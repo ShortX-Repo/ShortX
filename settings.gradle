@@ -10,7 +10,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
     }
 }
 rootProject.name = "ShortX"
 include ':app'
+include ':ui'
+include ':services'
