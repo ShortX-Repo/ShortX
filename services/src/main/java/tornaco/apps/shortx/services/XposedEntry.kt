@@ -11,6 +11,7 @@ import tornaco.apps.shortx.services.hook.Methods.start
 import tornaco.apps.shortx.services.hook.Methods.systemReady
 import tornaco.apps.shortx.services.hook.PackageNames.android
 import tornaco.apps.shortx.services.hook.afterMethod
+import tornaco.apps.shortx.services.hook.beforeMethod
 import tornaco.apps.shortx.services.hook.field
 
 class XposedEntry : IXposedHookLoadPackage {
@@ -29,9 +30,12 @@ class XposedEntry : IXposedHookLoadPackage {
                 ShortXService.systemReady()
             }
 
-            afterMethod(XposedHelpers.findClass("com.android.server.input.InputManagerService",
-                lpparam.classLoader), "filterInputEvent") {
-                ShortXService.filterInput(it.args[0] as InputEvent)
+            beforeMethod(XposedHelpers.findClass("com.android.server.input.InputManagerService",
+                lpparam.classLoader), "filterInputEvent") { param ->
+                val res = ShortXService.filterInput(param.args[0] as InputEvent)
+                res?.let {
+                    param.result = it
+                }
             }
         }
     }

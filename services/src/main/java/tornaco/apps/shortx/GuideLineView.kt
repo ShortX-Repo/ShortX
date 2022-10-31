@@ -15,6 +15,7 @@ import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.services.Logger
 import tornaco.apps.shortx.services.allHotSeats
 import tornaco.apps.shortx.services.getRect
+import tornaco.apps.shortx.services.screenSize
 
 class GuideLineView(context: Context) : FrameLayout(context) {
 
@@ -48,10 +49,9 @@ class GuideLineView(context: Context) : FrameLayout(context) {
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
         lp.format = PixelFormat.TRANSLUCENT
         lp.flags =
-            (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        lp.layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
         lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
         lp.packageName = mContext.packageName
         lp.windowAnimations = R.style.Animation_Toast
@@ -65,16 +65,8 @@ class GuideLineView(context: Context) : FrameLayout(context) {
     }
 
     class Guideline(context: Context) : View(context) {
-
-
-        private val windowManager: WindowManager by lazy {
-            context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        }
-        private val screenWidth: Int by lazy {
-            windowManager.defaultDisplay.width
-        }
-        private val screenHeight: Int by lazy {
-            windowManager.defaultDisplay.height
+        private val screenSize by lazy {
+            context.screenSize()
         }
 
         private val paint by lazy {
@@ -88,7 +80,7 @@ class GuideLineView(context: Context) : FrameLayout(context) {
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
             allHotSeats.forEach {
-                val rect = it.getRect(screenWidth.toFloat(), screenHeight.toFloat())
+                val rect = it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
                 canvas.drawRect(rect, paint.apply {
                     color = it.color
                 })

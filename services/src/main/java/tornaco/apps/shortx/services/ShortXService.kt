@@ -30,7 +30,12 @@ object ShortXService : SystemService() {
             }
 
             override fun onSwipeFromRight(x: Int, y: Int) {
-                logger.d("onSwipeFromRight: $x $y")
+                val screenSize = context.screenSize()
+                val matching = allHotSeats.firstOrNull {
+                    it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
+                        .contains(x.toFloat(), y.toFloat())
+                }
+                logger.d("onSwipeFromRight: $x $y  --> $matching")
             }
 
             override fun onSwipeFromLeft(x: Int, y: Int) {
@@ -38,14 +43,25 @@ object ShortXService : SystemService() {
             }
         })
 
-
         GuideLineView(context).attach()
     }
 
-    fun filterInput(event: InputEvent): Boolean {
+    fun filterInput(event: InputEvent): Boolean? {
         if (event is MotionEvent) {
             listener?.onPointerEvent(event)
+
+            if (event.action == MotionEvent.ACTION_UP) {
+                val screenSize = context.screenSize()
+
+                val matching = allHotSeats.firstOrNull {
+                    it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
+                        .contains(event.x, event.y)
+                }
+                if (matching != null && matching.area == Area.RightBottom) {
+                    return false
+                }
+            }
         }
-        return false
+        return null
     }
 }
