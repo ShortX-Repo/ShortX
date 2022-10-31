@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,35 @@
 
 package tornaco.apps.shortx.services;
 
+import static android.view.DisplayCutout.BOUNDS_POSITION_BOTTOM;
+import static android.view.DisplayCutout.BOUNDS_POSITION_LEFT;
+import static android.view.DisplayCutout.BOUNDS_POSITION_RIGHT;
+import static android.view.DisplayCutout.BOUNDS_POSITION_TOP;
+
+import android.annotation.NonNull;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.graphics.Region;
+import android.hardware.display.DisplayManagerGlobal;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Display;
+import android.view.DisplayCutout;
+import android.view.DisplayInfo;
 import android.view.GestureDetector;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.WindowManagerPolicyConstants.PointerEventListener;
 import android.widget.OverScroller;
 
-/*
+import java.io.PrintWriter;
+
+/**
  * Listens for system-wide input gestures, firing callbacks when detected.
  */
-public class SystemGesturesPointerEventListener {
+public class SystemGesturesPointerEventListener implements PointerEventListener {
     private static final String TAG = "SystemGestures";
     private static final boolean DEBUG = false;
     private static final long SWIPE_TIMEOUT_MS = 500;
@@ -44,8 +59,11 @@ public class SystemGesturesPointerEventListener {
     private static final int SWIPE_FROM_LEFT = 4;
 
     private final Context mContext;
-    private final int mSwipeStartThreshold;
-    private final int mSwipeDistanceThreshold;
+    private final Handler mHandler;
+    private int mDisplayCutoutTouchableRegionSize;
+    // The thresholds for each edge of the display
+    private final Rect mSwipeStartThreshold = new Rect();
+    private int mSwipeDistanceThreshold;
     private final Callbacks mCallbacks;
     private final int[] mDownPointerId = new int[MAX_TRACKED_POINTERS];
     private final float[] mDownX = new float[MAX_TRACKED_POINTERS];
@@ -53,23 +71,72 @@ public class SystemGesturesPointerEventListener {
     private final long[] mDownTime = new long[MAX_TRACKED_POINTERS];
 
     private GestureDetector mGestureDetector;
-    private OverScroller mOverscroller;
 
-    private int screenHeight;
-    private int screenWidth;
+    int screenHeight;
+    int screenWidth;
     private int mDownPointers;
     private boolean mSwipeFireable;
     private boolean mDebugFireable;
     private boolean mMouseHoveringAtEdge;
     private long mLastFlingTime;
 
-    public SystemGesturesPointerEventListener(Context context, Callbacks callbacks) {
-        mContext = context;
+    public SystemGesturesPointerEventListener(Context context, Handler handler, Callbacks callbacks) {
+        mContext = checkNull("context", context);
+        mHandler = handler;
         mCallbacks = checkNull("callbacks", callbacks);
-        mSwipeStartThreshold = 100;
-//                = checkNull("context", context).getResources()
-//                .getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
-        mSwipeDistanceThreshold = mSwipeStartThreshold;
+        onConfigurationChanged();
+    }
+
+    void onDisplayInfoChanged(DisplayInfo info) {
+        screenWidth = info.logicalWidth;
+        screenHeight = info.logicalHeight;
+        onConfigurationChanged();
+    }
+
+    void onConfigurationChanged() {
+        final Resources r = mContext.getResources();
+
+        // r.getDimensionPixelSize(com.android.internal.R.dimen.system_gestures_start_threshold)
+        int defaultThreshold = 72;
+        try {
+            int resId = Resources.getSystem().getIdentifier("system_gestures_start_threshold", "dimen", "android");
+            defaultThreshold = r.getDimensionPixelSize(resId);
+            Log.d(TAG, "system_gestures_start_threshold: " + defaultThreshold);
+        } catch (Throwable ignored) {
+
+        }
+        mSwipeStartThreshold.set(defaultThreshold, defaultThreshold, defaultThreshold,
+                defaultThreshold);
+        mSwipeDistanceThreshold = defaultThreshold;
+
+        // TODO Check compat
+        final Display display = DisplayManagerGlobal.getInstance()
+                .getRealDisplay(Display.DEFAULT_DISPLAY);
+        final DisplayCutout displayCutout = display.getCutout();
+        if (displayCutout != null) {
+            // Expand swipe start threshold such that we can catch touches that just start beyond
+            // the notch area
+            mDisplayCutoutTouchableRegionSize = r.getDimensionPixelSize(
+                    com.android.internal.R.dimen.display_cutout_touchable_region_size);
+            final Rect[] bounds = displayCutout.getBoundingRectsAll();
+            if (bounds[BOUNDS_POSITION_LEFT] != null) {
+                mSwipeStartThreshold.left = Math.max(mSwipeStartThreshold.left,
+                        bounds[BOUNDS_POSITION_LEFT].width() + mDisplayCutoutTouchableRegionSize);
+            }
+            if (bounds[BOUNDS_POSITION_TOP] != null) {
+                mSwipeStartThreshold.top = Math.max(mSwipeStartThreshold.top,
+                        bounds[BOUNDS_POSITION_TOP].height() + mDisplayCutoutTouchableRegionSize);
+            }
+            if (bounds[BOUNDS_POSITION_RIGHT] != null) {
+                mSwipeStartThreshold.right = Math.max(mSwipeStartThreshold.right,
+                        bounds[BOUNDS_POSITION_RIGHT].width() + mDisplayCutoutTouchableRegionSize);
+            }
+            if (bounds[BOUNDS_POSITION_BOTTOM] != null) {
+                mSwipeStartThreshold.bottom = Math.max(mSwipeStartThreshold.bottom,
+                        bounds[BOUNDS_POSITION_BOTTOM].height()
+                                + mDisplayCutoutTouchableRegionSize);
+            }
+        }
         if (DEBUG) Log.d(TAG, "mSwipeStartThreshold=" + mSwipeStartThreshold
                 + " mSwipeDistanceThreshold=" + mSwipeDistanceThreshold);
     }
@@ -82,11 +149,29 @@ public class SystemGesturesPointerEventListener {
     }
 
     public void systemReady() {
-        Handler h = new Handler(Looper.myLooper());
-        mGestureDetector = new GestureDetector(mContext, new FlingGestureDetector(), h);
-        mOverscroller = new OverScroller(mContext);
+        // GestureDetector records statistics about gesture classification events to inform gesture
+        // usage trends. SystemGesturesPointerEventListener creates a lot of noise in these
+        // statistics because it passes every touch event though a GestureDetector. By creating an
+        // anonymous subclass of GestureDetector, these statistics will be recorded with a unique
+        // source name that can be filtered.
+
+        // GestureDetector would get a ViewConfiguration instance by context, that may also
+        // create a new WindowManagerImpl for the new display, and lock WindowManagerGlobal
+        // temporarily in the constructor that would make a deadlock.
+        mHandler.post(() -> {
+            final int displayId = mContext.getDisplayId();
+            final DisplayInfo info = DisplayManagerGlobal.getInstance().getDisplayInfo(displayId);
+            if (info == null) {
+                // Display already removed, stop here.
+                Log.w(TAG, "Cannot create GestureDetector, display removed:" + displayId);
+                return;
+            }
+            mGestureDetector = new GestureDetector(mContext, new FlingGestureDetector(), mHandler) {
+            };
+        });
     }
 
+    @Override
     public void onPointerEvent(MotionEvent event) {
         if (mGestureDetector != null && event.isTouchEvent()) {
             mGestureDetector.onTouchEvent(event);
@@ -124,15 +209,29 @@ public class SystemGesturesPointerEventListener {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromBottom");
                         int pointerId = event.getPointerId(0);
                         final int i = findIndex(pointerId);
-                        int x = (int) mDownX[i];
-                        int y = (int) mDownY[i];
-                        mCallbacks.onSwipeFromBottom(x, y);
+                        if (i >= 0 && i < mDownX.length) {
+                            int x = (int) mDownX[i];
+                            int y = (int) mDownY[i];
+                            mCallbacks.onSwipeFromBottom(x, y);
+                        }
                     } else if (swipe == SWIPE_FROM_RIGHT) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromRight");
-                        mCallbacks.onSwipeFromRight();
+                        int pointerId = event.getPointerId(0);
+                        final int i = findIndex(pointerId);
+                        if (i >= 0 && i < mDownX.length) {
+                            int x = (int) mDownX[i];
+                            int y = (int) mDownY[i];
+                            mCallbacks.onSwipeFromRight(x, y);
+                        }
                     } else if (swipe == SWIPE_FROM_LEFT) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromLeft");
-                        mCallbacks.onSwipeFromLeft();
+                        int pointerId = event.getPointerId(0);
+                        final int i = findIndex(pointerId);
+                        if (i >= 0 && i < mDownX.length) {
+                            int x = (int) mDownX[i];
+                            int y = (int) mDownY[i];
+                            mCallbacks.onSwipeFromLeft(x, y);
+                        }
                     }
                 }
                 break;
@@ -165,15 +264,19 @@ public class SystemGesturesPointerEventListener {
     private void captureDown(MotionEvent event, int pointerIndex) {
         final int pointerId = event.getPointerId(pointerIndex);
         final int i = findIndex(pointerId);
-        if (DEBUG) Log.d(TAG, "pointer " + pointerId +
-                " down pointerIndex=" + pointerIndex + " trackingIndex=" + i);
+        if (DEBUG) Log.d(TAG, "pointer " + pointerId
+                + " down pointerIndex=" + pointerIndex + " trackingIndex=" + i);
         if (i != UNTRACKED_POINTER) {
             mDownX[i] = event.getX(pointerIndex);
             mDownY[i] = event.getY(pointerIndex);
             mDownTime[i] = event.getEventTime();
-            if (DEBUG) Log.d(TAG, "pointer " + pointerId +
-                    " down x=" + mDownX[i] + " y=" + mDownY[i]);
+            if (DEBUG) Log.d(TAG, "pointer " + pointerId
+                    + " down x=" + mDownX[i] + " y=" + mDownY[i]);
         }
+    }
+
+    protected boolean currentGestureStartedInRegion(Region r) {
+        return r.contains((int) mDownX[0], (int) mDownY[0]);
     }
 
     private int findIndex(int pointerId) {
@@ -220,22 +323,22 @@ public class SystemGesturesPointerEventListener {
         final long elapsed = time - mDownTime[i];
         if (DEBUG) Log.d(TAG, "pointer " + mDownPointerId[i]
                 + " moved (" + fromX + "->" + x + "," + fromY + "->" + y + ") in " + elapsed);
-        if (fromY <= mSwipeStartThreshold
+        if (fromY <= mSwipeStartThreshold.top
                 && y > fromY + mSwipeDistanceThreshold
                 && elapsed < SWIPE_TIMEOUT_MS) {
             return SWIPE_FROM_TOP;
         }
-        if (fromY >= screenHeight - mSwipeStartThreshold
+        if (fromY >= screenHeight - mSwipeStartThreshold.bottom
                 && y < fromY - mSwipeDistanceThreshold
                 && elapsed < SWIPE_TIMEOUT_MS) {
             return SWIPE_FROM_BOTTOM;
         }
-        if (fromX >= screenWidth - mSwipeStartThreshold
+        if (fromX >= screenWidth - mSwipeStartThreshold.right
                 && x < fromX - mSwipeDistanceThreshold
                 && elapsed < SWIPE_TIMEOUT_MS) {
             return SWIPE_FROM_RIGHT;
         }
-        if (fromX <= mSwipeStartThreshold
+        if (fromX <= mSwipeStartThreshold.left
                 && x > fromX + mSwipeDistanceThreshold
                 && elapsed < SWIPE_TIMEOUT_MS) {
             return SWIPE_FROM_LEFT;
@@ -243,7 +346,28 @@ public class SystemGesturesPointerEventListener {
         return SWIPE_NONE;
     }
 
+    public void dump(@NonNull PrintWriter pw, @NonNull String prefix) {
+        final String inner = prefix + "  ";
+        pw.println(prefix + TAG + ":");
+        pw.print(inner);
+        pw.print("mDisplayCutoutTouchableRegionSize=");
+        pw.println(mDisplayCutoutTouchableRegionSize);
+        pw.print(inner);
+        pw.print("mSwipeStartThreshold=");
+        pw.println(mSwipeStartThreshold);
+        pw.print(inner);
+        pw.print("mSwipeDistanceThreshold=");
+        pw.println(mSwipeDistanceThreshold);
+    }
+
     private final class FlingGestureDetector extends GestureDetector.SimpleOnGestureListener {
+
+        private OverScroller mOverscroller;
+
+        FlingGestureDetector() {
+            mOverscroller = new OverScroller(mContext);
+        }
+
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             if (!mOverscroller.isFinished()) {
@@ -278,9 +402,9 @@ public class SystemGesturesPointerEventListener {
 
         void onSwipeFromBottom(int x, int y);
 
-        void onSwipeFromRight();
+        void onSwipeFromRight(int x, int y);
 
-        void onSwipeFromLeft();
+        void onSwipeFromLeft(int x, int y);
 
         void onFling(int durationMs);
 
@@ -295,5 +419,62 @@ public class SystemGesturesPointerEventListener {
         void onMouseLeaveFromEdge();
 
         void onDebug();
+    }
+
+    public static class CallbacksAdapter implements Callbacks {
+        @Override
+        public void onSwipeFromTop() {
+
+        }
+
+        @Override
+        public void onSwipeFromBottom(int x, int y) {
+
+        }
+
+        @Override
+        public void onSwipeFromRight(int x, int y) {
+
+        }
+
+        @Override
+        public void onSwipeFromLeft(int x, int y) {
+
+        }
+
+        @Override
+        public void onFling(int durationMs) {
+
+        }
+
+        @Override
+        public void onDown() {
+
+        }
+
+        @Override
+        public void onUpOrCancel() {
+
+        }
+
+        @Override
+        public void onMouseHoverAtTop() {
+
+        }
+
+        @Override
+        public void onMouseHoverAtBottom() {
+
+        }
+
+        @Override
+        public void onMouseLeaveFromEdge() {
+
+        }
+
+        @Override
+        public void onDebug() {
+
+        }
     }
 }

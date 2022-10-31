@@ -4,16 +4,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.InputEvent
 import android.view.MotionEvent
-import tornaco.apps.shortx.services.SystemGesturesPointerEventListener.Callbacks
+import tornaco.apps.shortx.GuideLineView
+import tornaco.apps.shortx.newHandlerOfNewThread
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService() {
 
+    private val handler = newHandlerOfNewThread("ShortXService")
     private var listener: SystemGesturesPointerEventListener? = null
 
     override fun start(context: Context) {
         super.start(context)
-        listener = SystemGesturesPointerEventListener(context, object : Callbacks {
+    }
+
+    override fun systemReady() {
+        super.systemReady()
+        listener = SystemGesturesPointerEventListener(context, handler, object :
+            SystemGesturesPointerEventListener.CallbacksAdapter() {
             override fun onSwipeFromTop() {
                 logger.d("onSwipeFromTop")
             }
@@ -22,42 +29,17 @@ object ShortXService : SystemService() {
                 logger.d("onSwipeFromBottom: $x $y")
             }
 
-            override fun onSwipeFromRight() {
-                logger.d("onSwipeFromRight")
+            override fun onSwipeFromRight(x: Int, y: Int) {
+                logger.d("onSwipeFromRight: $x $y")
             }
 
-            override fun onSwipeFromLeft() {
-                logger.d("onSwipeFromLeft")
-            }
-
-            override fun onFling(durationMs: Int) {
-
-            }
-
-            override fun onDown() {
-
-            }
-
-            override fun onUpOrCancel() {
-
-            }
-
-            override fun onMouseHoverAtTop() {
-
-            }
-
-            override fun onMouseHoverAtBottom() {
-
-            }
-
-            override fun onMouseLeaveFromEdge() {
-
-            }
-
-            override fun onDebug() {
-
+            override fun onSwipeFromLeft(x: Int, y: Int) {
+                logger.d("onSwipeFromLeft: $x $y")
             }
         })
+
+
+        GuideLineView(context).attach()
     }
 
     fun filterInput(event: InputEvent): Boolean {
