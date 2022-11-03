@@ -96,6 +96,7 @@ object ShortXService : SystemService() {
     }
 
     fun filterInput(event: InputEvent): Boolean? {
+        logger.d("filterInput: $event")
         var res: Boolean? = null
         if (event is MotionEvent) {
             if (firingArea != null) {

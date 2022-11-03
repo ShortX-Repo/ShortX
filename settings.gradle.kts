@@ -1,3 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
+rootProject.name = "ShortX"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -5,18 +9,17 @@ pluginManagement {
         mavenCentral()
     }
 }
-dependencyResolutionManagement {
+@Suppress("JcenterRepositoryObsolete") dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         jcenter()
-        maven {
-            url "https://jitpack.io"
-        }
+        maven(url = "https://jitpack.io")
     }
 }
-rootProject.name = "ShortX"
-include ':app'
-include ':ui'
-include ':services'
+
+include(":app")
+include(":core")
+include(":services")

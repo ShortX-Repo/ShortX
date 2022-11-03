@@ -32,6 +32,11 @@ class XposedEntry : IXposedHookLoadPackage {
                 ShortXService.systemReady()
             }
 
+            afterMethod(lpparam.classLoader.inputManagerService(), start) { param ->
+                val nat = param.thisObject.field<Any>("mNative")
+                XposedHelpers.callMethod(nat, "setInputFilterEnabled", true)
+            }
+
             beforeMethod(lpparam.classLoader.inputManagerService(), filterInputEvent) { param ->
                 val res = ShortXService.filterInput(param.args[0] as InputEvent)
                 res?.let {
