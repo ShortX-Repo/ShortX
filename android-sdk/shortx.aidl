@@ -1,0 +1,1 @@
+parcelable tornaco.apps.shortx.core.Version;

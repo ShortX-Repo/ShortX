@@ -7,7 +7,11 @@ public interface IShortX extends android.os.IInterface
   /** Default implementation for IShortX. */
   public static class Default implements tornaco.apps.shortx.core.IShortX
   {
-    @Override public java.lang.String version() throws android.os.RemoteException
+    @Override public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.lang.String fingerprint() throws android.os.RemoteException
     {
       return null;
     }
@@ -57,7 +61,21 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_version:
         {
           data.enforceInterface(descriptor);
-          java.lang.String _result = this.version();
+          tornaco.apps.shortx.core.Version _result = this.version();
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_fingerprint:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _result = this.fingerprint();
           reply.writeNoException();
           reply.writeString(_result);
           return true;
@@ -83,16 +101,41 @@ public interface IShortX extends android.os.IInterface
       {
         return DESCRIPTOR;
       }
-      @Override public java.lang.String version() throws android.os.RemoteException
+      @Override public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.Version _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_version, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().version();
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.Version.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.lang.String fingerprint() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         java.lang.String _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_version, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_fingerprint, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().version();
+            return getDefaultImpl().fingerprint();
           }
           _reply.readException();
           _result = _reply.readString();
@@ -106,6 +149,7 @@ public interface IShortX extends android.os.IInterface
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+    static final int TRANSACTION_fingerprint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -123,5 +167,6 @@ public interface IShortX extends android.os.IInterface
       return Stub.Proxy.sDefaultImpl;
     }
   }
-  public java.lang.String version() throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
+  public java.lang.String fingerprint() throws android.os.RemoteException;
 }

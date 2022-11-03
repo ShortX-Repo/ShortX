@@ -31,7 +31,6 @@ object ShortXService : SystemService() {
 
     override fun start(context: Context) {
         super.start(context)
-
     }
 
     override fun systemReady() {

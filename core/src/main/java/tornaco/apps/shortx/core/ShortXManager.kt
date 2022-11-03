@@ -10,8 +10,15 @@ const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
 val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 
 class ShortXManager {
-    fun isInstalled() = ShortXManagerNative.service != null
-    fun version() = ShortXManagerNative.service?.version() ?: ""
+    private val service: IShortX? by lazy {
+        ShortXManagerNative.service
+    }
+
+    fun isInstalled() = service != null
+
+    fun version() = service?.version() ?: Version("", 0)
+
+    fun fingerprint() = service?.fingerprint() ?: ""
 }
 
 object ShortXManagerNative {

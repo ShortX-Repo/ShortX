@@ -1,14 +1,19 @@
 package tornaco.apps.shortx.services
 
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IShortX
+import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.util.Logger
-import java.util.*
-
 
 class ShortXBinderService : IShortX.Stub() {
     private val logger = Logger("ShortXBinderService")
 
-    override fun version(): String {
-        return UUID.randomUUID().toString()
+    override fun version(): Version {
+        return Version(
+            name = BuildProp.APP_VERSION_NAME,
+            code = BuildProp.APP_VERSION_CODE
+        )
     }
+
+    override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 }
