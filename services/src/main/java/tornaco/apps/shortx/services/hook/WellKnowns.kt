@@ -9,6 +9,7 @@ object PackageNames {
 object Methods {
     const val start = "start"
     const val systemReady = "systemReady"
+    const val filterInputEvent = "filterInputEvent"
 }
 
 object Fields {
@@ -27,6 +28,10 @@ object Classes {
         return XposedHelpers.findClass("com.android.server.am.ActiveServices", this)
     }
 
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.inputManagerService(): Class<*> {
+        return XposedHelpers.findClass("com.android.server.input.InputManagerService", this)
+    }
 
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.phoneWindowManagerClass(): Class<*> =

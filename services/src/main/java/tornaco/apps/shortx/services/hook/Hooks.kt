@@ -3,6 +3,9 @@ package tornaco.apps.shortx.services.hook
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
+import tornaco.apps.shortx.services.Logger
+
+private val logger = Logger("Hooks")
 
 fun beforeConstruct(
     clazz: Class<*>,
@@ -38,7 +41,12 @@ fun beforeMethod(
             super.beforeHookedMethod(param)
             param?.let { beforeMethod(it) }
         }
-    })
+    }).apply {
+        require(this.size > 0) {
+            "beforeMethod, unable to hook this method: $clazz#$methodName"
+        }
+        logger.w("beforeMethod, unhooks: $this for method: $clazz#$methodName")
+    }
 }
 
 fun afterMethod(
@@ -51,7 +59,12 @@ fun afterMethod(
             super.afterHookedMethod(param)
             param?.let { afterMethod(it) }
         }
-    })
+    }).apply {
+        require(this.size > 0) {
+            "afterMethod, unable to hook this method: $clazz#$methodName"
+        }
+        logger.w("afterMethod, unhooks: $this for method: $clazz#$methodName")
+    }
 }
 
 

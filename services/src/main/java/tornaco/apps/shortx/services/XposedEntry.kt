@@ -6,7 +6,9 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.services.hook.Classes.amsClass
+import tornaco.apps.shortx.services.hook.Classes.inputManagerService
 import tornaco.apps.shortx.services.hook.Fields.mContext
+import tornaco.apps.shortx.services.hook.Methods.filterInputEvent
 import tornaco.apps.shortx.services.hook.Methods.start
 import tornaco.apps.shortx.services.hook.Methods.systemReady
 import tornaco.apps.shortx.services.hook.PackageNames.android
@@ -30,8 +32,7 @@ class XposedEntry : IXposedHookLoadPackage {
                 ShortXService.systemReady()
             }
 
-            beforeMethod(XposedHelpers.findClass("com.android.server.input.InputManagerService",
-                lpparam.classLoader), "filterInputEvent") { param ->
+            beforeMethod(lpparam.classLoader.inputManagerService(), filterInputEvent) { param ->
                 val res = ShortXService.filterInput(param.args[0] as InputEvent)
                 res?.let {
                     param.result = it

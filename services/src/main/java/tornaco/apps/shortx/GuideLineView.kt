@@ -49,7 +49,9 @@ class GuideLineView(context: Context) : FrameLayout(context) {
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
         lp.format = PixelFormat.TRANSLUCENT
         lp.flags =
-            (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         lp.layoutInDisplayCutoutMode =
             WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
         lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY

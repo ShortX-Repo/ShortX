@@ -41,6 +41,8 @@ import android.widget.OverScroller;
 
 import java.io.PrintWriter;
 
+import tornaco.apps.shortx.ResExtKt;
+
 /**
  * Listens for system-wide input gestures, firing callbacks when detected.
  */
@@ -97,11 +99,11 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         final Resources r = mContext.getResources();
 
         // r.getDimensionPixelSize(com.android.internal.R.dimen.system_gestures_start_threshold)
-        int defaultThreshold = 72;
+        int defaultThreshold = ResExtKt.getDp(24);
         try {
             int resId = Resources.getSystem().getIdentifier("system_gestures_start_threshold", "dimen", "android");
             defaultThreshold = r.getDimensionPixelSize(resId);
-            Log.d(TAG, "system_gestures_start_threshold: " + defaultThreshold);
+            Log.w(TAG, "system_gestures_start_threshold: " + defaultThreshold);
         } catch (Throwable ignored) {
 
         }
@@ -149,6 +151,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     }
 
     public void systemReady() {
+        mGestureDetector = new GestureDetector(mContext, new FlingGestureDetector(), mHandler);
         // GestureDetector records statistics about gesture classification events to inform gesture
         // usage trends. SystemGesturesPointerEventListener creates a lot of noise in these
         // statistics because it passes every touch event though a GestureDetector. By creating an
@@ -166,8 +169,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                 Log.w(TAG, "Cannot create GestureDetector, display removed:" + displayId);
                 return;
             }
-            mGestureDetector = new GestureDetector(mContext, new FlingGestureDetector(), mHandler) {
-            };
+
         });
     }
 
@@ -362,10 +364,26 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
 
     private final class FlingGestureDetector extends GestureDetector.SimpleOnGestureListener {
 
-        private OverScroller mOverscroller;
+        private final OverScroller mOverscroller;
 
         FlingGestureDetector() {
             mOverscroller = new OverScroller(mContext);
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            super.onShowPress(e);
+            mCallbacks.onShowPress((int) e.getX(), (int) e.getY());
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return super.onDown(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return super.onSingleTapConfirmed(e);
         }
 
         @Override
@@ -373,7 +391,26 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
             if (!mOverscroller.isFinished()) {
                 mOverscroller.forceFinished(true);
             }
+            mCallbacks.onSingleTapUp((int) e.getX(), (int) e.getY());
             return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            if (!mOverscroller.isFinished()) {
+                mOverscroller.forceFinished(true);
+            }
+            mCallbacks.onDoubleTap((int) e.getX(), (int) e.getY());
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+            if (!mOverscroller.isFinished()) {
+                mOverscroller.forceFinished(true);
+            }
+            mCallbacks.onLongPress((int) e.getX(), (int) e.getY());
         }
 
         @Override
@@ -419,6 +456,14 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         void onMouseLeaveFromEdge();
 
         void onDebug();
+
+        void onSingleTapUp(int x, int y);
+
+        void onDoubleTap(int x, int y);
+
+        void onLongPress(int x, int y);
+
+        void onShowPress(int x, int y);
     }
 
     public static class CallbacksAdapter implements Callbacks {
@@ -474,6 +519,26 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
 
         @Override
         public void onDebug() {
+
+        }
+
+        @Override
+        public void onSingleTapUp(int x, int y) {
+
+        }
+
+        @Override
+        public void onDoubleTap(int x, int y) {
+
+        }
+
+        @Override
+        public void onLongPress(int x, int y) {
+
+        }
+
+        @Override
+        public void onShowPress(int x, int y) {
 
         }
     }

@@ -3,8 +3,11 @@ package tornaco.apps.shortx.services
 import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
+import tornaco.apps.shortx.dp
 
-private const val HOT_SEAT_ARE_SIZE = 64f
+val defaultHotSeatSize by lazy {
+    16.dp
+}
 
 enum class Area {
     LeftTop,
@@ -33,7 +36,7 @@ data class HotSeat(val area: Area, @ColorInt val color: Int)
 fun HotSeat.getRect(
     screenWidth: Float,
     screenHeight: Float,
-    areaSize: Float = HOT_SEAT_ARE_SIZE,
+    areaSize: Float = defaultHotSeatSize.toFloat(),
 ): RectF {
     return when (this.area) {
         Area.BottomAll -> {

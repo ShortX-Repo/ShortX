@@ -331,3 +331,6 @@ val Context.windowManager: WindowManager
 /** Returns the LauncherApps instance. **/
 val Context.launcherApps: LauncherApps
     get() = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+
+val Context.statusBarManager: StatusBarManager
+    get() = getSystemService(Context.STATUS_BAR_SERVICE) as StatusBarManager
