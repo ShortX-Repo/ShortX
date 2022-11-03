@@ -8,6 +8,11 @@ import java.util.*
 private val props = Properties()
 
 object Configs {
+    const val sxPackageName = "tornaco.apps.shortx" +
+            ""
+    var sxVersionCode: Int? = 0
+    var sxVersionName: String? = null
+
     const val compileSdkVersion = 33
     const val minSdkVersion = 26
     const val targetSdkVersion = 33

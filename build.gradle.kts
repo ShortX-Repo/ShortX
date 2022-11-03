@@ -1,3 +1,6 @@
+import tornaco.project.android.shortx.Configs.sxVersionCode
+import tornaco.project.android.shortx.Configs.sxVersionName
+
 buildscript {
     repositories {
         google()
@@ -22,3 +25,6 @@ androidGitVersion {
     codeFormat = "MNPBB"
     baseCode = 1
 }
+
+sxVersionCode = androidGitVersion.code()
+sxVersionName = androidGitVersion.name()
