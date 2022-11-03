@@ -5,6 +5,7 @@ import android.view.InputEvent
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.hook.Classes.amsClass
 import tornaco.apps.shortx.services.hook.Classes.inputManagerService
 import tornaco.apps.shortx.services.hook.Fields.mContext

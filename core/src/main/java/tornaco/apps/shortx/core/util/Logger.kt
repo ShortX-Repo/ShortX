@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services
+package tornaco.apps.shortx.core.util
 
 import android.util.Log
 

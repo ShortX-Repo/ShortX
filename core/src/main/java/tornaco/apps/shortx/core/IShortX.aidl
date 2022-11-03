@@ -1,4 +1,4 @@
-package tornaco.apps.shortx;
+package tornaco.apps.shortx.core;
 
 interface IShortX {
     String version();

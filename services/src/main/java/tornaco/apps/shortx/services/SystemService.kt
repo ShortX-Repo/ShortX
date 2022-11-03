@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services
 
 import android.annotation.CallSuper
 import android.content.Context
+import tornaco.apps.shortx.core.util.Logger
 
 open class SystemService {
     val logger by lazy {

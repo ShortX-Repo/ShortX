@@ -1,11 +1,11 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
  */
-package tornaco.apps.shortx;
+package tornaco.apps.shortx.core;
 public interface IShortX extends android.os.IInterface
 {
   /** Default implementation for IShortX. */
-  public static class Default implements tornaco.apps.shortx.IShortX
+  public static class Default implements tornaco.apps.shortx.core.IShortX
   {
     @Override public java.lang.String version() throws android.os.RemoteException
     {
@@ -17,28 +17,28 @@ public interface IShortX extends android.os.IInterface
     }
   }
   /** Local-side IPC implementation stub class. */
-  public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.IShortX
+  public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.IShortX
   {
-    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.IShortX";
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IShortX";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
       this.attachInterface(this, DESCRIPTOR);
     }
     /**
-     * Cast an IBinder object into an tornaco.apps.shortx.IShortX interface,
+     * Cast an IBinder object into an tornaco.apps.shortx.core.IShortX interface,
      * generating a proxy if needed.
      */
-    public static tornaco.apps.shortx.IShortX asInterface(android.os.IBinder obj)
+    public static tornaco.apps.shortx.core.IShortX asInterface(android.os.IBinder obj)
     {
       if ((obj==null)) {
         return null;
       }
       android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
-      if (((iin!=null)&&(iin instanceof tornaco.apps.shortx.IShortX))) {
-        return ((tornaco.apps.shortx.IShortX)iin);
+      if (((iin!=null)&&(iin instanceof tornaco.apps.shortx.core.IShortX))) {
+        return ((tornaco.apps.shortx.core.IShortX)iin);
       }
-      return new tornaco.apps.shortx.IShortX.Stub.Proxy(obj);
+      return new tornaco.apps.shortx.core.IShortX.Stub.Proxy(obj);
     }
     @Override public android.os.IBinder asBinder()
     {
@@ -68,7 +68,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
     }
-    private static class Proxy implements tornaco.apps.shortx.IShortX
+    private static class Proxy implements tornaco.apps.shortx.core.IShortX
     {
       private android.os.IBinder mRemote;
       Proxy(android.os.IBinder remote)
@@ -103,10 +103,10 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      public static tornaco.apps.shortx.IShortX sDefaultImpl;
+      public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
-    public static boolean setDefaultImpl(tornaco.apps.shortx.IShortX impl) {
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
       // users in the same process use this function.
@@ -119,7 +119,7 @@ public interface IShortX extends android.os.IInterface
       }
       return false;
     }
-    public static tornaco.apps.shortx.IShortX getDefaultImpl() {
+    public static tornaco.apps.shortx.core.IShortX getDefaultImpl() {
       return Stub.Proxy.sDefaultImpl;
     }
   }

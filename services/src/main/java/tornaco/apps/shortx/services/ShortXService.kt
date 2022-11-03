@@ -5,7 +5,9 @@ import android.content.Context
 import android.view.InputEvent
 import android.view.MotionEvent
 import tornaco.apps.shortx.GuideLineView
-import tornaco.apps.shortx.newHandlerOfNewThread
+import tornaco.apps.shortx.core.util.newHandlerOfNewThread
+import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.core.util.statusBarManager
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService() {

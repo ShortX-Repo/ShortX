@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.core.util
 
 import android.os.Handler
 import android.os.HandlerThread

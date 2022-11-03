@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'kotlin'
 }
 
 java {
@@ -10,5 +10,6 @@ java {
 
 dependencies {
     compileOnly files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar")
-    compileOnly 'de.robv.android.xposed:api:82'
+    implementation project(":core")
+    implementation project(":external:utils")
 }

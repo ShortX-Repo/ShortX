@@ -11,11 +11,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.android.internal.R
-import de.robv.android.xposed.XposedHelpers
-import tornaco.apps.shortx.services.Logger
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.allHotSeats
 import tornaco.apps.shortx.services.getRect
-import tornaco.apps.shortx.services.screenSize
+import util.Reflections
 
 class GuideLineView(context: Context) : FrameLayout(context) {
 
@@ -61,7 +61,7 @@ class GuideLineView(context: Context) : FrameLayout(context) {
     }
 
     private fun WindowManager.LayoutParams.trySetTrustedOverlay() {
-        kotlin.runCatching { XposedHelpers.callMethod(this, "setTrustedOverlay") }.onFailure {
+        kotlin.runCatching { Reflections.callMethod(this, "setTrustedOverlay") }.onFailure {
             logger.e(it, "trySetTrustedOverlay")
         }
     }
