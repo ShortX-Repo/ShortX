@@ -37,6 +37,13 @@ object ShortXService : SystemService() {
         super.systemReady()
         publishBinderService()
 
+        settings.apply {
+            readBlocking()
+            logger.d("data-id before = ${getString("data-id")}")
+            putString("data-id", System.currentTimeMillis().toString())
+            logger.d("data-id = ${getString("data-id")}")
+        }
+
         listener = SystemGesturesPointerEventListener(context,
             handler,
             object : SystemGesturesPointerEventListener.CallbacksAdapter() {
@@ -168,7 +175,7 @@ object ShortXService : SystemService() {
                 logger.d("BinderProxy, onTransact: $code")
                 if (code == IPC_CODE) {
                     data!!.enforceInterface(IShortX::class.java.name)
-                    val service = ShortXBinderService()
+                    val service = serviceBinder
                     reply.writeStrongBinder(service.asBinder())
                     return true
                 }

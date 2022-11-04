@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services
+package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Context
 import android.view.InputEvent
@@ -6,16 +6,14 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.hook.Classes.amsClass
-import tornaco.apps.shortx.services.hook.Classes.inputManagerService
-import tornaco.apps.shortx.services.hook.Fields.mContext
-import tornaco.apps.shortx.services.hook.Methods.filterInputEvent
-import tornaco.apps.shortx.services.hook.Methods.start
-import tornaco.apps.shortx.services.hook.Methods.systemReady
-import tornaco.apps.shortx.services.hook.PackageNames.android
-import tornaco.apps.shortx.services.hook.afterMethod
-import tornaco.apps.shortx.services.hook.beforeMethod
-import tornaco.apps.shortx.services.hook.field
+import tornaco.apps.shortx.services.ShortXService
+import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
+import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
+import tornaco.apps.shortx.services.xposed.hooks.hook.Fields.mContext
+import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.filterInputEvent
+import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.start
+import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.systemReady
+import tornaco.apps.shortx.services.xposed.hooks.hook.PackageNames.android
 
 class XposedEntry : IXposedHookLoadPackage {
     private val logger = Logger("XposedEntry")

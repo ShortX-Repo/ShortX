@@ -9,7 +9,6 @@ plugins {
     id("kotlin-parcelize")
 }
 
-
 android {
     defaultConfig {
         applicationId = Configs.sxPackageName

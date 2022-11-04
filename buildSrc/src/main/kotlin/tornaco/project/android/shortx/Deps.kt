@@ -15,3 +15,11 @@ object ClassPaths {
 object Compose {
     const val composeVersion = "1.2.0"
 }
+
+object Coroutines {
+    private const val version = "1.5.0-RC"
+    const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
+    const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
+    const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0"
+    const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
+}

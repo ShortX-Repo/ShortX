@@ -1,1 +1,1 @@
-tornaco.apps.shortx.services.XposedEntry
+tornaco.apps.shortx.services.xposed.hooks.hook.XposedEntry

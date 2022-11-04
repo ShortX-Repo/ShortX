@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.hook
+package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XposedHelpers
 
