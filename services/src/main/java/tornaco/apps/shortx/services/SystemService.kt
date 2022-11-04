@@ -3,14 +3,18 @@ package tornaco.apps.shortx.services
 import android.annotation.CallSuper
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.data.SettingsStore
 
 open class SystemService {
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
+    val handler by lazy {
+        newHandlerOfNewThread(this.javaClass.simpleName)
+    }
 
     val logger by lazy {
         Logger(this.javaClass.simpleName)
@@ -65,10 +69,14 @@ open class SystemService {
 
 val SystemService.systemServiceScope: CoroutineScope
     get() {
+        require(isStarted) {
+            "Trying to access systemServiceScope before System started!"
+        }
         val key = "systemServiceScope"
         val scope: CoroutineScope? = this.getTag(key)
         if (scope != null) {
             return scope
         }
-        return addTagIfAbsent(key, CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate))
+        return addTagIfAbsent(key,
+            CoroutineScope(SupervisorJob() + handler.asCoroutineDispatcher("HD#Scope")))
     }

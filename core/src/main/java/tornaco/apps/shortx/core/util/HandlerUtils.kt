@@ -5,7 +5,7 @@ import android.os.HandlerThread
 import android.os.Looper
 
 fun newHandlerOfNewThread(name: String?): Handler {
-    val hr = HandlerThread(name)
+    val hr = HandlerThread("HT-$name")
     hr.start()
     return Handler(hr.looper)
 }
