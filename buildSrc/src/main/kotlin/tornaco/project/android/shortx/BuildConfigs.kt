@@ -8,14 +8,15 @@ import java.util.*
 private val props = Properties()
 
 object Configs {
-    const val sxPackageName = "tornaco.apps.shortx" +
-            ""
+    const val sxPackageName = "tornaco.apps.shortx"
     var sxVersionCode: Int? = 0
     var sxVersionName: String? = null
 
     const val compileSdkVersion = 33
     const val minSdkVersion = 26
     const val targetSdkVersion = 33
+
+    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     // We use this value to find some build tools binaries.
     // consider to find the latest version more gracefully

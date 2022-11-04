@@ -10,3 +10,8 @@ object ClassPaths {
 
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 }
+
+
+object Compose {
+    const val composeVersion = "1.2.0"
+}
