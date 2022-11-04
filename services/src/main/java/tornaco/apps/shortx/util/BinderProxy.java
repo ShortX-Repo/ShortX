@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services;
+package tornaco.apps.shortx.util;
 
 import android.os.Binder;
 import android.os.IInterface;

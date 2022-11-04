@@ -10,8 +10,9 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     private val logger = Logger("${SettingsStore::class.java.simpleName}-$name")
     private val storeFile by lazy { Dirs.dataStoreFile(name) }
 
-    private val stringMap = mutableMapOf<String, String?>()
-    private val intMap = mutableMapOf<String, Int>()
+    private val stringCache = mutableMapOf<String, String?>()
+    private val boolCache = mutableMapOf<String, Boolean?>()
+    private val intCache = mutableMapOf<String, Int?>()
 
     private var job: Job? = null
 
@@ -29,8 +30,9 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
                 Settings.parseDelimitedFrom(it)
             }
             settings.run {
-                stringMap.putAll(stringSettingsMap)
-                intMap.putAll(intSettingsMap)
+                stringCache.putAll(stringSettingsMap)
+                boolCache.putAll(boolSettingsMap)
+                intCache.putAll(intSettingsMap)
             }
         }.onFailure {
             logger.e(it, "read error")
@@ -39,15 +41,24 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
 
 
     fun getString(key: String, defaultValue: String? = null): String? {
-        return stringMap.getOrDefault(key, defaultValue)
+        return stringCache[key] ?: defaultValue
+    }
+
+    fun getBool(key: String, defaultValue: Boolean = false): Boolean {
+        return boolCache[key] ?: defaultValue
     }
 
     fun getInt(key: String, defaultValue: Int? = null): Int? {
-        return intMap.getOrDefault(key, defaultValue)
+        return intCache[key] ?: defaultValue
     }
 
     fun putString(key: String, value: String?) {
-        stringMap[key] = value
+        stringCache[key] = value
+        postWrite()
+    }
+
+    fun putBool(key: String, value: Boolean) {
+        boolCache[key] = value
         postWrite()
     }
 
@@ -62,8 +73,9 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     private suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
         val settings = Settings.newBuilder().apply {
-            putAllStringSettings(stringMap)
-            putAllIntSettings(intMap)
+            putAllStringSettings(stringCache)
+            putAllBoolSettings(boolCache)
+            putAllIntSettings(intCache)
         }.build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {

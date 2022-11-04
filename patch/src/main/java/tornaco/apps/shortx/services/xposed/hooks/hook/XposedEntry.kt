@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Context
-import android.view.InputEvent
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -32,15 +31,16 @@ class XposedEntry : IXposedHookLoadPackage {
             }
 
             afterMethod(lpparam.classLoader.inputManagerService(), start) { param ->
-                val nat = param.thisObject.field<Any>("mNative")
-                XposedHelpers.callMethod(nat, "setInputFilterEnabled", true)
+                param.thisObject.fieldOrNull<Any>("mNative")?.run {
+                    XposedHelpers.callMethod(this, "setInputFilterEnabled", true)
+                }
             }
 
             beforeMethod(lpparam.classLoader.inputManagerService(), filterInputEvent) { param ->
-                val res = ShortXService.filterInput(param.args[0] as InputEvent)
-                res?.let {
-                    param.result = it
-                }
+//                val res = ShortXService.filterInput(param.args[0] as InputEvent)
+//                res?.let {
+//                    param.result = it
+//                }
             }
         }
     }

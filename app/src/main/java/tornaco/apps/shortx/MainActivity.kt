@@ -6,10 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background) {
-                    Greeting(ShortXManager().version().toString())
+                    Greeting()
                 }
             }
         }
@@ -28,8 +28,14 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun Greeting(name: String) {
-        Text(text = name)
+    fun Greeting() {
+        var enabled by remember {
+            mutableStateOf(shortXManager.isEdgeGestureEnabled())
+        }
+        Switch(checked = enabled, onCheckedChange = {
+            shortXManager.setEdgeGestureEnabled(!enabled)
+            enabled = shortXManager.isEdgeGestureEnabled()
+        })
     }
 }
 

@@ -15,6 +15,13 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public boolean isEdgeGestureEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
+    @Override public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -78,6 +85,23 @@ public interface IShortX extends android.os.IInterface
           java.lang.String _result = this.fingerprint();
           reply.writeNoException();
           reply.writeString(_result);
+          return true;
+        }
+        case TRANSACTION_isEdgeGestureEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isEdgeGestureEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_setEdgeGestureEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setEdgeGestureEnabled(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -146,10 +170,51 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public boolean isEdgeGestureEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isEdgeGestureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isEdgeGestureEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enable)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setEdgeGestureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setEdgeGestureEnabled(enable);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_fingerprint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+    static final int TRANSACTION_isEdgeGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+    static final int TRANSACTION_setEdgeGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -169,4 +234,6 @@ public interface IShortX extends android.os.IInterface
   }
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
   public java.lang.String fingerprint() throws android.os.RemoteException;
+  public boolean isEdgeGestureEnabled() throws android.os.RemoteException;
+  public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException;
 }

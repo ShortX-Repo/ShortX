@@ -25,7 +25,7 @@ open class SystemService {
     lateinit var context: Context
         private set
 
-    val settings: SettingsStore by lazy {
+    val store: SettingsStore by lazy {
         SettingsStore(this.javaClass.simpleName, systemServiceScope)
     }
 
@@ -38,7 +38,7 @@ open class SystemService {
 
     @CallSuper
     open fun systemReady() {
-        settings.readBlocking()
+        store.readBlocking()
         isSystemReady = true
         logger.i("systemReady: $this")
     }
