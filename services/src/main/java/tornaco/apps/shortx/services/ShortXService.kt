@@ -8,21 +8,19 @@ import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.util.BinderProxy
 
+private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
+
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService() {
-    private val edgeGestureService = EdgeGestureService()
-
-    private val internalServices = listOf(edgeGestureService)
-
     override fun start(context: Context) {
         super.start(context)
-        internalServices.forEach { it.start(context) }
+        ShortXServiceManager.start(context)
     }
 
     override fun systemReady() {
         super.systemReady()
         publishBinderService()
-        internalServices.forEach { it.systemReady() }
+        ShortXServiceManager.systemReady()
     }
 
     private fun publishBinderService() {
@@ -68,10 +66,10 @@ object ShortXService : SystemService() {
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
-        override fun isEdgeGestureEnabled() = edgeGestureService.isEnabled()
+        override fun isEdgeGestureEnabled() = ShortXServiceManager.edgeGestureService.isEnabled()
 
         override fun setEdgeGestureEnabled(enable: Boolean) {
-            edgeGestureService.setEnabled(enable)
+            ShortXServiceManager.edgeGestureService.setEnabled(enable)
         }
     }
 }

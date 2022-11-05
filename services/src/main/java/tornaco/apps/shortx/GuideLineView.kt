@@ -42,6 +42,13 @@ class GuideLineView(context: Context) : FrameLayout(context) {
         isAttached = true
     }
 
+    fun detach() {
+        if (isAttached) {
+            windowManager.removeViewImmediate(this)
+            isAttached = false
+        }
+    }
+
     private fun createLayoutParams(): WindowManager.LayoutParams {
         val lp = WindowManager.LayoutParams()
         lp.gravity = Gravity.START or Gravity.TOP
