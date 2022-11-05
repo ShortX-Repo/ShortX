@@ -66,10 +66,18 @@ object ShortXService : SystemService() {
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
-        override fun isEdgeGestureEnabled() = ShortXServiceManager.edgeGestureService.isEnabled()
+        override fun isEdgeGestureEnabled() = ShortXServiceManager.gesture.isEnabled()
 
         override fun setEdgeGestureEnabled(enable: Boolean) {
-            ShortXServiceManager.edgeGestureService.setEnabled(enable)
+            ShortXServiceManager.gesture.setEnabled(enable)
+        }
+
+        override fun isEdgeGestureEnabledOnArea(areaName: String) =
+            ShortXServiceManager.gesture.isEdgeGestureEnabledOnArea(areaName)
+
+
+        override fun setEdgeGestureEnabledOnArea(areaName: String, enable: Boolean) {
+            ShortXServiceManager.gesture.setEdgeGestureEnabledOnArea(areaName, enable)
         }
     }
 }

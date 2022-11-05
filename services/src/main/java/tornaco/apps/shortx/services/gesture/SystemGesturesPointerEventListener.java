@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tornaco.apps.shortx.services;
+package tornaco.apps.shortx.services.gesture;
 
 import static android.view.DisplayCutout.BOUNDS_POSITION_BOTTOM;
 import static android.view.DisplayCutout.BOUNDS_POSITION_LEFT;

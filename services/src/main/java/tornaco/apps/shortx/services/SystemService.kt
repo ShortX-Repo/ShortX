@@ -2,13 +2,13 @@ package tornaco.apps.shortx.services
 
 import android.annotation.CallSuper
 import android.content.Context
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.data.SettingsStore
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 open class SystemService {
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
@@ -80,14 +80,3 @@ val SystemService.systemServiceScope: CoroutineScope
         return addTagIfAbsent(key,
             CoroutineScope(SupervisorJob() + handler.asCoroutineDispatcher("HD#Scope")))
     }
-
-
-fun CoroutineScope.launchSafety(
-    context: CoroutineContext = EmptyCoroutineContext,
-    start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend CoroutineScope.() -> Unit,
-): Job = launch(context = context, start = start, block = {
-    kotlin.runCatching { block() }.onFailure {
-        ServiceManager.watchDogService.onFatalError(it)
-    }
-})

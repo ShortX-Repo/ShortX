@@ -2,8 +2,8 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.core.util.Logger
+import util.Reflections
 
 private val logger = Logger("Hooks")
 
@@ -70,11 +70,11 @@ fun afterMethod(
 
 @Suppress("UNCHECKED_CAST")
 fun <T> Any.field(fieldName: String): T {
-    return XposedHelpers.getObjectField(this, fieldName) as T
+    return Reflections.getObjectField(this, fieldName) as T
 }
 
 @Suppress("UNCHECKED_CAST")
 fun <T> Any.fieldOrNull(fieldName: String): T? {
-    return kotlin.runCatching { XposedHelpers.getObjectField(this, fieldName) as T }
+    return kotlin.runCatching { Reflections.getObjectField(this, fieldName) as T }
         .getOrElse { null }
 }

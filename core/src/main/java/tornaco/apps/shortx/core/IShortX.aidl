@@ -6,4 +6,7 @@ interface IShortX {
 
     boolean isEdgeGestureEnabled();
     void setEdgeGestureEnabled(boolean enable);
+
+    boolean isEdgeGestureEnabledOnArea(String areaName);
+    void setEdgeGestureEnabledOnArea(String areaName, boolean enable);
 }

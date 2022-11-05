@@ -9,24 +9,14 @@ import tornaco.apps.shortx.core.util.Logger
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
 val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 
-val Context.shortXManager get() = ShortXManager(this)
+val Context.shortXManager
+    get() = ShortXManager(this, ShortXManagerNative.service ?: IShortX.Default())
 
-class ShortXManager(private val context: Context) {
-    private val service: IShortX? by lazy {
-        ShortXManagerNative.service
-    }
+class ShortXManager(private val context: Context, private val service: IShortX) :
+    IShortX by service {
 
-    fun isInstalled() = service != null
-
-    fun version() = service?.version() ?: Version("", 0)
-
-    fun fingerprint() = service?.fingerprint() ?: ""
-
-    fun isEdgeGestureEnabled() = service?.isEdgeGestureEnabled ?: false
-
-    fun setEdgeGestureEnabled(enable: Boolean) = service?.run {
-        isEdgeGestureEnabled = enable
-    }
+    fun isInstalled(): Boolean =
+        kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
 }
 
 object ShortXManagerNative {

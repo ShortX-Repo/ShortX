@@ -1,44 +1,23 @@
-package tornaco.apps.shortx.services
+package tornaco.apps.shortx.services.gesture
 
 import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
+import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.dp
 
 val defaultHotSeatSize by lazy {
     16.dp
 }
 
-enum class Area {
-    LeftTop,
-    LeftCenter,
-    LeftBottom,
-    LeftAll,
-
-    RightTop,
-    RightCenter,
-    RightBottom,
-    RightAll,
-
-    TopLeft,
-    TopCenter,
-    TopRight,
-    TopAll,
-
-    BottomLeft,
-    BottomCenter,
-    BottomRight,
-    BottomAll,
-}
-
 data class HotSeat(val area: Area, @ColorInt val color: Int)
 
-fun HotSeat.getRect(
+fun Area.getRect(
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float = defaultHotSeatSize.toFloat(),
 ): RectF {
-    return when (this.area) {
+    return when (this) {
         Area.BottomAll -> {
             RectF(areaSize,
                 screenHeight - areaSize,
@@ -67,7 +46,7 @@ fun HotSeat.getRect(
                 screenHeight)
         }
 
-        Area.LeftAll -> TODO()
+        Area.LeftAll -> RectF()
         Area.LeftTop -> {
             val splitSize = screenHeight / 3
             RectF(0f,
@@ -91,7 +70,7 @@ fun HotSeat.getRect(
         }
 
 
-        Area.RightAll -> TODO()
+        Area.RightAll -> RectF()
         Area.RightCenter -> {
             val splitSize = screenHeight / 3
             RectF(screenWidth - areaSize,
@@ -114,7 +93,7 @@ fun HotSeat.getRect(
                 screenHeight)
         }
 
-        Area.TopAll -> TODO()
+        Area.TopAll -> RectF()
         Area.TopCenter -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
             RectF(areaSize + splitSize,

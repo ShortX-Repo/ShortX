@@ -1,5 +1,6 @@
 package tornaco.apps.shortx
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -13,11 +14,12 @@ import android.widget.FrameLayout
 import com.android.internal.R
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
-import tornaco.apps.shortx.services.allHotSeats
-import tornaco.apps.shortx.services.getRect
+import tornaco.apps.shortx.services.gesture.HotSeat
+import tornaco.apps.shortx.services.gesture.getRect
 import util.Reflections
 
-class GuideLineView(context: Context) : FrameLayout(context) {
+@SuppressLint("ViewConstructor")
+class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(context) {
 
     private val logger = Logger(GuideLineView::class.java.simpleName)
     private val windowManager: WindowManager by lazy {
@@ -27,7 +29,7 @@ class GuideLineView(context: Context) : FrameLayout(context) {
     private var isAttached = false
 
     init {
-        addView(Guideline(context), LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        addView(Guideline(context, hotSeats), LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }
 
     fun attach() {
@@ -73,7 +75,7 @@ class GuideLineView(context: Context) : FrameLayout(context) {
         }
     }
 
-    class Guideline(context: Context) : View(context) {
+    class Guideline(context: Context, private val hotSeats: List<HotSeat>) : View(context) {
         private val screenSize by lazy {
             context.screenSize()
         }
@@ -88,8 +90,8 @@ class GuideLineView(context: Context) : FrameLayout(context) {
 
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
-            allHotSeats.forEach {
-                val rect = it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
+            hotSeats.forEach {
+                val rect = it.area.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
                 canvas.drawRect(rect, paint.apply {
                     color = it.color
                 })
