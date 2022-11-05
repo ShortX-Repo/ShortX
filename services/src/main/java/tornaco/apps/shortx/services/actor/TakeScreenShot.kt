@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.actor
+package tornaco.apps.shortx.services.actor
 
 import android.content.Context
 import android.os.Handler

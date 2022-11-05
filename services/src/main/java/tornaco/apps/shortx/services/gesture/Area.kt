@@ -4,7 +4,7 @@ import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
 import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.dp
+import tornaco.apps.shortx.services.dp
 
 val defaultHotSeatSize by lazy {
     16.dp

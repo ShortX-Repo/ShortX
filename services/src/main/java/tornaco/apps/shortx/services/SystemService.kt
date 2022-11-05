@@ -8,7 +8,7 @@ import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
-import tornaco.apps.shortx.data.SettingsStore
+import tornaco.apps.shortx.services.data.SettingsStore
 
 open class SystemService {
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()

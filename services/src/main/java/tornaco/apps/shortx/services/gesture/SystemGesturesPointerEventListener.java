@@ -41,7 +41,7 @@ import android.widget.OverScroller;
 
 import java.io.PrintWriter;
 
-import tornaco.apps.shortx.ResExtKt;
+import tornaco.apps.shortx.services.ResExtKt;
 
 /**
  * Listens for system-wide input gestures, firing callbacks when detected.

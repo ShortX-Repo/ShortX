@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.actor.TakeScreenShot
+import tornaco.apps.shortx.services.actor.TakeScreenShot
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.data
+package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.*
 import tornaco.apps.shortx.core.util.Logger

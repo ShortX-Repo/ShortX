@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.data
+package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
 import tornaco.apps.shortx.core.gesture.Area

@@ -15,7 +15,7 @@
  *
  */
 
-package tornaco.apps.shortx
+package tornaco.apps.shortx.services
 
 import android.content.Context
 import android.content.res.Configuration
