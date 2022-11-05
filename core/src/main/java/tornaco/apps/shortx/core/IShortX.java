@@ -15,19 +15,26 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
-    @Override public boolean isEdgeGestureEnabled() throws android.os.RemoteException
+    @Override public boolean isGestureEnabled() throws android.os.RemoteException
     {
       return false;
     }
-    @Override public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException
+    @Override public void setGestureEnabled(boolean enable) throws android.os.RemoteException
     {
     }
-    @Override public boolean isEdgeGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException
+    @Override public boolean isGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException
     {
       return false;
     }
-    @Override public void setEdgeGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException
+    @Override public void setGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException
     {
+    }
+    @Override public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException
+    {
+    }
+    @Override public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
+    {
+      return null;
     }
     @Override
     public android.os.IBinder asBinder() {
@@ -94,42 +101,78 @@ public interface IShortX extends android.os.IInterface
           reply.writeString(_result);
           return true;
         }
-        case TRANSACTION_isEdgeGestureEnabled:
+        case TRANSACTION_isGestureEnabled:
         {
           data.enforceInterface(descriptor);
-          boolean _result = this.isEdgeGestureEnabled();
+          boolean _result = this.isGestureEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
           return true;
         }
-        case TRANSACTION_setEdgeGestureEnabled:
+        case TRANSACTION_setGestureEnabled:
         {
           data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
-          this.setEdgeGestureEnabled(_arg0);
+          this.setGestureEnabled(_arg0);
           reply.writeNoException();
           return true;
         }
-        case TRANSACTION_isEdgeGestureEnabledOnArea:
+        case TRANSACTION_isGestureEnabledOnArea:
         {
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          boolean _result = this.isEdgeGestureEnabledOnArea(_arg0);
+          boolean _result = this.isGestureEnabledOnArea(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
           return true;
         }
-        case TRANSACTION_setEdgeGestureEnabledOnArea:
+        case TRANSACTION_setGestureEnabledOnArea:
         {
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
-          this.setEdgeGestureEnabledOnArea(_arg0, _arg1);
+          this.setGestureEnabledOnArea(_arg0, _arg1);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_setGestureAction:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          android.os.Bundle _arg2;
+          if ((0!=data.readInt())) {
+            _arg2 = android.os.Bundle.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg2 = null;
+          }
+          this.setGestureAction(_arg0, _arg1, _arg2);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getGestureAction:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          android.os.Bundle _result = this.getGestureAction(_arg0, _arg1);
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
           return true;
         }
         default:
@@ -198,16 +241,16 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public boolean isEdgeGestureEnabled() throws android.os.RemoteException
+      @Override public boolean isGestureEnabled() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         boolean _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_isEdgeGestureEnabled, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isGestureEnabled, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isEdgeGestureEnabled();
+            return getDefaultImpl().isGestureEnabled();
           }
           _reply.readException();
           _result = (0!=_reply.readInt());
@@ -218,16 +261,16 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException
+      @Override public void setGestureEnabled(boolean enable) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
-          boolean _status = mRemote.transact(Stub.TRANSACTION_setEdgeGestureEnabled, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureEnabled, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setEdgeGestureEnabled(enable);
+            getDefaultImpl().setGestureEnabled(enable);
             return;
           }
           _reply.readException();
@@ -237,7 +280,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public boolean isEdgeGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException
+      @Override public boolean isGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -245,9 +288,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(areaName);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_isEdgeGestureEnabledOnArea, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isGestureEnabledOnArea, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().isEdgeGestureEnabledOnArea(areaName);
+            return getDefaultImpl().isGestureEnabledOnArea(areaName);
           }
           _reply.readException();
           _result = (0!=_reply.readInt());
@@ -258,7 +301,7 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public void setEdgeGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException
+      @Override public void setGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -266,9 +309,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(areaName);
           _data.writeInt(((enable)?(1):(0)));
-          boolean _status = mRemote.transact(Stub.TRANSACTION_setEdgeGestureEnabledOnArea, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureEnabledOnArea, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setEdgeGestureEnabledOnArea(areaName, enable);
+            getDefaultImpl().setGestureEnabledOnArea(areaName, enable);
             return;
           }
           _reply.readException();
@@ -277,15 +320,71 @@ public interface IShortX extends android.os.IInterface
           _reply.recycle();
           _data.recycle();
         }
+      }
+      @Override public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(areaName);
+          _data.writeString(gestureEvent);
+          if ((data!=null)) {
+            _data.writeInt(1);
+            data.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setGestureAction(areaName, gestureEvent, data);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        android.os.Bundle _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(areaName);
+          _data.writeString(gestureEvent);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getGestureAction(areaName, gestureEvent);
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = android.os.Bundle.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
       }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_fingerprint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
-    static final int TRANSACTION_isEdgeGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
-    static final int TRANSACTION_setEdgeGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
-    static final int TRANSACTION_isEdgeGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
-    static final int TRANSACTION_setEdgeGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+    static final int TRANSACTION_isGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+    static final int TRANSACTION_setGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+    static final int TRANSACTION_isGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
+    static final int TRANSACTION_setGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+    static final int TRANSACTION_setGestureAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
+    static final int TRANSACTION_getGestureAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -305,8 +404,10 @@ public interface IShortX extends android.os.IInterface
   }
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
   public java.lang.String fingerprint() throws android.os.RemoteException;
-  public boolean isEdgeGestureEnabled() throws android.os.RemoteException;
-  public void setEdgeGestureEnabled(boolean enable) throws android.os.RemoteException;
-  public boolean isEdgeGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException;
-  public void setEdgeGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException;
+  public boolean isGestureEnabled() throws android.os.RemoteException;
+  public void setGestureEnabled(boolean enable) throws android.os.RemoteException;
+  public boolean isGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException;
+  public void setGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException;
+  public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException;
+  public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException;
 }

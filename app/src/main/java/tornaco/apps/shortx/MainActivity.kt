@@ -1,19 +1,20 @@
 package tornaco.apps.shortx
 
+import android.content.ComponentName
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.action.ExpandNotification
+import tornaco.apps.shortx.core.action.StartActivity
 import tornaco.apps.shortx.core.gesture.Area
+import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -37,37 +38,78 @@ class MainActivity : ComponentActivity() {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())) {
 
-            MainEdgeSwitch()
+            MainSwitch()
             Area.values().forEach {
-                EdgeAreaToggle(area = it)
+                AreaToggle(area = it)
             }
+            ExpandNotificationButton()
+            StartActivityButton()
+            CurrentActions()
         }
     }
 
     @Composable
-    private fun MainEdgeSwitch() {
+    private fun MainSwitch() {
         var enabled by remember {
-            mutableStateOf(shortXManager.isEdgeGestureEnabled)
+            mutableStateOf(shortXManager.isGestureEnabled())
         }
         Switch(checked = enabled, onCheckedChange = {
-            shortXManager.isEdgeGestureEnabled = !enabled
-            enabled = shortXManager.isEdgeGestureEnabled
+            shortXManager.setGestureEnabled(!enabled)
+            enabled = shortXManager.isGestureEnabled()
         })
     }
 
     @Composable
-    private fun EdgeAreaToggle(area: Area) {
+    private fun AreaToggle(area: Area) {
         var enabled by remember {
-            mutableStateOf(shortXManager.isEdgeGestureEnabledOnArea(area.name))
+            mutableStateOf(shortXManager.isGestureEnabledOnArea(area))
         }
 
         Row(horizontalArrangement = Arrangement.Center) {
             Text(text = area.name)
             Spacer(modifier = Modifier.size(1.dp))
             Switch(checked = enabled, onCheckedChange = {
-                shortXManager.setEdgeGestureEnabledOnArea(area.name, !enabled)
-                enabled = shortXManager.isEdgeGestureEnabledOnArea(area.name)
+                shortXManager.setGestureEnabledOnArea(area, !enabled)
+                enabled = shortXManager.isGestureEnabledOnArea(area)
             })
+        }
+    }
+
+    @Composable
+    private fun ExpandNotificationButton() {
+        TextButton(onClick = {
+            val expandNotification = ExpandNotification()
+            shortXManager.setGestureAction(Area.RightCenter,
+                GestureEvent.DoubleTap,
+                expandNotification)
+        }) {
+            Text(text = "ExpandNotification-RightCenter")
+        }
+    }
+
+    @Composable
+    private fun StartActivityButton() {
+        TextButton(onClick = {
+            val startActivity = StartActivity(ComponentName(packageName,
+                MainActivity::class.java.name).flattenToString())
+            shortXManager.setGestureAction(Area.RightTop,
+                GestureEvent.DoubleTap,
+                startActivity)
+        }) {
+            Text(text = "StartActivity-RightTop")
+        }
+    }
+
+    @Composable
+    private fun CurrentActions() {
+        Column {
+            Text(text = "RightCenter: ${
+                shortXManager.getGestureAction(Area.RightCenter, GestureEvent.DoubleTap).toBundle()
+            }")
+
+            Text(text = "RightTop: ${
+                shortXManager.getGestureAction(Area.RightTop, GestureEvent.DoubleTap).toBundle()
+            }")
         }
     }
 }

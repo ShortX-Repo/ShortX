@@ -60,7 +60,7 @@ class Detector(
             it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
                 .contains(downX, downY)
         }
-        return area != null && service.isEdgeGestureEnabledOnArea(area)
+        return area != null && service.isGestureEnabledOnArea(area)
     }
 }
 

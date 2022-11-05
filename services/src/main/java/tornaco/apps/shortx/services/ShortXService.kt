@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Binder
+import android.os.Bundle
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
@@ -36,48 +37,59 @@ object ShortXService : SystemService() {
     }
 
     private fun newBinderProxy(orig: Binder): BinderProxy {
-        return BinderProxy(orig,
-            object : BinderProxy.InvocationHandler {
-                override fun onTransact(
-                    code: Int,
-                    data: Parcel?,
-                    reply: Parcel,
-                    flags: Int,
-                ): Boolean? {
-                    logger.d("BinderProxy, onTransact: $code")
-                    if (code == IPC_CODE) {
-                        data!!.enforceInterface(IShortX::class.java.name)
-                        val service = serviceBinder
-                        reply.writeStrongBinder(service.asBinder())
-                        return true
-                    }
-                    return null
+        return BinderProxy(orig, object : BinderProxy.InvocationHandler {
+            override fun onTransact(
+                code: Int,
+                data: Parcel?,
+                reply: Parcel,
+                flags: Int,
+            ): Boolean? {
+                logger.d("BinderProxy, onTransact: $code")
+                if (code == IPC_CODE) {
+                    data!!.enforceInterface(IShortX::class.java.name)
+                    val service = serviceBinder
+                    reply.writeStrongBinder(service.asBinder())
+                    return true
                 }
-            })
+                return null
+            }
+        })
     }
 
     private val serviceBinder = object : IShortX.Stub() {
         override fun version(): Version {
-            return Version(
-                name = BuildProp.APP_VERSION_NAME,
-                code = BuildProp.APP_VERSION_CODE
-            )
+            return Version(name = BuildProp.APP_VERSION_NAME, code = BuildProp.APP_VERSION_CODE)
         }
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
-        override fun isEdgeGestureEnabled() = ShortXServiceManager.gesture.isEnabled()
+        override fun isGestureEnabled() = ShortXServiceManager.gesture.isEnabled()
 
-        override fun setEdgeGestureEnabled(enable: Boolean) {
+        override fun setGestureEnabled(enable: Boolean) {
             ShortXServiceManager.gesture.setEnabled(enable)
         }
 
-        override fun isEdgeGestureEnabledOnArea(areaName: String) =
-            ShortXServiceManager.gesture.isEdgeGestureEnabledOnArea(areaName)
+        override fun isGestureEnabledOnArea(areaName: String) =
+            ShortXServiceManager.gesture.isGestureEnabledOnArea(areaName)
 
 
-        override fun setEdgeGestureEnabledOnArea(areaName: String, enable: Boolean) {
-            ShortXServiceManager.gesture.setEdgeGestureEnabledOnArea(areaName, enable)
+        override fun setGestureEnabledOnArea(areaName: String, enable: Boolean) {
+            ShortXServiceManager.gesture.setGestureEnabledOnArea(
+                areaName = areaName,
+                enable = enable
+            )
+        }
+
+        override fun setGestureAction(areaName: String, gestureEvent: String, data: Bundle) {
+            ShortXServiceManager.gesture.setGestureAction(
+                areaName = areaName,
+                gestureEvent = gestureEvent,
+                data = data
+            )
+        }
+
+        override fun getGestureAction(areaName: String, gestureEvent: String): Bundle {
+            return ShortXServiceManager.gesture.getGestureAction(areaName, gestureEvent)
         }
     }
 }

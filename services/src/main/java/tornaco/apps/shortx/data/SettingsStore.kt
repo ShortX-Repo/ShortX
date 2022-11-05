@@ -3,6 +3,7 @@ package tornaco.apps.shortx.data
 import kotlinx.coroutines.*
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.proto.Settings
+import tornaco.apps.shortx.services.proto.StringMap
 
 private const val WRITE_DELAY = 3000L
 
@@ -13,6 +14,7 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     private val stringCache = mutableMapOf<String, String?>()
     private val boolCache = mutableMapOf<String, Boolean?>()
     private val intCache = mutableMapOf<String, Int?>()
+    private val stringMapCache = mutableMapOf<String, Map<String, String>>()
 
     private var job: Job? = null
 
@@ -33,6 +35,10 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
                 stringCache.putAll(stringSettingsMap)
                 boolCache.putAll(boolSettingsMap)
                 intCache.putAll(intSettingsMap)
+
+                stringMapSettingsMap.forEach {
+                    stringMapCache[it.key] = it.value.dataMap
+                }
             }
         }.onFailure {
             logger.e(it, "read error")
@@ -62,6 +68,18 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
         postWrite()
     }
 
+    fun putStringMap(key: String, value: Map<String, String>) {
+        stringMapCache[key] = value
+        postWrite()
+    }
+
+    fun getStringMap(
+        key: String,
+        defaultValue: Map<String, String> = emptyMap(),
+    ): Map<String, String> {
+        return stringMapCache[key] ?: defaultValue
+    }
+
     private fun postWrite() {
         job?.cancel()
         job = scope.launch {
@@ -76,6 +94,10 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
             putAllStringSettings(stringCache)
             putAllBoolSettings(boolCache)
             putAllIntSettings(intCache)
+
+            stringMapCache.forEach {
+                putStringMapSettings(it.key, StringMap.newBuilder().putAllData(it.value).build())
+            }
         }.build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {

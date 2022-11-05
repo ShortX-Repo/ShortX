@@ -4,9 +4,12 @@ interface IShortX {
     Version version();
     String fingerprint();
 
-    boolean isEdgeGestureEnabled();
-    void setEdgeGestureEnabled(boolean enable);
+    boolean isGestureEnabled();
+    void setGestureEnabled(boolean enable);
 
-    boolean isEdgeGestureEnabledOnArea(String areaName);
-    void setEdgeGestureEnabledOnArea(String areaName, boolean enable);
+    boolean isGestureEnabledOnArea(String areaName);
+    void setGestureEnabledOnArea(String areaName, boolean enable);
+
+    void setGestureAction(String areaName, String gestureEvent, in Bundle data);
+    Bundle getGestureAction(String areaName, String gestureEvent);
 }

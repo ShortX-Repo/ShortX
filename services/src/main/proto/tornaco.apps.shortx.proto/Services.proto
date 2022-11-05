@@ -14,6 +14,8 @@ message Settings {
   map<string, StringList> stringListSettings = 5;
   map<string, IntList> intListSettings = 6;
   map<string, BoolList> boolListSettings = 7;
+
+  map<string, StringMap> stringMapSettings = 8;
 }
 
 message StringList {
@@ -26,4 +28,8 @@ message IntList {
 
 message BoolList {
   repeated bool bools = 1[packed = true];
+}
+
+message StringMap {
+  map<string, string> data = 1;
 }
