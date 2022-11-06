@@ -4,10 +4,11 @@ import android.content.Context
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.services.actor.TakeScreenShot
+import tornaco.apps.shortx.core.action.TakeScreenshot
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.services.actor.Supervisor
 
 class Detector(
     private val context: Context,
@@ -15,7 +16,8 @@ class Detector(
     private val service: GestureService,
 ) {
     private val logger = Logger("Detector")
-    private val takeScreenShot = TakeScreenShot(context, handler)
+    private var supervisor: Supervisor? = null
+
     private val screenSize by lazy {
         context.screenSize()
     }
@@ -25,12 +27,12 @@ class Detector(
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 return if (isGestureEnabledOnEvent(e)) {
                     logger.d("onDoubleTap")
-                    takeScreenShot()
+                    supervisor?.execute(TakeScreenshot())
                     true
                 } else false
             }
 
-            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 logger.d("onSingleTapConfirmed")
                 return super.onSingleTapConfirmed(e)
             }

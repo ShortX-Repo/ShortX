@@ -23,6 +23,9 @@ fun Bundle.toActionOrThrow(): Action {
         StartActivity.NAME -> {
             StartActivity.readFromBundle(this)
         }
+        TakeScreenshot.NAME -> {
+            TakeScreenshot.readFromBundle(this)
+        }
         ExpandNotification.NAME -> {
             ExpandNotification.readFromBundle(this)
         }
