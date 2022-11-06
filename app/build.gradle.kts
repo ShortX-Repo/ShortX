@@ -1,12 +1,16 @@
-import tornaco.project.android.shortx.*
+import tornaco.project.android.shortx.Compose
+import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
+import tornaco.project.android.shortx.Hilt
+import tornaco.project.android.shortx.log
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
     id("kotlin-parcelize")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -109,6 +113,10 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.3.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.3.0")
     implementation("androidx.compose.material3:material3:1.1.0-alpha01")
+
+    implementation(Hilt.library)
+    implementation(Hilt.hiltNavigationCompose)
+    kapt(Hilt.googleAndroidCompiler)
 
     implementation(project(":core"))
     implementation(project(":services"))

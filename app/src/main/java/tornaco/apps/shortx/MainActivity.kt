@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.action.ExpandNotification
 import tornaco.apps.shortx.core.action.StartActivity
 import tornaco.apps.shortx.core.gesture.Area
@@ -18,17 +19,12 @@ import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ShortXTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background) {
-                    Content()
-                }
-            }
+            MainScreen()
         }
     }
 

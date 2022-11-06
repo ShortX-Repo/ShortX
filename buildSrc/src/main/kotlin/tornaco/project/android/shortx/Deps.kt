@@ -23,3 +23,12 @@ object Coroutines {
     const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0"
     const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
 }
+
+object Hilt {
+    private const val version = "2.42"
+    const val googleAndroidCompiler = "com.google.dagger:hilt-android-compiler:$version"
+    const val testing = "com.google.dagger:hilt-android-testing:$version"
+    const val library = "com.google.dagger:hilt-android:$version"
+    const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
+    const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:1.0.0"
+}

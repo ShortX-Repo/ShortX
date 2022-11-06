@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath(tornaco.project.android.shortx.ClassPaths.gradlePlugin)
         classpath(tornaco.project.android.shortx.ClassPaths.kotlinPlugin)
+        classpath(tornaco.project.android.shortx.Hilt.gradlePlugin)
     }
 }
 
