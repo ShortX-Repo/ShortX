@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +39,10 @@ fun MainScreen() {
                     Text(text = "ShortX")
                 })
             }) {
-                Column(Modifier.padding(it).padding(vertical = 16.dp)) {
+                Column(Modifier
+                    .padding(it)
+                    .padding(vertical = 16.dp)
+                    .verticalScroll(rememberScrollState())) {
                     state.areaSettings.forEach { settings ->
                         AreaSettings(settings)
                     }
@@ -50,18 +55,30 @@ fun MainScreen() {
 
 @Composable
 fun AreaSettings(settings: AreaSettings) {
-    settings.gestureActions.forEach { gestureAction ->
-        Row(modifier = Modifier.fillMaxWidth().clickable {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 8.dp),
+            text = settings.area.name,
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary))
+        settings.gestureActions.forEach { gestureAction ->
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
 
-            }.padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
-                contentDescription = "")
-            Spacer(modifier = Modifier.size(16.dp))
-            Column(modifier = Modifier) {
-                Text(text = gestureAction.gestureName)
-                Text(text = gestureAction.actionName, style = MaterialTheme.typography.bodySmall)
+                }
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
+                    contentDescription = "")
+                Spacer(modifier = Modifier.size(16.dp))
+                Column(modifier = Modifier) {
+                    Text(text = gestureAction.gestureName)
+                    Text(text = gestureAction.actionName,
+                        style = MaterialTheme.typography.bodySmall)
+                }
             }
         }
+
     }
 }

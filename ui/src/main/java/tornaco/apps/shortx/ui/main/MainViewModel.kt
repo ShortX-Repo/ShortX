@@ -32,14 +32,32 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     fun loadGestureSettings() {
         viewModelScope.launch {
-            val right =
-                AreaSettings(area = Area.RightTop, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(Area.RightTop, it)
+            val left = listOf(Area.LeftTop, Area.LeftCenter, Area.LeftBottom).map { area ->
+                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
+                    val action = shortXManager.getGestureAction(area, it)
                     GestureAction(it.name, action.name)
                 })
+            }
+            val right = listOf(Area.RightTop, Area.RightCenter, Area.RightBottom).map { area ->
+                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
+                    val action = shortXManager.getGestureAction(area, it)
+                    GestureAction(it.name, action.name)
+                })
+            }
+            val top = listOf(Area.TopLeft, Area.TopCenter, Area.TopRight).map { area ->
+                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
+                    val action = shortXManager.getGestureAction(area, it)
+                    GestureAction(it.name, action.name)
+                })
+            }
+            val bottom = listOf(Area.BottomLeft, Area.BottomCenter, Area.BottomRight).map { area ->
+                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
+                    val action = shortXManager.getGestureAction(area, it)
+                    GestureAction(it.name, action.name)
+                })
+            }
 
-
-            val mainState = MainState(areaSettings = listOf(right))
+            val mainState = MainState(areaSettings = left + right + top + bottom)
             _state.value = mainState
         }
     }
