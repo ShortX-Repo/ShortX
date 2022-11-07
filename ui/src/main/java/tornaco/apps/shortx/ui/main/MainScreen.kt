@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.main
 
-import android.content.ComponentName
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +24,9 @@ import tornaco.apps.shortx.ui.base.ExpandableContainer
 import tornaco.apps.shortx.ui.base.ExpandableState
 import tornaco.apps.shortx.ui.base.requireActivity
 import tornaco.apps.shortx.ui.main.actions.ActionsSelector
+import tornaco.apps.shortx.ui.main.actions.AllSelectors
 import tornaco.apps.shortx.ui.main.actions.rememberActionsSelectorState
+import tornaco.apps.shortx.ui.main.actions.rememberStartActivitySelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +95,7 @@ fun AreaSettingsMain(
         .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = settings.area.name)
+        Text(text = settings.area.name, style = MaterialTheme.typography.titleMedium)
         Switch(checked = settings.isEnabled, onCheckedChange = {
             setEnabled(it)
         })
@@ -107,13 +108,16 @@ fun AreaSettingsExpanded(
     availableGestureActions: List<String>,
     setAction: (GestureEvent, Action) -> Unit,
 ) {
-    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth()) {
         settings.gestureActions.forEach { gestureAction ->
             Box {
                 val actionSelectorState = rememberActionsSelectorState()
                 AreaGestureActionItem(gestureAction) {
                     actionSelectorState.open()
+                }
+
+                val startActivityState = rememberStartActivitySelectorState {
+                    setAction(gestureAction.gestureEvent, it)
                 }
 
                 ActionsSelector(actionSelectorState, availableGestureActions) { actionName ->
@@ -125,12 +129,12 @@ fun AreaSettingsExpanded(
                             setAction(gestureAction.gestureEvent, ExpandNotification())
                         }
                         StartActivity.NAME -> {
-                            val startActivity = StartActivity(ComponentName(context.packageName,
-                                MainActivity::class.java.name).flattenToString())
-                            setAction(gestureAction.gestureEvent, startActivity)
+                            startActivityState.show()
                         }
                     }
                 }
+
+                AllSelectors(startActivityState = startActivityState)
             }
         }
 
@@ -154,8 +158,12 @@ private fun AreaGestureActionItem(
             contentDescription = "")
         Spacer(modifier = Modifier.size(16.dp))
         Column(modifier = Modifier) {
-            Text(text = gestureAction.gestureEvent.name)
-            Text(text = gestureAction.actionName, style = MaterialTheme.typography.bodySmall)
+            Text(text = gestureAction.gestureEvent.name,
+                style = MaterialTheme.typography.titleMedium)
+            Text(text = gestureAction.actionName, style = MaterialTheme.typography.bodyMedium)
+            gestureAction.actionDescriptions.forEach {
+                Text(text = it, style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

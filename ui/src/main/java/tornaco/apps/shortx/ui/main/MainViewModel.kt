@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.LifeCycleAwareViewModel
+import tornaco.apps.shortx.ui.main.actions.getExtraDescription
 import javax.inject.Inject
 
 data class MainState(
@@ -26,7 +27,11 @@ data class AreaSettings(
     val isEnabled: Boolean,
 )
 
-data class GestureAction(val gestureEvent: GestureEvent, val actionName: String)
+data class GestureAction(
+    val gestureEvent: GestureEvent,
+    val actionName: String,
+    val actionDescriptions: List<String> = emptyList(),
+)
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -42,25 +47,25 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             val left = listOf(Area.LeftTop, Area.LeftCenter, Area.LeftBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name)
+                    GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val right = listOf(Area.RightTop, Area.RightCenter, Area.RightBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name)
+                    GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val top = listOf(Area.TopLeft, Area.TopCenter, Area.TopRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name)
+                    GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val bottom = listOf(Area.BottomLeft, Area.BottomCenter, Area.BottomRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name)
+                    GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
 

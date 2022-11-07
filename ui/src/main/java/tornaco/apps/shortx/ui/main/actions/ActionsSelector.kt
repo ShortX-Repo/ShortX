@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.main.actions
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -49,5 +50,13 @@ fun ActionsSelector(
                 setAction(it)
             })
         }
+    }
+}
+
+
+@Composable
+fun AllSelectors(startActivityState: StartActivitySelectorState) {
+    Box {
+        StartActivitySelector(startActivityState)
     }
 }
