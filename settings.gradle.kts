@@ -21,6 +21,7 @@ pluginManagement {
 }
 
 include(":app")
+include(":ui")
 include(":core")
 include(":services")
 include(":patch")

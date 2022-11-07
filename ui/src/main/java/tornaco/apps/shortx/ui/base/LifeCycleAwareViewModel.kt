@@ -15,7 +15,7 @@
  *
  */
 
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui.base
 
 import androidx.annotation.CallSuper
 import androidx.lifecycle.DefaultLifecycleObserver

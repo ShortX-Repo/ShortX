@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,9 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.requireActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,12 +34,10 @@ fun MainScreen() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Scaffold(modifier = Modifier, topBar = {
                 TopAppBar(title = {
-                    Text(text = stringResource(id = R.string.app_name))
+                    Text(text = "ShortX")
                 })
             }) {
-                Column(Modifier
-                    .padding(it)
-                    .padding(vertical = 16.dp)) {
+                Column(Modifier.padding(it).padding(vertical = 16.dp)) {
                     state.areaSettings.forEach { settings ->
                         AreaSettings(settings)
                     }
@@ -52,12 +51,9 @@ fun MainScreen() {
 @Composable
 fun AreaSettings(settings: AreaSettings) {
     settings.gestureActions.forEach { gestureAction ->
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
+        Row(modifier = Modifier.fillMaxWidth().clickable {
 
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            }.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
                 contentDescription = "")

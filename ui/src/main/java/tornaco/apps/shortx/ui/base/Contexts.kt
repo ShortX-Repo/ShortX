@@ -15,7 +15,7 @@
  *
  */
 
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui.base
 
 import android.content.Context
 import android.content.ContextWrapper

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.base.LifeCycleAwareViewModel
 import javax.inject.Inject
 
 data class MainState(

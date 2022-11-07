@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui.main
 
 import android.content.ComponentName
 import android.os.Bundle
