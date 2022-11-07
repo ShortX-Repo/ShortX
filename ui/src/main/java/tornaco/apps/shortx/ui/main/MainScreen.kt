@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -17,8 +14,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.ExpandableContainer
+import tornaco.apps.shortx.ui.base.ExpandableState
 import tornaco.apps.shortx.ui.base.requireActivity
 import tornaco.apps.shortx.ui.main.actions.ActionsSelector
 import tornaco.apps.shortx.ui.main.actions.rememberActionsSelectorState
@@ -48,10 +48,13 @@ fun MainScreen() {
                     .padding(vertical = 16.dp)
                     .verticalScroll(rememberScrollState())) {
                     state.areaSettings.forEach { settings ->
-                        AreaSettings(settings,
-                            state.availableGestureActions) { gestureName, action ->
-                            viewModel.setAreaGestureAction(settings.area, gestureName, action)
-                        }
+                        AreaSettings(settings = settings,
+                            availableGestureActions = state.availableGestureActions,
+                            setEnabled = { area: Area, enable: Boolean ->
+                                viewModel.setGestureEnabledOnArea(area, enable)
+                            }, setAction = { gesture, action ->
+                                viewModel.setAreaGestureAction(settings.area, gesture, action)
+                            })
                     }
                 }
             }
@@ -65,13 +68,42 @@ fun AreaSettings(
     settings: AreaSettings,
     availableGestureActions: List<String>,
     setAction: (GestureEvent, Action) -> Unit,
+    setEnabled: (Area, Boolean) -> Unit,
+) {
+    val expandState = remember { mutableStateOf(ExpandableState.Collapsed) }
+    ExpandableContainer(expandState = expandState, mainContent = {
+        AreaSettingsMain(settings) {
+            setEnabled(settings.area, it)
+        }
+    }, expandContent = {
+        AreaSettingsExpanded(settings, availableGestureActions, setAction)
+    })
+}
+
+@Composable
+fun AreaSettingsMain(
+    settings: AreaSettings,
+    setEnabled: (Boolean) -> Unit,
+) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text = settings.area.name)
+        Switch(checked = settings.isEnabled, onCheckedChange = {
+            setEnabled(it)
+        })
+    }
+}
+
+@Composable
+fun AreaSettingsExpanded(
+    settings: AreaSettings,
+    availableGestureActions: List<String>,
+    setAction: (GestureEvent, Action) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 8.dp),
-            text = settings.area.name,
-            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary))
         settings.gestureActions.forEach { gestureAction ->
             Box {
                 val actionSelectorState = rememberActionsSelectorState()
@@ -105,8 +137,7 @@ private fun AreaGestureActionItem(
         Spacer(modifier = Modifier.size(16.dp))
         Column(modifier = Modifier) {
             Text(text = gestureAction.gestureEvent.name)
-            Text(text = gestureAction.actionName,
-                style = MaterialTheme.typography.bodySmall)
+            Text(text = gestureAction.actionName, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

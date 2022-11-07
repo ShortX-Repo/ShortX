@@ -16,7 +16,9 @@ class Detector(
     private val service: GestureService,
 ) {
     private val logger = Logger("Detector")
-    private var supervisor: Supervisor? = null
+    private val supervisor: Supervisor by lazy {
+        Supervisor(context, handler)
+    }
 
     private val screenSize by lazy {
         context.screenSize()
