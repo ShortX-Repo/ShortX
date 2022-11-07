@@ -17,6 +17,13 @@ class Supervisor(
     private val logger = Logger("Actor.Supervisor")
 
     override fun execute(action: Action) {
+        logger.i("execute: $action")
+        kotlin.runCatching { execute0(action) }.onFailure {
+            logger.e(it, "execute action error")
+        }
+    }
+
+    private fun execute0(action: Action) {
         when (action) {
             is TakeScreenshot -> {
                 TakeScreenshot(context, handler).invoke()

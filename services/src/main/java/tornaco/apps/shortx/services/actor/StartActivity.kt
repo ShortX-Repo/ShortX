@@ -9,6 +9,7 @@ class StartActivity(
     private val startActivity: tornaco.apps.shortx.core.action.StartActivity,
 ) {
     operator fun invoke() {
-        context.startActivity(Intent().setComponent(ComponentName.unflattenFromString(startActivity.shortName)))
+        context.startActivity(Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .setComponent(ComponentName.unflattenFromString(startActivity.shortName)))
     }
 }

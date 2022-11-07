@@ -6,8 +6,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.TakeScreenshot
 
 
 class ActionsSelectorState {
@@ -34,7 +32,7 @@ fun rememberActionsSelectorState(): ActionsSelectorState {
 fun ActionsSelector(
     state: ActionsSelectorState = rememberActionsSelectorState(),
     availableGestureActions: List<String>,
-    setAction: (Action) -> Unit,
+    setAction: (String) -> Unit,
 ) {
     DropdownMenu(
         modifier = Modifier.fillMaxWidth(.68f),
@@ -48,7 +46,7 @@ fun ActionsSelector(
                 Text(it)
             }, onClick = {
                 state.close()
-                setAction(TakeScreenshot())
+                setAction(it)
             })
         }
     }

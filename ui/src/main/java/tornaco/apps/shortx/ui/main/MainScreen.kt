@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.main
 
+import android.content.ComponentName
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.action.ExpandNotification
+import tornaco.apps.shortx.core.action.StartActivity
+import tornaco.apps.shortx.core.action.TakeScreenshot
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.ui.R
@@ -103,6 +107,7 @@ fun AreaSettingsExpanded(
     availableGestureActions: List<String>,
     setAction: (GestureEvent, Action) -> Unit,
 ) {
+    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth()) {
         settings.gestureActions.forEach { gestureAction ->
             Box {
@@ -110,8 +115,21 @@ fun AreaSettingsExpanded(
                 AreaGestureActionItem(gestureAction) {
                     actionSelectorState.open()
                 }
-                ActionsSelector(actionSelectorState, availableGestureActions) { action ->
-                    setAction(gestureAction.gestureEvent, action)
+
+                ActionsSelector(actionSelectorState, availableGestureActions) { actionName ->
+                    when (actionName) {
+                        TakeScreenshot.NAME -> {
+                            setAction(gestureAction.gestureEvent, TakeScreenshot())
+                        }
+                        ExpandNotification.NAME -> {
+                            setAction(gestureAction.gestureEvent, ExpandNotification())
+                        }
+                        StartActivity.NAME -> {
+                            val startActivity = StartActivity(ComponentName(context.packageName,
+                                MainActivity::class.java.name).flattenToString())
+                            setAction(gestureAction.gestureEvent, startActivity)
+                        }
+                    }
                 }
             }
         }

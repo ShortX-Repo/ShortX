@@ -4,8 +4,11 @@ import android.content.Context
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.core.action.TakeScreenshot
+import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.action.NoAction
+import tornaco.apps.shortx.core.action.toActionOrThrow
 import tornaco.apps.shortx.core.gesture.Area
+import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.actor.Supervisor
@@ -27,11 +30,12 @@ class Detector(
     private val gestureDetector: GestureDetector =
         GestureDetector(context, object : OnGestureListenerAdapter() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                return if (isGestureEnabledOnEvent(e)) {
-                    logger.d("onDoubleTap")
-                    supervisor?.execute(TakeScreenshot())
-                    true
-                } else false
+                val area = detectArea(e) ?: return false
+                if (!service.isGestureEnabledOnArea(area)) return false
+                val action = getGestureAction(area, GestureEvent.DoubleTap)
+                if (action is NoAction) return false
+                supervisor.execute(action)
+                return true
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
@@ -46,25 +50,20 @@ class Detector(
                 return false
             }
         }
-
-        when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-                if (isGestureEnabledOnEvent(event)) {
-                    return false
-                }
-            }
-        }
         return null
     }
 
-    private fun isGestureEnabledOnEvent(event: MotionEvent): Boolean {
+    private fun detectArea(event: MotionEvent): Area? {
         val downX = event.x
         val downY = event.y
         val area = Area.values().firstOrNull {
-            it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
-                .contains(downX, downY)
+            it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat()).contains(downX, downY)
         }
-        return area != null && service.isGestureEnabledOnArea(area)
+        return area
+    }
+
+    private fun getGestureAction(area: Area, gestureEvent: GestureEvent): Action {
+        return service.getGestureAction(area.name, gestureEvent.name).toActionOrThrow()
     }
 }
 
