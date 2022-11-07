@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.gesture
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
+import android.os.VibrationEffect
 import android.view.GestureDetector
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.action.Action
@@ -11,7 +13,10 @@ import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
+import tornaco.apps.shortx.core.util.vibrate
 import tornaco.apps.shortx.services.actor.Supervisor
+import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.systemServiceScope
 
 class Detector(
     private val context: Context,
@@ -20,7 +25,9 @@ class Detector(
 ) {
     private val logger = Logger("Detector")
     private val supervisor: Supervisor by lazy {
-        Supervisor(context, handler)
+        Supervisor(context = context, handler = handler, beforeExecute = {
+            vibrateOnExecuteAction()
+        })
     }
 
     private val screenSize by lazy {
@@ -64,6 +71,14 @@ class Detector(
 
     private fun getGestureAction(area: Area, gestureEvent: GestureEvent): Action {
         return service.getGestureAction(area.name, gestureEvent.name).toActionOrThrow()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun vibrateOnExecuteAction() {
+        service.systemServiceScope.launchSafety {
+            context.vibrate.vibrate(VibrationEffect.createOneShot(30,
+                VibrationEffect.DEFAULT_AMPLITUDE))
+        }
     }
 }
 

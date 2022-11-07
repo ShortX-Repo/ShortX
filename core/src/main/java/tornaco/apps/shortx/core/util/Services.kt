@@ -33,10 +33,7 @@ import android.net.wifi.WifiManager
 import android.net.wifi.aware.WifiAwareManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.nfc.NfcManager
-import android.os.BatteryManager
-import android.os.HardwarePropertiesManager
-import android.os.PowerManager
-import android.os.UserManager
+import android.os.*
 import android.os.health.SystemHealthManager
 import android.os.storage.StorageManager
 import android.print.PrintManager
@@ -332,5 +329,9 @@ val Context.windowManager: WindowManager
 val Context.launcherApps: LauncherApps
     get() = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
+// TODO GuoHao Fix
 val Context.statusBarManager: StatusBarManager
     get() = getSystemService(Context.STATUS_BAR_SERVICE) as StatusBarManager
+
+val Context.vibrate: Vibrator
+    get() = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

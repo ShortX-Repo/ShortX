@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.actor
 import android.content.Context
 import android.os.Handler
 import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.action.ExpandNotification
 import tornaco.apps.shortx.core.action.StartActivity
 import tornaco.apps.shortx.core.action.TakeScreenshot
 import tornaco.apps.shortx.core.util.Logger
@@ -12,7 +13,9 @@ interface Actor {
 }
 
 class Supervisor(
-    private val context: Context, private val handler: Handler,
+    private val context: Context,
+    private val handler: Handler,
+    private val beforeExecute: (Action) -> Unit = {},
 ) : Actor {
     private val logger = Logger("Actor.Supervisor")
 
@@ -24,12 +27,16 @@ class Supervisor(
     }
 
     private fun execute0(action: Action) {
+        beforeExecute(action)
         when (action) {
             is TakeScreenshot -> {
                 TakeScreenshot(context, handler).invoke()
             }
             is StartActivity -> {
                 StartActivity(context, action).invoke()
+            }
+            is ExpandNotification -> {
+                ExpandNotification(context).invoke()
             }
             else -> {
                 logger.w("UnSupported action: $action")
