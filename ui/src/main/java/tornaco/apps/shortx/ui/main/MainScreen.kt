@@ -16,8 +16,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.requireActivity
+import tornaco.apps.shortx.ui.main.actions.ActionsSelector
+import tornaco.apps.shortx.ui.main.actions.rememberActionsSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +48,10 @@ fun MainScreen() {
                     .padding(vertical = 16.dp)
                     .verticalScroll(rememberScrollState())) {
                     state.areaSettings.forEach { settings ->
-                        AreaSettings(settings)
+                        AreaSettings(settings,
+                            state.availableGestureActions) { gestureName, action ->
+                            viewModel.setAreaGestureAction(settings.area, gestureName, action)
+                        }
                     }
                 }
             }
@@ -54,7 +61,11 @@ fun MainScreen() {
 }
 
 @Composable
-fun AreaSettings(settings: AreaSettings) {
+fun AreaSettings(
+    settings: AreaSettings,
+    availableGestureActions: List<String>,
+    setAction: (GestureEvent, Action) -> Unit,
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -62,23 +73,40 @@ fun AreaSettings(settings: AreaSettings) {
             text = settings.area.name,
             style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary))
         settings.gestureActions.forEach { gestureAction ->
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-
+            Box {
+                val actionSelectorState = rememberActionsSelectorState()
+                AreaGestureActionItem(gestureAction) {
+                    actionSelectorState.open()
                 }
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
-                    contentDescription = "")
-                Spacer(modifier = Modifier.size(16.dp))
-                Column(modifier = Modifier) {
-                    Text(text = gestureAction.gestureName)
-                    Text(text = gestureAction.actionName,
-                        style = MaterialTheme.typography.bodySmall)
+                ActionsSelector(actionSelectorState, availableGestureActions) { action ->
+                    setAction(gestureAction.gestureEvent, action)
                 }
             }
         }
 
+    }
+}
+
+
+@Composable
+private fun AreaGestureActionItem(
+    gestureAction: GestureAction,
+    onClick: () -> Unit,
+) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+            onClick()
+        }
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
+            contentDescription = "")
+        Spacer(modifier = Modifier.size(16.dp))
+        Column(modifier = Modifier) {
+            Text(text = gestureAction.gestureEvent.name)
+            Text(text = gestureAction.actionName,
+                style = MaterialTheme.typography.bodySmall)
+        }
     }
 }

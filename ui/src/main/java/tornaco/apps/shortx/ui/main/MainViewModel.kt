@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.action.*
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
@@ -16,10 +17,11 @@ import javax.inject.Inject
 
 data class MainState(
     val areaSettings: List<AreaSettings> = emptyList(),
+    val availableGestureActions: List<String> = emptyList(),
 )
 
 data class AreaSettings(val area: Area, val gestureActions: List<GestureAction>)
-data class GestureAction(val gestureName: String, val actionName: String)
+data class GestureAction(val gestureEvent: GestureEvent, val actionName: String)
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -35,30 +37,45 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             val left = listOf(Area.LeftTop, Area.LeftCenter, Area.LeftBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it.name, action.name)
+                    GestureAction(it, action.name)
                 })
             }
             val right = listOf(Area.RightTop, Area.RightCenter, Area.RightBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it.name, action.name)
+                    GestureAction(it, action.name)
                 })
             }
             val top = listOf(Area.TopLeft, Area.TopCenter, Area.TopRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it.name, action.name)
+                    GestureAction(it, action.name)
                 })
             }
             val bottom = listOf(Area.BottomLeft, Area.BottomCenter, Area.BottomRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
                     val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it.name, action.name)
+                    GestureAction(it, action.name)
                 })
             }
 
-            val mainState = MainState(areaSettings = left + right + top + bottom)
+            val availableActions = listOf(
+                StartActivity.NAME,
+                ExpandNotification.NAME,
+                TakeScreenshot.NAME,
+                NoAction.NAME
+            )
+
+            val mainState = MainState(areaSettings = left + right + top + bottom,
+                availableGestureActions = availableActions)
             _state.value = mainState
+        }
+    }
+
+    fun setAreaGestureAction(area: Area, gestureEvent: GestureEvent, action: Action) {
+        viewModelScope.launch {
+            shortXManager.setGestureAction(area, gestureEvent, action)
+            loadGestureSettings()
         }
     }
 }
