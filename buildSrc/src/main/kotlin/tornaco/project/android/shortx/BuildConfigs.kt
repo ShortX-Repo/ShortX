@@ -2,6 +2,7 @@ package tornaco.project.android.shortx
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import java.io.File
 import java.util.*
 
@@ -11,6 +12,7 @@ object Configs {
     const val sxPackageName = "tornaco.apps.shortx"
     var sxVersionCode: Int? = 0
     var sxVersionName: String? = null
+    var sxIsDebugBuild: Boolean = false
 
     const val compileSdkVersion = 33
     const val minSdkVersion = 26
@@ -45,7 +47,6 @@ object Configs {
     }
 }
 
-
 @ExperimentalStdlibApi
 class ShortXBuildPlugin : Plugin<Project> {
     override fun apply(project: Project) = project.applyPlugin()
@@ -62,6 +63,30 @@ class ShortXBuildPlugin : Plugin<Project> {
                 propFile.inputStream().use { props.load(it) }
             }
         }
+
+        updateBuildConfigs()
     }
 
+    private fun Project.updateBuildConfigs() {
+        sxIsDebugBuild = getBuildVariant() == Variant.DEBUG
+        log("sxIsDebugBuild: $sxIsDebugBuild")
+    }
+
+    private fun Project.getBuildVariant(): Variant {
+        val tskReqStr = gradle.startParameter.taskRequests.map {
+            it.args
+        }.toString()
+        log("getBuildVariant, tskReqStr: $tskReqStr")
+        val isDebug = tskReqStr.contains(Variant.DEBUG.name, ignoreCase = true)
+        return if (isDebug) {
+            Variant.DEBUG
+        } else {
+            Variant.RELEASE
+        }
+    }
+
+    enum class Variant {
+        DEBUG,
+        RELEASE
+    }
 }

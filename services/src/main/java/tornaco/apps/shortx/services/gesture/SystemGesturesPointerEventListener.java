@@ -20,39 +20,35 @@ import static android.view.DisplayCutout.BOUNDS_POSITION_BOTTOM;
 import static android.view.DisplayCutout.BOUNDS_POSITION_LEFT;
 import static android.view.DisplayCutout.BOUNDS_POSITION_RIGHT;
 import static android.view.DisplayCutout.BOUNDS_POSITION_TOP;
+import static tornaco.apps.shortx.core.BuildProp.APP_IS_DEBUG;
 
 import android.annotation.NonNull;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Region;
-import android.hardware.display.DisplayManagerGlobal;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 import android.view.DisplayCutout;
 import android.view.DisplayInfo;
-import android.view.GestureDetector;
 import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.WindowManagerPolicyConstants.PointerEventListener;
-import android.widget.OverScroller;
 
 import java.io.PrintWriter;
 
+import tornaco.apps.shortx.core.util.OsUtils;
+import tornaco.apps.shortx.core.util.ScreenUtilsKt;
 import tornaco.apps.shortx.services.ResExtKt;
 
 /**
  * Listens for system-wide input gestures, firing callbacks when detected.
  */
-public class SystemGesturesPointerEventListener implements PointerEventListener {
+public class SystemGesturesPointerEventListener {
     private static final String TAG = "SystemGestures";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = APP_IS_DEBUG;
     private static final long SWIPE_TIMEOUT_MS = 500;
     private static final int MAX_TRACKED_POINTERS = 32;  // max per input system
     private static final int UNTRACKED_POINTER = -1;
-    private static final int MAX_FLING_TIME_MILLIS = 5000;
 
     private static final int SWIPE_NONE = 0;
     private static final int SWIPE_FROM_TOP = 1;
@@ -61,7 +57,6 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     private static final int SWIPE_FROM_LEFT = 4;
 
     private final Context mContext;
-    private final Handler mHandler;
     private int mDisplayCutoutTouchableRegionSize;
     // The thresholds for each edge of the display
     private final Rect mSwipeStartThreshold = new Rect();
@@ -72,19 +67,15 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     private final float[] mDownY = new float[MAX_TRACKED_POINTERS];
     private final long[] mDownTime = new long[MAX_TRACKED_POINTERS];
 
-    private GestureDetector mGestureDetector;
-
     int screenHeight;
     int screenWidth;
     private int mDownPointers;
     private boolean mSwipeFireable;
     private boolean mDebugFireable;
     private boolean mMouseHoveringAtEdge;
-    private long mLastFlingTime;
 
-    public SystemGesturesPointerEventListener(Context context, Handler handler, Callbacks callbacks) {
+    public SystemGesturesPointerEventListener(Context context, Callbacks callbacks) {
         mContext = checkNull("context", context);
-        mHandler = handler;
         mCallbacks = checkNull("callbacks", callbacks);
         onConfigurationChanged();
     }
@@ -111,32 +102,36 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                 defaultThreshold);
         mSwipeDistanceThreshold = defaultThreshold;
 
-        // TODO Check compat
-        final Display display = DisplayManagerGlobal.getInstance()
-                .getRealDisplay(Display.DEFAULT_DISPLAY);
-        final DisplayCutout displayCutout = display.getCutout();
-        if (displayCutout != null) {
-            // Expand swipe start threshold such that we can catch touches that just start beyond
-            // the notch area
-            mDisplayCutoutTouchableRegionSize = r.getDimensionPixelSize(
-                    com.android.internal.R.dimen.display_cutout_touchable_region_size);
-            final Rect[] bounds = displayCutout.getBoundingRectsAll();
-            if (bounds[BOUNDS_POSITION_LEFT] != null) {
-                mSwipeStartThreshold.left = Math.max(mSwipeStartThreshold.left,
-                        bounds[BOUNDS_POSITION_LEFT].width() + mDisplayCutoutTouchableRegionSize);
-            }
-            if (bounds[BOUNDS_POSITION_TOP] != null) {
-                mSwipeStartThreshold.top = Math.max(mSwipeStartThreshold.top,
-                        bounds[BOUNDS_POSITION_TOP].height() + mDisplayCutoutTouchableRegionSize);
-            }
-            if (bounds[BOUNDS_POSITION_RIGHT] != null) {
-                mSwipeStartThreshold.right = Math.max(mSwipeStartThreshold.right,
-                        bounds[BOUNDS_POSITION_RIGHT].width() + mDisplayCutoutTouchableRegionSize);
-            }
-            if (bounds[BOUNDS_POSITION_BOTTOM] != null) {
-                mSwipeStartThreshold.bottom = Math.max(mSwipeStartThreshold.bottom,
-                        bounds[BOUNDS_POSITION_BOTTOM].height()
-                                + mDisplayCutoutTouchableRegionSize);
+        if (OsUtils.isQOrAbove()) {
+            final Display display = ScreenUtilsKt.defaultDisplay(mContext);
+            final DisplayCutout displayCutout = display.getCutout();
+            if (displayCutout != null) {
+                // Expand swipe start threshold such that we can catch touches that just start beyond
+                // the notch area
+                try {
+                    int resId = Resources.getSystem().getIdentifier("display_cutout_touchable_region_size", "dimen", "android");
+                    mDisplayCutoutTouchableRegionSize = r.getDimensionPixelSize(resId);
+                    Log.w(TAG, "display_cutout_touchable_region_size: " + defaultThreshold);
+                } catch (Throwable ignored) {
+                }
+                final Rect[] bounds = displayCutout.getBoundingRectsAll();
+                if (bounds[BOUNDS_POSITION_LEFT] != null) {
+                    mSwipeStartThreshold.left = Math.max(mSwipeStartThreshold.left,
+                            bounds[BOUNDS_POSITION_LEFT].width() + mDisplayCutoutTouchableRegionSize);
+                }
+                if (bounds[BOUNDS_POSITION_TOP] != null) {
+                    mSwipeStartThreshold.top = Math.max(mSwipeStartThreshold.top,
+                            bounds[BOUNDS_POSITION_TOP].height() + mDisplayCutoutTouchableRegionSize);
+                }
+                if (bounds[BOUNDS_POSITION_RIGHT] != null) {
+                    mSwipeStartThreshold.right = Math.max(mSwipeStartThreshold.right,
+                            bounds[BOUNDS_POSITION_RIGHT].width() + mDisplayCutoutTouchableRegionSize);
+                }
+                if (bounds[BOUNDS_POSITION_BOTTOM] != null) {
+                    mSwipeStartThreshold.bottom = Math.max(mSwipeStartThreshold.bottom,
+                            bounds[BOUNDS_POSITION_BOTTOM].height()
+                                    + mDisplayCutoutTouchableRegionSize);
+                }
             }
         }
         if (DEBUG) Log.d(TAG, "mSwipeStartThreshold=" + mSwipeStartThreshold
@@ -150,34 +145,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         return arg;
     }
 
-    public void systemReady() {
-        mGestureDetector = new GestureDetector(mContext, new FlingGestureDetector(), mHandler);
-        // GestureDetector records statistics about gesture classification events to inform gesture
-        // usage trends. SystemGesturesPointerEventListener creates a lot of noise in these
-        // statistics because it passes every touch event though a GestureDetector. By creating an
-        // anonymous subclass of GestureDetector, these statistics will be recorded with a unique
-        // source name that can be filtered.
-
-        // GestureDetector would get a ViewConfiguration instance by context, that may also
-        // create a new WindowManagerImpl for the new display, and lock WindowManagerGlobal
-        // temporarily in the constructor that would make a deadlock.
-        mHandler.post(() -> {
-            final int displayId = mContext.getDisplayId();
-            final DisplayInfo info = DisplayManagerGlobal.getInstance().getDisplayInfo(displayId);
-            if (info == null) {
-                // Display already removed, stop here.
-                Log.w(TAG, "Cannot create GestureDetector, display removed:" + displayId);
-                return;
-            }
-
-        });
-    }
-
-    @Override
-    public void onPointerEvent(MotionEvent event) {
-        if (mGestureDetector != null && event.isTouchEvent()) {
-            mGestureDetector.onTouchEvent(event);
-        }
+    public boolean onPointerEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 mSwipeFireable = true;
@@ -189,7 +157,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                     mCallbacks.onMouseLeaveFromEdge();
                 }
                 mCallbacks.onDown();
-                break;
+                return false;
             case MotionEvent.ACTION_POINTER_DOWN:
                 captureDown(event, event.getActionIndex());
                 if (mDebugFireable) {
@@ -199,14 +167,14 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                         mCallbacks.onDebug();
                     }
                 }
-                break;
+                return false;
             case MotionEvent.ACTION_MOVE:
                 if (mSwipeFireable) {
                     final int swipe = detectSwipe(event);
                     mSwipeFireable = swipe == SWIPE_NONE;
                     if (swipe == SWIPE_FROM_TOP) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromTop");
-                        mCallbacks.onSwipeFromTop();
+                        return mCallbacks.onSwipeFromTop();
                     } else if (swipe == SWIPE_FROM_BOTTOM) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromBottom");
                         int pointerId = event.getPointerId(0);
@@ -214,7 +182,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                         if (i >= 0 && i < mDownX.length) {
                             int x = (int) mDownX[i];
                             int y = (int) mDownY[i];
-                            mCallbacks.onSwipeFromBottom(x, y);
+                            return mCallbacks.onSwipeFromBottom(x, y);
                         }
                     } else if (swipe == SWIPE_FROM_RIGHT) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromRight");
@@ -223,7 +191,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                         if (i >= 0 && i < mDownX.length) {
                             int x = (int) mDownX[i];
                             int y = (int) mDownY[i];
-                            mCallbacks.onSwipeFromRight(x, y);
+                            return mCallbacks.onSwipeFromRight(x, y);
                         }
                     } else if (swipe == SWIPE_FROM_LEFT) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromLeft");
@@ -232,11 +200,11 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                         if (i >= 0 && i < mDownX.length) {
                             int x = (int) mDownX[i];
                             int y = (int) mDownY[i];
-                            mCallbacks.onSwipeFromLeft(x, y);
+                            return mCallbacks.onSwipeFromLeft(x, y);
                         }
                     }
                 }
-                break;
+                return false;
             case MotionEvent.ACTION_HOVER_MOVE:
                 if (event.isFromSource(InputDevice.SOURCE_MOUSE)) {
                     if (!mMouseHoveringAtEdge && event.getY() == 0) {
@@ -251,15 +219,16 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                         mMouseHoveringAtEdge = false;
                     }
                 }
-                break;
+                return false;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mSwipeFireable = false;
                 mDebugFireable = false;
                 mCallbacks.onUpOrCancel();
-                break;
+                return false;
             default:
                 if (DEBUG) Log.d(TAG, "Ignoring " + event);
+                return false;
         }
     }
 
@@ -362,88 +331,14 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         pw.println(mSwipeDistanceThreshold);
     }
 
-    private final class FlingGestureDetector extends GestureDetector.SimpleOnGestureListener {
-
-        private final OverScroller mOverscroller;
-
-        FlingGestureDetector() {
-            mOverscroller = new OverScroller(mContext);
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-            super.onShowPress(e);
-            mCallbacks.onShowPress((int) e.getX(), (int) e.getY());
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return super.onDown(e);
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return super.onSingleTapConfirmed(e);
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            if (!mOverscroller.isFinished()) {
-                mOverscroller.forceFinished(true);
-            }
-            mCallbacks.onSingleTapUp((int) e.getX(), (int) e.getY());
-            return true;
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if (!mOverscroller.isFinished()) {
-                mOverscroller.forceFinished(true);
-            }
-            mCallbacks.onDoubleTap((int) e.getX(), (int) e.getY());
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            super.onLongPress(e);
-            if (!mOverscroller.isFinished()) {
-                mOverscroller.forceFinished(true);
-            }
-            mCallbacks.onLongPress((int) e.getX(), (int) e.getY());
-        }
-
-        @Override
-        public boolean onFling(MotionEvent down, MotionEvent up,
-                               float velocityX, float velocityY) {
-            mOverscroller.computeScrollOffset();
-            long now = SystemClock.uptimeMillis();
-
-            if (mLastFlingTime != 0 && now > mLastFlingTime + MAX_FLING_TIME_MILLIS) {
-                mOverscroller.forceFinished(true);
-            }
-            mOverscroller.fling(0, 0, (int) velocityX, (int) velocityY,
-                    Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            int duration = mOverscroller.getDuration();
-            if (duration > MAX_FLING_TIME_MILLIS) {
-                duration = MAX_FLING_TIME_MILLIS;
-            }
-            mLastFlingTime = now;
-            mCallbacks.onFling(duration);
-            return true;
-        }
-    }
-
     interface Callbacks {
-        void onSwipeFromTop();
+        boolean onSwipeFromTop();
 
-        void onSwipeFromBottom(int x, int y);
+        boolean onSwipeFromBottom(int x, int y);
 
-        void onSwipeFromRight(int x, int y);
+        boolean onSwipeFromRight(int x, int y);
 
-        void onSwipeFromLeft(int x, int y);
-
-        void onFling(int durationMs);
+        boolean onSwipeFromLeft(int x, int y);
 
         void onDown();
 
@@ -456,40 +351,27 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         void onMouseLeaveFromEdge();
 
         void onDebug();
-
-        void onSingleTapUp(int x, int y);
-
-        void onDoubleTap(int x, int y);
-
-        void onLongPress(int x, int y);
-
-        void onShowPress(int x, int y);
     }
 
     public static class CallbacksAdapter implements Callbacks {
         @Override
-        public void onSwipeFromTop() {
-
+        public boolean onSwipeFromTop() {
+            return false;
         }
 
         @Override
-        public void onSwipeFromBottom(int x, int y) {
-
+        public boolean onSwipeFromBottom(int x, int y) {
+            return false;
         }
 
         @Override
-        public void onSwipeFromRight(int x, int y) {
-
+        public boolean onSwipeFromRight(int x, int y) {
+            return false;
         }
 
         @Override
-        public void onSwipeFromLeft(int x, int y) {
-
-        }
-
-        @Override
-        public void onFling(int durationMs) {
-
+        public boolean onSwipeFromLeft(int x, int y) {
+            return false;
         }
 
         @Override
@@ -519,26 +401,6 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
 
         @Override
         public void onDebug() {
-
-        }
-
-        @Override
-        public void onSingleTapUp(int x, int y) {
-
-        }
-
-        @Override
-        public void onDoubleTap(int x, int y) {
-
-        }
-
-        @Override
-        public void onLongPress(int x, int y) {
-
-        }
-
-        @Override
-        public void onShowPress(int x, int y) {
 
         }
     }

@@ -79,6 +79,6 @@ class GestureService : SystemService() {
         if (input == null) return null
         if (input !is MotionEvent) return null
 
-        return gestureDetector?.onEvent(input)
+        return gestureDetector?.interceptEvent(input)
     }
 }

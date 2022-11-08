@@ -1,6 +1,7 @@
 import tornaco.project.android.shortx.Configs.sxPackageName
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
+import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.addAidlTask
 import java.util.*
 
@@ -17,6 +18,7 @@ buildConfig {
     buildConfigField("String", "APP_PACKAGE_NAME", provider { "\"${sxPackageName}\"" })
     buildConfigField("String", "APP_VERSION_NAME", provider { "\"${sxVersionName}\"" })
     buildConfigField("int", "APP_VERSION_CODE", provider { "$sxVersionCode" })
+    buildConfigField("boolean", "APP_IS_DEBUG", provider { "$sxIsDebugBuild" })
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 }
