@@ -110,6 +110,7 @@ dependencies {
     implementation(project(":ui"))
     implementation(project(":services"))
     implementation(project(":patch"))
+    implementation(project(":core"))
 
     testImplementation("junit:junit:4.13.2")
 
