@@ -2,8 +2,9 @@ package tornaco.apps.shortx.services.actor
 
 import android.content.Context
 import android.os.Handler
-import tornaco.apps.shortx.core.action.Action
+import tornaco.apps.shortx.core.action.*
 import tornaco.apps.shortx.core.action.ExpandNotification
+import tornaco.apps.shortx.core.action.ShellCommand
 import tornaco.apps.shortx.core.action.StartActivity
 import tornaco.apps.shortx.core.action.TakeScreenshot
 import tornaco.apps.shortx.core.util.Logger
@@ -37,6 +38,9 @@ class Supervisor(
             }
             is ExpandNotification -> {
                 ExpandNotification(context).invoke()
+            }
+            is ShellCommand -> {
+                ShellCommand(context, action).invoke()
             }
             else -> {
                 logger.w("UnSupported action: $action")

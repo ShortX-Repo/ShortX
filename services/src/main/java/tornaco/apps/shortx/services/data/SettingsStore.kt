@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.*
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.mapToString
 import tornaco.apps.shortx.services.proto.Settings
 import tornaco.apps.shortx.services.proto.StringMap
 
@@ -17,6 +18,19 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     private val stringMapCache = mutableMapOf<String, Map<String, String>>()
 
     private var job: Job? = null
+
+    fun dump() {
+        logger.i("-----------------------")
+        logger.i("stringCache")
+        logger.i(stringCache.mapToString())
+        logger.i("boolCache")
+        logger.i(boolCache.mapToString())
+        logger.i("intCache")
+        logger.i(intCache.mapToString())
+        logger.i("stringMapCache")
+        logger.i(stringMapCache.mapToString())
+        logger.i("-----------------------")
+    }
 
     fun readBlocking() = runBlocking {
         readInternal()

@@ -55,8 +55,12 @@ fun ActionsSelector(
 
 
 @Composable
-fun AllSelectors(startActivityState: StartActivitySelectorState) {
+fun AllSelectors(
+    startActivityState: StartActivitySelectorState,
+    shellCommandSelectorState: ShellCommandSelectorState,
+) {
     Box {
         StartActivitySelector(startActivityState)
+        ShellCommandSelector(shellCommandSelectorState)
     }
 }

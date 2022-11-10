@@ -42,8 +42,8 @@ class Detector(
                 return handleEvent(e, GestureEvent.DoubleTap)
             }
 
-            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                logger.d("onSingleTapConfirmed")
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                logger.d("onSingleTapUp")
                 return handleEvent(e, GestureEvent.SingleTap)
             }
 
@@ -100,7 +100,12 @@ class Detector(
     }
 
     private fun getGestureAction(area: Area, gestureEvent: GestureEvent): Action {
-        return service.getGestureAction(area.name, gestureEvent.name).toActionOrThrow()
+        return kotlin.runCatching {
+            service.getGestureAction(area.name, gestureEvent.name).toActionOrThrow()
+        }.getOrElse {
+            logger.e(it, "getGestureAction error for: $area $gestureEvent")
+            NoAction()
+        }
     }
 
     @SuppressLint("MissingPermission")

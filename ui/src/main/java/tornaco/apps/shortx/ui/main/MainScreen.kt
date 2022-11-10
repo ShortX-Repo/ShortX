@@ -13,20 +13,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.ExpandNotification
-import tornaco.apps.shortx.core.action.StartActivity
-import tornaco.apps.shortx.core.action.TakeScreenshot
+import tornaco.apps.shortx.core.action.*
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.ExpandableContainer
 import tornaco.apps.shortx.ui.base.ExpandableState
 import tornaco.apps.shortx.ui.base.requireActivity
-import tornaco.apps.shortx.ui.main.actions.ActionsSelector
-import tornaco.apps.shortx.ui.main.actions.AllSelectors
-import tornaco.apps.shortx.ui.main.actions.rememberActionsSelectorState
-import tornaco.apps.shortx.ui.main.actions.rememberStartActivitySelectorState
+import tornaco.apps.shortx.ui.main.actions.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,6 +113,9 @@ fun AreaSettingsExpanded(
                 val startActivityState = rememberStartActivitySelectorState {
                     setAction(gestureAction.gestureEvent, it)
                 }
+                val shellCommandState = rememberShellCommandSelectorState {
+                    setAction(gestureAction.gestureEvent, it)
+                }
 
                 ActionsSelector(actionSelectorState, availableGestureActions) { actionName ->
                     when (actionName) {
@@ -131,10 +128,17 @@ fun AreaSettingsExpanded(
                         StartActivity.NAME -> {
                             startActivityState.show()
                         }
+                        ShellCommand.NAME -> {
+                            shellCommandState.show()
+                        }
+                        else -> {
+                            setAction(gestureAction.gestureEvent, NoAction())
+                        }
                     }
                 }
 
-                AllSelectors(startActivityState = startActivityState)
+                AllSelectors(startActivityState = startActivityState,
+                    shellCommandSelectorState = shellCommandState)
             }
         }
 

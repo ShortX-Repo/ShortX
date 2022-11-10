@@ -21,6 +21,8 @@ buildConfig {
     buildConfigField("boolean", "APP_IS_DEBUG", provider { "$sxIsDebugBuild" })
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
+
+    buildConfigField("String", "APP_SHELL_SERVICE_NAME", "\"tornaco.apps.shortx.ui.service.ShellService\"")
 }
 
 dependencies {

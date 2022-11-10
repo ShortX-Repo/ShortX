@@ -6,9 +6,10 @@ import android.os.Bundle
 import android.view.InputEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.services.GuideLineView
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.util.bundleToString
+import tornaco.apps.shortx.services.GuideLineView
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.*
 import tornaco.apps.shortx.services.launchSafety
@@ -54,6 +55,7 @@ class GestureService : SystemService() {
     }
 
     fun setGestureAction(areaName: String, gestureEvent: String, data: Bundle) {
+        logger.d("setGestureAction: $areaName $gestureEvent ${data.bundleToString()}")
         val area = Area.valueOf(areaName)
         val event = GestureEvent.valueOf(gestureEvent)
         store.write(Settings.MapSettings.GestureActionOnArea(area, event), data.toStringMap())

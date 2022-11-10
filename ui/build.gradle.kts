@@ -84,6 +84,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.0-alpha01")
 
     implementation(project(":core"))
+    implementation(project(":external:shell"))
 
     testImplementation("junit:junit:4.13.2")
 

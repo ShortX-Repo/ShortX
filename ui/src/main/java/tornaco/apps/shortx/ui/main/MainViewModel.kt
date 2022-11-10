@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.action.*
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.LifeCycleAwareViewModel
 import tornaco.apps.shortx.ui.main.actions.getExtraDescription
 import javax.inject.Inject
@@ -41,6 +42,8 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     private val _state = MutableStateFlow(MainState())
     val state get() = _state.asStateFlow()
+
+    private val logger = Logger("MainViewModel")
 
     fun loadGestureSettings() {
         viewModelScope.launch {
@@ -73,6 +76,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 StartActivity.NAME,
                 ExpandNotification.NAME,
                 TakeScreenshot.NAME,
+                ShellCommand.NAME,
                 NoAction.NAME
             )
 
@@ -83,6 +87,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     }
 
     fun setAreaGestureAction(area: Area, gestureEvent: GestureEvent, action: Action) {
+        logger.d("setAreaGestureAction: $area $gestureEvent $action")
         viewModelScope.launch {
             shortXManager.setGestureAction(area, gestureEvent, action)
             loadGestureSettings()

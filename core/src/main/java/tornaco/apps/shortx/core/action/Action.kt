@@ -1,8 +1,11 @@
 package tornaco.apps.shortx.core.action
 
 import android.os.Bundle
+import tornaco.apps.shortx.core.util.Logger
 
 const val KEY_ACTION_NAME = "action.name"
+
+private val logger = Logger("Action")
 
 abstract class Action(val name: String) {
     fun toBundle(): Bundle {
@@ -17,7 +20,6 @@ abstract class Action(val name: String) {
 
 fun Bundle.toActionOrThrow(): Action {
     if (isEmpty) return NoAction()
-
     return when (val name =
         requireNotNull(getString(KEY_ACTION_NAME)) { "Missing name on this bundle." }) {
         StartActivity.NAME -> {
@@ -29,8 +31,11 @@ fun Bundle.toActionOrThrow(): Action {
         ExpandNotification.NAME -> {
             ExpandNotification.readFromBundle(this)
         }
+        ShellCommand.NAME -> {
+            ShellCommand.readFromBundle(this)
+        }
         NoAction.NAME -> {
-            StartActivity.readFromBundle(this)
+            NoAction()
         }
         else -> {
             throw IllegalArgumentException("Unknown action name: $name")

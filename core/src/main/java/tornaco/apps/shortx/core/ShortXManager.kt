@@ -69,7 +69,7 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         area: Area,
         event: GestureEvent,
     ): Action {
-        return invokeService(NoAction()) {
+        return invokeService(NoAction(), area, event) {
             getGestureAction(area.name, event.name).toActionOrThrow()
         }
     }
@@ -79,6 +79,19 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
             onService(service)
         }.getOrElse {
             logger.e(it, "invokeService error")
+            defaultValue
+        }
+    }
+
+    private inline fun <T> invokeService(
+        defaultValue: T,
+        vararg logTokens: Any,
+        onService: IShortX.() -> T,
+    ): T {
+        return kotlin.runCatching {
+            onService(service)
+        }.getOrElse {
+            logger.e(it, "invokeService error, arg: ${logTokens.joinToString(", ")}")
             defaultValue
         }
     }
