@@ -30,9 +30,10 @@ data class AreaSettings(
 
 data class GestureAction(
     val gestureEvent: GestureEvent,
-    val actionName: String,
-    val actionDescriptions: List<String> = emptyList(),
+    val actions: List<ActionItem>,
 )
+
+data class ActionItem(val name: String, val desc: List<String> = emptyList())
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -49,25 +50,25 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         viewModelScope.launch {
             val left = listOf(Area.LeftTop, Area.LeftCenter, Area.LeftBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
+                    val action = shortXManager.getGestureActions(area, it)
                     GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val right = listOf(Area.RightTop, Area.RightCenter, Area.RightBottom).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
+                    val action = shortXManager.getGestureActions(area, it)
                     GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val top = listOf(Area.TopLeft, Area.TopCenter, Area.TopRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
+                    val action = shortXManager.getGestureActions(area, it)
                     GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
             val bottom = listOf(Area.BottomLeft, Area.BottomCenter, Area.BottomRight).map { area ->
                 AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
+                    val action = shortXManager.getGestureActions(area, it)
                     GestureAction(it, action.name, action.getExtraDescription())
                 }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
             }
@@ -89,7 +90,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun setAreaGestureAction(area: Area, gestureEvent: GestureEvent, action: Action) {
         logger.d("setAreaGestureAction: $area $gestureEvent $action")
         viewModelScope.launch {
-            shortXManager.setGestureAction(area, gestureEvent, action)
+            shortXManager.setGestureActions(area, gestureEvent, action)
             loadGestureSettings()
         }
     }

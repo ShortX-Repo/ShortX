@@ -8,6 +8,7 @@ import java.util.*
 plugins {
     id("java")
     id("kotlin")
+    id("com.google.protobuf").version("0.9.1")
     // https://github.com/gmazzo/gradle-buildconfig-plugin
     id("com.github.gmazzo.buildconfig") version "3.1.0"
 }
@@ -27,6 +28,7 @@ buildConfig {
 
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
+    implementation("com.google.protobuf:protobuf-java:3.17.2")
 }
 
 java {
@@ -35,3 +37,10 @@ java {
 }
 
 addAidlTask()
+
+protobuf {
+    protoc {
+        // The artifact spec for the Protobuf Compiler
+        artifact = "com.google.protobuf:protoc:3.6.1"
+    }
+}

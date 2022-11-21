@@ -29,10 +29,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void setGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException
     {
     }
-    @Override public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException
+    @Override public void setGestureActions(java.lang.String areaName, java.lang.String gestureEvent, java.util.List<tornaco.apps.shortx.core.action.ActionBytes> data) throws android.os.RemoteException
     {
     }
-    @Override public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
+    @Override public java.util.List<tornaco.apps.shortx.core.action.ActionBytes> getGestureActions(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
     {
       return null;
     }
@@ -139,40 +139,29 @@ public interface IShortX extends android.os.IInterface
           reply.writeNoException();
           return true;
         }
-        case TRANSACTION_setGestureAction:
+        case TRANSACTION_setGestureActions:
         {
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
           _arg1 = data.readString();
-          android.os.Bundle _arg2;
-          if ((0!=data.readInt())) {
-            _arg2 = android.os.Bundle.CREATOR.createFromParcel(data);
-          }
-          else {
-            _arg2 = null;
-          }
-          this.setGestureAction(_arg0, _arg1, _arg2);
+          java.util.List<tornaco.apps.shortx.core.action.ActionBytes> _arg2;
+          _arg2 = data.createTypedArrayList(tornaco.apps.shortx.core.action.ActionBytes.CREATOR);
+          this.setGestureActions(_arg0, _arg1, _arg2);
           reply.writeNoException();
           return true;
         }
-        case TRANSACTION_getGestureAction:
+        case TRANSACTION_getGestureActions:
         {
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
           _arg1 = data.readString();
-          android.os.Bundle _result = this.getGestureAction(_arg0, _arg1);
+          java.util.List<tornaco.apps.shortx.core.action.ActionBytes> _result = this.getGestureActions(_arg0, _arg1);
           reply.writeNoException();
-          if ((_result!=null)) {
-            reply.writeInt(1);
-            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          }
-          else {
-            reply.writeInt(0);
-          }
+          reply.writeTypedList(_result);
           return true;
         }
         default:
@@ -321,7 +310,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException
+      @Override public void setGestureActions(java.lang.String areaName, java.lang.String gestureEvent, java.util.List<tornaco.apps.shortx.core.action.ActionBytes> data) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -329,16 +318,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(areaName);
           _data.writeString(gestureEvent);
-          if ((data!=null)) {
-            _data.writeInt(1);
-            data.writeToParcel(_data, 0);
-          }
-          else {
-            _data.writeInt(0);
-          }
-          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureAction, _data, _reply, 0);
+          _data.writeTypedList(data);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureActions, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().setGestureAction(areaName, gestureEvent, data);
+            getDefaultImpl().setGestureActions(areaName, gestureEvent, data);
             return;
           }
           _reply.readException();
@@ -348,26 +331,21 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
+      @Override public java.util.List<tornaco.apps.shortx.core.action.ActionBytes> getGestureActions(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
-        android.os.Bundle _result;
+        java.util.List<tornaco.apps.shortx.core.action.ActionBytes> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(areaName);
           _data.writeString(gestureEvent);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureAction, _data, _reply, 0);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureActions, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getGestureAction(areaName, gestureEvent);
+            return getDefaultImpl().getGestureActions(areaName, gestureEvent);
           }
           _reply.readException();
-          if ((0!=_reply.readInt())) {
-            _result = android.os.Bundle.CREATOR.createFromParcel(_reply);
-          }
-          else {
-            _result = null;
-          }
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.action.ActionBytes.CREATOR);
         }
         finally {
           _reply.recycle();
@@ -383,8 +361,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_setGestureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
     static final int TRANSACTION_isGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
     static final int TRANSACTION_setGestureEnabledOnArea = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
-    static final int TRANSACTION_setGestureAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
-    static final int TRANSACTION_getGestureAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
+    static final int TRANSACTION_setGestureActions = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
+    static final int TRANSACTION_getGestureActions = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -408,6 +386,6 @@ public interface IShortX extends android.os.IInterface
   public void setGestureEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isGestureEnabledOnArea(java.lang.String areaName) throws android.os.RemoteException;
   public void setGestureEnabledOnArea(java.lang.String areaName, boolean enable) throws android.os.RemoteException;
-  public void setGestureAction(java.lang.String areaName, java.lang.String gestureEvent, android.os.Bundle data) throws android.os.RemoteException;
-  public android.os.Bundle getGestureAction(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException;
+  public void setGestureActions(java.lang.String areaName, java.lang.String gestureEvent, java.util.List<tornaco.apps.shortx.core.action.ActionBytes> data) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.action.ActionBytes> getGestureActions(java.lang.String areaName, java.lang.String gestureEvent) throws android.os.RemoteException;
 }

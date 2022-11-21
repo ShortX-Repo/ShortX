@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.NoAction
-import tornaco.apps.shortx.core.action.toActionOrThrow
+import tornaco.apps.shortx.core.action.ActionBytes
 import tornaco.apps.shortx.core.gesture.Area
 import tornaco.apps.shortx.core.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.Logger
@@ -59,18 +57,18 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
-    fun setGestureAction(area: Area, event: GestureEvent, action: Action) {
+    fun setGestureActions(area: Area, event: GestureEvent, actions: List<ActionBytes>) {
         invokeService(Unit) {
-            setGestureAction(area.name, event.name, action.toBundle())
+            setGestureActions(area.name, event.name, actions)
         }
     }
 
-    fun getGestureAction(
+    fun getGestureActions(
         area: Area,
         event: GestureEvent,
-    ): Action {
-        return invokeService(NoAction(), area, event) {
-            getGestureAction(area.name, event.name).toActionOrThrow()
+    ): List<ActionBytes> {
+        return invokeService(emptyList(), area, event) {
+            getGestureActions(area.name, event.name)
         }
     }
 

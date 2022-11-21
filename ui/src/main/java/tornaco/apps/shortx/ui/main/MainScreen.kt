@@ -164,7 +164,7 @@ private fun AreaGestureActionItem(
         Column(modifier = Modifier) {
             Text(text = gestureAction.gestureEvent.name,
                 style = MaterialTheme.typography.titleMedium)
-            Text(text = gestureAction.actionName, style = MaterialTheme.typography.bodyMedium)
+            Text(text = gestureAction.actionNames, style = MaterialTheme.typography.bodyMedium)
             gestureAction.actionDescriptions.forEach {
                 Text(text = it, style = MaterialTheme.typography.bodySmall)
             }

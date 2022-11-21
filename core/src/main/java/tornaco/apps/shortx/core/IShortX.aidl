@@ -10,6 +10,6 @@ interface IShortX {
     boolean isGestureEnabledOnArea(String areaName);
     void setGestureEnabledOnArea(String areaName, boolean enable);
 
-    void setGestureAction(String areaName, String gestureEvent, in Bundle data);
-    Bundle getGestureAction(String areaName, String gestureEvent);
+    void setGestureActions(String areaName, String gestureEvent, in List<ActionBytes> data);
+    List<ActionBytes> getGestureActions(String areaName, String gestureEvent);
 }
