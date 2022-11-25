@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.action.ActionBytes
 import tornaco.apps.shortx.services.util.BinderProxy
 
 private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
@@ -81,16 +82,19 @@ object ShortXService : SystemService() {
             )
         }
 
-        override fun setGestureAction(areaName: String, gestureEvent: String, data: Bundle) {
-            ShortXServiceManager.gesture.setGestureAction(
-                areaName = areaName,
-                gestureEvent = gestureEvent,
-                data = data
-            )
+        override fun setGestureActions(
+            areaName: String?,
+            gestureEvent: String?,
+            data: MutableList<ActionBytes>?
+        ) {
+            TODO("Not yet implemented")
         }
 
-        override fun getGestureAction(areaName: String, gestureEvent: String): Bundle {
-            return ShortXServiceManager.gesture.getGestureAction(areaName, gestureEvent)
+        override fun getGestureActions(
+            areaName: String?,
+            gestureEvent: String?
+        ): MutableList<ActionBytes> {
+            TODO("Not yet implemented")
         }
     }
 }

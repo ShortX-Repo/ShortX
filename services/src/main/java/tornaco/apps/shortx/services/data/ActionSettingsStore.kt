@@ -1,13 +1,9 @@
 package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.*
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.NoAction
+import tornaco.apps.shortx.core.proto.ActionSetting
+import tornaco.apps.shortx.core.proto.ActionSettings
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.proto.ActionSetting
-import tornaco.apps.shortx.services.proto.ActionSettings
-import tornaco.apps.shortx.services.proto.StartActivity
-import tornaco.apps.shortx.services.proto.TakeScreenshot
 
 private const val WRITE_DELAY = 3000L
 private const val STORE_NAME = "ActionSettings"
@@ -24,20 +20,6 @@ class ActionSettingsStore(private val scope: CoroutineScope) {
         readInternal()
     }
 
-    operator fun get(key: String): List<Action> {
-        return dataCache[key]?.let { actionSetting ->
-            actionSetting.payloadList.map { any ->
-                if (any.`is`(TakeScreenshot::class.java)) {
-                    tornaco.apps.shortx.core.action.TakeScreenshot()
-                } else if (any.`is`(StartActivity::class.java)) {
-                    val startActivity = any.unpack(StartActivity::class.java)
-                    tornaco.apps.shortx.core.action.StartActivity(startActivity.componentNameAsString)
-                } else {
-                    NoAction()
-                }
-            }
-        } ?: emptyList()
-    }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {

@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.core.action
 
-fun ActionBytes.toAction(): Any {
+import tornaco.apps.shortx.core.proto.NoAction
 
+fun ActionBytes.toAction(): Any {
+    return NoAction.newBuilder().build()
 }

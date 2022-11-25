@@ -28,7 +28,7 @@ buildConfig {
 
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
-    implementation("com.google.protobuf:protobuf-java:3.17.2")
+    api("com.google.protobuf:protobuf-java:3.17.2")
 }
 
 java {
