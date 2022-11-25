@@ -26,7 +26,6 @@ class GestureService : SystemService() {
 
     override fun systemReady() {
         super.systemReady()
-        store.readBlocking()
         gestureDetector = Detector(context, handler, this)
     }
 

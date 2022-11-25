@@ -3,12 +3,11 @@ package tornaco.apps.shortx.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Binder
-import android.os.Bundle
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
-import tornaco.apps.shortx.core.action.ActionBytes
-import tornaco.apps.shortx.services.util.BinderProxy
+import tornaco.apps.shortx.core.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.proto.Rule
 
 private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
 
@@ -65,36 +64,18 @@ object ShortXService : SystemService() {
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
-        override fun isGestureEnabled() = ShortXServiceManager.gesture.isEnabled()
-
-        override fun setGestureEnabled(enable: Boolean) {
-            ShortXServiceManager.gesture.setEnabled(enable)
+        override fun addRule(rule: ByteArrayWrapper) {
+            ShortXServiceManager.rule.addRule(Rule.parseFrom(rule.byte))
         }
 
-        override fun isGestureEnabledOnArea(areaName: String) =
-            ShortXServiceManager.gesture.isGestureEnabledOnArea(areaName)
-
-
-        override fun setGestureEnabledOnArea(areaName: String, enable: Boolean) {
-            ShortXServiceManager.gesture.setGestureEnabledOnArea(
-                areaName = areaName,
-                enable = enable
-            )
-        }
-
-        override fun setGestureActions(
-            areaName: String?,
-            gestureEvent: String?,
-            data: MutableList<ActionBytes>?
-        ) {
+        override fun deleteRule(rule: ByteArrayWrapper) {
             TODO("Not yet implemented")
         }
 
-        override fun getGestureActions(
-            areaName: String?,
-            gestureEvent: String?
-        ): MutableList<ActionBytes> {
-            TODO("Not yet implemented")
+        override fun getAllRules(): List<ByteArrayWrapper> {
+            return ShortXServiceManager.rule.getAllRules().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
     }
 }

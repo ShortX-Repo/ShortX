@@ -10,4 +10,18 @@ message Rule {
   google.protobuf.Any fact = 1;
   repeated google.protobuf.Any conditions = 2;
   repeated google.protobuf.Any actions = 3;
+
+  string id = 4;
+  int32 priority = 5;
+  int64 lastUpdateTime = 6;
+
+  Author author = 7;
+}
+
+message RuleList {
+  repeated Rule rules = 1;
+}
+
+message Author {
+  string name = 1;
 }

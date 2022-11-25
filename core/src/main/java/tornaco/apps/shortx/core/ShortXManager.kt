@@ -4,9 +4,8 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
-import tornaco.apps.shortx.core.action.ActionBytes
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.proto.Rule
 import tornaco.apps.shortx.core.util.Logger
 
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
@@ -33,42 +32,17 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
-    fun isGestureEnabled(): Boolean {
-        return invokeService(false) {
-            isGestureEnabled
-        }
-    }
-
-    fun setGestureEnabled(enable: Boolean) {
+    fun addRule(rule: Rule) {
         invokeService(Unit) {
-            isGestureEnabled = enable
+            addRule(ByteArrayWrapper(rule.toByteArray()))
         }
     }
 
-    fun isGestureEnabledOnArea(area: Area): Boolean {
-        return invokeService(false) {
-            isGestureEnabledOnArea(area.name)
-        }
-    }
-
-    fun setGestureEnabledOnArea(area: Area, enable: Boolean) {
-        invokeService(Unit) {
-            setGestureEnabledOnArea(area.name, enable)
-        }
-    }
-
-    fun setGestureActions(area: Area, event: GestureEvent, actions: List<ActionBytes>) {
-        invokeService(Unit) {
-            setGestureActions(area.name, event.name, actions)
-        }
-    }
-
-    fun getGestureActions(
-        area: Area,
-        event: GestureEvent,
-    ): List<ActionBytes> {
-        return invokeService(emptyList(), area, event) {
-            getGestureActions(area.name, event.name)
+    fun getAllRules(): List<Rule> {
+        return invokeService(emptyList()) {
+            allRules.map {
+                Rule.parseFrom(it.byte)
+            }
         }
     }
 

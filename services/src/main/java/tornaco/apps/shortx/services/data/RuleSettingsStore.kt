@@ -1,18 +1,17 @@
 package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.*
-import tornaco.apps.shortx.core.proto.ActionSetting
-import tornaco.apps.shortx.core.proto.ActionSettings
+import tornaco.apps.shortx.core.proto.Rule
+import tornaco.apps.shortx.core.proto.RuleList
 import tornaco.apps.shortx.core.util.Logger
 
 private const val WRITE_DELAY = 3000L
-private const val STORE_NAME = "ActionSettings"
 
-class ActionSettingsStore(private val scope: CoroutineScope) {
-    private val logger = Logger(STORE_NAME)
-    private val storeFile by lazy { Dirs.dataStoreFile(STORE_NAME) }
+class RuleSettingsStore(private val scope: CoroutineScope) {
+    private val logger = Logger("RuleSettingsStore")
+    private val storeFile by lazy { Dirs.dataStoreFile("rules") }
 
-    private val dataCache = mutableMapOf<String, ActionSetting>()
+    private val rulesCache: MutableList<Rule> = mutableListOf()
 
     private var job: Job? = null
 
@@ -20,6 +19,14 @@ class ActionSettingsStore(private val scope: CoroutineScope) {
         readInternal()
     }
 
+    fun addRule(rule: Rule) {
+        rulesCache.add(rule)
+        postWrite()
+    }
+
+    fun getAllRules(): List<Rule> {
+        return rulesCache.toList()
+    }
 
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {
@@ -27,19 +34,17 @@ class ActionSettingsStore(private val scope: CoroutineScope) {
             return@withContext
         }
         kotlin.runCatching {
-            val settings = storeFile.inputStream().use {
-                ActionSettings.parseDelimitedFrom(it)
+            val ruleList = storeFile.inputStream().use {
+                RuleList.parseDelimitedFrom(it)
             }
-            settings.run {
-                dataMap.forEach {
-                    data[it.key] = it.value
-                }
+            ruleList.run {
+                rulesCache.clear()
+                rulesCache.addAll(this.rulesList)
             }
         }.onFailure {
             logger.e(it, "read error")
         }
     }
-
 
     private fun postWrite() {
         job?.cancel()
@@ -51,14 +56,12 @@ class ActionSettingsStore(private val scope: CoroutineScope) {
 
     private suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
-        val settings = ActionSettings.newBuilder().apply {
-            dataMap.forEach { _ ->
-                putAllData(dataCache)
-            }
+        val ruleList = RuleList.newBuilder().apply {
+            addAllRules(rulesCache)
         }.build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {
-                settings.writeDelimitedTo(it)
+                ruleList.writeDelimitedTo(it)
                 logger.d("write to: $storeFile")
             }
         }.onFailure {
