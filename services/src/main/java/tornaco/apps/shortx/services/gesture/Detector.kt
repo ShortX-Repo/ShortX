@@ -6,8 +6,8 @@ import android.os.Handler
 import android.os.VibrationEffect
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.rule.fact.gesture.Area
+import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.vibrate

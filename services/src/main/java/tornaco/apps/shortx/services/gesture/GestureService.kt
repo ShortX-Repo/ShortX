@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.InputEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.rule.fact.gesture.Area
+import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.GuideLineView
 import tornaco.apps.shortx.services.SystemService

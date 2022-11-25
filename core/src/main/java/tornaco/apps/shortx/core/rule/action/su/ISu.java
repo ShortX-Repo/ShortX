@@ -1,11 +1,11 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
  */
-package tornaco.apps.shortx.core.action.su;
+package tornaco.apps.shortx.core.rule.action.su;
 public interface ISu extends android.os.IInterface
 {
   /** Default implementation for ISu. */
-  public static class Default implements tornaco.apps.shortx.core.action.su.ISu
+  public static class Default implements tornaco.apps.shortx.core.rule.action.su.ISu
   {
     @Override public void exe(java.lang.String[] command) throws android.os.RemoteException
     {
@@ -16,28 +16,28 @@ public interface ISu extends android.os.IInterface
     }
   }
   /** Local-side IPC implementation stub class. */
-  public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.action.su.ISu
+  public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.rule.action.su.ISu
   {
-    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.action.su.ISu";
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.rule.action.su.ISu";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
       this.attachInterface(this, DESCRIPTOR);
     }
     /**
-     * Cast an IBinder object into an tornaco.apps.shortx.core.action.su.ISu interface,
+     * Cast an IBinder object into an tornaco.apps.shortx.core.rule.action.su.ISu interface,
      * generating a proxy if needed.
      */
-    public static tornaco.apps.shortx.core.action.su.ISu asInterface(android.os.IBinder obj)
+    public static tornaco.apps.shortx.core.rule.action.su.ISu asInterface(android.os.IBinder obj)
     {
       if ((obj==null)) {
         return null;
       }
       android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
-      if (((iin!=null)&&(iin instanceof tornaco.apps.shortx.core.action.su.ISu))) {
-        return ((tornaco.apps.shortx.core.action.su.ISu)iin);
+      if (((iin!=null)&&(iin instanceof tornaco.apps.shortx.core.rule.action.su.ISu))) {
+        return ((tornaco.apps.shortx.core.rule.action.su.ISu)iin);
       }
-      return new tornaco.apps.shortx.core.action.su.ISu.Stub.Proxy(obj);
+      return new tornaco.apps.shortx.core.rule.action.su.ISu.Stub.Proxy(obj);
     }
     @Override public android.os.IBinder asBinder()
     {
@@ -67,7 +67,7 @@ public interface ISu extends android.os.IInterface
         }
       }
     }
-    private static class Proxy implements tornaco.apps.shortx.core.action.su.ISu
+    private static class Proxy implements tornaco.apps.shortx.core.rule.action.su.ISu
     {
       private android.os.IBinder mRemote;
       Proxy(android.os.IBinder remote)
@@ -98,10 +98,10 @@ public interface ISu extends android.os.IInterface
           _data.recycle();
         }
       }
-      public static tornaco.apps.shortx.core.action.su.ISu sDefaultImpl;
+      public static tornaco.apps.shortx.core.rule.action.su.ISu sDefaultImpl;
     }
     static final int TRANSACTION_exe = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
-    public static boolean setDefaultImpl(tornaco.apps.shortx.core.action.su.ISu impl) {
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.rule.action.su.ISu impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
       // users in the same process use this function.
@@ -114,7 +114,7 @@ public interface ISu extends android.os.IInterface
       }
       return false;
     }
-    public static tornaco.apps.shortx.core.action.su.ISu getDefaultImpl() {
+    public static tornaco.apps.shortx.core.rule.action.su.ISu getDefaultImpl() {
       return Stub.Proxy.sDefaultImpl;
     }
   }

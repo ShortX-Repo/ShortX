@@ -1,6 +1,8 @@
-package tornaco.apps.shortx.core.rule
+package tornaco.apps.shortx.core.rule.engine
 
 import tornaco.apps.shortx.core.proto.Rule
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 
 interface FactMatcher {

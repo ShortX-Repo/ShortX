@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.proto.KeyEvent
 import tornaco.apps.shortx.core.rule.*
+import tornaco.apps.shortx.core.rule.engine.FactMatcher
 
 object FactMatcherFactory {
     private val factValueMatchers: MutableMap<Class<*>, (l: ProtoMessage, r: ProtoMessage) -> Boolean> =

@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.gesture
 import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
-import tornaco.apps.shortx.core.gesture.Area
+import tornaco.apps.shortx.core.rule.fact.gesture.Area
 import tornaco.apps.shortx.services.dp
 
 val defaultHotSeatSize by lazy {

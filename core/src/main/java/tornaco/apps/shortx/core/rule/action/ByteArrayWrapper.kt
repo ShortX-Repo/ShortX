@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.core.action
+package tornaco.apps.shortx.core.rule.action
 
 import android.os.Parcel
 import android.os.Parcelable

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.core.gesture
+package tornaco.apps.shortx.core.rule.fact.gesture
 
 enum class GestureEvent {
     DoubleTap,
