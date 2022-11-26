@@ -14,6 +14,13 @@ object ClassPaths {
 
 object Compose {
     const val composeVersion = "1.2.0"
+
+    const val composeMaterialIconsExtended =
+        "androidx.compose.material:material-icons-extended:${composeVersion}"
+
+
+    const val enro = "dev.enro:enro:2.0.0-alpha10"
+    const val enroApt = "dev.enro:enro-processor:2.0.0-alpha10"
 }
 
 object Coroutines {
