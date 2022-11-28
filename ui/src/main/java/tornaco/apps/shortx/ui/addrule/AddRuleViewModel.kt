@@ -2,16 +2,36 @@ package tornaco.apps.shortx.ui.addrule
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.KeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.condition.CurrentPkg
+import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.base.BaseViewModel
+import java.util.*
 import javax.inject.Inject
 
-data class AddRuleState(val fact: Fact? = null, val selectableFacts: List<Fact> = emptyList())
+data class AddRuleState(
+    val fact: Fact? = null,
+    val selectableFacts: List<Fact> = emptyList(),
+    val conditions: List<Condition> = emptyList(),
+    val selectableConditions: List<Condition> = emptyList(),
+    val actions: List<Action> = emptyList(),
+    val selectableActions: List<Action> = emptyList(),
+)
 
 sealed class Fact(val label: () -> String, val icon: ImageVector) {
     data class KeyEvent(val keyCode: Int) : Fact({ "KeyEvent $keyCode" }, Icons.Filled.Key)
@@ -19,16 +39,59 @@ sealed class Fact(val label: () -> String, val icon: ImageVector) {
         Fact({ "Activity Started $name" }, Icons.Filled.Tag)
 }
 
+fun Fact.toProtoFact(): ProtoMessage {
+    return when (this) {
+        is Fact.KeyEvent -> {
+            tornaco.apps.shortx.core.proto.fact.KeyEvent.newBuilder().setKeyCode(20).build()
+        }
+        is Fact.ActivityStarted -> TODO()
+    }
+}
+
+sealed class Condition(val label: (Context) -> String, val icon: ImageVector) {
+    data class CurrentPkg(val pkg: Pkg) : Condition({ "$pkg" }, Icons.Filled.Key)
+}
+
+fun Condition.toProtoCondition(): ProtoMessage {
+    return when (this) {
+        is Condition.CurrentPkg -> {
+            CurrentPkg.newBuilder().setPkgName(this.pkg.pkgName).build()
+        }
+    }
+}
+
+sealed class Action(val label: (Context) -> String, val icon: ImageVector) {
+    object TakeScreenshot : Action({ "Take Screenshot" }, Icons.Filled.Key)
+}
+
+fun Action.toProtoAction(): ProtoMessage {
+    return when (this) {
+        is Action.TakeScreenshot -> {
+            TakeScreenshot.newBuilder().build()
+        }
+    }
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddRuleViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     BaseViewModel<AddRuleState>(context) {
 
+    private val _ruleSaved = MutableSharedFlow<String>()
+    val ruleSaved = _ruleSaved.asSharedFlow()
+
     override fun initState(): AddRuleState {
-        return AddRuleState(selectableFacts = listOf(
-            Fact.KeyEvent(0),
-            Fact.ActivityStarted(""),
-        ))
+        return AddRuleState(
+            selectableFacts = listOf(
+                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
+                Fact.ActivityStarted("N/A")),
+            selectableConditions = listOf(
+                Condition.CurrentPkg(unKnownPkg)
+            ),
+            selectableActions = listOf(
+                Action.TakeScreenshot
+            )
+        )
     }
 
     fun setFact(fact: Fact?) {
@@ -37,4 +100,46 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         }
     }
 
+    fun addCondition(condition: Condition) {
+        updateState {
+            copy(conditions = conditions.toMutableList().apply {
+                add(condition)
+            })
+        }
+    }
+
+    fun addAction(action: Action) {
+        updateState {
+            copy(actions = actions.toMutableList().apply {
+                add(action)
+            })
+        }
+    }
+
+    fun save() {
+        viewModelScope.launch {
+            val fact = state.value.fact ?: return@launch
+            val conditions = state.value.conditions
+            val actions = state.value.actions
+
+            val protoFact = fact.toProtoFact().pack_()
+            val protoConditions = conditions.map {
+                it.toProtoCondition().pack_()
+            }
+            val protoActions = actions.map {
+                it.toProtoAction().pack_()
+            }
+            val rule =
+                Rule.newBuilder()
+                    .setId(UUID.randomUUID().toString())
+                    .setLastUpdateTime(System.currentTimeMillis())
+                    .setFact(protoFact)
+                    .addAllConditions(protoConditions)
+                    .addAllActions(protoActions)
+                    .build()
+
+            shortXManager.addRule(rule)
+            _ruleSaved.emit(rule.id)
+        }
+    }
 }

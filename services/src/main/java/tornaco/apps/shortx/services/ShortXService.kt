@@ -6,8 +6,8 @@ import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.proto.Rule
 
 private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
 

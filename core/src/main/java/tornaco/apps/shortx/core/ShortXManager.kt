@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.proto.Rule
 import tornaco.apps.shortx.core.util.Logger
 
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE

@@ -1,8 +1,8 @@
 package tornaco.apps.shortx.services.data
 
 import kotlinx.coroutines.*
-import tornaco.apps.shortx.core.proto.Rule
-import tornaco.apps.shortx.core.proto.RuleList
+import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.util.Logger
 
 private const val WRITE_DELAY = 3000L

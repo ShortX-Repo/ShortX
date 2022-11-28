@@ -1,8 +1,8 @@
+import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
+import tornaco.project.android.shortx.Configs.resPrefix
 import tornaco.project.android.shortx.Hilt
 import tornaco.project.android.shortx.log
-import tornaco.project.android.shortx.Compose
-import tornaco.project.android.shortx.Configs.resPrefix
 
 plugins {
     id("com.android.library")
@@ -82,6 +82,7 @@ dependencies {
     implementation(Compose.enro)
     kapt(Compose.enroApt)
 
+    implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.6.1")
