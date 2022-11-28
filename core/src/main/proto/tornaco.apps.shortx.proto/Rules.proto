@@ -16,6 +16,9 @@ message Rule {
   int64 lastUpdateTime = 6;
 
   Author author = 7;
+
+  string title = 8;
+  string description = 9;
 }
 
 message RuleList {

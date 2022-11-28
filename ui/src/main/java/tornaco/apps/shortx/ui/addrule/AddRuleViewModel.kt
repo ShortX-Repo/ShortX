@@ -20,11 +20,14 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.base.BaseViewModel
 import java.util.*
 import javax.inject.Inject
 
 data class AddRuleState(
+    val title: String = "",
+    val description: String = "",
     val fact: Fact? = null,
     val selectableFacts: List<Fact> = emptyList(),
     val conditions: List<Condition> = emptyList(),
@@ -94,6 +97,18 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         )
     }
 
+    fun setTitle(title: String) {
+        updateState {
+            copy(title = title)
+        }
+    }
+
+    fun setDescription(description: String) {
+        updateState {
+            copy(description = description)
+        }
+    }
+
     fun setFact(fact: Fact?) {
         updateState {
             copy(fact = fact)
@@ -134,6 +149,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                     .setId(UUID.randomUUID().toString())
                     .setLastUpdateTime(System.currentTimeMillis())
                     .setFact(protoFact)
+                    .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
+                    .setDescription(state.value.description.fallbackOnEmpty("No description"))
                     .addAllConditions(protoConditions)
                     .addAllActions(protoActions)
                     .build()

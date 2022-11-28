@@ -80,6 +80,10 @@ fun AddRuleScreen() {
                 Column(modifier = Modifier
                     .padding(it)
                     .padding(horizontal = 16.dp)) {
+
+                    TitleAndDescription(state, vm)
+                    Spacer(modifier = Modifier.size(16.dp))
+
                     FactSelector(state) { fact ->
                         if (fact is Fact.KeyEvent) {
                             keyEventSelectorState.show()
@@ -87,6 +91,7 @@ fun AddRuleScreen() {
                             // noop
                         }
                     }
+                    Spacer(modifier = Modifier.size(16.dp))
 
                     // Condition selectors
                     val currentPkgSelectorState = rememberCurrentPkgSelectorState { pkg ->
@@ -98,6 +103,7 @@ fun AddRuleScreen() {
                             currentPkgSelectorState.show()
                         }
                     }
+                    Spacer(modifier = Modifier.size(16.dp))
 
                     // Actions
                     Actions(state = state) { action ->
@@ -105,10 +111,36 @@ fun AddRuleScreen() {
                             vm.addAction(action)
                         }
                     }
+                    Spacer(modifier = Modifier.size(16.dp))
                 }
             }
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TitleAndDescription(
+    state: AddRuleState,
+    vm: AddRuleViewModel,
+) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = "Title")
+        },
+        value = state.title, onValueChange = { title ->
+            vm.setTitle(title)
+        })
+    Spacer(modifier = Modifier.size(16.dp))
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = "Description")
+        },
+        value = state.description, onValueChange = { description ->
+            vm.setDescription(description)
+        })
 }
 
 @Composable
@@ -147,7 +179,9 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
-                    Text(text = it.label(context))
+                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(context)) {
+
+                    }
                 }
                 TextButton(onClick = {
                     selectorState.open()
@@ -179,7 +213,9 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.actions.forEach {
-                    Text(text = it.label(context))
+                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(context)) {
+
+                    }
                 }
                 TextButton(onClick = {
                     selectorState.open()
