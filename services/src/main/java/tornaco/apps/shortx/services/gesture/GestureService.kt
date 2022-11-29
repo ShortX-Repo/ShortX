@@ -8,14 +8,11 @@ import android.view.MotionEvent
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.rule.fact.gesture.Area
 import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
-import tornaco.apps.shortx.services.GuideLineView
-import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.*
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 3000L
 
-class GestureService : SystemService() {
+class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private var gestureDetector: Detector? = null
 
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null

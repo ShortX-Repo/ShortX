@@ -3,19 +3,19 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
-import tornaco.apps.shortx.services.ServiceManager
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
-class RuleService : SystemService() {
+class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
-            context, handler
+            shortXContext = shortXContext, context = context, handler = handler
         )
     }
 
@@ -30,7 +30,7 @@ class RuleService : SystemService() {
     }
 
     private fun installListeners() {
-        ServiceManager.gesture.onKeyEvent {
+        shortXContext.gesture.onKeyEvent {
             if (it.action == android.view.KeyEvent.ACTION_UP) {
                 logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
                 val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
@@ -49,7 +49,7 @@ class RuleService : SystemService() {
             return@onKeyEvent null
         }
 
-        ServiceManager.gesture.onGestureEvent {
+        shortXContext.gesture.onGestureEvent {
             false
         }
     }

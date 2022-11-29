@@ -66,6 +66,7 @@ class RuleProtoTest {
         val listener = mockk<EngineListener>(relaxed = true)
 
         RuleEngineFactory.newRuleEngine(
+            shortXContext = mockk(),
             context = mockk(),
             handler = mockk(),
             listener = listener

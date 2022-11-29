@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
 
-open class SystemService {
+open class SystemService(val shortXContext: ShortXContext) {
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
     val handler by lazy {
         newHandlerOfNewThread(this.javaClass.simpleName)

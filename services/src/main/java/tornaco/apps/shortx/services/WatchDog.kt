@@ -5,10 +5,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.services.ShortXService.shortXContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-class WatchDogService : SystemService() {
+class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val fatalErrors = mutableListOf<Throwable>()
 
     override fun systemReady() {
@@ -24,7 +25,7 @@ class WatchDogService : SystemService() {
 fun Handler.postSafety(runnable: () -> Unit) {
     post {
         kotlin.runCatching { runnable() }.onFailure {
-            ServiceManager.watchDog.onFatalError(it)
+            shortXContext.watchDog.onFatalError(it)
         }
     }
 }
@@ -35,6 +36,6 @@ fun CoroutineScope.launchSafety(
     block: suspend CoroutineScope.() -> Unit,
 ): Job = launch(context = context, start = start, block = {
     kotlin.runCatching { block() }.onFailure {
-        ServiceManager.watchDog.onFatalError(it)
+        shortXContext.watchDog.onFatalError(it)
     }
 })

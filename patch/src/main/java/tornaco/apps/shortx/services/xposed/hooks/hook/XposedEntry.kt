@@ -1,16 +1,19 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.app.usage.UsageEvents
+import android.content.ComponentName
 import android.content.Context
 import android.view.InputEvent
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.ServiceManager
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
+import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Fields.mContext
 import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.filterInputEvent
+import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.reportEvent
 import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.start
 import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.systemReady
 import tornaco.apps.shortx.services.xposed.hooks.hook.PackageNames.android
@@ -46,9 +49,27 @@ class XposedEntry : IXposedHookLoadPackage {
             }
 
             beforeMethod(lpparam.classLoader.inputManagerService(), filterInputEvent) { param ->
-                val res = ServiceManager.gesture.filterInput(param.args[0] as InputEvent)
+                val res =
+                    ShortXService.shortXContext.gesture.filterInput(param.args[0] as InputEvent)
                 res?.let {
                     param.result = it
+                }
+            }
+
+            beforeMethod(lpparam.classLoader.usageStatsServiceClass(), reportEvent) { param ->
+                val event = param.args[0] as UsageEvents.Event
+                val userId = param.args[1] as Int
+                val type = event.mEventType
+                val packageName = event.packageName
+                val className = event.className
+                if (type == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                    ShortXService.shortXContext.appState.onComponentMoveToBg(ComponentName(
+                        packageName,
+                        className), userId)
+                } else if (type == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    ShortXService.shortXContext.appState.onComponentMoveToFg(ComponentName(
+                        packageName,
+                        className), userId)
                 }
             }
         }

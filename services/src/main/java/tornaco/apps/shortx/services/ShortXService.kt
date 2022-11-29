@@ -9,19 +9,19 @@ import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
-private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
-
 @SuppressLint("StaticFieldLeak")
-object ShortXService : SystemService() {
+object ShortXService : SystemService(ShortXContextImpl()) {
+    private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
+
     override fun start(context: Context) {
         super.start(context)
-        ShortXServiceManager.start(context)
+        serviceLifecycle.start(context)
     }
 
     override fun systemReady() {
         super.systemReady()
         publishBinderService()
-        ShortXServiceManager.systemReady()
+        serviceLifecycle.systemReady()
     }
 
     private fun publishBinderService() {
@@ -65,15 +65,15 @@ object ShortXService : SystemService() {
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
         override fun addRule(rule: ByteArrayWrapper) {
-            ShortXServiceManager.rule.addRule(Rule.parseFrom(rule.byte))
+            shortXContext.rule.addRule(Rule.parseFrom(rule.byte))
         }
 
         override fun deleteRule(ruleId: String) {
-            ShortXServiceManager.rule.deleteRule(ruleId)
+            shortXContext.rule.deleteRule(ruleId)
         }
 
         override fun getAllRules(): List<ByteArrayWrapper> {
-            return ShortXServiceManager.rule.getAllRules().map {
+            return shortXContext.rule.getAllRules().map {
                 ByteArrayWrapper(it.toByteArray())
             }
         }

@@ -10,6 +10,7 @@ object Methods {
     const val start = "start"
     const val systemReady = "systemReady"
     const val filterInputEvent = "filterInputEvent"
+    const val reportEvent = "reportEvent"
 }
 
 object Fields {
@@ -40,4 +41,10 @@ object Classes {
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.windowManagerServiceClass(): Class<*> =
         XposedHelpers.findClass("com.android.server.wm.WindowManagerService", this)
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.usageStatsServiceClass(): Class<*> =
+        XposedHelpers.findClass("com.android.server.usage.UsageStatsService", this)
+
+
 }

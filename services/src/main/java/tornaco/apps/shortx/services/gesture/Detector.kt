@@ -89,7 +89,7 @@ class Detector(
     @SuppressLint("MissingPermission")
     private fun vibrateOnExecuteAction() {
         service.systemServiceScope.launchSafety {
-            context.vibrate.vibrate(VibrationEffect.createOneShot(30,
+            context.vibrate.vibrate(VibrationEffect.createOneShot(20,
                 VibrationEffect.DEFAULT_AMPLITUDE))
         }
     }
