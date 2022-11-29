@@ -70,10 +70,7 @@ class Detector(
     }
 
     private fun handleEvent(area: Area, gestureEvent: GestureEvent): Boolean {
-        if (!service.isGestureEnabledOnArea(area)) return false
-        val action = null
-        if (action == null) return false
-        return true
+       return service.handleGestureEvent(area, gestureEvent)
     }
 
     private fun detectArea(event: MotionEvent): Area? {

@@ -6,7 +6,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 
 interface FactMatcher {
-    suspend fun match(fact: ProtoMessage, targetFact: ProtoAny): Boolean
+    fun match(fact: ProtoMessage, targetFact: ProtoAny): Boolean
 }
 
 interface ConditionEvaluator {
@@ -22,6 +22,7 @@ interface Engine {
     val actionEvaluator: ActionEvaluator
     val factMatcher: FactMatcher
 
+    fun hasAnyRuleMatchFact(rules: List<Rule>, fact: ProtoMessage): Boolean
     suspend fun fire(fact: ProtoMessage, rules: List<Rule>)
 }
 
@@ -68,8 +69,16 @@ class DefaultRuleEngine(
     override val actionEvaluator: ActionEvaluator,
     private val listener: EngineListener = LogEngineListener("RuleEngine"),
 ) : Engine {
+    private val logger = Logger("DefaultRuleEngine")
+
+    override fun hasAnyRuleMatchFact(rules: List<Rule>, fact: ProtoMessage): Boolean {
+        return rules.filterInvalid().firstOrNull {
+            factMatcher.match(fact, it.fact)
+        } != null
+    }
 
     override suspend fun fire(fact: ProtoMessage, rules: List<Rule>) {
+        logger.d("fire: ${fact.javaClass}")
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.fact)) {
                 listener.onFactMatch(rule, rule.fact)

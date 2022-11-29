@@ -45,7 +45,7 @@ sealed class Fact(val label: () -> String, val icon: ImageVector) {
 fun Fact.toProtoFact(): ProtoMessage {
     return when (this) {
         is Fact.KeyEvent -> {
-            tornaco.apps.shortx.core.proto.fact.KeyEvent.newBuilder().setKeyCode(20).build()
+            tornaco.apps.shortx.core.proto.fact.KeyEvent.newBuilder().setKeyCode(keyCode).build()
         }
         is Fact.ActivityStarted -> TODO()
     }

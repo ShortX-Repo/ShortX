@@ -5,7 +5,11 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
-import tornaco.apps.shortx.core.proto.*
+import tornaco.apps.shortx.core.proto.action.StartActivity
+import tornaco.apps.shortx.core.proto.condition.CurrentPkg
+import tornaco.apps.shortx.core.proto.condition.True
+import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.engine.EngineListener
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
@@ -62,6 +66,8 @@ class RuleProtoTest {
         val listener = mockk<EngineListener>(relaxed = true)
 
         RuleEngineFactory.newRuleEngine(
+            context = mockk(),
+            handler = mockk(),
             listener = listener
         ).fire(
             KeyEvent.newBuilder().setKeyCode(20).build(),

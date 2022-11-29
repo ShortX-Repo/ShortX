@@ -2,16 +2,14 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Bundle
 import android.view.InputEvent
+import android.view.KeyEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.rule.fact.gesture.Area
 import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
-import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.GuideLineView
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.data.*
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
@@ -19,6 +17,9 @@ private const val GUIDELINE_VIEW_SHOWN_TIME = 3000L
 
 class GestureService : SystemService() {
     private var gestureDetector: Detector? = null
+
+    private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
+    private var onGestureEvent: ((Pair<Area, GestureEvent>) -> Boolean?)? = null
 
     override fun start(context: Context) {
         super.start(context)
@@ -29,41 +30,12 @@ class GestureService : SystemService() {
         gestureDetector = Detector(context, handler, this)
     }
 
-    fun isEnabled() = Settings.BoolSettings.GestureEnabled.let {
-        store.getBool(it.key, it.defaultValue)
+    fun onKeyEvent(onKeyEvent: (KeyEvent) -> Boolean?) {
+        this.onKeyEvent = onKeyEvent
     }
 
-    fun setEnabled(enable: Boolean) {
-        Settings.BoolSettings.GestureEnabled.let {
-            store.putBool(it.key, enable)
-        }
-    }
-
-    fun isGestureEnabledOnArea(areaName: String) = isGestureEnabledOnArea(Area.valueOf(areaName))
-
-    fun isGestureEnabledOnArea(area: Area) =
-        store.read(Settings.BoolSettings.GestureOnAreaEnabled(area))
-
-    fun setGestureEnabledOnArea(areaName: String, enable: Boolean) {
-        val area = Area.valueOf(areaName)
-        store.write(Settings.BoolSettings.GestureOnAreaEnabled(area), enable)
-
-        if (enable) {
-            showGideLineViewForArea(area)
-        }
-    }
-
-    fun setGestureAction(areaName: String, gestureEvent: String, data: Bundle) {
-        logger.d("setGestureAction: $areaName $gestureEvent ${data.bundleToString()}")
-        val area = Area.valueOf(areaName)
-        val event = GestureEvent.valueOf(gestureEvent)
-        store.write(Settings.MapSettings.GestureActionOnArea(area, event), data.toStringMap())
-    }
-
-    fun getGestureAction(areaName: String, gestureEvent: String): Bundle {
-        val area = Area.valueOf(areaName)
-        val event = GestureEvent.valueOf(gestureEvent)
-        return store.read(Settings.MapSettings.GestureActionOnArea(area, event)).toBundle()
+    fun onGestureEvent(onGestureEvent: (Pair<Area, GestureEvent>) -> Boolean?) {
+        this.onGestureEvent = onGestureEvent
     }
 
     private fun showGideLineViewForArea(area: Area) {
@@ -78,8 +50,16 @@ class GestureService : SystemService() {
     fun filterInput(input: InputEvent?): Boolean? {
         if (!isSystemReady) return null
         if (input == null) return null
-        if (input !is MotionEvent) return null
+        if (input is MotionEvent) return gestureDetector?.interceptEvent(input)
+        if (input is KeyEvent) return handleKeyEvent(input)
+        return null
+    }
 
-        return gestureDetector?.interceptEvent(input)
+    private fun handleKeyEvent(event: KeyEvent): Boolean? {
+        return onKeyEvent?.invoke(event)
+    }
+
+    fun handleGestureEvent(area: Area, gestureEvent: GestureEvent): Boolean {
+        return onGestureEvent?.invoke(area to gestureEvent) ?: false
     }
 }
