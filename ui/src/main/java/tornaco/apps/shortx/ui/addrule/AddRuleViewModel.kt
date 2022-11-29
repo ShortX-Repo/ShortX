@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.condition.CurrentPkg
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -65,12 +66,17 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
 sealed class Action(val label: (Context) -> String, val icon: ImageVector) {
     object TakeScreenshot : Action({ "Take Screenshot" }, Icons.Filled.Key)
+    data class ShellCommand(val command: String) :
+        Action({ "ShellCommand $command" }, Icons.Filled.Key)
 }
 
 fun Action.toProtoAction(): ProtoMessage {
     return when (this) {
         is Action.TakeScreenshot -> {
             TakeScreenshot.newBuilder().build()
+        }
+        is Action.ShellCommand -> {
+            ShellCommand.newBuilder().setCommand(command).build()
         }
     }
 }
@@ -92,7 +98,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Condition.CurrentPkg(unKnownPkg)
             ),
             selectableActions = listOf(
-                Action.TakeScreenshot
+                Action.TakeScreenshot,
+                Action.ShellCommand(""),
             )
         )
     }

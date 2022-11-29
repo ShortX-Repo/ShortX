@@ -18,6 +18,8 @@ import dev.enro.core.closeWithResult
 import dev.enro.core.compose.navigationHandle
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.ui.addrule.action.ShellCommandSelector
+import tornaco.apps.shortx.ui.addrule.action.rememberShellCommandSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.KeyEventSelector
@@ -106,9 +108,15 @@ fun AddRuleScreen() {
                     Spacer(modifier = Modifier.size(16.dp))
 
                     // Actions
+                    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
+                        vm.addAction(Action.ShellCommand(cmd))
+                    }
+                    ShellCommandSelector(state = shellCommandSelectorState)
                     Actions(state = state) { action ->
                         if (action is Action.TakeScreenshot) {
                             vm.addAction(action)
+                        } else if (action is Action.ShellCommand) {
+                            shellCommandSelectorState.show()
                         }
                     }
                     Spacer(modifier = Modifier.size(16.dp))
