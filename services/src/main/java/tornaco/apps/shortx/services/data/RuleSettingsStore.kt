@@ -24,6 +24,11 @@ class RuleSettingsStore(private val scope: CoroutineScope) {
         postWrite()
     }
 
+    fun deleteRule(ruleId: String) {
+        rulesCache.removeIf { it.id == ruleId }
+        postWrite()
+    }
+
     fun getAllRules(): List<Rule> {
         return rulesCache.toList()
     }

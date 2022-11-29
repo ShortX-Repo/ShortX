@@ -159,4 +159,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             _ruleSaved.emit(rule.id)
         }
     }
+
+    fun delete(ruleId: String) {
+        viewModelScope.launch {
+            shortXManager.deleteRule(ruleId)
+        }
+    }
 }

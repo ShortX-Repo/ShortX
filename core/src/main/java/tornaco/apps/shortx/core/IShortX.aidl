@@ -5,6 +5,6 @@ interface IShortX {
     String fingerprint();
 
     void addRule(in ByteArrayWrapper rule);
-    void deleteRule(in ByteArrayWrapper rule);
+    void deleteRule(String id);
     List<ByteArrayWrapper> getAllRules();
 }

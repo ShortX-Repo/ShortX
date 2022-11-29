@@ -42,6 +42,7 @@ class RuleService : SystemService() {
                             rules = getAllRules()
                         )
                     }
+                    // False means consume.
                     return@onKeyEvent true
                 }
             }
@@ -55,6 +56,10 @@ class RuleService : SystemService() {
 
     fun addRule(rule: Rule) {
         ruleSettingsStore.addRule(rule)
+    }
+
+    fun deleteRule(ruleId: String) {
+        ruleSettingsStore.deleteRule(ruleId)
     }
 
     fun getAllRules(): List<Rule> {

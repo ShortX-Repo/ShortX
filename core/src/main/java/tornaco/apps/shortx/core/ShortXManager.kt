@@ -38,6 +38,12 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
+    fun deleteRule(ruleId: String) {
+        invokeService(Unit) {
+            deleteRule(ruleId)
+        }
+    }
+
     fun getAllRules(): List<Rule> {
         return invokeService(emptyList()) {
             allRules.map {

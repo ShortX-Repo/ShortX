@@ -68,8 +68,8 @@ object ShortXService : SystemService() {
             ShortXServiceManager.rule.addRule(Rule.parseFrom(rule.byte))
         }
 
-        override fun deleteRule(rule: ByteArrayWrapper) {
-            TODO("Not yet implemented")
+        override fun deleteRule(ruleId: String) {
+            ShortXServiceManager.rule.deleteRule(ruleId)
         }
 
         override fun getAllRules(): List<ByteArrayWrapper> {

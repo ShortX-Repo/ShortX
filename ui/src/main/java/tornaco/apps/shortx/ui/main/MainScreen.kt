@@ -89,7 +89,11 @@ fun MainScreen() {
                 Column(modifier = Modifier
                     .padding(it)
                     .systemBarsPadding()) {
-                    NavigationGraph(navController = navController, state = state)
+                    NavigationGraph(navController = navController,
+                        state = state,
+                        deleteRule = { ruleId ->
+                            vm.delete(ruleId)
+                        })
                 }
             }
         }
@@ -138,10 +142,13 @@ private fun NavigationContent(
 private fun NavigationGraph(
     navController: NavHostController,
     state: MainState,
+    deleteRule: (String) -> Unit,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
-            RuleScreen(state)
+            RuleScreen(state) {
+                deleteRule(it)
+            }
         }
 
         composable(BottomNavItem.Actions.screenRoute.name) {

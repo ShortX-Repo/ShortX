@@ -18,7 +18,7 @@ public interface IShortX extends android.os.IInterface
     @Override public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
     {
     }
-    @Override public void deleteRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
+    @Override public void deleteRule(java.lang.String id) throws android.os.RemoteException
     {
     }
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRules() throws android.os.RemoteException
@@ -107,13 +107,8 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_deleteRule:
         {
           data.enforceInterface(descriptor);
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          if ((0!=data.readInt())) {
-            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
-          }
-          else {
-            _arg0 = null;
-          }
+          java.lang.String _arg0;
+          _arg0 = data.readString();
           this.deleteRule(_arg0);
           reply.writeNoException();
           return true;
@@ -217,22 +212,16 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void deleteRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
+      @Override public void deleteRule(java.lang.String id) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          if ((rule!=null)) {
-            _data.writeInt(1);
-            rule.writeToParcel(_data, 0);
-          }
-          else {
-            _data.writeInt(0);
-          }
+          _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteRule, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().deleteRule(rule);
+            getDefaultImpl().deleteRule(id);
             return;
           }
           _reply.readException();
@@ -289,6 +278,6 @@ public interface IShortX extends android.os.IInterface
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
   public java.lang.String fingerprint() throws android.os.RemoteException;
   public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException;
-  public void deleteRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException;
+  public void deleteRule(java.lang.String id) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRules() throws android.os.RemoteException;
 }
