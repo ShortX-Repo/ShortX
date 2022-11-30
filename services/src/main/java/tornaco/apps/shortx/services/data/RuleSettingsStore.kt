@@ -29,6 +29,16 @@ class RuleSettingsStore(private val scope: CoroutineScope) {
         postWrite()
     }
 
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
+        rulesCache.replaceAll {
+            if (it.id == ruleId) {
+                Rule.newBuilder().mergeFrom(it).setIsEnabled(enable).build()
+            } else {
+                it
+            }
+        }
+    }
+
     fun getAllRules(): List<Rule> {
         return rulesCache.toList()
     }

@@ -11,7 +11,13 @@ import java.util.*
 import javax.inject.Inject
 
 
-data class Rule(val id: String, val title: String, val description: String, val updateTime: String)
+data class Rule(
+    val id: String,
+    val title: String,
+    val description: String,
+    val updateTime: String,
+    val isEnabled: Boolean,
+)
 
 data class MainState(val rules: List<Rule> = emptyList())
 
@@ -30,12 +36,20 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 Rule(id = it.id,
                     title = it.title,
                     description = it.description,
-                    updateTime = Date(it.lastUpdateTime).toString()
+                    updateTime = Date(it.lastUpdateTime).toString(),
+                    isEnabled = it.isEnabled
                 )
             }
             updateState {
                 copy(rules = rules)
             }
+        }
+    }
+
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setRuleEnabled(ruleId, enable)
+            loadRules()
         }
     }
 

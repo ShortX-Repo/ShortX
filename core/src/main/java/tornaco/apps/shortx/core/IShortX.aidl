@@ -6,5 +6,8 @@ interface IShortX {
 
     void addRule(in ByteArrayWrapper rule);
     void deleteRule(String id);
+
+    void setRuleEnabled(String ruleId, boolean enable);
+
     List<ByteArrayWrapper> getAllRules();
 }

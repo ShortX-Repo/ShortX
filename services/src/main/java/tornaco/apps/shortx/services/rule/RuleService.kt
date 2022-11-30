@@ -34,12 +34,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             if (it.action == android.view.KeyEvent.ACTION_UP) {
                 logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
                 val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
-                if (engine.hasAnyRuleMatchFact(getAllRules(), fact)) {
+                val enabledRules = getAllRules().filter { it.isEnabled }
+                if (engine.hasAnyRuleMatchFact(enabledRules, fact)) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     systemServiceScope.launchSafety {
                         engine.fire(
                             fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build(),
-                            rules = getAllRules()
+                            rules = enabledRules
                         )
                     }
                     // False means consume.
@@ -60,6 +61,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun deleteRule(ruleId: String) {
         ruleSettingsStore.deleteRule(ruleId)
+    }
+
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
+        ruleSettingsStore.setRuleEnabled(ruleId, enable)
     }
 
     fun getAllRules(): List<Rule> {

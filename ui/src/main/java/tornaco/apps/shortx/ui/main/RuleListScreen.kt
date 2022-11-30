@@ -27,7 +27,11 @@ import tornaco.apps.shortx.ui.base.ListItem
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RuleScreen(state: MainState, onDelete: (String) -> Unit) {
+fun RuleScreen(
+    state: MainState,
+    onDelete: (String) -> Unit,
+    setRuleEnabled: (String, Boolean) -> Unit,
+) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = state.rules, key = { listItem: Rule -> listItem.id }) { rule ->
             var deleted by remember { mutableStateOf(false) }
@@ -98,8 +102,7 @@ fun RuleScreen(state: MainState, onDelete: (String) -> Unit) {
                                 if (dismissState.dismissDirection != null) 2.dp else 0.dp
                             ).value
                         ) {
-                            RuleItem(rule = rule) {
-                            }
+                            RuleItem(rule = rule, onClick = {}, setRuleEnabled = setRuleEnabled)
                         }
                     }
                 )
@@ -112,11 +115,14 @@ fun RuleScreen(state: MainState, onDelete: (String) -> Unit) {
 private fun RuleItem(
     rule: Rule,
     onClick: () -> Unit,
+    setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     ListItem(
         title = rule.title,
         text1 = rule.description,
         text2 = rule.updateTime,
-        onClick = onClick
+        checked = rule.isEnabled,
+        onClick = onClick,
+        onCheckedChange = { setRuleEnabled(rule.id, it) }
     )
 }

@@ -72,6 +72,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.deleteRule(ruleId)
         }
 
+        override fun setRuleEnabled(ruleId: String, enable: Boolean) {
+            shortXContext.rule.setRuleEnabled(ruleId, enable)
+        }
+
         override fun getAllRules(): List<ByteArrayWrapper> {
             return shortXContext.rule.getAllRules().map {
                 ByteArrayWrapper(it.toByteArray())

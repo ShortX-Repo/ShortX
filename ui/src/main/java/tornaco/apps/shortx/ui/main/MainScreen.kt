@@ -93,6 +93,9 @@ fun MainScreen() {
                         state = state,
                         deleteRule = { ruleId ->
                             vm.delete(ruleId)
+                        },
+                        setRuleEnabled = { id, enable ->
+                            vm.setRuleEnabled(id, enable)
                         })
                 }
             }
@@ -143,12 +146,11 @@ private fun NavigationGraph(
     navController: NavHostController,
     state: MainState,
     deleteRule: (String) -> Unit,
+    setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
-            RuleScreen(state) {
-                deleteRule(it)
-            }
+            RuleScreen(state = state, setRuleEnabled = setRuleEnabled, onDelete = deleteRule)
         }
 
         composable(BottomNavItem.Actions.screenRoute.name) {

@@ -19,6 +19,8 @@ message Rule {
 
   string title = 8;
   string description = 9;
+
+  bool isEnabled = 10;
 }
 
 message RuleList {
