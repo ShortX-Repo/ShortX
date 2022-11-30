@@ -1,18 +1,18 @@
 package tornaco.apps.shortx.ui.main.actions
 
+import android.content.ComponentName
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import tornaco.apps.shortx.core.action.StartActivity
-import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
-class StartActivitySelectorState(val onActivitySelected: (StartActivity) -> Unit) {
+class StartActivitySelectorState(val onActivitySelected: (ComponentName) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -26,7 +26,7 @@ class StartActivitySelectorState(val onActivitySelected: (StartActivity) -> Unit
 }
 
 @Composable
-fun rememberStartActivitySelectorState(onActivitySelected: (StartActivity) -> Unit): StartActivitySelectorState {
+fun rememberStartActivitySelectorState(onActivitySelected: (ComponentName) -> Unit): StartActivitySelectorState {
     return remember {
         StartActivitySelectorState(onActivitySelected)
     }
@@ -44,8 +44,8 @@ fun StartActivitySelector(state: StartActivitySelectorState) {
         }, buttons = {
             TextButton(onClick = {
                 if (componentNameString.isNotBlank()) {
-                    val startActivity = StartActivity(componentNameString)
-                    state.onActivitySelected(startActivity)
+                    val startActivity = ComponentName.unflattenFromString(componentNameString)
+                    startActivity?.let { state.onActivitySelected(it) }
                     state.dismiss()
                 }
             }) {
@@ -55,8 +55,7 @@ fun StartActivitySelector(state: StartActivitySelectorState) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TextField(
                     leadingIcon = {
-                        Icon(painter = painterResource(id = R.drawable.ic_baseline_category_24),
-                            contentDescription = "")
+                        Icon(imageVector = Icons.Filled.Tag, contentDescription = "Component")
                     },
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(

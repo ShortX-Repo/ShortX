@@ -3,25 +3,25 @@ package tornaco.apps.shortx.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Binder
-import android.os.Bundle
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
-import tornaco.apps.shortx.services.util.BinderProxy
-
-private typealias ShortXServiceManager = tornaco.apps.shortx.services.ServiceManager
+import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
 @SuppressLint("StaticFieldLeak")
-object ShortXService : SystemService() {
+object ShortXService : SystemService(ShortXContextImpl()) {
+    private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
+
     override fun start(context: Context) {
         super.start(context)
-        ShortXServiceManager.start(context)
+        serviceLifecycle.start(context)
     }
 
     override fun systemReady() {
         super.systemReady()
         publishBinderService()
-        ShortXServiceManager.systemReady()
+        serviceLifecycle.systemReady()
     }
 
     private fun publishBinderService() {
@@ -64,33 +64,28 @@ object ShortXService : SystemService() {
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
-        override fun isGestureEnabled() = ShortXServiceManager.gesture.isEnabled()
-
-        override fun setGestureEnabled(enable: Boolean) {
-            ShortXServiceManager.gesture.setEnabled(enable)
+        override fun addRule(rule: ByteArrayWrapper) {
+            shortXContext.rule.addRule(Rule.parseFrom(rule.byte))
         }
 
-        override fun isGestureEnabledOnArea(areaName: String) =
-            ShortXServiceManager.gesture.isGestureEnabledOnArea(areaName)
-
-
-        override fun setGestureEnabledOnArea(areaName: String, enable: Boolean) {
-            ShortXServiceManager.gesture.setGestureEnabledOnArea(
-                areaName = areaName,
-                enable = enable
-            )
+        override fun deleteRule(ruleId: String) {
+            shortXContext.rule.deleteRule(ruleId)
         }
 
-        override fun setGestureAction(areaName: String, gestureEvent: String, data: Bundle) {
-            ShortXServiceManager.gesture.setGestureAction(
-                areaName = areaName,
-                gestureEvent = gestureEvent,
-                data = data
-            )
+        override fun getRuleById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getRuleById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
-        override fun getGestureAction(areaName: String, gestureEvent: String): Bundle {
-            return ShortXServiceManager.gesture.getGestureAction(areaName, gestureEvent)
+        override fun setRuleEnabled(ruleId: String, enable: Boolean) {
+            shortXContext.rule.setRuleEnabled(ruleId, enable)
+        }
+
+        override fun getAllRules(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllRules().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
     }
 }

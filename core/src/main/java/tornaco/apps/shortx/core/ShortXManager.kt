@@ -4,11 +4,8 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.NoAction
-import tornaco.apps.shortx.core.action.toActionOrThrow
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
 
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
@@ -35,42 +32,37 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
-    fun isGestureEnabled(): Boolean {
-        return invokeService(false) {
-            isGestureEnabled
-        }
-    }
-
-    fun setGestureEnabled(enable: Boolean) {
+    fun addRule(rule: Rule) {
         invokeService(Unit) {
-            isGestureEnabled = enable
+            addRule(ByteArrayWrapper(rule.toByteArray()))
         }
     }
 
-    fun isGestureEnabledOnArea(area: Area): Boolean {
-        return invokeService(false) {
-            isGestureEnabledOnArea(area.name)
-        }
-    }
-
-    fun setGestureEnabledOnArea(area: Area, enable: Boolean) {
+    fun deleteRule(ruleId: String) {
         invokeService(Unit) {
-            setGestureEnabledOnArea(area.name, enable)
+            deleteRule(ruleId)
         }
     }
 
-    fun setGestureAction(area: Area, event: GestureEvent, action: Action) {
+    fun getRuleById(id: String): Rule? {
+        return invokeService(null) {
+            getRuleById(id)?.byte?.let {
+                Rule.parseFrom(it)
+            }
+        }
+    }
+
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
         invokeService(Unit) {
-            setGestureAction(area.name, event.name, action.toBundle())
+            setRuleEnabled(ruleId, enable)
         }
     }
 
-    fun getGestureAction(
-        area: Area,
-        event: GestureEvent,
-    ): Action {
-        return invokeService(NoAction(), area, event) {
-            getGestureAction(area.name, event.name).toActionOrThrow()
+    fun getAllRules(): List<Rule> {
+        return invokeService(emptyList()) {
+            allRules.map {
+                Rule.parseFrom(it.byte)
+            }
         }
     }
 

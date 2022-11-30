@@ -112,14 +112,19 @@ dependencies {
     implementation(project(":patch"))
     implementation(project(":core"))
 
+    implementation(Compose.enro)
+    kapt(Compose.enroApt)
+
     testImplementation("junit:junit:4.13.2")
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.4")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.1")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.3.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.3.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.1")
+
+    testImplementation("io.mockk:mockk:1.13.2")
 }
 
 

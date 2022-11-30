@@ -22,3 +22,6 @@
 
 
 -keep class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
+
+# Proto
+-keep class tornaco.apps.shortx.core.proto** {*;}

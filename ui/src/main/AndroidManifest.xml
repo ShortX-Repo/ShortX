@@ -3,6 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application>
+
+        <activity
+            android:name=".main.MainActivity"
+            android:exported="true"
+            android:theme="@style/UiTheme.ShortX">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"

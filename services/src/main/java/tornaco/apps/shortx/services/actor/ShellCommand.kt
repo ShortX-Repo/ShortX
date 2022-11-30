@@ -5,15 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.action.su.ISu
+import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.services.util.AppServiceProxy
 
 class ShellCommand(
     private val context: Context,
-    private val shellCommand: tornaco.apps.shortx.core.action.ShellCommand,
+    private val shellCommand: String,
 ) {
     operator fun invoke() {
-        ShellServiceProxy.exe(context, shellCommand.command)
+        ShellServiceProxy.exe(context, shellCommand)
     }
 }
 

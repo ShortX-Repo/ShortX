@@ -6,15 +6,11 @@ import android.os.Handler
 import android.os.VibrationEffect
 import android.view.GestureDetector
 import android.view.MotionEvent
-import tornaco.apps.shortx.core.action.Action
-import tornaco.apps.shortx.core.action.NoAction
-import tornaco.apps.shortx.core.action.toActionOrThrow
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.rule.fact.gesture.Area
+import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.vibrate
-import tornaco.apps.shortx.services.actor.Supervisor
 import tornaco.apps.shortx.services.gesture.SystemGesturesPointerEventListener.CallbacksAdapter
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
@@ -25,11 +21,6 @@ class Detector(
     private val service: GestureService,
 ) {
     private val logger = Logger("Detector")
-    private val supervisor: Supervisor by lazy {
-        Supervisor(context = context, handler = handler, beforeExecute = {
-            vibrateOnExecuteAction()
-        })
-    }
 
     private val screenSize by lazy {
         context.screenSize()
@@ -79,11 +70,7 @@ class Detector(
     }
 
     private fun handleEvent(area: Area, gestureEvent: GestureEvent): Boolean {
-        if (!service.isGestureEnabledOnArea(area)) return false
-        val action = getGestureAction(area, gestureEvent)
-        if (action is NoAction) return false
-        supervisor.execute(action)
-        return true
+       return service.handleGestureEvent(area, gestureEvent)
     }
 
     private fun detectArea(event: MotionEvent): Area? {
@@ -99,19 +86,10 @@ class Detector(
         return area
     }
 
-    private fun getGestureAction(area: Area, gestureEvent: GestureEvent): Action {
-        return kotlin.runCatching {
-            service.getGestureAction(area.name, gestureEvent.name).toActionOrThrow()
-        }.getOrElse {
-            logger.e(it, "getGestureAction error for: $area $gestureEvent")
-            NoAction()
-        }
-    }
-
     @SuppressLint("MissingPermission")
     private fun vibrateOnExecuteAction() {
         service.systemServiceScope.launchSafety {
-            context.vibrate.vibrate(VibrationEffect.createOneShot(30,
+            context.vibrate.vibrate(VibrationEffect.createOneShot(20,
                 VibrationEffect.DEFAULT_AMPLITUDE))
         }
     }

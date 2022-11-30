@@ -6,10 +6,10 @@ import android.content.Intent
 
 class StartActivity(
     private val context: Context,
-    private val startActivity: tornaco.apps.shortx.core.action.StartActivity,
+    private val componentNameAsString: String,
 ) {
     operator fun invoke() {
         context.startActivity(Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            .setComponent(ComponentName.unflattenFromString(startActivity.shortName)))
+            .setComponent(ComponentName.unflattenFromString(componentNameAsString)))
     }
 }

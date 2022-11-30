@@ -1,8 +1,8 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
+import tornaco.apps.shortx.core.rule.fact.gesture.Area
+import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
 
 sealed class Settings<T>(val key: String, val defaultValue: T) {
 

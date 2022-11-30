@@ -1,4 +1,6 @@
+import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
+import tornaco.project.android.shortx.Configs.resPrefix
 import tornaco.project.android.shortx.Hilt
 import tornaco.project.android.shortx.log
 
@@ -62,12 +64,14 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = tornaco.project.android.shortx.Compose.composeVersion
+        kotlinCompilerExtensionVersion = Compose.composeVersion
     }
 
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    resourcePrefix = resPrefix
 }
 
 dependencies {
@@ -75,23 +79,29 @@ dependencies {
     implementation(Hilt.hiltNavigationCompose)
     kapt(Hilt.googleAndroidCompiler)
 
+    implementation(Compose.enro)
+    kapt(Compose.enroApt)
 
+    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("androidx.compose.ui:ui:1.3.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.3.0")
-    implementation("androidx.compose.material3:material3:1.1.0-alpha01")
+    implementation("androidx.compose.ui:ui:1.3.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.3.1")
+    implementation("androidx.compose.material3:material3:1.1.0-alpha02")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation(Compose.composeMaterialIconsExtended)
 
     implementation(project(":core"))
     implementation(project(":external:shell"))
 
     testImplementation("junit:junit:4.13.2")
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.4")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.1")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.3.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.3.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.1")
 }

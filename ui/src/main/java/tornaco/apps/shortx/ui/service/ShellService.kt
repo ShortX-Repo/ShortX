@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.annotation.Keep
 import com.topjohnwu.superuser.Shell
-import tornaco.apps.shortx.core.action.su.ISu
+import tornaco.apps.shortx.core.rule.action.su.ISu
 
 @Keep
 class ShellService : Service() {

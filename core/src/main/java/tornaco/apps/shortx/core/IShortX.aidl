@@ -4,12 +4,11 @@ interface IShortX {
     Version version();
     String fingerprint();
 
-    boolean isGestureEnabled();
-    void setGestureEnabled(boolean enable);
+    void addRule(in ByteArrayWrapper rule);
+    void deleteRule(String id);
+    ByteArrayWrapper getRuleById(String id);
 
-    boolean isGestureEnabledOnArea(String areaName);
-    void setGestureEnabledOnArea(String areaName, boolean enable);
+    void setRuleEnabled(String ruleId, boolean enable);
 
-    void setGestureAction(String areaName, String gestureEvent, in Bundle data);
-    Bundle getGestureAction(String areaName, String gestureEvent);
+    List<ByteArrayWrapper> getAllRules();
 }

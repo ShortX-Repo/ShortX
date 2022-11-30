@@ -5,99 +5,58 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.action.*
-import tornaco.apps.shortx.core.gesture.Area
-import tornaco.apps.shortx.core.gesture.GestureEvent
-import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.base.LifeCycleAwareViewModel
-import tornaco.apps.shortx.ui.main.actions.getExtraDescription
+import tornaco.apps.shortx.ui.base.BaseViewModel
+import java.util.*
 import javax.inject.Inject
 
-data class MainState(
-    val areaSettings: List<AreaSettings> = emptyList(),
-    val availableGestureActions: List<String> = emptyList(),
-)
 
-data class AreaSettings(
-    val area: Area,
-    val gestureActions: List<GestureAction>,
+data class Rule(
+    val id: String,
+    val title: String,
+    val description: String,
+    val updateTime: String,
     val isEnabled: Boolean,
 )
 
-data class GestureAction(
-    val gestureEvent: GestureEvent,
-    val actionName: String,
-    val actionDescriptions: List<String> = emptyList(),
-)
+data class MainState(val rules: List<Rule> = emptyList())
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
-    LifeCycleAwareViewModel() {
-    private val shortXManager by lazy { context.shortXManager }
+    BaseViewModel<MainState>(context) {
 
-    private val _state = MutableStateFlow(MainState())
-    val state get() = _state.asStateFlow()
+    override fun initState(): MainState {
+        return MainState()
+    }
 
-    private val logger = Logger("MainViewModel")
-
-    fun loadGestureSettings() {
+    fun loadRules() {
         viewModelScope.launch {
-            val left = listOf(Area.LeftTop, Area.LeftCenter, Area.LeftBottom).map { area ->
-                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name, action.getExtraDescription())
-                }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
+            val rules = shortXManager.getAllRules().map {
+                Rule(id = it.id,
+                    title = it.title,
+                    description = it.description,
+                    updateTime = Date(it.lastUpdateTime).toString(),
+                    isEnabled = it.isEnabled
+                )
             }
-            val right = listOf(Area.RightTop, Area.RightCenter, Area.RightBottom).map { area ->
-                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name, action.getExtraDescription())
-                }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
+            updateState {
+                copy(rules = rules)
             }
-            val top = listOf(Area.TopLeft, Area.TopCenter, Area.TopRight).map { area ->
-                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name, action.getExtraDescription())
-                }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
-            }
-            val bottom = listOf(Area.BottomLeft, Area.BottomCenter, Area.BottomRight).map { area ->
-                AreaSettings(area = area, gestureActions = GestureEvent.values().map {
-                    val action = shortXManager.getGestureAction(area, it)
-                    GestureAction(it, action.name, action.getExtraDescription())
-                }, isEnabled = shortXManager.isGestureEnabledOnArea(area))
-            }
-
-            val availableActions = listOf(
-                StartActivity.NAME,
-                ExpandNotification.NAME,
-                TakeScreenshot.NAME,
-                ShellCommand.NAME,
-                NoAction.NAME
-            )
-
-            val mainState = MainState(areaSettings = left + right + top + bottom,
-                availableGestureActions = availableActions)
-            _state.value = mainState
         }
     }
 
-    fun setAreaGestureAction(area: Area, gestureEvent: GestureEvent, action: Action) {
-        logger.d("setAreaGestureAction: $area $gestureEvent $action")
+    fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
-            shortXManager.setGestureAction(area, gestureEvent, action)
-            loadGestureSettings()
+            shortXManager.setRuleEnabled(ruleId, enable)
+            loadRules()
         }
     }
 
-    fun setGestureEnabledOnArea(area: Area, enable: Boolean) {
+    fun delete(ruleId: String) {
         viewModelScope.launch {
-            shortXManager.setGestureEnabledOnArea(area, enable)
-            loadGestureSettings()
+            shortXManager.deleteRule(ruleId)
+            loadRules()
         }
     }
 }

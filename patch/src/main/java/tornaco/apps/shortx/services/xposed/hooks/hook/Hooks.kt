@@ -14,7 +14,13 @@ fun beforeConstruct(
     XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
         override fun beforeHookedMethod(param: MethodHookParam?) {
             super.beforeHookedMethod(param)
-            param?.let { beforeConstruct(it) }
+            param?.let {
+                kotlin.runCatching {
+                    beforeConstruct(it)
+                }.onFailure {
+                    logger.e(it, "beforeConstruct-$clazz")
+                }
+            }
         }
     })
 }
@@ -26,7 +32,13 @@ fun afterConstruct(
     XposedBridge.hookAllConstructors(clazz, object : XC_MethodHook() {
         override fun afterHookedMethod(param: MethodHookParam?) {
             super.afterHookedMethod(param)
-            param?.let { afterConstruct(it) }
+            param?.let {
+                kotlin.runCatching {
+                    afterConstruct(it)
+                }.onFailure {
+                    logger.e(it, "afterConstruct-$clazz")
+                }
+            }
         }
     })
 }
@@ -39,7 +51,13 @@ fun beforeMethod(
     XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
         override fun beforeHookedMethod(param: MethodHookParam?) {
             super.beforeHookedMethod(param)
-            param?.let { beforeMethod(it) }
+            param?.let {
+                kotlin.runCatching {
+                    beforeMethod(it)
+                }.onFailure {
+                    logger.e(it, "beforeHookedMethod-$clazz-$methodName")
+                }
+            }
         }
     }).apply {
         require(this.size > 0) {
@@ -57,7 +75,13 @@ fun afterMethod(
     XposedBridge.hookAllMethods(clazz, methodName, object : XC_MethodHook() {
         override fun afterHookedMethod(param: MethodHookParam?) {
             super.afterHookedMethod(param)
-            param?.let { afterMethod(it) }
+            param?.let {
+                kotlin.runCatching {
+                    afterMethod(it)
+                }.onFailure {
+                    logger.e(it, "afterHookedMethod-$clazz-$methodName")
+                }
+            }
         }
     }).apply {
         require(this.size > 0) {
