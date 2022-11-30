@@ -27,6 +27,7 @@ import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.ui.addrule.AddRule
 import tornaco.apps.shortx.ui.main.MainState
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.Rule
 import tornaco.apps.shortx.ui.main.RuleScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -75,7 +76,7 @@ fun MainScreen() {
                     FloatingActionButton(onClick = {
                         when (navController.currentBackStackEntry?.destination?.route) {
                             Route.Rules.name -> {
-                                addRuleNav.push(AddRule)
+                                addRuleNav.push(AddRule())
                             }
                             Route.Actions.name -> {
 
@@ -96,6 +97,9 @@ fun MainScreen() {
                         },
                         setRuleEnabled = { id, enable ->
                             vm.setRuleEnabled(id, enable)
+                        },
+                        onRuleClick = { rule ->
+                            addRuleNav.push(AddRule(rule.id))
                         })
                 }
             }
@@ -147,10 +151,14 @@ private fun NavigationGraph(
     state: MainState,
     deleteRule: (String) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
+    onRuleClick: (Rule) -> Unit,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
-            RuleScreen(state = state, setRuleEnabled = setRuleEnabled, onDelete = deleteRule)
+            RuleScreen(state = state,
+                setRuleEnabled = setRuleEnabled,
+                onDelete = deleteRule,
+                onRuleClick = onRuleClick)
         }
 
         composable(BottomNavItem.Actions.screenRoute.name) {

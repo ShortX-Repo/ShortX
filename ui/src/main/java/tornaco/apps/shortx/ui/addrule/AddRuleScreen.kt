@@ -24,6 +24,9 @@ import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.models.Action
+import tornaco.apps.shortx.ui.addrule.models.Condition
+import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -31,7 +34,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Parcelize
-object AddRule : NavigationKey.SupportsPush.WithResult<Boolean>
+data class AddRule(val ruleId: String? = null) : NavigationKey.SupportsPush.WithResult<Boolean>
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +46,8 @@ fun AddRuleScreen() {
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
+        val ruleId = navigation.key.ruleId
+        vm.initFromRuleId(ruleId)
         vm.ruleSaved.collectLatest {
             navigation.closeWithResult(true)
         }
@@ -54,7 +59,7 @@ fun AddRuleScreen() {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(text = "Add Rule") },
+                        title = { Text(text = if (state.isEditRule) "Edit Rule" else "Add Rule") },
                         navigationIcon = {
                             IconButton(onClick = {
                                 navigation.closeWithResult(false)
@@ -64,12 +69,14 @@ fun AddRuleScreen() {
                         })
                 },
                 bottomBar = {
-                    FilledTonalButton(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .padding(vertical = 16.dp),
+                    FilledTonalButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp)
+                            .padding(vertical = 16.dp),
+                        enabled = state.ruleChanged,
                         onClick = { vm.save() }) {
-                        Text("Save")
+                        Text(if (state.isEditRule) "Update" else "Save")
                     }
                 }
             ) {

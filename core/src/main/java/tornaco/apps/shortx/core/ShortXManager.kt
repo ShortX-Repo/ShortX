@@ -44,6 +44,14 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
+    fun getRuleById(id: String): Rule? {
+        return invokeService(null) {
+            getRuleById(id)?.byte?.let {
+                Rule.parseFrom(it)
+            }
+        }
+    }
+
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         invokeService(Unit) {
             setRuleEnabled(ruleId, enable)

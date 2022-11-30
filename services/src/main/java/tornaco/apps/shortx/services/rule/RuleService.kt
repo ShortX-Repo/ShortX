@@ -63,6 +63,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         ruleSettingsStore.deleteRule(ruleId)
     }
 
+    fun getRuleById(id: String): Rule? {
+        return ruleSettingsStore.getRuleById(id)
+    }
+
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         ruleSettingsStore.setRuleEnabled(ruleId, enable)
     }

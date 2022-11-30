@@ -28,21 +28,22 @@ import tornaco.apps.shortx.ui.base.ListItem
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RuleScreen(
-    state: MainState,
-    onDelete: (String) -> Unit,
-    setRuleEnabled: (String, Boolean) -> Unit,
+        state: MainState,
+        onDelete: (String) -> Unit,
+        onRuleClick: (Rule) -> Unit,
+        setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(items = state.rules, key = { listItem: Rule -> listItem.id }) { rule ->
+        items(items = state.rules, key = { listItem: Rule -> listItem.id + listItem.updateTime }) { rule ->
             var deleted by remember { mutableStateOf(false) }
             val dismissState = rememberDismissState(
-                confirmStateChange = { dismissValue ->
-                    if (dismissValue == DismissValue.DismissedToStart) {
-                        deleted = true
-                        return@rememberDismissState true
+                    confirmStateChange = { dismissValue ->
+                        if (dismissValue == DismissValue.DismissedToStart) {
+                            deleted = true
+                            return@rememberDismissState true
+                        }
+                        return@rememberDismissState false
                     }
-                    return@rememberDismissState false
-                }
             )
             val scope = rememberCoroutineScope()
             if (deleted) {
@@ -53,58 +54,60 @@ fun RuleScreen(
             }
 
             AnimatedVisibility(
-                visible = !deleted,
-                enter = expandVertically(),
-                exit = shrinkVertically()
+                    visible = !deleted,
+                    enter = expandVertically(),
+                    exit = shrinkVertically()
             ) {
 
                 SwipeToDismiss(
-                    state = dismissState,
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    directions = setOf(
-                        DismissDirection.EndToStart
-                    ),
-                    dismissThresholds = {
-                        FractionalThreshold(0.5f)
-                    },
-                    background = {
-                        val color by animateColorAsState(
-                            when (dismissState.targetValue) {
-                                DismissValue.Default -> Color.LightGray
-                                DismissValue.DismissedToEnd -> Color.Green
-                                DismissValue.DismissedToStart -> Color.Red
-                            }
-                        )
-                        val alignment = Alignment.CenterEnd
-                        val icon = Icons.Default.Delete
-
-                        val scale by animateFloatAsState(
-                            if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-                        )
-
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(color)
-                                .padding(horizontal = 20.dp),
-                            contentAlignment = alignment
-                        ) {
-                            Icon(
-                                icon,
-                                contentDescription = "Localized description",
-                                modifier = Modifier.scale(scale)
+                        state = dismissState,
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        directions = setOf(
+                                DismissDirection.EndToStart
+                        ),
+                        dismissThresholds = {
+                            FractionalThreshold(0.75f)
+                        },
+                        background = {
+                            val color by animateColorAsState(
+                                    when (dismissState.targetValue) {
+                                        DismissValue.Default -> Color.LightGray
+                                        DismissValue.DismissedToEnd -> Color.Green
+                                        DismissValue.DismissedToStart -> Color.Red
+                                    }
                             )
+                            val alignment = Alignment.CenterEnd
+                            val icon = Icons.Default.Delete
+
+                            val scale by animateFloatAsState(
+                                    if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+                            )
+
+                            Box(
+                                    Modifier
+                                            .fillMaxSize()
+                                            .background(color)
+                                            .padding(horizontal = 20.dp),
+                                    contentAlignment = alignment
+                            ) {
+                                Icon(
+                                        icon,
+                                        contentDescription = "Localized description",
+                                        modifier = Modifier.scale(scale)
+                                )
+                            }
+                        },
+                        dismissContent = {
+                            Card(shape = MaterialTheme.shapes.large,
+                                    elevation = animateDpAsState(
+                                            if (dismissState.dismissDirection != null) 1.dp else 0.dp
+                                    ).value
+                            ) {
+                                RuleItem(rule = rule, onClick = {
+                                    onRuleClick(rule)
+                                }, setRuleEnabled = setRuleEnabled)
+                            }
                         }
-                    },
-                    dismissContent = {
-                        Card(
-                            elevation = animateDpAsState(
-                                if (dismissState.dismissDirection != null) 2.dp else 0.dp
-                            ).value
-                        ) {
-                            RuleItem(rule = rule, onClick = {}, setRuleEnabled = setRuleEnabled)
-                        }
-                    }
                 )
             }
         }
@@ -113,16 +116,16 @@ fun RuleScreen(
 
 @Composable
 private fun RuleItem(
-    rule: Rule,
-    onClick: () -> Unit,
-    setRuleEnabled: (String, Boolean) -> Unit,
+        rule: Rule,
+        onClick: () -> Unit,
+        setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     ListItem(
-        title = rule.title,
-        text1 = rule.description,
-        text2 = rule.updateTime,
-        checked = rule.isEnabled,
-        onClick = onClick,
-        onCheckedChange = { setRuleEnabled(rule.id, it) }
+            title = rule.title,
+            text1 = rule.description,
+            text2 = rule.updateTime,
+            checked = rule.isEnabled,
+            onClick = onClick,
+            onCheckedChange = { setRuleEnabled(rule.id, it) }
     )
 }

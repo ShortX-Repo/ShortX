@@ -20,6 +20,7 @@ class RuleSettingsStore(private val scope: CoroutineScope) {
     }
 
     fun addRule(rule: Rule) {
+        rulesCache.removeIf { it.id == rule.id }
         rulesCache.add(rule)
         postWrite()
     }
@@ -27,6 +28,10 @@ class RuleSettingsStore(private val scope: CoroutineScope) {
     fun deleteRule(ruleId: String) {
         rulesCache.removeIf { it.id == ruleId }
         postWrite()
+    }
+
+    fun getRuleById(id: String): Rule? {
+        return rulesCache.firstOrNull { it.id == id }
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
