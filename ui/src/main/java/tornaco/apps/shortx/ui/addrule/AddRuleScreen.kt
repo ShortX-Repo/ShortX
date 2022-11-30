@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,9 +59,12 @@ fun AddRuleScreen() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    TopAppBar(
+                    MediumTopAppBar(
+                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { Text(text = if (state.isEditRule) "Edit Rule" else "Add Rule") },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -68,7 +72,9 @@ fun AddRuleScreen() {
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
-                        })
+                        },
+                        scrollBehavior = scrollBehavior
+                    )
                 },
                 bottomBar = {
                     FilledTonalButton(

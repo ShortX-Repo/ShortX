@@ -1,10 +1,11 @@
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AppShortcut
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,9 +59,22 @@ fun MainScreen() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    TopAppBar(title = { Text(text = stringResource(id = R.string.ui_app_name)) })
+                    MediumTopAppBar(
+                        title = { Text(text = stringResource(id = R.string.ui_app_name)) },
+                        actions = {
+                            IconButton(onClick = { }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = "Settings"
+                                )
+                            }
+                        },
+                        scrollBehavior = scrollBehavior,
+                    )
                 },
                 bottomBar = {
                     NavigationContent(navController)
@@ -81,8 +96,7 @@ fun MainScreen() {
                 }) {
                 Column(
                     modifier = Modifier
-                        .padding(it)
-                        .systemBarsPadding()
+                        .padding(it),
                 ) {
                     NavigationGraph(navController = navController,
                         state = state,

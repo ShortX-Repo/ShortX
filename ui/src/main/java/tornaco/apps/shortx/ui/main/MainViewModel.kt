@@ -31,6 +31,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     }
 
     fun loadRules() {
+        logger.d("loadRules")
         viewModelScope.launch {
             val rules = shortXManager.getAllRules().map {
                 Rule(id = it.id,

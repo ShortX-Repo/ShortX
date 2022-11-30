@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.enro.core.NavigationKey
 import kotlinx.parcelize.Parcelize
@@ -14,6 +15,7 @@ class MainKey : NavigationKey
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent { MainScreen() }
     }
 }
