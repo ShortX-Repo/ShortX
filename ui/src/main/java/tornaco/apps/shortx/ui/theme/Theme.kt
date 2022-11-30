@@ -49,13 +49,6 @@ fun ShortXTheme(
         else -> LightColorScheme
     }
     val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            (view.context.requireActivity()).window.statusBarColor = colorScheme.surface.toArgb()
-            WindowCompat.getInsetsController((view.context.requireActivity()).window,
-                view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
 
     MaterialTheme(
         colorScheme = colorScheme,

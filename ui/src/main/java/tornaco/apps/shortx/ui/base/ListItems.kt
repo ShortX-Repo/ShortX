@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ListItem(
@@ -49,18 +50,31 @@ fun ListItem(
         .clickable {
             onClick()
         }
-        .padding(horizontal = 16.dp, vertical = 8.dp),
+        .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween) {
 
-        Row(modifier = Modifier,
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(end = 24.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Text(text = text1, style = MaterialTheme.typography.bodyMedium)
-                Text(text = text2, style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
+                )
+                Text(
+                    text = text1,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                )
+                Text(
+                    text = text2,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+                )
             }
         }
 
