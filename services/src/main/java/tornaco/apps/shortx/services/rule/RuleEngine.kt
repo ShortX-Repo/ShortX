@@ -16,7 +16,7 @@ import tornaco.apps.shortx.services.ShortXContext
 
 object RuleEngineFactory {
     private fun newConditionEvaluator(shortXContext: ShortXContext) = object : ConditionEvaluator {
-        override suspend fun evaluate(condition: ProtoAny): Boolean {
+        override fun evaluate(condition: ProtoAny): Boolean {
             return when {
                 condition is_ CurrentPkg::class.java -> {
                     val currentPkg = condition unpack_ CurrentPkg::class.java
@@ -38,8 +38,10 @@ object RuleEngineFactory {
         override suspend fun evaluate(action: ProtoAny) {
             if (action is_ StartActivity::class.java) {
                 val startActivity = action unpack_ StartActivity::class.java
-                tornaco.apps.shortx.services.actor.StartActivity(context,
-                    startActivity.componentNameAsString).invoke()
+                tornaco.apps.shortx.services.actor.StartActivity(
+                    context,
+                    startActivity.componentNameAsString
+                ).invoke()
             } else if (action is_ TakeScreenshot::class.java) {
                 tornaco.apps.shortx.services.actor.TakeScreenshot(context, handler).invoke()
             } else if (action is_ ShellCommand::class.java) {
@@ -57,9 +59,11 @@ object RuleEngineFactory {
         conditionEvaluator: ConditionEvaluator = newConditionEvaluator(shortXContext),
         actionEvaluator: ActionEvaluator = newActionEvaluator(context, handler),
         listener: EngineListener = LogEngineListener("RuleEngine"),
-    ) = DefaultRuleEngine(factMatcher = factMatcher,
+    ) = DefaultRuleEngine(
+        factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
         actionEvaluator = actionEvaluator,
-        listener = listener)
+        listener = listener
+    )
 }
 

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui
+package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -20,19 +20,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import dev.enro.annotations.NavigationDestination
-import dev.enro.core.NavigationKey
 import dev.enro.core.compose.registerForNavigationResult
-import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.addrule.AddRule
-import tornaco.apps.shortx.ui.main.MainState
-import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.Rule
-import tornaco.apps.shortx.ui.main.RuleScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-
-@Parcelize
-object Main : NavigationKey.SupportsPush
 
 enum class Route {
     Rules, Actions
@@ -48,7 +39,6 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var screenR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@NavigationDestination(Main::class)
 fun MainScreen() {
     val vm = hiltViewModel<MainViewModel>()
     val state by vm.state.collectAsState()
@@ -63,8 +53,10 @@ fun MainScreen() {
     })
 
     ShortXTheme {
-        Surface(modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
             Scaffold(
                 topBar = {
                     TopAppBar(title = { Text(text = stringResource(id = R.string.ui_app_name)) })
@@ -76,7 +68,7 @@ fun MainScreen() {
                     FloatingActionButton(onClick = {
                         when (navController.currentBackStackEntry?.destination?.route) {
                             Route.Rules.name -> {
-                                addRuleNav.push(AddRule())
+                                addRuleNav.present(AddRule())
                             }
                             Route.Actions.name -> {
 
@@ -87,9 +79,11 @@ fun MainScreen() {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
                 }) {
-                Column(modifier = Modifier
-                    .padding(it)
-                    .systemBarsPadding()) {
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                        .systemBarsPadding()
+                ) {
                     NavigationGraph(navController = navController,
                         state = state,
                         deleteRule = { ruleId ->
@@ -99,7 +93,7 @@ fun MainScreen() {
                             vm.setRuleEnabled(id, enable)
                         },
                         onRuleClick = { rule ->
-                            addRuleNav.push(AddRule(rule.id))
+                            addRuleNav.present(AddRule(rule.id))
                         })
                 }
             }
@@ -155,10 +149,12 @@ private fun NavigationGraph(
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
-            RuleScreen(state = state,
+            RuleScreen(
+                state = state,
                 setRuleEnabled = setRuleEnabled,
                 onDelete = deleteRule,
-                onRuleClick = onRuleClick)
+                onRuleClick = onRuleClick
+            )
         }
 
         composable(BottomNavItem.Actions.screenRoute.name) {

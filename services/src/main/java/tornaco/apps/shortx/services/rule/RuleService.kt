@@ -31,11 +31,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     private fun installListeners() {
         shortXContext.gesture.onKeyEvent {
-            if (it.action == android.view.KeyEvent.ACTION_UP) {
-                logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
-                val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
-                val enabledRules = getAllRules().filter { it.isEnabled }
-                if (engine.hasAnyRuleMatchFact(enabledRules, fact)) {
+            logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
+            val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
+            val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
+            if (engine.shouldFire(enabledRules, fact)) {
+                if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     systemServiceScope.launchSafety {
                         engine.fire(
@@ -43,9 +43,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                             rules = enabledRules
                         )
                     }
-                    // False means consume.
-                    return@onKeyEvent true
                 }
+                // False means consume.
+                return@onKeyEvent false
             }
             return@onKeyEvent null
         }

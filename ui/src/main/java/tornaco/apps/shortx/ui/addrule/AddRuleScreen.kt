@@ -34,7 +34,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Parcelize
-data class AddRule(val ruleId: String? = null) : NavigationKey.SupportsPush.WithResult<Boolean>
+data class AddRule(val ruleId: String? = null) : NavigationKey.SupportsPresent.WithResult<Boolean>
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,8 +54,10 @@ fun AddRuleScreen() {
     }
 
     ShortXTheme {
-        Surface(modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
             Scaffold(
                 topBar = {
                     TopAppBar(
@@ -86,9 +88,11 @@ fun AddRuleScreen() {
                 })
                 KeyEventSelector(keyEventSelectorState)
 
-                Column(modifier = Modifier
-                    .padding(it)
-                    .padding(horizontal = 16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                        .padding(horizontal = 16.dp)
+                ) {
 
                     TitleAndDescription(state, vm)
                     Spacer(modifier = Modifier.size(16.dp))

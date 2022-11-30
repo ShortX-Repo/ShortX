@@ -10,7 +10,7 @@ interface FactMatcher {
 }
 
 interface ConditionEvaluator {
-    suspend fun evaluate(condition: ProtoAny): Boolean
+    fun evaluate(condition: ProtoAny): Boolean
 }
 
 interface ActionEvaluator {
@@ -22,7 +22,7 @@ interface Engine {
     val actionEvaluator: ActionEvaluator
     val factMatcher: FactMatcher
 
-    fun hasAnyRuleMatchFact(rules: List<Rule>, fact: ProtoMessage): Boolean
+    fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean
     suspend fun fire(fact: ProtoMessage, rules: List<Rule>)
 }
 
@@ -71,9 +71,11 @@ class DefaultRuleEngine(
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
 
-    override fun hasAnyRuleMatchFact(rules: List<Rule>, fact: ProtoMessage): Boolean {
+    override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         return rules.filterInvalid().firstOrNull {
-            factMatcher.match(fact, it.fact)
+            factMatcher.match(fact, it.fact) && it.conditionsList.all { con ->
+                conditionEvaluator.evaluate(con)
+            }
         } != null
     }
 
