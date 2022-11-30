@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.ui.addrule
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -13,7 +15,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.enro.annotations.NavigationDestination
 import dev.enro.core.NavigationKey
 import dev.enro.core.closeWithResult
 import dev.enro.core.compose.navigationHandle
@@ -39,7 +40,6 @@ data class AddRule(val ruleId: String? = null) : NavigationKey.SupportsPresent.W
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@NavigationDestination(AddRule::class)
 fun AddRuleScreen() {
     val navigation = navigationHandle<AddRule>()
 
@@ -96,6 +96,7 @@ fun AddRuleScreen() {
 
                 Column(
                     modifier = Modifier
+                        .verticalScroll(rememberScrollState())
                         .padding(it)
                         .padding(horizontal = 16.dp)
                 ) {

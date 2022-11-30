@@ -14,6 +14,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="tornaco.apps.shortx.ui.AddRuleActivity"
+            android:theme="@style/UiTheme.ShortX" />
+
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"
