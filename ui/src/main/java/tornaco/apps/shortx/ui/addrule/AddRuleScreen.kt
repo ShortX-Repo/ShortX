@@ -131,10 +131,19 @@ fun AddRuleScreen() {
                     }
                     ShellCommandSelector(state = shellCommandSelectorState)
                     Actions(state = state) { action ->
-                        if (action is Action.TakeScreenshot) {
-                            vm.addAction(action)
-                        } else if (action is Action.ShellCommand) {
-                            shellCommandSelectorState.show()
+                        when (action) {
+                            is Action.TakeScreenshot -> {
+                                vm.addAction(action)
+                            }
+                            is Action.ShellCommand -> {
+                                shellCommandSelectorState.show()
+                            }
+                            is Action.ShowToast -> {
+                                vm.addAction(Action.ShowToast("Hello"))
+                            }
+                            is Action.Delay -> {
+                                vm.addAction(Action.Delay(1000))
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.size(16.dp))

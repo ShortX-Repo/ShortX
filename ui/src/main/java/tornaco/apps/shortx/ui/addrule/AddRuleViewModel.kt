@@ -44,13 +44,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         return AddRuleState(
             selectableFacts = listOf(
                 Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
-                Fact.ActivityStarted("N/A")),
+                Fact.ActivityStarted("N/A")
+            ),
             selectableConditions = listOf(
                 Condition.CurrentPkg(unKnownPkg)
             ),
             selectableActions = listOf(
                 Action.TakeScreenshot,
                 Action.ShellCommand(""),
+                Action.ShowToast(""),
+                Action.Delay(0)
             )
         )
     }

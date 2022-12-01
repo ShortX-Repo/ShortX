@@ -15,3 +15,11 @@ message StartActivity {
 message ShellCommand {
   string command = 1;
 }
+
+message ShowToast {
+  string message = 1;
+}
+
+message Delay {
+  int64 time = 1;
+}
