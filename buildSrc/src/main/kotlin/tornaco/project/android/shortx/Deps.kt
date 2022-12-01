@@ -23,6 +23,12 @@ object Compose {
     const val enroApt = "dev.enro:enro-processor:2.0.0-alpha10"
 }
 
+object Others {
+    const val glide = "com.github.bumptech.glide:glide:4.13.0"
+    const val glideCompiler = "com.github.bumptech.glide:compiler:4.13.0"
+    const val landscapistGlide = "com.github.skydoves:landscapist-glide:1.5.0"
+}
+
 object Coroutines {
     private const val version = "1.5.0-RC"
     const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"

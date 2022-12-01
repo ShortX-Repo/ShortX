@@ -1,3 +1,4 @@
+import tornaco.project.android.shortx.Others
 import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
@@ -81,6 +82,11 @@ dependencies {
 
     implementation(Compose.enro)
     kapt(Compose.enroApt)
+
+    implementation(Others.landscapistGlide)
+    implementation(Others.glide)
+    kapt(Others.glideCompiler)
+    annotationProcessor(Others.glideCompiler)
 
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.8.0-alpha03")

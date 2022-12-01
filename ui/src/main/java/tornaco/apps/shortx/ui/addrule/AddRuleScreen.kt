@@ -115,9 +115,10 @@ fun AddRuleScreen() {
                     Spacer(modifier = Modifier.size(16.dp))
 
                     // Condition selectors
-                    val currentPkgSelectorState = rememberCurrentPkgSelectorState { pkg ->
-                        vm.addCondition(Condition.CurrentPkg(pkg))
-                    }
+                    val currentPkgSelectorState =
+                        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+                            vm.addCondition(Condition.CurrentPkg(pkg))
+                        }
                     CurrentPkgSelector(currentPkgSelectorState)
                     Conditions(state = state) { con ->
                         if (con is Condition.CurrentPkg) {

@@ -12,12 +12,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.App
+import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.models.*
 import tornaco.apps.shortx.ui.base.BaseViewModel
+import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -47,13 +49,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
     override fun initState(): AddRuleState {
         return AddRuleState(
             selectableFacts = listOf(
-                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
-                Fact.ActivityStarted("N/A")
-            ),
-            selectableConditions = listOf(
-                Condition.CurrentPkg(unKnownPkg)
-            ),
-            selectableActions = listOf(
+                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN), Fact.ActivityStarted("N/A")
+            ), selectableConditions = listOf(
+                Condition.CurrentPkg(
+                    App(
+                        pkg = unKnownPkg,
+                        label = "Current Package",
+                        category = AppCategory.User
+                    )
+                )
+            ), selectableActions = listOf(
                 Action.TakeScreenshot,
                 Action.ShellCommand(""),
                 Action.ShowToast(""),
@@ -66,6 +71,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         viewModelScope.launch {
             val apps = withContext(Dispatchers.IO) {
                 shortXManager.getInstalledApps()
+                    .sortedWith { o1, o2 ->
+                        Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
+                    }.sortedBy { it.category.ordinal }
             }
             updateState {
                 copy(installedApps = apps)
@@ -126,16 +134,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
             }
-            val rule =
-                Rule.newBuilder()
-                    .setId(state.value.id ?: UUID.randomUUID().toString())
-                    .setLastUpdateTime(System.currentTimeMillis())
-                    .setFact(protoFact)
-                    .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
-                    .setDescription(state.value.description.fallbackOnEmpty("No description"))
-                    .addAllConditions(protoConditions)
-                    .addAllActions(protoActions)
-                    .build()
+            val rule = Rule.newBuilder().setId(state.value.id ?: UUID.randomUUID().toString())
+                .setLastUpdateTime(System.currentTimeMillis()).setFact(protoFact)
+                .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
+                .setDescription(state.value.description.fallbackOnEmpty("No description"))
+                .addAllConditions(protoConditions).addAllActions(protoActions).build()
 
             shortXManager.addRule(rule)
             _ruleSaved.emit(rule.id)
