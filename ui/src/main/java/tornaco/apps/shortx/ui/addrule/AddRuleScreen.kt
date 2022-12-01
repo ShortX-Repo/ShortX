@@ -49,6 +49,7 @@ fun AddRuleScreen() {
     LaunchedEffect(vm) {
         val ruleId = navigation.key.ruleId
         vm.initFromRuleId(ruleId)
+        vm.loadInstalledApps()
         vm.ruleSaved.collectLatest {
             navigation.closeWithResult(true)
         }

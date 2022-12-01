@@ -16,15 +16,15 @@ class ActionEvaluatorImpl(private val context: Context, private val handler: Han
     override suspend fun evaluate(action: ProtoAny) {
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
-            tornaco.apps.shortx.services.actor.StartActivity(
+            tornaco.apps.shortx.services.rule.actor.StartActivity(
                 context,
                 startActivity.componentNameAsString
             ).invoke()
         } else if (action is_ TakeScreenshot::class.java) {
-            tornaco.apps.shortx.services.actor.TakeScreenshot(context, handler).invoke()
+            tornaco.apps.shortx.services.rule.actor.TakeScreenshot(context, handler).invoke()
         } else if (action is_ ShellCommand::class.java) {
             val sc = action unpack_ ShellCommand::class.java
-            tornaco.apps.shortx.services.actor.ShellCommand(context, sc.command).invoke()
+            tornaco.apps.shortx.services.rule.actor.ShellCommand(context, sc.command).invoke()
         } else if (action is_ ShowToast::class.java) {
             val t = action unpack_ ShowToast::class.java
             handler.postSafety {

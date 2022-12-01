@@ -11,4 +11,6 @@ interface IShortX {
     void setRuleEnabled(String ruleId, boolean enable);
 
     List<ByteArrayWrapper> getAllRules();
+
+    List<App> getInstalledApps();
 }

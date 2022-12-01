@@ -6,9 +6,12 @@ import android.view.KeyEvent
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
@@ -30,6 +33,7 @@ data class AddRuleState(
     val selectableActions: List<Action> = emptyList(),
     val isEditRule: Boolean = false,
     val ruleChanged: Boolean = false,
+    val installedApps: List<App> = emptyList()
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -56,6 +60,17 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Action.Delay(0)
             )
         )
+    }
+
+    fun loadInstalledApps() {
+        viewModelScope.launch {
+            val apps = withContext(Dispatchers.IO) {
+                shortXManager.getInstalledApps()
+            }
+            updateState {
+                copy(installedApps = apps)
+            }
+        }
     }
 
     fun setTitle(title: String) {

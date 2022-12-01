@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.actor
+package tornaco.apps.shortx.services.rule.actor
 
 import android.content.Context
 import tornaco.apps.shortx.core.util.statusBarManager

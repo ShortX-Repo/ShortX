@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services
 
+import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.rule.RuleService
 

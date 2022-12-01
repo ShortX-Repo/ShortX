@@ -87,5 +87,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
+
+        override fun getInstalledApps(): List<App> {
+            return shortXContext.appState.getInstalledApps()
+        }
     }
 }

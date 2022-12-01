@@ -66,6 +66,12 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
+    fun getInstalledApps(): List<App> {
+        return invokeService(emptyList()) {
+            installedApps
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)
