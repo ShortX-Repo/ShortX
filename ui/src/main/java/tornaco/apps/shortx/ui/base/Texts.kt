@@ -9,14 +9,27 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LargeTitle(text: String) {
-    Text(modifier = Modifier.padding(vertical = 12.dp),
+    Text(
+        modifier = Modifier.padding(vertical = 12.dp),
         text = text,
-        style = MaterialTheme.typography.titleLarge)
+        style = MaterialTheme.typography.titleLarge
+    )
 }
 
 @Composable
 fun MediumTitle(text: String) {
-    Text(modifier = Modifier.padding(vertical = 12.dp),
+    Text(
+        modifier = Modifier.padding(vertical = 12.dp),
         text = text,
-        style = MaterialTheme.typography.titleMedium)
+        style = MaterialTheme.typography.titleMedium
+    )
+}
+
+@Composable
+fun DialogTitle(text: String) {
+    Text(
+        modifier = Modifier.padding(8.dp),
+        text = text,
+        style = MaterialTheme.typography.titleLarge
+    )
 }

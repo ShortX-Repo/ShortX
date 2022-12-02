@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class KeyEventSelectorState(val selected: (Int) -> Unit) {
@@ -40,7 +41,7 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            Text(text = "Key Event")
+            DialogTitle(text = "Key Event")
         }, buttons = {
             TextButton(onClick = {
                 if (keyCode != KeyEvent.KEYCODE_UNKNOWN) {

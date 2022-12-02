@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class ShellCommandSelectorState(val onSelected: (String) -> Unit) {
@@ -40,7 +41,7 @@ fun ShellCommandSelector(state: ShellCommandSelectorState) {
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            Text(text = "Shell Command")
+            DialogTitle(text = "Shell Command")
         }, buttons = {
             TextButton(onClick = {
                 if (commandString.isNotBlank()) {
@@ -58,7 +59,8 @@ fun ShellCommandSelector(state: ShellCommandSelectorState) {
                     },
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent),
+                        containerColor = Color.Transparent
+                    ),
                     label = {
                         Text(text = "Command")
                     },
