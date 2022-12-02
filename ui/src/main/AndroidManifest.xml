@@ -15,7 +15,7 @@
         </activity>
 
         <activity
-            android:name="tornaco.apps.shortx.ui.AddRuleActivity"
+            android:name="tornaco.apps.shortx.ui.addrule.AddRuleActivity"
             android:theme="@style/UiTheme.ShortX" />
 
         <service

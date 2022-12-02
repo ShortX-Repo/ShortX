@@ -7,6 +7,7 @@ import dev.enro.core.controller.NavigationApplication
 import dev.enro.core.controller.createNavigationController
 import dev.enro.core.plugins.EnroLogger
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.EntryPoint
 
 @NavigationComponent
 @HiltAndroidApp
@@ -20,5 +21,6 @@ class ShortXApp : Application(), NavigationApplication {
     override fun onCreate() {
         super.onCreate()
         logger.d("onCreate.")
+        EntryPoint.onCreate(this)
     }
 }

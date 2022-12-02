@@ -1,8 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package tornaco.apps.shortx.ui.addrule.condition
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,10 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.App
-import tornaco.apps.shortx.ui.base.AppIcon
-import tornaco.apps.shortx.ui.base.DialogTitle
-import tornaco.apps.shortx.ui.base.ShortXDialog
-import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.*
 
 class CurrentPkgSelectorState(val apps: List<App>, val selected: (App) -> Unit) {
     private var _isShow by mutableStateOf(false)
@@ -57,7 +56,7 @@ fun CurrentPkgSelector(state: CurrentPkgSelectorState) {
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(
-                text = "Current Package",
+                text = LocalI18N.current["ui.dialog.title.current.app"],
             )
         }, buttons = {
             TextButton(onClick = {
@@ -171,7 +170,11 @@ private fun SearchTextField(searchBarState: SearchBarState, focusRequester: Focu
             unfocusedIndicatorColor = Color.Transparent
         ),
         label = {
-            Text(text = "Search ${searchBarState.totalAppsCount} Apps")
+            Text(
+                text = LocalI18N.current["ui.search.title.search.n.apps", mapOf(
+                    "count" to searchBarState.totalAppsCount.toString()
+                )]
+            )
         },
         shape = RoundedCornerShape(6.dp),
         maxLines = 1,

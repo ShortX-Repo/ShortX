@@ -88,6 +88,9 @@ dependencies {
     kapt(Others.glideCompiler)
     annotationProcessor(Others.glideCompiler)
 
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json-jvm
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1")
+
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("androidx.core:core-ktx:1.9.0")
