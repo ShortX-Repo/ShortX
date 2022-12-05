@@ -1,20 +1,23 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.condition.CurrentPkg
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.ui.base.I18N
 
-sealed class Condition(val label: (Context) -> String, val icon: ImageVector) {
-    data class CurrentPkg(val app: App) : Condition({ app.label }, Icons.Filled.Key)
+sealed class Condition(val label: (I18N) -> String, val icon: ImageVector) {
+    data class CurrentPkg(val app: App) : Condition({
+        it["ui.dialog.title.current.app.with.app.label", mapOf("app" to app.label)]
+    }, Icons.Filled.Key)
 }
 
 fun Condition.toProtoCondition(): ProtoMessage {
@@ -25,13 +28,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
     }
 }
 
-fun ProtoAny.toCondition(): Condition? {
+fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
     return if (this is_ CurrentPkg::class.java) {
         val data = this unpack_ CurrentPkg::class.java
+        val pkg = Pkg(data.pkgName, userId = 0)
+        val appLabel = shortXManager.getAppLabel(pkg)
         Condition.CurrentPkg(
             app = App(
-                pkg = Pkg(data.pkgName, userId = 0),
-                label = "",
+                pkg = pkg,
+                label = appLabel,
                 category = AppCategory.User
             )
         )

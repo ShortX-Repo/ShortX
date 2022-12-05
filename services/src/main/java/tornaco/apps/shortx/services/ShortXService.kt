@@ -91,5 +91,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun getInstalledApps(): List<App> {
             return shortXContext.appState.getInstalledApps()
         }
+
+        override fun getAppLabel(pkg: Pkg): String? {
+            return shortXContext.appState.getAppLabel(pkg)
+        }
     }
 }

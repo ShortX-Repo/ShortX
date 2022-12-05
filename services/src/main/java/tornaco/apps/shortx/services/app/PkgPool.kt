@@ -14,7 +14,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.util.PackageMonitor
 
-class PkgPool(private val context: Context, private val handler: Handler, private val userId: Int) {
+class PkgPool(private val context: Context, private val handler: Handler, val userId: Int) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
     private val pkgMonitor = object : PackageMonitor() {
@@ -33,8 +33,8 @@ class PkgPool(private val context: Context, private val handler: Handler, privat
         }
     }
 
-    private val _allApps: MutableList<App> = mutableListOf()
-    val allApps: List<App> get() = _allApps.toList()
+    private val _allApps: MutableMap<String, App> = mutableMapOf()
+    val allApps: Map<String, App> get() = _allApps.toMap()
 
     fun init() {
         logger.d("init")
@@ -57,16 +57,18 @@ class PkgPool(private val context: Context, private val handler: Handler, privat
             }
 
         _allApps.clear()
-        _allApps.addAll(apps)
+        apps.forEach {
+            _allApps.put(it.pkg.pkgName, it)
+        }
     }
 
     fun load(pkgName: String) {
         logger.d("load $pkgName")
         kotlin.runCatching {
-            _allApps.removeIf { it.pkg.pkgName == pkgName }
+            _allApps.remove(pkgName)
             val app = PkgUtils.getApplicationInfoAsUser(context, pkgName, userId)?.toApp()
             app?.let {
-                _allApps.add(app)
+                _allApps.put(app.pkg.pkgName, app)
             }
         }.onFailure {
             logger.e(it, "load: $pkgName")
@@ -75,7 +77,7 @@ class PkgPool(private val context: Context, private val handler: Handler, privat
 
     fun remove(pkgName: String) {
         logger.d("remove $pkgName")
-        _allApps.removeIf { it.pkg.pkgName == pkgName }
+        _allApps.remove(pkgName)
     }
 
     private fun ApplicationInfo.toApp(): App {

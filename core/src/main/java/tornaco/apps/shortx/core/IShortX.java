@@ -36,6 +36,10 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public java.lang.String getAppLabel(tornaco.apps.shortx.core.Pkg pkg) throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -165,6 +169,21 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.App> _result = this.getInstalledApps();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getAppLabel:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.Pkg _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.Pkg.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          java.lang.String _result = this.getAppLabel(_arg0);
+          reply.writeNoException();
+          reply.writeString(_result);
           return true;
         }
         default:
@@ -363,6 +382,33 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public java.lang.String getAppLabel(tornaco.apps.shortx.core.Pkg pkg) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.lang.String _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((pkg!=null)) {
+            _data.writeInt(1);
+            pkg.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAppLabel, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAppLabel(pkg);
+          }
+          _reply.readException();
+          _result = _reply.readString();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -373,6 +419,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_setRuleEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
     static final int TRANSACTION_getAllRules = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
     static final int TRANSACTION_getInstalledApps = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
+    static final int TRANSACTION_getAppLabel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 8);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -398,4 +445,5 @@ public interface IShortX extends android.os.IInterface
   public void setRuleEnabled(java.lang.String ruleId, boolean enable) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRules() throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.App> getInstalledApps() throws android.os.RemoteException;
+  public java.lang.String getAppLabel(tornaco.apps.shortx.core.Pkg pkg) throws android.os.RemoteException;
 }

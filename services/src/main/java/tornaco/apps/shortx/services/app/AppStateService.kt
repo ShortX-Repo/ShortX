@@ -55,8 +55,11 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     }
 
     fun getInstalledApps(): List<App> {
-        return pkgPools.map { it.allApps }.flatten()
+        return pkgPools.map { it.allApps.values }.flatten()
     }
+
+    fun getAppLabel(pkg: Pkg): String? =
+        pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)?.label
 
     @SuppressLint("MissingPermission")
     private fun getUsers(): List<UserInfo> {

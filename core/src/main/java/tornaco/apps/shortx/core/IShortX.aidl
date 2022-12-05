@@ -13,4 +13,5 @@ interface IShortX {
     List<ByteArrayWrapper> getAllRules();
 
     List<App> getInstalledApps();
+    String getAppLabel(in Pkg pkg);
 }

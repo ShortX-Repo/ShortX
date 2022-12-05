@@ -29,10 +29,7 @@ import tornaco.apps.shortx.ui.addrule.fact.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
-import tornaco.apps.shortx.ui.base.DropdownItem
-import tornaco.apps.shortx.ui.base.DropdownSelector
-import tornaco.apps.shortx.ui.base.MediumTitle
-import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Parcelize
@@ -216,7 +213,7 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
-                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(context)) {
+                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(LocalI18N.current)) {
 
                     }
                 }
@@ -230,7 +227,7 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
             DropdownSelector(
                 state = selectorState,
                 items = state.selectableConditions.map {
-                    DropdownItem(label = it.label(context), data = it, icon = it.icon)
+                    DropdownItem(label = it.label(LocalI18N.current), data = it, icon = it.icon)
                 }
             ) {
                 selectCondition(it.data)

@@ -72,6 +72,12 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
+    fun getAppLabel(pkg: Pkg): String {
+        return invokeService("Unknown") {
+            getAppLabel(pkg) ?: "Unknown"
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

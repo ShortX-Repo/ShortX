@@ -54,7 +54,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Condition.CurrentPkg(
                     App(
                         pkg = unKnownPkg,
-                        label = "Current Package",
+                        label = "",
                         category = AppCategory.User
                     )
                 )
@@ -161,7 +161,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                             title = rule.title,
                             description = rule.description,
                             fact = rule.fact.toFact(),
-                            conditions = rule.conditionsList.mapNotNull { it.toCondition() },
+                            conditions = rule.conditionsList.mapNotNull { it.toCondition(shortXManager) },
                             actions = rule.actionsList.mapNotNull { it.toAction() },
                             isEditRule = true
                         )
