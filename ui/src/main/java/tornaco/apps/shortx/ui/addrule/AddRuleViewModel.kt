@@ -113,10 +113,26 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         }
     }
 
+    fun removeCondition(condition: Condition) {
+        updateState {
+            copy(conditions = conditions.toMutableList().apply {
+                remove(condition)
+            }, ruleChanged = true)
+        }
+    }
+
     fun addAction(action: Action) {
         updateState {
             copy(actions = actions.toMutableList().apply {
                 add(action)
+            }, ruleChanged = true)
+        }
+    }
+
+    fun removeAction(action: Action) {
+        updateState {
+            copy(actions = actions.toMutableList().apply {
+                remove(action)
             }, ruleChanged = true)
         }
     }
@@ -161,7 +177,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                             title = rule.title,
                             description = rule.description,
                             fact = rule.fact.toFact(),
-                            conditions = rule.conditionsList.mapNotNull { it.toCondition(shortXManager) },
+                            conditions = rule.conditionsList.mapNotNull {
+                                it.toCondition(
+                                    shortXManager
+                                )
+                            },
                             actions = rule.actionsList.mapNotNull { it.toAction() },
                             isEditRule = true
                         )

@@ -19,20 +19,30 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ListItem(
     title: String,
-    onClick: () -> Unit,
+    action1: @Composable () -> Unit,
+    onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            onClick()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 60.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier
+            .weight(1f, fill = false)
+            .clickable {
+                onClick()
+            }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(modifier = Modifier) {
+                Text(text = title, style = MaterialTheme.typography.titleMedium)
+            }
         }
-        .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(modifier = Modifier) {
-            Text(text = title, style = MaterialTheme.typography.titleMedium)
-        }
+
+        action1()
     }
 }
 

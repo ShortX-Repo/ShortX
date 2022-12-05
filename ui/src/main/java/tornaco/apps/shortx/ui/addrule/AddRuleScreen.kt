@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -54,12 +55,10 @@ fun AddRuleScreen() {
 
     ShortXTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -75,17 +74,15 @@ fun AddRuleScreen() {
                     )
                 },
                 bottomBar = {
-                    FilledTonalButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp)
-                            .padding(vertical = 16.dp),
+                    FilledTonalButton(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .padding(vertical = 16.dp),
                         enabled = state.ruleChanged,
                         onClick = { vm.save() }) {
                         Text(if (state.isEditRule) "Update" else "Save")
                     }
-                }
-            ) {
+                }) {
                 // Fact selectors
                 val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
                     vm.setFact(Fact.KeyEvent(code))
@@ -97,6 +94,7 @@ fun AddRuleScreen() {
                         .verticalScroll(rememberScrollState())
                         .padding(it)
                         .padding(horizontal = 16.dp)
+                        .animateContentSize()
                 ) {
 
                     TitleAndDescription(state, vm)
@@ -117,11 +115,13 @@ fun AddRuleScreen() {
                             vm.addCondition(Condition.CurrentPkg(pkg))
                         }
                     CurrentPkgSelector(currentPkgSelectorState)
-                    Conditions(state = state) { con ->
+                    Conditions(state = state, selectCondition = { con ->
                         if (con is Condition.CurrentPkg) {
                             currentPkgSelectorState.show()
                         }
-                    }
+                    }, removeCondition = { con ->
+                        vm.removeCondition(con)
+                    })
                     Spacer(modifier = Modifier.size(16.dp))
 
                     // Actions
@@ -129,7 +129,8 @@ fun AddRuleScreen() {
                         vm.addAction(Action.ShellCommand(cmd))
                     }
                     ShellCommandSelector(state = shellCommandSelectorState)
-                    Actions(state = state) { action ->
+
+                    Actions(state = state, selectAction = { action: Action ->
                         when (action) {
                             is Action.TakeScreenshot -> {
                                 vm.addAction(action)
@@ -144,7 +145,9 @@ fun AddRuleScreen() {
                                 vm.addAction(Action.Delay(1000))
                             }
                         }
-                    }
+                    }, removeAction = { action ->
+                        vm.removeAction(action)
+                    })
                     Spacer(modifier = Modifier.size(16.dp))
                 }
             }
@@ -158,23 +161,17 @@ private fun TitleAndDescription(
     state: AddRuleState,
     vm: AddRuleViewModel,
 ) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = {
-            Text(text = "Title")
-        },
-        value = state.title, onValueChange = { title ->
-            vm.setTitle(title)
-        })
+    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+        Text(text = "Title")
+    }, value = state.title, onValueChange = { title ->
+        vm.setTitle(title)
+    })
     Spacer(modifier = Modifier.size(16.dp))
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = {
-            Text(text = "Description")
-        },
-        value = state.description, onValueChange = { description ->
-            vm.setDescription(description)
-        })
+    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+        Text(text = "Description")
+    }, value = state.description, onValueChange = { description ->
+        vm.setDescription(description)
+    })
 }
 
 @Composable
@@ -190,12 +187,9 @@ private fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
                 Text(text = state.fact?.label?.invoke() ?: "Select Fact")
             }
 
-            DropdownSelector(
-                state = selectorState,
-                items = state.selectableFacts.map {
-                    DropdownItem(label = it.label(), data = it, icon = it.icon)
-                }
-            ) {
+            DropdownSelector(state = selectorState, items = state.selectableFacts.map {
+                DropdownItem(label = it.label(), data = it, icon = it.icon)
+            }) {
                 selectFact(it.data)
             }
         }
@@ -203,7 +197,11 @@ private fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
 }
 
 @Composable
-fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
+fun Conditions(
+    state: AddRuleState,
+    selectCondition: (Condition) -> Unit,
+    removeCondition: (Condition) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle("Conditions")
 
@@ -212,9 +210,13 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
-                    ListItem(title = it.labelWithValue(LocalI18N.current)) {
-
-                    }
+                    ListItem(title = it.labelWithValue(LocalI18N.current), action1 = {
+                        IconButton(onClick = {
+                            removeCondition(it)
+                        }) {
+                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
+                        }
+                    }, onClick = {})
                 }
                 TextButton(onClick = {
                     selectorState.open()
@@ -223,16 +225,11 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
                 }
             }
 
-            DropdownSelector(
-                state = selectorState,
-                items = state.selectableConditions.map {
-                    DropdownItem(
-                        label = it.labelForSelector(LocalI18N.current),
-                        data = it,
-                        icon = it.icon
-                    )
-                }
-            ) {
+            DropdownSelector(state = selectorState, items = state.selectableConditions.map {
+                DropdownItem(
+                    label = it.labelForSelector(LocalI18N.current), data = it, icon = it.icon
+                )
+            }) {
                 selectCondition(it.data)
             }
         }
@@ -240,7 +237,7 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
 }
 
 @Composable
-fun Actions(state: AddRuleState, selectAction: (Action) -> Unit) {
+fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (Action) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle("Actions")
 
@@ -250,9 +247,9 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.actions.forEach {
-                    ListItem(title = it.label(context)) {
-
-                    }
+                    ActionItem(title = it.label(context), onClick = {}, onRemoveClick = {
+                        removeAction(it)
+                    })
                 }
                 TextButton(onClick = {
                     selectorState.open()
@@ -261,14 +258,22 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit) {
                 }
             }
 
-            DropdownSelector(
-                state = selectorState,
-                items = state.selectableActions.map {
-                    DropdownItem(label = it.label(context), data = it, icon = it.icon)
-                }
-            ) {
+            DropdownSelector(state = selectorState, items = state.selectableActions.map {
+                DropdownItem(label = it.label(context), data = it, icon = it.icon)
+            }) {
                 selectAction(it.data)
             }
         }
     }
+}
+
+@Composable
+private fun ActionItem(
+    title: String, onClick: () -> Unit, onRemoveClick: () -> Unit
+) {
+    ListItem(title = title, action1 = {
+        IconButton(onClick = { onRemoveClick() }) {
+            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
+        }
+    }, onClick = {})
 }
