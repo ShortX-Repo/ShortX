@@ -207,13 +207,12 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle("Conditions")
 
-        val context = LocalContext.current
         Box {
             val selectorState = rememberDropdownSelectorState()
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
-                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(LocalI18N.current)) {
+                    ListItem(title = it.labelWithValue(LocalI18N.current)) {
 
                     }
                 }
@@ -227,7 +226,11 @@ fun Conditions(state: AddRuleState, selectCondition: (Condition) -> Unit) {
             DropdownSelector(
                 state = selectorState,
                 items = state.selectableConditions.map {
-                    DropdownItem(label = it.label(LocalI18N.current), data = it, icon = it.icon)
+                    DropdownItem(
+                        label = it.labelForSelector(LocalI18N.current),
+                        data = it,
+                        icon = it.icon
+                    )
                 }
             ) {
                 selectCondition(it.data)
@@ -247,7 +250,7 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.actions.forEach {
-                    tornaco.apps.shortx.ui.base.ListItem(title = it.label(context)) {
+                    ListItem(title = it.label(context)) {
 
                     }
                 }

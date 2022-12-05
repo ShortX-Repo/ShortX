@@ -1,5 +1,5 @@
 {
   "ui.dialog.title.current.app": "某应用在前台时",
-  "ui.dialog.title.current.app.with.app.label": "{app} 应用在前台",
+  "ui.dialog.title.current.app.with.app.label": "当 {app} 在前台时",
   "ui.search.title.search.n.apps": "搜素 {count} 个应用"
 }

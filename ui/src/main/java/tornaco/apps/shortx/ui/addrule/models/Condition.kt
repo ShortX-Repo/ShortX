@@ -14,9 +14,15 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.ui.base.I18N
 
-sealed class Condition(val label: (I18N) -> String, val icon: ImageVector) {
+sealed class Condition(
+    val labelWithValue: (I18N) -> String,
+    val labelForSelector: (I18N) -> String,
+    val icon: ImageVector
+) {
     data class CurrentPkg(val app: App) : Condition({
         it["ui.dialog.title.current.app.with.app.label", mapOf("app" to app.label)]
+    }, {
+        it["ui.dialog.title.current.app"]
     }, Icons.Filled.Key)
 }
 
@@ -35,9 +41,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         val appLabel = shortXManager.getAppLabel(pkg)
         Condition.CurrentPkg(
             app = App(
-                pkg = pkg,
-                label = appLabel,
-                category = AppCategory.User
+                pkg = pkg, label = appLabel, category = AppCategory.User
             )
         )
     } else null
