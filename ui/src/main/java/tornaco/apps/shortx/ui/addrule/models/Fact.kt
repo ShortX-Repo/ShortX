@@ -1,19 +1,15 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 
-sealed class Fact(val label: () -> String, val icon: ImageVector) {
-    data class KeyEvent(val keyCode: Int) : Fact({ "KeyEvent $keyCode" }, Icons.Filled.Key)
+sealed class Fact(val label: () -> String) {
+    data class KeyEvent(val keyCode: Int) : Fact({ "KeyEvent $keyCode" })
     data class ActivityStarted(val name: String) :
-        Fact({ "Activity Started $name" }, Icons.Filled.Tag)
+        Fact({ "Activity Started $name" })
 }
 
 fun Fact.toProtoFact(): ProtoMessage {

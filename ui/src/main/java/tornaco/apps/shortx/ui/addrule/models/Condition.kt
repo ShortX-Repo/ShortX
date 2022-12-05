@@ -1,8 +1,5 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.Pkg
@@ -12,18 +9,9 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.ui.base.I18N
 
-sealed class Condition(
-    val labelWithValue: (I18N) -> String,
-    val labelForSelector: (I18N) -> String,
-    val icon: ImageVector
-) {
-    data class CurrentForegroundApp(val app: App) : Condition({
-        it["ui.dialog.title.current.app.with.app.label", mapOf("app" to app.label)]
-    }, {
-        it["ui.dialog.title.current.app"]
-    }, Icons.Filled.Key)
+sealed interface Condition {
+    data class CurrentForegroundApp(val app: App) : Condition
 }
 
 fun Condition.toProtoCondition(): ProtoMessage {

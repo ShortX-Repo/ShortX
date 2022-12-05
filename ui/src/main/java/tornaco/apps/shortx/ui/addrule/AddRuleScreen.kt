@@ -13,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.enro.core.NavigationKey
@@ -23,14 +22,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.ui.addrule.action.ShellCommandSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberShellCommandSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.Actions
+import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.FactSelector
 import tornaco.apps.shortx.ui.addrule.fact.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
-import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Parcelize
@@ -172,123 +173,4 @@ private fun TitleAndDescription(
     }, value = state.description, onValueChange = { description ->
         vm.setDescription(description)
     })
-}
-
-@Composable
-private fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle("Fact")
-
-        Box {
-            val selectorState = rememberDropdownSelectorState()
-            TextButton(onClick = {
-                selectorState.open()
-            }) {
-                Text(text = state.fact?.label?.invoke() ?: "Select Fact")
-            }
-
-            DropdownSelector(state = selectorState, items = state.selectableFacts.map {
-                DropdownItem(label = it.label(), data = it, icon = it.icon)
-            }) {
-                selectFact(it.data)
-            }
-        }
-    }
-}
-
-@Composable
-fun Conditions(
-    state: AddRuleState,
-    selectCondition: (Condition) -> Unit,
-    removeCondition: (Condition) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle("Conditions")
-
-        Box {
-            val selectorState = rememberDropdownSelectorState()
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                state.conditions.forEach {
-                    ListItem(
-                        title = it.labelWithValue(LocalI18N.current),
-                        icon = {
-                            IconForCondition(it)
-                        },
-                        action1 = {
-                            IconButton(onClick = {
-                                removeCondition(it)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "Remove"
-                                )
-                            }
-                        }, onClick = {})
-                }
-                TextButton(onClick = {
-                    selectorState.open()
-                }) {
-                    Text("Add Condition")
-                }
-            }
-
-            DropdownSelector(state = selectorState, items = state.selectableConditions.map {
-                DropdownItem(
-                    label = it.labelForSelector(LocalI18N.current), data = it, icon = it.icon
-                )
-            }) {
-                selectCondition(it.data)
-            }
-        }
-    }
-}
-
-@Composable
-private fun IconForCondition(condition: Condition) {
-    if (condition is Condition.CurrentForegroundApp) {
-        AppIcon(modifier = Modifier.size(24.dp), condition.app.pkg)
-    }
-}
-
-@Composable
-fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (Action) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle("Actions")
-
-        val context = LocalContext.current
-        Box {
-            val selectorState = rememberDropdownSelectorState()
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                state.actions.forEach {
-                    ActionItem(title = it.label(context), onClick = {}, onRemoveClick = {
-                        removeAction(it)
-                    })
-                }
-                TextButton(onClick = {
-                    selectorState.open()
-                }) {
-                    Text("Add Action")
-                }
-            }
-
-            DropdownSelector(state = selectorState, items = state.selectableActions.map {
-                DropdownItem(label = it.label(context), data = it, icon = it.icon)
-            }) {
-                selectAction(it.data)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ActionItem(
-    title: String, onClick: () -> Unit, onRemoveClick: () -> Unit
-) {
-    ListItem(title = title, action1 = {
-        IconButton(onClick = { onRemoveClick() }) {
-            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
-        }
-    }, onClick = {})
 }

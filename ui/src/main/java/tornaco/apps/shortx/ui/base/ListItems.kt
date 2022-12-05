@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ListItem(
-    title: String,
+    titleLines: List<String>,
     icon: @Composable () -> Unit = {},
     action1: @Composable () -> Unit,
     onClick: () -> Unit
@@ -39,7 +39,12 @@ fun ListItem(
             icon()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Text(text = titleLines[0], style = MaterialTheme.typography.titleMedium)
+                if (titleLines.size > 1) {
+                    titleLines.subList(1, titleLines.size).forEach {
+                        Text(text = it, style = MaterialTheme.typography.titleSmall)
+                    }
+                }
             }
         }
 

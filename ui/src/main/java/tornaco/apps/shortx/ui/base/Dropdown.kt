@@ -1,24 +1,19 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 
 data class DropdownItem<T>(
-    val label: String,
+    val labelLines: List<String>,
     val data: T,
-    val icon: ImageVector? = null,
+    val icon: @Composable () -> Unit = {}
 )
 
 class DropdownSelectorState {
@@ -57,11 +52,16 @@ fun <T> DropdownSelector(
         items.forEach {
             DropdownMenuItem(text = {
                 Row(verticalAlignment = CenterVertically) {
-                    it.icon?.let { vector ->
-                        Icon(imageVector = vector, contentDescription = it.label)
-                    }
+                    it.icon.invoke()
                     Spacer(modifier = Modifier.size(4.dp))
-                    Text(text = it.label)
+                    Column {
+                        Text(text = it.labelLines[0])
+                        if (it.labelLines.size > 1) {
+                            it.labelLines.subList(1, it.labelLines.size).forEach {
+                                Text(text = it)
+                            }
+                        }
+                    }
                 }
             }, onClick = {
                 state.close()
