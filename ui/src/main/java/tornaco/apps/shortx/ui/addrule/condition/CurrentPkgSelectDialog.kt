@@ -114,7 +114,7 @@ private fun AppItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                AppIcon(modifier = Modifier.size(38.dp), app)
+                AppIcon(modifier = Modifier.size(38.dp), app.pkg)
                 Spacer(modifier = Modifier.size(12.dp))
 
                 Column(verticalArrangement = Arrangement.Center) {

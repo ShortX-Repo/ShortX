@@ -22,7 +22,7 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.signature.ObjectKey;
 
-import tornaco.apps.shortx.core.App;
+import tornaco.apps.shortx.core.Pkg;
 import tornaco.apps.shortx.core.util.Logger;
 
 /**
@@ -43,17 +43,17 @@ public class GlidePackageIconModule extends AppGlideModule {
     @SuppressWarnings("NullableProblems")
     private static class PackageInfoDataFetcher implements DataFetcher<Bitmap> {
 
-        private final App info;
+        private final Pkg info;
         private final Context context;
 
-        public PackageInfoDataFetcher(App info, Context context) {
+        public PackageInfoDataFetcher(Pkg info, Context context) {
             this.info = info;
             this.context = context;
         }
 
         @Override
         public void loadData(Priority priority, DataCallback<? super Bitmap> callback) {
-            Bitmap bd = AppIconLoaderUtil.loadAppIconBitmapWithIconPack(context, getInfo().getPkg().getPkgName(), getInfo().getPkg().getUserId());
+            Bitmap bd = AppIconLoaderUtil.loadAppIconBitmapWithIconPack(context, info.getPkgName(), info.getUserId());
             callback.onDataReady(bd);
         }
 
@@ -78,32 +78,28 @@ public class GlidePackageIconModule extends AppGlideModule {
         public DataSource getDataSource() {
             return DataSource.LOCAL;
         }
-
-        public App getInfo() {
-            return this.info;
-        }
     }
 
     private static class PackageIconModuleLoaderFactory
-            implements ModelLoaderFactory<App, Bitmap> {
+            implements ModelLoaderFactory<Pkg, Bitmap> {
         private final Context context;
 
-        private static final Singleton2<Context, ModelLoader<App, Bitmap>> sLoader
-                = new Singleton2<Context, ModelLoader<App, Bitmap>>() {
+        private static final Singleton2<Context, ModelLoader<Pkg, Bitmap>> sLoader
+                = new Singleton2<Context, ModelLoader<Pkg, Bitmap>>() {
             @Override
-            protected ModelLoader<App, Bitmap> create(Context context) {
-                return new ModelLoader<App, Bitmap>() {
+            protected ModelLoader<Pkg, Bitmap> create(Context context) {
+                return new ModelLoader<Pkg, Bitmap>() {
                     @NonNull
                     @Override
-                    public LoadData<Bitmap> buildLoadData(App info, int width,
+                    public LoadData<Bitmap> buildLoadData(Pkg info, int width,
                                                           int height, Options options) {
-                        Key diskCacheKey = new ObjectKey(info.getPkg().getPkgName() + "-" + info.getPkg().getUserId());
+                        Key diskCacheKey = new ObjectKey(info.getPkgName() + "-" + info.getUserId());
                         return new LoadData<>(diskCacheKey, new PackageInfoDataFetcher(info, context));
                     }
 
                     @Override
-                    public boolean handles(App info) {
-                        return info.getPkg() != null;
+                    public boolean handles(Pkg info) {
+                        return info.getPkgName() != null;
                     }
                 };
             }
@@ -114,12 +110,12 @@ public class GlidePackageIconModule extends AppGlideModule {
         }
 
 
-        private static ModelLoader<App, Bitmap> singleInstanceLoader(Context context) {
+        private static ModelLoader<Pkg, Bitmap> singleInstanceLoader(Context context) {
             return sLoader.get(context);
         }
 
         @Override
-        public ModelLoader<App, Bitmap> build(MultiModelLoaderFactory multiFactory) {
+        public ModelLoader<Pkg, Bitmap> build(MultiModelLoaderFactory multiFactory) {
             return singleInstanceLoader(context);
         }
 
@@ -132,7 +128,7 @@ public class GlidePackageIconModule extends AppGlideModule {
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry) {
         super.registerComponents(context, glide, registry);
-        registry.append(App.class,
+        registry.append(Pkg.class,
                 Bitmap.class, new PackageIconModuleLoaderFactory(context));
     }
 }

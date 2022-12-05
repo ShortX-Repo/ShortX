@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ListItem(
     title: String,
+    icon: @Composable () -> Unit = {},
     action1: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
@@ -35,7 +36,7 @@ fun ListItem(
             }
             .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically) {
-            Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+            icon()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium)

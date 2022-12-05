@@ -112,11 +112,11 @@ fun AddRuleScreen() {
                     // Condition selectors
                     val currentPkgSelectorState =
                         rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-                            vm.addCondition(Condition.CurrentPkg(pkg))
+                            vm.addCondition(Condition.CurrentForegroundApp(pkg))
                         }
                     CurrentPkgSelector(currentPkgSelectorState)
                     Conditions(state = state, selectCondition = { con ->
-                        if (con is Condition.CurrentPkg) {
+                        if (con is Condition.CurrentForegroundApp) {
                             currentPkgSelectorState.show()
                         }
                     }, removeCondition = { con ->
@@ -210,13 +210,21 @@ fun Conditions(
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
-                    ListItem(title = it.labelWithValue(LocalI18N.current), action1 = {
-                        IconButton(onClick = {
-                            removeCondition(it)
-                        }) {
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
-                        }
-                    }, onClick = {})
+                    ListItem(
+                        title = it.labelWithValue(LocalI18N.current),
+                        icon = {
+                            IconForCondition(it)
+                        },
+                        action1 = {
+                            IconButton(onClick = {
+                                removeCondition(it)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Remove"
+                                )
+                            }
+                        }, onClick = {})
                 }
                 TextButton(onClick = {
                     selectorState.open()
@@ -233,6 +241,13 @@ fun Conditions(
                 selectCondition(it.data)
             }
         }
+    }
+}
+
+@Composable
+private fun IconForCondition(condition: Condition) {
+    if (condition is Condition.CurrentForegroundApp) {
+        AppIcon(modifier = Modifier.size(24.dp), condition.app.pkg)
     }
 }
 

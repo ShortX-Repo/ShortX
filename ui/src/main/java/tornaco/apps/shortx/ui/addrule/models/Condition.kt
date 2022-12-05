@@ -19,7 +19,7 @@ sealed class Condition(
     val labelForSelector: (I18N) -> String,
     val icon: ImageVector
 ) {
-    data class CurrentPkg(val app: App) : Condition({
+    data class CurrentForegroundApp(val app: App) : Condition({
         it["ui.dialog.title.current.app.with.app.label", mapOf("app" to app.label)]
     }, {
         it["ui.dialog.title.current.app"]
@@ -28,7 +28,7 @@ sealed class Condition(
 
 fun Condition.toProtoCondition(): ProtoMessage {
     return when (this) {
-        is Condition.CurrentPkg -> {
+        is Condition.CurrentForegroundApp -> {
             CurrentPkg.newBuilder().setPkgName(this.app.pkg.pkgName).build()
         }
     }
@@ -39,7 +39,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         val data = this unpack_ CurrentPkg::class.java
         val pkg = Pkg(data.pkgName, userId = 0)
         val appLabel = shortXManager.getAppLabel(pkg)
-        Condition.CurrentPkg(
+        Condition.CurrentForegroundApp(
             app = App(
                 pkg = pkg, label = appLabel, category = AppCategory.User
             )

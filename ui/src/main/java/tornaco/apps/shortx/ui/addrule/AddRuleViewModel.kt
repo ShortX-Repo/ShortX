@@ -51,7 +51,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             selectableFacts = listOf(
                 Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN), Fact.ActivityStarted("N/A")
             ), selectableConditions = listOf(
-                Condition.CurrentPkg(
+                Condition.CurrentForegroundApp(
                     App(
                         pkg = unKnownPkg,
                         label = "",
