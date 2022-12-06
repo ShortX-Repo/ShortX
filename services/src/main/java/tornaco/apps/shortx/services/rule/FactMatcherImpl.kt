@@ -15,7 +15,7 @@ class FactMatcherImpl : FactMatcher {
 
     init {
         register(KeyEvent::class.java) { l, r ->
-            (l as KeyEvent).keyCode == (r as KeyEvent).keyCode
+            l == r
         }
     }
 
@@ -35,7 +35,7 @@ class FactMatcherImpl : FactMatcher {
     private fun match0(l: ProtoMessage, r: ProtoMessage): Boolean {
         val matcher = factValueMatchers[l.javaClass]
         logger.d("matching $l $r")
-        return matcher?.invoke(l, r) ?: false
+        return matcher?.invoke(l, r) ?: (l == r)
     }
 
 }

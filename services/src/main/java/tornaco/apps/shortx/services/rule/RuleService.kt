@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.services.ShortXContext
@@ -39,7 +40,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     systemServiceScope.launchSafety {
                         engine.fire(
-                            fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build(),
+                            fact = fact,
                             rules = enabledRules
                         )
                     }
@@ -51,6 +52,19 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
 
         shortXContext.gesture.onGestureEvent {
+            logger.d("onGestureEvent: $it")
+            val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
+            val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
+            if (engine.shouldFire(enabledRules, fact)) {
+                logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
+                systemServiceScope.launchSafety {
+                    engine.fire(
+                        fact = fact,
+                        rules = enabledRules
+                    )
+                }
+                return@onGestureEvent true
+            }
             false
         }
     }

@@ -27,9 +27,7 @@ import tornaco.apps.shortx.ui.addrule.condition.Actions
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.FactSelector
-import tornaco.apps.shortx.ui.addrule.fact.KeyEventSelector
-import tornaco.apps.shortx.ui.addrule.fact.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
@@ -91,6 +89,11 @@ fun AddRuleScreen() {
                 })
                 KeyEventSelector(keyEventSelectorState)
 
+                val edgeGestureSelectorState = rememberEdgeGestureSelectorState { eg ->
+                    vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
+                }
+                EdgeGestureSelector(edgeGestureSelectorState)
+
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
@@ -103,10 +106,15 @@ fun AddRuleScreen() {
                     Spacer(modifier = Modifier.size(16.dp))
 
                     FactSelector(state) { fact ->
-                        if (fact is Fact.KeyEvent) {
-                            keyEventSelectorState.show()
-                        } else if (fact is Fact.ActivityStarted) {
-                            // noop
+                        when (fact) {
+                            is Fact.KeyEvent -> {
+                                keyEventSelectorState.show()
+                            }
+                            is Fact.ActivityStarted -> {
+                            }
+                            is Fact.EdgeGesture -> {
+                                edgeGestureSelectorState.show()
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.size(16.dp))

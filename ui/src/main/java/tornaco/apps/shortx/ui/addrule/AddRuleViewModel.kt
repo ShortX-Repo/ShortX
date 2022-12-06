@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
+import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
@@ -49,7 +51,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
     override fun initState(): AddRuleState {
         return AddRuleState(
             selectableFacts = listOf(
-                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN), Fact.ActivityStarted("N/A")
+                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
+                Fact.ActivityStarted("N/A"),
+                Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap)
             ), selectableConditions = listOf(
                 Condition.CurrentForegroundApp(
                     App(

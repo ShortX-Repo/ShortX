@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.sp
 fun ListItem(
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
-    action1: @Composable () -> Unit,
-    onClick: () -> Unit
+    action1: @Composable () -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -44,6 +44,36 @@ fun ListItem(
                         Text(text = it, style = MaterialTheme.typography.titleSmall)
                     }
                 }
+            }
+        }
+
+        action1()
+    }
+}
+
+@Composable
+fun ListItem(
+    title: String,
+    icon: @Composable () -> Unit = {},
+    action1: @Composable () -> Unit = {},
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier
+            .heightIn(min = 60.dp)
+            .weight(1f, fill = false)
+            .clickable {
+                onClick()
+            }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            icon()
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(modifier = Modifier) {
+                Text(text = title, style = MaterialTheme.typography.titleMedium)
             }
         }
 
