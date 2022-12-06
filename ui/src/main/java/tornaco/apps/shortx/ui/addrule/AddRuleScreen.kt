@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.fact.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Parcelize
@@ -63,7 +65,7 @@ fun AddRuleScreen() {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = if (state.isEditRule) "Edit Rule" else "Add Rule") },
+                        title = { Text(text = if (state.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 navigation.closeWithResult(false)
@@ -71,18 +73,17 @@ fun AddRuleScreen() {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
                         },
+                        actions = {
+                            IconButton(
+                                enabled = state.ruleChanged,
+                                onClick = {
+                                    vm.save()
+                                }) {
+                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                            }
+                        },
                         scrollBehavior = scrollBehavior
                     )
-                },
-                bottomBar = {
-                    FilledTonalButton(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .padding(vertical = 16.dp),
-                        enabled = state.ruleChanged,
-                        onClick = { vm.save() }) {
-                        Text(if (state.isEditRule) "Update" else "Save")
-                    }
                 }) {
                 // Fact selectors
                 val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
@@ -163,13 +164,13 @@ private fun TitleAndDescription(
     vm: AddRuleViewModel,
 ) {
     OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = "Title")
+        Text(text = LocalI18N.current["ui.rule.title"])
     }, value = state.title, onValueChange = { title ->
         vm.setTitle(title)
     })
     Spacer(modifier = Modifier.size(16.dp))
     OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = "Description")
+        Text(text = LocalI18N.current["ui.rule.description"])
     }, value = state.description, onValueChange = { description ->
         vm.setDescription(description)
     })

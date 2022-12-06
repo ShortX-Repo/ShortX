@@ -18,7 +18,7 @@ import tornaco.apps.shortx.ui.base.*
 @Composable
 fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (Action) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle("Actions")
+        MediumTitle(LocalI18N.current["ui.actions.title"])
         Box {
             val selectorState = rememberDropdownSelectorState()
 
@@ -39,7 +39,10 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (
                 TextButton(onClick = {
                     selectorState.open()
                 }) {
-                    Text("Add Action")
+                    Icon(
+                        imageVector = Icons.Filled.Add, contentDescription = "Select"
+                    )
+                    Text(LocalI18N.current["ui.actions.add"])
                 }
             }
 

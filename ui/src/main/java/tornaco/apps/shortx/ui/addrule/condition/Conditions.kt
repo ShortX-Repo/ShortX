@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -23,7 +24,7 @@ fun Conditions(
     state: AddRuleState, selectCondition: (Condition) -> Unit, removeCondition: (Condition) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle("Conditions")
+        MediumTitle(LocalI18N.current["ui.conditions.title"])
 
         Box {
             val selectorState = rememberDropdownSelectorState()
@@ -45,7 +46,10 @@ fun Conditions(
                 TextButton(onClick = {
                     selectorState.open()
                 }) {
-                    Text("Add Condition")
+                    Icon(
+                        imageVector = Icons.Filled.Add, contentDescription = "Select"
+                    )
+                    Text(LocalI18N.current["ui.conditions.add"])
                 }
             }
 

@@ -1,5 +1,14 @@
 {
   "ui.dialog.title.current.app": "When app in foreground",
   "ui.dialog.title.current.app.with.app.label": "When {app} in foreground",
-  "ui.search.title.search.n.apps": "Search {count} Apps"
+  "ui.search.title.search.n.apps": "Search {count} Apps",
+  "ui.fact.title": "Trigger",
+  "ui.conditions.title": "Conditions",
+  "ui.conditions.add": "Add Conditions",
+  "ui.actions.title": "Actions",
+  "ui.actions.add": "Add Action",
+  "ui.title.edit.rule": "Edit Rule",
+  "ui.title.add.rule": "New Rule",
+  "ui.rule.title": "Title",
+  "ui.rule.description": "Description"
 }

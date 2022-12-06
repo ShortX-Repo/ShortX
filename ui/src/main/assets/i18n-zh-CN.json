@@ -1,5 +1,15 @@
 {
   "ui.dialog.title.current.app": "某应用在前台时",
   "ui.dialog.title.current.app.with.app.label": "当 {app} 在前台时",
-  "ui.search.title.search.n.apps": "搜素 {count} 个应用"
+  "ui.search.title.search.n.apps": "搜素 {count} 个应用",
+  "ui.fact.title": "触发器",
+  "ui.fact.select": "选择触发器",
+  "ui.conditions.title": "条件",
+  "ui.conditions.add": "添加条件",
+  "ui.actions.title": "动作",
+  "ui.actions.add": "添加动作",
+  "ui.title.edit.rule": "编辑",
+  "ui.title.add.rule": "创建",
+  "ui.rule.title": "标题",
+  "ui.rule.description": "描述"
 }
