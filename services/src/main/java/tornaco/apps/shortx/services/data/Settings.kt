@@ -1,8 +1,8 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
-import tornaco.apps.shortx.core.rule.fact.gesture.Area
-import tornaco.apps.shortx.core.rule.fact.gesture.GestureEvent
+import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.fact.Gesture
 
 sealed class Settings<T>(val key: String, val defaultValue: T) {
 
@@ -11,14 +11,14 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         object GestureEnabled : BoolSettings(key = "GestureEnabled", defaultValue = false)
 
-        data class GestureOnAreaEnabled(val area: Area) :
+        data class GestureOnAreaEnabled(val area: Edge) :
             BoolSettings(key = "GestureOnAreaEnabled-$area", defaultValue = false)
     }
 
     sealed class MapSettings(key: String, defaultValue: Map<String, String> = emptyMap()) :
         Settings<Map<String, String>>(key, defaultValue) {
 
-        data class GestureActionOnArea(val area: Area, val gestureEvent: GestureEvent) :
+        data class GestureActionOnArea(val area: Edge, val gestureEvent: Gesture) :
             MapSettings(key = "GestureActionOnArea-$area-$gestureEvent")
     }
 }

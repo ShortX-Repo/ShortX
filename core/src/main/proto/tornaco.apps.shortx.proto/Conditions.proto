@@ -12,9 +12,12 @@ message CurrentPkg {
   int32 userId = 2;
 }
 
+message CurrentPkgMultiple {
+  repeated CurrentPkg pkgs = 1;
+}
+
 message CurrentActivity {
   string pkgName = 1;
   string className = 2;
   int32 userId = 3;
 }
-

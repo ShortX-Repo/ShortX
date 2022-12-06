@@ -3,135 +3,131 @@ package tornaco.apps.shortx.services.gesture
 import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
-import tornaco.apps.shortx.core.rule.fact.gesture.Area
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.services.dp
 
 val defaultHotSeatSize by lazy {
     16.dp
 }
 
-data class HotSeat(val area: Area, @ColorInt val color: Int)
+data class HotSeat(val area: Edge, @ColorInt val color: Int)
 
-fun Area.getRect(
+fun Edge.getRect(
     screenWidth: Float,
     screenHeight: Float,
     areaSize: Float = defaultHotSeatSize.toFloat(),
 ): RectF {
     return when (this) {
-        Area.BottomAll -> {
-            RectF(areaSize,
-                screenHeight - areaSize,
-                screenWidth - areaSize,
-                screenHeight)
+        Edge.BottomAll -> {
+            RectF(
+                areaSize, screenHeight - areaSize, screenWidth - areaSize, screenHeight
+            )
         }
-        Area.BottomCenter -> {
+        Edge.BottomCenter -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize + splitSize,
+            RectF(
+                areaSize + splitSize,
                 screenHeight - areaSize,
                 areaSize + splitSize * 2,
-                screenHeight)
+                screenHeight
+            )
         }
-        Area.BottomLeft -> {
+        Edge.BottomLeft -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize,
-                screenHeight - areaSize,
-                areaSize + splitSize,
-                screenHeight)
+            RectF(
+                areaSize, screenHeight - areaSize, areaSize + splitSize, screenHeight
+            )
         }
-        Area.BottomRight -> {
+        Edge.BottomRight -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize + 2 * splitSize,
+            RectF(
+                areaSize + 2 * splitSize,
                 screenHeight - areaSize,
                 screenWidth - areaSize,
-                screenHeight)
+                screenHeight
+            )
         }
 
-        Area.LeftAll -> RectF()
-        Area.LeftTop -> {
+        Edge.LeftAll -> RectF()
+        Edge.LeftTop -> {
             val splitSize = screenHeight / 3
-            RectF(0f,
-                0f,
-                areaSize,
-                splitSize)
+            RectF(
+                0f, 0f, areaSize, splitSize
+            )
         }
-        Area.LeftCenter -> {
+        Edge.LeftCenter -> {
             val splitSize = screenHeight / 3
-            RectF(0f,
-                splitSize,
-                areaSize,
-                splitSize * 2)
+            RectF(
+                0f, splitSize, areaSize, splitSize * 2
+            )
         }
-        Area.LeftBottom -> {
+        Edge.LeftBottom -> {
             val splitSize = screenHeight / 3
-            RectF(0f,
-                splitSize * 2,
-                areaSize,
-                screenHeight)
+            RectF(
+                0f, splitSize * 2, areaSize, screenHeight
+            )
         }
 
 
-        Area.RightAll -> RectF()
-        Area.RightCenter -> {
+        Edge.RightAll -> RectF()
+        Edge.RightCenter -> {
             val splitSize = screenHeight / 3
-            RectF(screenWidth - areaSize,
-                splitSize,
-                screenWidth,
-                splitSize * 2)
+            RectF(
+                screenWidth - areaSize, splitSize, screenWidth, splitSize * 2
+            )
         }
-        Area.RightTop -> {
+        Edge.RightTop -> {
             val splitSize = screenHeight / 3
-            RectF(screenWidth - areaSize,
-                0f,
-                screenWidth,
-                splitSize)
+            RectF(
+                screenWidth - areaSize, 0f, screenWidth, splitSize
+            )
         }
-        Area.RightBottom -> {
+        Edge.RightBottom -> {
             val splitSize = screenHeight / 3
-            RectF(screenWidth - areaSize,
-                splitSize * 2,
-                screenWidth,
-                screenHeight)
+            RectF(
+                screenWidth - areaSize, splitSize * 2, screenWidth, screenHeight
+            )
         }
 
-        Area.TopAll -> RectF()
-        Area.TopCenter -> {
+        Edge.TopAll -> RectF()
+        Edge.TopCenter -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize + splitSize,
-                0f,
-                areaSize + splitSize * 2,
-                areaSize)
+            RectF(
+                areaSize + splitSize, 0f, areaSize + splitSize * 2, areaSize
+            )
         }
-        Area.TopLeft -> {
+        Edge.TopLeft -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize,
-                0f,
-                areaSize + splitSize,
-                areaSize)
+            RectF(
+                areaSize, 0f, areaSize + splitSize, areaSize
+            )
         }
-        Area.TopRight -> {
+        Edge.TopRight -> {
             val splitSize = (screenWidth - 2 * areaSize) / 3
-            RectF(areaSize + 2 * splitSize,
-                0f,
-                screenWidth - areaSize,
-                areaSize)
+            RectF(
+                areaSize + 2 * splitSize, 0f, screenWidth - areaSize, areaSize
+            )
+        }
+        Edge.UNRECOGNIZED -> {
+            RectF()
         }
     }
 }
 
 val allHotSeats = listOf(
-    HotSeat(Area.BottomLeft, Color.RED),
-    HotSeat(Area.BottomCenter, Color.GREEN),
-    HotSeat(Area.BottomRight, Color.BLUE),
+    HotSeat(Edge.BottomLeft, Color.RED),
+    HotSeat(Edge.BottomCenter, Color.GREEN),
+    HotSeat(Edge.BottomRight, Color.BLUE),
 
-    HotSeat(Area.TopLeft, Color.RED),
-    HotSeat(Area.TopCenter, Color.GREEN),
-    HotSeat(Area.TopRight, Color.BLUE),
+    HotSeat(Edge.TopLeft, Color.RED),
+    HotSeat(Edge.TopCenter, Color.GREEN),
+    HotSeat(Edge.TopRight, Color.BLUE),
 
-    HotSeat(Area.LeftTop, Color.RED),
-    HotSeat(Area.LeftCenter, Color.GREEN),
-    HotSeat(Area.LeftBottom, Color.BLUE),
+    HotSeat(Edge.LeftTop, Color.RED),
+    HotSeat(Edge.LeftCenter, Color.GREEN),
+    HotSeat(Edge.LeftBottom, Color.BLUE),
 
-    HotSeat(Area.RightTop, Color.RED),
-    HotSeat(Area.RightCenter, Color.GREEN),
-    HotSeat(Area.RightBottom, Color.BLUE),
+    HotSeat(Edge.RightTop, Color.RED),
+    HotSeat(Edge.RightCenter, Color.GREEN),
+    HotSeat(Edge.RightBottom, Color.BLUE),
 )

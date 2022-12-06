@@ -7,3 +7,39 @@ option java_multiple_files = true;
 message KeyEvent {
   int32 keyCode = 1;
 }
+
+message EdgeGesture {
+  Edge edge = 1;
+  Gesture gesture = 2;
+}
+
+enum Edge {
+  LeftTop = 0;
+  LeftCenter = 1;
+  LeftBottom = 2;
+  LeftAll = 3;
+
+  RightTop = 4;
+  RightCenter = 5;
+  RightBottom = 6;
+  RightAll = 7;
+
+  TopLeft = 8;
+  TopCenter = 9;
+  TopRight = 10;
+  TopAll = 11;
+
+  BottomLeft = 12;
+  BottomCenter = 13;
+  BottomRight = 14;
+  BottomAll = 15;
+}
+
+enum Gesture {
+  DoubleTap = 0;
+  LongTap = 1;
+  SingleTap = 2;
+  SwipeFromBottom = 3;
+  SwipeFromRight = 4;
+  SwipeFromLeft = 5;
+}
