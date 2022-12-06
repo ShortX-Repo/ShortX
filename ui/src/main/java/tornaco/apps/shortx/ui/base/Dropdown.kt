@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -53,12 +54,12 @@ fun <T> DropdownSelector(
             DropdownMenuItem(text = {
                 Row(verticalAlignment = CenterVertically) {
                     it.icon.invoke()
-                    Spacer(modifier = Modifier.size(4.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
                     Column {
-                        Text(text = it.labelLines[0])
+                        Text(text = it.labelLines[0], style = MaterialTheme.typography.titleMedium)
                         if (it.labelLines.size > 1) {
                             it.labelLines.subList(1, it.labelLines.size).forEach {
-                                Text(text = it)
+                                Text(text = it, style = MaterialTheme.typography.titleSmall)
                             }
                         }
                     }
