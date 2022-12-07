@@ -94,16 +94,16 @@ fun AddRuleScreen() {
                 ) {
 
                     TitleAndDescription(state, vm)
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(24.dp))
 
                     FactSelectors(vm, state)
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(24.dp))
 
                     ConditionSelectors(state, vm)
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(24.dp))
 
                     ActionSelectors(vm, state)
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(24.dp))
                 }
             }
         }
@@ -191,9 +191,12 @@ private fun FactSelectors(
     })
     KeyEventSelector(keyEventSelectorState)
 
-    val edgeGestureSelectorState = rememberEdgeGestureSelectorState { eg ->
-        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
-    }
+    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
+        selected = { eg ->
+            vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
+        }, showEdgeHint = {
+            vm.showEdgeHint(it)
+        })
     EdgeGestureSelector(edgeGestureSelectorState)
     FactSelector(state) { fact ->
         when (fact) {

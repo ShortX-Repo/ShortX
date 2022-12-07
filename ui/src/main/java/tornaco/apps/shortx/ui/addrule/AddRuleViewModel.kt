@@ -111,6 +111,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         }
     }
 
+    fun showEdgeHint(edge: Edge) {
+        shortXManager.showEdgeHint(edge)
+    }
+
     fun addCondition(condition: Condition) {
         updateState {
             copy(conditions = conditions.toMutableList().apply {
@@ -156,8 +160,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
             }
-            val rule = Rule.
-            newBuilder()
+            val rule = Rule.newBuilder()
                 .setId(state.value.id ?: UUID.randomUUID().toString())
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setFact(protoFact)

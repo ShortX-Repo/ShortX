@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
@@ -75,6 +76,12 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
     fun getAppLabel(pkg: Pkg): String {
         return invokeService("Unknown") {
             getAppLabel(pkg) ?: "Unknown"
+        }
+    }
+
+    fun showEdgeHint(edge: Edge) {
+        invokeService(Unit) {
+            showEdgeHint(edge.number)
         }
     }
 

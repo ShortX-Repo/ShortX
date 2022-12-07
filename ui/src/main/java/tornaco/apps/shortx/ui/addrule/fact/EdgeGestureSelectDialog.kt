@@ -12,7 +12,10 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.ui.base.*
 
-class EdgeGestureSelectorState(val selected: (Pair<Edge, Gesture>) -> Unit) {
+class EdgeGestureSelectorState(
+    val showEdgeHint: (Edge) -> Unit,
+    val selected: (Pair<Edge, Gesture>) -> Unit
+) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -26,9 +29,12 @@ class EdgeGestureSelectorState(val selected: (Pair<Edge, Gesture>) -> Unit) {
 }
 
 @Composable
-fun rememberEdgeGestureSelectorState(selected: (Pair<Edge, Gesture>) -> Unit): EdgeGestureSelectorState {
+fun rememberEdgeGestureSelectorState(
+    showEdgeHint: (Edge) -> Unit,
+    selected: (Pair<Edge, Gesture>) -> Unit
+): EdgeGestureSelectorState {
     return remember {
-        EdgeGestureSelectorState(selected)
+        EdgeGestureSelectorState(showEdgeHint, selected)
     }
 }
 
@@ -66,6 +72,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                         },
                         onSelect = {
                             edge = it.data
+                            state.showEdgeHint(it.data)
                         }
                     )
                 }

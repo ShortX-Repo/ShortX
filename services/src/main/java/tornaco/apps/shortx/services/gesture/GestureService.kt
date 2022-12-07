@@ -27,6 +27,13 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
         gestureDetector = Detector(context, handler, this)
     }
 
+    fun showEdgeHint(edgeNumber: Int) {
+        val edge: Edge? = Edge.forNumber(edgeNumber)
+        edge?.let {
+            showGideLineViewForArea(it)
+        }
+    }
+
     fun onKeyEvent(onKeyEvent: (KeyEvent) -> Boolean?) {
         this.onKeyEvent = onKeyEvent
     }

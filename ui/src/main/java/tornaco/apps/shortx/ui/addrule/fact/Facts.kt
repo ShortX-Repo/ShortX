@@ -4,8 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,7 +24,7 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
 
             Column {
                 state.fact?.let {
-                    ListItem(title = labelForFact(fact = it))
+                    ListItem(title = labelForFact(fact = it), icon = { IconForFact(fact = it) })
                 }
 
                 TextButton(onClick = {
@@ -64,5 +63,26 @@ private fun labelForFact(fact: Fact): String {
         is Fact.ActivityStarted -> "Activity ${fact.name} started"
         is Fact.EdgeGesture -> "Edge gesture: ${fact.edge} ${fact.gesture}"
         is Fact.KeyEvent -> "Key event: ${fact.keyCode}"
+    }
+}
+
+@Composable
+private fun IconForFact(fact: Fact) {
+    when (fact) {
+        is Fact.ActivityStarted -> {
+            Icon(
+                imageVector = Icons.Filled.Update, contentDescription = "ActivityStarted"
+            )
+        }
+        is Fact.EdgeGesture -> {
+            Icon(
+                imageVector = Icons.Filled.Gesture, contentDescription = "EdgeGesture"
+            )
+        }
+        is Fact.KeyEvent -> {
+            Icon(
+                imageVector = Icons.Filled.Key, contentDescription = "KeyEvent"
+            )
+        }
     }
 }

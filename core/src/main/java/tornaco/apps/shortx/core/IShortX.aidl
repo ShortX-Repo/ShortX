@@ -14,4 +14,6 @@ interface IShortX {
 
     List<App> getInstalledApps();
     String getAppLabel(in Pkg pkg);
+
+    void showEdgeHint(int edgeNumber);
 }

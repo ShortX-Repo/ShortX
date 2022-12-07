@@ -95,5 +95,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun getAppLabel(pkg: Pkg): String? {
             return shortXContext.appState.getAppLabel(pkg)
         }
+
+        override fun showEdgeHint(edgeNumber: Int) {
+            shortXContext.gesture.showEdgeHint(edgeNumber)
+        }
     }
 }
