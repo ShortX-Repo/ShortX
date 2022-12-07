@@ -156,11 +156,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
             }
-            val rule = Rule.newBuilder().setId(state.value.id ?: UUID.randomUUID().toString())
-                .setLastUpdateTime(System.currentTimeMillis()).setFact(protoFact)
+            val rule = Rule.
+            newBuilder()
+                .setId(state.value.id ?: UUID.randomUUID().toString())
+                .setLastUpdateTime(System.currentTimeMillis())
+                .setFact(protoFact)
                 .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
                 .setDescription(state.value.description.fallbackOnEmpty("No description"))
-                .addAllConditions(protoConditions).addAllActions(protoActions).build()
+                .addAllConditions(protoConditions)
+                .addAllActions(protoActions)
+                .build()
 
             shortXManager.addRule(rule)
             _ruleSaved.emit(rule.id)

@@ -42,6 +42,7 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
                     )
+                    TinySpacer()
                     Text(LocalI18N.current["ui.actions.add"])
                 }
             }

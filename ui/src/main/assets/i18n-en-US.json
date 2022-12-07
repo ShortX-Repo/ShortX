@@ -3,6 +3,7 @@
   "ui.dialog.title.current.app.with.app.label": "When {app} in foreground",
   "ui.search.title.search.n.apps": "Search {count} Apps",
   "ui.fact.title": "Trigger",
+  "ui.fact.select": "Set Trigger",
   "ui.conditions.title": "Conditions",
   "ui.conditions.add": "Add Conditions",
   "ui.actions.title": "Actions",

@@ -50,6 +50,7 @@ fun Conditions(
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
                     )
+                    TinySpacer()
                     Text(LocalI18N.current["ui.conditions.add"])
                 }
             }
