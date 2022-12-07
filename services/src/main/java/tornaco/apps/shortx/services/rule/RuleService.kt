@@ -10,6 +10,7 @@ import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
+
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)

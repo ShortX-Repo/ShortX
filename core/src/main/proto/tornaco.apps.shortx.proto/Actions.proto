@@ -23,3 +23,7 @@ message ShowToast {
 message Delay {
   int64 time = 1;
 }
+
+message MVEL {
+  string expression = 1;
+}

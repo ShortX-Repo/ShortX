@@ -72,6 +72,9 @@ private fun labelForActionSelector(action: Action): List<String> {
         Action.TakeScreenshot -> {
             listOf("Take Screenshot")
         }
+        is Action.MVEL -> {
+            listOf("MVEL expression")
+        }
     }
 }
 
@@ -89,6 +92,9 @@ private fun labelLinesForAction(action: Action): List<String> {
         }
         Action.TakeScreenshot -> {
             listOf("Take Screenshot")
+        }
+        is Action.MVEL -> {
+            listOf("MVEL expression", action.expression)
         }
     }
 }
@@ -113,7 +119,12 @@ private fun IconForAction(action: Action) {
         }
         Action.TakeScreenshot -> {
             Icon(
-                imageVector = Icons.Filled.Phone, contentDescription = "Take Screenshot"
+                imageVector = Icons.Filled.Devices, contentDescription = "Take Screenshot"
+            )
+        }
+        is Action.MVEL -> {
+            Icon(
+                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
             )
         }
     }

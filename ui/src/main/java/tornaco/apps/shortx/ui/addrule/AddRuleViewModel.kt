@@ -66,7 +66,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Action.TakeScreenshot,
                 Action.ShellCommand(""),
                 Action.ShowToast(""),
-                Action.Delay(0)
+                Action.Delay(0),
+                Action.MVEL(""),
             )
         )
     }

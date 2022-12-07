@@ -9,8 +9,11 @@ object RuleEngineFactory {
     private fun newConditionEvaluator(shortXContext: ShortXContext) =
         ConditionEvaluatorImpl(shortXContext)
 
-    private fun newActionEvaluator(context: Context, handler: Handler) =
-        ActionEvaluatorImpl(context, handler)
+    private fun newActionEvaluator(
+        context: Context,
+        shortXContext: ShortXContext,
+        handler: Handler
+    ) = ActionEvaluatorImpl(context, shortXContext, handler)
 
     private fun newFactMatcher() = FactMatcherImpl()
 
@@ -20,7 +23,7 @@ object RuleEngineFactory {
         handler: Handler,
         factMatcher: FactMatcher = newFactMatcher(),
         conditionEvaluator: ConditionEvaluator = newConditionEvaluator(shortXContext),
-        actionEvaluator: ActionEvaluator = newActionEvaluator(context, handler),
+        actionEvaluator: ActionEvaluator = newActionEvaluator(context, shortXContext, handler),
         listener: EngineListener = LogEngineListener("RuleEngine"),
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,

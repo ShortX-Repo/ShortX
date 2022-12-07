@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import tornaco.apps.shortx.core.proto.action.Delay
-import tornaco.apps.shortx.core.proto.action.ShellCommand
-import tornaco.apps.shortx.core.proto.action.ShowToast
-import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -14,6 +11,7 @@ sealed interface Action {
     data class ShellCommand(val command: String) : Action
     data class Delay(val time: Long) : Action
     data class ShowToast(val message: String) : Action
+    data class MVEL(val expression: String) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -29,6 +27,9 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         is Action.ShowToast -> {
             ShowToast.newBuilder().setMessage(message).build()
+        }
+        is Action.MVEL -> {
+            MVEL.newBuilder().setExpression(expression).build()
         }
     }
 }
@@ -49,6 +50,10 @@ fun ProtoAny.toAction(): Action? {
         this is_ Delay::class.java -> {
             val data = this unpack_ Delay::class.java
             Action.Delay(time = data.time)
+        }
+        this is_ MVEL::class.java -> {
+            val data = this unpack_ MVEL::class.java
+            Action.MVEL(expression = data.expression)
         }
         else -> null
     }

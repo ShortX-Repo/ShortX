@@ -21,7 +21,9 @@ import dev.enro.core.closeWithResult
 import dev.enro.core.compose.navigationHandle
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.ShellCommandSelector
+import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.action.rememberShellCommandSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.Actions
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
@@ -140,6 +142,11 @@ fun AddRuleScreen() {
                     }
                     ShellCommandSelector(state = shellCommandSelectorState)
 
+                    val mvelSelectorState = rememberMVELSelectorState { expression ->
+                        vm.addAction(Action.MVEL(expression))
+                    }
+                    MVELSelector(state = mvelSelectorState)
+
                     Actions(state = state, selectAction = { action: Action ->
                         when (action) {
                             is Action.TakeScreenshot -> {
@@ -153,6 +160,9 @@ fun AddRuleScreen() {
                             }
                             is Action.Delay -> {
                                 vm.addAction(Action.Delay(1000))
+                            }
+                            is Action.MVEL -> {
+                                mvelSelectorState.show()
                             }
                         }
                     }, removeAction = { action ->

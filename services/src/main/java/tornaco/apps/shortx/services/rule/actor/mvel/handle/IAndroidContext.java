@@ -1,0 +1,11 @@
+package tornaco.apps.shortx.services.rule.actor.mvel.handle;
+
+import android.content.Context;
+
+/**
+ * Android Context API: https://developer.android.com/reference/android/content/Context
+ * No extra API.
+ */
+@HandlerName("context")
+public abstract class IAndroidContext extends Context {
+}

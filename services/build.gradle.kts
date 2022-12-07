@@ -22,6 +22,9 @@ dependencies {
     implementation(Coroutines.stdlib)
 
     implementation("com.google.protobuf:protobuf-java:3.17.2")
+
+    // https://mvnrepository.com/artifact/org.mvel/mvel2
+    implementation("org.mvel:mvel2:2.4.14.Final")
 }
 
 protobuf {

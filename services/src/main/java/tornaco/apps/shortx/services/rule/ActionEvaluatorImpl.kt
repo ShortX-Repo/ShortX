@@ -9,9 +9,15 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.engine.ActionEvaluator
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 
-class ActionEvaluatorImpl(private val context: Context, private val handler: Handler) :
+class ActionEvaluatorImpl(
+    private val context: Context,
+    private val shortXContext: ShortXContext,
+    private val handler: Handler
+) :
     ActionEvaluator {
     override suspend fun evaluate(action: ProtoAny) {
         if (action is_ StartActivity::class.java) {
@@ -33,6 +39,9 @@ class ActionEvaluatorImpl(private val context: Context, private val handler: Han
         } else if (action is_ Delay::class.java) {
             val d = action unpack_ Delay::class.java
             delay(maxOf(0, d.time))
+        } else if (action is_ MVEL::class.java) {
+            val d = action unpack_ MVEL::class.java
+            MVELExecutor(context, shortXContext, d.expression).invoke()
         }
     }
 }
