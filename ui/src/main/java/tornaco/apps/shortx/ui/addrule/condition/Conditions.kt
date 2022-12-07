@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -54,13 +55,11 @@ fun Conditions(
             }
 
             DropdownSelector(state = selectorState, items = state.selectableConditions.map {
-                DropdownItem(
-                    labelLines = labelForConditionSelector(condition = it),
+                DropdownItem(labelLines = labelForConditionSelector(condition = it),
                     data = it,
                     icon = {
                         IconForConditionSelector(condition = it)
-                    }
-                )
+                    })
             }) {
                 selectCondition(it.data)
             }
@@ -74,6 +73,9 @@ private fun labelForConditionSelector(condition: Condition): List<String> {
         is Condition.CurrentForegroundApp -> {
             listOf(LocalI18N.current["ui.dialog.title.current.app"])
         }
+        is Condition.MVEL -> {
+            listOf("MVEL expression")
+        }
     }
 }
 
@@ -83,13 +85,23 @@ private fun labelForCondition(condition: Condition): List<String> {
         is Condition.CurrentForegroundApp -> {
             listOf(LocalI18N.current["ui.dialog.title.current.app.with.app.label", mapOf("app" to condition.app.label)])
         }
+        is Condition.MVEL -> {
+            listOf("MVEL expression", condition.expression)
+        }
     }
 }
 
 @Composable
 private fun IconForCondition(condition: Condition) {
-    if (condition is Condition.CurrentForegroundApp) {
-        AppIcon(modifier = Modifier.size(24.dp), condition.app.pkg)
+    when (condition) {
+        is Condition.CurrentForegroundApp -> {
+            AppIcon(modifier = Modifier.size(24.dp), condition.app.pkg)
+        }
+        is Condition.MVEL -> {
+            Icon(
+                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            )
+        }
     }
 }
 
@@ -100,6 +112,11 @@ private fun IconForConditionSelector(condition: Condition) {
         is Condition.CurrentForegroundApp -> {
             Icon(
                 imageVector = Icons.Filled.Android, contentDescription = "App"
+            )
+        }
+        is Condition.MVEL -> {
+            Icon(
+                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
             )
         }
     }

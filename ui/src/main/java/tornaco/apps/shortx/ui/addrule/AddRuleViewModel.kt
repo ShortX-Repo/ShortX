@@ -61,7 +61,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                         label = "",
                         category = AppCategory.User
                     )
-                )
+                ),
+                Condition.MVEL("")
             ), selectableActions = listOf(
                 Action.TakeScreenshot,
                 Action.ShellCommand(""),

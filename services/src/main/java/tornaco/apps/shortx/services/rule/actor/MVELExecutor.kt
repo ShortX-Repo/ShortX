@@ -15,13 +15,13 @@ class MVELExecutor(
 ) {
     private val logger = Logger("MVELExecutor")
 
-    operator fun invoke() {
+    operator fun invoke(): Any {
         val varsMap: Map<String, Any> = mutableMapOf<String, Any>().apply {
             put("context", context)
             Handle.inject(context, shortXContext, this)
         }
         val factory: VariableResolverFactory = MapVariableResolverFactory(varsMap)
         logger.w("Execute: $expression")
-        MVEL.eval(expression, factory)
+        return MVEL.eval(expression, factory)
     }
 }

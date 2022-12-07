@@ -24,6 +24,6 @@ message Delay {
   int64 time = 1;
 }
 
-message MVEL {
+message ExecuteMVEL {
   string expression = 1;
 }

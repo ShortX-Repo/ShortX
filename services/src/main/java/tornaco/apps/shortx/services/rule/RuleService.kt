@@ -17,7 +17,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
-            shortXContext = shortXContext, context = context, handler = handler
+            shortXContext = shortXContext, androidContext = context, handler = handler
         )
     }
 

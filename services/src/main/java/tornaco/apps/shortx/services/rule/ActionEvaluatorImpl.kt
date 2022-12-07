@@ -39,8 +39,8 @@ class ActionEvaluatorImpl(
         } else if (action is_ Delay::class.java) {
             val d = action unpack_ Delay::class.java
             delay(maxOf(0, d.time))
-        } else if (action is_ MVEL::class.java) {
-            val d = action unpack_ MVEL::class.java
+        } else if (action is_ ExecuteMVEL::class.java) {
+            val d = action unpack_ ExecuteMVEL::class.java
             MVELExecutor(context, shortXContext, d.expression).invoke()
         }
     }

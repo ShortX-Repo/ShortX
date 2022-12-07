@@ -67,7 +67,7 @@ class RuleProtoTest {
 
         RuleEngineFactory.newRuleEngine(
             shortXContext = mockk(),
-            context = mockk(),
+            androidContext = mockk(),
             handler = mockk(),
             listener = listener
         ).fire(

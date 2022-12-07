@@ -29,7 +29,7 @@ fun Action.toProtoAction(): ProtoMessage {
             ShowToast.newBuilder().setMessage(message).build()
         }
         is Action.MVEL -> {
-            MVEL.newBuilder().setExpression(expression).build()
+            ExecuteMVEL.newBuilder().setExpression(expression).build()
         }
     }
 }
@@ -51,8 +51,8 @@ fun ProtoAny.toAction(): Action? {
             val data = this unpack_ Delay::class.java
             Action.Delay(time = data.time)
         }
-        this is_ MVEL::class.java -> {
-            val data = this unpack_ MVEL::class.java
+        this is_ ExecuteMVEL::class.java -> {
+            val data = this unpack_ ExecuteMVEL::class.java
             Action.MVEL(expression = data.expression)
         }
         else -> null

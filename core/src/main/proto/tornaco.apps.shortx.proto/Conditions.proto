@@ -21,3 +21,7 @@ message CurrentActivity {
   string className = 2;
   int32 userId = 3;
 }
+
+message MatchMVEL {
+  string expression = 1;
+}

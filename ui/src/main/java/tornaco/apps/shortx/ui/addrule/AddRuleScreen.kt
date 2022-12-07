@@ -85,17 +85,6 @@ fun AddRuleScreen() {
                         scrollBehavior = scrollBehavior
                     )
                 }) {
-                // Fact selectors
-                val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
-                    vm.setFact(Fact.KeyEvent(code))
-                })
-                KeyEventSelector(keyEventSelectorState)
-
-                val edgeGestureSelectorState = rememberEdgeGestureSelectorState { eg ->
-                    vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
-                }
-                EdgeGestureSelector(edgeGestureSelectorState)
-
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
@@ -107,69 +96,114 @@ fun AddRuleScreen() {
                     TitleAndDescription(state, vm)
                     Spacer(modifier = Modifier.size(16.dp))
 
-                    FactSelector(state) { fact ->
-                        when (fact) {
-                            is Fact.KeyEvent -> {
-                                keyEventSelectorState.show()
-                            }
-                            is Fact.ActivityStarted -> {
-                            }
-                            is Fact.EdgeGesture -> {
-                                edgeGestureSelectorState.show()
-                            }
-                        }
-                    }
+                    FactSelectors(vm, state)
                     Spacer(modifier = Modifier.size(16.dp))
 
-                    // Condition selectors
-                    val currentPkgSelectorState =
-                        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-                            vm.addCondition(Condition.CurrentForegroundApp(pkg))
-                        }
-                    CurrentPkgSelector(currentPkgSelectorState)
-                    Conditions(state = state, selectCondition = { con ->
-                        if (con is Condition.CurrentForegroundApp) {
-                            currentPkgSelectorState.show()
-                        }
-                    }, removeCondition = { con ->
-                        vm.removeCondition(con)
-                    })
+                    ConditionSelectors(state, vm)
                     Spacer(modifier = Modifier.size(16.dp))
 
-                    // Actions
-                    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-                        vm.addAction(Action.ShellCommand(cmd))
-                    }
-                    ShellCommandSelector(state = shellCommandSelectorState)
-
-                    val mvelSelectorState = rememberMVELSelectorState { expression ->
-                        vm.addAction(Action.MVEL(expression))
-                    }
-                    MVELSelector(state = mvelSelectorState)
-
-                    Actions(state = state, selectAction = { action: Action ->
-                        when (action) {
-                            is Action.TakeScreenshot -> {
-                                vm.addAction(action)
-                            }
-                            is Action.ShellCommand -> {
-                                shellCommandSelectorState.show()
-                            }
-                            is Action.ShowToast -> {
-                                vm.addAction(Action.ShowToast("Hello"))
-                            }
-                            is Action.Delay -> {
-                                vm.addAction(Action.Delay(1000))
-                            }
-                            is Action.MVEL -> {
-                                mvelSelectorState.show()
-                            }
-                        }
-                    }, removeAction = { action ->
-                        vm.removeAction(action)
-                    })
+                    ActionSelectors(vm, state)
                     Spacer(modifier = Modifier.size(16.dp))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActionSelectors(
+    vm: AddRuleViewModel,
+    state: AddRuleState
+) {
+    // Actions
+    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
+        vm.addAction(Action.ShellCommand(cmd))
+    }
+    ShellCommandSelector(state = shellCommandSelectorState)
+
+    val mvelSelectorState = rememberMVELSelectorState { expression ->
+        vm.addAction(Action.MVEL(expression))
+    }
+    MVELSelector(state = mvelSelectorState)
+
+    Actions(state = state, selectAction = { action: Action ->
+        when (action) {
+            is Action.TakeScreenshot -> {
+                vm.addAction(action)
+            }
+            is Action.ShellCommand -> {
+                shellCommandSelectorState.show()
+            }
+            is Action.ShowToast -> {
+                vm.addAction(Action.ShowToast("Hello"))
+            }
+            is Action.Delay -> {
+                vm.addAction(Action.Delay(1000))
+            }
+            is Action.MVEL -> {
+                mvelSelectorState.show()
+            }
+        }
+    }, removeAction = { action ->
+        vm.removeAction(action)
+    })
+}
+
+@Composable
+private fun ConditionSelectors(
+    state: AddRuleState,
+    vm: AddRuleViewModel
+) {
+    // Condition selectors
+    val currentPkgSelectorState =
+        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+            vm.addCondition(Condition.CurrentForegroundApp(pkg))
+        }
+    CurrentPkgSelector(currentPkgSelectorState)
+
+    val mvelConditionSelectorState = rememberMVELSelectorState { expression ->
+        vm.addCondition(Condition.MVEL(expression))
+    }
+    MVELSelector(state = mvelConditionSelectorState)
+
+    Conditions(state = state, selectCondition = { con ->
+        when (con) {
+            is Condition.CurrentForegroundApp -> {
+                currentPkgSelectorState.show()
+            }
+            is Condition.MVEL -> {
+                mvelConditionSelectorState.show()
+            }
+        }
+    }, removeCondition = { con ->
+        vm.removeCondition(con)
+    })
+}
+
+@Composable
+private fun FactSelectors(
+    vm: AddRuleViewModel,
+    state: AddRuleState
+) {
+    // Fact selectors
+    val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
+        vm.setFact(Fact.KeyEvent(code))
+    })
+    KeyEventSelector(keyEventSelectorState)
+
+    val edgeGestureSelectorState = rememberEdgeGestureSelectorState { eg ->
+        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
+    }
+    EdgeGestureSelector(edgeGestureSelectorState)
+    FactSelector(state) { fact ->
+        when (fact) {
+            is Fact.KeyEvent -> {
+                keyEventSelectorState.show()
+            }
+            is Fact.ActivityStarted -> {
+            }
+            is Fact.EdgeGesture -> {
+                edgeGestureSelectorState.show()
             }
         }
     }

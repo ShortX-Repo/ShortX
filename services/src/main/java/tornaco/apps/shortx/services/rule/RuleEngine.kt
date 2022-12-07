@@ -6,8 +6,8 @@ import tornaco.apps.shortx.core.rule.engine.*
 import tornaco.apps.shortx.services.ShortXContext
 
 object RuleEngineFactory {
-    private fun newConditionEvaluator(shortXContext: ShortXContext) =
-        ConditionEvaluatorImpl(shortXContext)
+    private fun newConditionEvaluator(context: Context, shortXContext: ShortXContext) =
+        ConditionEvaluatorImpl(context, shortXContext)
 
     private fun newActionEvaluator(
         context: Context,
@@ -19,11 +19,18 @@ object RuleEngineFactory {
 
     fun newRuleEngine(
         shortXContext: ShortXContext,
-        context: Context,
+        androidContext: Context,
         handler: Handler,
         factMatcher: FactMatcher = newFactMatcher(),
-        conditionEvaluator: ConditionEvaluator = newConditionEvaluator(shortXContext),
-        actionEvaluator: ActionEvaluator = newActionEvaluator(context, shortXContext, handler),
+        conditionEvaluator: ConditionEvaluator = newConditionEvaluator(
+            androidContext,
+            shortXContext
+        ),
+        actionEvaluator: ActionEvaluator = newActionEvaluator(
+            androidContext,
+            shortXContext,
+            handler
+        ),
         listener: EngineListener = LogEngineListener("RuleEngine"),
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,
