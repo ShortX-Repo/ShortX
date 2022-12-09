@@ -21,11 +21,7 @@ import dev.enro.core.closeWithResult
 import dev.enro.core.compose.navigationHandle
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
-import tornaco.apps.shortx.ui.addrule.action.MVELSelector
-import tornaco.apps.shortx.ui.addrule.action.ShellCommandSelector
-import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
-import tornaco.apps.shortx.ui.addrule.action.rememberShellCommandSelectorState
-import tornaco.apps.shortx.ui.addrule.action.Actions
+import tornaco.apps.shortx.ui.addrule.action.*
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
@@ -207,6 +203,15 @@ private fun FactSelectors(
             }
             is Fact.EdgeGesture -> {
                 edgeGestureSelectorState.show()
+            }
+            Fact.ScreenOff -> {
+                vm.setFact(Fact.ScreenOff)
+            }
+            Fact.ScreenOn -> {
+                vm.setFact(Fact.ScreenOn)
+            }
+            Fact.UserPresent -> {
+                vm.setFact(Fact.UserPresent)
             }
         }
     }

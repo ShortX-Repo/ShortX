@@ -11,5 +11,11 @@
   "ui.title.edit.rule": "Edit Rule",
   "ui.title.add.rule": "New Rule",
   "ui.rule.title": "Title",
-  "ui.rule.description": "Description"
+  "ui.rule.description": "Description",
+  "ui.fact.screen.off": "Screen Off",
+  "ui.fact.screen.on": "Screen On",
+  "ui.fact.screen.user.present": "Screen Unlock",
+  "ui.fact.activity.started": "Activity Start",
+  "ui.fact.key.event": "Key Event",
+  "ui.fact.edge.gesture": "Edge Gesture"
 }

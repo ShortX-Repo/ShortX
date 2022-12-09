@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.core.proto.fact.EdgeGesture
-import tornaco.apps.shortx.core.proto.fact.Gesture
-import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.fact.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -14,6 +11,10 @@ sealed interface Fact {
     data class ActivityStarted(val name: String) : Fact
 
     data class EdgeGesture(val edge: Edge, val gesture: Gesture) : Fact
+
+    object ScreenOn : Fact
+    object ScreenOff : Fact
+    object UserPresent : Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -24,6 +25,15 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.ActivityStarted -> TODO()
         is Fact.EdgeGesture -> {
             EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).build()
+        }
+        Fact.ScreenOff -> {
+            ScreenOff.newBuilder().build()
+        }
+        Fact.ScreenOn -> {
+            ScreenOn.newBuilder().build()
+        }
+        Fact.UserPresent -> {
+            UserPresent.newBuilder().build()
         }
     }
 }
@@ -37,6 +47,15 @@ fun ProtoAny.toFact(): Fact? {
         this is_ EdgeGesture::class.java -> {
             val data = this unpack_ EdgeGesture::class.java
             Fact.EdgeGesture(edge = data.edge, gesture = data.gesture)
+        }
+        this is_ ScreenOff::class.java -> {
+            Fact.ScreenOff
+        }
+        this is_ ScreenOn::class.java -> {
+            Fact.ScreenOn
+        }
+        this is_ UserPresent::class.java -> {
+            Fact.UserPresent
         }
         else -> {
             null

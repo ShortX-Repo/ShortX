@@ -4,10 +4,12 @@ import android.content.Context
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.rule.fact.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 
 
@@ -21,6 +23,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         )
     }
 
+    private val allTriggers by lazy {
+        allTriggers(context, shortXContext)
+    }
+
     override fun start(context: Context) {
         super.start(context)
     }
@@ -29,6 +35,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         super.systemReady()
         ruleSettingsStore.readBlocking()
         installListeners()
+    }
+
+    override fun shutdown() {
+        super.shutdown()
+        allTriggers.forEach {
+            kotlin.runCatching {
+                logger.d("Un-Register trigger: $it")
+                it.unRegister()
+            }.onFailure { logger.e("Fail unRegister trigger $it") }
+        }
     }
 
     private fun installListeners() {
@@ -67,6 +83,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                 return@onGestureEvent true
             }
             false
+        }
+
+        allTriggers.forEach {
+            kotlin.runCatching {
+                logger.d("Register trigger: $it")
+                it.register()
+            }.onFailure { logger.e("Fail register trigger $it") }
+        }
+    }
+
+    fun publishFact(reason: String, fact: ProtoMessage) {
+        logger.d("publishFact: $reason, $fact")
+        systemServiceScope.launchSafety {
+            engine.fire(fact, getAllRules().filter { rule -> rule.isEnabled })
         }
     }
 

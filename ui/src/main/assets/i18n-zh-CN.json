@@ -11,5 +11,11 @@
   "ui.title.edit.rule": "编辑",
   "ui.title.add.rule": "创建",
   "ui.rule.title": "标题",
-  "ui.rule.description": "描述"
+  "ui.rule.description": "描述",
+  "ui.fact.screen.off": "息屏",
+  "ui.fact.screen.on": "亮屏",
+  "ui.fact.screen.user.present": "屏幕解锁",
+  "ui.fact.activity.started": "Activity启动",
+  "ui.fact.key.event": "按键事件",
+  "ui.fact.edge.gesture": "边缘手势"
 }

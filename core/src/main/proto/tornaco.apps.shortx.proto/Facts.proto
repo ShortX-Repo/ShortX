@@ -8,6 +8,32 @@ message KeyEvent {
   int32 keyCode = 1;
 }
 
+message ScreenOn {}
+message ScreenOff {}
+message UserPresent {}
+
+message BatteryLevelChange {
+  int32 level = 2;
+}
+message ChargerPlug {
+  bool requireAC = 1;
+  bool requireUSB = 2;
+}
+message ChargerUnplug {
+  bool requireAC = 1;
+  bool requireUSB = 2;
+}
+message BatteryLow {}
+message BatteryNotLow {}
+message BatteryFull {}
+
+message WifiConnected {
+  string requiredSSID = 1;
+}
+message WifiDisconnectedConnected {
+  string requiredDisconnectedFromSSID = 1;
+}
+
 message EdgeGesture {
   Edge edge = 1;
   Gesture gesture = 2;

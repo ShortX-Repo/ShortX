@@ -54,7 +54,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             selectableFacts = listOf(
                 Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
                 Fact.ActivityStarted("N/A"),
-                Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap)
+                Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap),
+                Fact.ScreenOff,
+                Fact.ScreenOn,
+                Fact.UserPresent
             ), selectableConditions = listOf(
                 Condition.CurrentForegroundApp(
                     App(

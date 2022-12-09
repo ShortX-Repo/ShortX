@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Gesture
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,7 +24,9 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
 
             Column {
                 state.fact?.let {
-                    ListItem(title = labelForFact(fact = it), icon = { IconForFact(fact = it) })
+                    ListItem(
+                        titleLines = labelForFact(fact = it),
+                        icon = { IconForFact(fact = it) })
                 }
 
                 TextButton(onClick = {
@@ -42,7 +41,10 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
             }
 
             DropdownSelector(state = selectorState, items = state.selectableFacts.map {
-                DropdownItem(labelLines = listOf(labelForFactSelector(it)), data = it)
+                DropdownItem(
+                    labelLines = listOf(labelForFactSelector(it)),
+                    data = it,
+                    icon = { IconForFact(fact = it) })
             }) {
                 selectFact(it.data)
             }
@@ -53,19 +55,29 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
 @Composable
 private fun labelForFactSelector(fact: Fact): String {
     return when (fact) {
-        is Fact.ActivityStarted -> "Activity started"
-        is Fact.EdgeGesture -> "Edge gesture"
-        is Fact.KeyEvent -> "Key event"
+        is Fact.ActivityStarted -> LocalI18N.current["ui.fact.activity.started"]
+        is Fact.EdgeGesture -> LocalI18N.current["ui.fact.edge.gesture"]
+        is Fact.KeyEvent -> LocalI18N.current["ui.fact.key.event"]
+        Fact.ScreenOff -> LocalI18N.current["ui.fact.screen.off"]
+        Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
+        Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
     }
 }
 
 
 @Composable
-private fun labelForFact(fact: Fact): String {
+private fun labelForFact(fact: Fact): List<String> {
     return when (fact) {
-        is Fact.ActivityStarted -> "Activity ${fact.name} started"
-        is Fact.EdgeGesture -> "Edge gesture: ${fact.edge} ${fact.gesture}"
-        is Fact.KeyEvent -> "Key event: ${fact.keyCode}"
+        is Fact.ActivityStarted -> listOf(LocalI18N.current["ui.fact.activity.started"], fact.name)
+        is Fact.EdgeGesture -> listOf(
+            LocalI18N.current["ui.fact.edge.gesture"],
+            "${fact.edge}",
+            "${fact.gesture}"
+        )
+        is Fact.KeyEvent -> listOf(LocalI18N.current["ui.fact.key.event"], "${fact.keyCode}")
+        Fact.ScreenOff -> listOf(LocalI18N.current["ui.fact.screen.off"])
+        Fact.ScreenOn -> listOf(LocalI18N.current["ui.fact.screen.on"])
+        Fact.UserPresent -> listOf(LocalI18N.current["ui.fact.screen.user.present"])
     }
 }
 
@@ -85,6 +97,21 @@ private fun IconForFact(fact: Fact) {
         is Fact.KeyEvent -> {
             Icon(
                 imageVector = Icons.Filled.Key, contentDescription = "KeyEvent"
+            )
+        }
+        Fact.ScreenOff -> {
+            Icon(
+                imageVector = Icons.Filled.Lock, contentDescription = "ScreenOff"
+            )
+        }
+        Fact.ScreenOn -> {
+            Icon(
+                imageVector = Icons.Filled.Smartphone, contentDescription = "ScreenOn"
+            )
+        }
+        Fact.UserPresent -> {
+            Icon(
+                imageVector = Icons.Filled.LockOpen, contentDescription = "UserPresent"
             )
         }
     }

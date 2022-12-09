@@ -85,13 +85,18 @@ class DefaultRuleEngine(
             if (factMatcher.match(fact, rule.fact)) {
                 listener.onFactMatch(rule, rule.fact)
                 val conditionRes = rule.conditionsList.all {
-                    conditionEvaluator.evaluate(it)
+                    kotlin.runCatching { conditionEvaluator.evaluate(it) }.getOrElse {
+                        logger.e(it, "Error evaluate condition")
+                        false
+                    }
                 }
                 if (conditionRes) {
                     listener.onConditionMatch(rule)
                     rule.actionsList.forEach {
                         listener.beforeEvaluateAction(rule, it)
-                        actionEvaluator.evaluate(it)
+                        kotlin.runCatching { actionEvaluator.evaluate(it) }.onFailure { err ->
+                            logger.e(err, "Error evaluate action")
+                        }
                         listener.afterEvaluateAction(rule, it)
                     }
                 } else {
