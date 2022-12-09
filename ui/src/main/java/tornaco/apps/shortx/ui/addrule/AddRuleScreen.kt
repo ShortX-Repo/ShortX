@@ -25,7 +25,7 @@ import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.ShellCommandSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.action.rememberShellCommandSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.Actions
+import tornaco.apps.shortx.ui.addrule.action.Actions
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState

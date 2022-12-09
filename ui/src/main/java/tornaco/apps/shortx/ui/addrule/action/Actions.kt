@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.condition
+package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,11 +47,17 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (
                 }
             }
 
-            DropdownSelector(state = selectorState, items = state.selectableActions.map {
-                DropdownItem(labelLines = labelForActionSelector(it), data = it, icon = {
-                    IconForAction(action = it)
-                })
-            }) {
+            val actionItems = state.selectableActions.mapValues {
+                it.value.map { action ->
+                    DropdownItem(
+                        labelLines = labelForActionSelector(action),
+                        data = action,
+                        icon = {
+                            IconForAction(action = action)
+                        })
+                }
+            }
+            DropdownSelector(state = selectorState, items = actionItems) {
                 selectAction(it.data)
             }
         }

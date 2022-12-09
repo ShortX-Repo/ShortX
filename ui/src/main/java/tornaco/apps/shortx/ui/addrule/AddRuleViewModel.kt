@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.models.*
 import tornaco.apps.shortx.ui.base.BaseViewModel
+import tornaco.apps.shortx.ui.base.I18NKey
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
@@ -34,7 +35,7 @@ data class AddRuleState(
     val conditions: List<Condition> = emptyList(),
     val selectableConditions: List<Condition> = emptyList(),
     val actions: List<Action> = emptyList(),
-    val selectableActions: List<Action> = emptyList(),
+    val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
     val isEditRule: Boolean = false,
     val ruleChanged: Boolean = false,
     val installedApps: List<App> = emptyList()
@@ -63,12 +64,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                     )
                 ),
                 Condition.MVEL("")
-            ), selectableActions = listOf(
-                Action.TakeScreenshot,
-                Action.ShellCommand(""),
-                Action.ShowToast(""),
-                Action.Delay(0),
-                Action.MVEL(""),
+            ), selectableActions = mapOf(
+                "UI" to listOf(
+                    Action.TakeScreenshot,
+                    Action.ShowToast(""),
+                ),
+                "Misc" to listOf(
+                    Action.ShellCommand(""),
+                    Action.Delay(0),
+                    Action.MVEL(""),
+                )
             )
         )
     }
