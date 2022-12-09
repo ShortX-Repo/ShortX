@@ -19,23 +19,25 @@ import tornaco.apps.shortx.ui.base.*
 fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (Action) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.actions.title"])
-        Box {
-            val selectorState = rememberDropdownSelectorState()
+        val selectorState = rememberDropdownSelectorState()
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                state.actions.forEach {
-                    ListItem(titleLines = labelLinesForAction(action = it), icon = {
-                        IconForAction(action = it)
-                    }, action1 = {
-                        IconButton(onClick = {
-                            removeAction(it)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Close, contentDescription = "Remove"
-                            )
-                        }
-                    }, onClick = {})
-                }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            state.actions.forEach {
+                ListItem(titleLines = labelLinesForAction(action = it), icon = {
+                    IconForAction(action = it)
+                }, action1 = {
+                    IconButton(onClick = {
+                        removeAction(it)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Close, contentDescription = "Remove"
+                        )
+                    }
+                }, onClick = {})
+            }
+
+            Box {
+
                 TextButton(onClick = {
                     selectorState.open()
                 }) {
@@ -45,20 +47,20 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (
                     TinySpacer()
                     Text(LocalI18N.current["ui.actions.add"])
                 }
-            }
 
-            val actionItems = state.selectableActions.mapValues {
-                it.value.map { action ->
-                    DropdownItem(
-                        labelLines = labelForActionSelector(action),
-                        data = action,
-                        icon = {
-                            IconForAction(action = action)
-                        })
+                val actionItems = state.selectableActions.mapValues {
+                    it.value.map { action ->
+                        DropdownItem(
+                            labelLines = labelForActionSelector(action),
+                            data = action,
+                            icon = {
+                                IconForAction(action = action)
+                            })
+                    }
                 }
-            }
-            DropdownSelector(state = selectorState, items = actionItems) {
-                selectAction(it.data)
+                DropdownSelector(state = selectorState, items = actionItems) {
+                    selectAction(it.data)
+                }
             }
         }
     }
