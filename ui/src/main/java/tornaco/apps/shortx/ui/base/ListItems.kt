@@ -3,10 +3,8 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Commit
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -87,6 +85,7 @@ fun ListItem(
     title: String? = null,
     text1: String? = null,
     text2: String? = null,
+    overflow: @Composable ColumnScope.() -> Unit = {},
     checked: Boolean,
     onClick: () -> Unit,
     onCheckedChange: ((Boolean) -> Unit),
@@ -120,12 +119,16 @@ fun ListItem(
                         )
                     )
                 }
+                TinySpacer()
                 text1?.let {
                     Text(
                         text = text1,
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                     )
                 }
+                TinySpacer()
+                TinySpacer()
+                TinySpacer()
                 text2?.let {
                     Text(
                         text = text2,
@@ -136,11 +139,7 @@ fun ListItem(
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            IconButton(
-                modifier = Modifier,
-                onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
-            }
+            overflow()
             Switch(
                 modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
                 checked = checked,

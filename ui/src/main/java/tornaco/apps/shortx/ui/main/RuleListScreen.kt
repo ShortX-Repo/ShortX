@@ -1,29 +1,27 @@
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.ui.base.ColorDefaults
-import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.*
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RuleScreen(
     state: MainState,
-    onDelete: (String) -> Unit,
+    onDelete: (Rule) -> Unit,
     onRuleClick: (Rule) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
@@ -45,7 +43,8 @@ fun RuleScreen(
                     onClick = {
                         onRuleClick(rule)
                     },
-                    setRuleEnabled = setRuleEnabled
+                    setRuleEnabled = setRuleEnabled,
+                    onDelete = onDelete
                 )
             }
         }
@@ -57,13 +56,49 @@ private fun RuleItem(
     rule: Rule,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
+    onDelete: (Rule) -> Unit
 ) {
     ListItem(
         title = rule.title,
         text1 = rule.description,
-        text2 = rule.updateTime,
+        text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
+        overflow = {
+            ListItemOverflowMenu(rule, onDelete)
+        },
         checked = rule.isEnabled,
         onClick = onClick,
         onCheckedChange = { setRuleEnabled(rule.id, it) }
     )
+}
+
+@Composable
+private fun ListItemOverflowMenu(rule: Rule, onDelete: (Rule) -> Unit) {
+    Box {
+        val menuState = rememberDropdownSelectorState()
+        IconButton(
+            modifier = Modifier,
+            onClick = {
+                menuState.open()
+            }) {
+            Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
+        }
+
+        DropdownSelector(
+            state = menuState,
+            items = listOf(
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                    data = "delete",
+                    icon = {
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
+                    })
+            ), onSelect = {
+                when (it.data) {
+                    "delete" -> {
+                        onDelete(rule)
+                    }
+                    else -> {}
+                }
+            })
+    }
 }

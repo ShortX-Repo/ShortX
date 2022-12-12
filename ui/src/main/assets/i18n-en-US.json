@@ -17,5 +17,7 @@
   "ui.fact.screen.user.present": "Screen Unlock",
   "ui.fact.activity.started": "Activity Start",
   "ui.fact.key.event": "Key Event",
-  "ui.fact.edge.gesture": "Edge Gesture"
+  "ui.fact.edge.gesture": "Edge Gesture",
+  "ui.update.time": "Last update: {date}",
+  "ui.common.delete": "Delete"
 }

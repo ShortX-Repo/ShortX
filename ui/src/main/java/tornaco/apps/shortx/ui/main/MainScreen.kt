@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AppShortcut
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -100,8 +103,8 @@ fun MainScreen() {
                 ) {
                     NavigationGraph(navController = navController,
                         state = state,
-                        deleteRule = { ruleId ->
-                            vm.delete(ruleId)
+                        deleteRule = { rule ->
+                            vm.delete(rule.id)
                         },
                         setRuleEnabled = { id, enable ->
                             vm.setRuleEnabled(id, enable)
@@ -157,7 +160,7 @@ private fun NavigationContent(
 private fun NavigationGraph(
     navController: NavHostController,
     state: MainState,
-    deleteRule: (String) -> Unit,
+    deleteRule: (Rule) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
     onRuleClick: (Rule) -> Unit,
 ) {
