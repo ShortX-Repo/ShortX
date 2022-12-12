@@ -42,6 +42,7 @@ class RuleSettingsStore(private val scope: CoroutineScope) {
                 it
             }
         }
+        postWrite()
     }
 
     fun getAllRules(): List<Rule> {

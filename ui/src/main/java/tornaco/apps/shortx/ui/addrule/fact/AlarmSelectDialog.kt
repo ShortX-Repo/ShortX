@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +18,6 @@ import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.ui.base.*
-import kotlin.math.min
 
 class AlarmSelectorState(val selected: (Alarm) -> Unit) {
     private var _isShow by mutableStateOf(false)
@@ -28,8 +26,6 @@ class AlarmSelectorState(val selected: (Alarm) -> Unit) {
     var h = mutableStateOf(0)
     var m = mutableStateOf(0)
     var s = mutableStateOf(0)
-
-    var tag by mutableStateOf("")
 
     fun show() {
         _isShow = true
@@ -63,7 +59,6 @@ fun AlarmSelector(state: AlarmSelectorState) {
                                 .setSeconds(state.s.value)
                                 .build()
                         )
-                        .setLabel(state.tag)
                         .setRepeat(RepeatDays.newBuilder().addDays(WeekDay.MONDAY).build())
                         .build()
                 )
@@ -92,24 +87,6 @@ fun AlarmContent(state: AlarmSelectorState) {
         Text(
             text = "Min interval", style = MaterialTheme.typography.labelSmall
         )
-
-        LargeSpacer()
-        OutlinedTextField(
-            label = {
-                Text(text = "Tag")
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Tag,
-                    contentDescription = "tag"
-                )
-            },
-            value = state.tag,
-            maxLines = 1,
-            onValueChange = {
-                state.tag = it.substring(0, min(16, it.length)).replace("-", "_")
-                    .trim()
-            })
 
         TinySpacer()
         Text(

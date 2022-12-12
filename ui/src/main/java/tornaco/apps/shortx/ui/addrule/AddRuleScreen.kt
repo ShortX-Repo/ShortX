@@ -196,7 +196,8 @@ private fun FactSelectors(
     EdgeGestureSelector(edgeGestureSelectorState)
 
     val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
-        vm.setFact(Fact.Alarm(alarm.label, alarm.triggerAt, alarm.repeat))
+        // Use rule id as alarm tag.
+        vm.setFact(Fact.Alarm(state.id, alarm.triggerAt, alarm.repeat))
     }
     AlarmSelector(timeOfADaySelector)
 

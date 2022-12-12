@@ -29,7 +29,7 @@ import java.util.*
 import javax.inject.Inject
 
 data class AddRuleState(
-    val id: String? = null,
+    val id: String = UUID.randomUUID().toString(),
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,
@@ -40,7 +40,8 @@ data class AddRuleState(
     val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
     val isEditRule: Boolean = false,
     val ruleChanged: Boolean = false,
-    val installedApps: List<App> = emptyList()
+    val installedApps: List<App> = emptyList(),
+    val isEnabled: Boolean = false
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -172,13 +173,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 it.toProtoAction().pack_()
             }
             val rule = Rule.newBuilder()
-                .setId(state.value.id ?: UUID.randomUUID().toString())
+                .setId(state.value.id)
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setFact(protoFact)
                 .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
                 .setDescription(state.value.description.fallbackOnEmpty("No description"))
                 .addAllConditions(protoConditions)
                 .addAllActions(protoActions)
+                .setIsEnabled(state.value.isEnabled)
                 .build()
 
             shortXManager.addRule(rule)
@@ -208,7 +210,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                                 )
                             },
                             actions = rule.actionsList.mapNotNull { it.toAction() },
-                            isEditRule = true
+                            isEditRule = true,
+                            isEnabled = rule.isEnabled
                         )
                     }
                 }

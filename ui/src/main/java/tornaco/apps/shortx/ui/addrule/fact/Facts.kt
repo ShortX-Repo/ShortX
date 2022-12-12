@@ -81,7 +81,6 @@ private fun labelForFact(fact: Fact): List<String> {
         Fact.UserPresent -> listOf(LocalI18N.current["ui.fact.screen.user.present"])
         is Fact.Alarm -> listOf(
             "Time of a day",
-            fact.label,
             fact.repeatDays.toString(),
             fact.timeOfADay.toString()
         )

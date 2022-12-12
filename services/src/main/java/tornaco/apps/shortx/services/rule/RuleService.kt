@@ -5,12 +5,9 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoMessage
-import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.RuleSettingsStore
-import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.rule.fact.allTriggers
-import tornaco.apps.shortx.services.systemServiceScope
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -102,10 +99,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun addRule(rule: Rule) {
         ruleSettingsStore.addRule(rule)
+        handler.postSafety {
+            allTriggers.forEach { it.onAddRule(rule) }
+        }
     }
 
     fun deleteRule(ruleId: String) {
         ruleSettingsStore.deleteRule(ruleId)
+        handler.postSafety {
+            allTriggers.forEach { it.onDeleteRule() }
+        }
     }
 
     fun getRuleById(id: String): Rule? {
@@ -113,7 +116,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
+        logger.d("setRuleEnabled: $ruleId $enable")
         ruleSettingsStore.setRuleEnabled(ruleId, enable)
+        handler.postSafety {
+            allTriggers.forEach {
+                if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
+            }
+        }
     }
 
     fun getAllRules(): List<Rule> {

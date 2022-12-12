@@ -70,7 +70,6 @@ enum Gesture {
   SwipeFromLeft = 5;
 }
 
-
 message TimeOfADay {
   int32 hour = 1;
   int32 minutes = 2;
@@ -86,7 +85,8 @@ message RepeatDays {
 }
 
 message Alarm {
-  string label = 1;
+  // For fact matcher.
+  string tag = 1;
   TimeOfADay triggerAt = 2;
   RepeatDays repeat = 3;
 }

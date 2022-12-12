@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -16,6 +17,12 @@ class FactMatcherImpl : FactMatcher {
     init {
         register(KeyEvent::class.java) { l, r ->
             l == r
+        }
+        register(Alarm::class.java) { l, r ->
+            // Alarm match label.
+            val la = l as Alarm
+            val ra = r as Alarm
+            la.tag == ra.tag
         }
     }
 

@@ -35,8 +35,8 @@ import java.util.*
 import kotlin.math.abs
 
 private const val BROADCAST_ACTION = "github.tornaco.android.thanos.service.alarm.engine.action"
-private const val BROADCAST_EXTRA_LABEL =
-    "github.tornaco.android.thanos.service.alarm.engine.extra.label"
+private const val BROADCAST_EXTRA_TAG =
+    "github.tornaco.android.thanos.service.alarm.engine.extra.tag"
 
 class AlarmScheduler(
     private val context: Context,
@@ -50,10 +50,10 @@ class AlarmScheduler(
         override fun onReceive(context: Context?, intent: Intent) {
             val action = intent.action ?: return
             if (action != BROADCAST_ACTION) return
-            val label = intent.getStringExtra(BROADCAST_EXTRA_LABEL) ?: ""
+            val tag = intent.getStringExtra(BROADCAST_EXTRA_TAG) ?: ""
             handler.post {
-                logger.w("AlarmScheduler, on alarm: $label")
-                onAlarm(label)
+                logger.w("AlarmScheduler, on alarm: $tag")
+                onAlarm(tag)
             }
         }
     }
@@ -64,7 +64,7 @@ class AlarmScheduler(
             requestCode(alarm),
             Intent(BROADCAST_ACTION)
                 .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_LABEL, alarm.label)
+                .putExtra(BROADCAST_EXTRA_TAG, alarm.tag)
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -90,7 +90,7 @@ class AlarmScheduler(
         logger.e(it, "AlarmScheduler schedule error")
     }
 
-    fun cancel(alarm: Alarm) = kotlin.runCatching {
+    fun cancel(alarm: Alarm, reason: String) = kotlin.runCatching {
         // Get pending intent used to create alarm, use FLAG_NO_CREATE if PendingIntent
         // does not already exist, then null will be returned.
         val pi = PendingIntent.getBroadcast(
@@ -98,11 +98,11 @@ class AlarmScheduler(
             requestCode(alarm),
             Intent(BROADCAST_ACTION)
                 .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_LABEL, alarm.label)
+                .putExtra(BROADCAST_EXTRA_TAG, alarm.tag)
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
-        logger.w("AlarmScheduler cancel: $alarm, pi: $pi")
+        logger.w("AlarmScheduler cancel: $alarm, $reason, pi: $pi")
         pi?.let {
             alarmManager.cancel(pi)
         }
@@ -110,7 +110,7 @@ class AlarmScheduler(
         logger.e(it, "AlarmScheduler cancel error")
     }
 
-    private fun requestCode(alarm: Alarm) = alarm.label.hashCode()
+    private fun requestCode(alarm: Alarm) = alarm.tag.hashCode()
 
     fun systemReady() {
         logger.w("AlarmScheduler systemReady")
