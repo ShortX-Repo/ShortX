@@ -194,6 +194,12 @@ private fun FactSelectors(
             vm.showEdgeHint(it)
         })
     EdgeGestureSelector(edgeGestureSelectorState)
+
+    val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
+        vm.setFact(Fact.Alarm(alarm.label, alarm.triggerAt, alarm.repeat))
+    }
+    AlarmSelector(timeOfADaySelector)
+
     FactSelector(state) { fact ->
         when (fact) {
             is Fact.KeyEvent -> {
@@ -212,6 +218,9 @@ private fun FactSelectors(
             }
             Fact.UserPresent -> {
                 vm.setFact(Fact.UserPresent)
+            }
+            is Fact.Alarm -> {
+                timeOfADaySelector.show()
             }
         }
     }

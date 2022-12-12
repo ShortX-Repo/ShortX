@@ -15,6 +15,8 @@ import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.proto.fact.RepeatDays
+import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
@@ -57,7 +59,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap),
                 Fact.ScreenOff,
                 Fact.ScreenOn,
-                Fact.UserPresent
+                Fact.UserPresent,
+                Fact.Alarm("", TimeOfADay.getDefaultInstance(), RepeatDays.getDefaultInstance())
             ), selectableConditions = listOf(
                 Condition.CurrentForegroundApp(
                     App(

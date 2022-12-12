@@ -61,6 +61,7 @@ private fun labelForFactSelector(fact: Fact): String {
         Fact.ScreenOff -> LocalI18N.current["ui.fact.screen.off"]
         Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
         Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
+        is Fact.Alarm -> "Time of a day"
     }
 }
 
@@ -78,6 +79,12 @@ private fun labelForFact(fact: Fact): List<String> {
         Fact.ScreenOff -> listOf(LocalI18N.current["ui.fact.screen.off"])
         Fact.ScreenOn -> listOf(LocalI18N.current["ui.fact.screen.on"])
         Fact.UserPresent -> listOf(LocalI18N.current["ui.fact.screen.user.present"])
+        is Fact.Alarm -> listOf(
+            "Time of a day",
+            fact.label,
+            fact.repeatDays.toString(),
+            fact.timeOfADay.toString()
+        )
     }
 }
 
@@ -112,6 +119,11 @@ private fun IconForFact(fact: Fact) {
         Fact.UserPresent -> {
             Icon(
                 imageVector = Icons.Filled.LockOpen, contentDescription = "UserPresent"
+            )
+        }
+        is Fact.Alarm -> {
+            Icon(
+                imageVector = Icons.Filled.Alarm, contentDescription = "Alarm"
             )
         }
     }

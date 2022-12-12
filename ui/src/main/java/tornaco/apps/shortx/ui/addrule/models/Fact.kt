@@ -15,6 +15,9 @@ sealed interface Fact {
     object ScreenOn : Fact
     object ScreenOff : Fact
     object UserPresent : Fact
+
+    data class Alarm(val label: String, val timeOfADay: TimeOfADay, val repeatDays: RepeatDays) :
+        Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -34,6 +37,13 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
         Fact.UserPresent -> {
             UserPresent.newBuilder().build()
+        }
+        is Fact.Alarm -> {
+            Alarm.newBuilder()
+                .setLabel(label)
+                .setRepeat(repeatDays)
+                .setTriggerAt(timeOfADay)
+                .build()
         }
     }
 }
@@ -56,6 +66,14 @@ fun ProtoAny.toFact(): Fact? {
         }
         this is_ UserPresent::class.java -> {
             Fact.UserPresent
+        }
+        this is_ Alarm::class.java -> {
+            val data = this unpack_ Alarm::class.java
+            Fact.Alarm(
+                label = data.label,
+                timeOfADay = data.triggerAt,
+                repeatDays = data.repeat
+            )
         }
         else -> {
             null
