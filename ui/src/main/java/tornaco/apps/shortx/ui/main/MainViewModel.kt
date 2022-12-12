@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.ui.base.BaseViewModel
 import java.util.*
 import javax.inject.Inject
@@ -34,10 +35,14 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         logger.d("loadRules")
         viewModelScope.launch {
             val rules = shortXManager.getAllRules().map {
-                Rule(id = it.id,
+                Rule(
+                    id = it.id,
                     title = it.title,
                     description = it.description,
-                    updateTime = Date(it.lastUpdateTime).toString(),
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.lastUpdateTime)
+                    ),
                     isEnabled = it.isEnabled
                 )
             }
