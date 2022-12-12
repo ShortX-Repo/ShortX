@@ -69,3 +69,24 @@ enum Gesture {
   SwipeFromRight = 4;
   SwipeFromLeft = 5;
 }
+
+
+message TimeOfADay {
+  int32 hour = 1;
+  int32 minutes = 2;
+  int32 seconds = 3;
+}
+
+enum WeekDay {
+  MONDAY = 0; TUESDAY = 1; WEDNESDAY = 2; THURSDAY = 3; FRIDAY = 4; SATURDAY = 5; SUNDAY = 6;
+}
+
+message RepeatDays {
+  repeated WeekDay days = 1;
+}
+
+message Alarm {
+  string label = 1;
+  TimeOfADay triggerAt = 2;
+  RepeatDays repeat = 3;
+}
