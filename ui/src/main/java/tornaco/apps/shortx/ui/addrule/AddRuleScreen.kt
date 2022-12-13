@@ -139,6 +139,12 @@ private fun ActionSelectors(
             is Action.MVEL -> {
                 mvelSelectorState.show()
             }
+            Action.HideOverlay -> {
+                vm.addAction(Action.HideOverlay)
+            }
+            Action.ShowOverlay -> {
+                vm.addAction(Action.ShowOverlay)
+            }
         }
     }, removeAction = { action ->
         vm.removeAction(action)

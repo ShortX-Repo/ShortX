@@ -1,14 +1,12 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.RuleSettingsStore
-import tornaco.apps.shortx.services.overlay.OverlayClassLoader
 import tornaco.apps.shortx.services.rule.fact.allTriggers
 
 
@@ -26,8 +24,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         allTriggers(context, shortXContext)
     }
 
-    private var overlay: Any? = null
-
     override fun start(context: Context) {
         super.start(context)
     }
@@ -36,23 +32,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         super.systemReady()
         ruleSettingsStore.readBlocking()
         installListeners()
-
-        val showOverlay = {
-            OverlayClassLoader(context).apply {
-                overlay?.dismiss()
-                getShortXObject()?.apply {
-                    show()
-                    overlay = this
-                }
-            }
-        }
-        shortXContext.appState.onPackageChanged {
-            if (it.pkgName == BuildProp.APP_PACKAGE_NAME) {
-                showOverlay()
-            }
-        }
-
-        showOverlay()
     }
 
     override fun shutdown() {

@@ -8,6 +8,7 @@ class ServiceLifecycle(shortXContext: ShortXContext) {
         shortXContext.rule,
         shortXContext.gesture,
         shortXContext.watchDog,
+        shortXContext.overlay,
     )
 
     fun start(context: Context) {

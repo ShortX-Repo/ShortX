@@ -4,21 +4,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.StateViewModel
-import java.util.*
 
-class OverlayViewModel : StateViewModel<String>() {
+data class State(val isShow: Boolean = false)
+
+class OverlayViewModel : StateViewModel<State>() {
     fun start() {
         viewModelScope.launch {
-            while (true) {
-                updateState {
-                    Date().toString()
-                }
-                delay(1000)
+            delay(3000)
+            updateState {
+                copy(isShow = false)
             }
         }
     }
 
-    override fun initState(): String {
-        return "X"
-    }
+    override fun initState() = State(isShow = true)
 }

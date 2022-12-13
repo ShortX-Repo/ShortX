@@ -9,26 +9,13 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.annotation.Keep
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Stadium
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Recomposer
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.compositionContext
 import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
@@ -36,6 +23,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 
 @Keep
@@ -43,35 +31,14 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
 
     init {
-        isClickable = false
-        isFocusable = false
-    }
-
-    fun show() {
         val rootContainer = FrameLayout(context)
         val wrapContent = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
+            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
         )
 
         val composeView = ComposeView(context).apply {
             setContent {
-                val vm = viewModel<OverlayViewModel>()
-                val state = vm.state.collectAsState()
-                LaunchedEffect(vm) {
-                    vm.start()
-                }
-                Column(modifier = Modifier.wrapContentSize()) {
-                    FilledTonalButton(onClick = {
-                        Toast.makeText(context, "Stadium", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Icon(imageVector = Icons.Filled.Stadium, contentDescription = "Stadium")
-                    }
-
-                    TextButton(onClick = {}) {
-                        Text(text = state.value)
-                    }
-                }
+                OverlayContent()
             }
             isFocusable = false
             isClickable = false
@@ -79,18 +46,31 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         }
         rootContainer.addView(composeView, wrapContent)
 
-        val windowManager = context.windowManager
         val rootLP =
             LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         addView(rootContainer, rootLP)
-
-        val lp = createLayoutParams()
-        lp.title = "ShortX-ComposeOverlay"
-        windowManager.addView(this, lp)
     }
 
-    private fun dismiss() {
-        kotlin.runCatching { context.windowManager.removeViewImmediate(this) }.onFailure {
+    fun show() {
+        logger.d("show")
+        if (!isAttachedToWindow) {
+            val lp = createLayoutParams()
+            lp.title = "ShortX-ComposeOverlay"
+            val windowManager = context.windowManager
+            windowManager.addView(this, lp)
+        } else {
+            logger.d("Already isAttachedToWindow.")
+        }
+    }
+
+    fun isShow() = isAttachedToWindow
+
+    fun dismiss() {
+        kotlin.runCatching {
+            if (isAttachedToWindow) {
+                context.windowManager.removeViewImmediate(this)
+            }
+        }.onFailure {
             logger.e(it, "dismiss")
         }
     }
@@ -105,6 +85,10 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         lp.packageName = context.packageName
         lp.windowAnimations = android.R.style.Animation_Toast
+
+        val screenSize = context.screenSize()
+        lp.x = screenSize.x - 72.dp_
+        lp.y = screenSize.y / 4
         return lp
     }
 
@@ -123,6 +107,11 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         runRecomposeScope.launch {
             reComposer.runRecomposeAndApplyChanges()
         }
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
     }
 }
 
@@ -162,7 +151,5 @@ internal class MyLifecycleOwner : SavedStateRegistryOwner {
 
 internal val Int.dp_: Int
     get() = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        this.toFloat(),
-        Resources.getSystem().displayMetrics
+        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
     ).toInt()

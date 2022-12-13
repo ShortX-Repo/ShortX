@@ -80,6 +80,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                     Action.ShellCommand(""),
                     Action.Delay(0),
                     Action.MVEL(""),
+                    Action.ShowOverlay,
+                    Action.HideOverlay
                 )
             )
         )

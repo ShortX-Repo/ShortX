@@ -27,3 +27,6 @@ message Delay {
 message ExecuteMVEL {
   string expression = 1;
 }
+
+message HideOverlay {}
+message ShowOverlay {}

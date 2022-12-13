@@ -84,6 +84,12 @@ private fun labelForActionSelector(action: Action): List<String> {
         is Action.MVEL -> {
             listOf("MVEL expression")
         }
+        Action.HideOverlay -> {
+            listOf("HideOverlay")
+        }
+        Action.ShowOverlay -> {
+            listOf("ShowOverlay")
+        }
     }
 }
 
@@ -104,6 +110,12 @@ private fun labelLinesForAction(action: Action): List<String> {
         }
         is Action.MVEL -> {
             listOf("MVEL expression", action.expression)
+        }
+        Action.HideOverlay -> {
+            listOf("HideOverlay")
+        }
+        Action.ShowOverlay -> {
+            listOf("ShowOverlay")
         }
     }
 }
@@ -134,6 +146,16 @@ private fun IconForAction(action: Action) {
         is Action.MVEL -> {
             Icon(
                 imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            )
+        }
+        Action.HideOverlay -> {
+            Icon(
+                imageVector = Icons.Filled.Window, contentDescription = "HideOverlay"
+            )
+        }
+        Action.ShowOverlay -> {
+            Icon(
+                imageVector = Icons.Filled.Window, contentDescription = "ShowOverlay"
             )
         }
     }
