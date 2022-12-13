@@ -7,7 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
-import tornaco.apps.shortx.ui.base.BaseViewModel
+import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ data class MainState(val rules: List<Rule> = emptyList())
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
-    BaseViewModel<MainState>(context) {
+    ContextViewModel<MainState>(context) {
 
     override fun initState(): MainState {
         return MainState()

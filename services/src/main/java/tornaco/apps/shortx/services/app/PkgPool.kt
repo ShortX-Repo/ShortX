@@ -14,7 +14,12 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.util.PackageMonitor
 
-class PkgPool(private val context: Context, private val handler: Handler, val userId: Int) {
+class PkgPool(
+    private val context: Context,
+    private val handler: Handler,
+    val userId: Int,
+    val onPackageUpdateFinished: (Pkg) -> Unit = {}
+) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
     private val pkgMonitor = object : PackageMonitor() {
@@ -29,6 +34,13 @@ class PkgPool(private val context: Context, private val handler: Handler, val us
             super.onPackageRemoved(packageName, uid)
             packageName?.let {
                 remove(it)
+            }
+        }
+
+        override fun onPackageUpdateFinished(packageName: String?, uid: Int) {
+            super.onPackageUpdateFinished(packageName, uid)
+            packageName?.let {
+                onPackageUpdateFinished(Pkg(it, UserHandle.getUserId(uid)))
             }
         }
     }

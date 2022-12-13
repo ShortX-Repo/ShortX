@@ -13,10 +13,7 @@ import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.UserComponent
 import tornaco.apps.shortx.core.unknownUserComponent
 import tornaco.apps.shortx.core.util.userManager
-import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val _currentFgComponentName = MutableStateFlow(unknownUserComponent)
@@ -24,11 +21,22 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     private val pkgPools = mutableListOf<PkgPool>()
 
+    private val onPackageChangedListeners: MutableList<((Pkg) -> Unit)> = mutableListOf()
+
     override fun systemReady() {
         super.systemReady()
         systemServiceScope.launchSafety {
             getUsers().forEach {
-                val pool = PkgPool(context, handler, it.id).apply {
+                val pool = PkgPool(
+                    context = context,
+                    handler = handler,
+                    userId = it.id,
+                    onPackageUpdateFinished = { changed ->
+                        handler.postSafety {
+                            onPackageChangedListeners.forEach { it(changed) }
+                        }
+                    }).apply {
+
                     init()
                     load()
                 }
@@ -60,6 +68,10 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun getAppLabel(pkg: Pkg): String? =
         pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)?.label
+
+    fun onPackageChanged(listener: (Pkg) -> Unit) {
+        onPackageChangedListeners.add(listener)
+    }
 
     @SuppressLint("MissingPermission")
     private fun getUsers(): List<UserInfo> {

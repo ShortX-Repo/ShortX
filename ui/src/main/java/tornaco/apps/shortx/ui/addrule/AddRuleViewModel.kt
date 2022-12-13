@@ -22,7 +22,7 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.models.*
-import tornaco.apps.shortx.ui.base.BaseViewModel
+import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18NKey
 import java.text.Collator
 import java.util.*
@@ -47,7 +47,7 @@ data class AddRuleState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddRuleViewModel @Inject constructor(@ApplicationContext private val context: Context) :
-    BaseViewModel<AddRuleState>(context) {
+    ContextViewModel<AddRuleState>(context) {
 
     private val _ruleSaved = MutableSharedFlow<String>()
     val ruleSaved = _ruleSaved.asSharedFlow()

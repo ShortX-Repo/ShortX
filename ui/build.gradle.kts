@@ -105,6 +105,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))
+    implementation(project(":external:utils"))
 
     testImplementation("junit:junit:4.13.2")
 
