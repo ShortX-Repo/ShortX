@@ -22,6 +22,7 @@ import dev.enro.core.NavigationKey
 import dev.enro.core.close
 import dev.enro.core.compose.navigationHandle
 import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -69,11 +70,22 @@ fun SettingsScreen() {
                 ) {
 
                     PreferenceUi(
-                        Preference.TextPreference(
-                            icon = Icons.Filled.SafetyDivider,
-                            title = "First Item",
-                            summary = "Use item instead of items(1) if you have a single item as they are equivalent, but this would be more clear."
-                        )
+                        listOf(
+                            Preference.TextPreference(
+                                icon = Icons.Filled.SafetyDivider,
+                                title = "First Item",
+                                summary = "Use item instead of items(1) if you have a single item as they are equivalent, but this would be more clear."
+                            ),
+                            Preference.SwitchPreference(
+                                icon = Icons.Filled.SafetyDivider,
+                                title = "Enable DOC",
+                                summary = "让技术向善？恐怕只能天方夜谭了？\n" +
+                                        "有人说：科技就是一块板砖，哪里需要哪里搬。",
+                                value = true,
+                                onCheckChanged = {
+                                    Logger("").d("onCheckChanged-- $it")
+                                }
+                            ))
                     )
                 }
             }

@@ -17,7 +17,8 @@ sealed interface Preference {
     data class SwitchPreference(
         override val title: String,
         override val summary: String? = null,
-        val key: String,
         override val icon: ImageVector? = null,
+        val value: Boolean,
+        val onCheckChanged: (Boolean) -> Unit
     ) : Preference
 }
