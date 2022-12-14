@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -35,7 +34,7 @@ fun RuleScreen(
             Card(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                shape = RoundedCornerShape(12.dp),
+                shape = ShortXCardRoundedCornerShape,
                 elevation = 0.dp
             ) {
                 RuleItem(

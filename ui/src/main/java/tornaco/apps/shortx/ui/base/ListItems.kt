@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,16 +26,20 @@ fun ListItem(
     onClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(modifier = Modifier
-            .heightIn(min = 60.dp)
-            .weight(1f, fill = false)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+            }, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier
+                .heightIn(min = 60.dp)
+                .weight(1f, fill = false)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             icon()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
@@ -59,16 +64,20 @@ fun ListItem(
     onClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(modifier = Modifier
-            .heightIn(min = 60.dp)
-            .weight(1f, fill = false)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+            }, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier
+                .heightIn(min = 60.dp)
+                .weight(1f, fill = false)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             icon()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
@@ -93,13 +102,13 @@ fun ListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         Row(
             modifier = Modifier
                 .weight(1f, fill = false)

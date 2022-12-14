@@ -19,5 +19,6 @@
   "ui.fact.key.event": "按键事件",
   "ui.fact.edge.gesture": "边缘手势",
   "ui.update.time": "更新时间：{date}",
-  "ui.common.delete": "删除"
+  "ui.common.delete": "删除",
+  "ui.common.settings": "设置"
 }

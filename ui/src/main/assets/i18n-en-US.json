@@ -19,5 +19,6 @@
   "ui.fact.key.event": "Key Event",
   "ui.fact.edge.gesture": "Edge Gesture",
   "ui.update.time": "Last update: {date}",
-  "ui.common.delete": "Delete"
+  "ui.common.delete": "Delete",
+  "ui.common.settings": "Settings"
 }
