@@ -1,13 +1,12 @@
 package tornaco.apps.shortx.ui.overlay
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.FrameLayout
 import androidx.annotation.Keep
 import androidx.compose.runtime.Recomposer
@@ -29,6 +28,57 @@ import tornaco.apps.shortx.core.util.windowManager
 @Keep
 class ComposeOverlay(context: Context) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
+    private val overlayLP = createLayoutParams()
+
+    private var isDragging = false
+    private val touchSlop by lazy {
+        ViewConfiguration.get(context).scaledTouchSlop.let {
+            it * it
+        }
+    }
+
+    private val touchListener: OnTouchListener = object : OnTouchListener {
+        private var touchX = 0f
+        private var touchY = 0f
+        private var startX = 0f
+        private var startY = 0f
+
+        @SuppressLint("ClickableViewAccessibility")
+        override fun onTouch(v: View, event: MotionEvent): Boolean {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchX = event.x + left
+                    touchY = event.y + top
+                    startX = event.rawX
+                    startY = event.rawY
+                    isDragging = false
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = (event.rawX - startX).toInt()
+                    val dy = (event.rawY - startY).toInt()
+                    if (dx * dx + dy * dy > touchSlop) {
+                        isDragging = true
+                        overlayLP.x = (event.rawX - touchX).toInt()
+                        overlayLP.y = (event.rawY - touchY).toInt()
+                        context.windowManager.updateViewLayout(this@ComposeOverlay, overlayLP)
+                        return true
+                    }
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    run {
+                        touchY = 0.0f
+                        touchX = touchY
+                    }
+                    if (isDragging) {
+                        isDragging = false
+                        return true
+                    }
+                }
+                else -> {}
+            }
+            return false
+        }
+    }
 
     init {
         val rootContainer = FrameLayout(context)
@@ -49,15 +99,16 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         val rootLP =
             LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         addView(rootContainer, rootLP)
+
+        setOnTouchListener(touchListener)
     }
 
     fun show() {
         logger.d("show")
         if (!isAttachedToWindow) {
-            val lp = createLayoutParams()
-            lp.title = "ShortX-ComposeOverlay"
+            overlayLP.title = "ShortX-ComposeOverlay"
             val windowManager = context.windowManager
-            windowManager.addView(this, lp)
+            windowManager.addView(this, overlayLP)
         } else {
             logger.d("Already isAttachedToWindow.")
         }
@@ -84,11 +135,7 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_Toast
-
-        val screenSize = context.screenSize()
-        lp.x = screenSize.x - 72.dp_
-        lp.y = screenSize.y / 4
+        lp.windowAnimations = android.R.style.Animation_InputMethod
         return lp
     }
 
@@ -109,9 +156,18 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
         }
     }
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        //  updatePos()
+    }
 
+    private fun updatePos() {
+        logger.d("updatePos: $width $height")
+        context.screenSize().apply {
+            overlayLP.x = x - width
+            overlayLP.y = (y - height) / 2
+        }
+        context.windowManager.updateViewLayout(this, overlayLP)
     }
 }
 

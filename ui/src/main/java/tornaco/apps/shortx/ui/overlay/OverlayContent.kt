@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import tornaco.apps.shortx.ui.base.LargeSpacer
 
 private const val BUTTON_COUNT = 6
 
@@ -24,9 +25,9 @@ fun OverlayContent() {
     LaunchedEffect(vm) {
         vm.start()
     }
-
     Card(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column(modifier = Modifier.wrapContentSize()) {
             repeat(BUTTON_COUNT) {
@@ -36,6 +37,7 @@ fun OverlayContent() {
                     IconForButton(index = it)
                 }
             }
+            LargeSpacer()
         }
     }
 }
