@@ -2058,7 +2058,7 @@ class MDIconTest {
         all.lines().map {
             it.trim().let { line ->
                 val code = """
-                    "${line.replace(".kt", "")}" to Icons.Filled.${line.replace(".kt", "")}
+                    "${line.replace(".kt", "")}" to Icons.Filled.${line.replace(".kt", "")},
                 """.trimIndent()
                 code
             }

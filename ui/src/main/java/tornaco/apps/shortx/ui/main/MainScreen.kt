@@ -28,6 +28,8 @@ import androidx.navigation.compose.rememberNavController
 import dev.enro.core.compose.registerForNavigationResult
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.addrule.AddRule
+import tornaco.apps.shortx.ui.base.MDIconSelector
+import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class Route {
@@ -66,10 +68,12 @@ fun MainScreen() {
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
+                    val iconSelectorState = rememberMDIconSelectorState {}
+                    MDIconSelector(state = iconSelectorState)
                     MediumTopAppBar(
                         title = { Text(text = stringResource(id = R.string.ui_app_name)) },
                         actions = {
-                            IconButton(onClick = { }) {
+                            IconButton(onClick = { iconSelectorState.show() }) {
                                 Icon(
                                     imageVector = Icons.Filled.Settings,
                                     contentDescription = "Settings"
