@@ -22,7 +22,7 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
     override fun systemReady() {
         super.systemReady()
         shortXContext.appState.onPackageChanged {
-            overlay?.dismiss()
+            hideOverlay()
             overlay = null
             logger.d("Dispose overlay object since apk updated")
         }

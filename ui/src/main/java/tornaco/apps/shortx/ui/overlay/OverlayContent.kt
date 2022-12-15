@@ -1,8 +1,11 @@
 package tornaco.apps.shortx.ui.overlay
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +33,12 @@ fun OverlayContent() {
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Column(modifier = Modifier.wrapContentSize()) {
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .heightIn(max = 240.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
             repeat(BUTTON_COUNT) {
                 IconButton(onClick = {
 
