@@ -4,6 +4,9 @@ import android.os.Handler
 import android.os.Looper
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.postSafety
 
 class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -36,5 +39,13 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
     fun hideOverlay() = mainHandler.postSafety {
         logger.d("hideOverlay")
         overlay?.dismiss()
+    }
+
+    fun getOverlayButtonIconName(index: Int): String {
+        return store.read(Settings.StringSettings.OverlayButtonIconForIndex(index))
+    }
+
+    fun setOverlayButtonIconName(index: Int, name: String) {
+        store.write(Settings.StringSettings.OverlayButtonIconForIndex(index), name)
     }
 }

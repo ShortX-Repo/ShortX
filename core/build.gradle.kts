@@ -24,6 +24,7 @@ buildConfig {
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
 
     buildConfigField("String", "APP_SHELL_SERVICE_NAME", "\"tornaco.apps.shortx.ui.service.ShellService\"")
+    buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"Settings\"")
 }
 
 dependencies {

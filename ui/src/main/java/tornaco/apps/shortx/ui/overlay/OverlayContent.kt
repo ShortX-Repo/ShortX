@@ -3,8 +3,6 @@ package tornaco.apps.shortx.ui.overlay
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Stadium
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,18 +10,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.MDIcons
 
-private const val BUTTON_COUNT = 6
+const val BUTTON_COUNT = 6
 
 @Composable
 fun OverlayContent() {
     val vm = viewModel<OverlayViewModel>()
     val state = vm.state.collectAsState()
+    val context = LocalContext.current
     LaunchedEffect(vm) {
-        vm.start()
+        vm.start(context)
     }
     Card(
         modifier = Modifier
@@ -34,7 +35,7 @@ fun OverlayContent() {
                 IconButton(onClick = {
 
                 }) {
-                    IconForButton(index = it)
+                    IconForButton(index = it, state.value.buttonIcons[it])
                 }
             }
             LargeSpacer()
@@ -43,6 +44,6 @@ fun OverlayContent() {
 }
 
 @Composable
-private fun IconForButton(index: Int) {
-    Icon(imageVector = Icons.Filled.Stadium, contentDescription = "Stadium")
+private fun IconForButton(index: Int, icon: String) {
+    Icon(imageVector = MDIcons.filled(icon), contentDescription = icon)
 }

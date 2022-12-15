@@ -10,9 +10,9 @@ sealed interface Preference {
     data class TextPreference(
         override val title: String,
         override val summary: String? = null,
-        override val icon: ImageVector? = null
-    ) :
-        Preference
+        override val icon: ImageVector? = null,
+        val onClick: (() -> Unit)? = null
+    ) : Preference
 
     data class SwitchPreference(
         override val title: String,

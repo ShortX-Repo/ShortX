@@ -85,6 +85,18 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
         }
     }
 
+    fun getOverlayButtonIconName(index: Int): String {
+        return invokeService("Settings") {
+            getOverlayButtonIconName(index)
+        }
+    }
+
+    fun setOverlayButtonIconName(index: Int, name: String?) {
+        invokeService(Unit) {
+            setOverlayButtonIconName(index, name)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

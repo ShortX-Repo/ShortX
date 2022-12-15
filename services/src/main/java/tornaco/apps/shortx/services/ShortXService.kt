@@ -99,5 +99,13 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun showEdgeHint(edgeNumber: Int) {
             shortXContext.gesture.showEdgeHint(edgeNumber)
         }
+
+        override fun getOverlayButtonIconName(index: Int): String {
+            return shortXContext.overlay.getOverlayButtonIconName(index)
+        }
+
+        override fun setOverlayButtonIconName(index: Int, name: String) {
+            shortXContext.overlay.setOverlayButtonIconName(index, name)
+        }
     }
 }

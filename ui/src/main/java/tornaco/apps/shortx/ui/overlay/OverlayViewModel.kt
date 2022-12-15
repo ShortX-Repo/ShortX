@@ -1,21 +1,37 @@
 package tornaco.apps.shortx.ui.overlay
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import android.content.Context
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 
-data class State(val isShow: Boolean = false)
+data class OverlayState(
+    val buttonIcons: List<String>
+)
 
-class OverlayViewModel : StateViewModel<State>() {
-    fun start() {
-        viewModelScope.launch {
-            delay(3000)
-            updateState {
-                copy(isShow = false)
-            }
+class OverlayViewModel : StateViewModel<OverlayState>() {
+    fun start(context: Context) {
+        loadState(context)
+
+
+    }
+
+    private fun loadState(context: Context) {
+        updateState {
+            copy(
+                buttonIcons = mutableListOf<String>().apply {
+                    repeat(BUTTON_COUNT) { index ->
+                        val name = context.shortXManager.getOverlayButtonIconName(index)
+                        add(name)
+                    }
+                }
+            )
         }
     }
 
-    override fun initState() = State(isShow = true)
+    override fun initState() = OverlayState(mutableListOf<String>().apply {
+        repeat(BUTTON_COUNT) {
+            add(BuildProp.DEFAULT_OVERLAY_BUTTON_ICON)
+        }
+    })
 }

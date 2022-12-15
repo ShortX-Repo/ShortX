@@ -1547,6 +1547,7 @@ object MDIconsFilled {
         "SettingsSuggest" to Icons.Filled.SettingsSuggest,
         "SettingsSystemDaydream" to Icons.Filled.SettingsSystemDaydream,
         "SettingsVoice" to Icons.Filled.SettingsVoice,
+        "Settings" to Icons.Filled.Settings,
         "SevereCold" to Icons.Filled.SevereCold,
         "ShareLocation" to Icons.Filled.ShareLocation,
         "Shield" to Icons.Filled.Shield,

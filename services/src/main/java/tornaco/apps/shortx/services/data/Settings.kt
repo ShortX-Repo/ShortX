@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 
@@ -13,6 +14,13 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         data class GestureOnAreaEnabled(val area: Edge) :
             BoolSettings(key = "GestureOnAreaEnabled-$area", defaultValue = false)
+    }
+
+    sealed class StringSettings(key: String, defaultValue: String) :
+        Settings<String>(key, defaultValue) {
+
+        data class OverlayButtonIconForIndex(val index: Int) :
+            StringSettings(key = "OverlayButtonIconForIndex-$index", defaultValue = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON)
     }
 
     sealed class MapSettings(key: String, defaultValue: Map<String, String> = emptyMap()) :
@@ -35,6 +43,12 @@ fun SettingsStore.write(settings: Settings.MapSettings, map: Map<String, String>
 fun SettingsStore.read(settings: Settings.MapSettings) =
     getStringMap(settings.key, settings.defaultValue)
 
+
+fun SettingsStore.write(settings: Settings.StringSettings, value: String) =
+    putString(settings.key, value)
+
+fun SettingsStore.read(settings: Settings.StringSettings) =
+    getString(settings.key, settings.defaultValue)
 
 fun Bundle.toStringMap(): Map<String, String> {
     return keySet().associateWith { getString(it) }

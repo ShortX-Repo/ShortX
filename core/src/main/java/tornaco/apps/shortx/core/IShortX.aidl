@@ -16,4 +16,7 @@ interface IShortX {
     String getAppLabel(in Pkg pkg);
 
     void showEdgeHint(int edgeNumber);
+
+    String getOverlayButtonIconName(int index);
+    void setOverlayButtonIconName(int index, String name);
 }

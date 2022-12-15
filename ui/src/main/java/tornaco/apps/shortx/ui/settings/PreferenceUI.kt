@@ -48,7 +48,7 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
-
+                preference.onClick?.invoke()
             }, verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
