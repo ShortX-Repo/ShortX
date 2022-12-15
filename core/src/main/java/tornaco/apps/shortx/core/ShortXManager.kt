@@ -110,6 +110,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun hasBoundActionOnOverlayButton(index: Int): Boolean {
+        return invokeService(false) {
+            hasBoundActionOnOverlayButton(index)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

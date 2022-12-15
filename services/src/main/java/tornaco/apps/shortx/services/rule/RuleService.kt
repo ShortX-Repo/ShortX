@@ -24,6 +24,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         allTriggers(context, shortXContext)
     }
 
+    private val ruleChangeListeners = mutableListOf<() -> Unit>()
+
     override fun start(context: Context) {
         super.start(context)
     }
@@ -100,6 +102,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun addRule(rule: Rule) {
         ruleSettingsStore.addRule(rule)
         handler.postSafety {
+            ruleChanged()
             allTriggers.forEach { it.onAddRule(rule) }
         }
     }
@@ -107,6 +110,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun deleteRule(ruleId: String) {
         ruleSettingsStore.deleteRule(ruleId)
         handler.postSafety {
+            ruleChanged()
             allTriggers.forEach { it.onDeleteRule() }
         }
     }
@@ -119,6 +123,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         logger.d("setRuleEnabled: $ruleId $enable")
         ruleSettingsStore.setRuleEnabled(ruleId, enable)
         handler.postSafety {
+            ruleChanged()
             allTriggers.forEach {
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
@@ -127,5 +132,17 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun getAllRules(): List<Rule> {
         return ruleSettingsStore.getAllRules()
+    }
+
+    fun addRuleChangeListener(listener: () -> Unit) {
+        ruleChangeListeners.add(listener)
+    }
+
+    fun removeRuleChangeListener(listener: () -> Unit) {
+        ruleChangeListeners.remove(listener)
+    }
+
+    private fun ruleChanged() {
+        ruleChangeListeners.forEach { it() }
     }
 }

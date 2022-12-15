@@ -23,4 +23,5 @@ interface IShortX {
     void setOverlayButtonIconName(int index, String name);
     void registerOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
     void unRegisterOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
+    boolean hasBoundActionOnOverlayButton(int index);
 }

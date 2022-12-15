@@ -62,6 +62,7 @@ private fun labelForFactSelector(fact: Fact): String {
         Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
         Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
         is Fact.Alarm -> "Time of a day"
+        is Fact.OverlayButtonClick -> LocalI18N.current["ui.fact.overlay.button.click"]
     }
 }
 
@@ -83,6 +84,10 @@ private fun labelForFact(fact: Fact): List<String> {
             "Time of a day",
             fact.repeatDays.toString(),
             fact.timeOfADay.toString()
+        )
+        is Fact.OverlayButtonClick -> listOf(
+            LocalI18N.current["ui.fact.overlay.button.click"],
+            fact.index.toString()
         )
     }
 }
@@ -123,6 +128,11 @@ private fun IconForFact(fact: Fact) {
         is Fact.Alarm -> {
             Icon(
                 imageVector = Icons.Filled.Alarm, contentDescription = "Alarm"
+            )
+        }
+        is Fact.OverlayButtonClick -> {
+            Icon(
+                imageVector = Icons.Filled.SmartButton, contentDescription = "Button"
             )
         }
     }

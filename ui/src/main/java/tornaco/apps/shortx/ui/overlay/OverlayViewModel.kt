@@ -6,7 +6,8 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 
 data class OverlayState(
-    val buttonIcons: List<String>
+    val buttonIcons: List<String>,
+    val enabledButtons: Set<Int>
 )
 
 class OverlayViewModel : StateViewModel<OverlayState>() {
@@ -33,13 +34,26 @@ class OverlayViewModel : StateViewModel<OverlayState>() {
                     val name = shortXManager.getOverlayButtonIconName(index)
                     add(name)
                 }
+            }, enabledButtons = mutableSetOf<Int>().apply {
+                repeat(BUTTON_COUNT) { index ->
+                    if (shortXManager.hasBoundActionOnOverlayButton(index)) {
+                        add(index)
+                    }
+                }
             })
         }
     }
 
-    override fun initState() = OverlayState(mutableListOf<String>().apply {
-        repeat(BUTTON_COUNT) {
-            add(BuildProp.DEFAULT_OVERLAY_BUTTON_ICON)
-        }
-    })
+    override fun initState() = OverlayState(
+        buttonIcons = mutableListOf<String>().apply {
+            repeat(BUTTON_COUNT) {
+                add(BuildProp.DEFAULT_OVERLAY_BUTTON_ICON)
+            }
+        },
+        enabledButtons = emptySet()
+    )
+
+    fun onButtonClick(index: Int) {
+
+    }
 }

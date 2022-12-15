@@ -56,6 +56,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void unRegisterOverlayButtonSettingsChangeListener(tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener listener) throws android.os.RemoteException
     {
     }
+    @Override public boolean hasBoundActionOnOverlayButton(int index) throws android.os.RemoteException
+    {
+      return false;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -248,6 +252,16 @@ public interface IShortX extends android.os.IInterface
           _arg0 = tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
           this.unRegisterOverlayButtonSettingsChangeListener(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_hasBoundActionOnOverlayButton:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          boolean _result = this.hasBoundActionOnOverlayButton(_arg0);
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
           return true;
         }
         default:
@@ -571,6 +585,27 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public boolean hasBoundActionOnOverlayButton(int index) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(index);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_hasBoundActionOnOverlayButton, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().hasBoundActionOnOverlayButton(index);
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -587,6 +622,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_setOverlayButtonIconName = (android.os.IBinder.FIRST_CALL_TRANSACTION + 11);
     static final int TRANSACTION_registerOverlayButtonSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 12);
     static final int TRANSACTION_unRegisterOverlayButtonSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 13);
+    static final int TRANSACTION_hasBoundActionOnOverlayButton = (android.os.IBinder.FIRST_CALL_TRANSACTION + 14);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -618,4 +654,5 @@ public interface IShortX extends android.os.IInterface
   public void setOverlayButtonIconName(int index, java.lang.String name) throws android.os.RemoteException;
   public void registerOverlayButtonSettingsChangeListener(tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener listener) throws android.os.RemoteException;
   public void unRegisterOverlayButtonSettingsChangeListener(tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener listener) throws android.os.RemoteException;
+  public boolean hasBoundActionOnOverlayButton(int index) throws android.os.RemoteException;
 }

@@ -20,5 +20,6 @@
   "ui.fact.edge.gesture": "Edge Gesture",
   "ui.update.time": "Last update: {date}",
   "ui.common.delete": "Delete",
-  "ui.common.settings": "Settings"
+  "ui.common.settings": "Settings",
+  "ui.fact.overlay.button.click": "On sidebar button click"
 }

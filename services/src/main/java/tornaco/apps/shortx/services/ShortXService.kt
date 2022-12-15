@@ -116,5 +116,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun unRegisterOverlayButtonSettingsChangeListener(listener: IOverlayButtonSettingsChangeListener) {
             shortXContext.overlay.unRegisterOverlayButtonSettingsChangeListener(listener)
         }
+
+        override fun hasBoundActionOnOverlayButton(index: Int): Boolean {
+            return shortXContext.overlay.hasBoundActionOnOverlayButton(index)
+        }
     }
 }

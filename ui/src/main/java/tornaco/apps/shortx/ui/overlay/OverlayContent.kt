@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.MDIcons
 
 const val BUTTON_COUNT = 6
@@ -37,14 +36,15 @@ fun OverlayContent() {
                 .heightIn(max = 240.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            repeat(BUTTON_COUNT) {
-                IconButton(onClick = {
-
-                }) {
-                    IconForButton(index = it, state.value.buttonIcons[it])
+            repeat(BUTTON_COUNT) { index ->
+                if (state.value.enabledButtons.contains(index)) {
+                    IconButton(onClick = {
+                        vm.onButtonClick(index)
+                    }) {
+                        IconForButton(index = index, state.value.buttonIcons[index])
+                    }
                 }
             }
-            LargeSpacer()
         }
     }
 }
