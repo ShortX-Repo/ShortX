@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
+import tornaco.apps.shortx.core.overlay.OverlayButtonSettingsChangeListener
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -12,10 +13,10 @@ import tornaco.apps.shortx.core.util.Logger
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
 val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 
-val Context.shortXManager
-    get() = ShortXManager(this, ShortXManagerNative.service ?: IShortX.Default())
+val shortXManager
+    get() = ShortXManager(ShortXManagerNative.service ?: IShortX.Default())
 
-class ShortXManager(private val context: Context, private val service: IShortX) {
+class ShortXManager(private val service: IShortX) {
     private val logger = Logger("ShortXManager")
 
     fun isInstalled(): Boolean =
@@ -94,6 +95,18 @@ class ShortXManager(private val context: Context, private val service: IShortX) 
     fun setOverlayButtonIconName(index: Int, name: String?) {
         invokeService(Unit) {
             setOverlayButtonIconName(index, name)
+        }
+    }
+
+    fun registerOverlayButtonSettingsChangeListener(listener: OverlayButtonSettingsChangeListener) {
+        invokeService(Unit) {
+            registerOverlayButtonSettingsChangeListener(listener)
+        }
+    }
+
+    fun unRegisterOverlayButtonSettingsChangeListener(listener: OverlayButtonSettingsChangeListener) {
+        invokeService(Unit) {
+            unRegisterOverlayButtonSettingsChangeListener(listener)
         }
     }
 

@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.core;
 
+import tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener;
+
 interface IShortX {
     Version version();
     String fingerprint();
@@ -19,4 +21,6 @@ interface IShortX {
 
     String getOverlayButtonIconName(int index);
     void setOverlayButtonIconName(int index, String name);
+    void registerOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
+    void unRegisterOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
 }

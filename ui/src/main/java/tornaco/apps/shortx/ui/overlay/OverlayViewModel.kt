@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.ui.overlay
 
-import android.content.Context
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.overlay.OverlayButtonSettingsChangeListener
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 
@@ -10,22 +10,30 @@ data class OverlayState(
 )
 
 class OverlayViewModel : StateViewModel<OverlayState>() {
-    fun start(context: Context) {
-        loadState(context)
-
-
+    private val overlayChangeListener = object : OverlayButtonSettingsChangeListener() {
+        override fun postOverlayButtonSettingsChanged(index: Int) {
+            loadState()
+        }
     }
 
-    private fun loadState(context: Context) {
+    fun start() {
+        shortXManager.registerOverlayButtonSettingsChangeListener(overlayChangeListener)
+        loadState()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unRegisterOverlayButtonSettingsChangeListener(overlayChangeListener)
+    }
+
+    private fun loadState() {
         updateState {
-            copy(
-                buttonIcons = mutableListOf<String>().apply {
-                    repeat(BUTTON_COUNT) { index ->
-                        val name = context.shortXManager.getOverlayButtonIconName(index)
-                        add(name)
-                    }
+            copy(buttonIcons = mutableListOf<String>().apply {
+                repeat(BUTTON_COUNT) { index ->
+                    val name = shortXManager.getOverlayButtonIconName(index)
+                    add(name)
                 }
-            )
+            })
         }
     }
 

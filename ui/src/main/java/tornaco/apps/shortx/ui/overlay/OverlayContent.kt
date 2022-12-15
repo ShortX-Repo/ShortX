@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -25,9 +24,8 @@ const val BUTTON_COUNT = 6
 fun OverlayContent() {
     val vm = viewModel<OverlayViewModel>()
     val state = vm.state.collectAsState()
-    val context = LocalContext.current
     LaunchedEffect(vm) {
-        vm.start(context)
+        vm.start()
     }
     Card(
         modifier = Modifier

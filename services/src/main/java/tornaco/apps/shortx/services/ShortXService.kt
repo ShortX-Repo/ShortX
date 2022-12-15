@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
@@ -106,6 +107,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun setOverlayButtonIconName(index: Int, name: String) {
             shortXContext.overlay.setOverlayButtonIconName(index, name)
+        }
+
+        override fun registerOverlayButtonSettingsChangeListener(listener: IOverlayButtonSettingsChangeListener) {
+            shortXContext.overlay.registerOverlayButtonSettingsChangeListener(listener)
+        }
+
+        override fun unRegisterOverlayButtonSettingsChangeListener(listener: IOverlayButtonSettingsChangeListener) {
+            shortXContext.overlay.unRegisterOverlayButtonSettingsChangeListener(listener)
         }
     }
 }
