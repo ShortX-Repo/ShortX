@@ -1,33 +1,19 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
-import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.core.proto.fact.Gesture
 
 sealed class Settings<T>(val key: String, val defaultValue: T) {
 
     sealed class BoolSettings(key: String, defaultValue: Boolean) :
         Settings<Boolean>(key, defaultValue) {
-
-        object GestureEnabled : BoolSettings(key = "GestureEnabled", defaultValue = false)
-
-        data class GestureOnAreaEnabled(val area: Edge) :
-            BoolSettings(key = "GestureOnAreaEnabled-$area", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :
         Settings<String>(key, defaultValue) {
-
-        data class OverlayButtonIconForIndex(val index: Int) :
-            StringSettings(key = "OverlayButtonIconForIndex-$index", defaultValue = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON)
     }
 
     sealed class MapSettings(key: String, defaultValue: Map<String, String> = emptyMap()) :
         Settings<Map<String, String>>(key, defaultValue) {
-
-        data class GestureActionOnArea(val area: Edge, val gestureEvent: Gesture) :
-            MapSettings(key = "GestureActionOnArea-$area-$gestureEvent")
     }
 }
 

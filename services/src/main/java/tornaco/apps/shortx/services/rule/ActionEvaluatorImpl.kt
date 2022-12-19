@@ -42,9 +42,11 @@ class ActionEvaluatorImpl(
         } else if (action is_ ExecuteMVEL::class.java) {
             val d = action unpack_ ExecuteMVEL::class.java
             MVELExecutor(context, shortXContext, d.expression).invoke()
-        } else if (action is_ ShowOverlay::class.java) {
-            shortXContext.overlay.showOverlay()
-        } else if (action is_ HideOverlay::class.java) {
+        } else if (action is_ ShowOverlayButton::class.java) {
+            val d = action unpack_ ShowOverlayButton::class.java
+            val buttonSettingsList = d.buttonSettingsList
+            shortXContext.overlay.showOverlay(buttonSettingsList)
+        } else if (action is_ HideOverlayButton::class.java) {
             shortXContext.overlay.hideOverlay()
         }
     }

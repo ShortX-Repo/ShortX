@@ -1,7 +1,5 @@
 package tornaco.apps.shortx.core;
 
-import tornaco.apps.shortx.core.overlay.IOverlayButtonSettingsChangeListener;
-
 interface IShortX {
     Version version();
     String fingerprint();
@@ -18,10 +16,4 @@ interface IShortX {
     String getAppLabel(in Pkg pkg);
 
     void showEdgeHint(int edgeNumber);
-
-    String getOverlayButtonIconName(int index);
-    void setOverlayButtonIconName(int index, String name);
-    void registerOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
-    void unRegisterOverlayButtonSettingsChangeListener(in IOverlayButtonSettingsChangeListener listener);
-    boolean hasBoundActionOnOverlayButton(int index);
 }

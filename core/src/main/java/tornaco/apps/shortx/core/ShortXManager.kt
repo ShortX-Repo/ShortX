@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
-import tornaco.apps.shortx.core.overlay.OverlayButtonSettingsChangeListener
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -83,36 +82,6 @@ class ShortXManager(private val service: IShortX) {
     fun showEdgeHint(edge: Edge) {
         invokeService(Unit) {
             showEdgeHint(edge.number)
-        }
-    }
-
-    fun getOverlayButtonIconName(index: Int): String {
-        return invokeService("Settings") {
-            getOverlayButtonIconName(index)
-        }
-    }
-
-    fun setOverlayButtonIconName(index: Int, name: String?) {
-        invokeService(Unit) {
-            setOverlayButtonIconName(index, name)
-        }
-    }
-
-    fun registerOverlayButtonSettingsChangeListener(listener: OverlayButtonSettingsChangeListener) {
-        invokeService(Unit) {
-            registerOverlayButtonSettingsChangeListener(listener)
-        }
-    }
-
-    fun unRegisterOverlayButtonSettingsChangeListener(listener: OverlayButtonSettingsChangeListener) {
-        invokeService(Unit) {
-            unRegisterOverlayButtonSettingsChangeListener(listener)
-        }
-    }
-
-    fun hasBoundActionOnOverlayButton(index: Int): Boolean {
-        return invokeService(false) {
-            hasBoundActionOnOverlayButton(index)
         }
     }
 

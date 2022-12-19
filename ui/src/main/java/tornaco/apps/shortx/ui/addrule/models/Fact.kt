@@ -11,7 +11,6 @@ sealed interface Fact {
     data class ActivityStarted(val name: String) : Fact
 
     data class EdgeGesture(val edge: Edge, val gesture: Gesture) : Fact
-    data class OverlayButtonClick(val index: Int) : Fact
 
     object ScreenOn : Fact
     object ScreenOff : Fact
@@ -45,9 +44,6 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setTag(tag)
                 .build()
         }
-        is Fact.OverlayButtonClick -> {
-            OverlayButtonClick.newBuilder().setIndex(index).build()
-        }
     }
 }
 
@@ -60,10 +56,6 @@ fun ProtoAny.toFact(): Fact? {
         this is_ EdgeGesture::class.java -> {
             val data = this unpack_ EdgeGesture::class.java
             Fact.EdgeGesture(edge = data.edge, gesture = data.gesture)
-        }
-        this is_ OverlayButtonClick::class.java -> {
-            val data = this unpack_ OverlayButtonClick::class.java
-            Fact.OverlayButtonClick(index = data.index)
         }
         this is_ ScreenOff::class.java -> {
             Fact.ScreenOff

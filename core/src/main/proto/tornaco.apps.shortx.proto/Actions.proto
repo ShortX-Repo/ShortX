@@ -4,6 +4,8 @@ option java_package = "tornaco.apps.shortx.core.proto.action";
 option java_outer_classname = "OuterActions";
 option java_multiple_files = true;
 
+import "google/protobuf/any.proto";
+
 message NoAction {}
 message TakeScreenshot {}
 message ExpandNotification {}
@@ -28,5 +30,14 @@ message ExecuteMVEL {
   string expression = 1;
 }
 
-message HideOverlay {}
-message ShowOverlay {}
+message OverlayButtonSetting {
+  repeated google.protobuf.Any actions = 1;
+  string icon = 2;
+  int32 index = 3;
+}
+
+message HideOverlayButton {}
+
+message ShowOverlayButton {
+  repeated OverlayButtonSetting buttonSettings = 1;
+}

@@ -21,12 +21,15 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
 
+@SuppressLint("ViewConstructor")
 @Keep
-class ComposeOverlay(context: Context) : FrameLayout(context) {
+class ComposeOverlay(context: Context, private val settings: List<OverlayButtonSetting>) :
+    FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
 
@@ -104,7 +107,7 @@ class ComposeOverlay(context: Context) : FrameLayout(context) {
     }
 
     fun show() {
-        logger.d("show")
+        logger.d("show: $settings")
         if (!isAttachedToWindow) {
             overlayLP.title = "ShortX-ComposeOverlay"
             val windowManager = context.windowManager

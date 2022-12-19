@@ -207,11 +207,6 @@ private fun FactSelectors(
     }
     AlarmSelector(timeOfADaySelector)
 
-    val overlayButtonClickSelectorState = rememberOverlayButtonClickSelectorState {
-        vm.setFact(Fact.OverlayButtonClick(it))
-    }
-    OverlayButtonClickSelector(state = overlayButtonClickSelectorState)
-
     FactSelector(state) { fact ->
         when (fact) {
             is Fact.KeyEvent -> {
@@ -233,9 +228,6 @@ private fun FactSelectors(
             }
             is Fact.Alarm -> {
                 timeOfADaySelector.show()
-            }
-            is Fact.OverlayButtonClick -> {
-                overlayButtonClickSelectorState.show()
             }
         }
     }

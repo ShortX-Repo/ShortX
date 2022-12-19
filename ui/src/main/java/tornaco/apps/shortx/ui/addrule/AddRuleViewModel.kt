@@ -58,7 +58,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
                 Fact.ActivityStarted("N/A"),
                 Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap),
-                Fact.OverlayButtonClick(0),
                 Fact.ScreenOff,
                 Fact.ScreenOn,
                 Fact.UserPresent,

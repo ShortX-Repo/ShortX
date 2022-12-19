@@ -30,20 +30,10 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
     }
 
     fun loadState() {
-        updateState {
-            copy(
-                buttonIcons = mutableListOf<String>().apply {
-                    repeat(BUTTON_COUNT) { index ->
-                        val name = shortXManager.getOverlayButtonIconName(index)
-                        add(name)
-                    }
-                }
-            )
-        }
+
     }
 
     fun setIconForButtonIndex(index: Int, name: String) {
-        shortXManager.setOverlayButtonIconName(index, name)
         updateState {
             copy(buttonIcons = buttonIcons.toMutableList().apply {
                 add(index, name)

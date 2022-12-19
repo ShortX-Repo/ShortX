@@ -90,11 +90,3 @@ message Alarm {
   TimeOfADay triggerAt = 2;
   RepeatDays repeat = 3;
 }
-
-message OverlayButtonClick {
-  int32 index = 1;
-}
-
-message OverlayButtonLongClick {
-  int32 index = 1;
-}

@@ -34,10 +34,10 @@ fun Action.toProtoAction(): ProtoMessage {
             ExecuteMVEL.newBuilder().setExpression(expression).build()
         }
         Action.HideOverlay -> {
-            HideOverlay.newBuilder().build()
+            HideOverlayButton.newBuilder().build()
         }
         Action.ShowOverlay -> {
-            ShowOverlay.newBuilder().build()
+            HideOverlayButton.newBuilder().build()
         }
     }
 }
@@ -63,10 +63,10 @@ fun ProtoAny.toAction(): Action? {
             val data = this unpack_ ExecuteMVEL::class.java
             Action.MVEL(expression = data.expression)
         }
-        this is_ ShowOverlay::class.java -> {
+        this is_ ShowOverlayButton::class.java -> {
             Action.ShowOverlay
         }
-        this is_ HideOverlay::class.java -> {
+        this is_ HideOverlayButton::class.java -> {
             Action.HideOverlay
         }
         else -> null
