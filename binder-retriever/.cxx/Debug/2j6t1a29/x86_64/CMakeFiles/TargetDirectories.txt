@@ -1,3 +1,0 @@
-/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/2j6t1a29/x86_64/CMakeFiles/rebuild_cache.dir
-/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/2j6t1a29/x86_64/CMakeFiles/edit_cache.dir
-/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/2j6t1a29/x86_64/CMakeFiles/retriever.dir

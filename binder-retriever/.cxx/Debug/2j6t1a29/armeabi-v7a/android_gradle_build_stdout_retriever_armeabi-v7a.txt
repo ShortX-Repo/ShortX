@@ -1,2 +1,0 @@
-ninja: Entering directory `/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/Debug/2j6t1a29/armeabi-v7a'
-ninja: no work to do.
