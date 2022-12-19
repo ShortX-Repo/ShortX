@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -15,18 +16,23 @@ class FactMatcherImpl : FactMatcher {
         mutableMapOf()
 
     init {
-        register(KeyEvent::class.java) { l, r ->
-            l == r
+        register(KeyEvent::class.java) { l, f ->
+            l == f
         }
-        register(Alarm::class.java) { l, r ->
+        register(Alarm::class.java) { l, f ->
             // Alarm match label.
             val la = l as Alarm
-            val ra = r as Alarm
+            val ra = f as Alarm
             la.tag == ra.tag
+        }
+        register(AppBecomeFg::class.java) { l, f ->
+            val fgl = l as AppBecomeFg
+            val fgr = f as AppBecomeFg
+            fgl.appsList.containsAll(fgr.appsList)
         }
     }
 
-    private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, r: ProtoMessage) -> Boolean) {
+    private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, f: ProtoMessage) -> Boolean) {
         factValueMatchers[clazz] = matcher
     }
 

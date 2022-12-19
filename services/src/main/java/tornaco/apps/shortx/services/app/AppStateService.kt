@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.UserComponent
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
+import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.unknownUserComponent
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
@@ -54,12 +57,25 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun onComponentMoveToBg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToBg: $componentName user: $userId")
+        shortXContext.rule.publishFact(
+            "onComponentMoveToBg",
+            AppBecomeBg.newBuilder().addApps(
+                AppPkg.newBuilder().setPkgName(componentName.packageName).setUserId(userId).build()
+            ).build()
+        )
     }
 
     fun onComponentMoveToFg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToFg: $componentName user: $userId")
         _currentFgComponentName.value =
             UserComponent(Pkg(componentName.packageName, userId), componentName.className)
+
+        shortXContext.rule.publishFact(
+            "onComponentMoveToFg",
+            AppBecomeFg.newBuilder().addApps(
+                AppPkg.newBuilder().setPkgName(componentName.packageName).setUserId(userId).build()
+            ).build()
+        )
     }
 
     fun getInstalledApps(): List<App> {

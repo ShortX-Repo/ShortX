@@ -1,5 +1,3 @@
 # ninja log v5
-0	374	1671421276	CMakeFiles/retriever.dir/retriever.cpp.o	8328a6c231418b41
-375	474	1671421276	/Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/Debug/2j6t1a29/obj/x86/libretriever.so	7309816e3b7b66ac
-2	633	1671426411	CMakeFiles/retriever.dir/retriever.cpp.o	8328a6c231418b41
-633	966	1671426411	/Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/Debug/2j6t1a29/obj/x86/libretriever.so	7309816e3b7b66ac
+1	1120	1671441528	CMakeFiles/retriever.dir/retriever.cpp.o	8328a6c231418b41
+1121	1347	1671441528	/Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/Debug/2j6t1a29/obj/x86/libretriever.so	7309816e3b7b66ac

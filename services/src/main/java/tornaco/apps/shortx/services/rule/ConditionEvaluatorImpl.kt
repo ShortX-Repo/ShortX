@@ -24,7 +24,7 @@ class ConditionEvaluatorImpl(
             condition is_ CurrentPkg::class.java -> {
                 val currentPkg = condition unpack_ CurrentPkg::class.java
                 val state = shortXContext.appState.currentFgComponentName.value
-                currentPkg.pkgName == state.pkg.pkgName
+                currentPkg.pkg.pkgName == state.pkg.pkgName && currentPkg.pkg.userId == state.pkg.userId
             }
             condition is_ True::class.java -> {
                 true

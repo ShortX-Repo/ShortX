@@ -61,7 +61,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 Fact.ScreenOff,
                 Fact.ScreenOn,
                 Fact.UserPresent,
-                Fact.Alarm("", TimeOfADay.getDefaultInstance(), RepeatDays.getDefaultInstance())
+                Fact.Alarm("", TimeOfADay.getDefaultInstance(), RepeatDays.getDefaultInstance()),
+                Fact.AppBecomeBackground(emptyList()),
+                Fact.AppBecomeForeground(emptyList())
             ), selectableConditions = listOf(
                 Condition.CurrentForegroundApp(
                     App(
@@ -205,7 +207,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                             id = rule.id,
                             title = rule.title,
                             description = rule.description,
-                            fact = rule.fact.toFact(),
+                            fact = rule.fact.toFact(shortXManager),
                             conditions = rule.conditionsList.mapNotNull {
                                 it.toCondition(
                                     shortXManager

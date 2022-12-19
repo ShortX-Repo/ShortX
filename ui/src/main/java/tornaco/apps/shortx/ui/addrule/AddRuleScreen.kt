@@ -21,15 +21,15 @@ import dev.enro.core.closeWithResult
 import dev.enro.core.compose.navigationHandle
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
-import tornaco.apps.shortx.ui.addrule.action.*
+import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.action.MVELSelector
+import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
-import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
-import tornaco.apps.shortx.ui.base.I18NKey
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -126,7 +126,7 @@ private fun ConditionSelectors(
     // Condition selectors
     val currentPkgSelectorState =
         rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-            vm.addCondition(Condition.CurrentForegroundApp(pkg))
+            vm.addCondition(Condition.CurrentForegroundApp(pkg[0]))
         }
     CurrentPkgSelector(currentPkgSelectorState)
 
@@ -174,6 +174,19 @@ private fun FactSelectors(
     }
     AlarmSelector(timeOfADaySelector)
 
+    // Condition selectors
+    val appBgPkgSelectorState =
+        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
+        }
+    CurrentPkgSelector(appBgPkgSelectorState)
+
+    val appFgPkgSelectorState =
+        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
+        }
+    CurrentPkgSelector(appFgPkgSelectorState)
+
     FactSelector(state) { fact ->
         when (fact) {
             is Fact.KeyEvent -> {
@@ -195,6 +208,12 @@ private fun FactSelectors(
             }
             is Fact.Alarm -> {
                 timeOfADaySelector.show()
+            }
+            is Fact.AppBecomeBackground -> {
+                appBgPkgSelectorState.show()
+            }
+            is Fact.AppBecomeForeground -> {
+                appFgPkgSelectorState.show()
             }
         }
     }

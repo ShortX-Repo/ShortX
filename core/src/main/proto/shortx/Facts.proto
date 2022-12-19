@@ -4,6 +4,8 @@ option java_package = "tornaco.apps.shortx.core.proto.fact";
 option java_outer_classname = "OuterFacts";
 option java_multiple_files = true;
 
+import "shortx/Common.proto";
+
 message KeyEvent {
   int32 keyCode = 1;
 }
@@ -89,4 +91,11 @@ message Alarm {
   string tag = 1;
   TimeOfADay triggerAt = 2;
   RepeatDays repeat = 3;
+}
+
+message AppBecomeFg {
+  repeated AppPkg apps = 1;
+}
+message AppBecomeBg {
+  repeated AppPkg apps = 1;
 }

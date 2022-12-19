@@ -62,6 +62,8 @@ private fun labelForFactSelector(fact: Fact): String {
         Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
         Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
         is Fact.Alarm -> "Time of a day"
+        is Fact.AppBecomeBackground -> LocalI18N.current["ui.fact.app.become.bg"]
+        is Fact.AppBecomeForeground -> LocalI18N.current["ui.fact.app.become.fg"]
     }
 }
 
@@ -83,6 +85,14 @@ private fun labelForFact(fact: Fact): List<String> {
             "Time of a day",
             fact.repeatDays.toString(),
             fact.timeOfADay.toString()
+        )
+        is Fact.AppBecomeBackground -> listOf(
+            LocalI18N.current["ui.fact.app.become.bg"],
+            fact.apps.joinToString { it.label }
+        )
+        is Fact.AppBecomeForeground -> listOf(
+            LocalI18N.current["ui.fact.app.become.fg"],
+            fact.apps.joinToString { it.label }
         )
     }
 }
@@ -125,5 +135,11 @@ private fun IconForFact(fact: Fact) {
                 imageVector = Icons.Filled.Alarm, contentDescription = "Alarm"
             )
         }
+        is Fact.AppBecomeBackground -> Icon(
+            imageVector = Icons.Filled.Refresh, contentDescription = "AppBecomeBackground"
+        )
+        is Fact.AppBecomeForeground -> Icon(
+            imageVector = Icons.Filled.LocalSee, contentDescription = "AppBecomeForeground"
+        )
     }
 }
