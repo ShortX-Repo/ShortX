@@ -12,7 +12,7 @@ sealed interface Action {
     data class Delay(val time: Long) : Action
     data class ShowToast(val message: String) : Action
     data class MVEL(val expression: String) : Action
-    object ShowOverlay : Action
+    data class ShowOverlay(val settings: List<OverlayButtonSetting>) : Action
     object HideOverlay : Action
 }
 
@@ -36,8 +36,8 @@ fun Action.toProtoAction(): ProtoMessage {
         Action.HideOverlay -> {
             HideOverlayButton.newBuilder().build()
         }
-        Action.ShowOverlay -> {
-            HideOverlayButton.newBuilder().build()
+        is Action.ShowOverlay -> {
+            ShowOverlayButton.newBuilder().addAllButtonSettings(settings).build()
         }
     }
 }
@@ -64,7 +64,8 @@ fun ProtoAny.toAction(): Action? {
             Action.MVEL(expression = data.expression)
         }
         this is_ ShowOverlayButton::class.java -> {
-            Action.ShowOverlay
+            val data = this unpack_ ShowOverlayButton::class.java
+            Action.ShowOverlay(settings = data.buttonSettingsList)
         }
         this is_ HideOverlayButton::class.java -> {
             Action.HideOverlay

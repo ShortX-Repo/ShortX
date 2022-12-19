@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,18 +12,89 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
 
+
 @Composable
-fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (Action) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+fun ActionSelectors(
+    header: @Composable ColumnScope.() -> Unit = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
+    },
+    addAction: (Action) -> Unit,
+    removeAction: (Action) -> Unit,
+    selectableActions: Map<I18NKey, List<Action>>,
+    actions: List<Action>
+) {
+    // Actions
+    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
+        addAction(Action.ShellCommand(cmd))
+    }
+    ShellCommandSelector(state = shellCommandSelectorState)
+
+    val mvelSelectorState = rememberMVELSelectorState { expression ->
+        addAction(Action.MVEL(expression))
+    }
+    MVELSelector(state = mvelSelectorState)
+
+    val showOverlayButtonSelectorState =
+        rememberShowOverlayButtonSelectorState(selectableActions) { items ->
+            val action = Action.ShowOverlay(
+                items.map { it.toProtoModel() }
+            )
+            addAction(action)
+        }
+    ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
+
+    Actions(
+        header = header,
+        selectableActions = selectableActions,
+        actions = actions,
+        selectAction = { action: Action ->
+            when (action) {
+                is Action.TakeScreenshot -> {
+                    addAction(action)
+                }
+                is Action.ShellCommand -> {
+                    shellCommandSelectorState.show()
+                }
+                is Action.ShowToast -> {
+                    addAction(Action.ShowToast("Hello"))
+                }
+                is Action.Delay -> {
+                    addAction(Action.Delay(1000))
+                }
+                is Action.MVEL -> {
+                    mvelSelectorState.show()
+                }
+                Action.HideOverlay -> {
+                    addAction(Action.HideOverlay)
+                }
+                is Action.ShowOverlay -> {
+                    showOverlayButtonSelectorState.show()
+                }
+            }
+        },
+        removeAction = { action ->
+            removeAction(action)
+        })
+}
+
+
+@Composable
+private fun Actions(
+    header: @Composable ColumnScope.() -> Unit,
+    selectableActions: Map<I18NKey, List<Action>>,
+    actions: List<Action>,
+    selectAction: (Action) -> Unit,
+    removeAction: (Action) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        header()
         val selectorState = rememberDropdownSelectorState()
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            state.actions.forEach {
+            actions.forEach {
                 ListItem(titleLines = labelLinesForAction(action = it), icon = {
                     IconForAction(action = it)
                 }, action1 = {
@@ -48,7 +120,7 @@ fun Actions(state: AddRuleState, selectAction: (Action) -> Unit, removeAction: (
                     Text(LocalI18N.current["ui.actions.add"])
                 }
 
-                val actionItems = state.selectableActions.mapValues {
+                val actionItems = selectableActions.mapValues {
                     it.value.map { action ->
                         DropdownItem(
                             labelLines = labelForActionSelector(action),
@@ -87,7 +159,7 @@ private fun labelForActionSelector(action: Action): List<String> {
         Action.HideOverlay -> {
             listOf("HideOverlay")
         }
-        Action.ShowOverlay -> {
+        is Action.ShowOverlay -> {
             listOf("ShowOverlay")
         }
     }
@@ -114,8 +186,12 @@ private fun labelLinesForAction(action: Action): List<String> {
         Action.HideOverlay -> {
             listOf("HideOverlay")
         }
-        Action.ShowOverlay -> {
-            listOf("ShowOverlay")
+        is Action.ShowOverlay -> {
+            mutableListOf("ShowOverlay").apply {
+                action.settings.forEach {
+                    add("With ${it.actionsList.size} actions")
+                }
+            }
         }
     }
 }
@@ -153,7 +229,7 @@ private fun IconForAction(action: Action) {
                 imageVector = Icons.Filled.Window, contentDescription = "HideOverlay"
             )
         }
-        Action.ShowOverlay -> {
+        is Action.ShowOverlay -> {
             Icon(
                 imageVector = Icons.Filled.Window, contentDescription = "ShowOverlay"
             )

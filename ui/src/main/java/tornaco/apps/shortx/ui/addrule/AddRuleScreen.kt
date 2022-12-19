@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
+import tornaco.apps.shortx.ui.base.I18NKey
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -98,57 +99,23 @@ fun AddRuleScreen() {
                     ConditionSelectors(state, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ActionSelectors(vm, state)
+                    ActionSelectors(
+                        addAction = { action ->
+                            vm.addAction(
+                                action
+                            )
+                        },
+                        removeAction = { action ->
+                            vm.removeAction(action)
+                        },
+                        selectableActions = state.selectableActions,
+                        actions = state.actions
+                    )
                     Spacer(modifier = Modifier.size(24.dp))
                 }
             }
         }
     }
-}
-
-@Composable
-private fun ActionSelectors(
-    vm: AddRuleViewModel,
-    state: AddRuleState
-) {
-    // Actions
-    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-        vm.addAction(Action.ShellCommand(cmd))
-    }
-    ShellCommandSelector(state = shellCommandSelectorState)
-
-    val mvelSelectorState = rememberMVELSelectorState { expression ->
-        vm.addAction(Action.MVEL(expression))
-    }
-    MVELSelector(state = mvelSelectorState)
-
-    Actions(state = state, selectAction = { action: Action ->
-        when (action) {
-            is Action.TakeScreenshot -> {
-                vm.addAction(action)
-            }
-            is Action.ShellCommand -> {
-                shellCommandSelectorState.show()
-            }
-            is Action.ShowToast -> {
-                vm.addAction(Action.ShowToast("Hello"))
-            }
-            is Action.Delay -> {
-                vm.addAction(Action.Delay(1000))
-            }
-            is Action.MVEL -> {
-                mvelSelectorState.show()
-            }
-            Action.HideOverlay -> {
-                vm.addAction(Action.HideOverlay)
-            }
-            Action.ShowOverlay -> {
-                vm.addAction(Action.ShowOverlay)
-            }
-        }
-    }, removeAction = { action ->
-        vm.removeAction(action)
-    })
 }
 
 @Composable

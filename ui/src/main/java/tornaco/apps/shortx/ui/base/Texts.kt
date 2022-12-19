@@ -31,6 +31,18 @@ fun MediumTitle(text: String) {
 }
 
 @Composable
+fun SmallTitle(text: String) {
+    Text(
+        modifier = Modifier.padding(vertical = 12.dp),
+        text = text,
+        style = MaterialTheme.typography.titleSmall.copy(
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp
+        )
+    )
+}
+
+@Composable
 fun DialogTitle(text: String) {
     Text(
         modifier = Modifier.padding(8.dp),
