@@ -188,9 +188,7 @@ private fun labelLinesForAction(action: Action): List<String> {
         }
         is Action.ShowOverlay -> {
             mutableListOf("ShowOverlay").apply {
-                action.settings.forEach {
-                    add("With ${it.actionsList.size} actions")
-                }
+                add("With $size buttons")
             }
         }
     }

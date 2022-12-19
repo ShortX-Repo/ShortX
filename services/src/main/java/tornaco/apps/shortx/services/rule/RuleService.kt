@@ -4,6 +4,7 @@ import android.content.Context
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.RuleSettingsStore
@@ -97,6 +98,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         systemServiceScope.launchSafety {
             engine.fire(fact, getAllRules().filter { rule -> rule.isEnabled })
         }
+    }
+
+    fun executeActions(reason: String, actions: List<ProtoAny>) = systemServiceScope.launchSafety {
+        logger.d("executeActions: $reason, $actions")
+        engine.executeAction(actions)
     }
 
     fun addRule(rule: Rule) {

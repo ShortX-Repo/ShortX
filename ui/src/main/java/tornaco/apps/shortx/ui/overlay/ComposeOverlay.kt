@@ -21,15 +21,16 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
+import java.util.function.Consumer
 
 @SuppressLint("ViewConstructor")
 @Keep
-class ComposeOverlay(context: Context, private val settings: List<OverlayButtonSetting>) :
-    FrameLayout(context) {
+class ComposeOverlay(
+    context: Context, private val settings: List<String>, private val onButtonClick: Consumer<Int>
+) : FrameLayout(context), java.util.function.Function<String, Boolean> {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
 
@@ -91,7 +92,9 @@ class ComposeOverlay(context: Context, private val settings: List<OverlayButtonS
 
         val composeView = ComposeView(context).apply {
             setContent {
-                OverlayContent()
+                OverlayContent(settings) {
+                    onButtonClick.accept(it)
+                }
             }
             isFocusable = false
             isClickable = false
@@ -120,6 +123,7 @@ class ComposeOverlay(context: Context, private val settings: List<OverlayButtonS
     fun isShow() = isAttachedToWindow
 
     fun dismiss() {
+        logger.d("dismiss")
         kotlin.runCatching {
             if (isAttachedToWindow) {
                 context.windowManager.removeViewImmediate(this)
@@ -171,6 +175,26 @@ class ComposeOverlay(context: Context, private val settings: List<OverlayButtonS
             overlayLP.y = (y - height) / 2
         }
         context.windowManager.updateViewLayout(this, overlayLP)
+    }
+
+    override fun apply(t: String): Boolean {
+        logger.d("apply: $t")
+        return when (t) {
+            "show" -> {
+                show()
+                true
+            }
+            "dismiss" -> {
+                dismiss()
+                true
+            }
+            "isShow" -> {
+                isShow()
+            }
+            else -> {
+                false
+            }
+        }
     }
 }
 

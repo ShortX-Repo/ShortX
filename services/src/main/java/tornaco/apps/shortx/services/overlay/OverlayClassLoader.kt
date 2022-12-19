@@ -3,11 +3,10 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import dalvik.system.PathClassLoader
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
-import util.Reflector
 import java.io.File
+import java.util.function.Consumer
 
 class OverlayClassLoader(private val context: Context) {
     private val overlayClass by lazy {
@@ -27,12 +26,22 @@ class OverlayClassLoader(private val context: Context) {
         }
     }
 
-    fun newComposeOverlayObject(settings: List<OverlayButtonSetting>): Any? {
+    fun newComposeOverlayObject(
+        settings: List<String>,
+        onClick: (Int) -> Unit
+    ): Any? {
         return overlayClass?.let {
             kotlin.runCatching {
                 val constructor =
-                    it.getConstructor(Context::class.java, List::class.java)
-                val obj = constructor.newInstance(context, settings)
+                    it.getConstructor(Context::class.java, List::class.java, Consumer::class.java)
+                val obj = constructor.newInstance(
+                    context,
+                    settings,
+                    object : Consumer<Int> {
+                        override fun accept(button: Int) {
+                            onClick(button)
+                        }
+                    })
                 overlayLogger.d("getComposeOverlayObject: $obj")
                 obj
             }.getOrElse {
@@ -45,22 +54,22 @@ class OverlayClassLoader(private val context: Context) {
 
 private val overlayLogger = Logger("Overlay")
 
-fun Any.show() {
-    runCatching { Reflector().callMethod(this, "show") }.onFailure {
+fun java.util.function.Function<String, Boolean>.show() {
+    runCatching { apply("show") }.onFailure {
         overlayLogger.e(it, "show")
     }
 }
 
-fun Any.isShow(): Boolean {
-    return runCatching { return Reflector().callMethod(this, "isShow") as Boolean }
+fun java.util.function.Function<String, Boolean>.isShow(): Boolean {
+    return runCatching { return apply("isShow") }
         .getOrElse {
             overlayLogger.e(it, "isShow")
             false
         }
 }
 
-fun Any.dismiss() {
-    runCatching { Reflector().callMethod(this, "dismiss") }.onFailure {
+fun java.util.function.Function<String, Boolean>.dismiss() {
+    runCatching { apply("dismiss") }.onFailure {
         overlayLogger.e(it, "dismiss")
     }
 }

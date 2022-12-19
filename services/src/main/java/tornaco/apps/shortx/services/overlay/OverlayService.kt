@@ -7,6 +7,11 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.postSafety
 
+internal data class ShowingOverlay(
+    val token: java.util.function.Function<String, Boolean>,
+    val settings: List<OverlayButtonSetting>
+)
+
 class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -15,39 +20,49 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
     private val overlayClassLoader by lazy {
         OverlayClassLoader(context)
     }
-    private var overlay: Any? = null
+    private var showingOverlays: MutableList<ShowingOverlay> = mutableListOf()
 
     override fun systemReady() {
         super.systemReady()
         shortXContext.appState.onPackageChanged {
-            hideOverlay(dispose = true)
             logger.d("Dispose overlay object since apk updated")
-        }
-
-        shortXContext.rule.addRuleChangeListener {
-            logger.d("Rule changed.")
-            shortXContext.rule.getAllRules().filter {
-                it.isEnabled
-            }.forEach { rule ->
-
-            }
+            postHideAllOverlay()
         }
     }
 
-    fun showOverlay(buttonSettingsList: List<OverlayButtonSetting>) = mainHandler.postSafety {
-        logger.d("showOverlay")
-        if (overlay == null) {
-            overlay = overlayClassLoader.newComposeOverlayObject(buttonSettingsList)
+    fun postShowOverlay(settings: List<OverlayButtonSetting>) = mainHandler.postSafety {
+        logger.d("showOverlay, current showing: $showingOverlays, settings: $settings")
+
+        if (showingOverlays.any {
+                it.settings == settings
+            }) {
+            logger.d("showOverlay skip since has showing for same settings.")
+            return@postSafety
         }
-        overlay?.show()
+
+        @Suppress("UNCHECKED_CAST") val overlayIns =
+            overlayClassLoader.newComposeOverlayObject(settings.map { it.icon }) {
+                shortXContext.rule.executeActions(
+                    "Overlay Button #$it click",
+                    settings[it].actionsList
+                )
+            } as java.util.function.Function<String, Boolean>
+
+
+        showingOverlays.add(ShowingOverlay(overlayIns, settings).apply {
+            token.show()
+        })
     }
 
-    fun hideOverlay(dispose: Boolean = false) = mainHandler.postSafety {
-        logger.d("hideOverlay")
-        overlay?.dismiss()
-        if (dispose) {
-            logger.d("dispose overlay.")
-            overlay = null
+    fun postHideAllOverlay() = mainHandler.postSafety {
+        hideAllOverlay()
+    }
+
+    private fun hideAllOverlay() {
+        logger.d("hideAllOverlay")
+        showingOverlays.forEach {
+            it.token.dismiss()
         }
+        showingOverlays.clear()
     }
 }

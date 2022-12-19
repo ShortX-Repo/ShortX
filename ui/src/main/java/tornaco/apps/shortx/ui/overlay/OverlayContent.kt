@@ -20,7 +20,10 @@ import tornaco.apps.shortx.ui.base.MDIcons
 const val BUTTON_COUNT = 6
 
 @Composable
-fun OverlayContent() {
+fun OverlayContent(
+    settings: List<String>,
+    onButtonClick: (Int) -> Unit
+) {
     val vm = viewModel<OverlayViewModel>()
     val state = vm.state.collectAsState()
     LaunchedEffect(vm) {
@@ -36,13 +39,11 @@ fun OverlayContent() {
                 .heightIn(max = 240.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            repeat(BUTTON_COUNT) { index ->
-                if (state.value.enabledButtons.contains(index)) {
-                    IconButton(onClick = {
-                        vm.onButtonClick(index)
-                    }) {
-                        IconForButton(index = index, state.value.buttonIcons[index])
-                    }
+            settings.forEachIndexed { index, icon ->
+                IconButton(onClick = {
+                    onButtonClick(index)
+                }) {
+                    IconForButton(icon)
                 }
             }
         }
@@ -50,6 +51,6 @@ fun OverlayContent() {
 }
 
 @Composable
-private fun IconForButton(index: Int, icon: String) {
+private fun IconForButton(icon: String) {
     Icon(imageVector = MDIcons.filled(icon), contentDescription = icon)
 }

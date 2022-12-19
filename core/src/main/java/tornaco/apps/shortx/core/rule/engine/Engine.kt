@@ -24,6 +24,12 @@ interface Engine {
 
     fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean
     suspend fun fire(fact: ProtoMessage, rules: List<Rule>)
+
+    suspend fun executeAction(actions: List<ProtoAny>) {
+        actions.forEach {
+            actionEvaluator.evaluate(it)
+        }
+    }
 }
 
 interface EngineListener {
