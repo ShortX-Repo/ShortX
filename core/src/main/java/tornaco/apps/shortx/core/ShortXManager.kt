@@ -1,9 +1,9 @@
 package tornaco.apps.shortx.core
 
 import android.content.Context
+import android.os.IBinder
 import android.os.Parcel
 import android.os.RemoteException
-import android.os.ServiceManager
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -111,6 +111,8 @@ class ShortXManager(private val service: IShortX) {
 object ShortXManagerNative {
     private val logger = Logger("ShortXManagerNative")
 
+    var binder: IBinder? = null
+
     val service: IShortX? by lazy {
         getServiceOrNull()
     }
@@ -119,7 +121,7 @@ object ShortXManagerNative {
         val data = Parcel.obtain()
         val reply = Parcel.obtain()
         return try {
-            val proxyBinder = ServiceManager.getService(PROXY_SERVICE_NAME)
+            val proxyBinder = binder
             logger.d("proxyBinder: $proxyBinder")
             if (proxyBinder == null) {
                 null

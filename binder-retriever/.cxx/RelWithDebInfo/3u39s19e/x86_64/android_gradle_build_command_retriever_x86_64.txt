@@ -1,0 +1,7 @@
+Executable : /Users/guohao/Library/Android/sdk/cmake/3.18.1/bin/ninja
+arguments : 
+-C
+/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/RelWithDebInfo/3u39s19e/x86_64
+retriever
+jvmArgs : 
+

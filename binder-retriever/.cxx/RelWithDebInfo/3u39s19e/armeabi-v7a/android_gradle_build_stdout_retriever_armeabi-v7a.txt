@@ -1,0 +1,3 @@
+ninja: Entering directory `/Users/guohao/Documents/Workspace/ShortX/binder-retriever/.cxx/RelWithDebInfo/3u39s19e/armeabi-v7a'
+[1/2] Building CXX object CMakeFiles/retriever.dir/retriever.cpp.o
+[2/2] Linking CXX shared library /Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/RelWithDebInfo/3u39s19e/obj/armeabi-v7a/libretriever.so

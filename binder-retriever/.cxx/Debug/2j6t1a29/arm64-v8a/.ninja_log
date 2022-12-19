@@ -1,0 +1,5 @@
+# ninja log v5
+0	503	1671421275	CMakeFiles/retriever.dir/retriever.cpp.o	35a6e19ff834c5bb
+504	629	1671421275	/Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/Debug/2j6t1a29/obj/arm64-v8a/libretriever.so	32b616ff2329241
+1	1152	1671426405	CMakeFiles/retriever.dir/retriever.cpp.o	35a6e19ff834c5bb
+1152	1479	1671426406	/Users/guohao/Documents/Workspace/ShortX/binder-retriever/build/intermediates/cxx/Debug/2j6t1a29/obj/arm64-v8a/libretriever.so	32b616ff2329241

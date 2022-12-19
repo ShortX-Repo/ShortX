@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":binder-retriever")
+
+
 rootProject.name = "ShortX"
 
 pluginManagement {
@@ -22,6 +25,7 @@ pluginManagement {
 
 include(":app")
 include(":ui")
+include(":binder-retriever")
 include(":core")
 include(":services")
 include(":patch")

@@ -102,6 +102,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.3.1")
     implementation(Compose.composeMaterialIconsExtended)
 
+    implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))
