@@ -45,6 +45,13 @@ class ComposeOverlay(
         }
     }
 
+    private val callPosUpdateRunnable =
+        Runnable {
+            val out = IntArray(2)
+            getLocationOnScreen(out)
+            onPosChange.accept(android.util.Pair.create(out[0], out[1]))
+        }
+
     private val touchListener: OnTouchListener = object : OnTouchListener {
         private var touchX = 0f
         private var touchY = 0f
@@ -69,12 +76,10 @@ class ComposeOverlay(
                         overlayLP.x = (event.rawX - touchX).toInt()
                         overlayLP.y = (event.rawY - touchY).toInt()
                         context.windowManager.updateViewLayout(this@ComposeOverlay, overlayLP)
-                        onPosChange.accept(
-                            android.util.Pair.create(
-                                maxOf(overlayLP.x, 0),
-                                maxOf(overlayLP.y, 0)
-                            )
-                        )
+
+                        removeCallbacks(callPosUpdateRunnable)
+                        postDelayed(callPosUpdateRunnable, 300)
+
                         return true
                     }
                 }
@@ -176,7 +181,7 @@ class ComposeOverlay(
 
     private fun initPos() {
         logger.d("initPos: $width $height")
-        if (initialPos.first > 0 && initialPos.second > 0) {
+        if (initialPos.first >= 0 && initialPos.second >= 0) {
             overlayLP.x = initialPos.first
             overlayLP.y = initialPos.second
         } else {

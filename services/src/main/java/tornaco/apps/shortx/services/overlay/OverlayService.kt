@@ -51,6 +51,7 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
                 initialPos = android.util.Pair.create(posX, posY),
                 onPosChange = { pos ->
                     handler.postSafety {
+                        logger.d("onPosChange, write settings: $pos")
                         store.write(Settings.IntSettings.OverlayButtonPosX, pos.first)
                         store.write(Settings.IntSettings.OverlayButtonPosY, pos.second)
                     }
