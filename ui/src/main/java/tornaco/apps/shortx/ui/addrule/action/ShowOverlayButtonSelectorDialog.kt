@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.models.Action
+import tornaco.apps.shortx.ui.addrule.models.toAction
 import tornaco.apps.shortx.ui.addrule.models.toProtoAction
 import tornaco.apps.shortx.ui.base.*
 
@@ -27,7 +28,11 @@ class ShowOverlayButtonSelectorState(
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
-    fun show() {
+    private var _initialData: MutableList<OverlayButtonItem> = mutableListOf()
+    val initialData: List<OverlayButtonItem> get() = _initialData
+
+    fun show(initialData: List<OverlayButtonItem>) {
+        _initialData = initialData.toMutableList()
         _isShow = true
     }
 
@@ -42,16 +47,19 @@ fun rememberShowOverlayButtonSelectorState(
     onSelected: (List<OverlayButtonItem>) -> Unit
 ): ShowOverlayButtonSelectorState {
     return remember {
-        ShowOverlayButtonSelectorState(selectableActions, onSelected)
+        ShowOverlayButtonSelectorState(
+            selectableActions = selectableActions,
+            onSelected = onSelected
+        )
     }
 }
 
 @Composable
 fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
-    var overlayButtonItems by remember(state) {
-        mutableStateOf(mutableListOf<OverlayButtonItem>())
-    }
     if (state.isShow) {
+        var overlayButtonItems by remember(state) {
+            mutableStateOf(state.initialData.toMutableList())
+        }
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = "ShowOverlayButton")
         }, buttons = {
@@ -155,8 +163,14 @@ data class OverlayButtonItem(
     val actions: List<Action> = emptyList()
 )
 
-fun OverlayButtonItem.toProtoModel(): OverlayButtonSetting {
+fun OverlayButtonItem.toOverlayButtonSetting(): OverlayButtonSetting {
     return OverlayButtonSetting.newBuilder().setIcon(icon).addAllActions(
         actions.map { it.toProtoAction().pack_() }
     ).build()
+}
+
+fun OverlayButtonSetting.toOverlayButtonItem(): OverlayButtonItem {
+    return OverlayButtonItem(icon = icon, actions = actionsList.mapNotNull {
+        it.toAction()
+    })
 }

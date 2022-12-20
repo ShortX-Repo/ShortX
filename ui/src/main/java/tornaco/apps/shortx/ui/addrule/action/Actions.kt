@@ -38,9 +38,11 @@ fun ActionSelectors(
     MVELSelector(state = mvelSelectorState)
 
     val showOverlayButtonSelectorState =
-        rememberShowOverlayButtonSelectorState(selectableActions) { items ->
+        rememberShowOverlayButtonSelectorState(
+            selectableActions = selectableActions
+        ) { items ->
             val action = Action.ShowOverlay(
-                items.map { it.toProtoModel() }
+                items.map { it.toOverlayButtonSetting() }
             )
             addAction(action)
         }
@@ -71,12 +73,31 @@ fun ActionSelectors(
                     addAction(Action.HideOverlay)
                 }
                 is Action.ShowOverlay -> {
-                    showOverlayButtonSelectorState.show()
+                    showOverlayButtonSelectorState.show(emptyList())
                 }
             }
         },
         removeAction = { action ->
             removeAction(action)
+        },
+        onActionClick = { action ->
+            when (action) {
+                is Action.TakeScreenshot -> {
+                }
+                is Action.ShellCommand -> {
+                }
+                is Action.ShowToast -> {
+                }
+                is Action.Delay -> {
+                }
+                is Action.MVEL -> {
+                }
+                Action.HideOverlay -> {
+                }
+                is Action.ShowOverlay -> {
+                    showOverlayButtonSelectorState.show(action.settings.map { it.toOverlayButtonItem() })
+                }
+            }
         })
 }
 
@@ -87,7 +108,8 @@ private fun Actions(
     selectableActions: Map<I18NKey, List<Action>>,
     actions: List<Action>,
     selectAction: (Action) -> Unit,
-    removeAction: (Action) -> Unit
+    removeAction: (Action) -> Unit,
+    onActionClick: (Action) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
@@ -95,17 +117,21 @@ private fun Actions(
 
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEach {
-                ListItem(titleLines = labelLinesForAction(action = it), icon = {
-                    IconForAction(action = it)
-                }, action1 = {
-                    IconButton(onClick = {
-                        removeAction(it)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Close, contentDescription = "Remove"
-                        )
-                    }
-                }, onClick = {})
+                ListItem(
+                    titleLines = labelLinesForAction(action = it),
+                    icon = {
+                        IconForAction(action = it)
+                    },
+                    action1 = {
+                        IconButton(onClick = {
+                            removeAction(it)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Close, contentDescription = "Remove"
+                            )
+                        }
+                    },
+                    onClick = { onActionClick(it) })
             }
 
             Box {
@@ -188,7 +214,7 @@ private fun labelLinesForAction(action: Action): List<String> {
         }
         is Action.ShowOverlay -> {
             mutableListOf("ShowOverlay").apply {
-                add("With $size buttons")
+                add("${action.settings.size} buttons")
             }
         }
     }
