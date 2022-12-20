@@ -29,7 +29,11 @@ import java.util.function.Consumer
 @SuppressLint("ViewConstructor")
 @Keep
 class ComposeOverlay(
-    context: Context, private val settings: List<String>, private val onButtonClick: Consumer<Int>
+    context: Context,
+    private val initialPos: android.util.Pair<Int, Int>,
+    private val onPosChange: Consumer<android.util.Pair<Int, Int>>,
+    private val settings: List<String>,
+    private val onButtonClick: Consumer<Int>
 ) : FrameLayout(context), java.util.function.Function<String, Boolean> {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
@@ -65,6 +69,12 @@ class ComposeOverlay(
                         overlayLP.x = (event.rawX - touchX).toInt()
                         overlayLP.y = (event.rawY - touchY).toInt()
                         context.windowManager.updateViewLayout(this@ComposeOverlay, overlayLP)
+                        onPosChange.accept(
+                            android.util.Pair.create(
+                                maxOf(overlayLP.x, 0),
+                                maxOf(overlayLP.y, 0)
+                            )
+                        )
                         return true
                     }
                 }
@@ -110,11 +120,12 @@ class ComposeOverlay(
     }
 
     fun show() {
-        logger.d("show: $settings")
+        logger.d("show: $settings, initialPos: $initialPos")
         if (!isAttachedToWindow) {
             overlayLP.title = "ShortX-ComposeOverlay"
             val windowManager = context.windowManager
             windowManager.addView(this, overlayLP)
+            initPos()
         } else {
             logger.d("Already isAttachedToWindow.")
         }
@@ -142,7 +153,7 @@ class ComposeOverlay(
         lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         lp.packageName = context.packageName
-        lp.windowAnimations = android.R.style.Animation_InputMethod
+        lp.windowAnimations = android.R.style.Animation_Dialog
         return lp
     }
 
@@ -163,17 +174,24 @@ class ComposeOverlay(
         }
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        //  updatePos()
+    private fun initPos() {
+        logger.d("initPos: $width $height")
+        if (initialPos.first > 0 && initialPos.second > 0) {
+            overlayLP.x = initialPos.first
+            overlayLP.y = initialPos.second
+        } else {
+            context.screenSize().apply {
+                overlayLP.x = x - width
+                overlayLP.y = (y - height) / 2
+            }
+        }
+        context.windowManager.updateViewLayout(this, overlayLP)
     }
 
-    private fun updatePos() {
-        logger.d("updatePos: $width $height")
-        context.screenSize().apply {
-            overlayLP.x = x - width
-            overlayLP.y = (y - height) / 2
-        }
+    private fun updatePos(x: Int, y: Int) {
+        logger.d("updatePos: $x $y")
+        overlayLP.x = x
+        overlayLP.y = y
         context.windowManager.updateViewLayout(this, overlayLP)
     }
 

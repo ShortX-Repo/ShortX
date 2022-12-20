@@ -12,6 +12,12 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
         Settings<String>(key, defaultValue) {
     }
 
+    sealed class IntSettings(key: String, defaultValue: Int) :
+        Settings<Int>(key, defaultValue) {
+        object OverlayButtonPosX : IntSettings(key = "OverlayButtonPosX", defaultValue = -1)
+        object OverlayButtonPosY : IntSettings(key = "OverlayButtonPosY", defaultValue = -1)
+    }
+
     sealed class MapSettings(key: String, defaultValue: Map<String, String> = emptyMap()) :
         Settings<Map<String, String>>(key, defaultValue) {
     }
@@ -35,6 +41,12 @@ fun SettingsStore.write(settings: Settings.StringSettings, value: String) =
 
 fun SettingsStore.read(settings: Settings.StringSettings) =
     getString(settings.key, settings.defaultValue)
+
+fun SettingsStore.write(settings: Settings.IntSettings, value: Int) =
+    putInt(settings.key, value)
+
+fun SettingsStore.read(settings: Settings.IntSettings): Int =
+    getInt(settings.key, settings.defaultValue)
 
 fun Bundle.toStringMap(): Map<String, String> {
     return keySet().associateWith { getString(it) }

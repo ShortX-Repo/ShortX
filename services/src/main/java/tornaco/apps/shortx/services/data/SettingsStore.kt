@@ -68,8 +68,13 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
         return boolCache[key] ?: defaultValue
     }
 
-    fun getInt(key: String, defaultValue: Int? = null): Int? {
+    fun getInt(key: String, defaultValue: Int): Int {
         return intCache[key] ?: defaultValue
+    }
+
+    fun putInt(key: String, value: Int) {
+        intCache[key] = value
+        postWrite()
     }
 
     fun putString(key: String, value: String?) {

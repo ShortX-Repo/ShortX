@@ -27,15 +27,25 @@ class OverlayClassLoader(private val context: Context) {
     }
 
     fun newComposeOverlayObject(
+        initialPos: android.util.Pair<Int, Int>,
+        onPosChange: Consumer<android.util.Pair<Int, Int>>,
         settings: List<String>,
         onClick: (Int) -> Unit
     ): Any? {
         return overlayClass?.let {
             kotlin.runCatching {
                 val constructor =
-                    it.getConstructor(Context::class.java, List::class.java, Consumer::class.java)
+                    it.getConstructor(
+                        Context::class.java,
+                        android.util.Pair::class.java,
+                        Consumer::class.java,
+                        List::class.java,
+                        Consumer::class.java
+                    )
                 val obj = constructor.newInstance(
                     context,
+                    initialPos,
+                    onPosChange,
                     settings,
                     object : Consumer<Int> {
                         override fun accept(button: Int) {

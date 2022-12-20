@@ -5,6 +5,9 @@ import android.os.Looper
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.postSafety
 
 internal data class ShowingOverlay(
@@ -40,8 +43,21 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
             return@postSafety
         }
 
+        val posX = store.read(Settings.IntSettings.OverlayButtonPosX)
+        val posY = store.read(Settings.IntSettings.OverlayButtonPosY)
+
         @Suppress("UNCHECKED_CAST") val overlayIns =
-            overlayClassLoader.newComposeOverlayObject(settings.map { it.icon }) {
+            overlayClassLoader.newComposeOverlayObject(
+                initialPos = android.util.Pair.create(posX, posY),
+                onPosChange = { pos ->
+                    handler.postSafety {
+                        store.write(Settings.IntSettings.OverlayButtonPosX, pos.first)
+                        store.write(Settings.IntSettings.OverlayButtonPosY, pos.second)
+                    }
+                },
+
+                settings = settings.map { it.icon }
+            ) {
                 shortXContext.rule.executeActions(
                     "Overlay Button #$it click",
                     settings[it].actionsList
