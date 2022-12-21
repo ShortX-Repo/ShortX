@@ -34,10 +34,12 @@ message OverlayButtonSetting {
   repeated google.protobuf.Any actions = 1;
   string icon = 2;
   int32 index = 3;
+  string label = 4;
 }
 
 message HideOverlayButton {}
 
 message ShowOverlayButton {
   repeated OverlayButtonSetting buttonSettings = 1;
+  bool autoCollapse = 2;
 }
