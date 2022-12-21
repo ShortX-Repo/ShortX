@@ -13,8 +13,13 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 object ShortXService : SystemService(ShortXContextImpl()) {
     private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
 
+    init {
+        LogInit.initEarlyLogging()
+    }
+
     override fun start(context: Context) {
         super.start(context)
+        LogInit.initStartedLogging()
         serviceLifecycle.start(context)
     }
 

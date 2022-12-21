@@ -8,16 +8,29 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 
 const val PROXY_SERVICE_NAME = Context.PRINT_SERVICE
 val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 
+private val defaultServiceStub = IShortX.Default()
+private val logger = Logger("ShortXManager")
+
 val shortXManager
-    get() = ShortXManager(ShortXManagerNative.service ?: IShortX.Default())
+    get() = ShortXManager(
+        (ShortXManagerNative.service
+            ?: Proxy.newProxyInstance(
+                IShortX::class.java.classLoader,
+                arrayOf(IShortX::class.java),
+                fun(_: Any, method: Method, args: Array<out Any>): Any? {
+                    logger.w("Invoke defaultServiceStub: ${method.name}")
+                    return method.invoke(defaultServiceStub, args)
+                }
+            )) as IShortX
+    )
 
 class ShortXManager(private val service: IShortX) {
-    private val logger = Logger("ShortXManager")
-
     fun isInstalled(): Boolean =
         kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
 
@@ -129,7 +142,7 @@ object ShortXManagerNative {
                 data.writeInterfaceToken(IShortX::class.java.name)
                 proxyBinder.transact(IPC_CODE, data, reply, 0)
                 val binder = reply.readStrongBinder()
-                logger.d("Our binder: $binder")
+                logger.d("shortx binder: $binder")
                 IShortX.Stub.asInterface(binder)
             }
         } catch (e: RemoteException) {

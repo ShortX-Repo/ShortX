@@ -10,6 +10,9 @@ object Dirs {
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")
 
+    fun baseServerLogDir() =
+        File(baseServerDir(), "log")
+
     fun dataStoreDir() = File(baseServerDataDir(), "data_store")
 
     fun dataStoreFile(prefName: String) = File(dataStoreDir(), prefName.let {
