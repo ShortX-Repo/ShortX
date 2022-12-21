@@ -41,7 +41,10 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
         }
     }
 
-    fun postShowOverlay(settings: List<OverlayButtonSetting>) = mainHandler.postSafety {
+    fun postShowOverlay(
+        autoCollapse: Boolean,
+        settings: List<OverlayButtonSetting>
+    ) = mainHandler.postSafety {
         logger.d("showOverlay, current showing: $showingOverlays, settings: $settings")
 
         if (showingOverlays.any {
@@ -56,6 +59,7 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
 
         @Suppress("UNCHECKED_CAST") val overlayIns =
             overlayClassLoader.newComposeOverlayObject(
+                autoCollapse = autoCollapse,
                 initialPos = android.util.Pair.create(posX, posY),
                 onPosChange = { pos ->
                     handler.postSafety {

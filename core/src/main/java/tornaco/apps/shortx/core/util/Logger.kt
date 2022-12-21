@@ -3,7 +3,7 @@ package tornaco.apps.shortx.core.util
 import android.util.Log
 import tornaco.apps.shortx.core.BuildProp
 
-class Logger(private val tag: String) {
+class Logger(private val tag: String = "-") {
     private val fullTag get() = "ShortX-$tag"
 
     fun d(any: Any?) {

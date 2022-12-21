@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,16 +24,21 @@ import tornaco.apps.shortx.ui.base.*
 
 class ShowOverlayButtonSelectorState(
     val selectableActions: Map<I18NKey, List<Action>>,
-    val onSelected: (List<OverlayButtonItem>) -> Unit
+    val onSelected: (ShowOverlayButtonSettings) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
-    private var _initialData: MutableList<OverlayButtonItem> = mutableListOf()
-    val initialData: List<OverlayButtonItem> get() = _initialData
+    private var _initialData: ShowOverlayButtonSettings by mutableStateOf(
+        ShowOverlayButtonSettings(
+            false,
+            emptyList()
+        )
+    )
+    val initialData: ShowOverlayButtonSettings get() = _initialData
 
-    fun show(initialData: List<OverlayButtonItem>) {
-        _initialData = initialData.toMutableList()
+    fun show(initialData: ShowOverlayButtonSettings) {
+        _initialData = initialData
         _isShow = true
     }
 
@@ -44,7 +50,7 @@ class ShowOverlayButtonSelectorState(
 @Composable
 fun rememberShowOverlayButtonSelectorState(
     selectableActions: Map<I18NKey, List<Action>>,
-    onSelected: (List<OverlayButtonItem>) -> Unit
+    onSelected: (ShowOverlayButtonSettings) -> Unit
 ): ShowOverlayButtonSelectorState {
     return remember {
         ShowOverlayButtonSelectorState(
@@ -58,14 +64,22 @@ fun rememberShowOverlayButtonSelectorState(
 fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
     if (state.isShow) {
         var overlayButtonItems by remember(state) {
-            mutableStateOf(state.initialData.toMutableList())
+            mutableStateOf(state.initialData.items.toMutableList())
+        }
+        var isAutoCollapse by remember(state.initialData) {
+            mutableStateOf(state.initialData.autoCollapse)
         }
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = "ShowOverlayButton")
         }, buttons = {
             TextButton(onClick = {
                 if (overlayButtonItems.any { it.actions.isNotEmpty() }) {
-                    state.onSelected(overlayButtonItems)
+                    state.onSelected(
+                        ShowOverlayButtonSettings(
+                            autoCollapse = isAutoCollapse,
+                            items = overlayButtonItems
+                        )
+                    )
                     state.dismiss()
                 }
             }) {
@@ -142,8 +156,20 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                     StandardSpacer()
                 }
 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SmallTitle(text = "Auto collapse")
+
+                    StandardSpacer()
+
+                    Switch(checked = isAutoCollapse, onCheckedChange = {
+                        isAutoCollapse = it
+                    })
+                }
+
+
                 StandardSpacer()
-                StandardSpacer()
+
+
                 // Add icon
                 FilledTonalButton(onClick = {
                     overlayButtonItems = overlayButtonItems.toMutableList().apply {
@@ -157,6 +183,8 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
     }
 }
 
+
+data class ShowOverlayButtonSettings(val autoCollapse: Boolean, val items: List<OverlayButtonItem>)
 
 data class OverlayButtonItem(
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,

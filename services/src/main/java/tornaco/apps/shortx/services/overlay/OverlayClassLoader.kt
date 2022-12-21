@@ -29,6 +29,7 @@ class OverlayClassLoader(private val context: Context) {
     fun newComposeOverlayObject(
         initialPos: android.util.Pair<Int, Int>,
         onPosChange: Consumer<android.util.Pair<Int, Int>>,
+        autoCollapse: Boolean,
         settings: List<String>,
         onClick: (Int) -> Unit
     ): Any? {
@@ -40,6 +41,7 @@ class OverlayClassLoader(private val context: Context) {
                         android.util.Pair::class.java,
                         Consumer::class.java,
                         List::class.java,
+                        Boolean::class.java,
                         Consumer::class.java
                     )
                 val obj = constructor.newInstance(
@@ -47,6 +49,7 @@ class OverlayClassLoader(private val context: Context) {
                     initialPos,
                     onPosChange,
                     settings,
+                    autoCollapse,
                     object : Consumer<Int> {
                         override fun accept(button: Int) {
                             onClick(button)

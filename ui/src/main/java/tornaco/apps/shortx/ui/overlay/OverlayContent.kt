@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.overlay
 
+import android.view.MotionEvent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,23 +15,36 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.MDIcons
 
 const val BUTTON_COUNT = 6
 
-
-private class ExpandState {
+private class ExpandState(private val scope: CoroutineScope) {
     private var _isExpand by mutableStateOf(true)
     val isExpand get() = _isExpand
 
-    suspend fun expand() {
+    private var pendingCollapseJob: Job? = null
+
+    fun cancelPendingCollapseJob() {
+        pendingCollapseJob?.cancel()
+    }
+
+    fun scheduleCollapse() {
+        cancelPendingCollapseJob()
+        pendingCollapseJob = scope.launch {
+            delay(3000)
+            collapse()
+        }
+    }
+
+    fun expand() {
         _isExpand = true
-        delay(3000)
-        collapse()
     }
 
     fun collapse() {
@@ -41,61 +55,76 @@ private class ExpandState {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OverlayContent(
+    autoCollapse: Boolean,
     settings: List<String>,
-    onButtonClick: (Int) -> Unit
+    onButtonClick: (Int) -> Unit,
+    motionEventSpy: (MotionEvent) -> Unit
 ) {
-    val vm = viewModel<OverlayViewModel>()
-    val state = vm.state.collectAsState()
-    LaunchedEffect(vm) {
-        vm.start()
-    }
-    Card(
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .wrapContentSize()
-                .heightIn(max = 240.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            val expandState by remember {
-                mutableStateOf(ExpandState())
-            }
-            // Expand tool.
-            val scope = rememberCoroutineScope()
-            AnimatedVisibility(visible = !expandState.isExpand) {
-                Box(modifier = Modifier
-                    .width(48.dp)
-                    .height(24.dp)
-                    .clickable {
-                        scope.launch { expandState.expand() }
-                    }) {
-                    Icon(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .align(Alignment.Center),
-                        imageVector = Icons.Filled.ExpandMore,
-                        contentDescription = "Expand"
-                    )
-                }
-            }
 
-            // Expand content.
-            AnimatedVisibility(visible = expandState.isExpand) {
-                Column {
-                    settings.forEachIndexed { index, icon ->
-                        IconButton(onClick = {
-                            onButtonClick(index)
+    val scope = rememberCoroutineScope()
+
+    val expandState by remember(settings) {
+        mutableStateOf(ExpandState(scope))
+    }
+
+    if (autoCollapse) {
+        LaunchedEffect(settings) {
+            expandState.scheduleCollapse()
+        }
+    }
+
+    Box(modifier = Modifier.motionEventSpy {
+        motionEventSpy(it)
+
+        if (autoCollapse) {
+            if (it.action == MotionEvent.ACTION_UP) {
+                expandState.scheduleCollapse()
+            } else {
+                expandState.cancelPendingCollapseJob()
+            }
+        }
+
+    }) {
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .heightIn(max = 240.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Expand tool.
+                AnimatedVisibility(visible = !expandState.isExpand) {
+                    Box(modifier = Modifier
+                        .width(48.dp)
+                        .height(24.dp)
+                        .clickable {
+                            expandState.expand()
                         }) {
-                            IconForButton(icon)
+                        Icon(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .align(Alignment.Center),
+                            imageVector = Icons.Filled.ExpandMore,
+                            contentDescription = "Expand"
+                        )
+                    }
+                }
+
+                // Expand content.
+                AnimatedVisibility(visible = expandState.isExpand) {
+                    Column {
+                        settings.forEachIndexed { index, icon ->
+                            IconButton(onClick = {
+                                onButtonClick(index)
+                            }) {
+                                IconForButton(icon)
+                            }
                         }
                     }
                 }
-            }
-
-            LaunchedEffect(settings) {
-                expandState.expand()
             }
         }
     }

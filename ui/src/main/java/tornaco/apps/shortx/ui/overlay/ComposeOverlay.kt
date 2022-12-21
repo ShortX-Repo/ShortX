@@ -33,6 +33,7 @@ class ComposeOverlay(
     private val initialPos: android.util.Pair<Int, Int>,
     private val onPosChange: Consumer<android.util.Pair<Int, Int>>,
     private val settings: List<String>,
+    private val autoCollapse: Boolean,
     private val onButtonClick: Consumer<Int>
 ) : FrameLayout(context), java.util.function.Function<String, Boolean> {
     private val logger: Logger = Logger("ComposeOverlay")
@@ -107,9 +108,15 @@ class ComposeOverlay(
 
         val composeView = ComposeView(context).apply {
             setContent {
-                OverlayContent(settings) {
-                    onButtonClick.accept(it)
-                }
+                OverlayContent(
+                    autoCollapse = autoCollapse,
+                    settings = settings,
+                    motionEventSpy = {
+                        touchListener.onTouch(
+                            this@ComposeOverlay, it
+                        )
+                    },
+                    onButtonClick = { onButtonClick.accept(it) })
             }
             isFocusable = false
             isClickable = false

@@ -40,9 +40,10 @@ fun ActionSelectors(
     val showOverlayButtonSelectorState =
         rememberShowOverlayButtonSelectorState(
             selectableActions = selectableActions
-        ) { items ->
+        ) { settings ->
             val action = Action.ShowOverlay(
-                items.map { it.toOverlayButtonSetting() }
+                autoCollapse = settings.autoCollapse,
+                settings = settings.items.map { it.toOverlayButtonSetting() }
             )
             addAction(action)
         }
@@ -73,7 +74,12 @@ fun ActionSelectors(
                     addAction(Action.HideOverlay)
                 }
                 is Action.ShowOverlay -> {
-                    showOverlayButtonSelectorState.show(emptyList())
+                    showOverlayButtonSelectorState.show(
+                        ShowOverlayButtonSettings(
+                            false,
+                            emptyList()
+                        )
+                    )
                 }
             }
         },
@@ -95,7 +101,11 @@ fun ActionSelectors(
                 Action.HideOverlay -> {
                 }
                 is Action.ShowOverlay -> {
-                    showOverlayButtonSelectorState.show(action.settings.map { it.toOverlayButtonItem() })
+                    showOverlayButtonSelectorState.show(
+                        ShowOverlayButtonSettings(
+                            action.autoCollapse,
+                            action.settings.map { it.toOverlayButtonItem() })
+                    )
                 }
             }
         })

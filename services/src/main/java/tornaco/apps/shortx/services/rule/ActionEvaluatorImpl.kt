@@ -45,7 +45,8 @@ class ActionEvaluatorImpl(
         } else if (action is_ ShowOverlayButton::class.java) {
             val d = action unpack_ ShowOverlayButton::class.java
             val buttonSettingsList = d.buttonSettingsList
-            shortXContext.overlay.postShowOverlay(buttonSettingsList)
+            val autoCollapse = d.autoCollapse
+            shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList)
         } else if (action is_ HideOverlayButton::class.java) {
             shortXContext.overlay.postHideAllOverlay()
         }
