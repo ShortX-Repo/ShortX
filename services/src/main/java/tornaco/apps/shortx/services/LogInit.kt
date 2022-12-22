@@ -73,7 +73,7 @@ object LogInit {
             // Flush init log buffer.
             val initLogFile = File(
                 File(Dirs.baseServerLogDir(), "log"),
-                "thanox-init.log"
+                "shortx-init.log"
             )
             INIT_LOG_BUFFER.forEach {
                 initLogFile.writeText(it)

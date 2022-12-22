@@ -17,6 +17,8 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         LogInit.initEarlyLogging()
     }
 
+    fun main() {}
+
     override fun start(context: Context) {
         super.start(context)
         LogInit.initStartedLogging()
@@ -25,7 +27,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
     override fun systemReady() {
         super.systemReady()
-        publishBinderService()
+      //  publishBinderService()
         serviceLifecycle.systemReady()
     }
 
@@ -62,7 +64,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             })
     }
 
-    private val serviceBinder = object : IShortX.Stub() {
+    val serviceBinder = object : IShortX.Stub() {
         override fun version(): Version {
             return Version(name = BuildProp.APP_VERSION_NAME, code = BuildProp.APP_VERSION_CODE)
         }

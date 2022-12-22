@@ -102,6 +102,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.3.1")
     implementation(Compose.composeMaterialIconsExtended)
 
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
+
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":external:shell"))

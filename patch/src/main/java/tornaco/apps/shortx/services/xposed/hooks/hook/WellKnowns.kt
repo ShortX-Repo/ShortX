@@ -11,6 +11,9 @@ object Methods {
     const val systemReady = "systemReady"
     const val filterInputEvent = "filterInputEvent"
     const val reportEvent = "reportEvent"
+    const val getService = "getService"
+    const val onTransact = "onTransact"
+    const val print = "print"
 }
 
 object Fields {
@@ -45,6 +48,13 @@ object Classes {
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.usageStatsServiceClass(): Class<*> =
         XposedHelpers.findClass("com.android.server.usage.UsageStatsService", this)
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.printManagerImplClass(): Class<*> =
+        XposedHelpers.findClass(
+            " com.android.server.print.PrintManagerService\$PrintManagerImpl",
+            this
+        )
 
 
 }

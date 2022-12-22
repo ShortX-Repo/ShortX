@@ -1,9 +1,7 @@
 package tornaco.apps.shortx.core
 
 import android.content.Context
-import android.os.IBinder
-import android.os.Parcel
-import android.os.RemoteException
+import android.print.IPrintManager
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -19,7 +17,7 @@ private val logger = Logger("ShortXManager")
 
 val shortXManager
     get() = ShortXManager(
-        (ShortXManagerNative.service
+        (ShortXManagerNative.shortX
             ?: Proxy.newProxyInstance(
                 IShortX::class.java.classLoader,
                 arrayOf(IShortX::class.java),
@@ -124,33 +122,21 @@ class ShortXManager(private val service: IShortX) {
 object ShortXManagerNative {
     private val logger = Logger("ShortXManagerNative")
 
-    var binder: IBinder? = null
+    // IPrintManager
+    var androidService: Any? = null
 
-    val service: IShortX? by lazy {
-        getServiceOrNull()
-    }
+    val shortX: IShortX? get() = getServiceOrNull2()
 
-    private fun getServiceOrNull(): IShortX? {
-        val data = Parcel.obtain()
-        val reply = Parcel.obtain()
-        return try {
-            val proxyBinder = binder
-            logger.d("proxyBinder: $proxyBinder")
-            if (proxyBinder == null) {
-                null
-            } else {
-                data.writeInterfaceToken(IShortX::class.java.name)
-                proxyBinder.transact(IPC_CODE, data, reply, 0)
-                val binder = reply.readStrongBinder()
-                logger.d("shortx binder: $binder")
-                IShortX.Stub.asInterface(binder)
-            }
-        } catch (e: RemoteException) {
-            logger.e(e, "Get err")
+    private fun getServiceOrNull2(): IShortX? {
+        return kotlin.runCatching {
+            val print = androidService as IPrintManager
+            val bundle = print.print("ShortX", null, null, null, 0, 0)
+            val shortx = bundle?.getBinder("shortX-Binder")
+            logger.d("shortx binder: $shortx")
+            IShortX.Stub.asInterface(shortx)
+        }.getOrElse {
+            logger.e(it)
             null
-        } finally {
-            data.recycle()
-            reply.recycle()
         }
     }
 }
