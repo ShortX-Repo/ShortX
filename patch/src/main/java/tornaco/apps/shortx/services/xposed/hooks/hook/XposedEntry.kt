@@ -58,6 +58,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
                 val res =
                     ShortXService.shortXContext.gesture.filterInput(param.args[0] as InputEvent)
                 res?.let {
+                    logger.d("filterInputEvent, setResult: $it")
                     param.result = it
                 }
             }

@@ -1,7 +1,7 @@
 {
   "ui.dialog.title.current.app": "When app in foreground",
   "ui.dialog.title.current.app.with.app.label": "When {app} in foreground",
-  "ui.search.title.search.n.apps": "Search {count} Apps",
+  "ui.search.title.search.n.items": "Search {count} items",
   "ui.fact.title": "Trigger",
   "ui.fact.select": "Set Trigger",
   "ui.conditions.title": "Conditions",

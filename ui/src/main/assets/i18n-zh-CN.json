@@ -1,7 +1,7 @@
 {
   "ui.dialog.title.current.app": "某应用在前台时",
   "ui.dialog.title.current.app.with.app.label": "当 {app} 在前台时",
-  "ui.search.title.search.n.apps": "搜素 {count} 个应用",
+  "ui.search.title.search.n.items": "搜素 {count} 个项目",
   "ui.fact.title": "触发器",
   "ui.fact.select": "选择触发器",
   "ui.conditions.title": "条件",
