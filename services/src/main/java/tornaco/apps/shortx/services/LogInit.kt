@@ -81,6 +81,6 @@ object LogInit {
         }
         Log.d("ShortX-Logging", "Init xlog with file and android printer.")
     }.onFailure {
-        Log.e("ShortX-Logging", "Error initStartedLogging")
+        Log.e("ShortX-Logging", "Error initStartedLogging: ${Log.getStackTraceString(it)}")
     }
 }

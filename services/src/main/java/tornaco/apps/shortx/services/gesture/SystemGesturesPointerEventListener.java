@@ -90,10 +90,11 @@ public class SystemGesturesPointerEventListener {
         final Resources r = mContext.getResources();
 
         // r.getDimensionPixelSize(com.android.internal.R.dimen.system_gestures_start_threshold)
-        int defaultThreshold = ResExtKt.getDp(24);
+        int defaultThreshold = ResExtKt.getDp(12);
         try {
             int resId = Resources.getSystem().getIdentifier("system_gestures_start_threshold", "dimen", "android");
-            defaultThreshold = r.getDimensionPixelSize(resId);
+            // /2 means we use less than system distance to block some touch events.
+            defaultThreshold = r.getDimensionPixelSize(resId) / 2;
             Log.w(TAG, "system_gestures_start_threshold: " + defaultThreshold);
         } catch (Throwable ignored) {
 
@@ -148,6 +149,7 @@ public class SystemGesturesPointerEventListener {
     public boolean onPointerEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                if (DEBUG) Log.d(TAG, "DOWN event.getDownTime: " + event.getDownTime());
                 mSwipeFireable = true;
                 mDebugFireable = true;
                 mDownPointers = 0;
@@ -169,6 +171,7 @@ public class SystemGesturesPointerEventListener {
                 }
                 return false;
             case MotionEvent.ACTION_MOVE:
+                if (DEBUG) Log.d(TAG, "MOVE event.getDownTime: " + event.getDownTime());
                 if (mSwipeFireable) {
                     final int swipe = detectSwipe(event);
                     mSwipeFireable = swipe == SWIPE_NONE;
@@ -222,6 +225,7 @@ public class SystemGesturesPointerEventListener {
                 return false;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                if (DEBUG) Log.d(TAG, "UP/CANCEL event.getDownTime: " + event.getDownTime());
                 mSwipeFireable = false;
                 mDebugFireable = false;
                 mCallbacks.onUpOrCancel();

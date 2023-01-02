@@ -18,6 +18,8 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
     private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = null
 
+    private val blockingEventDownTimes: MutableSet<Long> = mutableSetOf()
+
     override fun start(context: Context) {
         super.start(context)
     }
@@ -54,9 +56,23 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
     fun filterInput(input: InputEvent?): Boolean? {
         if (!isSystemReady) return null
         if (input == null) return null
-        if (input is MotionEvent) return gestureDetector?.interceptEvent(input)
+        if (input is MotionEvent) {
+            return filterMotionEvent(input)
+        }
         if (input is KeyEvent) return handleKeyEvent(input)
         return null
+    }
+
+    private fun filterMotionEvent(input: MotionEvent): Boolean? {
+        if (input.action == MotionEvent.ACTION_UP || input.action == MotionEvent.ACTION_CANCEL) {
+            blockingEventDownTimes.clear()
+        } else if (blockingEventDownTimes.contains(input.downTime)
+        ) {
+            return false
+        }
+        return gestureDetector?.interceptEvent(input)?.also {
+            if (!it) blockingEventDownTimes.add(input.downTime)
+        }
     }
 
     private fun handleKeyEvent(event: KeyEvent): Boolean? {
