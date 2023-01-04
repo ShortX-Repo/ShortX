@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.util.vibrate
 import tornaco.apps.shortx.services.gesture.SystemGesturesPointerEventListener.CallbacksAdapter
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import java.io.PrintWriter
 
 class Detector(
     private val context: Context,
@@ -108,6 +109,10 @@ class Detector(
             }
         }
         return null
+    }
+
+    fun dump() {
+        pointerEventListener.dump(PrintWriter(System.err), "")
     }
 }
 

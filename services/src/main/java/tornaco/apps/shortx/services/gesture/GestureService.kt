@@ -26,7 +26,9 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
 
     override fun systemReady() {
         super.systemReady()
-        gestureDetector = Detector(context, handler, this)
+        gestureDetector = Detector(context, handler, this).also {
+            it.dump()
+        }
     }
 
     fun showEdgeHint(edgeNumber: Int) {
