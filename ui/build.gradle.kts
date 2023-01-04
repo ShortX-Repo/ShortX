@@ -1,9 +1,5 @@
-import tornaco.project.android.shortx.Others
-import tornaco.project.android.shortx.Compose
-import tornaco.project.android.shortx.Configs
+import tornaco.project.android.shortx.*
 import tornaco.project.android.shortx.Configs.resPrefix
-import tornaco.project.android.shortx.Hilt
-import tornaco.project.android.shortx.log
 
 plugins {
     id("com.android.library")
@@ -45,6 +41,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    setPublishNonDefault(true)
+    flavorDimensions.add("market")
+    productFlavors {
+        create("row") {
+            dimension = "market"
+        }
+        create("prc") {
+            dimension = "market"
         }
     }
 

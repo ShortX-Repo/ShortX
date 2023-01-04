@@ -63,6 +63,18 @@ android {
         }
     }
 
+    flavorDimensions.add("market")
+    productFlavors {
+        create("row") {
+            dimension = "market"
+            versionNameSuffix = "-row"
+        }
+        create("prc") {
+            dimension = "market"
+            versionNameSuffix = "-prc"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -103,11 +115,15 @@ android {
 }
 
 dependencies {
+    val rowImplementation by configurations
+    val prcImplementation by configurations
+
     implementation(Hilt.library)
     implementation(Hilt.hiltNavigationCompose)
     kapt(Hilt.googleAndroidCompiler)
 
     implementation(project(":ui"))
+
     implementation(project(":services"))
     implementation(project(":patch"))
     implementation(project(":core"))
