@@ -13,9 +13,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="tornaco.apps.shortx.ui.addrule.AddRuleActivity" />
-        <activity android:name="tornaco.apps.shortx.ui.settings.SettingsActivity" />
-
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"

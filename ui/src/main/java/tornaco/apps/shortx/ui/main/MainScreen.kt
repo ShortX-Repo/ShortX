@@ -25,29 +25,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import dev.enro.core.compose.navigationHandle
-import dev.enro.core.compose.registerForNavigationResult
-import dev.enro.core.present
 import tornaco.apps.shortx.ui.R
-import tornaco.apps.shortx.ui.addrule.AddRule
-import tornaco.apps.shortx.ui.settings.AppSettings
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-enum class Route {
+enum class HomeBottomRoute {
     Rules, Actions
 }
 
-sealed class BottomNavItem(var title: String, var icon: ImageVector, var screenRoute: Route) {
+sealed class BottomNavItem(
+    var title: String,
+    var icon: ImageVector,
+    var screenRoute: HomeBottomRoute
+) {
     object Rules :
-        BottomNavItem("Rules", Icons.Filled.List, Route.Rules)
+        BottomNavItem("Rules", Icons.Filled.List, HomeBottomRoute.Rules)
 
     object Actions :
-        BottomNavItem("Actions", Icons.Filled.AppShortcut, Route.Actions)
+        BottomNavItem("Actions", Icons.Filled.AppShortcut, HomeBottomRoute.Actions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun HomeScreen(goToSettings: () -> Unit, goToAddRule: () -> Unit, goToEditRule: (String) -> Unit) {
     val vm = hiltViewModel<MainViewModel>()
     val state by vm.state.collectAsState()
 
@@ -56,10 +55,6 @@ fun MainScreen() {
     }
 
     val navController = rememberNavController()
-    val addRuleNav = registerForNavigationResult<Boolean>(onResult = {
-        vm.loadRules()
-    })
-    val navigationHandle = navigationHandle()
 
     ShortXTheme {
         Surface(
@@ -74,7 +69,7 @@ fun MainScreen() {
                         title = { Text(text = stringResource(id = R.string.ui_app_name)) },
                         actions = {
                             IconButton(onClick = {
-                                navigationHandle.present(AppSettings)
+                                goToSettings()
                             }) {
                                 Icon(
                                     imageVector = Icons.Filled.Settings,
@@ -86,15 +81,15 @@ fun MainScreen() {
                     )
                 },
                 bottomBar = {
-                    NavigationContent(navController)
+                    BottomNavigationContent(navController)
                 },
                 floatingActionButton = {
                     FloatingActionButton(onClick = {
                         when (navController.currentBackStackEntry?.destination?.route) {
-                            Route.Rules.name -> {
-                                addRuleNav.present(AddRule())
+                            HomeBottomRoute.Rules.name -> {
+                                goToAddRule()
                             }
-                            Route.Actions.name -> {
+                            HomeBottomRoute.Actions.name -> {
 
                             }
                             else -> {}
@@ -107,7 +102,7 @@ fun MainScreen() {
                     modifier = Modifier
                         .padding(it),
                 ) {
-                    NavigationGraph(navController = navController,
+                    BottomNavigationGraph(navController = navController,
                         state = state,
                         deleteRule = { rule ->
                             vm.delete(rule.id)
@@ -116,7 +111,7 @@ fun MainScreen() {
                             vm.setRuleEnabled(id, enable)
                         },
                         onRuleClick = { rule ->
-                            addRuleNav.present(AddRule(rule.id))
+                            goToEditRule(rule.id)
                         })
                 }
             }
@@ -125,7 +120,7 @@ fun MainScreen() {
 }
 
 @Composable
-private fun NavigationContent(
+private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
@@ -163,7 +158,7 @@ private fun NavigationContent(
 
 
 @Composable
-private fun NavigationGraph(
+private fun BottomNavigationGraph(
     navController: NavHostController,
     state: MainState,
     deleteRule: (Rule) -> Unit,

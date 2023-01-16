@@ -18,10 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.enro.core.NavigationKey
-import dev.enro.core.close
-import dev.enro.core.compose.navigationHandle
-import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelector
@@ -31,13 +27,9 @@ import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.overlay.BUTTON_COUNT
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-@Parcelize
-object AppSettings : NavigationKey.SupportsPresent
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen() {
-    val navigation = navigationHandle<AppSettings>()
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
 
@@ -58,7 +50,6 @@ fun SettingsScreen() {
                         title = { Text(text = LocalI18N.current["ui.common.settings"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                navigation.close()
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }

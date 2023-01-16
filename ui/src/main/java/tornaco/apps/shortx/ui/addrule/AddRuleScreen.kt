@@ -16,11 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.enro.core.NavigationKey
-import dev.enro.core.closeWithResult
-import dev.enro.core.compose.navigationHandle
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
 import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
@@ -33,23 +29,16 @@ import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-@Parcelize
-data class AddRule(val ruleId: String? = null) : NavigationKey.SupportsPresent.WithResult<Boolean>
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRuleScreen() {
-    val navigation = navigationHandle<AddRule>()
-
+fun AddRuleScreen(ruleId: String? = null) {
     val vm = hiltViewModel<AddRuleViewModel>()
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
-        val ruleId = navigation.key.ruleId
         vm.initFromRuleId(ruleId)
         vm.loadInstalledApps()
         vm.ruleSaved.collectLatest {
-            navigation.closeWithResult(true)
         }
     }
 
@@ -65,7 +54,7 @@ fun AddRuleScreen() {
                         title = { Text(text = if (state.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                navigation.closeWithResult(false)
+                                // TODO
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
