@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.ui.base.BaseActivity
 
@@ -9,7 +12,7 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 class MainActivity : BaseActivity() {
     @Composable
     override fun Content() {
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
         AppNavigationGraph(appNavController = navController)
     }
 }

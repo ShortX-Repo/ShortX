@@ -1,24 +1,26 @@
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
+import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 
 enum class AppRoute {
     Home, AddRule, Settings
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigationGraph(
     appNavController: NavHostController,
 ) {
-    NavHost(appNavController, startDestination = AppRoute.Home.name) {
-        composable(AppRoute.Home.name) {
+    AnimatedNavHost(appNavController, startDestination = AppRoute.Home.name) {
+        animateComposable(AppRoute.Home.name) {
             HomeScreen(
                 goToSettings = {
                     appNavController.navigate(AppRoute.Settings.name)
@@ -27,18 +29,22 @@ fun AppNavigationGraph(
                     appNavController.navigate(AppRoute.AddRule.name)
                 },
                 goToEditRule = {
-                    appNavController.navigate("${AppRoute.AddRule.name}/$it")
+                    appNavController.navigate("${AppRoute.AddRule.name}?ruleId=$it")
                 }
             )
         }
 
-        composable(AppRoute.Settings.name) {
+        animateComposable(AppRoute.Settings.name) {
             SettingsScreen()
         }
 
-        composable(
-            "${AppRoute.AddRule.name}/{ruleId}",
-            arguments = listOf(navArgument("ruleId") { type = NavType.StringType })
+        animateComposable(
+            "${AppRoute.AddRule.name}?ruleId={ruleId}",
+            arguments = listOf(navArgument("ruleId") {
+                type = NavType.StringType
+                defaultValue = null
+                nullable = true
+            })
         ) { backStackEntry ->
             val ruleId = backStackEntry.arguments?.getString("ruleId")
             AddRuleScreen(ruleId)
