@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.app.usage.UsageEvents
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.ParceledListSlice
 import android.os.Bundle
 import android.view.InputEvent
 import de.robv.android.xposed.IXposedHookLoadPackage
@@ -11,8 +12,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
+import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.appWidgetServiceImplClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.printManagerImplClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Fields.mContext
 import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.filterInputEvent
@@ -87,19 +88,20 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             }
 
             beforeMethod(
-                lpparam.classLoader.printManagerImplClass().apply {
-                    logger.d("PrintManagerImpl class: $this")
+                lpparam.classLoader.appWidgetServiceImplClass().apply {
+                    logger.d("appWidgetServiceImplClass class: $this")
                 },
-                Methods.print
+                Methods.startListening
             ) { hookParam ->
-                logger.d("PrintManagerImpl.print: ${hookParam.args.map { it?.toString() }}")
-                val printJobName = hookParam.args[0] as String
-                if (printJobName == "ShortX") {
-                    logger.d("Inject binder for print")
+                logger.d("appWidgetServiceImplClass.startListening: ${hookParam.args.map { it?.toString() }}")
+                val printJobName = hookParam.args[1] as String
+                if (printJobName == "shortx") {
+                    logger.d("Inject binder for appWidgetServiceImplClass")
                     val service = ShortXService.serviceBinder
-                    hookParam.result = Bundle().apply {
+                    val bundle = Bundle().apply {
                         putBinder("shortX-Binder", service)
                     }
+                    hookParam.result = ParceledListSlice(listOf(bundle))
                 }
             }
         }

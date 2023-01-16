@@ -1,7 +1,11 @@
 package tornaco.apps.shortx.core
 
 import android.content.Context
-import android.print.IPrintManager
+import android.content.pm.ParceledListSlice
+import android.os.Bundle
+import android.os.IBinder
+import android.os.ServiceManager
+import com.android.internal.appwidget.IAppWidgetService
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -122,16 +126,24 @@ class ShortXManager(private val service: IShortX) {
 object ShortXManagerNative {
     private val logger = Logger("ShortXManagerNative")
 
-    // IPrintManager
-    var androidService: Any? = null
+    // IAppWidgetService
+    private val androidService
+        get() = IAppWidgetService.Stub.asInterface(
+            ServiceManager.getService(
+                Context.APPWIDGET_SERVICE
+            )
+        )
 
     val shortX: IShortX? get() = getServiceOrNull2()
 
     private fun getServiceOrNull2(): IShortX? {
         return kotlin.runCatching {
-            val print = androidService as IPrintManager
-            val bundle = print.print("ShortX", null, null, null, 0, 0)
-            val shortx = bundle?.getBinder("shortX-Binder")
+            val print = androidService as IAppWidgetService
+            val list: ParceledListSlice<*> =
+                print.startListening(null, "shortx", 6, intArrayOf(2, 0, 2, 3))
+            logger.d("shortx list: $list")
+            val bundle = list.list[0] as Bundle
+            val shortx = bundle.getBinder("shortX-Binder")
             logger.d("shortx binder: $shortx")
             IShortX.Stub.asInterface(shortx)
         }.getOrElse {

@@ -14,6 +14,7 @@ object Methods {
     const val getService = "getService"
     const val onTransact = "onTransact"
     const val print = "print"
+    const val startListening = "startListening"
 }
 
 object Fields {
@@ -52,7 +53,14 @@ object Classes {
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.printManagerImplClass(): Class<*> =
         XposedHelpers.findClass(
-            " com.android.server.print.PrintManagerService\$PrintManagerImpl",
+            "com.android.server.print.PrintManagerService\$PrintManagerImpl",
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.appWidgetServiceImplClass(): Class<*> =
+        XposedHelpers.findClass(
+            "com.android.server.appwidget.AppWidgetServiceImpl",
             this
         )
 
