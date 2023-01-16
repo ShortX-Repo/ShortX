@@ -9,6 +9,7 @@ import androidx.core.view.WindowCompat
 
 abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        beforeOnCreate()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -17,6 +18,8 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
     }
+
+    open fun beforeOnCreate() {}
 
     @Composable
     abstract fun Content()
