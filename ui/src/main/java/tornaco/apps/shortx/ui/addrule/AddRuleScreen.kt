@@ -31,15 +31,14 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRuleScreen(ruleId: String? = null) {
+fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
     val vm = hiltViewModel<AddRuleViewModel>()
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.loadInstalledApps()
-        vm.ruleSaved.collectLatest {
-        }
+        vm.ruleSaved.collectLatest {}
     }
 
     ShortXTheme {
@@ -47,24 +46,24 @@ fun AddRuleScreen(ruleId: String? = null) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { Text(text = if (state.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                // TODO
+                                back()
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
                         },
                         actions = {
-                            IconButton(
-                                enabled = state.ruleChanged,
-                                onClick = {
-                                    vm.save()
-                                }) {
+                            IconButton(enabled = state.ruleChanged, onClick = {
+                                vm.save()
+                                back()
+                            }) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }
                         },
@@ -88,17 +87,13 @@ fun AddRuleScreen(ruleId: String? = null) {
                     ConditionSelectors(state, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ActionSelectors(
-                        addAction = { action ->
-                            vm.addAction(
-                                action
-                            )
-                        },
-                        removeAction = { action ->
-                            vm.removeAction(action)
-                        },
-                        selectableActions = state.selectableActions,
-                        actions = state.actions
+                    ActionSelectors(addAction = { action ->
+                        vm.addAction(
+                            action
+                        )
+                    }, removeAction = { action ->
+                        vm.removeAction(action)
+                    }, selectableActions = state.selectableActions, actions = state.actions
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }
@@ -109,14 +104,12 @@ fun AddRuleScreen(ruleId: String? = null) {
 
 @Composable
 private fun ConditionSelectors(
-    state: AddRuleState,
-    vm: AddRuleViewModel
+    state: AddRuleState, vm: AddRuleViewModel
 ) {
     // Condition selectors
-    val currentPkgSelectorState =
-        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-            vm.addCondition(Condition.CurrentForegroundApp(pkg[0]))
-        }
+    val currentPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+        vm.addCondition(Condition.CurrentForegroundApp(pkg[0]))
+    }
     CurrentPkgSelector(currentPkgSelectorState)
 
     val mvelConditionSelectorState = rememberMVELSelectorState { expression ->
@@ -140,8 +133,7 @@ private fun ConditionSelectors(
 
 @Composable
 private fun FactSelectors(
-    vm: AddRuleViewModel,
-    state: AddRuleState
+    vm: AddRuleViewModel, state: AddRuleState
 ) {
     // Fact selectors
     val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
@@ -149,12 +141,11 @@ private fun FactSelectors(
     })
     KeyEventSelector(keyEventSelectorState)
 
-    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
-        selected = { eg ->
-            vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
-        }, showEdgeHint = {
-            vm.showEdgeHint(it)
-        })
+    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(selected = { eg ->
+        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
+    }, showEdgeHint = {
+        vm.showEdgeHint(it)
+    })
     EdgeGestureSelector(edgeGestureSelectorState)
 
     val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
@@ -164,16 +155,14 @@ private fun FactSelectors(
     AlarmSelector(timeOfADaySelector)
 
     // Condition selectors
-    val appBgPkgSelectorState =
-        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
-        }
+    val appBgPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+        vm.setFact(Fact.AppBecomeBackground(apps = pkg))
+    }
     CurrentPkgSelector(appBgPkgSelectorState)
 
-    val appFgPkgSelectorState =
-        rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
-            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
-        }
+    val appFgPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+        vm.setFact(Fact.AppBecomeForeground(apps = pkg))
+    }
     CurrentPkgSelector(appFgPkgSelectorState)
 
     FactSelector(state) { fact ->

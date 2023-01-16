@@ -35,7 +35,9 @@ fun AppNavigationGraph(
         }
 
         animateComposable(AppRoute.Settings.name) {
-            SettingsScreen()
+            SettingsScreen {
+                appNavController.popBackStack()
+            }
         }
 
         animateComposable(
@@ -47,7 +49,9 @@ fun AppNavigationGraph(
             })
         ) { backStackEntry ->
             val ruleId = backStackEntry.arguments?.getString("ruleId")
-            AddRuleScreen(ruleId)
+            AddRuleScreen(ruleId) {
+                appNavController.popBackStack()
+            }
         }
     }
 }

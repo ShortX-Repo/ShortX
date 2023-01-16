@@ -29,7 +29,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(back: () -> Unit) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
 
@@ -50,6 +50,7 @@ fun SettingsScreen() {
                         title = { Text(text = LocalI18N.current["ui.common.settings"]) },
                         navigationIcon = {
                             IconButton(onClick = {
+                                back()
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
