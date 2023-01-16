@@ -57,7 +57,7 @@ fun <T> DropdownSelector(
                     it.icon.invoke()
                     Spacer(modifier = Modifier.size(8.dp))
                     Column {
-                        Text(text = it.labelLines[0], style = MaterialTheme.typography.titleMedium)
+                        Text(text = it.labelLines[0], style = MaterialTheme.typography.titleSmall)
                         if (it.labelLines.size > 1) {
                             it.labelLines.subList(1, it.labelLines.size).forEach {
                                 Text(text = it, style = MaterialTheme.typography.titleSmall)
@@ -107,7 +107,7 @@ fun <T> DropdownSelector(
                         Column {
                             Text(
                                 text = it.labelLines[0],
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleSmall
                             )
                             if (it.labelLines.size > 1) {
                                 it.labelLines.subList(1, it.labelLines.size).forEach {
