@@ -59,7 +59,7 @@ fun ListItem(
 @Composable
 fun ListItem(
     title: String,
-    icon: @Composable () -> Unit = {},
+    icon: (@Composable () -> Unit)? = null,
     action1: @Composable () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
@@ -78,8 +78,10 @@ fun ListItem(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            icon()
-            Spacer(modifier = Modifier.size(16.dp))
+            icon?.let {
+                it()
+                Spacer(modifier = Modifier.size(16.dp))
+            }
             Column(modifier = Modifier) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium)
             }

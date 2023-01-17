@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
+import android.view.KeyEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,7 +62,7 @@ private fun labelForFactSelector(fact: Fact): String {
         Fact.ScreenOff -> LocalI18N.current["ui.fact.screen.off"]
         Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
         Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
-        is Fact.Alarm -> "Time of a day"
+        is Fact.Alarm -> LocalI18N.current["ui.fact.time.of.a.day"]
         is Fact.AppBecomeBackground -> LocalI18N.current["ui.fact.app.become.bg"]
         is Fact.AppBecomeForeground -> LocalI18N.current["ui.fact.app.become.fg"]
     }
@@ -77,12 +78,15 @@ private fun labelForFact(fact: Fact): List<String> {
             "${fact.edge}",
             "${fact.gesture}"
         )
-        is Fact.KeyEvent -> listOf(LocalI18N.current["ui.fact.key.event"], "${fact.keyCode}")
+        is Fact.KeyEvent -> listOf(
+            LocalI18N.current["ui.fact.key.event"],
+            getLabelForKeyCode(keyCode = fact.keyCode)
+        )
         Fact.ScreenOff -> listOf(LocalI18N.current["ui.fact.screen.off"])
         Fact.ScreenOn -> listOf(LocalI18N.current["ui.fact.screen.on"])
         Fact.UserPresent -> listOf(LocalI18N.current["ui.fact.screen.user.present"])
         is Fact.Alarm -> listOf(
-            "Time of a day",
+            LocalI18N.current["ui.fact.time.of.a.day"],
             fact.repeatDays.toString(),
             fact.timeOfADay.toString()
         )
@@ -112,7 +116,7 @@ private fun IconForFact(fact: Fact) {
         }
         is Fact.KeyEvent -> {
             Icon(
-                imageVector = Icons.Filled.Key, contentDescription = "KeyEvent"
+                imageVector = Icons.Filled.Keyboard, contentDescription = "KeyEvent"
             )
         }
         Fact.ScreenOff -> {
@@ -136,10 +140,22 @@ private fun IconForFact(fact: Fact) {
             )
         }
         is Fact.AppBecomeBackground -> Icon(
-            imageVector = Icons.Filled.Refresh, contentDescription = "AppBecomeBackground"
+            imageVector = Icons.Filled.FiberDvr, contentDescription = "AppBecomeBackground"
         )
         is Fact.AppBecomeForeground -> Icon(
-            imageVector = Icons.Filled.LocalSee, contentDescription = "AppBecomeForeground"
+            imageVector = Icons.Filled.Aod, contentDescription = "AppBecomeForeground"
         )
+    }
+}
+
+@Composable
+private fun getLabelForKeyCode(keyCode: Int): String {
+    return when (keyCode) {
+        KeyEvent.KEYCODE_VOLUME_DOWN -> LocalI18N.current["ui.keycode.label.volume.down"]
+        KeyEvent.KEYCODE_VOLUME_UP -> LocalI18N.current["ui.keycode.label.volume.up"]
+        KeyEvent.KEYCODE_BACK -> LocalI18N.current["ui.keycode.label.back"]
+        KeyEvent.KEYCODE_HOME -> LocalI18N.current["ui.keycode.label.home"]
+        KeyEvent.KEYCODE_POWER -> LocalI18N.current["ui.keycode.label.power"]
+        else -> keyCode.toString()
     }
 }

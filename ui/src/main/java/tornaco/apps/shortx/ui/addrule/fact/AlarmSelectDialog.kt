@@ -47,7 +47,7 @@ fun rememberAlarmSelectorState(selected: (Alarm) -> Unit): AlarmSelectorState {
 fun AlarmSelector(state: AlarmSelectorState) {
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = "Time of a day")
+            DialogTitle(text = LocalI18N.current["ui.fact.time.of.a.day"])
         }, buttons = {
             TextButton(onClick = {
                 state.selected(

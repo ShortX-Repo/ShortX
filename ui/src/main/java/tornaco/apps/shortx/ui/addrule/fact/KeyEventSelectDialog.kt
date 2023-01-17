@@ -3,14 +3,11 @@ package tornaco.apps.shortx.ui.addrule.fact
 import android.view.KeyEvent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class KeyEventSelectorState(val selected: (Int) -> Unit) {
@@ -33,43 +30,41 @@ fun rememberKeyEventSelectorState(selected: (Int) -> Unit): KeyEventSelectorStat
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KeyEventSelector(state: KeyEventSelectorState) {
-    var keyCode by remember(state) {
-        mutableStateOf(KeyEvent.KEYCODE_UNKNOWN)
-    }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = "Key Event")
+            DialogTitle(text = LocalI18N.current["ui.fact.key.event"])
         }, buttons = {
-            TextButton(onClick = {
-                if (keyCode != KeyEvent.KEYCODE_UNKNOWN) {
-                    state.selected(keyCode)
-                    state.dismiss()
-                }
-            }) {
-                Text(text = stringResource(id = android.R.string.ok))
-            }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TextField(
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Filled.Tag, contentDescription = "Key Code")
-                    },
-                    shape = TextFieldDefaults.outlinedShape,
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent),
-                    label = {
-                        Text(text = "Component")
-                    },
-                    value = keyCode.toString(),
-                    onValueChange = {
-                        keyCode = kotlin.runCatching {
-                            it.toInt()
-                        }.getOrElse { KeyEvent.KEYCODE_UNKNOWN }
+                arrayOf(
+                    KeyEventItem(LocalI18N.current["ui.keycode.label.back"], KeyEvent.KEYCODE_BACK),
+                    KeyEventItem(LocalI18N.current["ui.keycode.label.home"], KeyEvent.KEYCODE_HOME),
+                    KeyEventItem(
+                        LocalI18N.current["ui.keycode.label.volume.down"],
+                        KeyEvent.KEYCODE_VOLUME_DOWN
+                    ),
+                    KeyEventItem(
+                        LocalI18N.current["ui.keycode.label.volume.up"],
+                        KeyEvent.KEYCODE_VOLUME_UP
+                    ),
+                    KeyEventItem(
+                        LocalI18N.current["ui.keycode.label.power"],
+                        KeyEvent.KEYCODE_POWER
+                    ),
+                ).forEach { key ->
+                    ListItem(title = key.labelKey, onClick = {
+                        state.selected(key.keyCode)
+                        state.dismiss()
                     })
+                }
             }
         })
     }
 }
+
+private data class KeyEventItem(
+    val labelKey: String,
+    val keyCode: Int
+)
