@@ -23,5 +23,9 @@
   "ui.common.settings": "Settings",
   "ui.fact.overlay.button.click": "On sidebar button click",
   "ui.fact.app.become.bg": "App become background",
-  "ui.fact.app.become.fg": "App become foreground"
+  "ui.fact.app.become.fg": "App become foreground",
+  "ui.title.edit.da": "Edit Direct Action",
+  "ui.title.add.da": "New Direct Action",
+  "ui.da.title": "Title",
+  "ui.da.description": "Description"
 }

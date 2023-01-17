@@ -20,8 +20,8 @@ import tornaco.apps.shortx.ui.base.*
 @Composable
 fun RuleScreen(
     state: MainState,
-    onDelete: (Rule) -> Unit,
-    onRuleClick: (Rule) -> Unit,
+    onDelete: (RuleUM) -> Unit,
+    onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     LazyColumn(
@@ -30,7 +30,7 @@ fun RuleScreen(
     ) {
         items(
             items = state.rules,
-            key = { listItem: Rule -> listItem.id + listItem.updateTime }) { rule ->
+            key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
             Card(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 backgroundColor = ColorDefaults.backgroundSurfaceColor(),
@@ -52,10 +52,10 @@ fun RuleScreen(
 
 @Composable
 private fun RuleItem(
-    rule: Rule,
+    rule: RuleUM,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
-    onDelete: (Rule) -> Unit
+    onDelete: (RuleUM) -> Unit
 ) {
     ListItem(
         title = rule.title,
@@ -71,7 +71,7 @@ private fun RuleItem(
 }
 
 @Composable
-private fun ListItemOverflowMenu(rule: Rule, onDelete: (Rule) -> Unit) {
+private fun ListItemOverflowMenu(rule: RuleUM, onDelete: (RuleUM) -> Unit) {
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(

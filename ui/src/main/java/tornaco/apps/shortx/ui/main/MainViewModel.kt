@@ -12,7 +12,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-data class Rule(
+data class RuleUM(
     val id: String,
     val title: String,
     val description: String,
@@ -20,7 +20,17 @@ data class Rule(
     val isEnabled: Boolean,
 )
 
-data class MainState(val rules: List<Rule> = emptyList())
+data class DirectActionUM(
+    val id: String,
+    val title: String,
+    val description: String,
+    val updateTime: String,
+)
+
+data class MainState(
+    val rules: List<RuleUM> = emptyList(),
+    val das: List<DirectActionUM> = emptyList()
+)
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -35,7 +45,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         logger.d("loadRules")
         viewModelScope.launch {
             val rules = shortXManager.getAllRules().map {
-                Rule(
+                RuleUM(
                     id = it.id,
                     title = it.title,
                     description = it.description,
@@ -48,6 +58,26 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             }
             updateState {
                 copy(rules = rules)
+            }
+        }
+    }
+
+    fun loadDirections() {
+        logger.d("loadDirections")
+        viewModelScope.launch {
+            val das = shortXManager.getAllDirectAction().map {
+                DirectActionUM(
+                    id = it.id,
+                    title = it.title,
+                    description = it.description,
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.lastUpdateTime)
+                    ),
+                )
+            }
+            updateState {
+                copy(das = das)
             }
         }
     }

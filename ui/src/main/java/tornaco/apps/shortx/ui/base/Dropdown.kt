@@ -40,12 +40,13 @@ fun rememberDropdownSelectorState(): DropdownSelectorState {
 
 @Composable
 fun <T> DropdownSelector(
+    widthFraction: Float = 0.6f,
     state: DropdownSelectorState = rememberDropdownSelectorState(),
     items: List<DropdownItem<T>>,
     onSelect: (DropdownItem<T>) -> Unit,
 ) {
     DropdownMenu(
-        modifier = Modifier.fillMaxWidth(.68f),
+        modifier = Modifier.fillMaxWidth(widthFraction),
         expanded = state.isMenuOpen,
         onDismissRequest = {
             state.close()

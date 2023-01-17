@@ -6,12 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 
 enum class AppRoute {
-    Home, AddRule, Settings
+    Home, AddRule, AddDA, Settings
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -30,6 +31,9 @@ fun AppNavigationGraph(
                 },
                 goToEditRule = {
                     appNavController.navigate("${AppRoute.AddRule.name}?ruleId=$it")
+                },
+                goToAddDA = {
+                    appNavController.navigate(AppRoute.AddDA.name)
                 }
             )
         }
@@ -50,6 +54,20 @@ fun AppNavigationGraph(
         ) { backStackEntry ->
             val ruleId = backStackEntry.arguments?.getString("ruleId")
             AddRuleScreen(ruleId) {
+                appNavController.popBackStack()
+            }
+        }
+
+        animateComposable(
+            "${AppRoute.AddDA.name}?daId={daId}",
+            arguments = listOf(navArgument("daId") {
+                type = NavType.StringType
+                defaultValue = null
+                nullable = true
+            })
+        ) { backStackEntry ->
+            val daId = backStackEntry.arguments?.getString("daId")
+            AddDirectActionScreen(daId) {
                 appNavController.popBackStack()
             }
         }

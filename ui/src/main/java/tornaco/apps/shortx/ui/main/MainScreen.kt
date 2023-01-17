@@ -33,37 +33,38 @@ enum class HomeBottomRoute {
 }
 
 sealed class BottomNavItem(
-    var title: String,
-    var icon: ImageVector,
-    var screenRoute: HomeBottomRoute
+    var title: String, var icon: ImageVector, var screenRoute: HomeBottomRoute
 ) {
-    object Rules :
-        BottomNavItem("Rules", Icons.Filled.List, HomeBottomRoute.Rules)
+    object Rules : BottomNavItem("Rules", Icons.Filled.List, HomeBottomRoute.Rules)
 
-    object Actions :
-        BottomNavItem("Actions", Icons.Filled.AppShortcut, HomeBottomRoute.Actions)
+    object DirectActions :
+        BottomNavItem("DirectActions", Icons.Filled.AppShortcut, HomeBottomRoute.Actions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(goToSettings: () -> Unit, goToAddRule: () -> Unit, goToEditRule: (String) -> Unit) {
+fun HomeScreen(
+    goToSettings: () -> Unit,
+    goToAddRule: () -> Unit,
+    goToEditRule: (String) -> Unit,
+    goToAddDA: () -> Unit
+) {
     val vm = hiltViewModel<MainViewModel>()
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.loadRules()
+        vm.loadDirections()
     }
 
     val navController = rememberNavController()
 
     ShortXTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         title = { Text(text = stringResource(id = R.string.ui_app_name)) },
@@ -90,7 +91,7 @@ fun HomeScreen(goToSettings: () -> Unit, goToAddRule: () -> Unit, goToEditRule: 
                                 goToAddRule()
                             }
                             HomeBottomRoute.Actions.name -> {
-
+                                goToAddDA()
                             }
                             else -> {}
                         }
@@ -99,8 +100,7 @@ fun HomeScreen(goToSettings: () -> Unit, goToAddRule: () -> Unit, goToEditRule: 
                     }
                 }) {
                 Column(
-                    modifier = Modifier
-                        .padding(it),
+                    modifier = Modifier.padding(it),
                 ) {
                     BottomNavigationGraph(navController = navController,
                         state = state,
@@ -124,17 +124,15 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.Rules,
-        BottomNavItem.Actions
+        BottomNavItem.Rules, BottomNavItem.DirectActions
     )
     NavigationBar(modifier = Modifier.fillMaxWidth()) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
-            NavigationBarItem(
-                icon = {
-                    Icon(imageVector = item.icon, contentDescription = item.title)
-                },
+            NavigationBarItem(icon = {
+                Icon(imageVector = item.icon, contentDescription = item.title)
+            },
                 label = {
                     Text(text = item.title, fontSize = 9.sp)
                 },
@@ -150,8 +148,7 @@ private fun BottomNavigationContent(
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
-            )
+                })
         }
     }
 }
@@ -161,9 +158,9 @@ private fun BottomNavigationContent(
 private fun BottomNavigationGraph(
     navController: NavHostController,
     state: MainState,
-    deleteRule: (Rule) -> Unit,
+    deleteRule: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
-    onRuleClick: (Rule) -> Unit,
+    onRuleClick: (RuleUM) -> Unit,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
@@ -175,8 +172,8 @@ private fun BottomNavigationGraph(
             )
         }
 
-        composable(BottomNavItem.Actions.screenRoute.name) {
-
+        composable(BottomNavItem.DirectActions.screenRoute.name) {
+            DirectActionListScreen(state = state, onDelete = {}, onDirectActionClick = {})
         }
     }
 }

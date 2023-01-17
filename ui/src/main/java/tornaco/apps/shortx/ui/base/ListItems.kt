@@ -160,6 +160,71 @@ fun ListItem(
     }
 }
 
+
+@Composable
+fun ListItem(
+    title: String? = null,
+    text1: String? = null,
+    text2: String? = null,
+    overflow: @Composable ColumnScope.() -> Unit = {},
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .clickable {
+                onClick()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(end = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(modifier = Modifier) {
+                title?.let {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600
+                        )
+                    )
+                }
+                TinySpacer()
+                text1?.let {
+                    Text(
+                        text = text1,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                        maxLines = 3
+                    )
+                }
+                TinySpacer()
+                TinySpacer()
+                TinySpacer()
+                text2?.let {
+                    Text(
+                        text = text2,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        maxLines = 3
+                    )
+                }
+            }
+        }
+
+        Column(horizontalAlignment = Alignment.End) {
+            overflow()
+        }
+    }
+}
+
 @Composable
 @Preview
 fun ListItemPreview() {
@@ -170,7 +235,22 @@ fun ListItemPreview() {
                 text2 = "Text2",
                 checked = true,
                 onClick = {},
-                onCheckedChange = {})
+                onCheckedChange = {}
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun ListItem2Preview() {
+    LazyColumn {
+        items(10) {
+            ListItem(title = "Title",
+                text1 = "Text1",
+                text2 = "Text2",
+                onClick = {}
+            )
         }
     }
 }

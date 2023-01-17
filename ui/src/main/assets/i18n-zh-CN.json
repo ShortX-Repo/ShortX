@@ -8,8 +8,8 @@
   "ui.conditions.add": "添加条件",
   "ui.actions.title": "动作",
   "ui.actions.add": "添加动作",
-  "ui.title.edit.rule": "编辑",
-  "ui.title.add.rule": "创建",
+  "ui.title.edit.rule": "编辑自动指令",
+  "ui.title.add.rule": "创建自动指令",
   "ui.rule.title": "标题",
   "ui.rule.description": "描述",
   "ui.fact.screen.off": "息屏",
@@ -23,5 +23,9 @@
   "ui.common.settings": "设置",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",
-  "ui.fact.app.become.fg": "应用进入前台显示"
+  "ui.fact.app.become.fg": "应用进入前台显示",
+  "ui.title.edit.da": "编辑一键指令",
+  "ui.title.add.da": "创建一键指令",
+  "ui.da.title": "标题",
+  "ui.da.description": "描述"
 }
