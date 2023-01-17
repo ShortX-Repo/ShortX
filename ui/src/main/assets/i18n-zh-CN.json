@@ -20,6 +20,7 @@
   "ui.fact.edge.gesture": "边缘手势",
   "ui.update.time": "更新时间：{date}",
   "ui.common.delete": "删除",
+  "ui.common.edit": "编辑",
   "ui.common.settings": "设置",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

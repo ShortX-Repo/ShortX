@@ -47,7 +47,8 @@ fun HomeScreen(
     goToSettings: () -> Unit,
     goToAddRule: () -> Unit,
     goToEditRule: (String) -> Unit,
-    goToAddDA: () -> Unit
+    goToAddDA: () -> Unit,
+    goToEditDA: (String) -> Unit,
 ) {
     val vm = hiltViewModel<MainViewModel>()
     val state by vm.state.collectAsState()
@@ -105,13 +106,22 @@ fun HomeScreen(
                     BottomNavigationGraph(navController = navController,
                         state = state,
                         deleteRule = { rule ->
-                            vm.delete(rule.id)
+                            vm.deleteRule(rule.id)
                         },
                         setRuleEnabled = { id, enable ->
                             vm.setRuleEnabled(id, enable)
                         },
                         onRuleClick = { rule ->
                             goToEditRule(rule.id)
+                        },
+                        onDAClick = { da ->
+                            vm.executeDA(da)
+                        },
+                        onDeleteDA = { da ->
+                            vm.deleteDA(da.id)
+                        },
+                        onEditDA = { da ->
+                            goToEditDA(da.id)
                         })
                 }
             }
@@ -161,6 +171,9 @@ private fun BottomNavigationGraph(
     deleteRule: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
+    onDeleteDA: (DirectActionUM) -> Unit,
+    onEditDA: (DirectActionUM) -> Unit,
+    onDAClick: (DirectActionUM) -> Unit,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
@@ -173,7 +186,12 @@ private fun BottomNavigationGraph(
         }
 
         composable(BottomNavItem.DirectActions.screenRoute.name) {
-            DirectActionListScreen(state = state, onDelete = {}, onDirectActionClick = {})
+            DirectActionListScreen(
+                state = state,
+                onDelete = onDeleteDA,
+                onEdit = onEditDA,
+                onDirectActionClick = onDAClick
+            )
         }
     }
 }

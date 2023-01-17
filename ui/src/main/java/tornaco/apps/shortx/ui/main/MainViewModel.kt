@@ -89,10 +89,23 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         }
     }
 
-    fun delete(ruleId: String) {
+    fun deleteRule(ruleId: String) {
         viewModelScope.launch {
             shortXManager.deleteRule(ruleId)
             loadRules()
+        }
+    }
+
+    fun deleteDA(daId: String) {
+        viewModelScope.launch {
+            shortXManager.deleteDirectAction(daId)
+            loadDirections()
+        }
+    }
+
+    fun executeDA(da: DirectActionUM) {
+        viewModelScope.launch {
+            shortXManager.executeDirectionActionById(da.id)
         }
     }
 }

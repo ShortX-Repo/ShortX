@@ -24,5 +24,6 @@ interface IShortX {
     void deleteDirectAction(String id);
     ByteArrayWrapper getDirectActionById(String id);
     List<ByteArrayWrapper> getAllDirectAction();
+    void executeDirectionActionById(String id);
     // Direct Actions end
 }

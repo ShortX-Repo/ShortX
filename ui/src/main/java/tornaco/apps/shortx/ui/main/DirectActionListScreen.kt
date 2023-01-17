@@ -27,7 +27,8 @@ import tornaco.apps.shortx.ui.base.*
 fun DirectActionListScreen(
     state: MainState,
     onDelete: (DirectActionUM) -> Unit,
-    onDirectActionClick: (DirectActionUM) -> Unit
+    onEdit: (DirectActionUM) -> Unit,
+    onDirectActionClick: (DirectActionUM) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -49,7 +50,8 @@ fun DirectActionListScreen(
                     onClick = {
                         onDirectActionClick(da)
                     },
-                    onDelete = onDelete
+                    onDelete = onDelete,
+                    onEdit = onEdit,
                 )
             }
         }
@@ -60,13 +62,14 @@ fun DirectActionListScreen(
 private fun DirectActionItem(
     da: DirectActionUM,
     onClick: () -> Unit,
-    onDelete: (DirectActionUM) -> Unit
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit,
 ) {
     DAListItem(
         title = da.title,
         text1 = da.description,
         overflow = {
-            ListItemOverflowMenu(da, onDelete)
+            ListItemOverflowMenu(da, onDelete, onEdit)
         },
         onClick = onClick,
     )
@@ -135,7 +138,11 @@ private fun DAListItem(
 }
 
 @Composable
-private fun ListItemOverflowMenu(da: DirectActionUM, onDelete: (DirectActionUM) -> Unit) {
+private fun ListItemOverflowMenu(
+    da: DirectActionUM,
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit
+) {
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(
@@ -155,11 +162,20 @@ private fun ListItemOverflowMenu(da: DirectActionUM, onDelete: (DirectActionUM) 
                     data = "delete",
                     icon = {
                         Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
+                    }),
+                DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                    data = "edit",
+                    icon = {
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Edit")
                     })
             ), onSelect = {
                 when (it.data) {
                     "delete" -> {
                         onDelete(da)
+                    }
+                    "edit" -> {
+                        onEdit(da)
                     }
                     else -> {}
                 }

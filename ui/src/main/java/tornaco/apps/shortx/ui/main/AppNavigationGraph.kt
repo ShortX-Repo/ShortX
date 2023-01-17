@@ -34,6 +34,9 @@ fun AppNavigationGraph(
                 },
                 goToAddDA = {
                     appNavController.navigate(AppRoute.AddDA.name)
+                },
+                goToEditDA = {
+                    appNavController.navigate("${AppRoute.AddDA.name}?daId=$it")
                 }
             )
         }

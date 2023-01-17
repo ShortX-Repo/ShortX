@@ -174,4 +174,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun getAllDirectAction(): List<DirectAction> {
         return dasSettingsStore.getAllDirectActions()
     }
+
+    fun executeDirectionActionById(id: String) {
+        getDirectActionById(id)?.let {
+            executeActions("executeDirectionActionById#${it.title}", it.actionsList)
+        }
+    }
 }

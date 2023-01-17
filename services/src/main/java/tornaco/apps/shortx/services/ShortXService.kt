@@ -127,5 +127,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
+
+        override fun executeDirectionActionById(id: String) {
+            shortXContext.rule.executeDirectionActionById(id)
+        }
     }
 }
