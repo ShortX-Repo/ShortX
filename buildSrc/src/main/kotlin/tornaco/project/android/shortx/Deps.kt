@@ -8,16 +8,12 @@ object ClassPaths {
     const val gradleBuilderModel = "com.android.tools.build:builder-model:$gradleVersion"
     const val androidToolsCommon = "com.android.tools:common:30.0.1"
 
-    const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
+    const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
 }
 
 
 object Compose {
-    const val composeVersion = "1.2.0"
-
-    const val composeMaterialIconsExtended =
-        "androidx.compose.material:material-icons-extended:${composeVersion}"
-
+    const val composeVersion = "1.3.0"
 
     const val enro = "dev.enro:enro:2.0.0-alpha10"
     const val enroApt = "dev.enro:enro-processor:2.0.0-alpha10"
