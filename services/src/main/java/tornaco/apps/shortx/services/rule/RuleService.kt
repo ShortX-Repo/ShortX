@@ -1,12 +1,14 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.rule.fact.allTriggers
 
@@ -15,6 +17,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }
+    private val dasSettingsStore: DirectActionSettingsStore by lazy {
+        DirectActionSettingsStore(systemServiceScope)
+    }
+
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
             shortXContext = shortXContext, androidContext = context, handler = handler
@@ -34,6 +40,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     override fun systemReady() {
         super.systemReady()
         ruleSettingsStore.readBlocking()
+        dasSettingsStore.readBlocking()
         installListeners()
     }
 
@@ -150,5 +157,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     private fun ruleChanged() {
         ruleChangeListeners.forEach { it() }
+    }
+
+    fun addDirectAction(da: DirectAction) {
+        dasSettingsStore.addDirectAction(da)
+    }
+
+    fun deleteDirectAction(id: String) {
+        dasSettingsStore.deleteDirectAction(id)
+    }
+
+    fun getDirectActionById(id: String): DirectAction? {
+        return dasSettingsStore.getDirectActionById(id)
+    }
+
+    fun getAllDirectAction(): List<DirectAction> {
+        return dasSettingsStore.getAllDirectActions()
     }
 }

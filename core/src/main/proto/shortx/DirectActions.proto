@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "tornaco.apps.shortx.core.proto.da";
+option java_outer_classname = "OuterDirectActions";
+option java_multiple_files = true;
+
+import "google/protobuf/any.proto";
+import "shortx/Common.proto";
+
+message DirectAction {
+  repeated google.protobuf.Any actions = 1;
+
+  string id = 2;
+  int64 lastUpdateTime = 3;
+
+  Author author = 4;
+
+  string title = 5;
+  string description = 6;
+}
+
+message DirectActionList {
+  repeated DirectAction directActions = 1;
+}

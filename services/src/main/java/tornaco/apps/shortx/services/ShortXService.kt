@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
@@ -27,7 +28,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
     override fun systemReady() {
         super.systemReady()
-      //  publishBinderService()
+        //  publishBinderService()
         serviceLifecycle.systemReady()
     }
 
@@ -105,6 +106,26 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun showEdgeHint(edgeNumber: Int) {
             shortXContext.gesture.showEdgeHint(edgeNumber)
+        }
+
+        override fun addDirectAction(da: ByteArrayWrapper) {
+            shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byte))
+        }
+
+        override fun deleteDirectAction(id: String) {
+            shortXContext.rule.deleteDirectAction(id)
+        }
+
+        override fun getDirectActionById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getDirectActionById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllDirectAction(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllDirectAction().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
     }
 }

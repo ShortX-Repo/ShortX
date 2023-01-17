@@ -3,9 +3,9 @@ package tornaco.apps.shortx.core
 import android.content.Context
 import android.content.pm.ParceledListSlice
 import android.os.Bundle
-import android.os.IBinder
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -97,6 +97,34 @@ class ShortXManager(private val service: IShortX) {
     fun showEdgeHint(edge: Edge) {
         invokeService(Unit) {
             showEdgeHint(edge.number)
+        }
+    }
+
+    fun addDirectAction(da: DirectAction) {
+        invokeService(Unit) {
+            addDirectAction(ByteArrayWrapper(da.toByteArray()))
+        }
+    }
+
+    fun deleteDirectAction(id: String) {
+        invokeService(Unit) {
+            deleteDirectAction(id)
+        }
+    }
+
+    fun getDirectActionById(id: String): DirectAction? {
+        return invokeService(null) {
+            getDirectActionById(id)?.byte.let {
+                DirectAction.parseFrom(it)
+            }
+        }
+    }
+
+    fun getAllDirectAction(): List<DirectAction> {
+        return invokeService(emptyList()) {
+            allDirectAction.map {
+                DirectAction.parseFrom(it.byte)
+            }
         }
     }
 

@@ -8,3 +8,7 @@ message AppPkg {
   string pkgName = 1;
   int32 userId = 2;
 }
+
+message Author {
+  string name = 1;
+}

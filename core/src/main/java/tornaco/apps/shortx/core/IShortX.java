@@ -15,6 +15,8 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Rules start
+
     @Override public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
     {
     }
@@ -32,6 +34,8 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Rules end
+
     @Override public java.util.List<tornaco.apps.shortx.core.App> getInstalledApps() throws android.os.RemoteException
     {
       return null;
@@ -42,6 +46,22 @@ public interface IShortX extends android.os.IInterface
     }
     @Override public void showEdgeHint(int edgeNumber) throws android.os.RemoteException
     {
+    }
+    // Direct Actions start
+
+    @Override public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
+    {
+    }
+    @Override public void deleteDirectAction(java.lang.String id) throws android.os.RemoteException
+    {
+    }
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDirectActionById(java.lang.String id) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDirectAction() throws android.os.RemoteException
+    {
+      return null;
     }
     @Override
     public android.os.IBinder asBinder() {
@@ -198,6 +218,53 @@ public interface IShortX extends android.os.IInterface
           reply.writeNoException();
           return true;
         }
+        case TRANSACTION_addDirectAction:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.addDirectAction(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_deleteDirectAction:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.deleteDirectAction(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getDirectActionById:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDirectActionById(_arg0);
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_getAllDirectAction:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDirectAction();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
         default:
         {
           return super.onTransact(code, data, reply, flags);
@@ -264,6 +331,8 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Rules start
+
       @Override public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -374,6 +443,8 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Rules end
+
       @Override public java.util.List<tornaco.apps.shortx.core.App> getInstalledApps() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -440,6 +511,98 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Direct Actions start
+
+      @Override public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((da!=null)) {
+            _data.writeInt(1);
+            da.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_addDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addDirectAction(da);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void deleteDirectAction(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_deleteDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteDirectAction(id);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDirectActionById(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getDirectActionById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getDirectActionById(id);
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDirectAction() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllDirectAction();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -452,6 +615,10 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getInstalledApps = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
     static final int TRANSACTION_getAppLabel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 8);
     static final int TRANSACTION_showEdgeHint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 9);
+    static final int TRANSACTION_addDirectAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 10);
+    static final int TRANSACTION_deleteDirectAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 11);
+    static final int TRANSACTION_getDirectActionById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 12);
+    static final int TRANSACTION_getAllDirectAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 13);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -471,12 +638,22 @@ public interface IShortX extends android.os.IInterface
   }
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
   public java.lang.String fingerprint() throws android.os.RemoteException;
+  // Rules start
+
   public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException;
   public void deleteRule(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleById(java.lang.String id) throws android.os.RemoteException;
   public void setRuleEnabled(java.lang.String ruleId, boolean enable) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRules() throws android.os.RemoteException;
+  // Rules end
+
   public java.util.List<tornaco.apps.shortx.core.App> getInstalledApps() throws android.os.RemoteException;
   public java.lang.String getAppLabel(tornaco.apps.shortx.core.Pkg pkg) throws android.os.RemoteException;
   public void showEdgeHint(int edgeNumber) throws android.os.RemoteException;
+  // Direct Actions start
+
+  public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
+  public void deleteDirectAction(java.lang.String id) throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDirectActionById(java.lang.String id) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDirectAction() throws android.os.RemoteException;
 }
