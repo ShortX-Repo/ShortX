@@ -36,5 +36,13 @@
   "ui.keycode.label.volume.down": "音量 -",
   "ui.keycode.label.power": "电源",
   "ui.keycode.label.home": "主页",
-  "ui.keycode.label.back": "返回"
+  "ui.keycode.label.back": "返回",
+  "ui.action.show.toast": "显示吐司",
+  "ui.action.show.shell": "Shell 命令",
+  "ui.action.show.delay": "延迟",
+  "ui.action.show.take.screenshot": "截屏",
+  "ui.action.show.mvel": "MVEL表达式",
+  "ui.action.show.hide.overlay": "隐藏悬浮工具",
+  "ui.action.show.show.overlay": "显示悬浮工具",
+  "ui.action.show.launch.app": "打开应用"
 }

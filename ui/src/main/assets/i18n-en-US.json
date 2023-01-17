@@ -36,5 +36,13 @@
   "ui.keycode.label.volume.down": "Volume -",
   "ui.keycode.label.power": "Power",
   "ui.keycode.label.home": "Home",
-  "ui.keycode.label.back": "Back"
+  "ui.keycode.label.back": "Back",
+  "ui.action.show.toast": "Show Toast",
+  "ui.action.show.shell": "Shell Command",
+  "ui.action.show.delay": "Delay",
+  "ui.action.show.take.screenshot": "Take Screenshot",
+  "ui.action.show.mvel": "MVEL expression",
+  "ui.action.show.hide.overlay": "Hide Overlays",
+  "ui.action.show.show.overlay": "Show Overlay",
+  "ui.action.show.launch.app": "Launch App"
 }

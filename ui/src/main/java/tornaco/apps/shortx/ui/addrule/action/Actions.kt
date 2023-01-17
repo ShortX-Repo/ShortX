@@ -197,28 +197,28 @@ private fun Actions(
 private fun labelForActionSelector(action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
-            listOf("Show Toast")
+            listOf(LocalI18N.current["ui.action.show.toast"])
         }
         is Action.ShellCommand -> {
-            listOf("Shell command")
+            listOf(LocalI18N.current["ui.action.show.shell"])
         }
         is Action.Delay -> {
-            listOf("Delay")
+            listOf(LocalI18N.current["ui.action.show.delay"])
         }
         Action.TakeScreenshot -> {
-            listOf("Take Screenshot")
+            listOf(LocalI18N.current["ui.action.show.take.screenshot"])
         }
         is Action.MVEL -> {
-            listOf("MVEL expression")
+            listOf(LocalI18N.current["ui.action.show.mvel"])
         }
         Action.HideOverlay -> {
-            listOf("HideOverlay")
+            listOf(LocalI18N.current["ui.action.show.hide.overlay"])
         }
         is Action.ShowOverlay -> {
-            listOf("ShowOverlay")
+            listOf(LocalI18N.current["ui.action.show.show.overlay"])
         }
         is Action.LaunchApp -> {
-            listOf("LaunchApp")
+            listOf(LocalI18N.current["ui.action.show.launch.app"])
         }
     }
 }
@@ -227,29 +227,32 @@ private fun labelForActionSelector(action: Action): List<String> {
 private fun labelLinesForAction(action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
-            listOf("Show Toast", action.message)
+            listOf(LocalI18N.current["ui.action.show.toast"], action.message)
         }
         is Action.ShellCommand -> {
-            listOf("Shell command", action.command)
+            listOf(LocalI18N.current["ui.action.show.shell"], action.command)
         }
         is Action.Delay -> {
-            listOf("Delay", action.time.toString())
+            listOf(LocalI18N.current["ui.action.show.delay"], action.time.toString())
         }
         Action.TakeScreenshot -> {
-            listOf("Take Screenshot")
+            listOf(LocalI18N.current["ui.action.show.take.screenshot"])
         }
         is Action.MVEL -> {
-            listOf("MVEL expression", action.expression)
+            listOf(LocalI18N.current["ui.action.show.mvel"], action.expression)
         }
         Action.HideOverlay -> {
-            listOf("HideOverlay")
+            listOf(LocalI18N.current["ui.action.show.hide.overlay"])
         }
         is Action.ShowOverlay -> {
-            mutableListOf("ShowOverlay").apply {
+            mutableListOf(LocalI18N.current["ui.action.show.show.overlay"]).apply {
                 add("${action.settings.size} buttons")
             }
         }
-        is Action.LaunchApp -> listOf("LaunchApp", action.appLabel)
+        is Action.LaunchApp -> listOf(
+            LocalI18N.current["ui.action.show.launch.app"],
+            action.appLabel
+        )
     }
 }
 
