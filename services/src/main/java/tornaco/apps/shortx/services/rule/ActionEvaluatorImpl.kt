@@ -49,6 +49,9 @@ class ActionEvaluatorImpl(
             shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList)
         } else if (action is_ HideOverlayButton::class.java) {
             shortXContext.overlay.postHideAllOverlay()
+        } else if (action is_ LaunchApp::class.java) {
+            val app = action unpack_ LaunchApp::class.java
+            shortXContext.appState.launchApp(app.appPkg)
         }
     }
 }

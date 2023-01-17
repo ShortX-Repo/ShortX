@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.ui.addrule.models
 
+import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -16,6 +19,7 @@ sealed interface Action {
         Action
 
     object HideOverlay : Action
+    data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -42,10 +46,13 @@ fun Action.toProtoAction(): ProtoMessage {
             ShowOverlayButton.newBuilder().setAutoCollapse(autoCollapse)
                 .addAllButtonSettings(settings).build()
         }
+        is Action.LaunchApp -> {
+            LaunchApp.newBuilder().setAppPkg(appPkg).build()
+        }
     }
 }
 
-fun ProtoAny.toAction(): Action? {
+fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
     return when {
         this is_ TakeScreenshot::class.java -> {
             Action.TakeScreenshot
@@ -72,6 +79,12 @@ fun ProtoAny.toAction(): Action? {
         }
         this is_ HideOverlayButton::class.java -> {
             Action.HideOverlay
+        }
+        this is_ LaunchApp::class.java -> {
+            val data = this unpack_ LaunchApp::class.java
+            val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
+            val appLabel = shortXManager.getAppLabel(pkg)
+            Action.LaunchApp(data.appPkg, appLabel = appLabel)
         }
         else -> null
     }

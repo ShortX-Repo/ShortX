@@ -101,4 +101,15 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             listOf(um.getUserInfo(UserHandle.USER_SYSTEM))
         }
     }
+
+    @SuppressLint("MissingPermission")
+    fun launchApp(appPkg: AppPkg?) {
+        logger.d("launchApp: $appPkg")
+        appPkg?.let {
+            context.packageManager.getLaunchIntentForPackage(appPkg.pkgName)?.let { intent ->
+                logger.d("launchApp, intent: $intent")
+                context.startActivityAsUser(intent, UserHandle.of(appPkg.userId))
+            }
+        }
+    }
 }

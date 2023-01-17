@@ -5,6 +5,7 @@ option java_outer_classname = "OuterActions";
 option java_multiple_files = true;
 
 import "google/protobuf/any.proto";
+import "shortx/Common.proto";
 
 message NoAction {}
 message TakeScreenshot {}
@@ -42,4 +43,8 @@ message HideOverlayButton {}
 message ShowOverlayButton {
   repeated OverlayButtonSetting buttonSettings = 1;
   bool autoCollapse = 2;
+}
+
+message LaunchApp {
+    AppPkg appPkg = 1;
 }

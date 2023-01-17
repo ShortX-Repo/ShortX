@@ -12,6 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tornaco.apps.shortx.core.App
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
 
@@ -24,7 +28,8 @@ fun ActionSelectors(
     addAction: (Action) -> Unit,
     removeAction: (Action) -> Unit,
     selectableActions: Map<I18NKey, List<Action>>,
-    actions: List<Action>
+    actions: List<Action>,
+    installedApps: List<App>,
 ) {
     // Actions
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
@@ -39,7 +44,8 @@ fun ActionSelectors(
 
     val showOverlayButtonSelectorState =
         rememberShowOverlayButtonSelectorState(
-            selectableActions = selectableActions
+            selectableActions = selectableActions,
+            installedApps = installedApps
         ) { settings ->
             val action = Action.ShowOverlay(
                 autoCollapse = settings.autoCollapse,
@@ -48,6 +54,15 @@ fun ActionSelectors(
             addAction(action)
         }
     ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
+
+    val launchAppSelectorState = rememberCurrentPkgSelectorState(apps = installedApps, selected = {
+        val first = it[0]
+        val action = Action.LaunchApp(first.let { app ->
+            AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
+        }, appLabel = first.label)
+        addAction(action)
+    })
+    CurrentPkgSelector(state = launchAppSelectorState)
 
     Actions(
         header = header,
@@ -81,6 +96,9 @@ fun ActionSelectors(
                         )
                     )
                 }
+                is Action.LaunchApp -> {
+                    launchAppSelectorState.show()
+                }
             }
         },
         removeAction = { action ->
@@ -107,6 +125,7 @@ fun ActionSelectors(
                             action.settings.map { it.toOverlayButtonItem() })
                     )
                 }
+                is Action.LaunchApp -> {}
             }
         })
 }
@@ -198,6 +217,9 @@ private fun labelForActionSelector(action: Action): List<String> {
         is Action.ShowOverlay -> {
             listOf("ShowOverlay")
         }
+        is Action.LaunchApp -> {
+            listOf("LaunchApp")
+        }
     }
 }
 
@@ -227,6 +249,7 @@ private fun labelLinesForAction(action: Action): List<String> {
                 add("${action.settings.size} buttons")
             }
         }
+        is Action.LaunchApp -> listOf("LaunchApp", action.appLabel)
     }
 }
 
@@ -266,6 +289,11 @@ private fun IconForAction(action: Action) {
         is Action.ShowOverlay -> {
             Icon(
                 imageVector = Icons.Filled.Window, contentDescription = "ShowOverlay"
+            )
+        }
+        is Action.LaunchApp -> {
+            Icon(
+                imageVector = Icons.Filled.OpenInNew, contentDescription = "LaunchApp"
             )
         }
     }

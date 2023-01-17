@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.App
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -48,6 +49,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
                 "UI" to listOf(
                     Action.TakeScreenshot,
                     Action.ShowToast(""),
+                ),
+                "App" to listOf(
+                    Action.LaunchApp(AppPkg.getDefaultInstance(), ""),
                 ),
                 "Misc" to listOf(
                     Action.ShellCommand(""),
@@ -142,7 +146,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
                             id = da.id,
                             title = da.title,
                             description = da.description,
-                            actions = da.actionsList.mapNotNull { it.toAction() },
+                            actions = da.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditDirectAction = true,
                         )
                     }

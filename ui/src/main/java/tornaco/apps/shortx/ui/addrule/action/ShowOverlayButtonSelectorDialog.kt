@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.toAction
 import tornaco.apps.shortx.ui.addrule.models.toProtoAction
@@ -24,6 +26,7 @@ import tornaco.apps.shortx.ui.base.*
 
 class ShowOverlayButtonSelectorState(
     val selectableActions: Map<I18NKey, List<Action>>,
+    val installedApps: List<App>,
     val onSelected: (ShowOverlayButtonSettings) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
@@ -50,11 +53,13 @@ class ShowOverlayButtonSelectorState(
 @Composable
 fun rememberShowOverlayButtonSelectorState(
     selectableActions: Map<I18NKey, List<Action>>,
+    installedApps: List<App>,
     onSelected: (ShowOverlayButtonSettings) -> Unit
 ): ShowOverlayButtonSelectorState {
     return remember {
         ShowOverlayButtonSelectorState(
             selectableActions = selectableActions,
+            installedApps = installedApps,
             onSelected = onSelected
         )
     }
@@ -148,7 +153,8 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                                         )
                                     )
                                 }
-                            }
+                            },
+                            installedApps = state.installedApps
                         )
                     }
 
@@ -199,6 +205,6 @@ fun OverlayButtonItem.toOverlayButtonSetting(): OverlayButtonSetting {
 
 fun OverlayButtonSetting.toOverlayButtonItem(): OverlayButtonItem {
     return OverlayButtonItem(icon = icon, actions = actionsList.mapNotNull {
-        it.toAction()
+        it.toAction(shortXManager = shortXManager)
     })
 }

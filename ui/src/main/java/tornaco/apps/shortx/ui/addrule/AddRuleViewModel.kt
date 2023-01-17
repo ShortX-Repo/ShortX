@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
@@ -77,6 +78,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 "UI" to listOf(
                     Action.TakeScreenshot,
                     Action.ShowToast(""),
+                ),
+                "App" to listOf(
+                    Action.LaunchApp(AppPkg.getDefaultInstance(), ""),
                 ),
                 "Misc" to listOf(
                     Action.ShellCommand(""),
@@ -213,7 +217,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                                     shortXManager
                                 )
                             },
-                            actions = rule.actionsList.mapNotNull { it.toAction() },
+                            actions = rule.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditRule = true,
                             isEnabled = rule.isEnabled
                         )
