@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AppShortcut
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -25,20 +21,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
-    Rules, Actions
+    Rules, DirectActions
 }
 
 sealed class BottomNavItem(
     var title: String, var icon: ImageVector, var screenRoute: HomeBottomRoute
 ) {
-    object Rules : BottomNavItem("Rules", Icons.Filled.List, HomeBottomRoute.Rules)
+    object Rules : BottomNavItem("ui.feat.label.rule", Icons.Filled.AutoMode, HomeBottomRoute.Rules)
 
     object DirectActions :
-        BottomNavItem("DirectActions", Icons.Filled.AppShortcut, HomeBottomRoute.Actions)
+        BottomNavItem("ui.feat.label.da", Icons.Filled.TouchApp, HomeBottomRoute.DirectActions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +55,8 @@ fun HomeScreen(
     }
 
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     ShortXTheme {
         Surface(
@@ -68,7 +66,15 @@ fun HomeScreen(
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
-                        title = { Text(text = stringResource(id = R.string.ui_app_name)) },
+                        title = {
+                            Text(
+                                text = if (currentRoute == HomeBottomRoute.DirectActions.name) {
+                                    LocalI18N.current["ui.feat.label.da"]
+                                } else {
+                                    LocalI18N.current["ui.feat.label.rule"]
+                                }
+                            )
+                        },
                         actions = {
                             IconButton(onClick = {
                                 goToSettings()
@@ -91,7 +97,7 @@ fun HomeScreen(
                             HomeBottomRoute.Rules.name -> {
                                 goToAddRule()
                             }
-                            HomeBottomRoute.Actions.name -> {
+                            HomeBottomRoute.DirectActions.name -> {
                                 goToAddDA()
                             }
                             else -> {}
@@ -134,7 +140,8 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.Rules, BottomNavItem.DirectActions
+        BottomNavItem.DirectActions,
+        BottomNavItem.Rules
     )
     NavigationBar(modifier = Modifier.fillMaxWidth()) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -144,7 +151,7 @@ private fun BottomNavigationContent(
                 Icon(imageVector = item.icon, contentDescription = item.title)
             },
                 label = {
-                    Text(text = item.title, fontSize = 9.sp)
+                    Text(text = LocalI18N.current[item.title], fontSize = 9.sp)
                 },
                 alwaysShowLabel = true,
                 selected = currentRoute == item.screenRoute.name,
@@ -175,7 +182,7 @@ private fun BottomNavigationGraph(
     onEditDA: (DirectActionUM) -> Unit,
     onDAClick: (DirectActionUM) -> Unit,
 ) {
-    NavHost(navController, startDestination = BottomNavItem.Rules.screenRoute.name) {
+    NavHost(navController, startDestination = BottomNavItem.DirectActions.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
             RuleScreen(
                 state = state,

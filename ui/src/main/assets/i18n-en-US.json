@@ -28,5 +28,7 @@
   "ui.title.edit.da": "Edit Direct Action",
   "ui.title.add.da": "New Direct Action",
   "ui.da.title": "Title",
-  "ui.da.description": "Description"
+  "ui.da.description": "Description",
+  "ui.feat.label.da": "Direct Action",
+  "ui.feat.label.rule": "Rule"
 }

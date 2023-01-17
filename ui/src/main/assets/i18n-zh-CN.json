@@ -28,5 +28,7 @@
   "ui.title.edit.da": "编辑一键指令",
   "ui.title.add.da": "创建一键指令",
   "ui.da.title": "标题",
-  "ui.da.description": "描述"
+  "ui.da.description": "描述",
+  "ui.feat.label.da": "一键指令",
+  "ui.feat.label.rule": "自动指令"
 }

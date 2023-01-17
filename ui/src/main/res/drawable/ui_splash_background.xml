@@ -1,11 +1,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
-            android:opacity="opaque">
+    android:opacity="opaque">
     <!-- The background color, preferably the same as your normal theme -->
-    <item android:drawable="@color/ui_mi_org"/>
-    <!--Your product logo - 144dp color version of your app icon-->
-    <item>
-        <bitmap
-                android:gravity="center"
-                android:src="@drawable/ui_splash_logo"/>
-    </item>
+    <item android:drawable="@color/ui_mi_org" />
 </layer-list>
