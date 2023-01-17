@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -114,11 +117,14 @@ fun HomeScreen(
                         deleteRule = { rule ->
                             vm.deleteRule(rule.id)
                         },
+                        editRule = { rule ->
+                            goToEditRule(rule.id)
+                        },
                         setRuleEnabled = { id, enable ->
                             vm.setRuleEnabled(id, enable)
                         },
                         onRuleClick = { rule ->
-                            goToEditRule(rule.id)
+                            vm.setRuleEnabled(rule.id, !rule.isEnabled)
                         },
                         onDAClick = { da ->
                             vm.executeDA(da)
@@ -176,6 +182,7 @@ private fun BottomNavigationGraph(
     navController: NavHostController,
     state: MainState,
     deleteRule: (RuleUM) -> Unit,
+    editRule: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
     onDeleteDA: (DirectActionUM) -> Unit,
@@ -188,6 +195,7 @@ private fun BottomNavigationGraph(
                 state = state,
                 setRuleEnabled = setRuleEnabled,
                 onDelete = deleteRule,
+                onEdit = editRule,
                 onRuleClick = onRuleClick
             )
         }

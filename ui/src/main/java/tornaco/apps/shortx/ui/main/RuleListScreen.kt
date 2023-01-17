@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +11,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.base.*
 
@@ -21,6 +25,7 @@ import tornaco.apps.shortx.ui.base.*
 fun RuleScreen(
     state: MainState,
     onDelete: (RuleUM) -> Unit,
+    onEdit: (RuleUM) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
@@ -31,8 +36,22 @@ fun RuleScreen(
         items(
             items = state.rules,
             key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+
+            var scaleAnimStarted by remember {
+                mutableStateOf(false)
+            }
+            val scalePercent by animateFloatAsState(
+                targetValue = if (scaleAnimStarted) 0.99f else 1f,
+                animationSpec = spring(),
+                finishedListener = {
+                    scaleAnimStarted = false
+                }
+            )
+
             Card(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .scale(scalePercent),
                 backgroundColor = ColorDefaults.backgroundSurfaceColor(),
                 shape = ShortXCardRoundedCornerShape,
                 elevation = 0.dp
@@ -41,9 +60,11 @@ fun RuleScreen(
                     rule = rule,
                     onClick = {
                         onRuleClick(rule)
+                        scaleAnimStarted = true
                     },
                     setRuleEnabled = setRuleEnabled,
-                    onDelete = onDelete
+                    onDelete = onDelete,
+                    onEdit = onEdit,
                 )
             }
         }
@@ -55,14 +76,15 @@ private fun RuleItem(
     rule: RuleUM,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
-    onDelete: (RuleUM) -> Unit
+    onDelete: (RuleUM) -> Unit,
+    onEdit: (RuleUM) -> Unit,
 ) {
     ListItem(
         title = rule.title,
         text1 = rule.description,
         text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
         overflow = {
-            ListItemOverflowMenu(rule, onDelete)
+            ListItemOverflowMenu(rule, onDelete, onEdit)
         },
         checked = rule.isEnabled,
         onClick = onClick,
@@ -71,7 +93,11 @@ private fun RuleItem(
 }
 
 @Composable
-private fun ListItemOverflowMenu(rule: RuleUM, onDelete: (RuleUM) -> Unit) {
+private fun ListItemOverflowMenu(
+    rule: RuleUM,
+    onDelete: (RuleUM) -> Unit,
+    onEdit: (RuleUM) -> Unit
+) {
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(
@@ -83,18 +109,27 @@ private fun ListItemOverflowMenu(rule: RuleUM, onDelete: (RuleUM) -> Unit) {
         }
 
         DropdownSelector(
+            widthFraction = 0.3f,
             state = menuState,
             items = listOf(
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                     data = "delete",
                     icon = {
-                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
+                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+                    }),
+                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                    data = "edit",
+                    icon = {
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                     })
             ), onSelect = {
                 when (it.data) {
                     "delete" -> {
                         onDelete(rule)
+                    }
+                    "edit" -> {
+                        onEdit(rule)
                     }
                     else -> {}
                 }

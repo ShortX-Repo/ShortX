@@ -1,19 +1,23 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Commit
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,12 +43,12 @@ fun DirectActionListScreen(
     onEdit: (DirectActionUM) -> Unit,
     onDirectActionClick: (DirectActionUM) -> Unit,
 ) {
-    LazyVerticalGrid(
+    LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
-        columns = GridCells.Fixed(2),
+        columns = StaggeredGridCells.Fixed(2),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
-        items(items = state.das, key = { listItem: DirectActionUM -> listItem.id }) { da ->
+        items(items = state.das, key = { it.id }) { da ->
             var colorAnimStarted by remember {
                 mutableStateOf(false)
             }
@@ -59,7 +63,7 @@ fun DirectActionListScreen(
                 }
             )
             val scalePercent by animateFloatAsState(
-                targetValue = if (scaleAnimStarted) 0.92f else 1f,
+                targetValue = if (scaleAnimStarted) 0.96f else 1f,
                 animationSpec = spring(),
                 finishedListener = {
                     scaleAnimStarted = false
@@ -159,7 +163,7 @@ private fun DAListItem(
             title?.let {
                 Text(
                     text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 20.sp, fontWeight = FontWeight.W600
+                        fontSize = 16.sp, fontWeight = FontWeight.W600
                     )
                 )
             }
@@ -167,7 +171,7 @@ private fun DAListItem(
             text1?.let {
                 Text(
                     text = text1,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                     maxLines = 3
                 )
             }
@@ -177,7 +181,7 @@ private fun DAListItem(
             text2?.let {
                 Text(
                     text = text2,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                     maxLines = 3
                 )
             }
@@ -201,11 +205,12 @@ private fun ListItemOverflowMenu(
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                 data = "delete",
                 icon = {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
-                }), DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+                }),
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                 data = "edit",
                 icon = {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "Edit")
+                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                 })
         ), onSelect = {
             when (it.data) {

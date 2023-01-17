@@ -123,7 +123,7 @@ fun ListItem(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.W600
                         )
                     )
@@ -132,7 +132,7 @@ fun ListItem(
                 text1?.let {
                     Text(
                         text = text1,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                         maxLines = 3
                     )
                 }
@@ -142,7 +142,7 @@ fun ListItem(
                 text2?.let {
                     Text(
                         text = text2,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                         maxLines = 3
                     )
                 }
