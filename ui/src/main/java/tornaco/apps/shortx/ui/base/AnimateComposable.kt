@@ -13,7 +13,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
 
-val springSpec = spring<IntOffset>(stiffness = Spring.StiffnessLow)
+val animSpec = spring<IntOffset>(stiffness = Spring.StiffnessLow)
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.animateComposable(
@@ -26,26 +26,22 @@ fun NavGraphBuilder.animateComposable(
         route,
         enterTransition = {
             slideIntoContainer(
-                AnimatedContentScope.SlideDirection.Left,
-                animationSpec = springSpec
+                AnimatedContentScope.SlideDirection.Up,
+                animationSpec = animSpec
             )
         },
+
         exitTransition = {
-            slideOutOfContainer(
-                AnimatedContentScope.SlideDirection.Left,
-                animationSpec = springSpec
-            )
+            null
         },
+
         popEnterTransition = {
-            slideIntoContainer(
-                AnimatedContentScope.SlideDirection.Right,
-                animationSpec = springSpec
-            )
+            null
         },
         popExitTransition = {
             slideOutOfContainer(
-                AnimatedContentScope.SlideDirection.Right,
-                animationSpec = springSpec
+                AnimatedContentScope.SlideDirection.Down,
+                animationSpec = animSpec
             )
         },
         arguments = arguments,
