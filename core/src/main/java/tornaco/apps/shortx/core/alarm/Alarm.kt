@@ -31,7 +31,18 @@ val Alarm.triggerDateToday: Date
     }.time
 
 val RepeatDays.isNo: Boolean get() = daysList.isEmpty()
-val RepeatDays.isEveryDay get() = daysList.containsAll(WeekDay.values().toList())
+val RepeatDays.isEveryDay
+    get() = daysList.containsAll(
+        listOf(
+            WeekDay.SUNDAY,
+            WeekDay.MONDAY,
+            WeekDay.TUESDAY,
+            WeekDay.WEDNESDAY,
+            WeekDay.THURSDAY,
+            WeekDay.FRIDAY,
+            WeekDay.SATURDAY
+        )
+    )
 
 fun RepeatDays.isRepeatToday(): Boolean {
     val today = Calendar.getInstance().apply {
