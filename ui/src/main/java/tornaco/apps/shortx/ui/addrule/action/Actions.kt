@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
-import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
 
@@ -55,14 +55,14 @@ fun ActionSelectors(
         }
     ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
 
-    val launchAppSelectorState = rememberCurrentPkgSelectorState(apps = installedApps, selected = {
+    val launchAppSelectorState = rememberAppPkgSelectorState(apps = installedApps, selected = {
         val first = it[0]
         val action = Action.LaunchApp(first.let { app ->
             AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
         }, appLabel = first.label)
         addAction(action)
     })
-    CurrentPkgSelector(state = launchAppSelectorState)
+    AppPkgSelector(state = launchAppSelectorState)
 
     Actions(
         header = header,
@@ -251,7 +251,7 @@ private fun labelLinesForAction(action: Action): List<String> {
         }
         is Action.LaunchApp -> listOf(
             LocalI18N.current["ui.action.show.launch.app"],
-            action.appLabel
+            "${action.appLabel}${PREFIX_APP_ICON}${action.appPkg.pkgName}"
         )
     }
 }

@@ -21,8 +21,8 @@ import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
 import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
-import tornaco.apps.shortx.ui.addrule.condition.CurrentPkgSelector
-import tornaco.apps.shortx.ui.addrule.condition.rememberCurrentPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
@@ -109,10 +109,10 @@ private fun ConditionSelectors(
     state: AddRuleState, vm: AddRuleViewModel
 ) {
     // Condition selectors
-    val currentPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+    val currentPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
         vm.addCondition(Condition.CurrentForegroundApp(pkg[0]))
     }
-    CurrentPkgSelector(currentPkgSelectorState)
+    AppPkgSelector(currentPkgSelectorState)
 
     val mvelConditionSelectorState = rememberMVELSelectorState { expression ->
         vm.addCondition(Condition.MVEL(expression))
@@ -160,15 +160,15 @@ private fun FactSelectors(
     AlarmSelector(timeOfADaySelector)
 
     // Condition selectors
-    val appBgPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+    val appBgPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
         vm.setFact(Fact.AppBecomeBackground(apps = pkg))
     }
-    CurrentPkgSelector(appBgPkgSelectorState)
+    AppPkgSelector(appBgPkgSelectorState)
 
-    val appFgPkgSelectorState = rememberCurrentPkgSelectorState(state.installedApps) { pkg ->
+    val appFgPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
         vm.setFact(Fact.AppBecomeForeground(apps = pkg))
     }
-    CurrentPkgSelector(appFgPkgSelectorState)
+    AppPkgSelector(appFgPkgSelectorState)
 
     FactSelector(state) { fact ->
         when (fact) {

@@ -11,12 +11,16 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.Pkg
+
+const val PREFIX_APP_ICON = "app_icon://"
 
 @Composable
 fun ListItem(
@@ -31,14 +35,14 @@ fun ListItem(
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }, verticalAlignment = Alignment.CenterVertically
+            }, verticalAlignment = CenterVertically
     ) {
         Row(
             modifier = Modifier
                 .heightIn(min = 60.dp)
                 .weight(1f, fill = false)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             icon()
             Spacer(modifier = Modifier.size(16.dp))
@@ -46,7 +50,19 @@ fun ListItem(
                 Text(text = titleLines[0], style = MaterialTheme.typography.titleMedium)
                 if (titleLines.size > 1) {
                     titleLines.subList(1, titleLines.size).forEach {
-                        Text(text = it, style = MaterialTheme.typography.titleSmall)
+                        if (it.contains(PREFIX_APP_ICON)) {
+                            val pkgName = it.substringAfter(PREFIX_APP_ICON)
+                            Row(verticalAlignment = CenterVertically) {
+                                AppIcon(modifier = Modifier.size(16.dp), pkg = Pkg(pkgName, 0))
+                                SmallSpacer()
+                                Text(
+                                    text = it.substringBefore(PREFIX_APP_ICON),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
+                        } else {
+                            Text(text = it, style = MaterialTheme.typography.titleSmall)
+                        }
                     }
                 }
             }
@@ -69,14 +85,14 @@ fun ListItem(
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }, verticalAlignment = Alignment.CenterVertically
+            }, verticalAlignment = CenterVertically
     ) {
         Row(
             modifier = Modifier
                 .heightIn(min = 60.dp)
                 .weight(1f, fill = false)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             icon?.let {
                 it()
@@ -108,7 +124,7 @@ fun ListItem(
             .clickable {
                 onClick()
             },
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
@@ -116,7 +132,7 @@ fun ListItem(
                 .weight(1f, fill = false)
                 .padding(end = 24.dp)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
             Spacer(modifier = Modifier.size(16.dp))
@@ -178,7 +194,7 @@ fun ListItem(
             .clickable {
                 onClick()
             },
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
@@ -186,7 +202,7 @@ fun ListItem(
                 .weight(1f, fill = false)
                 .padding(end = 24.dp)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
             Spacer(modifier = Modifier.size(16.dp))

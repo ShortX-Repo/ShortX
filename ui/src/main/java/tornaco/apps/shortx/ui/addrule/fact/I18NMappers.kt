@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import java.util.*
 
 
@@ -69,11 +70,15 @@ fun labelForFact(fact: Fact): List<String> {
         }
         is Fact.AppBecomeBackground -> listOf(
             LocalI18N.current["ui.fact.app.become.bg"],
-            fact.apps.joinToString { it.label }
+            fact.apps.joinToString {
+                "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
+            }
         )
         is Fact.AppBecomeForeground -> listOf(
             LocalI18N.current["ui.fact.app.become.fg"],
-            fact.apps.joinToString { it.label }
+            fact.apps.joinToString {
+                "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
+            }
         )
     }
 }

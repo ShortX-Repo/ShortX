@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.ui.base.*
 
-class CurrentPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> Unit) {
+class AppPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -29,23 +29,23 @@ class CurrentPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> 
 }
 
 @Composable
-fun rememberCurrentPkgSelectorState(
+fun rememberAppPkgSelectorState(
     apps: List<App>, selected: (List<App>) -> Unit
-): CurrentPkgSelectorState {
+): AppPkgSelectorState {
     return remember(apps) {
-        CurrentPkgSelectorState(apps, selected)
+        AppPkgSelectorState(apps, selected)
     }
 }
 
 @Composable
-fun CurrentPkgSelector(state: CurrentPkgSelectorState) {
+fun AppPkgSelector(state: AppPkgSelectorState) {
     var selectedApp by remember(state) {
         mutableStateOf<App?>(null)
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(
-                text = LocalI18N.current["ui.dialog.title.current.app"],
+                text = LocalI18N.current["ui.dialog.title.select.app"],
             )
         }, buttons = {
             TextButton(onClick = {
