@@ -25,3 +25,5 @@
 
 # Proto
 -keep class tornaco.apps.shortx.core.proto** {*;}
+
+-keep class ** implements android.os.Parcelable { *; }
