@@ -113,6 +113,7 @@ fun ListItem(
     text1: String? = null,
     text2: String? = null,
     overflow: @Composable ColumnScope.() -> Unit = {},
+    icon: (@Composable () -> Unit)? = null,
     checked: Boolean,
     onClick: () -> Unit,
     onCheckedChange: ((Boolean) -> Unit),
@@ -134,7 +135,7 @@ fun ListItem(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = CenterVertically
         ) {
-            Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+            icon?.invoke()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
                 title?.let {

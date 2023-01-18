@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -80,6 +83,11 @@ private fun RuleItem(
     onEdit: (RuleUM) -> Unit,
 ) {
     ListItem(
+        icon = {
+            ColoredIcon {
+                Icon(imageVector = Icons.Filled.AutoAwesome, contentDescription = "Icon")
+            }
+        },
         title = rule.title,
         text1 = rule.description,
         text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],

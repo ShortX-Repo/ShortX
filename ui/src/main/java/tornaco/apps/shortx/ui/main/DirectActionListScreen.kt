@@ -16,6 +16,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
@@ -154,6 +155,7 @@ private fun DAListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+
             Column(horizontalAlignment = Alignment.End) {
                 overflow()
             }
