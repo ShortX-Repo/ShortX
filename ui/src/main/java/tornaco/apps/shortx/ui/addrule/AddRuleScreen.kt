@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,7 +150,10 @@ private fun FactSelectors(
     })
     EdgeGestureSelector(edgeGestureSelectorState)
 
-    val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
+    val timeOfADaySelector = rememberAlarmSelectorState(
+        initialRepeat = emptyArray(),
+        initialTime = LocalTime.now()
+    ) { alarm ->
         // Use rule id as alarm tag.
         vm.setFact(Fact.Alarm(state.id, alarm.triggerAt, alarm.repeat))
     }

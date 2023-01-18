@@ -19,6 +19,7 @@
   "ui.fact.key.event": "Key Event",
   "ui.fact.edge.gesture": "Edge Gesture",
   "ui.fact.time.of.a.day": "Time of",
+  "ui.fact.time.of.a.day.repeat": "Repeat",
   "ui.update.time": "Last update: {date}",
   "ui.common.delete": "Delete",
   "ui.common.edit": "Edit",

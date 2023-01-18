@@ -1,31 +1,52 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.timepicker.BottomTimePicker
+import java.time.LocalTime
 
-class AlarmSelectorState(val selected: (Alarm) -> Unit) {
+class AlarmSelectorState(
+    initialTime: LocalTime,
+    initialRepeat: Array<WeekDay>,
+    val selected: (Alarm) -> Unit
+) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
-    var h = mutableStateOf(0)
-    var m = mutableStateOf(0)
-    var s = mutableStateOf(0)
+    var time: LocalTime = initialTime
+
+    var repeat = mutableStateOf(initialRepeat.toList())
+
+    fun addRepeat(weekDay: WeekDay) {
+        repeat.value = repeat.value.toMutableList().apply {
+            add(weekDay)
+        }
+    }
+
+    fun removeRepeat(weekDay: WeekDay) {
+        repeat.value = repeat.value.toMutableList().apply {
+            remove(weekDay)
+        }
+    }
 
     fun show() {
         _isShow = true
@@ -37,9 +58,13 @@ class AlarmSelectorState(val selected: (Alarm) -> Unit) {
 }
 
 @Composable
-fun rememberAlarmSelectorState(selected: (Alarm) -> Unit): AlarmSelectorState {
+fun rememberAlarmSelectorState(
+    initialTime: LocalTime,
+    initialRepeat: Array<WeekDay>,
+    selected: (Alarm) -> Unit
+): AlarmSelectorState {
     return remember {
-        AlarmSelectorState(selected)
+        AlarmSelectorState(initialTime, initialRepeat, selected)
     }
 }
 
@@ -51,15 +76,22 @@ fun AlarmSelector(state: AlarmSelectorState) {
         }, buttons = {
             TextButton(onClick = {
                 state.selected(
-                    Alarm.newBuilder()
+                    Alarm
+                        .newBuilder()
                         .setTriggerAt(
-                            TimeOfADay.newBuilder()
-                                .setHour(state.h.value)
-                                .setMinutes(state.m.value)
-                                .setSeconds(state.s.value)
+                            TimeOfADay
+                                .newBuilder()
+                                .setHour(state.time.hour)
+                                .setMinutes(state.time.minute)
+                                .setSeconds(state.time.second)
                                 .build()
                         )
-                        .setRepeat(RepeatDays.newBuilder().addDays(WeekDay.MONDAY).build())
+                        .setRepeat(
+                            RepeatDays
+                                .newBuilder()
+                                .addAllDays(state.repeat.value)
+                                .build()
+                        )
                         .build()
                 )
                 state.dismiss()
@@ -72,99 +104,69 @@ fun AlarmSelector(state: AlarmSelectorState) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmContent(state: AlarmSelectorState) {
     Column(
-        modifier = Modifier
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start
+        verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Hour(state)
-        Minute(state)
-        Second(state)
-        Text(
-            text = "Min interval", style = MaterialTheme.typography.labelSmall
-        )
-
-        TinySpacer()
-        Text(
-            text = "Tag", style = MaterialTheme.typography.labelSmall
-        )
+        BottomTimePicker(is24TimeFormat = true, currentTime = state.time) {
+            state.time = it
+        }
+        RepeatSelector(state)
     }
 }
 
 @Composable
-private fun Hour(durationState: AlarmSelectorState) {
-    Field(
-        durationState.h,
-        "Hour",
-        0,
-        24
-    )
-}
-
-@Composable
-private fun Minute(durationState: AlarmSelectorState) {
-    Field(
-        durationState.m,
-        "Minute",
-        15,
-        59
-    )
-}
-
-@Composable
-private fun Second(durationState: AlarmSelectorState) {
-    Field(
-        durationState.s,
-        "Second",
-        0,
-        59
-    )
-}
-
-@Composable
-private fun Field(fieldValue: MutableState<Int>, label: String, min: Int = 0, max: Int) {
-    var value by fieldValue
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+private fun RepeatSelector(state: AlarmSelectorState) {
+    Column(
+        modifier = Modifier.padding(top = 24.dp, bottom = 32.dp),
+        horizontalAlignment = Alignment.Start
     ) {
-        Text(text = label)
-        LargeSpacer()
-
-        // -
-        IconButton(onClick = {
-            if (value > min) {
-                value -= 1
-            } else {
-                value = max
-            }
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Remove,
-                contentDescription = "-"
-            )
-        }
-
+        Text(
+            text = LocalI18N.current["ui.fact.time.of.a.day.repeat"],
+            style = MaterialTheme.typography.bodySmall
+        )
         StandardSpacer()
-        Text(text = "$value")
-        StandardSpacer()
-
-        // +
-        IconButton(onClick = {
-            if (value < max) {
-                value += 1
-            } else {
-                value = min
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            arrayOf(
+                WeekDay.SUNDAY,
+                WeekDay.MONDAY,
+                WeekDay.TUESDAY,
+                WeekDay.WEDNESDAY,
+                WeekDay.THURSDAY,
+                WeekDay.FRIDAY,
+                WeekDay.SATURDAY
+            ).forEach { weekDay ->
+                val isSelected = state.repeat.value.contains(weekDay)
+                Column(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .height(36.dp)
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color = if (isSelected) MaterialTheme.colorScheme.errorContainer else ColorDefaults.backgroundSurfaceColor())
+                        .clickable {
+                            if (isSelected) {
+                                state.removeRepeat(weekDay)
+                            } else {
+                                state.addRepeat(weekDay)
+                            }
+                        }
+                        .padding(4.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = weekDay.name.first().toString().uppercase(),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = W600)
+                    )
+                }
             }
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "+"
-            )
         }
     }
 }
