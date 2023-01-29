@@ -21,16 +21,16 @@ import androidx.compose.ui.unit.dp
 fun ColoredIcon(
     modifier: Modifier = Modifier,
     size: Dp = 42.dp,
+    padding: Dp = 4.dp,
     color: Color = MaterialTheme.colorScheme.surfaceVariant,
     icon: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
             .size(size)
-            .padding(2.dp)
             .clip(CircleShape)
             .background(color = color)
-            .padding(4.dp),
+            .padding(padding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
