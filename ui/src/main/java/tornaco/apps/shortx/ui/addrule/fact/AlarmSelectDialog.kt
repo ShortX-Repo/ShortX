@@ -149,7 +149,7 @@ private fun RepeatSelector(state: AlarmSelectorState) {
                         .height(36.dp)
                         .padding(2.dp)
                         .clip(CircleShape)
-                        .background(color = if (isSelected) MaterialTheme.colorScheme.errorContainer else ColorDefaults.backgroundSurfaceColor())
+                        .background(color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else ColorDefaults.backgroundSurfaceColor())
                         .clickable {
                             if (isSelected) {
                                 state.removeRepeat(weekDay)

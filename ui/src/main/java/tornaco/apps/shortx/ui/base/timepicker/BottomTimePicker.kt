@@ -3,9 +3,9 @@ package tornaco.apps.shortx.ui.base.timepicker
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,13 +35,13 @@ fun BottomTimePicker(
             is24TimeFormat = is24TimeFormat,
             itemStyles = ItemStyles(
                 defaultTextStyle = TextStyle(
-                    Color.DarkGray,
+                    MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 ),
                 selectedTextStyle = TextStyle(
-                    Color.Black,
-                    fontSize = 18.sp,
+                    MaterialTheme.colorScheme.primary,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Black
                 )
             ),
