@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,14 +15,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
 import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.models.Condition
@@ -35,11 +37,18 @@ import java.time.LocalTime
 fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
     val vm = hiltViewModel<AddRuleViewModel>()
     val state by vm.state.collectAsState()
+    val context = LocalContext.current
+    val savedMessage = LocalI18N.current["ui.toast.rule.saved"]
+    val showToast = {
+        Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
+    }
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.loadInstalledApps()
-        vm.ruleSaved.collectLatest {}
+        vm.ruleSaved.collectLatest {
+            showToast()
+        }
     }
 
     ShortXTheme {
