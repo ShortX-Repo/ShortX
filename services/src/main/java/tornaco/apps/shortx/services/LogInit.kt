@@ -10,6 +10,7 @@ import com.elvishew.xlog.printer.Printer
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.data.Dirs
 import util.StringStack
@@ -19,18 +20,27 @@ import java.io.File
 object LogInit {
     private const val LOG_PREFIX = "ShortX"
 
+    @Suppress("ObjectPropertyName")
+    private var _logDebug = BuildProp.APP_IS_DEBUG
+    val logDebug get() = _logDebug
+
     // Log buffer for store early log.
     private val INIT_LOG_BUFFER: StringStack = StringStack()
 
     init {
         logAdapter = { level: Int, tag: String, msg: String ->
             when (level) {
-                Log.DEBUG -> XLog.d("$tag $msg")
-                Log.INFO -> XLog.i("$tag $msg")
+                Log.VERBOSE -> if (_logDebug) XLog.v("$tag $msg")
+                Log.DEBUG -> if (_logDebug) XLog.d("$tag $msg")
+                Log.INFO -> if (_logDebug) XLog.i("$tag $msg")
                 Log.WARN -> XLog.w("$tag $msg")
                 Log.ERROR -> XLog.e("$tag $msg")
             }
         }
+    }
+
+    fun setLogDebug(enable: Boolean) {
+        this._logDebug = enable
     }
 
     fun initEarlyLogging() {

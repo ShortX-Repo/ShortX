@@ -7,6 +7,19 @@ sealed interface Preference {
     val summary: String?
     val icon: ImageVector?
 
+    object Divider : Preference {
+        override val title: String = "Divider"
+        override val summary: String? = null
+        override val icon: ImageVector? = null
+    }
+
+    data class Category(
+        override val title: String,
+    ) : Preference {
+        override val summary: String? = null
+        override val icon: ImageVector? = null
+    }
+
     data class TextPreference(
         override val title: String,
         override val summary: String? = null,
@@ -20,5 +33,12 @@ sealed interface Preference {
         override val icon: ImageVector? = null,
         val value: Boolean,
         val onCheckChanged: (Boolean) -> Unit
+    ) : Preference
+
+    data class ExpandablePreference(
+        override val title: String,
+        override val summary: String? = null,
+        override val icon: ImageVector? = null,
+        val preferences: List<Preference>
     ) : Preference
 }

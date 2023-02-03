@@ -72,6 +72,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun fingerprint() = BuildProp.BUILD_FINGERPRINT
 
+        override fun setLogDebugEnable(enable: Boolean) {
+            LogInit.setLogDebug(enable)
+        }
+
+        override fun isLogDebugEnable(): Boolean {
+            return LogInit.logDebug
+        }
+
         override fun addRule(rule: ByteArrayWrapper) {
             shortXContext.rule.addRule(Rule.parseFrom(rule.byte))
         }

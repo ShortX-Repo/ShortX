@@ -2,19 +2,21 @@ package tornaco.apps.shortx.ui.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import tornaco.apps.shortx.core.BuildProp
+import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.overlay.BUTTON_COUNT
 import javax.inject.Inject
 
 
 data class SettingsState(
-    val buttonIcons: List<String>
+    val isActivated: Boolean = false,
+    val coreVersion: Version = Version("N/A", 0),
+    val coreFP: String = "N/A",
+    val isDebugLogEnabled: Boolean = false,
 )
-
-private const val DEFAULT_ICON_NAME = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -22,23 +24,27 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
     ContextViewModel<SettingsState>(context) {
 
     override fun initState(): SettingsState {
-        return SettingsState(buttonIcons = mutableListOf<String>().apply {
-            repeat(BUTTON_COUNT) {
-                add(DEFAULT_ICON_NAME)
-            }
-        })
+        return SettingsState()
     }
 
     fun loadState() {
-
-    }
-
-    fun setIconForButtonIndex(index: Int, name: String) {
         updateState {
-            copy(buttonIcons = buttonIcons.toMutableList().apply {
-                add(index, name)
-            })
+            copy(
+                isActivated = shortXManager.isInstalled(),
+                coreVersion = shortXManager.version(),
+                coreFP = shortXManager.fingerprint(),
+                isDebugLogEnabled = shortXManager.isLogDebugEnable()
+            )
         }
     }
 
+    fun setLogDebugEnable(enable: Boolean) {
+        logger.d("setLogDebugEnable: $enable")
+        viewModelScope.launch {
+            shortXManager.setLogDebugEnable(enable)
+            updateState {
+                copy(isDebugLogEnabled = shortXManager.isLogDebugEnable())
+            }
+        }
+    }
 }

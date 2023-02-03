@@ -4,6 +4,9 @@ interface IShortX {
     Version version();
     String fingerprint();
 
+    void setLogDebugEnable(boolean enable);
+    boolean isLogDebugEnable();
+
     // Rules start
     void addRule(in ByteArrayWrapper rule);
     void deleteRule(String id);

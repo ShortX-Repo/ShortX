@@ -48,6 +48,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun isLogDebugEnable(): Boolean {
+        return invokeService(false) {
+            isLogDebugEnable
+        }
+    }
+
+    fun setLogDebugEnable(enable: Boolean) {
+        return invokeService(Unit) {
+            isLogDebugEnable = enable
+        }
+    }
+
     fun addRule(rule: Rule) {
         invokeService(Unit) {
             addRule(ByteArrayWrapper(rule.toByteArray()))

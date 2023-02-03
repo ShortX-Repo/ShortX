@@ -1,16 +1,15 @@
 package tornaco.apps.shortx.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -38,7 +37,53 @@ private fun PreferenceUi(preference: Preference) {
         is Preference.TextPreference -> {
             TextPreferenceUi(preference = preference)
         }
+        is Preference.Divider -> {
+            Divider()
+        }
+        is Preference.Category -> {
+            CategoryUi(preference = preference)
+        }
+        is Preference.ExpandablePreference -> {
+            ExpandablePreferenceUi(preference = preference)
+        }
     }
+}
+
+@Composable
+private fun CategoryUi(preference: Preference.Category) {
+    Box(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = preference.title,
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 12.sp
+            )
+        )
+    }
+}
+
+
+@Composable
+private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) {
+    ExpandableContainer(
+        mainContent = {
+            TextPreferenceUi(
+                preference = Preference.TextPreference(
+                    title = preference.title,
+                    summary = preference.summary,
+                    icon = preference.icon
+                )
+            )
+        }, expandContent = {
+            preference.preferences.forEach {
+                PreferenceUi(it)
+            }
+        })
 }
 
 @Composable
@@ -47,8 +92,12 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .clickable {
-                preference.onClick?.invoke()
+            .apply {
+                if (preference.onClick != null) {
+                    clickable {
+                        preference.onClick.invoke()
+                    }
+                }
             }, verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -118,4 +167,37 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                 preference.onCheckChanged(it)
             })
     }
+}
+
+
+private enum class ExpandableState { Expand, Collapsed }
+
+@Composable
+private fun ExpandableContainer(
+    mainContent: @Composable () -> Unit,
+    expandContent: @Composable () -> Unit,
+) {
+    var expandState by remember {
+        mutableStateOf(ExpandableState.Collapsed)
+    }
+    Column(
+        modifier = Modifier
+            .clip(ShortXCardRoundedCornerShape)
+            .clickable {
+                expandState =
+                    if (expandState == ExpandableState.Expand) {
+                        ExpandableState.Collapsed
+                    } else {
+                        ExpandableState.Expand
+                    }
+            },
+        verticalArrangement = Arrangement.Center
+    ) {
+        mainContent()
+
+        AnimatedVisibility(visible = expandState == ExpandableState.Expand) {
+            expandContent()
+        }
+    }
+
 }

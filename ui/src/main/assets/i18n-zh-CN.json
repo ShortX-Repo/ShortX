@@ -63,5 +63,12 @@
   "ui.action.show.mvel": "MVEL表达式",
   "ui.action.show.hide.overlay": "隐藏悬浮工具",
   "ui.action.show.show.overlay": "显示悬浮工具",
-  "ui.action.show.launch.app": "打开应用"
+  "ui.action.show.launch.app": "打开应用",
+  "ui.settings.about": "关于",
+  "ui.settings.general": "通用",
+  "ui.settings.app.info": "应用信息",
+  "ui.settings.core.info": "核心信息",
+  "ui.settings.core.info.na": "未激活",
+  "ui.settings.enable.debug.log": "开启日志",
+  "ui.settings.enable.debug.log.description": "输出详细调试日志"
 }
