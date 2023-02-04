@@ -94,12 +94,12 @@ private fun aboutSettings(state: SettingsState) = listOf(
     Preference.ExpandablePreference(
         icon = Icons.Outlined.Info,
         title = LocalI18N.current["ui.settings.app.info"],
-        summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}\nShoortX@tornaco:${BuildProp.BUILD_FINGERPRINT}",
+        summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
         preferences = listOf(
             Preference.TextPreference(icon = Icons.Outlined.Extension,
                 title = LocalI18N.current["ui.settings.core.info"],
                 summary = if (state.isActivated) {
-                    "${state.coreVersion.name}\n${state.coreVersion.code}\nShoortX@tornaco${state.coreFP}"
+                    "${state.coreVersion.name}\n${state.coreVersion.code}"
                 } else {
                     LocalI18N.current["ui.settings.core.info.na"]
                 },
