@@ -1,8 +1,12 @@
 package tornaco.apps.shortx.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -76,7 +80,8 @@ private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) 
                 preference = Preference.TextPreference(
                     title = preference.title,
                     summary = preference.summary,
-                    icon = preference.icon
+                    icon = preference.icon,
+                    onClick = preference.onClick
                 )
             )
         }, expandContent = {
@@ -92,12 +97,8 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .apply {
-                if (preference.onClick != null) {
-                    clickable {
-                        preference.onClick.invoke()
-                    }
-                }
+            .clickable {
+                preference.onClick?.invoke()
             }, verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -112,10 +113,17 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
             }
             StandardSpacer()
             Column(modifier = Modifier) {
-                Text(text = preference.title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    modifier = Modifier.padding(end = 36.dp),
+                    text = preference.title, style = MaterialTheme.typography.titleMedium
+                )
                 preference.summary?.let {
                     SmallSpacer()
-                    Text(text = it, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        modifier = Modifier.padding(end = 36.dp),
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
@@ -151,10 +159,18 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
             }
             StandardSpacer()
             Column(modifier = Modifier) {
-                Text(text = preference.title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    modifier = Modifier.padding(end = 36.dp),
+                    text = preference.title,
+                    style = MaterialTheme.typography.titleMedium
+                )
                 preference.summary?.let {
                     SmallSpacer()
-                    Text(text = it, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        modifier = Modifier.padding(end = 36.dp),
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
@@ -182,18 +198,46 @@ private fun ExpandableContainer(
     }
     Column(
         modifier = Modifier
-            .clip(ShortXCardRoundedCornerShape)
-            .clickable {
-                expandState =
-                    if (expandState == ExpandableState.Expand) {
-                        ExpandableState.Collapsed
-                    } else {
-                        ExpandableState.Expand
-                    }
-            },
+            .clip(ShortXCardRoundedCornerShape),
         verticalArrangement = Arrangement.Center
     ) {
-        mainContent()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
+                mainContent()
+            }
+
+            IconButton(
+                modifier = Modifier
+                    .padding(end = 16.dp),
+                onClick = {
+                    expandState =
+                        if (expandState == ExpandableState.Expand) {
+                            ExpandableState.Collapsed
+                        } else {
+                            ExpandableState.Expand
+                        }
+                }) {
+
+                Crossfade(targetState = expandState == ExpandableState.Expand) { isExpand ->
+                    if (isExpand) {
+                        Icon(
+                            imageVector = Icons.Outlined.ExpandLess,
+                            contentDescription = "ExpandLess"
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.ExpandMore,
+                            contentDescription = "ExpandMore"
+                        )
+                    }
+                }
+            }
+
+        }
 
         AnimatedVisibility(visible = expandState == ExpandableState.Expand) {
             expandContent()

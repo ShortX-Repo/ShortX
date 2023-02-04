@@ -104,6 +104,6 @@ private fun aboutSettings(state: SettingsState) = listOf(
                     LocalI18N.current["ui.settings.core.info.na"]
                 },
                 onClick = {})
-        )
+        ),
     ),
 )

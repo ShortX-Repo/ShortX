@@ -39,6 +39,7 @@ sealed interface Preference {
         override val title: String,
         override val summary: String? = null,
         override val icon: ImageVector? = null,
-        val preferences: List<Preference>
+        val preferences: List<Preference>,
+        val onClick: (() -> Unit)? = null
     ) : Preference
 }
