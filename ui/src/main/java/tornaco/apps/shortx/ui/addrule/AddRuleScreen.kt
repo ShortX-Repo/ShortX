@@ -136,6 +136,9 @@ private fun ConditionSelectors(
             is Condition.MVEL -> {
                 mvelConditionSelectorState.show()
             }
+            Condition.TRUE -> {
+                vm.addCondition(Condition.TRUE)
+            }
         }
     }, removeCondition = { con ->
         vm.removeCondition(con)

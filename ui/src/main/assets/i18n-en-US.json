@@ -6,6 +6,8 @@
   "ui.fact.select": "Set Trigger",
   "ui.conditions.title": "Conditions",
   "ui.conditions.add": "Add Conditions",
+  "ui.conditions.true": "No Condition",
+  "ui.conditions.true.desc": "Always execute actions when it was triggered",
   "ui.actions.title": "Actions",
   "ui.actions.add": "Add Action",
   "ui.title.edit.rule": "Edit Rule",

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.CurrentPkg
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -15,6 +16,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 sealed interface Condition {
     data class CurrentForegroundApp(val app: App) : Condition
     data class MVEL(val expression: String) : Condition
+    object TRUE : Condition
 }
 
 fun Condition.toProtoCondition(): ProtoMessage {
@@ -26,6 +28,9 @@ fun Condition.toProtoCondition(): ProtoMessage {
         }
         is Condition.MVEL -> {
             MatchMVEL.newBuilder().setExpression(expression).build()
+        }
+        Condition.TRUE -> {
+            True.newBuilder().build()
         }
     }
 }
@@ -45,6 +50,9 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ MatchMVEL::class.java -> {
             val data = this unpack_ MatchMVEL::class.java
             Condition.MVEL(data.expression)
+        }
+        this is_ True::class.java -> {
+            Condition.TRUE
         }
         else -> null
     }

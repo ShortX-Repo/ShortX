@@ -6,6 +6,8 @@
   "ui.fact.select": "选择触发器",
   "ui.conditions.title": "条件",
   "ui.conditions.add": "添加条件",
+  "ui.conditions.true": "无条件",
+  "ui.conditions.true.desc": "触发条件满足时，动作会无条件执行",
   "ui.actions.title": "动作",
   "ui.actions.add": "添加动作",
   "ui.title.edit.rule": "编辑自动指令",

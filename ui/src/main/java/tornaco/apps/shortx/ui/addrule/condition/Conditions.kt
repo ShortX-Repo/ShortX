@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -75,6 +72,11 @@ private fun labelForConditionSelector(condition: Condition): List<String> {
         is Condition.MVEL -> {
             listOf("MVEL expression")
         }
+        Condition.TRUE -> {
+            listOf(
+                LocalI18N.current["ui.conditions.true"]
+            )
+        }
     }
 }
 
@@ -89,6 +91,12 @@ private fun labelForCondition(condition: Condition): List<String> {
         }
         is Condition.MVEL -> {
             listOf("MVEL expression", condition.expression)
+        }
+        Condition.TRUE -> {
+            listOf(
+                LocalI18N.current["ui.conditions.true"],
+                LocalI18N.current["ui.conditions.true.desc"]
+            )
         }
     }
 }
@@ -106,6 +114,11 @@ private fun IconForCondition(condition: Condition) {
                 imageVector = Icons.Filled.Code, contentDescription = "MVEL"
             )
         }
+        Condition.TRUE -> {
+            Icon(
+                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
+            )
+        }
     }
 }
 
@@ -121,6 +134,11 @@ private fun IconForConditionSelector(condition: Condition) {
         is Condition.MVEL -> {
             Icon(
                 imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            )
+        }
+        Condition.TRUE -> {
+            Icon(
+                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
             )
         }
     }
