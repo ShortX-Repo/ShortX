@@ -14,6 +14,7 @@
   "ui.title.add.rule": "创建自动指令",
   "ui.rule.title": "标题",
   "ui.rule.description": "描述",
+  "ui.toast.rule.saved": "自动指令已保存",
   "ui.fact.screen.off": "息屏",
   "ui.fact.screen.on": "亮屏",
   "ui.fact.screen.user.present": "屏幕解锁",

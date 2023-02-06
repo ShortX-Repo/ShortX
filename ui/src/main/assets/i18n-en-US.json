@@ -14,6 +14,7 @@
   "ui.title.add.rule": "New Rule",
   "ui.rule.title": "Title",
   "ui.rule.description": "Description",
+  "ui.toast.rule.saved": "Rule saved",
   "ui.fact.screen.off": "Screen Off",
   "ui.fact.screen.on": "Screen On",
   "ui.fact.screen.user.present": "Screen Unlock",
