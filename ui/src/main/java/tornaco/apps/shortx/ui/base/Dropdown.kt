@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 data class DropdownItem<T>(
@@ -61,7 +62,10 @@ fun <T> DropdownSelector(
                         Text(text = it.labelLines[0], style = MaterialTheme.typography.titleSmall)
                         if (it.labelLines.size > 1) {
                             it.labelLines.subList(1, it.labelLines.size).forEach {
-                                Text(text = it, style = MaterialTheme.typography.titleSmall)
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
+                                )
                             }
                         }
                     }

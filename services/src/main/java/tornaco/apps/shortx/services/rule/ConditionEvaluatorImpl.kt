@@ -48,17 +48,17 @@ class ConditionEvaluatorImpl(
         }
     }
 
-    override fun evaluate(rule: Rule, condition: List<ProtoAny>): Boolean {
-        logger.d("evaluate rule condition: ${rule.title} ${rule.condOp}")
+    override fun evaluate(rule: Rule, conditions: List<ProtoAny>): Boolean {
+        logger.d("evaluate rule condition: ${rule.title} ${rule.condOp} condition size: ${conditions.size}")
         return when (rule.condOp) {
             ConditionOperator.ALL -> {
-                condition.all { tryEvaluate(it) }
+                conditions.all { tryEvaluate(it) }
             }
             ConditionOperator.ANY -> {
-                condition.any { tryEvaluate(it) }
+                conditions.any { tryEvaluate(it) }
             }
             ConditionOperator.NONE -> {
-                condition.none { tryEvaluate(it) }
+                conditions.none { tryEvaluate(it) }
             }
             ConditionOperator.MVEL -> {
                 val expression = rule.condOpPayload.expression
@@ -66,18 +66,19 @@ class ConditionEvaluatorImpl(
 
                 val varMap = mutableMapOf<String, Any>()
                 var expressionTranslation = expression
-                repeat(condition.size) { index ->
-                    val codeName = "c$index"
-                    varMap[codeName] = ConditionCallable(this, condition[index])
+                repeat(conditions.size) { index ->
+                    val codeName = "c${index + 1}"
+                    varMap[codeName] = ConditionCallable(this, conditions[index])
                     expressionTranslation =
                         expressionTranslation.replace(codeName, "$codeName.call()")
+                    logger.d("replace codeName: $codeName, after replace: $expressionTranslation")
                 }
-
                 val res = MVELExecutor(context, shortXContext, expressionTranslation).invoke(varMap)
+                logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $res")
                 return res.toString().toBooleanStrictOrNull() ?: false
             }
             else -> {
-                condition.all { tryEvaluate(it) }
+                conditions.all { tryEvaluate(it) }
             }
         }
     }

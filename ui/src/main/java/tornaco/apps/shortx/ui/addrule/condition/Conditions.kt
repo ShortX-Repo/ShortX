@@ -1,11 +1,16 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.ui.addrule.AddRuleState
@@ -43,34 +48,68 @@ fun Conditions(
                         }
                     }, onClick = {})
                 }
-                TextButton(onClick = {
-                    conditionSelectorState.open()
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Add, contentDescription = "Select"
-                    )
-                    TinySpacer()
-                    Text(LocalI18N.current["ui.conditions.add"])
+
+                // Add button
+                Box {
+                    FilledTonalButton(onClick = {
+                        conditionSelectorState.open()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Add, contentDescription = "Select"
+                        )
+                        TinySpacer()
+                        Text(LocalI18N.current["ui.conditions.add"])
+                    }
+                    DropdownSelector(
+                        state = conditionSelectorState,
+                        items = state.selectableConditions.map {
+                            DropdownItem(labelLines = labelForConditionSelector(condition = it),
+                                data = it,
+                                icon = {
+                                    IconForConditionSelector(condition = it)
+                                })
+                        }) {
+                        selectCondition(it.data)
+                    }
                 }
+
 
                 StandardSpacer()
-                FilledTonalButton(onClick = {
-                    opSelectorState.open()
-                }) {
-                    Text(text = state.conditionOp.javaClass.simpleName)
+
+                // OP button
+                AnimatedVisibility(visible = state.conditions.size > 1) {
+                    OpSelector(state, opSelectorState, setConditionOp)
                 }
             }
+        }
+    }
+}
 
-            DropdownSelector(
-                state = conditionSelectorState,
-                items = state.selectableConditions.map {
-                    DropdownItem(labelLines = labelForConditionSelector(condition = it),
-                        data = it,
-                        icon = {
-                            IconForConditionSelector(condition = it)
-                        })
-                }) {
-                selectCondition(it.data)
+@Composable
+private fun OpSelector(
+    state: AddRuleState,
+    opSelectorState: DropdownSelectorState,
+    setConditionOp: (Op) -> Unit
+) {
+    Column {
+        MediumTitle(LocalI18N.current["ui.condition.op"])
+        ListItem(titleLines = mutableListOf(
+            opTitle(op = state.conditionOp),
+        ).apply {
+            addAll(opDescription(op = state.conditionOp))
+        }, icon = {
+            IconForOp(state.conditionOp)
+        })
+
+        Box {
+            FilledTonalButton(onClick = {
+                opSelectorState.open()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Edit, contentDescription = "Edit"
+                )
+                TinySpacer()
+                Text(text = LocalI18N.current["ui.condition.op.edit"])
             }
 
             val mvelSelectorState = rememberMVELSelectorState(
@@ -82,10 +121,30 @@ fun Conditions(
             MVELSelector(state = mvelSelectorState)
             DropdownSelector(
                 state = opSelectorState, items = listOf(
-                    DropdownItem(labelLines = listOf("ALL"), data = "All"),
-                    DropdownItem(labelLines = listOf("ANY"), data = "Any"),
-                    DropdownItem(labelLines = listOf("NONE"), data = "None"),
-                    DropdownItem(labelLines = listOf("MVEL"), data = "MVEL"),
+                    DropdownItem(
+                        labelLines = listOf(
+                            opTitle(op = Op.All),
+                            opDescription(op = Op.All).first()
+                        ), data = "All"
+                    ),
+                    DropdownItem(
+                        labelLines = listOf(
+                            opTitle(op = Op.Any),
+                            opDescription(op = Op.Any).first()
+                        ), data = "Any"
+                    ),
+                    DropdownItem(
+                        labelLines = listOf(
+                            opTitle(op = Op.None),
+                            opDescription(op = Op.None).first()
+                        ), data = "None"
+                    ),
+                    DropdownItem(
+                        labelLines = listOf(
+                            opTitle(op = Op.MVEL("")),
+                            opDescription(op = Op.MVEL("")).first()
+                        ), data = "MVEL"
+                    ),
                 )
             ) {
                 when (it.data) {
@@ -186,6 +245,74 @@ private fun IconForConditionSelector(condition: Condition) {
         Condition.TRUE -> {
             Icon(
                 imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
+            )
+        }
+    }
+}
+
+@Composable
+private fun opTitle(op: Op): String {
+    return when (op) {
+        Op.All -> {
+            "ALL"
+        }
+        Op.Any -> {
+            "ANY"
+        }
+
+        Op.None -> {
+            "NONE"
+        }
+        is Op.MVEL -> {
+            "MVEL"
+        }
+    }
+}
+
+
+@Composable
+private fun opDescription(op: Op): List<String> {
+    return when (op) {
+        Op.All -> {
+            listOf(LocalI18N.current["ui.condition.op.all.desc"])
+        }
+        Op.Any -> {
+            listOf(LocalI18N.current["ui.condition.op.any.desc"])
+        }
+
+        Op.None -> {
+            listOf(LocalI18N.current["ui.condition.op.none.desc"])
+        }
+
+        is Op.MVEL -> {
+            listOf(LocalI18N.current["ui.condition.op.mvel.desc"], op.expression)
+        }
+    }
+}
+
+@Composable
+private fun IconForOp(op: Op) {
+    when (op) {
+        Op.All -> {
+            Icon(
+                imageVector = Icons.Filled.SelectAll, contentDescription = "All"
+            )
+        }
+        Op.Any -> {
+            Icon(
+                imageVector = Icons.Filled.Analytics, contentDescription = "Any"
+            )
+        }
+
+        Op.None -> {
+            Icon(
+                imageVector = Icons.Filled.InsertInvitation, contentDescription = "None"
+            )
+        }
+
+        is Op.MVEL -> {
+            Icon(
+                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
             )
         }
     }

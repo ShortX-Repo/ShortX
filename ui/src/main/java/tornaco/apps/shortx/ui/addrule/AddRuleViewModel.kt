@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.models.*
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18NKey
@@ -158,12 +159,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
     }
 
     fun setConditionOp(op: Op) {
-        updateState {
-            copy(conditionOp = op)
-        }
         if (op != state.value.conditionOp) {
             updateState {
-                copy(ruleChanged = true)
+                copy(
+                    ruleChanged = true,
+                    conditionOp = op
+                )
             }
         }
     }
@@ -251,6 +252,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                                     shortXManager
                                 )
                             },
+                            conditionOp = rule.condOp.toOp(rule.condOpPayload),
                             actions = rule.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditRule = true,
                             isEnabled = rule.isEnabled

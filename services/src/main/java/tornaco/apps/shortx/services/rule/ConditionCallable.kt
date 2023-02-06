@@ -2,10 +2,14 @@ package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.util.Logger
+
+private val logger = Logger("ConditionCallable")
 
 @DoNotStrip
 class ConditionCallable(private val eva: ConditionEvaluatorImpl, private val condition: ProtoAny) {
     fun call(): Boolean {
+        logger.d("call condition class: ${condition.javaClass}")
         return eva.tryEvaluate(condition)
     }
 }

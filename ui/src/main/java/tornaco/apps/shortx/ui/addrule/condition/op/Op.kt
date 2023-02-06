@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.op
 
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 
 sealed interface Op {
     object All : Op
@@ -15,5 +16,15 @@ fun Op.toConditionOperator(): ConditionOperator {
         Op.Any -> ConditionOperator.ANY
         Op.None -> ConditionOperator.NONE
         is Op.MVEL -> ConditionOperator.MVEL
+    }
+}
+
+fun ConditionOperator.toOp(payload: ConditionOperatorPayload?): Op {
+    return when (this) {
+        ConditionOperator.ALL -> Op.All
+        ConditionOperator.ANY -> Op.Any
+        ConditionOperator.NONE -> Op.None
+        ConditionOperator.MVEL -> Op.MVEL(payload?.expression ?: "false")
+        ConditionOperator.UNRECOGNIZED -> Op.All
     }
 }

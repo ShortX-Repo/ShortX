@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.App
@@ -183,7 +180,7 @@ private fun Actions(
 
             Box {
 
-                TextButton(onClick = {
+                FilledTonalButton(onClick = {
                     selectorState.open()
                 }) {
                     Icon(

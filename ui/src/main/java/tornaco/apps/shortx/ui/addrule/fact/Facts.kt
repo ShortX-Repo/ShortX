@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,7 +30,7 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
                         icon = { IconForFact(fact = it) })
                 }
 
-                TextButton(onClick = {
+                FilledTonalButton(onClick = {
                     selectorState.open()
                 }) {
                     Icon(
