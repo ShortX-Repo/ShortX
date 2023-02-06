@@ -15,9 +15,10 @@ class MVELExecutor(
 ) {
     private val logger = Logger("MVELExecutor")
 
-    operator fun invoke(): Any {
+    operator fun invoke(vars: Map<String, Any> = emptyMap()): Any {
         val varsMap: Map<String, Any> = mutableMapOf<String, Any>().apply {
             put("context", context)
+            putAll(vars)
             Handle.inject(context, shortXContext, this)
         }
         val factory: VariableResolverFactory = MapVariableResolverFactory(varsMap)

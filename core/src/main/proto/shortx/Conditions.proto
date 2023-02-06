@@ -6,6 +6,17 @@ option java_multiple_files = true;
 
 import "shortx/Common.proto";
 
+enum ConditionOperator {
+  ALL = 0;
+  ANY = 1;
+  NONE = 2;
+  MVEL = 3;
+}
+
+message ConditionOperatorPayload {
+  string expression = 1;
+}
+
 message True {}
 message False {}
 

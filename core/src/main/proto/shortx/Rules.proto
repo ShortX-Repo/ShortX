@@ -6,6 +6,7 @@ option java_multiple_files = true;
 
 import "google/protobuf/any.proto";
 import "shortx/Common.proto";
+import "shortx/Conditions.proto";
 
 message Rule {
   google.protobuf.Any fact = 1;
@@ -22,6 +23,9 @@ message Rule {
   string description = 9;
 
   bool isEnabled = 10;
+
+  ConditionOperator condOp = 11;
+  ConditionOperatorPayload condOpPayload = 12;
 }
 
 message RuleList {

@@ -10,7 +10,7 @@ interface FactMatcher {
 }
 
 interface ConditionEvaluator {
-    fun evaluate(condition: ProtoAny): Boolean
+    fun evaluate(rule: Rule, condition: List<ProtoAny>): Boolean
 }
 
 interface ActionEvaluator {
@@ -79,9 +79,7 @@ class DefaultRuleEngine(
 
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         return rules.filterInvalid().firstOrNull {
-            factMatcher.match(fact, it.fact) && it.conditionsList.all { con ->
-                conditionEvaluator.evaluate(con)
-            }
+            factMatcher.match(fact, it.fact) && conditionEvaluator.evaluate(it, it.conditionsList)
         } != null
     }
 
@@ -90,12 +88,7 @@ class DefaultRuleEngine(
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.fact)) {
                 listener.onFactMatch(rule, rule.fact)
-                val conditionRes = rule.conditionsList.all {
-                    kotlin.runCatching { conditionEvaluator.evaluate(it) }.getOrElse {
-                        logger.e(it, "Error evaluate condition")
-                        false
-                    }
-                }
+                val conditionRes = conditionEvaluator.evaluate(rule, rule.conditionsList)
                 if (conditionRes) {
                     listener.onConditionMatch(rule)
                     rule.actionsList.forEach {

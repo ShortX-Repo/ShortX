@@ -27,3 +27,12 @@
 -keep class tornaco.apps.shortx.core.proto** {*;}
 
 -keep class ** implements android.os.Parcelable { *; }
+
+
+-keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
+
+# Do not strip any method/class that is annotated with @DoNotStrip
+-keep @tornaco.apps.shortx.core.annotations.DoNotStrip class *
+-keepclassmembers class * {
+    @tornaco.apps.shortx.core.annotations.DoNotStrip *;
+}
