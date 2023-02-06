@@ -1,10 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.FilledTonalButton
@@ -13,6 +10,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
@@ -91,8 +89,8 @@ private fun OpSelector(
     opSelectorState: DropdownSelectorState,
     setConditionOp: (Op) -> Unit
 ) {
-    Column {
-        MediumTitle(LocalI18N.current["ui.condition.op"])
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        SmallTitle(LocalI18N.current["ui.condition.op"])
         ListItem(titleLines = mutableListOf(
             opTitle(op = state.conditionOp),
         ).apply {

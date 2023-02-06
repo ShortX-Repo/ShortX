@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,7 +68,7 @@ fun rememberShowOverlayButtonSelectorState(
 fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
     if (state.isShow) {
         var overlayButtonItems by remember(state) {
-            mutableStateOf(state.initialData.items.toMutableList())
+            mutableStateOf(state.initialData.items)
         }
         var isAutoCollapse by remember(state.initialData) {
             mutableStateOf(state.initialData.autoCollapse)
@@ -107,10 +106,10 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                     }
                     MDIconSelector(state = iconSelector)
                     Column {
-                        MediumTitle(text = "Button of $index")
+                        MediumTitle(text = LocalI18N.current["ui.action.show.button.of", mapOf("index" to "${index + 1}")])
 
                         Row(verticalAlignment = CenterVertically) {
-                            SmallTitle("Icon")
+                            SmallTitle(LocalI18N.current["ui.action.show.icon"])
                             TinySpacer()
                             TextButton(onClick = {
                                 iconSelector.show()
@@ -158,12 +157,13 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                         )
                     }
 
+                    StandardSpacer()
                     Divider(modifier = Modifier.fillMaxWidth())
                     StandardSpacer()
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SmallTitle(text = "Auto collapse")
+                Row(verticalAlignment = CenterVertically) {
+                    SmallTitle(text = LocalI18N.current["ui.action.show.auto.collapse"])
 
                     StandardSpacer()
 
@@ -175,14 +175,13 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
 
                 StandardSpacer()
 
-
                 // Add icon
                 FilledTonalButton(onClick = {
                     overlayButtonItems = overlayButtonItems.toMutableList().apply {
                         add(OverlayButtonItem())
                     }
                 }) {
-                    Text(text = "Add Button")
+                    Text(text = LocalI18N.current["ui.action.show.add.button"])
                 }
             }
         })
