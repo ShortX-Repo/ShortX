@@ -28,6 +28,7 @@ data class DirectActionUM(
 )
 
 data class MainState(
+    val isActivated: Boolean = false,
     val rules: List<RuleUM> = emptyList(),
     val das: List<DirectActionUM> = emptyList()
 )
@@ -38,7 +39,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     ContextViewModel<MainState>(context) {
 
     override fun initState(): MainState {
-        return MainState()
+        return MainState(isActivated = shortXManager.isInstalled())
     }
 
     fun loadRules() {

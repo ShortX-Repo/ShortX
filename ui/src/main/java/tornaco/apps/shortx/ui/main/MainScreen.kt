@@ -1,22 +1,19 @@
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.R
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -24,7 +21,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
@@ -61,6 +61,10 @@ fun HomeScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    var isShowActiveDialog by remember {
+        mutableStateOf(false)
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -68,28 +72,40 @@ fun HomeScreen(
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
-                        title = {
-                            Text(
-                                text = if (currentRoute == HomeBottomRoute.DirectActions.name) {
-                                    LocalI18N.current["ui.feat.label.da"]
-                                } else {
-                                    LocalI18N.current["ui.feat.label.rule"]
-                                }
-                            )
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                goToSettings()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Settings,
-                                    contentDescription = "Settings"
+                    if (state.isActivated) {
+                        MediumTopAppBar(
+                            title = {
+                                Text(
+                                    text = if (currentRoute == HomeBottomRoute.DirectActions.name) {
+                                        LocalI18N.current["ui.feat.label.da"]
+                                    } else {
+                                        LocalI18N.current["ui.feat.label.rule"]
+                                    }
                                 )
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    goToSettings()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Settings,
+                                        contentDescription = "Settings"
+                                    )
+                                }
+                            },
+                            scrollBehavior = scrollBehavior,
+                        )
+                    } else {
+                        TopAppBar(title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = stringResource(id = tornaco.apps.shortx.ui.R.string.ui_app_name))
+                                SmallSpacer()
+                                ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                    isShowActiveDialog = true
+                                }
                             }
-                        },
-                        scrollBehavior = scrollBehavior,
-                    )
+                        })
+                    }
                 },
                 bottomBar = {
                     BottomNavigationContent(navController)
@@ -135,6 +151,12 @@ fun HomeScreen(
                         onEditDA = { da ->
                             goToEditDA(da.id)
                         })
+
+                    if (isShowActiveDialog) {
+                        ActiveDialog(onDismissRequest = {
+                            isShowActiveDialog = false
+                        })
+                    }
                 }
             }
         }
@@ -209,4 +231,22 @@ private fun BottomNavigationGraph(
             )
         }
     }
+}
+
+
+@Composable
+private fun ActiveDialog(
+    onDismissRequest: () -> Unit,
+) {
+    ShortXAlertDialog(title = {
+        Text(text = LocalI18N.current["ui.settings.core.info.na"])
+    }, text = {
+        Text(text = LocalI18N.current["ui.active.dialog.message"])
+    }, onDismissRequest = onDismissRequest, confirmButton = {
+        TextButton(onClick = {
+            onDismissRequest()
+        }) {
+            Text(text = stringResource(R.string.ok))
+        }
+    })
 }
