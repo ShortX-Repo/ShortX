@@ -59,6 +59,7 @@
   "ui.action.show.toast": "Show Toast",
   "ui.action.show.shell": "Shell Command",
   "ui.action.show.delay": "Delay",
+  "ui.action.show.delay.input.message": "Input millis to delay",
   "ui.action.show.take.screenshot": "Take Screenshot",
   "ui.action.show.mvel": "MVEL expression",
   "ui.action.show.hide.overlay": "Hide Overlays",

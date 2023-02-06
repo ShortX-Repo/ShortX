@@ -59,6 +59,7 @@
   "ui.action.show.toast": "显示吐司",
   "ui.action.show.shell": "Shell 命令",
   "ui.action.show.delay": "延迟",
+  "ui.action.show.delay.input.message": "输入延迟的毫秒数",
   "ui.action.show.take.screenshot": "截屏",
   "ui.action.show.mvel": "MVEL表达式",
   "ui.action.show.hide.overlay": "隐藏悬浮工具",

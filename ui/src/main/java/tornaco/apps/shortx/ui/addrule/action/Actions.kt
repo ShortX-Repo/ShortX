@@ -37,6 +37,22 @@ fun ActionSelectors(
     }
     ShellCommandSelector(state = shellCommandSelectorState)
 
+    val toastSelectionState =
+        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
+            message = null,
+            onSelected = {
+                addAction(Action.ShowToast(it))
+            })
+    TextInput(state = toastSelectionState)
+
+    val delaySelectionState =
+        rememberTextInputState(title = LocalI18N.current["ui.action.show.delay"],
+            message = null,
+            onSelected = {
+                addAction(Action.Delay(it.toLongOrNull() ?: 0))
+            })
+    TextInput(state = delaySelectionState)
+
     val mvelSelectorState = rememberMVELSelectorState { expression ->
         addAction(Action.MVEL(expression))
     }
@@ -77,10 +93,10 @@ fun ActionSelectors(
                     shellCommandSelectorState.show()
                 }
                 is Action.ShowToast -> {
-                    addAction(Action.ShowToast("Hello"))
+                    toastSelectionState.show()
                 }
                 is Action.Delay -> {
-                    addAction(Action.Delay(1000))
+                    delaySelectionState.show()
                 }
                 is Action.MVEL -> {
                     mvelSelectorState.show()
