@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
@@ -21,7 +22,10 @@ import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.unKnownPkg
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.models.*
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18NKey
@@ -37,6 +41,7 @@ data class AddRuleState(
     val selectableFacts: List<Fact> = emptyList(),
     val conditions: List<Condition> = emptyList(),
     val selectableConditions: List<Condition> = emptyList(),
+    val conditionOp: Op = Op.All,
     val actions: List<Action> = emptyList(),
     val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
     val isEditRule: Boolean = false,
@@ -152,6 +157,17 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         }
     }
 
+    fun setConditionOp(op: Op) {
+        updateState {
+            copy(conditionOp = op)
+        }
+        if (op != state.value.conditionOp) {
+            updateState {
+                copy(ruleChanged = true)
+            }
+        }
+    }
+
     fun addAction(action: Action) {
         updateState {
             copy(actions = actions.toMutableList().apply {
@@ -185,9 +201,26 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                 .setId(state.value.id)
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setFact(protoFact)
-                .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
-                .setDescription(state.value.description.fallbackOnEmpty("No description"))
+                .setTitle(
+                    state.value.title.fallbackOnEmpty(
+                        DateUtils.formatShortForMessageTime(
+                            System.currentTimeMillis()
+                        )
+                    )
+                )
+                .setDescription(state.value.description.fallbackOnEmpty(""))
                 .addAllConditions(protoConditions)
+                .setCondOp(state.value.conditionOp.toConditionOperator())
+                .apply {
+                    val op = state.value.conditionOp
+                    if (op is Op.MVEL) {
+                        condOpPayload =
+                            ConditionOperatorPayload
+                                .newBuilder()
+                                .setExpression(op.expression)
+                                .build()
+                    }
+                }
                 .addAllActions(protoActions)
                 .setIsEnabled(state.value.isEnabled)
                 .build()

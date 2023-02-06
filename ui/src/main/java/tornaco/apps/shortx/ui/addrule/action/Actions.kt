@@ -46,14 +46,16 @@ fun ActionSelectors(
     TextInput(state = toastSelectionState)
 
     val delaySelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.show.delay"],
+        rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
             message = null,
             onSelected = {
                 addAction(Action.Delay(it.toLongOrNull() ?: 0))
             })
     TextInput(state = delaySelectionState)
 
-    val mvelSelectorState = rememberMVELSelectorState { expression ->
+    val mvelSelectorState = rememberMVELSelectorState(
+        title = LocalI18N.current["ui.title.mvel"]
+    ) { expression ->
         addAction(Action.MVEL(expression))
     }
     MVELSelector(state = mvelSelectorState)
@@ -216,25 +218,25 @@ private fun labelForActionSelector(action: Action): List<String> {
             listOf(LocalI18N.current["ui.action.show.toast"])
         }
         is Action.ShellCommand -> {
-            listOf(LocalI18N.current["ui.action.show.shell"])
+            listOf(LocalI18N.current["ui.action.shell"])
         }
         is Action.Delay -> {
-            listOf(LocalI18N.current["ui.action.show.delay"])
+            listOf(LocalI18N.current["ui.action.delay"])
         }
         Action.TakeScreenshot -> {
-            listOf(LocalI18N.current["ui.action.show.take.screenshot"])
+            listOf(LocalI18N.current["ui.action.take.screenshot"])
         }
         is Action.MVEL -> {
             listOf(LocalI18N.current["ui.action.show.mvel"])
         }
         Action.HideOverlay -> {
-            listOf(LocalI18N.current["ui.action.show.hide.overlay"])
+            listOf(LocalI18N.current["ui.action.hide.overlay"])
         }
         is Action.ShowOverlay -> {
-            listOf(LocalI18N.current["ui.action.show.show.overlay"])
+            listOf(LocalI18N.current["ui.action.show.overlay"])
         }
         is Action.LaunchApp -> {
-            listOf(LocalI18N.current["ui.action.show.launch.app"])
+            listOf(LocalI18N.current["ui.action.launch.app"])
         }
     }
 }
@@ -246,27 +248,27 @@ private fun labelLinesForAction(action: Action): List<String> {
             listOf(LocalI18N.current["ui.action.show.toast"], action.message)
         }
         is Action.ShellCommand -> {
-            listOf(LocalI18N.current["ui.action.show.shell"], action.command)
+            listOf(LocalI18N.current["ui.action.shell"], action.command)
         }
         is Action.Delay -> {
-            listOf(LocalI18N.current["ui.action.show.delay"], action.time.toString())
+            listOf(LocalI18N.current["ui.action.delay"], action.time.toString())
         }
         Action.TakeScreenshot -> {
-            listOf(LocalI18N.current["ui.action.show.take.screenshot"])
+            listOf(LocalI18N.current["ui.action.take.screenshot"])
         }
         is Action.MVEL -> {
             listOf(LocalI18N.current["ui.action.show.mvel"], action.expression)
         }
         Action.HideOverlay -> {
-            listOf(LocalI18N.current["ui.action.show.hide.overlay"])
+            listOf(LocalI18N.current["ui.action.hide.overlay"])
         }
         is Action.ShowOverlay -> {
-            mutableListOf(LocalI18N.current["ui.action.show.show.overlay"]).apply {
+            mutableListOf(LocalI18N.current["ui.action.show.overlay"]).apply {
                 add("${action.settings.size} buttons")
             }
         }
         is Action.LaunchApp -> listOf(
-            LocalI18N.current["ui.action.show.launch.app"],
+            LocalI18N.current["ui.action.launch.app"],
             "${action.appLabel}${PREFIX_APP_ICON}${action.appPkg.pkgName}"
         )
     }

@@ -123,9 +123,10 @@ private fun ConditionSelectors(
     }
     AppPkgSelector(currentPkgSelectorState)
 
-    val mvelConditionSelectorState = rememberMVELSelectorState { expression ->
-        vm.addCondition(Condition.MVEL(expression))
-    }
+    val mvelConditionSelectorState =
+        rememberMVELSelectorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
+            vm.addCondition(Condition.MVEL(expression))
+        }
     MVELSelector(state = mvelConditionSelectorState)
 
     Conditions(state = state, selectCondition = { con ->
@@ -142,6 +143,8 @@ private fun ConditionSelectors(
         }
     }, removeCondition = { con ->
         vm.removeCondition(con)
+    }, setConditionOp = {
+        vm.setConditionOp(it)
     })
 }
 

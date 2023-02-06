@@ -5,25 +5,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.ui.addrule.AddRuleState
+import tornaco.apps.shortx.ui.addrule.action.MVELSelector
+import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.base.*
 
 @Composable
 fun Conditions(
-    state: AddRuleState, selectCondition: (Condition) -> Unit, removeCondition: (Condition) -> Unit
+    state: AddRuleState,
+    selectCondition: (Condition) -> Unit,
+    removeCondition: (Condition) -> Unit,
+    setConditionOp: (Op) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.conditions.title"])
 
         Box {
-            val selectorState = rememberDropdownSelectorState()
+            val conditionSelectorState = rememberDropdownSelectorState()
+            val opSelectorState = rememberDropdownSelectorState()
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
@@ -40,7 +44,7 @@ fun Conditions(
                     }, onClick = {})
                 }
                 TextButton(onClick = {
-                    selectorState.open()
+                    conditionSelectorState.open()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
@@ -48,16 +52,59 @@ fun Conditions(
                     TinySpacer()
                     Text(LocalI18N.current["ui.conditions.add"])
                 }
+
+                StandardSpacer()
+                FilledTonalButton(onClick = {
+                    opSelectorState.open()
+                }) {
+                    Text(text = state.conditionOp.javaClass.simpleName)
+                }
             }
 
-            DropdownSelector(state = selectorState, items = state.selectableConditions.map {
-                DropdownItem(labelLines = labelForConditionSelector(condition = it),
-                    data = it,
-                    icon = {
-                        IconForConditionSelector(condition = it)
-                    })
-            }) {
+            DropdownSelector(
+                state = conditionSelectorState,
+                items = state.selectableConditions.map {
+                    DropdownItem(labelLines = labelForConditionSelector(condition = it),
+                        data = it,
+                        icon = {
+                            IconForConditionSelector(condition = it)
+                        })
+                }) {
                 selectCondition(it.data)
+            }
+
+            val mvelSelectorState = rememberMVELSelectorState(
+                title = LocalI18N.current["ui.title.mvel"],
+                message = LocalI18N.current["ui.condition.op.mvel"],
+                onSelected = {
+                    setConditionOp(Op.MVEL(it))
+                })
+            MVELSelector(state = mvelSelectorState)
+            DropdownSelector(
+                state = opSelectorState, items = listOf(
+                    DropdownItem(labelLines = listOf("ALL"), data = "All"),
+                    DropdownItem(labelLines = listOf("ANY"), data = "Any"),
+                    DropdownItem(labelLines = listOf("NONE"), data = "None"),
+                    DropdownItem(labelLines = listOf("MVEL"), data = "MVEL"),
+                )
+            ) {
+                when (it.data) {
+                    "All" -> {
+                        setConditionOp(Op.All)
+                    }
+                    "Any" -> {
+                        setConditionOp(Op.Any)
+                    }
+                    "None" -> {
+                        setConditionOp(Op.None)
+                    }
+                    "MVEL" -> {
+                        mvelSelectorState.show()
+                    }
+                    else -> {
+                        setConditionOp(Op.All)
+                    }
+                }
             }
         }
     }

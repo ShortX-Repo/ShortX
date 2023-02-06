@@ -12,8 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.StandardSpacer
 
-class MVELSelectorState(val onSelected: (String) -> Unit) {
+class MVELSelectorState(val title: String, val message: String?, val onSelected: (String) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -27,9 +28,13 @@ class MVELSelectorState(val onSelected: (String) -> Unit) {
 }
 
 @Composable
-fun rememberMVELSelectorState(onSelected: (String) -> Unit): MVELSelectorState {
+fun rememberMVELSelectorState(
+    title: String,
+    message: String? = null,
+    onSelected: (String) -> Unit
+): MVELSelectorState {
     return remember {
-        MVELSelectorState(onSelected)
+        MVELSelectorState(title, message, onSelected)
     }
 }
 
@@ -41,7 +46,7 @@ fun MVELSelector(state: MVELSelectorState) {
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = "MVEL expression")
+            DialogTitle(text = state.title)
         }, buttons = {
             TextButton(onClick = {
                 if (expressionString.isNotBlank()) {
@@ -53,6 +58,11 @@ fun MVELSelector(state: MVELSelectorState) {
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
+                state.message?.let {
+                    Text(text = it, style = MaterialTheme.typography.titleSmall)
+                }
+                StandardSpacer()
+
                 TextField(
                     leadingIcon = {
                         Icon(imageVector = Icons.Filled.Tag, contentDescription = "Expression")
