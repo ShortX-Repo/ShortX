@@ -86,5 +86,6 @@
   "ui.settings.core.info.na": "未激活",
   "ui.settings.enable.debug.log": "开启日志",
   "ui.settings.enable.debug.log.description": "输出详细调试日志",
+  "ui.pkg.set.title": "应用集",
   "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX"
 }

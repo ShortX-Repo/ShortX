@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.Info
@@ -26,7 +27,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(back: () -> Unit) {
+fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
 
@@ -63,7 +64,7 @@ fun SettingsScreen(back: () -> Unit) {
                         .animateContentSize()
                 ) {
                     PreferenceUi(mutableListOf<Preference>().apply {
-                        addAll(generalSettings(state, vm))
+                        addAll(generalSettings(state, vm, goToPkgSetList))
                         addAll(aboutSettings(state))
                     })
                 }
@@ -75,9 +76,19 @@ fun SettingsScreen(back: () -> Unit) {
 @Composable
 private fun generalSettings(
     state: SettingsState,
-    vm: SettingsViewModel
+    vm: SettingsViewModel,
+    goToPkgSetList: () -> Unit
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
+
+    Preference.TextPreference(icon = Icons.Outlined.Apps,
+        title = LocalI18N.current["ui.pkg.set.title"],
+        summary = "100",
+        onClick = {
+            goToPkgSetList()
+        }
+    ),
+
     Preference.SwitchPreference(icon = Icons.Outlined.DeveloperMode,
         title = LocalI18N.current["ui.settings.enable.debug.log"],
         summary = LocalI18N.current["ui.settings.enable.debug.log.description"],

@@ -86,5 +86,6 @@
   "ui.settings.core.info.na": "Not activated",
   "ui.settings.enable.debug.log": "Enable Log",
   "ui.settings.enable.debug.log.description": "Open debug log output",
+  "ui.pkg.set.title": "Application Set",
   "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager"
 }

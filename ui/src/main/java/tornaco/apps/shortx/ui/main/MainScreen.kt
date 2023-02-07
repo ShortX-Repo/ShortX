@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.main
 
-import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -246,7 +245,7 @@ private fun ActiveDialog(
         TextButton(onClick = {
             onDismissRequest()
         }) {
-            Text(text = stringResource(R.string.ok))
+            Text(text = stringResource(android.R.string.ok))
         }
     })
 }

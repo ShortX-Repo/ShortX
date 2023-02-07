@@ -9,10 +9,11 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.animateComposable
+import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 
 enum class AppRoute {
-    Home, AddRule, AddDA, Settings
+    Home, AddRule, AddDA, Settings, PkgSetList, PkgSetDetails
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -42,9 +43,11 @@ fun AppNavigationGraph(
         }
 
         animateComposable(AppRoute.Settings.name) {
-            SettingsScreen {
-                appNavController.popBackStack()
-            }
+            SettingsScreen(
+                back = { appNavController.popBackStack() },
+                goToPkgSetList = {
+                    appNavController.navigate(AppRoute.PkgSetList.name)
+                })
         }
 
         animateComposable(
@@ -73,6 +76,12 @@ fun AppNavigationGraph(
             AddDirectActionScreen(daId) {
                 appNavController.popBackStack()
             }
+        }
+
+        animateComposable(AppRoute.PkgSetList.name) {
+            PkgSetListScreen(back = {
+                appNavController.popBackStack()
+            })
         }
     }
 }
