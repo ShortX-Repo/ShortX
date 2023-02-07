@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -105,12 +106,20 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             }
         }
 
-        override fun getInstalledApps(): List<App> {
-            return shortXContext.appState.getInstalledApps()
+        override fun getInstalledApps(): List<ByteArrayWrapper> {
+            return shortXContext.appState.getInstalledApps().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
-        override fun getAppLabel(pkg: Pkg): String? {
-            return shortXContext.appState.getAppLabel(pkg)
+        override fun getAppLabel(pkg: ByteArrayWrapper): String? {
+            return shortXContext.appState.getAppLabel(AppPkg.parseFrom(pkg.byte))
+        }
+
+        override fun pkgToApp(pkg: ByteArrayWrapper): ByteArrayWrapper? {
+            return shortXContext.appState.pkgToApp(AppPkg.parseFrom(pkg.byte))?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
         override fun showEdgeHint(edgeNumber: Int) {

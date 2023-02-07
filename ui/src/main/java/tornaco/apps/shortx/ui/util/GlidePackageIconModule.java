@@ -22,7 +22,7 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.signature.ObjectKey;
 
-import tornaco.apps.shortx.core.Pkg;
+import tornaco.apps.shortx.core.proto.common.AppPkg;
 import tornaco.apps.shortx.core.util.Logger;
 
 /**
@@ -43,10 +43,10 @@ public class GlidePackageIconModule extends AppGlideModule {
     @SuppressWarnings("NullableProblems")
     private static class PackageInfoDataFetcher implements DataFetcher<Bitmap> {
 
-        private final Pkg info;
+        private final AppPkg info;
         private final Context context;
 
-        public PackageInfoDataFetcher(Pkg info, Context context) {
+        public PackageInfoDataFetcher(AppPkg info, Context context) {
             this.info = info;
             this.context = context;
         }
@@ -81,24 +81,24 @@ public class GlidePackageIconModule extends AppGlideModule {
     }
 
     private static class PackageIconModuleLoaderFactory
-            implements ModelLoaderFactory<Pkg, Bitmap> {
+            implements ModelLoaderFactory<AppPkg, Bitmap> {
         private final Context context;
 
-        private static final Singleton2<Context, ModelLoader<Pkg, Bitmap>> sLoader
-                = new Singleton2<Context, ModelLoader<Pkg, Bitmap>>() {
+        private static final Singleton2<Context, ModelLoader<AppPkg, Bitmap>> sLoader
+                = new Singleton2<Context, ModelLoader<AppPkg, Bitmap>>() {
             @Override
-            protected ModelLoader<Pkg, Bitmap> create(Context context) {
-                return new ModelLoader<Pkg, Bitmap>() {
+            protected ModelLoader<AppPkg, Bitmap> create(Context context) {
+                return new ModelLoader<AppPkg, Bitmap>() {
                     @NonNull
                     @Override
-                    public LoadData<Bitmap> buildLoadData(Pkg info, int width,
+                    public LoadData<Bitmap> buildLoadData(AppPkg info, int width,
                                                           int height, Options options) {
                         Key diskCacheKey = new ObjectKey(info.getPkgName() + "-" + info.getUserId());
                         return new LoadData<>(diskCacheKey, new PackageInfoDataFetcher(info, context));
                     }
 
                     @Override
-                    public boolean handles(Pkg info) {
+                    public boolean handles(AppPkg info) {
                         return info.getPkgName() != null;
                     }
                 };
@@ -110,12 +110,12 @@ public class GlidePackageIconModule extends AppGlideModule {
         }
 
 
-        private static ModelLoader<Pkg, Bitmap> singleInstanceLoader(Context context) {
+        private static ModelLoader<AppPkg, Bitmap> singleInstanceLoader(Context context) {
             return sLoader.get(context);
         }
 
         @Override
-        public ModelLoader<Pkg, Bitmap> build(MultiModelLoaderFactory multiFactory) {
+        public ModelLoader<AppPkg, Bitmap> build(MultiModelLoaderFactory multiFactory) {
             return singleInstanceLoader(context);
         }
 
@@ -128,7 +128,7 @@ public class GlidePackageIconModule extends AppGlideModule {
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry) {
         super.registerComponents(context, glide, registry);
-        registry.append(Pkg.class,
+        registry.append(AppPkg.class,
                 Bitmap.class, new PackageIconModuleLoaderFactory(context));
     }
 }

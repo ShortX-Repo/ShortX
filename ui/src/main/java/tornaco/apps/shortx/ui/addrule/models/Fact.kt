@@ -1,9 +1,10 @@
 package tornaco.apps.shortx.ui.addrule.models
 
 import tornaco.apps.shortx.core.App
-import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.*
 import tornaco.apps.shortx.core.rule.ProtoAny

@@ -9,6 +9,22 @@ message AppPkg {
   int32 userId = 2;
 }
 
+enum AppCategory {
+  User = 0;
+  System = 1;
+}
+
+message App {
+  AppPkg pkg = 1;
+  string label = 2;
+  AppCategory category = 3;
+}
+
+message UserComponent {
+  AppPkg pkg = 1;
+  string className = 2;
+}
+
 message Author {
   string name = 1;
 }

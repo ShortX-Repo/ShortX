@@ -34,7 +34,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PkgSetListScreen(back: () -> Unit) {
+fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
     val vm = hiltViewModel<PkgSetListViewModel>()
     val state by vm.state.collectAsState()
 
@@ -102,7 +102,7 @@ fun PkgSetListScreen(back: () -> Unit) {
                                         onEdit = {}
                                     )
                                 }, onClick = {
-
+                                    goToDetail(it.id)
                                 })
                         }
                     }

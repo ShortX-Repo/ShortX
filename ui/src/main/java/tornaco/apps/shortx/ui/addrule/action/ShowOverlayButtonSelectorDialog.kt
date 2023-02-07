@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.models.Action

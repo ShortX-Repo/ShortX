@@ -9,6 +9,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.animateComposable
+import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 
@@ -81,7 +82,25 @@ fun AppNavigationGraph(
         animateComposable(AppRoute.PkgSetList.name) {
             PkgSetListScreen(back = {
                 appNavController.popBackStack()
+            }, goToDetail = {
+                appNavController.navigate("${AppRoute.PkgSetDetails.name}?id=$it")
             })
+        }
+
+        animateComposable(
+            "${AppRoute.PkgSetDetails.name}?id={id}",
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType
+                defaultValue = null
+                nullable = true
+            })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            id?.let {
+                PkgSetDetailScreen(id = id) {
+                    appNavController.popBackStack()
+                }
+            }
         }
     }
 }

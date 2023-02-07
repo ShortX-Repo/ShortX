@@ -5,6 +5,8 @@ import android.content.pm.ParceledListSlice
 import android.os.Bundle
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -97,13 +99,23 @@ class ShortXManager(private val service: IShortX) {
 
     fun getInstalledApps(): List<App> {
         return invokeService(emptyList()) {
-            installedApps
+            installedApps.map {
+                App.parseFrom(it.byte)
+            }
         }
     }
 
-    fun getAppLabel(pkg: Pkg): String {
+    fun getAppLabel(pkg: AppPkg): String {
         return invokeService("Unknown") {
-            getAppLabel(pkg) ?: "Unknown"
+            getAppLabel(ByteArrayWrapper(pkg.toByteArray())) ?: "Unknown"
+        }
+    }
+
+    fun pkgToApp(pkg: AppPkg): App? {
+        return invokeService(null) {
+            pkgToApp(ByteArrayWrapper(pkg.toByteArray()))?.let {
+                App.parseFrom(it.byte)
+            }
         }
     }
 

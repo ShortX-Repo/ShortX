@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.App
+import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.base.*
 
 class AppPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> Unit) {

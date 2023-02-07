@@ -25,11 +25,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.skydoves.landscapist.glide.GlideImage
-import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.util.GlideApp
 
 @Composable
-fun AppIcon(modifier: Modifier, pkg: Pkg) {
+fun AppIcon(modifier: Modifier, pkg: AppPkg) {
     GlideImage(
         modifier = modifier,
         imageModel = pkg,

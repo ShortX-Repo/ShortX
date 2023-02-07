@@ -8,9 +8,9 @@ import android.content.pm.UserInfo
 import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.UserComponent
+import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
@@ -24,7 +24,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     private val pkgPools = mutableListOf<PkgPool>()
 
-    private val onPackageChangedListeners: MutableList<((Pkg) -> Unit)> = mutableListOf()
+    private val onPackageChangedListeners: MutableList<((AppPkg) -> Unit)> = mutableListOf()
 
     override fun systemReady() {
         super.systemReady()
@@ -82,10 +82,14 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         return pkgPools.map { it.allApps.values }.flatten()
     }
 
-    fun getAppLabel(pkg: Pkg): String? =
+    fun pkgToApp(pkg: AppPkg): App? {
+        return pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)
+    }
+
+    fun getAppLabel(pkg: AppPkg): String? =
         pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)?.label
 
-    fun onPackageChanged(listener: (Pkg) -> Unit) {
+    fun onPackageChanged(listener: (AppPkg) -> Unit) {
         onPackageChangedListeners.add(listener)
     }
 

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.App
+import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState

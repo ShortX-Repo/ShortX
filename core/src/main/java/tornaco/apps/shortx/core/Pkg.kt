@@ -1,32 +1,16 @@
+@file:Suppress("FunctionName")
+
 package tornaco.apps.shortx.core
 
-import android.os.Parcel
-import android.os.Parcelable
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppCategory
+import tornaco.apps.shortx.core.proto.common.AppPkg
 
 val unKnownPkg = Pkg("unknown", 0)
 
-data class Pkg(val pkgName: String, val userId: Int) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readInt()) {
-    }
+fun Pkg(pkgName: String, userId: Int): AppPkg =
+    AppPkg.newBuilder().setPkgName(pkgName).setUserId(userId).build()
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(pkgName)
-        parcel.writeInt(userId)
-    }
-
-    companion object CREATOR : Parcelable.Creator<Pkg> {
-        override fun createFromParcel(parcel: Parcel): Pkg {
-            return Pkg(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Pkg?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+fun App(pkg: AppPkg, label: String, category: AppCategory): App =
+    App.newBuilder().setCategory(category).setLabel(label)
+        .setPkg(pkg).build()

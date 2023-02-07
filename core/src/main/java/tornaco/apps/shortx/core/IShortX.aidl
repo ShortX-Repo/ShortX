@@ -17,8 +17,9 @@ interface IShortX {
     List<ByteArrayWrapper> getAllRules();
     // Rules end
 
-    List<App> getInstalledApps();
-    String getAppLabel(in Pkg pkg);
+    List<ByteArrayWrapper> getInstalledApps();
+    String getAppLabel(in ByteArrayWrapper pkg);
+    ByteArrayWrapper pkgToApp(in ByteArrayWrapper pkg);
 
     void showEdgeHint(int edgeNumber);
 

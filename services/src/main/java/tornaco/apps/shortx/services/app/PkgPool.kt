@@ -7,9 +7,10 @@ import android.os.Handler
 import android.os.UserHandle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.App
-import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppCategory
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.util.PackageMonitor
@@ -18,7 +19,7 @@ class PkgPool(
     private val context: Context,
     private val handler: Handler,
     val userId: Int,
-    val onPackageUpdateFinished: (Pkg) -> Unit = {}
+    val onPackageUpdateFinished: (AppPkg) -> Unit = {}
 ) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
@@ -93,7 +94,7 @@ class PkgPool(
     }
 
     private fun ApplicationInfo.toApp(): App {
-        return App(
+        return tornaco.apps.shortx.core.App(
             pkg = Pkg(packageName, userId), category = getCategory(), label = getLabel()
         )
     }
