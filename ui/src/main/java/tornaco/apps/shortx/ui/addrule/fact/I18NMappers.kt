@@ -68,18 +68,20 @@ fun labelForFact(fact: Fact): List<String> {
                 }
             )
         }
-        is Fact.AppBecomeBackground -> listOf(
-            LocalI18N.current["ui.fact.app.become.bg"],
-            fact.apps.joinToString {
+        is Fact.AppBecomeBackground -> mutableListOf(
+            LocalI18N.current["ui.fact.app.become.bg"]
+        ).apply {
+            addAll(fact.apps.map {
                 "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
-            }
-        )
-        is Fact.AppBecomeForeground -> listOf(
-            LocalI18N.current["ui.fact.app.become.fg"],
-            fact.apps.joinToString {
+            })
+        }
+        is Fact.AppBecomeForeground -> mutableListOf(
+            LocalI18N.current["ui.fact.app.become.fg"]
+        ).apply {
+            addAll(fact.apps.map {
                 "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
-            }
-        )
+            })
+        }
     }
 }
 

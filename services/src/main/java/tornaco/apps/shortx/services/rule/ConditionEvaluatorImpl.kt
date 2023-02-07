@@ -18,10 +18,13 @@ class ConditionEvaluatorImpl(
 
     private fun evaluate(condition: ProtoAny): Boolean {
         return when {
-            condition is_ CurrentPkg::class.java -> {
-                val currentPkg = condition unpack_ CurrentPkg::class.java
+            condition is_ CurrentPkgList::class.java -> {
+                val currentPkg = condition unpack_ CurrentPkgList::class.java
                 val state = shortXContext.appState.currentFgComponentName.value
-                currentPkg.pkg.pkgName == state.pkg.pkgName && currentPkg.pkg.userId == state.pkg.userId
+                val requiredPkgList = currentPkg.pkgsList
+                requiredPkgList.any {
+                    it.pkgName == state.pkg.pkgName && it.userId == state.pkg.userId
+                }
             }
             condition is_ True::class.java -> {
                 true

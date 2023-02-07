@@ -5,7 +5,7 @@ import tornaco.apps.shortx.core.AppCategory
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.proto.condition.CurrentPkg
+import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -14,7 +14,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 
 sealed interface Condition {
-    data class CurrentForegroundApp(val app: App) : Condition
+    data class CurrentForegroundApp(val apps: List<App>) : Condition
     data class MVEL(val expression: String) : Condition
     object TRUE : Condition
 }
@@ -22,8 +22,11 @@ sealed interface Condition {
 fun Condition.toProtoCondition(): ProtoMessage {
     return when (this) {
         is Condition.CurrentForegroundApp -> {
-            CurrentPkg.newBuilder().setPkg(
-                AppPkg.newBuilder().setPkgName(this.app.pkg.pkgName).setUserId(this.app.pkg.userId)
+            CurrentPkgList.newBuilder().addAllPkgs(
+                apps.map { app ->
+                    AppPkg.newBuilder().setPkgName(app.pkg.pkgName).setUserId(app.pkg.userId)
+                        .build()
+                }
             ).build()
         }
         is Condition.MVEL -> {
@@ -37,14 +40,18 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
 fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
     return when {
-        this is_ CurrentPkg::class.java -> {
-            val data = this unpack_ CurrentPkg::class.java
-            val pkg = Pkg(data.pkg.pkgName, userId = data.pkg.userId)
-            val appLabel = shortXManager.getAppLabel(pkg)
+        this is_ CurrentPkgList::class.java -> {
+            val data = this unpack_ CurrentPkgList::class.java
+            val pkgs = data.pkgsList.map { pkg ->
+                Pkg(pkg.pkgName, userId = pkg.userId)
+            }
             Condition.CurrentForegroundApp(
-                app = App(
-                    pkg = pkg, label = appLabel, category = AppCategory.User
-                )
+                apps = pkgs.map { pkg ->
+                    val appLabel = shortXManager.getAppLabel(pkg)
+                    App(
+                        pkg = pkg, label = appLabel, category = AppCategory.User
+                    )
+                }
             )
         }
         this is_ MatchMVEL::class.java -> {

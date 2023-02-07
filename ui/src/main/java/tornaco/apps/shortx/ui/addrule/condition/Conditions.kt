@@ -1,7 +1,10 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.FilledTonalButton
@@ -188,10 +191,11 @@ private fun labelForConditionSelector(condition: Condition): List<String> {
 private fun labelForCondition(condition: Condition): List<String> {
     return when (condition) {
         is Condition.CurrentForegroundApp -> {
-            listOf(LocalI18N.current["ui.dialog.title.current.app"],
-                condition.app.let {
+            mutableListOf(LocalI18N.current["ui.dialog.title.current.app"]).apply {
+                addAll(condition.apps.map {
                     "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
                 })
+            }
         }
         is Condition.MVEL -> {
             listOf("MVEL expression", condition.expression)

@@ -118,8 +118,8 @@ private fun ConditionSelectors(
     state: AddRuleState, vm: AddRuleViewModel
 ) {
     // Condition selectors
-    val currentPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
-        vm.addCondition(Condition.CurrentForegroundApp(pkg[0]))
+    val currentPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { appList ->
+        vm.addCondition(Condition.CurrentForegroundApp(appList))
     }
     AppPkgSelector(currentPkgSelectorState)
 

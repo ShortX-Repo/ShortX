@@ -10,7 +10,7 @@ interface FactMatcher {
 }
 
 interface ConditionEvaluator {
-    fun evaluate(rule: Rule, condition: List<ProtoAny>): Boolean
+    fun evaluate(rule: Rule, conditions: List<ProtoAny>): Boolean
 }
 
 interface ActionEvaluator {

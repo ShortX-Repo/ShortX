@@ -20,12 +20,8 @@ message ConditionOperatorPayload {
 message True {}
 message False {}
 
-message CurrentPkg {
-  AppPkg pkg = 1;
-}
-
-message CurrentPkgMultiple {
-  repeated CurrentPkg pkgs = 1;
+message CurrentPkgList {
+  repeated AppPkg pkgs = 1;
 }
 
 message CurrentActivity {
