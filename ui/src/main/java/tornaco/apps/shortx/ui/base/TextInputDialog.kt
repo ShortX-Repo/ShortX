@@ -41,7 +41,7 @@ fun rememberTextInputState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextInput(state: TextInputState) {
+fun TextInputDialog(state: TextInputState) {
     var expressionString by remember(state) {
         mutableStateOf("")
     }

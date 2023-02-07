@@ -81,11 +81,16 @@
   "ui.action.launch.app": "Launch App",
   "ui.settings.about": "About",
   "ui.settings.general": "General",
+  "ui.settings.dev": "Developer",
   "ui.settings.app.info": "App info",
   "ui.settings.core.info": "Framework info",
   "ui.settings.core.info.na": "Not activated",
   "ui.settings.enable.debug.log": "Enable Log",
   "ui.settings.enable.debug.log.description": "Open debug log output",
   "ui.pkg.set.title": "Application Set",
+  "ui.pkg.set.desc": "Classify applications to facilitate quick selection of a batch of applications",
+  "ui.pkg.set.add.title": "Add Application Set",
+  "ui.pkg.set.add.message": "Input label of the Application Set",
+  "ui.pkg.set.items.count": "{count} items",
   "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager"
 }

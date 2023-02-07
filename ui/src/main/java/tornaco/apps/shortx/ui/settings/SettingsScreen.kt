@@ -65,6 +65,7 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
                 ) {
                     PreferenceUi(mutableListOf<Preference>().apply {
                         addAll(generalSettings(state, vm, goToPkgSetList))
+                        addAll(devSettings(state, vm, goToPkgSetList))
                         addAll(aboutSettings(state))
                     })
                 }
@@ -83,11 +84,20 @@ private fun generalSettings(
 
     Preference.TextPreference(icon = Icons.Outlined.Apps,
         title = LocalI18N.current["ui.pkg.set.title"],
-        summary = "100",
+        summary = LocalI18N.current["ui.pkg.set.desc"],
         onClick = {
             goToPkgSetList()
         }
     ),
+)
+
+@Composable
+private fun devSettings(
+    state: SettingsState,
+    vm: SettingsViewModel,
+    goToPkgSetList: () -> Unit
+) = listOf(
+    Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
     Preference.SwitchPreference(icon = Icons.Outlined.DeveloperMode,
         title = LocalI18N.current["ui.settings.enable.debug.log"],

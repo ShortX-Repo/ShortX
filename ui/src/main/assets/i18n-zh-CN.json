@@ -81,11 +81,16 @@
   "ui.action.launch.app": "打开应用",
   "ui.settings.about": "关于",
   "ui.settings.general": "通用",
+  "ui.settings.dev": "开发",
   "ui.settings.app.info": "应用信息",
   "ui.settings.core.info": "核心信息",
   "ui.settings.core.info.na": "未激活",
   "ui.settings.enable.debug.log": "开启日志",
   "ui.settings.enable.debug.log.description": "输出详细调试日志",
   "ui.pkg.set.title": "应用集",
+  "ui.pkg.set.desc": "把应用进行归类，方便快速选择一批应用",
+  "ui.pkg.set.add.title": "创建应用集",
+  "ui.pkg.set.add.message": "输入应用集的名称",
+  "ui.pkg.set.items.count": "{count}个应用",
   "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX"
 }

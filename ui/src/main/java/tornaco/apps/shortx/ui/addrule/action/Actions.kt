@@ -43,7 +43,7 @@ fun ActionSelectors(
             onSelected = {
                 addAction(Action.ShowToast(it))
             })
-    TextInput(state = toastSelectionState)
+    TextInputDialog(state = toastSelectionState)
 
     val delaySelectionState =
         rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
@@ -51,7 +51,7 @@ fun ActionSelectors(
             onSelected = {
                 addAction(Action.Delay(it.toLongOrNull() ?: 0))
             })
-    TextInput(state = delaySelectionState)
+    TextInputDialog(state = delaySelectionState)
 
     val mvelSelectorState = rememberMVELSelectorState(
         title = LocalI18N.current["ui.title.mvel"]
