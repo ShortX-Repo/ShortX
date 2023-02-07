@@ -7,6 +7,7 @@ import android.os.Parcel
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
@@ -138,6 +139,26 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun executeDirectionActionById(id: String) {
             shortXContext.rule.executeDirectionActionById(id)
+        }
+
+        override fun addPkgSet(set: ByteArrayWrapper) {
+            shortXContext.pkgSet.addPkgSet(PkgSet.parseFrom(set.byte))
+        }
+
+        override fun deletePkgSet(id: String) {
+            shortXContext.pkgSet.deletePkgSet(id)
+        }
+
+        override fun getPkgSetById(id: String): ByteArrayWrapper? {
+            return shortXContext.pkgSet.getPkgSetById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllPkgSets(): List<ByteArrayWrapper> {
+            return shortXContext.pkgSet.getAllPkgSets().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
     }
 }

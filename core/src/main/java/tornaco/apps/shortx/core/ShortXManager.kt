@@ -7,6 +7,7 @@ import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.Logger
@@ -143,6 +144,34 @@ class ShortXManager(private val service: IShortX) {
     fun executeDirectionActionById(id: String) {
         invokeService(Unit) {
             executeDirectionActionById(id)
+        }
+    }
+
+    fun addPkgSet(pkgSet: PkgSet) {
+        invokeService(Unit) {
+            addPkgSet(ByteArrayWrapper(pkgSet.toByteArray()))
+        }
+    }
+
+    fun deletePkgSet(pkgSetId: String) {
+        invokeService(Unit) {
+            deletePkgSet(pkgSetId)
+        }
+    }
+
+    fun getPkgSetById(id: String): PkgSet? {
+        return invokeService(null) {
+            getPkgSetById(id)?.let {
+                PkgSet.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun getAllPkgSets(): List<PkgSet> {
+        return invokeService(emptyList()) {
+            allPkgSets.map {
+                PkgSet.parseFrom(it.byte)
+            }
         }
     }
 

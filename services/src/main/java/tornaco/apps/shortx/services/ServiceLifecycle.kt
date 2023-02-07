@@ -5,6 +5,7 @@ import android.content.Context
 class ServiceLifecycle(shortXContext: ShortXContext) {
     private val allServices = listOf(
         shortXContext.appState,
+        shortXContext.pkgSet,
         shortXContext.rule,
         shortXContext.gesture,
         shortXContext.watchDog,

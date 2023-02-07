@@ -29,4 +29,13 @@ interface IShortX {
     List<ByteArrayWrapper> getAllDirectAction();
     void executeDirectionActionById(String id);
     // Direct Actions end
+
+
+    // Pkg Set
+    void addPkgSet(in ByteArrayWrapper set);
+    void deletePkgSet(String id);
+    ByteArrayWrapper getPkgSetById(String id);
+    List<ByteArrayWrapper> getAllPkgSets();
+    // Pkg Set end
+
 }
