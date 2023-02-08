@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +24,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -44,7 +45,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val appSelectorDialogState = rememberAppPkgSelectorState(
-                apps = state.installedApps,
+                apps = state.selectableApps,
                 selected = {
                     vm.addApps(it)
                 }
@@ -64,7 +65,14 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
                         },
-                        actions = {},
+                        actions = {
+                            IconButton(enabled = state.isChanged, onClick = {
+                                vm.save()
+                                back()
+                            }) {
+                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                            }
+                        },
                         scrollBehavior = scrollBehavior
                     )
                 },
@@ -74,22 +82,36 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                     }) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
-                }) {
+                }) { paddingValues ->
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = it
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = paddingValues
                 ) {
-                    items(state.apps) {
-                        androidx.compose.material.Card(
+                    stickyHeader {
+                        OutlinedTextField(
                             modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                            shape = ShortXCardRoundedCornerShape,
-                            elevation = 0.dp
-                        ) {
-                            AppItem(it) { app ->
-                                vm.removeApps(listOf(app))
-                            }
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp, top = 16.dp),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.TextFields,
+                                    contentDescription = ""
+                                )
+                            },
+                            label = {
+                                Text(LocalI18N.current["ui.pkg.set.add.input.label"])
+                            },
+                            value = state.label,
+                            onValueChange = { value ->
+                                vm.updateLabel(value)
+                            })
+                    }
+
+                    items(state.apps) {
+                        AppItem(it) { app ->
+                            vm.removeApps(listOf(app))
                         }
                     }
                 }
@@ -144,7 +166,7 @@ private fun AppItem(
 
                 IconButton(onClick = { removeApp(app) }) {
                     Icon(
-                        imageVector = Icons.Filled.Remove,
+                        imageVector = Icons.Filled.Close,
                         contentDescription = "Remove"
                     )
                 }

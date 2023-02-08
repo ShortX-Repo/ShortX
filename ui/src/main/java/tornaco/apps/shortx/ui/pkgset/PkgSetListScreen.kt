@@ -49,7 +49,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
             val addPkgSetDialogState =
                 rememberTextInputState(
                     title = LocalI18N.current["ui.pkg.set.add.title"],
-                    message = LocalI18N.current["ui.pkg.set.add.message"],
+                    message = LocalI18N.current["ui.pkg.set.add.input.label"],
                     onSelected = {
                         vm.createPkgSet(it)
                     })

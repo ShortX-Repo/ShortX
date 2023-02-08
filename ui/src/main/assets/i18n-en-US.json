@@ -90,7 +90,7 @@
   "ui.pkg.set.title": "Application Set",
   "ui.pkg.set.desc": "Classify applications to facilitate quick selection of a batch of applications",
   "ui.pkg.set.add.title": "Add Application Set",
-  "ui.pkg.set.add.message": "Input label of the Application Set",
+  "ui.pkg.set.add.input.label": "Input label of the Application Set",
   "ui.pkg.set.items.count": "{count} items",
   "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager"
 }

@@ -3,6 +3,8 @@ package tornaco.apps.shortx.ui.pkgset
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 import java.text.Collator
@@ -14,6 +16,7 @@ data class PkgSetDetailState(
     val apps: List<App> = emptyList(),
     val selectableApps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
+    val isChanged: Boolean = false
 )
 
 class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
@@ -52,7 +55,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
 
     fun updateLabel(label: String) {
         updateState {
-            copy(label = label)
+            copy(label = label, isChanged = true)
         }
     }
 
@@ -68,6 +71,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
                 copy(
                     apps = newApps,
                     selectableApps = selectableApps,
+                    isChanged = true
                 )
             }
         }
@@ -85,9 +89,24 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
                 copy(
                     apps = newApps,
                     selectableApps = selectableApps,
+                    isChanged = true
                 )
             }
         }
     }
 
+    fun save() {
+        viewModelScope.launch {
+            with(state.value) {
+                if (isChanged) {
+                    val pkgs: List<AppPkg> = apps.map {
+                        it.pkg
+                    }
+                    shortXManager.addPkgSet(
+                        PkgSet.newBuilder().setId(id).setLabel(label).addAllAppPkgs(pkgs).build()
+                    )
+                }
+            }
+        }
+    }
 }
