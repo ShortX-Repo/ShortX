@@ -15,13 +15,13 @@ object RuleEngineFactory {
         handler: Handler
     ) = ActionEvaluatorImpl(context, shortXContext, handler)
 
-    private fun newFactMatcher() = FactMatcherImpl()
+    private fun newFactMatcher( shortXContext: ShortXContext) = FactMatcherImpl(shortXContext)
 
     fun newRuleEngine(
         shortXContext: ShortXContext,
         androidContext: Context,
         handler: Handler,
-        factMatcher: FactMatcher = newFactMatcher(),
+        factMatcher: FactMatcher = newFactMatcher(shortXContext),
         conditionEvaluator: ConditionEvaluator = newConditionEvaluator(
             androidContext,
             shortXContext

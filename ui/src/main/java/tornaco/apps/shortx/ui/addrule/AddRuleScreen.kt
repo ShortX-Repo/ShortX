@@ -118,9 +118,10 @@ private fun ConditionSelectors(
     state: AddRuleState, vm: AddRuleViewModel
 ) {
     // Condition selectors
-    val currentPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { appList ->
-        vm.addCondition(Condition.CurrentForegroundApp(appList))
-    }
+    val currentPkgSelectorState =
+        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { appList ->
+            vm.addCondition(Condition.CurrentForegroundApp(appList))
+        })
     AppPkgSelector(currentPkgSelectorState)
 
     val mvelConditionSelectorState =
@@ -175,14 +176,16 @@ private fun FactSelectors(
     AlarmSelector(timeOfADaySelector)
 
     // Condition selectors
-    val appBgPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
-        vm.setFact(Fact.AppBecomeBackground(apps = pkg))
-    }
+    val appBgPkgSelectorState =
+        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
+            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
+        })
     AppPkgSelector(appBgPkgSelectorState)
 
-    val appFgPkgSelectorState = rememberAppPkgSelectorState(state.installedApps) { pkg ->
-        vm.setFact(Fact.AppBecomeForeground(apps = pkg))
-    }
+    val appFgPkgSelectorState =
+        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
+            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
+        })
     AppPkgSelector(appFgPkgSelectorState)
 
     FactSelector(state) { fact ->

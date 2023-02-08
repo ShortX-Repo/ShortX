@@ -4,21 +4,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.core.App
+import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
-class AppPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> Unit) {
+class AppPkgSelectorState(
+    val apps: List<App>,
+    val onAppListSelected: (List<App>) -> Unit,
+    val onPkgSetSelected: (String) -> Unit
+) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -51,10 +55,11 @@ class AppPkgSelectorState(val apps: List<App>, val selected: (List<App>) -> Unit
 @Composable
 fun rememberAppPkgSelectorState(
     apps: List<App>,
-    selected: (List<App>) -> Unit
+    onPkgSetSelected: (String) -> Unit = {},
+    onAppListSelected: (List<App>) -> Unit = {}
 ): AppPkgSelectorState {
     return remember(apps) {
-        AppPkgSelectorState(apps, selected)
+        AppPkgSelectorState(apps, onAppListSelected, onPkgSetSelected)
     }
 }
 
@@ -67,45 +72,91 @@ fun AppPkgSelector(state: AppPkgSelectorState) {
             )
         }, buttons = {
             TextButton(onClick = {
-                state.selected(state.selectedApps)
+                state.onAppListSelected(state.selectedApps)
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
         }, content = {
-            val searchBarState = rememberSearchBarState(state.apps.size)
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(fraction = 0.68f)
-            ) {
-                item {
-                    SearchBar(searchBarState)
-                }
-                items(state.apps.filter {
-                    searchBarState.keyword.isBlank() || it.label.contains(searchBarState.keyword)
-                }) {
-                    AppItem(app = it,
-                        isSelected = state.selectedApps.contains(it),
-                        onCheckedChange = { app, isChecked ->
-                            if (isChecked) {
-                                state.addApp(app)
-                            } else {
-                                state.removeApp(app)
-                            }
+            var selectedTabIndex by remember {
+                mutableStateOf(0)
+            }
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                val titles = listOf(
+                    LocalI18N.current["ui.dialog.title.select.app"],
+                    LocalI18N.current["ui.pkg.set.title"]
+                )
+                titles.forEachIndexed { index, title ->
+                    Tab(selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
+                            )
                         })
                 }
             }
+
+            if (selectedTabIndex == 0) {
+                AppListContent(state)
+            } else {
+                PkgSetContent(state)
+            }
         })
+    }
+}
+
+@Composable
+private fun PkgSetContent(state: AppPkgSelectorState) {
+    val vm = hiltViewModel<PkgSetListViewModel>()
+    val state by vm.state.collectAsState()
+
+    LaunchedEffect(vm) {
+        vm.loadState()
+    }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(fraction = 0.68f)
+    ) {
+        items(state.pkgSets) {
+            ListItem(title = it.label)
+        }
+    }
+}
+
+@Composable
+private fun AppListContent(state: AppPkgSelectorState) {
+    val searchBarState = rememberSearchBarState(state.apps.size)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(fraction = 0.68f)
+    ) {
+        item {
+            SearchBar(searchBarState)
+        }
+        items(state.apps.filter {
+            searchBarState.keyword.isBlank() || it.label.contains(searchBarState.keyword)
+        }) {
+            AppItem(
+                app = it,
+                isSelected = state.selectedApps.contains(it),
+                onCheckedChange = { app, isChecked ->
+                    if (isChecked) {
+                        state.addApp(app)
+                    } else {
+                        state.removeApp(app)
+                    }
+                })
+        }
     }
 }
 
 
 @Composable
 private fun AppItem(
-    app: App,
-    isSelected: Boolean,
-    onCheckedChange: (App, Boolean) -> Unit
+    app: App, isSelected: Boolean, onCheckedChange: (App, Boolean) -> Unit
 ) {
     Box(modifier = Modifier
         .clip(ShortXCardRoundedCornerShape)

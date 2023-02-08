@@ -12,7 +12,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
@@ -74,7 +73,7 @@ fun ActionSelectors(
         }
     ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
 
-    val launchAppSelectorState = rememberAppPkgSelectorState(apps = installedApps, selected = {
+    val launchAppSelectorState = rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
         val first = it[0]
         val action = Action.LaunchApp(first.let { app ->
             AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()

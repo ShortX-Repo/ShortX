@@ -9,8 +9,9 @@ import tornaco.apps.shortx.core.rule.engine.FactMatcher
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.ShortXContext
 
-class FactMatcherImpl : FactMatcher {
+class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     private val logger = Logger("FactMatcher")
     private val factValueMatchers: MutableMap<Class<*>, (l: ProtoMessage, r: ProtoMessage) -> Boolean> =
         mutableMapOf()
@@ -28,7 +29,25 @@ class FactMatcherImpl : FactMatcher {
         register(AppBecomeFg::class.java) { l, f ->
             val fgl = l as AppBecomeFg
             val fgr = f as AppBecomeFg
-            fgl.appsList.containsAll(fgr.appsList)
+
+            val pkgListL =
+                if (fgl.pkgSetsList.isEmpty().not()) {
+                    fgl.pkgSetsList.flatMap {
+                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    }
+                } else {
+                    fgl.appsList
+                }
+            val pkgListR =
+                if (fgr.pkgSetsList.isEmpty().not()) {
+                    fgr.pkgSetsList.flatMap {
+                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    }
+                } else {
+                    fgr.appsList
+                }
+
+            pkgListL.containsAll(pkgListR)
         }
     }
 

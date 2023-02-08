@@ -46,7 +46,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
         ) {
             val appSelectorDialogState = rememberAppPkgSelectorState(
                 apps = state.selectableApps,
-                selected = {
+                onAppListSelected = {
                     vm.addApps(it)
                 }
             )
