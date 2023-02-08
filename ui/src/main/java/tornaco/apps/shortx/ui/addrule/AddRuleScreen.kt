@@ -187,30 +187,30 @@ private fun FactSelectors(
 
     FactSelector(state) { fact ->
         when (fact) {
-            is Fact.KeyEvent -> {
+            Fact.KeyEvent::class.java -> {
                 keyEventSelectorState.show()
             }
-            is Fact.ActivityStarted -> {
+            Fact.ActivityStarted::class.java -> {
             }
-            is Fact.EdgeGesture -> {
+            Fact.EdgeGesture::class.java -> {
                 edgeGestureSelectorState.show()
             }
-            Fact.ScreenOff -> {
+            Fact.ScreenOff::class.java -> {
                 vm.setFact(Fact.ScreenOff)
             }
-            Fact.ScreenOn -> {
+            Fact.ScreenOn::class.java -> {
                 vm.setFact(Fact.ScreenOn)
             }
-            Fact.UserPresent -> {
+            Fact.UserPresent::class.java -> {
                 vm.setFact(Fact.UserPresent)
             }
-            is Fact.Alarm -> {
+            Fact.Alarm::class.java -> {
                 timeOfADaySelector.show()
             }
-            is Fact.AppBecomeBackground -> {
+            Fact.AppBecomeBackground::class.java -> {
                 appBgPkgSelectorState.show()
             }
-            is Fact.AppBecomeForeground -> {
+            Fact.AppBecomeForeground::class.java -> {
                 appFgPkgSelectorState.show()
             }
         }

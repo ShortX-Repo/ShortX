@@ -14,22 +14,20 @@ import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import java.util.*
 
 
-@Composable
-fun labelForFactSelector(fact: Fact): String {
-    return labelForFactSelector(LocalI18N.current, fact)
-}
-
-fun labelForFactSelector(i18n: I18N, fact: Fact): String {
+fun labelForFactSelector(i18n: I18N, fact: Class<out Fact>): String {
     return when (fact) {
-        is Fact.ActivityStarted -> i18n["ui.fact.activity.started"]
-        is Fact.EdgeGesture -> i18n["ui.fact.edge.gesture"]
-        is Fact.KeyEvent -> i18n["ui.fact.key.event"]
-        Fact.ScreenOff -> i18n["ui.fact.screen.off"]
-        Fact.ScreenOn -> i18n["ui.fact.screen.on"]
-        Fact.UserPresent -> i18n["ui.fact.screen.user.present"]
-        is Fact.Alarm -> i18n["ui.fact.time.of.a.day"]
-        is Fact.AppBecomeBackground -> i18n["ui.fact.app.become.bg"]
-        is Fact.AppBecomeForeground -> i18n["ui.fact.app.become.fg"]
+        Fact.ActivityStarted::class.java -> i18n["ui.fact.activity.started"]
+        Fact.EdgeGesture::class.java -> i18n["ui.fact.edge.gesture"]
+        Fact.KeyEvent::class.java -> i18n["ui.fact.key.event"]
+        Fact.ScreenOff::class.java -> i18n["ui.fact.screen.off"]
+        Fact.ScreenOn::class.java -> i18n["ui.fact.screen.on"]
+        Fact.UserPresent::class.java -> i18n["ui.fact.screen.user.present"]
+        Fact.Alarm::class.java -> i18n["ui.fact.time.of.a.day"]
+        Fact.AppBecomeBackground::class.java -> i18n["ui.fact.app.become.bg"]
+        Fact.AppBecomeForeground::class.java -> i18n["ui.fact.app.become.fg"]
+        else -> {
+            ""
+        }
     }
 }
 

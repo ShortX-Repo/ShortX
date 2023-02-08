@@ -23,7 +23,7 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.dropdown.*
 
 @Composable
-fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
+fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
@@ -36,7 +36,7 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
                 state.fact?.let {
                     ListItem(
                         titleLines = labelForFact(fact = it),
-                        icon = { Icon(imageVector = imageVectorForFact(it)) })
+                        icon = { Icon(imageVector = imageVectorForFact(it.javaClass)) })
                 }
 
                 FilledTonalButton(onClick = {
@@ -69,13 +69,62 @@ private fun FactSelectorMenu(
     state: AddRuleState,
     isOpen: Boolean = false,
     setIsOpen: (Boolean) -> Unit,
-    itemSelected: (Fact) -> Unit
+    itemSelected: (Class<out Fact>) -> Unit
 ) {
     val i18N = LocalI18N.current
-    val menu = dropDownMenu {
-        state.selectableFacts.forEach {
-            item(it, labelForFactSelector(i18N, it)) {
-                icon(imageVectorForFact(fact = it))
+    val menu = dropDownMenu<Class<out Fact>> {
+        item(Fact.KeyEvent::class.java, labelForFactSelector(i18N, Fact.KeyEvent::class.java)) {
+            icon(imageVectorForFact(Fact.KeyEvent::class.java))
+        }
+        item(
+            Fact.ActivityStarted::class.java,
+            labelForFactSelector(i18N, Fact.ActivityStarted::class.java)
+        ) {
+            icon(imageVectorForFact(Fact.ActivityStarted::class.java))
+        }
+        item(
+            Fact.EdgeGesture::class.java,
+            labelForFactSelector(i18N, Fact.EdgeGesture::class.java)
+        ) {
+            icon(imageVectorForFact(Fact.EdgeGesture::class.java))
+        }
+
+        item(Fact.Alarm::class.java, i18N["ui.fact.screen"]) {
+            icon(imageVectorForFact(Fact.ScreenOn::class.java))
+            item(Fact.ScreenOn::class.java, labelForFactSelector(i18N, Fact.ScreenOn::class.java)) {
+                icon(imageVectorForFact(Fact.ScreenOn::class.java))
+            }
+            item(
+                Fact.ScreenOff::class.java,
+                labelForFactSelector(i18N, Fact.ScreenOff::class.java)
+            ) {
+                icon(imageVectorForFact(Fact.ScreenOff::class.java))
+            }
+            item(
+                Fact.UserPresent::class.java,
+                labelForFactSelector(i18N, Fact.UserPresent::class.java)
+            ) {
+                icon(imageVectorForFact(Fact.UserPresent::class.java))
+            }
+        }
+
+        item(Fact.Alarm::class.java, labelForFactSelector(i18N, Fact.Alarm::class.java)) {
+            icon(imageVectorForFact(Fact.Alarm::class.java))
+        }
+
+        item(Fact.AppBecomeForeground::class.java, i18N["ui.fact.app.bg.state"]) {
+            icon(imageVectorForFact(Fact.AppBecomeForeground::class.java))
+            item(
+                Fact.AppBecomeForeground::class.java,
+                labelForFactSelector(i18N, Fact.AppBecomeForeground::class.java)
+            ) {
+                icon(imageVectorForFact(Fact.AppBecomeForeground::class.java))
+            }
+            item(
+                Fact.AppBecomeBackground::class.java,
+                labelForFactSelector(i18N, Fact.AppBecomeBackground::class.java)
+            ) {
+                icon(imageVectorForFact(Fact.AppBecomeBackground::class.java))
             }
         }
     }
@@ -131,17 +180,20 @@ fun getFactMenu(): MenuItem<String> {
     return menu
 }
 
-private fun imageVectorForFact(fact: Fact): ImageVector {
+private fun imageVectorForFact(fact: Class<out Fact>): ImageVector {
     return when (fact) {
-        is Fact.ActivityStarted -> Icons.Filled.Update
-        is Fact.EdgeGesture -> Icons.Filled.Gesture
-        is Fact.KeyEvent -> Icons.Filled.Keyboard
-        Fact.ScreenOff -> Icons.Filled.Lock
-        Fact.ScreenOn -> Icons.Filled.Smartphone
-        Fact.UserPresent -> Icons.Filled.LockOpen
-        is Fact.Alarm -> Icons.Filled.Alarm
-        is Fact.AppBecomeBackground -> Icons.Filled.FiberDvr
-        is Fact.AppBecomeForeground -> Icons.Filled.Aod
+        Fact.ActivityStarted::class.java -> Icons.Filled.Update
+        Fact.EdgeGesture::class.java -> Icons.Filled.Gesture
+        Fact.KeyEvent::class.java -> Icons.Filled.Keyboard
+        Fact.ScreenOff::class.java -> Icons.Filled.Lock
+        Fact.ScreenOn::class.java -> Icons.Filled.Smartphone
+        Fact.UserPresent::class.java -> Icons.Filled.LockOpen
+        Fact.Alarm::class.java -> Icons.Filled.Alarm
+        Fact.AppBecomeBackground::class.java -> Icons.Filled.FiberDvr
+        Fact.AppBecomeForeground::class.java -> Icons.Filled.Aod
+        else -> {
+            Icons.Filled.Warning
+        }
     }
 }
 
