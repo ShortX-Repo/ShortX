@@ -1,19 +1,26 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package tornaco.apps.shortx.ui.addrule.fact
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.dropdown.*
 
 @Composable
 fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
@@ -21,17 +28,19 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
         Box {
-            val selectorState = rememberDropdownSelectorState()
+            var showFactSelectorMenu by remember {
+                mutableStateOf(false)
+            }
 
             Column {
                 state.fact?.let {
                     ListItem(
                         titleLines = labelForFact(fact = it),
-                        icon = { IconForFact(fact = it) })
+                        icon = { Icon(imageVector = imageVectorForFact(it)) })
                 }
 
                 FilledTonalButton(onClick = {
-                    selectorState.open()
+                    showFactSelectorMenu = true
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Settings, contentDescription = "Select"
@@ -41,63 +50,98 @@ fun FactSelector(state: AddRuleState, selectFact: (Fact) -> Unit) {
                 }
             }
 
-            DropdownSelector(state = selectorState, items = state.selectableFacts.map {
-                DropdownItem(
-                    labelLines = listOf(labelForFactSelector(it)),
-                    data = it,
-                    icon = { IconForFact(fact = it) })
-            }) {
-                selectFact(it.data)
-            }
+            FactSelectorMenu(
+                state = state,
+                isOpen = showFactSelectorMenu,
+                setIsOpen = { showFactSelectorMenu = it },
+                itemSelected = {
+                    showFactSelectorMenu = false
+                    selectFact(it)
+                }
+            )
         }
     }
 }
 
-
+@ExperimentalAnimationApi
 @Composable
-private fun IconForFact(fact: Fact) {
-    when (fact) {
-        is Fact.ActivityStarted -> {
-            Icon(
-                imageVector = Icons.Filled.Update, contentDescription = "ActivityStarted"
-            )
+private fun FactSelectorMenu(
+    state: AddRuleState,
+    isOpen: Boolean = false,
+    setIsOpen: (Boolean) -> Unit,
+    itemSelected: (Fact) -> Unit
+) {
+    val i18N = LocalI18N.current
+    val menu = dropDownMenu {
+        state.selectableFacts.forEach {
+            item(it, labelForFactSelector(i18N, it)) {
+                icon(imageVectorForFact(fact = it))
+            }
         }
-        is Fact.EdgeGesture -> {
-            Icon(
-                imageVector = Icons.Filled.Gesture, contentDescription = "EdgeGesture"
-            )
+    }
+
+    Dropdown(
+        isOpen = isOpen,
+        menu = menu,
+        onItemSelected = itemSelected,
+        onDismiss = { setIsOpen(false) },
+        offset = DpOffset(8.dp, 0.dp),
+        enter = EnterAnimation.ElevationScale,
+        exit = ExitAnimation.ElevationScale,
+        easing = Easing.FastOutSlowInEasing,
+        enterDuration = 400,
+        exitDuration = 400
+
+    )
+}
+
+fun getFactMenu(): MenuItem<String> {
+    val menu = dropDownMenu<String> {
+        item("about", "About") {
+            icon(Icons.TwoTone.Language)
         }
-        is Fact.KeyEvent -> {
-            Icon(
-                imageVector = Icons.Filled.Keyboard, contentDescription = "KeyEvent"
-            )
+        item("copy", "Copy") {
+            icon(Icons.TwoTone.FileCopy)
         }
-        Fact.ScreenOff -> {
-            Icon(
-                imageVector = Icons.Filled.Lock, contentDescription = "ScreenOff"
-            )
+        item("share", "Share") {
+            icon(Icons.TwoTone.Share)
+            item("to_clipboard", "To clipboard") {
+                item("pdf", "PDF")
+                item("epub", "EPUB")
+                item("web_page", "Web page")
+                item("microsoft_word", "Microsoft word")
+            }
+            item("as_a_file", "As a file") {
+                item("pdf", "PDF")
+                item("epub", "EPUB")
+                item("web_page", "Web page")
+                item("microsoft_word", "Microsoft word")
+            }
         }
-        Fact.ScreenOn -> {
-            Icon(
-                imageVector = Icons.Filled.Smartphone, contentDescription = "ScreenOn"
-            )
+        item("remove", "Remove") {
+            icon(Icons.TwoTone.DeleteSweep)
+            item("yep", "Yep") {
+                icon(Icons.TwoTone.Done)
+            }
+            item("go_back", "Go back") {
+                icon(Icons.TwoTone.Close)
+            }
         }
-        Fact.UserPresent -> {
-            Icon(
-                imageVector = Icons.Filled.LockOpen, contentDescription = "UserPresent"
-            )
-        }
-        is Fact.Alarm -> {
-            Icon(
-                imageVector = Icons.Filled.Alarm, contentDescription = "Alarm"
-            )
-        }
-        is Fact.AppBecomeBackground -> Icon(
-            imageVector = Icons.Filled.FiberDvr, contentDescription = "AppBecomeBackground"
-        )
-        is Fact.AppBecomeForeground -> Icon(
-            imageVector = Icons.Filled.Aod, contentDescription = "AppBecomeForeground"
-        )
+    }
+    return menu
+}
+
+private fun imageVectorForFact(fact: Fact): ImageVector {
+    return when (fact) {
+        is Fact.ActivityStarted -> Icons.Filled.Update
+        is Fact.EdgeGesture -> Icons.Filled.Gesture
+        is Fact.KeyEvent -> Icons.Filled.Keyboard
+        Fact.ScreenOff -> Icons.Filled.Lock
+        Fact.ScreenOn -> Icons.Filled.Smartphone
+        Fact.UserPresent -> Icons.Filled.LockOpen
+        is Fact.Alarm -> Icons.Filled.Alarm
+        is Fact.AppBecomeBackground -> Icons.Filled.FiberDvr
+        is Fact.AppBecomeForeground -> Icons.Filled.Aod
     }
 }
 

@@ -16,16 +16,20 @@ import java.util.*
 
 @Composable
 fun labelForFactSelector(fact: Fact): String {
+    return labelForFactSelector(LocalI18N.current, fact)
+}
+
+fun labelForFactSelector(i18n: I18N, fact: Fact): String {
     return when (fact) {
-        is Fact.ActivityStarted -> LocalI18N.current["ui.fact.activity.started"]
-        is Fact.EdgeGesture -> LocalI18N.current["ui.fact.edge.gesture"]
-        is Fact.KeyEvent -> LocalI18N.current["ui.fact.key.event"]
-        Fact.ScreenOff -> LocalI18N.current["ui.fact.screen.off"]
-        Fact.ScreenOn -> LocalI18N.current["ui.fact.screen.on"]
-        Fact.UserPresent -> LocalI18N.current["ui.fact.screen.user.present"]
-        is Fact.Alarm -> LocalI18N.current["ui.fact.time.of.a.day"]
-        is Fact.AppBecomeBackground -> LocalI18N.current["ui.fact.app.become.bg"]
-        is Fact.AppBecomeForeground -> LocalI18N.current["ui.fact.app.become.fg"]
+        is Fact.ActivityStarted -> i18n["ui.fact.activity.started"]
+        is Fact.EdgeGesture -> i18n["ui.fact.edge.gesture"]
+        is Fact.KeyEvent -> i18n["ui.fact.key.event"]
+        Fact.ScreenOff -> i18n["ui.fact.screen.off"]
+        Fact.ScreenOn -> i18n["ui.fact.screen.on"]
+        Fact.UserPresent -> i18n["ui.fact.screen.user.present"]
+        is Fact.Alarm -> i18n["ui.fact.time.of.a.day"]
+        is Fact.AppBecomeBackground -> i18n["ui.fact.app.become.bg"]
+        is Fact.AppBecomeForeground -> i18n["ui.fact.app.become.fg"]
     }
 }
 
