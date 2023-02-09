@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule
 
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -29,26 +31,13 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(AppBecomeFg::class.java) { actual, rule ->
             val fgActual = actual as AppBecomeFg
             val fgRule = rule as AppBecomeFg
+            matchAppBecomeBgOrFg(AppBecomeFgFactWrapper(fgActual), AppBecomeFgFactWrapper(fgRule))
+        }
 
-            val pkgListActual =
-                if (fgActual.pkgSetsList.isEmpty().not()) {
-                    fgActual.pkgSetsList.flatMap {
-                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
-                    }
-                } else {
-                    fgActual.appsList
-                }
-            val pkgListRule =
-                if (fgRule.pkgSetsList.isEmpty().not()) {
-                    fgRule.pkgSetsList.flatMap {
-                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
-                    }
-                } else {
-                    fgRule.appsList
-                }
-
-            logger.d("AppBecomeFg, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
-            pkgListRule.containsAll(pkgListActual)
+        register(AppBecomeBg::class.java) { actual, rule ->
+            val bgActual = actual as AppBecomeBg
+            val bgRule = rule as AppBecomeBg
+            matchAppBecomeBgOrFg(AppBecomeBgFactWrapper(bgActual), AppBecomeBgFactWrapper(bgRule))
         }
     }
 
@@ -71,4 +60,45 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         return matcher?.invoke(l, r) ?: (l == r)
     }
 
+
+    private fun matchAppBecomeBgOrFg(actual: AppBecomeBgFgFact, rule: AppBecomeBgFgFact): Boolean {
+        val pkgListActual = if (actual.pkgSetList.isEmpty().not()) {
+            actual.pkgSetList.flatMap {
+                shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+            }
+        } else {
+            actual.appList
+        }
+        val pkgListRule = if (rule.pkgSetList.isEmpty().not()) {
+            rule.pkgSetList.flatMap {
+                shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+            }
+        } else {
+            rule.appList
+        }
+
+        logger.d("matchAppBecomeBgOrFg, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
+        return pkgListRule.containsAll(pkgListActual)
+    }
+
+    internal interface AppBecomeBgFgFact {
+        val pkgSetList: List<String>
+        val appList: List<AppPkg>
+    }
+
+    class AppBecomeBgFactWrapper(private val appBecomeBg: AppBecomeBg) : AppBecomeBgFgFact {
+        override val pkgSetList: List<String>
+            get() = appBecomeBg.pkgSetsList
+        override val appList: List<AppPkg>
+            get() = appBecomeBg.appsList
+
+    }
+
+    class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : AppBecomeBgFgFact {
+        override val pkgSetList: List<String>
+            get() = appBecomeFg.pkgSetsList
+        override val appList: List<AppPkg>
+            get() = appBecomeFg.appsList
+
+    }
 }
