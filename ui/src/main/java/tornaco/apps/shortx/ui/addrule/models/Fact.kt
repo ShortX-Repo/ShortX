@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.*
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -26,12 +27,12 @@ sealed interface Fact {
 
     data class AppBecomeBackground(
         val apps: List<App> = emptyList(),
-        val pkgSets: List<String> = emptyList()
+        val pkgSets: List<PkgSet> = emptyList()
     ) : Fact
 
     data class AppBecomeForeground(
         val apps: List<App> = emptyList(),
-        val pkgSets: List<String> = emptyList()
+        val pkgSets: List<PkgSet> = emptyList()
     ) : Fact
 }
 
@@ -63,12 +64,12 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.AppBecomeBackground -> {
             AppBecomeBg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets).build()
+            }).addAllPkgSets(pkgSets.map { it.id }).build()
         }
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets).build()
+            }).addAllPkgSets(pkgSets.map { it.id }).build()
         }
     }
 }
@@ -102,17 +103,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         }
         this is_ AppBecomeFg::class.java -> {
             val data = this unpack_ AppBecomeFg::class.java
-            Fact.AppBecomeForeground(apps = data.appsList.map {
-                val pkg = Pkg(it.pkgName, it.userId)
+            Fact.AppBecomeForeground(apps = data.appsList.map { appPkg ->
+                val pkg = Pkg(appPkg.pkgName, appPkg.userId)
                 App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            }, pkgSets = data.pkgSetsList)
+            }, pkgSets = data.pkgSetsList.mapNotNull { shortXManager.getPkgSetById(it) })
         }
         this is_ AppBecomeBg::class.java -> {
             val data = this unpack_ AppBecomeBg::class.java
-            Fact.AppBecomeBackground(apps = data.appsList.map {
-                val pkg = Pkg(it.pkgName, it.userId)
+            Fact.AppBecomeBackground(apps = data.appsList.map { appPkg ->
+                val pkg = Pkg(appPkg.pkgName, appPkg.userId)
                 App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            }, pkgSets = data.pkgSetsList)
+            }, pkgSets = data.pkgSetsList.mapNotNull { shortXManager.getPkgSetById(it) })
         }
         else -> {
             null

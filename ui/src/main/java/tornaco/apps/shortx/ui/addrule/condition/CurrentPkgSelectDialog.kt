@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,13 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 class AppPkgSelectorState(
     val installedApps: List<App>,
     val onAppListSelected: (List<App>) -> Unit,
-    val onPkgSetSelected: (List<String>) -> Unit
+    val onPkgSetSelected: (List<PkgSet>) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
@@ -29,7 +32,7 @@ class AppPkgSelectorState(
     private var _selectedApps by mutableStateOf(emptyList<App>())
     val selectedApps get() = _selectedApps
 
-    private var _selectedPkgSets by mutableStateOf(emptyList<String>())
+    private var _selectedPkgSets by mutableStateOf(emptyList<PkgSet>())
     val selectedPkgSets get() = _selectedPkgSets
 
     fun show() {
@@ -54,17 +57,17 @@ class AppPkgSelectorState(
         }
     }
 
-    fun addPkgSet(id: String) {
+    fun addPkgSet(pkgSet: PkgSet) {
         _selectedPkgSets = selectedPkgSets.toMutableList().apply {
-            if (contains(id).not()) {
-                add(id)
+            if (firstOrNull { it.id == pkgSet.id } == null) {
+                add(pkgSet)
             }
         }
     }
 
-    fun removePkgSet(id: String) {
+    fun removePkgSet(pkgSet: PkgSet) {
         _selectedPkgSets = selectedPkgSets.toMutableList().apply {
-            remove(id)
+            removeIf { it.id == pkgSet.id }
         }
     }
 }
@@ -73,7 +76,7 @@ class AppPkgSelectorState(
 fun rememberAppPkgSelectorState(
     apps: List<App>,
     onAppListSelected: (List<App>) -> Unit = {},
-    onPkgSetSelected: (List<String>) -> Unit = {}
+    onPkgSetSelected: (List<PkgSet>) -> Unit = {}
 ): AppPkgSelectorState {
     return remember(apps) {
         AppPkgSelectorState(apps, onAppListSelected, onPkgSetSelected)
@@ -142,19 +145,22 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
             .fillMaxHeight(fraction = 0.68f)
     ) {
         items(state.pkgSets) {
-            ListItem(title = it.label, action1 = {
-                Checkbox(
-                    checked = selectorState.selectedPkgSets.contains(it.id),
-                    onCheckedChange = { checked ->
-                        if (checked) {
-                            selectorState.addPkgSet(it.id)
-                        } else {
-                            selectorState.removePkgSet(
-                                it.id
-                            )
-                        }
-                    })
-            })
+            ListItem(
+                icon = {
+                    Icon(imageVector = Icons.Filled.Apps)
+                },
+                title = it.label,
+                action1 = {
+                    Checkbox(
+                        checked = selectorState.selectedPkgSets.contains(it),
+                        onCheckedChange = { checked ->
+                            if (checked) {
+                                selectorState.addPkgSet(it)
+                            } else {
+                                selectorState.removePkgSet(it)
+                            }
+                        })
+                })
         }
     }
 }

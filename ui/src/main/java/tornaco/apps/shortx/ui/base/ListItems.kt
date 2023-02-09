@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.Pkg
 
 const val PREFIX_APP_ICON = "app_icon://"
+const val PREFIX_MD_ICON = "md_icon://"
 
 @Composable
 fun ListItem(
@@ -60,6 +61,19 @@ fun ListItem(
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
+                        } else if (it.contains(PREFIX_MD_ICON)) {
+                            val iconName = it.substringAfter(PREFIX_MD_ICON)
+                            Row(verticalAlignment = CenterVertically) {
+                                Icon(
+                                    modifier = Modifier.size(16.dp),
+                                    imageVector = MDIcons.filled(iconName)
+                                )
+                                SmallSpacer()
+                                Text(
+                                    text = it.substringBefore(PREFIX_MD_ICON),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
                         } else {
                             Text(text = it, style = MaterialTheme.typography.titleSmall)
                         }
@@ -85,7 +99,9 @@ fun ListItem(
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }, verticalAlignment = CenterVertically
+            },
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             modifier = Modifier
