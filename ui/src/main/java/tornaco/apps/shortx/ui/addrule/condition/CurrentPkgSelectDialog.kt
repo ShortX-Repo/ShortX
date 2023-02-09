@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -147,9 +147,12 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
         items(state.pkgSets) {
             ListItem(
                 icon = {
-                    Icon(imageVector = Icons.Filled.Apps)
+                    Icon(imageVector = Icons.Outlined.Folder)
                 },
-                title = it.label,
+                titleLines = listOf(
+                    it.label,
+                    LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")]
+                ),
                 action1 = {
                     Checkbox(
                         checked = selectorState.selectedPkgSets.contains(it),

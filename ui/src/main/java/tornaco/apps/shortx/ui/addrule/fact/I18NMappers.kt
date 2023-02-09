@@ -80,7 +80,7 @@ fun labelForFact(fact: Fact): List<String> {
                 })
             } else if (fact.pkgSets.isNotEmpty()) {
                 addAll(fact.pkgSets.map {
-                    "${it.label}${PREFIX_MD_ICON}Apps"
+                    "${it.label}${PREFIX_MD_ICON}Folder"
                 })
             }
         }
@@ -93,7 +93,7 @@ fun labelForFact(fact: Fact): List<String> {
                 })
             } else if (fact.pkgSets.isNotEmpty()) {
                 addAll(fact.pkgSets.map {
-                    "${it.label}${PREFIX_MD_ICON}Apps"
+                    "${it.label}${PREFIX_MD_ICON}Folder"
                 })
             }
         }

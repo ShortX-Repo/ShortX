@@ -36,7 +36,9 @@ fun ListItem(
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            }, verticalAlignment = CenterVertically
+            },
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             modifier = Modifier
@@ -66,7 +68,7 @@ fun ListItem(
                             Row(verticalAlignment = CenterVertically) {
                                 Icon(
                                     modifier = Modifier.size(16.dp),
-                                    imageVector = MDIcons.filled(iconName)
+                                    imageVector = MDIcons.outlined(iconName)
                                 )
                                 SmallSpacer()
                                 Text(
