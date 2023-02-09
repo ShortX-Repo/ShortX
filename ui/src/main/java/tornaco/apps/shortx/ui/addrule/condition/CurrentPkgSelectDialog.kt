@@ -19,15 +19,18 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 class AppPkgSelectorState(
-    val apps: List<App>,
+    val installedApps: List<App>,
     val onAppListSelected: (List<App>) -> Unit,
-    val onPkgSetSelected: (String) -> Unit
+    val onPkgSetSelected: (List<String>) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
     private var _selectedApps by mutableStateOf(emptyList<App>())
     val selectedApps get() = _selectedApps
+
+    private var _selectedPkgSets by mutableStateOf(emptyList<String>())
+    val selectedPkgSets get() = _selectedPkgSets
 
     fun show() {
         _isShow = true
@@ -50,13 +53,27 @@ class AppPkgSelectorState(
             remove(app)
         }
     }
+
+    fun addPkgSet(id: String) {
+        _selectedPkgSets = selectedPkgSets.toMutableList().apply {
+            if (contains(id).not()) {
+                add(id)
+            }
+        }
+    }
+
+    fun removePkgSet(id: String) {
+        _selectedPkgSets = selectedPkgSets.toMutableList().apply {
+            remove(id)
+        }
+    }
 }
 
 @Composable
 fun rememberAppPkgSelectorState(
     apps: List<App>,
-    onPkgSetSelected: (String) -> Unit = {},
-    onAppListSelected: (List<App>) -> Unit = {}
+    onAppListSelected: (List<App>) -> Unit = {},
+    onPkgSetSelected: (List<String>) -> Unit = {}
 ): AppPkgSelectorState {
     return remember(apps) {
         AppPkgSelectorState(apps, onAppListSelected, onPkgSetSelected)
@@ -66,21 +83,26 @@ fun rememberAppPkgSelectorState(
 @Composable
 fun AppPkgSelector(state: AppPkgSelectorState) {
     if (state.isShow) {
+        var selectedTabIndex by remember {
+            mutableStateOf(0)
+        }
+
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(
                 text = LocalI18N.current["ui.dialog.title.select.app"],
             )
         }, buttons = {
             TextButton(onClick = {
-                state.onAppListSelected(state.selectedApps)
+                if (selectedTabIndex == 0) {
+                    state.onAppListSelected(state.selectedApps)
+                } else {
+                    state.onPkgSetSelected(state.selectedPkgSets)
+                }
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
         }, content = {
-            var selectedTabIndex by remember {
-                mutableStateOf(0)
-            }
             TabRow(selectedTabIndex = selectedTabIndex) {
                 val titles = listOf(
                     LocalI18N.current["ui.dialog.title.select.app"],
@@ -107,7 +129,7 @@ fun AppPkgSelector(state: AppPkgSelectorState) {
 }
 
 @Composable
-private fun PkgSetContent(state: AppPkgSelectorState) {
+private fun PkgSetContent(selectorState: AppPkgSelectorState) {
     val vm = hiltViewModel<PkgSetListViewModel>()
     val state by vm.state.collectAsState()
 
@@ -120,14 +142,26 @@ private fun PkgSetContent(state: AppPkgSelectorState) {
             .fillMaxHeight(fraction = 0.68f)
     ) {
         items(state.pkgSets) {
-            ListItem(title = it.label)
+            ListItem(title = it.label, action1 = {
+                Checkbox(
+                    checked = selectorState.selectedPkgSets.contains(it.id),
+                    onCheckedChange = { checked ->
+                        if (checked) {
+                            selectorState.addPkgSet(it.id)
+                        } else {
+                            selectorState.removePkgSet(
+                                it.id
+                            )
+                        }
+                    })
+            })
         }
     }
 }
 
 @Composable
 private fun AppListContent(state: AppPkgSelectorState) {
-    val searchBarState = rememberSearchBarState(state.apps.size)
+    val searchBarState = rememberSearchBarState(state.installedApps.size)
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,7 +170,7 @@ private fun AppListContent(state: AppPkgSelectorState) {
         item {
             SearchBar(searchBarState)
         }
-        items(state.apps.filter {
+        items(state.installedApps.filter {
             searchBarState.keyword.isBlank() || it.label.contains(searchBarState.keyword)
         }) {
             AppItem(

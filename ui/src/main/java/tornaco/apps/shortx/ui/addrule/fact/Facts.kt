@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.base.dropdown.*
+import tornaco.apps.shortx.ui.base.dropdown.Dropdown
+import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu
 
 @Composable
 fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
@@ -51,14 +49,12 @@ fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
             }
 
             FactSelectorMenu(
-                state = state,
                 isOpen = showFactSelectorMenu,
-                setIsOpen = { showFactSelectorMenu = it },
-                itemSelected = {
-                    showFactSelectorMenu = false
-                    selectFact(it)
-                }
-            )
+                setIsOpen = { showFactSelectorMenu = it }
+            ) {
+                showFactSelectorMenu = false
+                selectFact(it)
+            }
         }
     }
 }
@@ -66,13 +62,12 @@ fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
 @ExperimentalAnimationApi
 @Composable
 private fun FactSelectorMenu(
-    state: AddRuleState,
     isOpen: Boolean = false,
     setIsOpen: (Boolean) -> Unit,
     itemSelected: (Class<out Fact>) -> Unit
 ) {
     val i18N = LocalI18N.current
-    val menu = dropDownMenu<Class<out Fact>> {
+    val menu = dropDownMenu {
         item(Fact.KeyEvent::class.java, labelForFactSelector(i18N, Fact.KeyEvent::class.java)) {
             icon(imageVectorForFact(Fact.KeyEvent::class.java))
         }
@@ -134,50 +129,7 @@ private fun FactSelectorMenu(
         menu = menu,
         onItemSelected = itemSelected,
         onDismiss = { setIsOpen(false) },
-        offset = DpOffset(8.dp, 0.dp),
-        enter = EnterAnimation.ElevationScale,
-        exit = ExitAnimation.ElevationScale,
-        easing = Easing.FastOutSlowInEasing,
-        enterDuration = 400,
-        exitDuration = 400
-
     )
-}
-
-fun getFactMenu(): MenuItem<String> {
-    val menu = dropDownMenu<String> {
-        item("about", "About") {
-            icon(Icons.TwoTone.Language)
-        }
-        item("copy", "Copy") {
-            icon(Icons.TwoTone.FileCopy)
-        }
-        item("share", "Share") {
-            icon(Icons.TwoTone.Share)
-            item("to_clipboard", "To clipboard") {
-                item("pdf", "PDF")
-                item("epub", "EPUB")
-                item("web_page", "Web page")
-                item("microsoft_word", "Microsoft word")
-            }
-            item("as_a_file", "As a file") {
-                item("pdf", "PDF")
-                item("epub", "EPUB")
-                item("web_page", "Web page")
-                item("microsoft_word", "Microsoft word")
-            }
-        }
-        item("remove", "Remove") {
-            icon(Icons.TwoTone.DeleteSweep)
-            item("yep", "Yep") {
-                icon(Icons.TwoTone.Done)
-            }
-            item("go_back", "Go back") {
-                icon(Icons.TwoTone.Close)
-            }
-        }
-    }
-    return menu
 }
 
 private fun imageVectorForFact(fact: Class<out Fact>): ImageVector {

@@ -24,8 +24,15 @@ sealed interface Fact {
 
     data class Alarm(val tag: String, val timeOfADay: TimeOfADay, val repeatDays: RepeatDays) : Fact
 
-    data class AppBecomeBackground(val apps: List<App>) : Fact
-    data class AppBecomeForeground(val apps: List<App>) : Fact
+    data class AppBecomeBackground(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<String> = emptyList()
+    ) : Fact
+
+    data class AppBecomeForeground(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<String> = emptyList()
+    ) : Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -56,12 +63,12 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.AppBecomeBackground -> {
             AppBecomeBg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).build()
+            }).addAllPkgSets(pkgSets).build()
         }
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).build()
+            }).addAllPkgSets(pkgSets).build()
         }
     }
 }
@@ -98,14 +105,14 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppBecomeForeground(apps = data.appsList.map {
                 val pkg = Pkg(it.pkgName, it.userId)
                 App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            })
+            }, pkgSets = data.pkgSetsList)
         }
         this is_ AppBecomeBg::class.java -> {
             val data = this unpack_ AppBecomeBg::class.java
             Fact.AppBecomeBackground(apps = data.appsList.map {
                 val pkg = Pkg(it.pkgName, it.userId)
                 App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            })
+            }, pkgSets = data.pkgSetsList)
         }
         else -> {
             null

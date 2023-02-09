@@ -6,7 +6,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 
 interface FactMatcher {
-    fun match(fact: ProtoMessage, targetFact: ProtoAny): Boolean
+    fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean
 }
 
 interface ConditionEvaluator {

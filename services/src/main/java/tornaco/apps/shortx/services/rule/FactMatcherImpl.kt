@@ -26,28 +26,29 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val ra = f as Alarm
             la.tag == ra.tag
         }
-        register(AppBecomeFg::class.java) { l, f ->
-            val fgl = l as AppBecomeFg
-            val fgr = f as AppBecomeFg
+        register(AppBecomeFg::class.java) { actual, rule ->
+            val fgActual = actual as AppBecomeFg
+            val fgRule = rule as AppBecomeFg
 
-            val pkgListL =
-                if (fgl.pkgSetsList.isEmpty().not()) {
-                    fgl.pkgSetsList.flatMap {
+            val pkgListActual =
+                if (fgActual.pkgSetsList.isEmpty().not()) {
+                    fgActual.pkgSetsList.flatMap {
                         shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
                     }
                 } else {
-                    fgl.appsList
+                    fgActual.appsList
                 }
-            val pkgListR =
-                if (fgr.pkgSetsList.isEmpty().not()) {
-                    fgr.pkgSetsList.flatMap {
+            val pkgListRule =
+                if (fgRule.pkgSetsList.isEmpty().not()) {
+                    fgRule.pkgSetsList.flatMap {
                         shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
                     }
                 } else {
-                    fgr.appsList
+                    fgRule.appsList
                 }
 
-            pkgListL.containsAll(pkgListR)
+            logger.d("AppBecomeFg, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
+            pkgListRule.containsAll(pkgListActual)
         }
     }
 
@@ -55,10 +56,10 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         factValueMatchers[clazz] = matcher
     }
 
-    override fun match(fact: ProtoMessage, targetFact: ProtoAny): Boolean {
-        return if (targetFact is_ fact.javaClass) {
-            val targetFactMessage = targetFact unpack_ fact.javaClass
-            match0(fact, targetFactMessage)
+    override fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
+        return if (ruleFact is_ actualFact.javaClass) {
+            val targetFactMessage = ruleFact unpack_ actualFact.javaClass
+            match0(actualFact, targetFactMessage)
         } else {
             false
         }
