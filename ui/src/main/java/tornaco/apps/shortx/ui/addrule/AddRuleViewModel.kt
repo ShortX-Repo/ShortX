@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.KeyEvent
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -11,14 +10,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.core.proto.fact.Gesture
-import tornaco.apps.shortx.core.proto.fact.RepeatDays
-import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
@@ -38,9 +33,7 @@ data class AddRuleState(
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,
-    val selectableFacts: List<Fact> = emptyList(),
     val conditions: List<Condition> = emptyList(),
-    val selectableConditions: List<Condition> = emptyList(),
     val conditionOp: Op = Op.All,
     val actions: List<Action> = emptyList(),
     val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
@@ -60,21 +53,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
 
     override fun initState(): AddRuleState {
         return AddRuleState(
-            selectableFacts = listOf(
-                Fact.KeyEvent(KeyEvent.KEYCODE_UNKNOWN),
-                Fact.ActivityStarted("N/A"),
-                Fact.EdgeGesture(Edge.BottomRight, Gesture.DoubleTap),
-                Fact.ScreenOff,
-                Fact.ScreenOn,
-                Fact.UserPresent,
-                Fact.Alarm("", TimeOfADay.getDefaultInstance(), RepeatDays.getDefaultInstance()),
-                Fact.AppBecomeBackground(emptyList()),
-                Fact.AppBecomeForeground(emptyList())
-            ), selectableConditions = listOf(
-                Condition.CurrentForegroundApp(emptyList()),
-                Condition.MVEL(""),
-                Condition.TRUE,
-            ), selectableActions = mapOf(
+            selectableActions = mapOf(
                 "UI" to listOf(
                     Action.TakeScreenshot,
                     Action.ShowToast(""),

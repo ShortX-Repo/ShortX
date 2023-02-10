@@ -22,6 +22,7 @@ message False {}
 
 message CurrentPkgList {
   repeated AppPkg pkgs = 1;
+  repeated string pkgSets = 2;
 }
 
 message CurrentActivity {

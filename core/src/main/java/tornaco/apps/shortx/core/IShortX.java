@@ -90,7 +90,7 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
-    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets() throws android.os.RemoteException
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets(boolean withPkgList) throws android.os.RemoteException
     {
       return null;
     }
@@ -385,7 +385,9 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_getAllPkgSets:
         {
           data.enforceInterface(descriptor);
-          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllPkgSets();
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllPkgSets(_arg0);
           reply.writeNoException();
           reply.writeTypedList(_result);
           return true;
@@ -891,16 +893,17 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets() throws android.os.RemoteException
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets(boolean withPkgList) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((withPkgList)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllPkgSets, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllPkgSets();
+            return getDefaultImpl().getAllPkgSets(withPkgList);
           }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
@@ -982,5 +985,5 @@ public interface IShortX extends android.os.IInterface
   public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException;
   public void deletePkgSet(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetById(java.lang.String id) throws android.os.RemoteException;
-  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets() throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets(boolean withPkgList) throws android.os.RemoteException;
 }

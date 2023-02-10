@@ -12,7 +12,8 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 
 class ConditionEvaluatorImpl(
-    private val context: Context, private val shortXContext: ShortXContext
+    private val context: Context,
+    private val shortXContext: ShortXContext
 ) : ConditionEvaluator {
     private val logger = Logger("ConditionEvaluatorImpl")
 
@@ -21,7 +22,13 @@ class ConditionEvaluatorImpl(
             condition is_ CurrentPkgList::class.java -> {
                 val currentPkg = condition unpack_ CurrentPkgList::class.java
                 val state = shortXContext.appState.currentFgComponentName.value
-                val requiredPkgList = currentPkg.pkgsList
+                val requiredPkgList = if (currentPkg.pkgSetsList.isNotEmpty()) {
+                    currentPkg.pkgSetsList.flatMap {
+                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    }
+                } else {
+                    currentPkg.pkgsList
+                }
                 requiredPkgList.any {
                     it.pkgName == state.pkg.pkgName && it.userId == state.pkg.userId
                 }

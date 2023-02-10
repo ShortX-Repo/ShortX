@@ -227,7 +227,7 @@ private fun labelForActionSelector(action: Action): List<String> {
             listOf(LocalI18N.current["ui.action.take.screenshot"])
         }
         is Action.MVEL -> {
-            listOf(LocalI18N.current["ui.action.mvel"])
+            listOf(LocalI18N.current["ui.title.mvel"])
         }
         Action.HideOverlay -> {
             listOf(LocalI18N.current["ui.action.hide.overlay"])
@@ -257,7 +257,7 @@ private fun labelLinesForAction(action: Action): List<String> {
             listOf(LocalI18N.current["ui.action.take.screenshot"])
         }
         is Action.MVEL -> {
-            listOf(LocalI18N.current["ui.action.mvel"], action.expression)
+            listOf(LocalI18N.current["ui.title.mvel"], action.expression)
         }
         Action.HideOverlay -> {
             listOf(LocalI18N.current["ui.action.hide.overlay"])

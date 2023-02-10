@@ -9,13 +9,14 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.True
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 
 sealed interface Condition {
-    data class CurrentForegroundApp(val apps: List<App>) : Condition
+    data class CurrentForegroundApp(val apps: List<App>, val pkgSets: List<PkgSet>) : Condition
     data class MVEL(val expression: String) : Condition
     object TRUE : Condition
 }
@@ -23,12 +24,19 @@ sealed interface Condition {
 fun Condition.toProtoCondition(): ProtoMessage {
     return when (this) {
         is Condition.CurrentForegroundApp -> {
-            CurrentPkgList.newBuilder().addAllPkgs(
-                apps.map { app ->
-                    AppPkg.newBuilder().setPkgName(app.pkg.pkgName).setUserId(app.pkg.userId)
-                        .build()
-                }
-            ).build()
+            CurrentPkgList.newBuilder()
+                .addAllPkgs(
+                    apps.map { app ->
+                        AppPkg.newBuilder()
+                            .setPkgName(app.pkg.pkgName)
+                            .setUserId(app.pkg.userId)
+                            .build()
+                    }
+                )
+                .addAllPkgSets(pkgSets.map {
+                    it.id
+                })
+                .build()
         }
         is Condition.MVEL -> {
             MatchMVEL.newBuilder().setExpression(expression).build()
@@ -52,6 +60,9 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                     App(
                         pkg = pkg, label = appLabel, category = AppCategory.User
                     )
+                },
+                pkgSets = data.pkgSetsList.mapNotNull {
+                    shortXManager.getPkgSetById(it)
                 }
             )
         }

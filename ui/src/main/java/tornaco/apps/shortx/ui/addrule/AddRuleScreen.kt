@@ -119,9 +119,23 @@ private fun ConditionSelectors(
 ) {
     // Condition selectors
     val currentPkgSelectorState =
-        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { appList ->
-            vm.addCondition(Condition.CurrentForegroundApp(appList))
-        })
+        rememberAppPkgSelectorState(
+            apps = state.installedApps,
+            onAppListSelected = { appList ->
+                vm.addCondition(
+                    Condition.CurrentForegroundApp(
+                        apps = appList,
+                        pkgSets = emptyList()
+                    )
+                )
+            }, onPkgSetSelected = { pkgSets ->
+                vm.addCondition(
+                    Condition.CurrentForegroundApp(
+                        apps = emptyList(),
+                        pkgSets = pkgSets
+                    )
+                )
+            })
     AppPkgSelector(currentPkgSelectorState)
 
     val mvelConditionSelectorState =
@@ -132,13 +146,13 @@ private fun ConditionSelectors(
 
     Conditions(state = state, selectCondition = { con ->
         when (con) {
-            is Condition.CurrentForegroundApp -> {
+            Condition.CurrentForegroundApp::class.java -> {
                 currentPkgSelectorState.show()
             }
-            is Condition.MVEL -> {
+            Condition.MVEL::class.java -> {
                 mvelConditionSelectorState.show()
             }
-            Condition.TRUE -> {
+            Condition.TRUE::class.java -> {
                 vm.addCondition(Condition.TRUE)
             }
         }

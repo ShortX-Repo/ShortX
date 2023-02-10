@@ -36,7 +36,7 @@ interface IShortX {
     void addPkgSet(in ByteArrayWrapper set);
     void deletePkgSet(String id);
     ByteArrayWrapper getPkgSetById(String id);
-    List<ByteArrayWrapper> getAllPkgSets();
+    List<ByteArrayWrapper> getAllPkgSets(boolean withPkgList);
     // Pkg Set end
 
 }

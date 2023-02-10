@@ -164,9 +164,18 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             }
         }
 
-        override fun getAllPkgSets(): List<ByteArrayWrapper> {
+        override fun getAllPkgSets(withPkgList: Boolean): List<ByteArrayWrapper> {
             return shortXContext.pkgSet.getAllPkgSets().map {
-                ByteArrayWrapper(it.toByteArray())
+                val trimmed =
+                    if (withPkgList) {
+                        it
+                    } else {
+                        PkgSet.newBuilder()
+                            .setLabel(it.label)
+                            .setId(it.id)
+                            .build()
+                    }
+                ByteArrayWrapper(trimmed.toByteArray())
             }
         }
     }

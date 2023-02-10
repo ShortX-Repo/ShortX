@@ -179,9 +179,9 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun getAllPkgSets(): List<PkgSet> {
+    fun getAllPkgSets(withPkgList: Boolean = true): List<PkgSet> {
         return invokeService(emptyList()) {
-            allPkgSets.map {
+            getAllPkgSets(withPkgList).map {
                 PkgSet.parseFrom(it.byte)
             }
         }

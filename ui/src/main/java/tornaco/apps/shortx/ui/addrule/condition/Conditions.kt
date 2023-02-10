@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,7 +26,7 @@ import tornaco.apps.shortx.ui.base.*
 @Composable
 fun Conditions(
     state: AddRuleState,
-    selectCondition: (Condition) -> Unit,
+    selectCondition: (Class<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
     setConditionOp: (Op) -> Unit
 ) {
@@ -63,13 +65,18 @@ fun Conditions(
                     }
                     DropdownSelector(
                         state = conditionSelectorState,
-                        items = state.selectableConditions.map {
-                            DropdownItem(labelLines = labelForConditionSelector(condition = it),
+                        items = listOf(
+                            Condition.CurrentForegroundApp::class.java,
+                            Condition.MVEL::class.java,
+                            Condition.TRUE::class.java
+                        ).map {
+                            DropdownItem(
+                                labelLines = labelForConditionSelector(it),
                                 data = it,
-                                icon = {
-                                    IconForConditionSelector(condition = it)
-                                })
-                        }) {
+                                icon = { IconForConditionSelector(condition = it) }
+                            )
+                        }
+                    ) {
                         selectCondition(it.data)
                     }
                 }
@@ -166,156 +173,6 @@ private fun OpSelector(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun labelForConditionSelector(condition: Condition): List<String> {
-    return when (condition) {
-        is Condition.CurrentForegroundApp -> {
-            listOf(LocalI18N.current["ui.dialog.title.current.app"])
-        }
-        is Condition.MVEL -> {
-            listOf("MVEL expression")
-        }
-        Condition.TRUE -> {
-            listOf(
-                LocalI18N.current["ui.conditions.true"]
-            )
-        }
-    }
-}
-
-@Composable
-private fun labelForCondition(condition: Condition): List<String> {
-    return when (condition) {
-        is Condition.CurrentForegroundApp -> {
-            mutableListOf(LocalI18N.current["ui.dialog.title.current.app"]).apply {
-                addAll(condition.apps.map {
-                    "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
-                })
-            }
-        }
-        is Condition.MVEL -> {
-            listOf("MVEL expression", condition.expression)
-        }
-        Condition.TRUE -> {
-            listOf(
-                LocalI18N.current["ui.conditions.true"],
-                LocalI18N.current["ui.conditions.true.desc"]
-            )
-        }
-    }
-}
-
-@Composable
-private fun IconForCondition(condition: Condition) {
-    when (condition) {
-        is Condition.CurrentForegroundApp -> {
-            Icon(
-                imageVector = Icons.Filled.Android, contentDescription = "CurrentForegroundApp"
-            )
-        }
-        is Condition.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
-            )
-        }
-        Condition.TRUE -> {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun IconForConditionSelector(condition: Condition) {
-    when (condition) {
-        is Condition.CurrentForegroundApp -> {
-            Icon(
-                imageVector = Icons.Filled.Android, contentDescription = "CurrentForegroundApp"
-            )
-        }
-        is Condition.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
-            )
-        }
-        Condition.TRUE -> {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
-            )
-        }
-    }
-}
-
-@Composable
-private fun opTitle(op: Op): String {
-    return when (op) {
-        Op.All -> {
-            "ALL"
-        }
-        Op.Any -> {
-            "ANY"
-        }
-
-        Op.None -> {
-            "NONE"
-        }
-        is Op.MVEL -> {
-            "MVEL"
-        }
-    }
-}
-
-
-@Composable
-private fun opDescription(op: Op): List<String> {
-    return when (op) {
-        Op.All -> {
-            listOf(LocalI18N.current["ui.condition.op.all.desc"])
-        }
-        Op.Any -> {
-            listOf(LocalI18N.current["ui.condition.op.any.desc"])
-        }
-
-        Op.None -> {
-            listOf(LocalI18N.current["ui.condition.op.none.desc"])
-        }
-
-        is Op.MVEL -> {
-            listOf(LocalI18N.current["ui.condition.op.mvel.desc"], op.expression)
-        }
-    }
-}
-
-@Composable
-private fun IconForOp(op: Op) {
-    when (op) {
-        Op.All -> {
-            Icon(
-                imageVector = Icons.Filled.SelectAll, contentDescription = "All"
-            )
-        }
-        Op.Any -> {
-            Icon(
-                imageVector = Icons.Filled.Analytics, contentDescription = "Any"
-            )
-        }
-
-        Op.None -> {
-            Icon(
-                imageVector = Icons.Filled.InsertInvitation, contentDescription = "None"
-            )
-        }
-
-        is Op.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
-            )
         }
     }
 }
