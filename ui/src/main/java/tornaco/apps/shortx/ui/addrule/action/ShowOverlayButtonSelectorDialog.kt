@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.proto.common.App
@@ -25,7 +24,7 @@ import tornaco.apps.shortx.ui.addrule.models.toProtoAction
 import tornaco.apps.shortx.ui.base.*
 
 class ShowOverlayButtonSelectorState(
-    val selectableActions: Map<I18NKey, List<Action>>,
+    val selectableActions: Map<I18NKey, List<Class<out Action>>>,
     val installedApps: List<App>,
     val onSelected: (ShowOverlayButtonSettings) -> Unit
 ) {
@@ -52,7 +51,7 @@ class ShowOverlayButtonSelectorState(
 
 @Composable
 fun rememberShowOverlayButtonSelectorState(
-    selectableActions: Map<I18NKey, List<Action>>,
+    selectableActions: Map<I18NKey, List<Class<out Action>>>,
     installedApps: List<App>,
     onSelected: (ShowOverlayButtonSettings) -> Unit
 ): ShowOverlayButtonSelectorState {

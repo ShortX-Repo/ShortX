@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +20,6 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
 
-
 @Composable
 fun ActionSelectors(
     header: @Composable ColumnScope.() -> Unit = {
@@ -27,7 +27,7 @@ fun ActionSelectors(
     },
     addAction: (Action) -> Unit,
     removeAction: (Action) -> Unit,
-    selectableActions: Map<I18NKey, List<Action>>,
+    selectableActions: Map<I18NKey, List<Class<out Action>>>,
     actions: List<Action>,
     installedApps: List<App>,
 ) {
@@ -73,40 +73,41 @@ fun ActionSelectors(
         }
     ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
 
-    val launchAppSelectorState = rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-        val first = it[0]
-        val action = Action.LaunchApp(first.let { app ->
-            AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
-        }, appLabel = first.label)
-        addAction(action)
-    })
+    val launchAppSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val first = it[0]
+            val action = Action.LaunchApp(first.let { app ->
+                AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
+            }, appLabel = first.label)
+            addAction(action)
+        })
     AppPkgSelector(state = launchAppSelectorState)
 
     Actions(
         header = header,
         selectableActions = selectableActions,
         actions = actions,
-        selectAction = { action: Action ->
+        selectAction = { action: Class<out Action> ->
             when (action) {
-                is Action.TakeScreenshot -> {
-                    addAction(action)
+                Action.TakeScreenshot::class.java -> {
+                    addAction(Action.TakeScreenshot)
                 }
-                is Action.ShellCommand -> {
+                Action.ShellCommand::class.java -> {
                     shellCommandSelectorState.show()
                 }
-                is Action.ShowToast -> {
+                Action.ShowToast::class.java -> {
                     toastSelectionState.show()
                 }
-                is Action.Delay -> {
+                Action.Delay::class.java -> {
                     delaySelectionState.show()
                 }
-                is Action.MVEL -> {
+                Action.MVEL::class.java -> {
                     mvelSelectorState.show()
                 }
-                Action.HideOverlay -> {
+                Action.HideOverlay::class.java -> {
                     addAction(Action.HideOverlay)
                 }
-                is Action.ShowOverlay -> {
+                Action.ShowOverlay::class.java -> {
                     showOverlayButtonSelectorState.show(
                         ShowOverlayButtonSettings(
                             false,
@@ -114,7 +115,7 @@ fun ActionSelectors(
                         )
                     )
                 }
-                is Action.LaunchApp -> {
+                Action.LaunchApp::class.java -> {
                     launchAppSelectorState.show()
                 }
             }
@@ -152,9 +153,9 @@ fun ActionSelectors(
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
-    selectableActions: Map<I18NKey, List<Action>>,
+    selectableActions: Map<I18NKey, List<Class<out Action>>>,
     actions: List<Action>,
-    selectAction: (Action) -> Unit,
+    selectAction: (Class<out Action>) -> Unit,
     removeAction: (Action) -> Unit,
     onActionClick: (Action) -> Unit = {}
 ) {
@@ -167,7 +168,7 @@ private fun Actions(
                 ListItem(
                     titleLines = labelLinesForAction(action = it),
                     icon = {
-                        IconForAction(action = it)
+                        IconForAction(action = it::class.java)
                     },
                     action1 = {
                         IconButton(onClick = {
@@ -207,115 +208,6 @@ private fun Actions(
                     selectAction(it.data)
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun labelForActionSelector(action: Action): List<String> {
-    return when (action) {
-        is Action.ShowToast -> {
-            listOf(LocalI18N.current["ui.action.show.toast"])
-        }
-        is Action.ShellCommand -> {
-            listOf(LocalI18N.current["ui.action.shell"])
-        }
-        is Action.Delay -> {
-            listOf(LocalI18N.current["ui.action.delay"])
-        }
-        Action.TakeScreenshot -> {
-            listOf(LocalI18N.current["ui.action.take.screenshot"])
-        }
-        is Action.MVEL -> {
-            listOf(LocalI18N.current["ui.title.mvel"])
-        }
-        Action.HideOverlay -> {
-            listOf(LocalI18N.current["ui.action.hide.overlay"])
-        }
-        is Action.ShowOverlay -> {
-            listOf(LocalI18N.current["ui.action.show.overlay"])
-        }
-        is Action.LaunchApp -> {
-            listOf(LocalI18N.current["ui.action.launch.app"])
-        }
-    }
-}
-
-@Composable
-private fun labelLinesForAction(action: Action): List<String> {
-    return when (action) {
-        is Action.ShowToast -> {
-            listOf(LocalI18N.current["ui.action.show.toast"], action.message)
-        }
-        is Action.ShellCommand -> {
-            listOf(LocalI18N.current["ui.action.shell"], action.command)
-        }
-        is Action.Delay -> {
-            listOf(LocalI18N.current["ui.action.delay"], action.time.toString())
-        }
-        Action.TakeScreenshot -> {
-            listOf(LocalI18N.current["ui.action.take.screenshot"])
-        }
-        is Action.MVEL -> {
-            listOf(LocalI18N.current["ui.title.mvel"], action.expression)
-        }
-        Action.HideOverlay -> {
-            listOf(LocalI18N.current["ui.action.hide.overlay"])
-        }
-        is Action.ShowOverlay -> {
-            mutableListOf(LocalI18N.current["ui.action.show.overlay"]).apply {
-                add("${action.settings.size} buttons")
-            }
-        }
-        is Action.LaunchApp -> listOf(
-            LocalI18N.current["ui.action.launch.app"],
-            "${action.appLabel}${PREFIX_APP_ICON}${action.appPkg.pkgName}"
-        )
-    }
-}
-
-@Composable
-private fun IconForAction(action: Action) {
-    when (action) {
-        is Action.ShowToast -> {
-            Icon(
-                imageVector = Icons.Filled.Message, contentDescription = "Toast"
-            )
-        }
-        is Action.ShellCommand -> {
-            Icon(
-                imageVector = Icons.Filled.Tag, contentDescription = "Shell"
-            )
-        }
-        is Action.Delay -> {
-            Icon(
-                imageVector = Icons.Filled.Timer, contentDescription = "Delay"
-            )
-        }
-        Action.TakeScreenshot -> {
-            Icon(
-                imageVector = Icons.Filled.Devices, contentDescription = "Take Screenshot"
-            )
-        }
-        is Action.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
-            )
-        }
-        Action.HideOverlay -> {
-            Icon(
-                imageVector = Icons.Filled.Window, contentDescription = "HideOverlay"
-            )
-        }
-        is Action.ShowOverlay -> {
-            Icon(
-                imageVector = Icons.Filled.Window, contentDescription = "ShowOverlay"
-            )
-        }
-        is Action.LaunchApp -> {
-            Icon(
-                imageVector = Icons.Filled.OpenInNew, contentDescription = "LaunchApp"
-            )
         }
     }
 }

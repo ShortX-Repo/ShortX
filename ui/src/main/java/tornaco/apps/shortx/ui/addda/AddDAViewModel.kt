@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -20,7 +18,6 @@ import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.addrule.models.toAction
 import tornaco.apps.shortx.ui.addrule.models.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.base.I18NKey
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
@@ -30,7 +27,6 @@ data class AddDirectActionState(
     val title: String = "",
     val description: String = "",
     val actions: List<Action> = emptyList(),
-    val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
     val isEditDirectAction: Boolean = false,
     val daChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
@@ -45,24 +41,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
     val daSaved = _daSaved.asSharedFlow()
 
     override fun initState(): AddDirectActionState {
-        return AddDirectActionState(
-            selectableActions = mapOf(
-                "UI" to listOf(
-                    Action.TakeScreenshot,
-                    Action.ShowToast(""),
-                ),
-                "App" to listOf(
-                    Action.LaunchApp(AppPkg.getDefaultInstance(), ""),
-                ),
-                "Misc" to listOf(
-                    Action.ShellCommand(""),
-                    Action.Delay(0),
-                    Action.MVEL(""),
-                    Action.ShowOverlay(false, emptyList()),
-                    Action.HideOverlay
-                )
-            )
-        )
+        return AddDirectActionState()
     }
 
     fun loadInstalledApps() {

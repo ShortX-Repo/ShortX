@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.selectableActions
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -82,7 +83,8 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                     }, removeAction = { action ->
                         vm.removeAction(action)
                     },
-                        selectableActions = state.selectableActions, actions = state.actions,
+                        selectableActions = selectableActions,
+                        actions = state.actions,
                         installedApps = state.installedApps
                     )
                     Spacer(modifier = Modifier.size(24.dp))

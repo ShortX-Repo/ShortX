@@ -103,7 +103,8 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                         )
                     }, removeAction = { action ->
                         vm.removeAction(action)
-                    }, selectableActions = state.selectableActions, actions = state.actions,
+                    }, selectableActions = selectableActions,
+                        actions = state.actions,
                         installedApps = state.installedApps
                     )
                     Spacer(modifier = Modifier.size(24.dp))

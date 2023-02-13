@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -23,10 +22,26 @@ import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.models.*
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.base.I18NKey
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
+
+val selectableActions = mapOf(
+    "UI" to listOf(
+        Action.TakeScreenshot::class.java,
+        Action.ShowToast::class.java,
+    ),
+    "App" to listOf(
+        Action.LaunchApp::class.java,
+    ),
+    "Misc" to listOf(
+        Action.ShellCommand::class.java,
+        Action.Delay::class.java,
+        Action.MVEL::class.java,
+        Action.ShowOverlay::class.java,
+        Action.HideOverlay::class.java
+    )
+)
 
 data class AddRuleState(
     val id: String = UUID.randomUUID().toString(),
@@ -36,7 +51,6 @@ data class AddRuleState(
     val conditions: List<Condition> = emptyList(),
     val conditionOp: Op = Op.All,
     val actions: List<Action> = emptyList(),
-    val selectableActions: Map<I18NKey, List<Action>> = emptyMap(),
     val isEditRule: Boolean = false,
     val ruleChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
@@ -52,24 +66,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
     val ruleSaved = _ruleSaved.asSharedFlow()
 
     override fun initState(): AddRuleState {
-        return AddRuleState(
-            selectableActions = mapOf(
-                "UI" to listOf(
-                    Action.TakeScreenshot,
-                    Action.ShowToast(""),
-                ),
-                "App" to listOf(
-                    Action.LaunchApp(AppPkg.getDefaultInstance(), ""),
-                ),
-                "Misc" to listOf(
-                    Action.ShellCommand(""),
-                    Action.Delay(0),
-                    Action.MVEL(""),
-                    Action.ShowOverlay(false, emptyList()),
-                    Action.HideOverlay
-                )
-            )
-        )
+        return AddRuleState()
     }
 
     fun loadInstalledApps() {
