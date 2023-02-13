@@ -12,6 +12,8 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
 
 class ActionEvaluatorImpl(
     private val context: Context,
@@ -19,6 +21,13 @@ class ActionEvaluatorImpl(
     private val handler: Handler
 ) :
     ActionEvaluator {
+    private val hw by lazy {
+        HwImpl(context, shortXContext)
+    }
+    private val data by lazy {
+        DataImpl(context, shortXContext)
+    }
+
     override suspend fun evaluate(action: ProtoAny) {
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
@@ -52,6 +61,28 @@ class ActionEvaluatorImpl(
         } else if (action is_ LaunchApp::class.java) {
             val app = action unpack_ LaunchApp::class.java
             shortXContext.appState.launchApp(app.appPkg)
+        } else if (action is_ SetWifiEnabled::class.java) {
+            val d = action unpack_ SetWifiEnabled::class.java
+            if (d.enable) hw.enableWifi() else hw.disableWifi()
+        } else if (action is_ SetBTEnabled::class.java) {
+            val d = action unpack_ SetBTEnabled::class.java
+            if (d.enable) hw.enableBT() else hw.disableBT()
+        } else if (action is_ SetGPSEnabled::class.java) {
+            val d = action unpack_ SetGPSEnabled::class.java
+            if (d.enable) hw.enableLocation() else hw.disableLocation()
+        } else if (action is_ SetNFCEnabled::class.java) {
+            val d = action unpack_ SetNFCEnabled::class.java
+            if (d.enable) hw.enableNfc() else hw.disableNfc()
+        } else if (action is_ SetFlashLightEnabled::class.java) {
+            val d = action unpack_ SetFlashLightEnabled::class.java
+            if (d.enable) hw.enabledFlashlight() else hw.disableFlashlight()
+        } else if (action is_ SetDataEnabled::class.java) {
+            val d = action unpack_ SetDataEnabled::class.java
+            if (d.hasSpecificSlotId) {
+                data.setDataEnabledForSlot(d.slotId, d.enable)
+            } else {
+                data.isDataEnabled = d.enable
+            }
         }
     }
 }

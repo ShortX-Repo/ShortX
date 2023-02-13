@@ -46,5 +46,43 @@ message ShowOverlayButton {
 }
 
 message LaunchApp {
-    AppPkg appPkg = 1;
+  AppPkg appPkg = 1;
+}
+
+message SetWifiEnabled {
+  bool enable = 1;
+}
+
+message SetBTEnabled {
+  bool enable = 1;
+}
+
+message SetHotSpotEnabled {
+  bool enable = 1;
+}
+
+message SetGPSEnabled {
+  bool enable = 1;
+}
+
+message SetDataEnabled {
+  bool enable = 1;
+  bool hasSpecificSlotId = 2;
+  int32 slotId = 3;
+}
+
+message SetNFCEnabled {
+  bool enable = 1;
+}
+
+message SetDNDEnabled {
+  bool enable = 1;
+}
+
+message SetDarkModeEnabled {
+  bool enable = 1;
+}
+
+message SetFlashLightEnabled {
+  bool enable = 1;
 }
