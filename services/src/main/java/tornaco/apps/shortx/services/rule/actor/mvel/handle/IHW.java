@@ -35,4 +35,10 @@ interface IHW {
     boolean isFlashlightEnabled();
 
     boolean isFlashlightAvailable();
+
+    boolean isTetheringEnabled();
+
+    boolean enableTethering();
+
+    boolean disableTethering();
 }

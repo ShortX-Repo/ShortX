@@ -64,6 +64,9 @@ class ActionEvaluatorImpl(
         } else if (action is_ SetWifiEnabled::class.java) {
             val d = action unpack_ SetWifiEnabled::class.java
             if (d.enable) hw.enableWifi() else hw.disableWifi()
+        } else if (action is_ SetHotSpotEnabled::class.java) {
+            val d = action unpack_ SetHotSpotEnabled::class.java
+            if (d.enable) hw.enableTethering() else hw.disableTethering()
         } else if (action is_ SetBTEnabled::class.java) {
             val d = action unpack_ SetBTEnabled::class.java
             if (d.enable) hw.enableBT() else hw.disableBT()

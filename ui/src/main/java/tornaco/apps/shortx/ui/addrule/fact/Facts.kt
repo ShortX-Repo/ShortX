@@ -32,8 +32,7 @@ fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
 
             Column {
                 state.fact?.let {
-                    ListItem(
-                        titleLines = labelForFact(fact = it),
+                    ListItem(titleLines = labelForFact(fact = it),
                         icon = { Icon(imageVector = imageVectorForFact(it.javaClass)) })
                 }
 
@@ -48,10 +47,8 @@ fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
                 }
             }
 
-            FactSelectorMenu(
-                isOpen = showFactSelectorMenu,
-                setIsOpen = { showFactSelectorMenu = it }
-            ) {
+            FactSelectorMenu(isOpen = showFactSelectorMenu,
+                setIsOpen = { showFactSelectorMenu = it }) {
                 showFactSelectorMenu = false
                 selectFact(it)
             }
@@ -62,62 +59,68 @@ fun FactSelector(state: AddRuleState, selectFact: (Class<out Fact>) -> Unit) {
 @ExperimentalAnimationApi
 @Composable
 private fun FactSelectorMenu(
-    isOpen: Boolean = false,
-    setIsOpen: (Boolean) -> Unit,
-    itemSelected: (Class<out Fact>) -> Unit
+    isOpen: Boolean = false, setIsOpen: (Boolean) -> Unit, itemSelected: (Class<out Fact>) -> Unit
 ) {
     val i18N = LocalI18N.current
     val menu = dropDownMenu {
-        item(Fact.KeyEvent::class.java, labelForFactSelector(i18N, Fact.KeyEvent::class.java)) {
+        item(
+            Fact.KeyEvent::class.java,
+            labelAndDescriptionForFactSelector(i18N, Fact.KeyEvent::class.java)
+        ) {
             icon(imageVectorForFact(Fact.KeyEvent::class.java))
         }
         item(
             Fact.ActivityStarted::class.java,
-            labelForFactSelector(i18N, Fact.ActivityStarted::class.java)
+            labelAndDescriptionForFactSelector(i18N, Fact.ActivityStarted::class.java)
         ) {
             icon(imageVectorForFact(Fact.ActivityStarted::class.java))
         }
         item(
             Fact.EdgeGesture::class.java,
-            labelForFactSelector(i18N, Fact.EdgeGesture::class.java)
+            labelAndDescriptionForFactSelector(i18N, Fact.EdgeGesture::class.java)
         ) {
             icon(imageVectorForFact(Fact.EdgeGesture::class.java))
         }
 
-        item(Fact.Alarm::class.java, i18N["ui.fact.screen"]) {
+        item(Fact.Alarm::class.java, i18N["ui.fact.screen"] to null) {
             icon(imageVectorForFact(Fact.ScreenOn::class.java))
-            item(Fact.ScreenOn::class.java, labelForFactSelector(i18N, Fact.ScreenOn::class.java)) {
+            item(
+                Fact.ScreenOn::class.java,
+                labelAndDescriptionForFactSelector(i18N, Fact.ScreenOn::class.java)
+            ) {
                 icon(imageVectorForFact(Fact.ScreenOn::class.java))
             }
             item(
                 Fact.ScreenOff::class.java,
-                labelForFactSelector(i18N, Fact.ScreenOff::class.java)
+                labelAndDescriptionForFactSelector(i18N, Fact.ScreenOff::class.java)
             ) {
                 icon(imageVectorForFact(Fact.ScreenOff::class.java))
             }
             item(
                 Fact.UserPresent::class.java,
-                labelForFactSelector(i18N, Fact.UserPresent::class.java)
+                labelAndDescriptionForFactSelector(i18N, Fact.UserPresent::class.java)
             ) {
                 icon(imageVectorForFact(Fact.UserPresent::class.java))
             }
         }
 
-        item(Fact.Alarm::class.java, labelForFactSelector(i18N, Fact.Alarm::class.java)) {
+        item(
+            Fact.Alarm::class.java, labelAndDescriptionForFactSelector(i18N, Fact.Alarm::class.java)
+        ) {
             icon(imageVectorForFact(Fact.Alarm::class.java))
         }
 
-        item(Fact.AppBecomeForeground::class.java, i18N["ui.fact.app.bg.state"]) {
+        item(Fact.AppBecomeForeground::class.java, i18N["ui.fact.app.bg.state"] to null) {
             icon(imageVectorForFact(Fact.AppBecomeForeground::class.java))
             item(
                 Fact.AppBecomeForeground::class.java,
-                labelForFactSelector(i18N, Fact.AppBecomeForeground::class.java)
+                labelAndDescriptionForFactSelector(i18N, Fact.AppBecomeForeground::class.java)
             ) {
                 icon(imageVectorForFact(Fact.AppBecomeForeground::class.java))
             }
             item(
                 Fact.AppBecomeBackground::class.java,
-                labelForFactSelector(i18N, Fact.AppBecomeBackground::class.java)
+                labelAndDescriptionForFactSelector(i18N, Fact.AppBecomeBackground::class.java)
             ) {
                 icon(imageVectorForFact(Fact.AppBecomeBackground::class.java))
             }

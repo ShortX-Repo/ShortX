@@ -5,39 +5,42 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.models.Action
+import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 
 
-@Composable
-fun labelForActionSelector(action: Class<out Action>): List<String> {
+fun labelAndDescriptionForActionSelector(
+    i18N: I18N,
+    action: Class<out Action>
+): Pair<String, String?> {
     return when (action) {
         Action.ShowToast::class.java -> {
-            listOf(LocalI18N.current["ui.action.show.toast"])
+            i18N["ui.action.show.toast"] to null
         }
         Action.ShellCommand::class.java -> {
-            listOf(LocalI18N.current["ui.action.shell"])
+            i18N["ui.action.shell"] to null
         }
         Action.Delay::class.java -> {
-            listOf(LocalI18N.current["ui.action.delay"])
+            i18N["ui.action.delay"] to null
         }
         Action.TakeScreenshot::class.java -> {
-            listOf(LocalI18N.current["ui.action.take.screenshot"])
+            i18N["ui.action.take.screenshot"] to null
         }
         Action.MVEL::class.java -> {
-            listOf(LocalI18N.current["ui.title.mvel"])
+            i18N["ui.title.mvel"] to null
         }
         Action.HideOverlay::class.java -> {
-            listOf(LocalI18N.current["ui.action.hide.overlay"])
+            i18N["ui.action.hide.overlay"] to null
         }
         Action.ShowOverlay::class.java -> {
-            listOf(LocalI18N.current["ui.action.show.overlay"])
+            i18N["ui.action.show.overlay"] to null
         }
         Action.LaunchApp::class.java -> {
-            listOf(LocalI18N.current["ui.action.launch.app"])
+            i18N["ui.action.launch.app"] to null
         }
         else -> {
-            emptyList()
+            "N/A" to null
         }
     }
 }

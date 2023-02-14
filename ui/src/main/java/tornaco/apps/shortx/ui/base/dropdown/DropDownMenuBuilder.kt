@@ -11,11 +11,36 @@ class DropDownMenuBuilder<T : Any> {
         menu.icon = value
     }
 
-    fun item(id: T, title: String, init: (DropDownMenuBuilder<T>.() -> Unit)? = null) {
+    fun item(
+        id: T,
+        title: String,
+        description: String?,
+        init: (DropDownMenuBuilder<T>.() -> Unit)? = null
+    ) {
         val menuBuilder = DropDownMenuBuilder<T>()
         val child = menuBuilder.menu.apply {
             this.id = id
             this.title = title
+            this.description = description
+        }
+        init?.let {
+            menuBuilder.init()
+        }
+        menu.children = menu.children ?: mutableListOf()
+        child.parent = menu
+        menu.children!!.add(child)
+    }
+
+    fun item(
+        id: T,
+        titleAndDescription: Pair<String, String?>,
+        init: (DropDownMenuBuilder<T>.() -> Unit)? = null
+    ) {
+        val menuBuilder = DropDownMenuBuilder<T>()
+        val child = menuBuilder.menu.apply {
+            this.id = id
+            this.title = titleAndDescription.first
+            this.description = titleAndDescription.second
         }
         init?.let {
             menuBuilder.init()
@@ -25,6 +50,7 @@ class DropDownMenuBuilder<T : Any> {
         menu.children!!.add(child)
     }
 }
+
 
 fun <T : Any> dropDownMenu(init: DropDownMenuBuilder<T>.() -> Unit): MenuItem<T> {
     val menuBuilder = DropDownMenuBuilder<T>()

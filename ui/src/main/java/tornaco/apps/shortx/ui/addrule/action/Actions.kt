@@ -11,7 +11,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -27,7 +27,6 @@ fun ActionSelectors(
     },
     addAction: (Action) -> Unit,
     removeAction: (Action) -> Unit,
-    selectableActions: Map<I18NKey, List<Class<out Action>>>,
     actions: List<Action>,
     installedApps: List<App>,
 ) {
@@ -62,7 +61,6 @@ fun ActionSelectors(
 
     val showOverlayButtonSelectorState =
         rememberShowOverlayButtonSelectorState(
-            selectableActions = selectableActions,
             installedApps = installedApps
         ) { settings ->
             val action = Action.ShowOverlay(
@@ -85,7 +83,6 @@ fun ActionSelectors(
 
     Actions(
         header = header,
-        selectableActions = selectableActions,
         actions = actions,
         selectAction = { action: Class<out Action> ->
             when (action) {
@@ -153,7 +150,6 @@ fun ActionSelectors(
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
-    selectableActions: Map<I18NKey, List<Class<out Action>>>,
     actions: List<Action>,
     selectAction: (Class<out Action>) -> Unit,
     removeAction: (Action) -> Unit,
@@ -161,8 +157,6 @@ private fun Actions(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
-        val selectorState = rememberDropdownSelectorState()
-
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEach {
                 ListItem(
@@ -183,9 +177,11 @@ private fun Actions(
             }
 
             Box {
-
+                var showActionSelectorMenu by remember {
+                    mutableStateOf(false)
+                }
                 FilledTonalButton(onClick = {
-                    selectorState.open()
+                    showActionSelectorMenu = true
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
@@ -194,18 +190,10 @@ private fun Actions(
                     Text(LocalI18N.current["ui.actions.add"])
                 }
 
-                val actionItems = selectableActions.mapValues {
-                    it.value.map { action ->
-                        DropdownItem(
-                            labelLines = labelForActionSelector(action),
-                            data = action,
-                            icon = {
-                                IconForAction(action = action)
-                            })
-                    }
-                }
-                DropdownSelector(state = selectorState, items = actionItems) {
-                    selectAction(it.data)
+                ActionSelectorMenu(isOpen = showActionSelectorMenu,
+                    setIsOpen = { showActionSelectorMenu = it }) {
+                    showActionSelectorMenu = false
+                    selectAction(it)
                 }
             }
         }

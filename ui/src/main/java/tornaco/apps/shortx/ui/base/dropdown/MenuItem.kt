@@ -7,6 +7,7 @@ class MenuItem<T : Any> {
     lateinit var id: T
 
     lateinit var title: String
+    var description: String? = null
 
     var icon: ImageVector? = null
 

@@ -15,12 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 // https://github.com/AndroidPoet/Dropdown
 
@@ -29,18 +31,17 @@ val MAX_WIDTH: Dp = 192.dp
 /*[animateContent]  enter and exit animation for the menu content. */
 @ExperimentalAnimationApi
 internal fun animateContent(
-    animationProp: AnimationProp,
-    enterAnimation: EnterAnimation,
-    exitAnimation: ExitAnimation
+    animationProp: AnimationProp, enterAnimation: EnterAnimation, exitAnimation: ExitAnimation
 ): ContentTransform {
-    return getMetaphorEnterAnimation(animationProp, enterAnimation) with
-            getMetaphorExitAnimation(animationProp, exitAnimation)
+    return getMetaphorEnterAnimation(animationProp, enterAnimation) with getMetaphorExitAnimation(
+        animationProp,
+        exitAnimation
+    )
 }
 
 /*[isNavigatingBack]  check if menu is navigating back. */
 fun <T : Any> isNavigatingBack(
-    currentMenu: MenuItem<T>,
-    nextMenu: MenuItem<T>
+    currentMenu: MenuItem<T>, nextMenu: MenuItem<T>
 ): Boolean {
     return currentMenu.hasParent() && nextMenu == currentMenu.parent!!
 }
@@ -66,40 +67,35 @@ fun <T : Any> Dropdown(
 
     DropdownMenu(
         modifier = modifier
-          .width(MAX_WIDTH)
-          .background(colors.backgroundColor),
+            .width(MAX_WIDTH)
+            .background(colors.backgroundColor),
         expanded = isOpen,
         onDismissRequest = onDismiss,
         offset = offset
     ) {
 
         val state by remember { mutableStateOf(MenuState(menu)) }
-        AnimatedContent(
-            targetState = state.currentMenuItem,
-            transitionSpec = {
-                if (isNavigatingBack(initialState, targetState)) {
-                    animateContent(
-                        AnimationProp(
-                            enterDuration,
-                            exitDuration,
-                            0,
-                            easing,
-                        ),
-                        enter, exit
-                    )
-                } else {
-                    animateContent(
-                        AnimationProp(
-                            enterDuration,
-                            exitDuration,
-                            0,
-                            easing,
-                        ),
-                        enter, exit
-                    )
-                }
+        AnimatedContent(targetState = state.currentMenuItem, transitionSpec = {
+            if (isNavigatingBack(initialState, targetState)) {
+                animateContent(
+                    AnimationProp(
+                        enterDuration,
+                        exitDuration,
+                        0,
+                        easing,
+                    ), enter, exit
+                )
+            } else {
+                animateContent(
+                    AnimationProp(
+                        enterDuration,
+                        exitDuration,
+                        0,
+                        easing,
+                    ), enter, exit
+                )
             }
-        ) { targetMenu ->
+        }) { targetMenu ->
             DropdownContent(
                 state = state,
                 targetMenu = targetMenu,
@@ -121,8 +117,7 @@ fun <T : Any> DropdownContent(
     Column(modifier = Modifier.width(192.dp)) {
         if (targetMenu.hasParent()) {
             CascadeHeaderItem(
-                targetMenu.title,
-                colors.contentColor
+                targetMenu.title, colors.contentColor
             ) {
                 state.currentMenuItem = targetMenu.parent!!
             }
@@ -131,10 +126,7 @@ fun <T : Any> DropdownContent(
             for (item in targetMenu.children!!) {
                 if (item.hasChildren()) {
                     ParentItem(
-                        item.id,
-                        item.title,
-                        item.icon,
-                        colors.contentColor
+                        item.id, item.title, item.description, item.icon, colors.contentColor
                     ) { id ->
                         val child = targetMenu.getChild(id)
                         if (child != null) {
@@ -147,6 +139,7 @@ fun <T : Any> DropdownContent(
                     ChildItem(
                         item.id,
                         item.title,
+                        item.description,
                         item.icon,
                         colors.contentColor,
                         onItemSelected
@@ -167,10 +160,7 @@ fun Space() {
 @Composable
 fun MenuItemIcon(icon: ImageVector, tint: Color) {
     Icon(
-        modifier = Modifier.size(24.dp),
-        imageVector = icon,
-        contentDescription = null,
-        tint = tint
+        modifier = Modifier.size(24.dp), imageVector = icon, contentDescription = null, tint = tint
     )
 }
 
@@ -196,6 +186,22 @@ fun MenuItemText(
     )
 }
 
+@Composable
+fun MenuItemDescription(
+    modifier: Modifier,
+    text: String,
+    color: Color,
+) {
+    val style = MaterialTheme.typography.body1.copy(fontSize = 10.sp)
+
+    Text(
+        modifier = modifier,
+        text = text,
+        style = style,
+        color = color
+    )
+}
+
 /*[MenuItem] DropdownMenuItem  wrapper to handle onclick and user interaction */
 @Composable
 fun MenuItem(onClick: () -> Unit, content: @Composable RowScope.() -> Unit) {
@@ -215,8 +221,7 @@ fun CascadeHeaderItem(
 ) {
     MenuItem(onClick = { onClick() }) {
         MenuItemIcon(
-            icon = Icons.Rounded.ArrowLeft,
-            tint = contentColor.copy(alpha = ContentAlpha.medium)
+            icon = Icons.Rounded.ArrowLeft, tint = contentColor.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.width(4.dp))
         MenuItemText(
@@ -233,6 +238,7 @@ fun CascadeHeaderItem(
 fun <T> ParentItem(
     id: T,
     title: String,
+    description: String?,
     icon: ImageVector?,
     contentColor: Color,
     onClick: (T) -> Unit,
@@ -242,11 +248,24 @@ fun <T> ParentItem(
             MenuItemIcon(icon = icon, tint = contentColor)
             Space()
         }
-        MenuItemText(
+        Column(
             modifier = Modifier.weight(1f),
-            text = title,
-            color = contentColor,
-        )
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            MenuItemText(
+                modifier = Modifier,
+                text = title,
+                color = contentColor,
+            )
+            description?.let {
+                MenuItemDescription(
+                    modifier = Modifier,
+                    text = it,
+                    color = contentColor,
+                )
+            }
+        }
         Space()
         MenuItemIcon(icon = Icons.Rounded.ArrowRight, tint = contentColor)
     }
@@ -257,6 +276,7 @@ fun <T> ParentItem(
 fun <T> ChildItem(
     id: T,
     title: String,
+    description: String?,
     icon: ImageVector?,
     contentColor: Color,
     onClick: (T) -> Unit,
@@ -266,10 +286,23 @@ fun <T> ChildItem(
             MenuItemIcon(icon = icon, tint = contentColor)
             Space()
         }
-        MenuItemText(
+        Column(
             modifier = Modifier.weight(1f),
-            text = title,
-            color = contentColor,
-        )
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            MenuItemText(
+                modifier = Modifier,
+                text = title,
+                color = contentColor,
+            )
+            description?.let {
+                MenuItemDescription(
+                    modifier = Modifier,
+                    text = it,
+                    color = contentColor,
+                )
+            }
+        }
     }
 }

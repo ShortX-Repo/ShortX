@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.mvel.handle.impl;
 
+import static android.net.TetheringManager.TETHERING_WIFI;
+
 import android.annotation.NonNull;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.net.TetheringManager;
 import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
 import android.os.Handler;
@@ -17,9 +20,12 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.elvishew.xlog.XLog;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import kotlin.jvm.Synchronized;
@@ -32,6 +38,8 @@ class HwImpl implements IHW {
     private final Context context;
     private final ShortXContext s;
     private FlashlightController flashlightController;
+
+    private final FlashlightController.DirectExecutor executor = new FlashlightController.DirectExecutor();
 
     public HwImpl(Context context, ShortXContext s) {
         this.context = context;
@@ -198,6 +206,33 @@ class HwImpl implements IHW {
         } catch (Throwable e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isTetheringEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean enableTethering() {
+        TetheringManager tm = (TetheringManager) context.getSystemService(Context.TETHERING_SERVICE);
+        tm.startTethering(new TetheringManager.TetheringRequest.Builder(
+                        TETHERING_WIFI).setShouldShowEntitlementUi(false).build(),
+                executor,
+                new TetheringManager.StartTetheringCallback() {
+                    @Override
+                    public void onTetheringFailed(final int result) {
+                        XLog.e("onTetheringFailed: " + result);
+                    }
+                });
+        return true;
+    }
+
+    @Override
+    public boolean disableTethering() {
+        TetheringManager tm = (TetheringManager) context.getSystemService(Context.TETHERING_SERVICE);
+        tm.stopTethering(TETHERING_WIFI);
+        return true;
     }
 
     @Synchronized
@@ -431,4 +466,18 @@ class FlashlightController {
          */
         void onFlashlightAvailabilityChanged(boolean available);
     }
+
+    static class DirectExecutor implements Executor {
+
+        @Override
+        public void execute(Runnable command) {
+            command.run();
+        }
+
+        @Override
+        public String toString() {
+            return "DIRECT_EXECUTOR";
+        }
+    }
 }
+

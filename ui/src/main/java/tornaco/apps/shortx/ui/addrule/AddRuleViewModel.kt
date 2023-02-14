@@ -26,23 +26,6 @@ import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
-val selectableActions = mapOf(
-    "UI" to listOf(
-        Action.TakeScreenshot::class.java,
-        Action.ShowToast::class.java,
-    ),
-    "App" to listOf(
-        Action.LaunchApp::class.java,
-    ),
-    "Misc" to listOf(
-        Action.ShellCommand::class.java,
-        Action.Delay::class.java,
-        Action.MVEL::class.java,
-        Action.ShowOverlay::class.java,
-        Action.HideOverlay::class.java
-    )
-)
-
 data class AddRuleState(
     val id: String = UUID.randomUUID().toString(),
     val title: String = "",

@@ -97,13 +97,15 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     ConditionSelectors(state, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ActionSelectors(addAction = { action ->
-                        vm.addAction(
-                            action
-                        )
-                    }, removeAction = { action ->
-                        vm.removeAction(action)
-                    }, selectableActions = selectableActions,
+                    ActionSelectors(
+                        addAction = { action ->
+                            vm.addAction(
+                                action
+                            )
+                        },
+                        removeAction = { action ->
+                            vm.removeAction(action)
+                        },
                         actions = state.actions,
                         installedApps = state.installedApps
                     )
