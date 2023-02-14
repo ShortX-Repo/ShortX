@@ -20,6 +20,24 @@ sealed interface Action {
 
     object HideOverlay : Action
     data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
+
+    object EnableBT : Action
+    object EnableWifi : Action
+    object EnableHotSpot : Action
+    object EnableData : Action
+    object EnableNFC : Action
+    object EnableFlashLight : Action
+    object EnableDND : Action
+    object EnableDarkMode : Action
+
+    object DisableBT : Action
+    object DisableWifi : Action
+    object DisableHotSpot : Action
+    object DisableData : Action
+    object DisableNFC : Action
+    object DisableFlashLight : Action
+    object DisableDND : Action
+    object DisableDarkMode : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -49,6 +67,22 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.LaunchApp -> {
             LaunchApp.newBuilder().setAppPkg(appPkg).build()
         }
+        Action.DisableBT -> TODO()
+        Action.DisableDND -> TODO()
+        Action.DisableDarkMode -> TODO()
+        Action.DisableData -> TODO()
+        Action.DisableFlashLight -> TODO()
+        Action.DisableHotSpot -> TODO()
+        Action.DisableNFC -> TODO()
+        Action.DisableWifi -> TODO()
+        Action.EnableBT -> TODO()
+        Action.EnableDND -> TODO()
+        Action.EnableDarkMode -> TODO()
+        Action.EnableData -> TODO()
+        Action.EnableFlashLight -> TODO()
+        Action.EnableHotSpot -> TODO()
+        Action.EnableNFC -> TODO()
+        Action.EnableWifi -> TODO()
     }
 }
 

@@ -1,9 +1,9 @@
 package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -75,51 +75,55 @@ fun labelLinesForAction(action: Action): List<String> {
             LocalI18N.current["ui.action.launch.app"],
             "${action.appLabel}$PREFIX_APP_ICON${action.appPkg.pkgName}"
         )
+
+        Action.DisableBT -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.bt"])])
+        Action.DisableDND -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.dnd"])])
+        Action.DisableDarkMode -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.dark.mode"])])
+        Action.DisableData -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.data"])])
+        Action.DisableFlashLight -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.flashlight"])])
+        Action.DisableHotSpot -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.hotspot"])])
+        Action.DisableNFC -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.nfc"])])
+        Action.DisableWifi -> listOf(LocalI18N.current["ui.action.enable", mapOf("s" to LocalI18N.current["ui.action.wifi"])])
+
+        Action.EnableBT -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.bt"])])
+        Action.EnableDND -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.dnd"])])
+        Action.EnableDarkMode -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.dark.mode"])])
+        Action.EnableData -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.data"])])
+        Action.EnableFlashLight -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.flashlight"])])
+        Action.EnableHotSpot -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.hotspot"])])
+        Action.EnableNFC -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.nfc"])])
+        Action.EnableWifi -> listOf(LocalI18N.current["ui.action.disable", mapOf("s" to LocalI18N.current["ui.action.wifi"])])
     }
 }
 
-@Composable
-fun IconForAction(action: Class<out Action>) {
-    when (action) {
+fun imageVectorForAction(action: Class<out Action>): ImageVector {
+    return when (action) {
         Action.ShowToast::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Message, contentDescription = "Toast"
-            )
+            Icons.Outlined.Message
         }
         Action.ShellCommand::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Tag, contentDescription = "Shell"
-            )
+            Icons.Outlined.Tag
         }
         Action.Delay::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Timer, contentDescription = "Delay"
-            )
+            Icons.Outlined.Timer
         }
         Action.TakeScreenshot::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Devices, contentDescription = "Take Screenshot"
-            )
+            Icons.Outlined.Devices
         }
         Action.MVEL::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
-            )
+            Icons.Outlined.Code
         }
         Action.HideOverlay::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Window, contentDescription = "HideOverlay"
-            )
+            Icons.Outlined.Window
         }
         Action.ShowOverlay::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.Window, contentDescription = "ShowOverlay"
-            )
+            Icons.Outlined.Window
         }
         Action.LaunchApp::class.java -> {
-            Icon(
-                imageVector = Icons.Filled.OpenInNew, contentDescription = "LaunchApp"
-            )
+            Icons.Outlined.OpenInNew
+        }
+        else -> {
+            Icons.Outlined.Settings
         }
     }
 }

@@ -122,18 +122,6 @@ fun ActionSelectors(
         },
         onActionClick = { action ->
             when (action) {
-                is Action.TakeScreenshot -> {
-                }
-                is Action.ShellCommand -> {
-                }
-                is Action.ShowToast -> {
-                }
-                is Action.Delay -> {
-                }
-                is Action.MVEL -> {
-                }
-                Action.HideOverlay -> {
-                }
                 is Action.ShowOverlay -> {
                     showOverlayButtonSelectorState.show(
                         ShowOverlayButtonSettings(
@@ -141,7 +129,7 @@ fun ActionSelectors(
                             action.settings.map { it.toOverlayButtonItem() })
                     )
                 }
-                is Action.LaunchApp -> {}
+                else -> {}
             }
         })
 }
@@ -162,7 +150,7 @@ private fun Actions(
                 ListItem(
                     titleLines = labelLinesForAction(action = it),
                     icon = {
-                        IconForAction(action = it::class.java)
+                        Icon(imageVector = imageVectorForAction(action = it::class.java))
                     },
                     action1 = {
                         IconButton(onClick = {
