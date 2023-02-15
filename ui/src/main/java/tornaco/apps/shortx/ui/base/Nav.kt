@@ -1,0 +1,21 @@
+package tornaco.apps.shortx.ui.base
+
+import androidx.navigation.NavController
+import kotlinx.coroutines.flow.StateFlow
+
+fun NavController.popBackWithResult(data: Map<String, Any>) {
+    this.previousBackStackEntry?.savedStateHandle?.let {
+        for ((key, value) in data) {
+            it[key] = value
+        }
+    }
+    popBackStack()
+}
+
+fun <T> NavController.getStateFlow(key: String, initialValue: T): StateFlow<T>? {
+    return this.currentBackStackEntry?.savedStateHandle?.getStateFlow(key, initialValue)
+}
+
+fun <T> NavController.removeData(key: String): T? {
+    return this.currentBackStackEntry?.savedStateHandle?.remove(key)
+}
