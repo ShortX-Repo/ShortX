@@ -83,6 +83,48 @@ fun ActionSelectors(
         })
     AppPkgSelector(state = launchAppSelectorState)
 
+    val stopAppSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.StopApp(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = stopAppSelectorState)
+
+    val startAppProcessSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.StartAppProcess(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = startAppProcessSelectorState)
+
+    val enableAppProcessSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.EnableApp(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = enableAppProcessSelectorState)
+
+    val disableAppProcessSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.DisableApp(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = disableAppProcessSelectorState)
+
+    val suspendAppProcessSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.SuspendApp(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = suspendAppProcessSelectorState)
+
+    val unsuspendAppProcessSelectorState =
+        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
+            val action = Action.UnsuspendApp(it)
+            addAction(action)
+        })
+    AppPkgSelector(state = unsuspendAppProcessSelectorState)
+
     Actions(
         header = header,
         actions = actions,
@@ -95,7 +137,13 @@ fun ActionSelectors(
                 delaySelectionState = delaySelectionState,
                 mvelSelectorState = mvelSelectorState,
                 showOverlayButtonSelectorState = showOverlayButtonSelectorState,
-                launchAppSelectorState = launchAppSelectorState
+                launchAppSelectorState = launchAppSelectorState,
+                stopAppSelectorState = stopAppSelectorState,
+                startAppProcessSelectorState = startAppProcessSelectorState,
+                enableAppProcessSelectorState = enableAppProcessSelectorState,
+                disableAppProcessSelectorState = disableAppProcessSelectorState,
+                suspendAppProcessSelectorState = suspendAppProcessSelectorState,
+                unsuspendAppProcessSelectorState = unsuspendAppProcessSelectorState,
             )
         },
         removeAction = { action ->
@@ -123,7 +171,13 @@ private fun onActionMenuSelected(
     delaySelectionState: TextInputState,
     mvelSelectorState: MVELSelectorState,
     showOverlayButtonSelectorState: ShowOverlayButtonSelectorState,
-    launchAppSelectorState: AppPkgSelectorState
+    launchAppSelectorState: AppPkgSelectorState,
+    stopAppSelectorState: AppPkgSelectorState,
+    startAppProcessSelectorState: AppPkgSelectorState,
+    enableAppProcessSelectorState: AppPkgSelectorState,
+    disableAppProcessSelectorState: AppPkgSelectorState,
+    suspendAppProcessSelectorState: AppPkgSelectorState,
+    unsuspendAppProcessSelectorState: AppPkgSelectorState,
 ) {
     when (action) {
         Action.TakeScreenshot::class -> {
@@ -176,6 +230,25 @@ private fun onActionMenuSelected(
             action.objectInstance?.let {
                 addAction(it)
             }
+        }
+
+        Action.StopApp::class -> {
+            stopAppSelectorState.show()
+        }
+        Action.StartAppProcess::class -> {
+            startAppProcessSelectorState.show()
+        }
+        Action.EnableApp::class -> {
+            enableAppProcessSelectorState.show()
+        }
+        Action.DisableApp::class -> {
+            disableAppProcessSelectorState.show()
+        }
+        Action.SuspendApp::class -> {
+            suspendAppProcessSelectorState.show()
+        }
+        Action.UnsuspendApp::class -> {
+            unsuspendAppProcessSelectorState.show()
         }
     }
 }

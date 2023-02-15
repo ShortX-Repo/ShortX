@@ -49,6 +49,24 @@ message LaunchApp {
   AppPkg appPkg = 1;
 }
 
+message StopApp {
+  repeated AppPkg appPkg = 1;
+}
+
+message SetAppEnabled {
+  repeated AppPkg appPkg = 1;
+  bool enable = 2;
+}
+
+message SetAppSuspend {
+  repeated AppPkg appPkg = 1;
+  bool suspend = 2;
+}
+
+message StartAppProcess {
+  repeated AppPkg appPkg = 1;
+}
+
 message SetWifiEnabled {
   bool enable = 1;
 }

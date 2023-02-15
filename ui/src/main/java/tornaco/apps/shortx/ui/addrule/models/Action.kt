@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.models
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
+import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -19,7 +20,14 @@ sealed interface Action {
         Action
 
     object HideOverlay : Action
+
     data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
+    data class StopApp(val appPkgs: List<App>) : Action
+    data class StartAppProcess(val appPkgs: List<App>) : Action
+    data class EnableApp(val appPkgs: List<App>) : Action
+    data class DisableApp(val appPkgs: List<App>) : Action
+    data class SuspendApp(val appPkgs: List<App>) : Action
+    data class UnsuspendApp(val appPkgs: List<App>) : Action
 
     object EnableBT : Action
     object EnableWifi : Action
@@ -84,6 +92,13 @@ fun Action.toProtoAction(): ProtoMessage {
         Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setEnable(true).build()
         Action.EnableNFC -> SetNFCEnabled.newBuilder().setEnable(true).build()
         Action.EnableWifi -> SetWifiEnabled.newBuilder().setEnable(true).build()
+
+        is Action.DisableApp -> TODO()
+        is Action.EnableApp -> TODO()
+        is Action.StartAppProcess -> TODO()
+        is Action.StopApp -> TODO()
+        is Action.SuspendApp -> TODO()
+        is Action.UnsuspendApp -> TODO()
     }
 }
 

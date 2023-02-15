@@ -113,6 +113,13 @@ fun labelLinesForAction(action: Action): List<String> {
         Action.EnableHotSpot -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])])
         Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
         Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
+
+        is Action.DisableApp -> TODO()
+        is Action.EnableApp -> TODO()
+        is Action.StartAppProcess -> TODO()
+        is Action.StopApp -> TODO()
+        is Action.SuspendApp -> TODO()
+        is Action.UnsuspendApp -> TODO()
     }
 }
 
