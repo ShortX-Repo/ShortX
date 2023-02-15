@@ -1,7 +1,5 @@
 package tornaco.apps.shortx.ui.addrule.models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
@@ -11,59 +9,34 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 
-sealed interface Action : Parcelable {
-    @Parcelize
+sealed interface Action {
     object TakeScreenshot : Action
-    @Parcelize
     data class ShellCommand(val command: String) : Action
-    @Parcelize
     data class Delay(val time: Long) : Action
-    @Parcelize
     data class ShowToast(val message: String) : Action
-
-    @Parcelize
     data class MVEL(val expression: String) : Action
-    @Parcelize
     data class ShowOverlay(val autoCollapse: Boolean, val settings: List<OverlayButtonSetting>) :
         Action
 
-    @Parcelize
     object HideOverlay : Action
-    @Parcelize
     data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
 
-    @Parcelize
     object EnableBT : Action
-    @Parcelize
     object EnableWifi : Action
-    @Parcelize
     object EnableHotSpot : Action
-    @Parcelize
     object EnableData : Action
-    @Parcelize
     object EnableNFC : Action
-    @Parcelize
     object EnableFlashLight : Action
-    @Parcelize
     object EnableDND : Action
-    @Parcelize
     object EnableDarkMode : Action
 
-    @Parcelize
     object DisableBT : Action
-    @Parcelize
     object DisableWifi : Action
-    @Parcelize
     object DisableHotSpot : Action
-    @Parcelize
     object DisableData : Action
-    @Parcelize
     object DisableNFC : Action
-    @Parcelize
     object DisableFlashLight : Action
-    @Parcelize
     object DisableDND : Action
-    @Parcelize
     object DisableDarkMode : Action
 }
 
