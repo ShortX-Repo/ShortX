@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
+import kotlin.reflect.KClass
 
 @Composable
 fun ActionSelectors(
@@ -84,38 +86,17 @@ fun ActionSelectors(
     Actions(
         header = header,
         actions = actions,
-        selectAction = { action: Class<out Action> ->
-            when (action) {
-                Action.TakeScreenshot::class.java -> {
-                    addAction(Action.TakeScreenshot)
-                }
-                Action.ShellCommand::class.java -> {
-                    shellCommandSelectorState.show()
-                }
-                Action.ShowToast::class.java -> {
-                    toastSelectionState.show()
-                }
-                Action.Delay::class.java -> {
-                    delaySelectionState.show()
-                }
-                Action.MVEL::class.java -> {
-                    mvelSelectorState.show()
-                }
-                Action.HideOverlay::class.java -> {
-                    addAction(Action.HideOverlay)
-                }
-                Action.ShowOverlay::class.java -> {
-                    showOverlayButtonSelectorState.show(
-                        ShowOverlayButtonSettings(
-                            false,
-                            emptyList()
-                        )
-                    )
-                }
-                Action.LaunchApp::class.java -> {
-                    launchAppSelectorState.show()
-                }
-            }
+        selectAction = { action: KClass<out Action> ->
+            onActionMenuSelected(
+                action = action,
+                addAction = addAction,
+                shellCommandSelectorState = shellCommandSelectorState,
+                toastSelectionState = toastSelectionState,
+                delaySelectionState = delaySelectionState,
+                mvelSelectorState = mvelSelectorState,
+                showOverlayButtonSelectorState = showOverlayButtonSelectorState,
+                launchAppSelectorState = launchAppSelectorState
+            )
         },
         removeAction = { action ->
             removeAction(action)
@@ -134,12 +115,77 @@ fun ActionSelectors(
         })
 }
 
+private fun onActionMenuSelected(
+    action: KClass<out Action>,
+    addAction: (Action) -> Unit,
+    shellCommandSelectorState: ShellCommandSelectorState,
+    toastSelectionState: TextInputState,
+    delaySelectionState: TextInputState,
+    mvelSelectorState: MVELSelectorState,
+    showOverlayButtonSelectorState: ShowOverlayButtonSelectorState,
+    launchAppSelectorState: AppPkgSelectorState
+) {
+    when (action) {
+        Action.TakeScreenshot::class -> {
+            addAction(Action.TakeScreenshot)
+        }
+        Action.ShellCommand::class -> {
+            shellCommandSelectorState.show()
+        }
+        Action.ShowToast::class -> {
+            toastSelectionState.show()
+        }
+        Action.Delay::class -> {
+            delaySelectionState.show()
+        }
+        Action.MVEL::class -> {
+            mvelSelectorState.show()
+        }
+        Action.HideOverlay::class -> {
+            addAction(Action.HideOverlay)
+        }
+        Action.ShowOverlay::class -> {
+            showOverlayButtonSelectorState.show(
+                ShowOverlayButtonSettings(
+                    false,
+                    emptyList()
+                )
+            )
+        }
+        Action.LaunchApp::class -> {
+            launchAppSelectorState.show()
+        }
+
+        Action.DisableBT::class,
+        Action.DisableDND::class,
+        Action.DisableDarkMode::class,
+        Action.DisableData::class,
+        Action.DisableFlashLight::class,
+        Action.DisableHotSpot::class,
+        Action.DisableNFC::class,
+        Action.DisableWifi::class,
+
+        Action.EnableBT::class,
+        Action.EnableDND::class,
+        Action.EnableDarkMode::class,
+        Action.EnableData::class,
+        Action.EnableFlashLight::class,
+        Action.EnableHotSpot::class,
+        Action.EnableNFC::class,
+        Action.EnableWifi::class -> {
+            action.objectInstance?.let {
+                addAction(it)
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
-    selectAction: (Class<out Action>) -> Unit,
+    selectAction: (KClass<out Action>) -> Unit,
     removeAction: (Action) -> Unit,
     onActionClick: (Action) -> Unit = {}
 ) {
@@ -150,7 +196,7 @@ private fun Actions(
                 ListItem(
                     titleLines = labelLinesForAction(action = it),
                     icon = {
-                        Icon(imageVector = imageVectorForAction(action = it::class.java))
+                        Icon(imageVector = imageVectorForAction(action = it::class))
                     },
                     action1 = {
                         IconButton(onClick = {

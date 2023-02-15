@@ -91,6 +91,8 @@
   "ui.action.flashlight": "手电筒",
   "ui.action.dnd": "勿扰模式",
   "ui.action.dark.mode": "暗色模式",
+  "ui.action.system.settings": "系统设置",
+  "ui.action.advanced": "高级",
   "ui.settings.about": "关于",
   "ui.settings.general": "通用",
   "ui.settings.dev": "开发",
