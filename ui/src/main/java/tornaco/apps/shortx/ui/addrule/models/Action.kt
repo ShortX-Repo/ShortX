@@ -67,22 +67,23 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.LaunchApp -> {
             LaunchApp.newBuilder().setAppPkg(appPkg).build()
         }
-        Action.DisableBT -> TODO()
-        Action.DisableDND -> TODO()
-        Action.DisableDarkMode -> TODO()
-        Action.DisableData -> TODO()
-        Action.DisableFlashLight -> TODO()
-        Action.DisableHotSpot -> TODO()
-        Action.DisableNFC -> TODO()
-        Action.DisableWifi -> TODO()
-        Action.EnableBT -> TODO()
-        Action.EnableDND -> TODO()
-        Action.EnableDarkMode -> TODO()
-        Action.EnableData -> TODO()
-        Action.EnableFlashLight -> TODO()
-        Action.EnableHotSpot -> TODO()
-        Action.EnableNFC -> TODO()
-        Action.EnableWifi -> TODO()
+        Action.DisableBT -> SetBTEnabled.newBuilder().setEnable(false).build()
+        Action.DisableDND -> SetDNDEnabled.newBuilder().setEnable(false).build()
+        Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(false).build()
+        Action.DisableData -> SetDataEnabled.newBuilder().setEnable(false).build()
+        Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(false).build()
+        Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setEnable(false).build()
+        Action.DisableNFC -> SetNFCEnabled.newBuilder().setEnable(false).build()
+        Action.DisableWifi -> SetWifiEnabled.newBuilder().setEnable(false).build()
+
+        Action.EnableBT -> SetBTEnabled.newBuilder().setEnable(true).build()
+        Action.EnableDND -> SetDNDEnabled.newBuilder().setEnable(true).build()
+        Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(true).build()
+        Action.EnableData -> SetDataEnabled.newBuilder().setEnable(true).build()
+        Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(true).build()
+        Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setEnable(true).build()
+        Action.EnableNFC -> SetNFCEnabled.newBuilder().setEnable(true).build()
+        Action.EnableWifi -> SetWifiEnabled.newBuilder().setEnable(true).build()
     }
 }
 
@@ -119,6 +120,62 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
             val appLabel = shortXManager.getAppLabel(pkg)
             Action.LaunchApp(data.appPkg, appLabel = appLabel)
+        }
+        this is_ SetWifiEnabled::class.java -> {
+            val data = this unpack_ SetWifiEnabled::class.java
+            if (data.enable) {
+                Action.EnableWifi
+            } else {
+                Action.DisableWifi
+            }
+        }
+        this is_ SetBTEnabled::class.java -> {
+            val data = this unpack_ SetBTEnabled::class.java
+            if (data.enable) {
+                Action.EnableBT
+            } else {
+                Action.DisableBT
+            }
+        }
+        this is_ SetNFCEnabled::class.java -> {
+            val data = this unpack_ SetNFCEnabled::class.java
+            if (data.enable) {
+                Action.EnableNFC
+            } else {
+                Action.DisableNFC
+            }
+        }
+        this is_ SetDNDEnabled::class.java -> {
+            val data = this unpack_ SetDNDEnabled::class.java
+            if (data.enable) {
+                Action.EnableDND
+            } else {
+                Action.DisableDND
+            }
+        }
+        this is_ SetDarkModeEnabled::class.java -> {
+            val data = this unpack_ SetDarkModeEnabled::class.java
+            if (data.enable) {
+                Action.EnableDarkMode
+            } else {
+                Action.DisableDarkMode
+            }
+        }
+        this is_ SetFlashLightEnabled::class.java -> {
+            val data = this unpack_ SetFlashLightEnabled::class.java
+            if (data.enable) {
+                Action.EnableFlashLight
+            } else {
+                Action.DisableFlashLight
+            }
+        }
+        this is_ SetHotSpotEnabled::class.java -> {
+            val data = this unpack_ SetHotSpotEnabled::class.java
+            if (data.enable) {
+                Action.EnableHotSpot
+            } else {
+                Action.DisableHotSpot
+            }
         }
         else -> null
     }
