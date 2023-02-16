@@ -7,6 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
@@ -66,14 +69,18 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadDirections() {
         logger.d("loadDirections")
         viewModelScope.launch {
-            val das = shortXManager.getAllDirectAction().map {
+            val das = shortXManager.getAllDirectAction().map { directAction ->
                 DirectActionUM(
-                    id = it.id,
-                    title = it.title,
-                    description = it.description,
+                    id = directAction.id,
+                    title = directAction.title,
+                    description = directAction.description.fallbackOnEmpty(directAction.actionsList.mapNotNull {
+                        it.toAction(shortXManager)
+                    }.joinToString {
+                        labelAndDescriptionForActionSelector(i18N, it::class).first
+                    }),
                     updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
-                        Date(it.lastUpdateTime)
+                        Date(directAction.lastUpdateTime)
                     ),
                 )
             }

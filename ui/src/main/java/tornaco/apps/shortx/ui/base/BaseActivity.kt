@@ -13,7 +13,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            CompositionLocalProvider(LocalI18N provides I18NImpl()) {
+            CompositionLocalProvider(LocalI18N provides i18NIns) {
                 Content()
             }
         }

@@ -75,6 +75,10 @@ fun labelAndDescriptionForActionSelector(
 @Composable
 fun labelLinesForAction(action: Action): List<String> {
     val i18N = LocalI18N.current
+    return labelLinesForAction(i18N, action)
+}
+
+fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)

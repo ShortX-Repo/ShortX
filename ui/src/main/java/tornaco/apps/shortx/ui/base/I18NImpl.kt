@@ -6,6 +6,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import tornaco.apps.shortx.core.util.Logger
 
+val i18NIns by lazy { I18NImpl() }
+
 class I18NImpl : I18N {
     override fun get(key: String, args: Map<String, String>): String {
         return I18NCache.get(key, args)

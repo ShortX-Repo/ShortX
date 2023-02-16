@@ -8,4 +8,5 @@ import tornaco.apps.shortx.core.util.Logger
 abstract class ContextViewModel<T> constructor(private val context: Context) : StateViewModel<T>() {
     protected val shortXManager = tornaco.apps.shortx.core.shortXManager
     protected val logger = Logger(javaClass.simpleName)
+    protected val i18N = i18NIns
 }

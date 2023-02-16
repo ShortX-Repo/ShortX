@@ -102,7 +102,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
                 .setId(state.value.id)
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
-                .setDescription(state.value.description.fallbackOnEmpty("No description"))
+                .apply {
+                    if (state.value.description.isNotEmpty()) {
+                        description = state.value.description
+                    }
+                }
                 .addAllActions(protoActions)
                 .build()
 
