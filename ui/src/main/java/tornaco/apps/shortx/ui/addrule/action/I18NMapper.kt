@@ -58,6 +58,13 @@ fun labelAndDescriptionForActionSelector(
         Action.EnableNFC::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])] to null
         Action.EnableWifi::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])] to null
 
+        Action.StopApp::class -> i18N["ui.action.stop.app"] to null
+        Action.StartAppProcess::class -> i18N["ui.action.start.app.process"] to null
+        Action.EnableApp::class -> i18N["ui.action.enable.app"] to null
+        Action.DisableApp::class -> i18N["ui.action.disable.app"] to null
+        Action.SuspendApp::class -> i18N["ui.action.suspend.app"] to null
+        Action.UnsuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
+
         else -> {
             "N/A" to null
         }
@@ -114,12 +121,13 @@ fun labelLinesForAction(action: Action): List<String> {
         Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
         Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
 
-        is Action.DisableApp -> TODO()
-        is Action.EnableApp -> TODO()
-        is Action.StartAppProcess -> TODO()
-        is Action.StopApp -> TODO()
-        is Action.SuspendApp -> TODO()
-        is Action.UnsuspendApp -> TODO()
+
+        is Action.StopApp -> listOf(i18N["ui.action.stop.app"])
+        is Action.StartAppProcess -> listOf(i18N["ui.action.start.app.process"])
+        is Action.EnableApp -> listOf(i18N["ui.action.enable.app"])
+        is Action.DisableApp -> listOf(i18N["ui.action.disable.app"])
+        is Action.SuspendApp -> listOf(i18N["ui.action.suspend.app"])
+        is Action.UnsuspendApp -> listOf(i18N["ui.action.unsuspend.app"])
     }
 }
 
@@ -199,6 +207,26 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         Action.EnableWifi::class -> {
             Icons.Outlined.Wifi
         }
+
+        Action.StopApp::class -> {
+            Icons.Outlined.StopCircle
+        }
+        Action.StartAppProcess::class -> {
+            Icons.Outlined.PlayArrow
+        }
+        Action.EnableApp::class -> {
+            Icons.Outlined.ToggleOn
+        }
+        Action.DisableApp::class -> {
+            Icons.Outlined.AcUnit
+        }
+        Action.SuspendApp::class -> {
+            Icons.Outlined.AdminPanelSettings
+        }
+        Action.UnsuspendApp::class -> {
+            Icons.Outlined.VerifiedUser
+        }
+
 
         else -> {
             Icons.Outlined.Settings

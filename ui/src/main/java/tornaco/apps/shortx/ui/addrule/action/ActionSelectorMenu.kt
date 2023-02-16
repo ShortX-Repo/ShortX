@@ -24,7 +24,7 @@ fun ActionSelectorMenu(
     val menu = dropDownMenu {
         item(
             Action.ShowToast::class,
-            "UI" to null
+            "UI"
         ) {
             icon(Icons.Outlined.Preview)
 
@@ -43,16 +43,11 @@ fun ActionSelectorMenu(
             }
         }
 
-        item(
-            Action.LaunchApp::class,
-            labelAndDescriptionForActionSelector(i18N, Action.LaunchApp::class)
-        ) {
-            icon(imageVectorForAction(Action.LaunchApp::class))
-        }
+        appItems(i18N)
 
         item(
             Action.ShellCommand::class,
-            i18N["ui.action.advanced"] to null
+            i18N["ui.action.advanced"]
         ) {
             icon(Icons.Outlined.Extension)
 
@@ -94,7 +89,7 @@ fun ActionSelectorMenu(
 
         item(
             Action.EnableWifi::class,
-            i18N["ui.action.system.settings"] to null
+            i18N["ui.action.system.settings"]
         ) {
             icon(Icons.Outlined.ToggleOn)
             systemSettingsItems(i18N)
@@ -109,12 +104,40 @@ fun ActionSelectorMenu(
     )
 }
 
+private fun DropDownMenuBuilder<KClass<out Action>>.appItems(
+    i18N: I18N
+) {
+    item(
+        Action.LaunchApp::class,
+        i18N["ui.action.category.app"]
+    ) {
+        icon(Icons.Outlined.Apps)
+
+        arrayOf(
+            Action.LaunchApp::class,
+            Action.StopApp::class,
+            Action.StartAppProcess::class,
+            Action.EnableApp::class,
+            Action.DisableApp::class,
+            Action.SuspendApp::class,
+            Action.UnsuspendApp::class,
+        ).forEach {
+            item(
+                it,
+                labelAndDescriptionForActionSelector(i18N, it)
+            ) {
+                icon(imageVectorForAction(it))
+            }
+        }
+    }
+}
+
 private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
     i18N: I18N
 ) {
     item(
         Action.EnableWifi::class,
-        i18N["ui.action.wifi"] to null
+        i18N["ui.action.wifi"]
     ) {
         icon(Icons.Outlined.Wifi)
 
@@ -135,7 +158,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableBT::class,
-        i18N["ui.action.bt"] to null
+        i18N["ui.action.bt"]
     ) {
         icon(Icons.Outlined.Bluetooth)
 
@@ -157,7 +180,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableData::class,
-        i18N["ui.action.data"] to null
+        i18N["ui.action.data"]
     ) {
         icon(Icons.Outlined.SignalCellular0Bar)
 
@@ -178,7 +201,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableHotSpot::class,
-        i18N["ui.action.hotspot"] to null
+        i18N["ui.action.hotspot"]
     ) {
         icon(Icons.Outlined.WifiTethering)
 
@@ -199,7 +222,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableNFC::class,
-        i18N["ui.action.nfc"] to null
+        i18N["ui.action.nfc"]
     ) {
         icon(Icons.Outlined.Nfc)
 
@@ -220,7 +243,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableDND::class,
-        i18N["ui.action.dnd"] to null
+        i18N["ui.action.dnd"]
     ) {
         icon(Icons.Outlined.DoNotDisturb)
 
@@ -241,7 +264,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableFlashLight::class,
-        i18N["ui.action.flashlight"] to null
+        i18N["ui.action.flashlight"]
     ) {
         icon(Icons.Outlined.FlashlightOn)
 
@@ -262,7 +285,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
 
     item(
         Action.EnableDarkMode::class,
-        i18N["ui.action.dark.mode"] to null
+        i18N["ui.action.dark.mode"]
     ) {
         icon(Icons.Outlined.DarkMode)
 

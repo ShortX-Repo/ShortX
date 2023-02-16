@@ -14,7 +14,7 @@ class DropDownMenuBuilder<T : Any> {
     fun item(
         id: T,
         title: String,
-        description: String?,
+        description: String? = null,
         init: (DropDownMenuBuilder<T>.() -> Unit)? = null
     ) {
         val menuBuilder = DropDownMenuBuilder<T>()
