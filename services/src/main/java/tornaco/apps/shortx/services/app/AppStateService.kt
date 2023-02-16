@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.content.pm.UserInfo
 import android.os.UserHandle
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import tornaco.apps.shortx.core.Pkg
@@ -15,8 +16,11 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.unknownUserComponent
+import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
+import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val _currentFgComponentName = MutableStateFlow(unknownUserComponent)
@@ -25,6 +29,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     private val pkgPools = mutableListOf<PkgPool>()
 
     private val onPackageChangedListeners: MutableList<((AppPkg) -> Unit)> = mutableListOf()
+
+    private val enableAppPkg by lazy { PmSetAppEnabledApplicationPackageEnabler(context) }
+    private val suspendAppPkg by lazy { PmSuspendApplicationPackageEnabler(context) }
 
     override fun systemReady() {
         super.systemReady()
@@ -54,6 +61,10 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             it.destroy()
         }
     }
+
+    fun AppPkg.isFront() = currentFgComponentName.value.pkg == this
+
+    fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
 
     fun onComponentMoveToBg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToBg: $componentName user: $userId")
@@ -113,6 +124,60 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             context.packageManager.getLaunchIntentForPackage(appPkg.pkgName)?.let { intent ->
                 logger.d("launchApp, intent: $intent")
                 context.startActivityAsUser(intent, UserHandle.of(appPkg.userId))
+            }
+        }
+    }
+
+    fun forceStopApp(appPkg: AppPkg, reason: String) {
+        logger.w("forceStopApp, $appPkg $reason")
+        systemServiceScope.launchSafety {
+            val amForceStop =
+                { context.activityManager.forceStopPackageAsUser(appPkg.pkgName, appPkg.userId) }
+            amForceStop()
+            delay(500)
+            if (!appPkg.isFront() && appPkg.isRunning()) {
+                logger.w("forceStopApp should kill again: $appPkg")
+                amForceStop()
+            }
+        }
+    }
+
+    fun forceStopApp(appPkgList: List<AppPkg>, reason: String) {
+        logger.w("forceStopApp, $appPkgList $reason")
+        systemServiceScope.launchSafety {
+            appPkgList.forEach {
+                context.activityManager.forceStopPackageAsUser(it.pkgName, it.userId)
+            }
+
+            delay(500)
+
+            appPkgList.forEach {
+                if (!it.isFront() && it.isRunning()) {
+                    logger.w("forceStopApp should kill again: $it")
+                    context.activityManager.forceStopPackageAsUser(it.pkgName, it.userId)
+                }
+            }
+        }
+    }
+
+    fun startAppProcess(appPkgList: List<AppPkg>, reason: String) {
+        logger.w("startAppProcess, $appPkgList $reason")
+    }
+
+    fun setAppEnabled(appPkgList: List<AppPkg>, enable: Boolean, reason: String) {
+        logger.w("setAppEnabled, enable: $enable $appPkgList $reason")
+        systemServiceScope.launchSafety {
+            appPkgList.forEach {
+                if (enable) enableAppPkg.enable(it) else enableAppPkg.disable(it)
+            }
+        }
+    }
+
+    fun setAppSuspend(appPkgList: List<AppPkg>, suspend: Boolean, reason: String) {
+        logger.w("setAppSuspend, suspend: $suspend $appPkgList $reason")
+        systemServiceScope.launchSafety {
+            appPkgList.forEach {
+                if (suspend) suspendAppPkg.disable(it) else suspendAppPkg.enable(it)
             }
         }
     }

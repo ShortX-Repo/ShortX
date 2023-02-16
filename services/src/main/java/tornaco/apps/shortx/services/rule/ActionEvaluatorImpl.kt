@@ -86,6 +86,38 @@ class ActionEvaluatorImpl(
             } else {
                 data.isDataEnabled = d.enable
             }
+        } else if (action is_ StopApp::class.java) {
+            val d = action unpack_ StopApp::class.java
+            val pkgs = if (d.pkgSetsList.isNotEmpty()) {
+                d.pkgSetsList.pkgSetIdsToPkgs(shortXContext)
+            } else {
+                d.appPkgList
+            }
+            shortXContext.appState.forceStopApp(pkgs, "Action Eva- StopApp")
+        } else if (action is_ StartAppProcess::class.java) {
+            val d = action unpack_ StartAppProcess::class.java
+            val pkgs = if (d.pkgSetsList.isNotEmpty()) {
+                d.pkgSetsList.pkgSetIdsToPkgs(shortXContext)
+            } else {
+                d.appPkgList
+            }
+            shortXContext.appState.startAppProcess(pkgs, "Action Eva- StartAppProcess")
+        } else if (action is_ SetAppEnabled::class.java) {
+            val d = action unpack_ SetAppEnabled::class.java
+            val pkgs = if (d.pkgSetsList.isNotEmpty()) {
+                d.pkgSetsList.pkgSetIdsToPkgs(shortXContext)
+            } else {
+                d.appPkgList
+            }
+            shortXContext.appState.setAppEnabled(pkgs, d.enable, "Action Eva- SetAppEnabled")
+        } else if (action is_ SetAppSuspend::class.java) {
+            val d = action unpack_ SetAppSuspend::class.java
+            val pkgs = if (d.pkgSetsList.isNotEmpty()) {
+                d.pkgSetsList.pkgSetIdsToPkgs(shortXContext)
+            } else {
+                d.appPkgList
+            }
+            shortXContext.appState.setAppSuspend(pkgs, d.suspend, "Action Eva- SetAppSuspend")
         }
     }
 }
