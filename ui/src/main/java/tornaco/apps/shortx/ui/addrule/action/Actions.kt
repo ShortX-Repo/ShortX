@@ -87,12 +87,18 @@ fun ActionSelectors(
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.StopApp(it)
             addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.StopApp(pkgSets = it)
+            addAction(action)
         })
     AppPkgSelector(state = stopAppSelectorState)
 
     val startAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.StartAppProcess(it)
+            addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.StartAppProcess(pkgSets = it)
             addAction(action)
         })
     AppPkgSelector(state = startAppProcessSelectorState)
@@ -101,12 +107,18 @@ fun ActionSelectors(
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.EnableApp(it)
             addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.EnableApp(pkgSets = it)
+            addAction(action)
         })
     AppPkgSelector(state = enableAppProcessSelectorState)
 
     val disableAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.DisableApp(it)
+            addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.DisableApp(pkgSets = it)
             addAction(action)
         })
     AppPkgSelector(state = disableAppProcessSelectorState)
@@ -115,12 +127,18 @@ fun ActionSelectors(
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.SuspendApp(it)
             addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.SuspendApp(pkgSets = it)
+            addAction(action)
         })
     AppPkgSelector(state = suspendAppProcessSelectorState)
 
     val unsuspendAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val action = Action.UnsuspendApp(it)
+            addAction(action)
+        }, onPkgSetSelected = {
+            val action = Action.UnsuspendApp(pkgSets = it)
             addAction(action)
         })
     AppPkgSelector(state = unsuspendAppProcessSelectorState)

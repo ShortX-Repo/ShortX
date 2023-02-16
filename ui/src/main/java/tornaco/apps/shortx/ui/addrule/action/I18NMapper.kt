@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -122,12 +123,30 @@ fun labelLinesForAction(action: Action): List<String> {
         Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
 
 
-        is Action.StopApp -> listOf(i18N["ui.action.stop.app"])
-        is Action.StartAppProcess -> listOf(i18N["ui.action.start.app.process"])
-        is Action.EnableApp -> listOf(i18N["ui.action.enable.app"])
-        is Action.DisableApp -> listOf(i18N["ui.action.disable.app"])
-        is Action.SuspendApp -> listOf(i18N["ui.action.suspend.app"])
-        is Action.UnsuspendApp -> listOf(i18N["ui.action.unsuspend.app"])
+        is Action.StopApp -> mutableListOf(i18N["ui.action.stop.app"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+        is Action.StartAppProcess -> mutableListOf(i18N["ui.action.start.app.process"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+        is Action.EnableApp -> mutableListOf(i18N["ui.action.enable.app"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+        is Action.DisableApp -> mutableListOf(i18N["ui.action.disable.app"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+        is Action.SuspendApp -> mutableListOf(i18N["ui.action.suspend.app"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+        is Action.UnsuspendApp -> mutableListOf(i18N["ui.action.unsuspend.app"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
     }
 }
 

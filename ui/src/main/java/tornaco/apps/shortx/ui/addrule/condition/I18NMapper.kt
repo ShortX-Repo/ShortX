@@ -5,10 +5,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.addrule.models.Condition
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
-import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
 
 @Composable
 fun labelForConditionSelector(condition: Class<out Condition>): List<String> {
@@ -34,17 +33,8 @@ fun labelForConditionSelector(condition: Class<out Condition>): List<String> {
 fun labelForCondition(condition: Condition): List<String> {
     return when (condition) {
         is Condition.CurrentForegroundApp -> {
-            mutableListOf(LocalI18N.current["ui.dialog.title.current.app"]).apply {
-                if (condition.pkgSets.isNotEmpty()) {
-                    addAll(condition.pkgSets.map {
-                        "${it.label}${PREFIX_MD_ICON}Folder"
-                    })
-                } else {
-                    addAll(condition.apps.map {
-                        "${it.label}$PREFIX_APP_ICON${it.pkg.pkgName}"
-                    })
-                }
-            }
+            mutableListOf(LocalI18N.current["ui.dialog.title.current.app"])
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
         is Condition.MVEL -> {
             listOf("MVEL expression", condition.expression)

@@ -51,20 +51,24 @@ message LaunchApp {
 
 message StopApp {
   repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
 }
 
 message SetAppEnabled {
   repeated AppPkg appPkg = 1;
-  bool enable = 2;
+  repeated string pkgSets = 2;
+  bool enable = 3;
 }
 
 message SetAppSuspend {
   repeated AppPkg appPkg = 1;
-  bool suspend = 2;
+  repeated string pkgSets = 2;
+  bool suspend = 3;
 }
 
 message StartAppProcess {
   repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
 }
 
 message SetWifiEnabled {

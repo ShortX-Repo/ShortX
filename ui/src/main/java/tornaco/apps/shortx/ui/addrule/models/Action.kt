@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -22,12 +23,35 @@ sealed interface Action {
     object HideOverlay : Action
 
     data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
-    data class StopApp(val appPkgs: List<App>) : Action
-    data class StartAppProcess(val appPkgs: List<App>) : Action
-    data class EnableApp(val appPkgs: List<App>) : Action
-    data class DisableApp(val appPkgs: List<App>) : Action
-    data class SuspendApp(val appPkgs: List<App>) : Action
-    data class UnsuspendApp(val appPkgs: List<App>) : Action
+    data class StopApp(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
+
+    data class StartAppProcess(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
+
+    data class EnableApp(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
+
+    data class DisableApp(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
+
+    data class SuspendApp(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
+
+    data class UnsuspendApp(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action
 
     object EnableBT : Action
     object EnableWifi : Action
@@ -130,12 +154,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ HideOverlayButton::class.java -> {
             Action.HideOverlay
         }
+
         this is_ LaunchApp::class.java -> {
             val data = this unpack_ LaunchApp::class.java
             val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
             val appLabel = shortXManager.getAppLabel(pkg)
             Action.LaunchApp(data.appPkg, appLabel = appLabel)
         }
+
         this is_ SetWifiEnabled::class.java -> {
             val data = this unpack_ SetWifiEnabled::class.java
             if (data.enable) {

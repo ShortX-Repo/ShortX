@@ -7,11 +7,10 @@ import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.addrule.models.Fact
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
-import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
 import java.util.*
 
 
@@ -70,30 +69,11 @@ fun labelForFact(fact: Fact): List<String> {
         }
         is Fact.AppBecomeBackground -> mutableListOf(
             LocalI18N.current["ui.fact.app.become.bg"]
-        ).apply {
-            if (fact.apps.isNotEmpty()) {
-                addAll(fact.apps.map {
-                    "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
-                })
-            } else if (fact.pkgSets.isNotEmpty()) {
-                addAll(fact.pkgSets.map {
-                    "${it.label}${PREFIX_MD_ICON}Folder"
-                })
-            }
-        }
+        ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+
         is Fact.AppBecomeForeground -> mutableListOf(
             LocalI18N.current["ui.fact.app.become.fg"]
-        ).apply {
-            if (fact.apps.isNotEmpty()) {
-                addAll(fact.apps.map {
-                    "${it.label}${PREFIX_APP_ICON}${it.pkg.pkgName}"
-                })
-            } else if (fact.pkgSets.isNotEmpty()) {
-                addAll(fact.pkgSets.map {
-                    "${it.label}${PREFIX_MD_ICON}Folder"
-                })
-            }
-        }
+        ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
     }
 }
 

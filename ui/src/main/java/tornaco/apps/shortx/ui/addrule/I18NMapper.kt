@@ -1,0 +1,23 @@
+package tornaco.apps.shortx.ui.addrule
+
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
+import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
+
+fun MutableList<String>.labelLinesFromAppsAndPkgSets(
+    apps: List<App> = emptyList(),
+    pkgSets: List<PkgSet> = emptyList()
+): MutableList<String> {
+    return apply {
+        if (apps.isNotEmpty()) {
+            addAll(apps.map {
+                "${it.label}$PREFIX_APP_ICON${it.pkg.pkgName}"
+            })
+        } else if (pkgSets.isNotEmpty()) {
+            addAll(pkgSets.map {
+                "${it.label}${PREFIX_MD_ICON}Folder"
+            })
+        }
+    }
+}
