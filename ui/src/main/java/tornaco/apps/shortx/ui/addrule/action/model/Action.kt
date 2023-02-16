@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.models
+package tornaco.apps.shortx.ui.addrule.action.model
 
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
@@ -10,6 +10,8 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 sealed interface Action {
     object TakeScreenshot : Action
@@ -117,12 +119,30 @@ fun Action.toProtoAction(): ProtoMessage {
         Action.EnableNFC -> SetNFCEnabled.newBuilder().setEnable(true).build()
         Action.EnableWifi -> SetWifiEnabled.newBuilder().setEnable(true).build()
 
-        is Action.DisableApp -> TODO()
-        is Action.EnableApp -> TODO()
-        is Action.StartAppProcess -> TODO()
-        is Action.StopApp -> TODO()
-        is Action.SuspendApp -> TODO()
-        is Action.UnsuspendApp -> TODO()
+        is Action.DisableApp -> {
+            SetAppEnabled.newBuilder().setEnable(false)
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        is Action.EnableApp -> {
+            SetAppEnabled.newBuilder().setEnable(true)
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        is Action.StartAppProcess -> {
+            StartAppProcess.newBuilder()
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        is Action.StopApp -> {
+            StopApp.newBuilder()
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        is Action.SuspendApp -> {
+            SetAppSuspend.newBuilder().setSuspend(true)
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        is Action.UnsuspendApp -> {
+            SetAppSuspend.newBuilder().setSuspend(false)
+                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
     }
 }
 
@@ -218,6 +238,55 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableHotSpot
             }
         }
+
+        this is_ StopApp::class.java -> {
+            val data = this unpack_ StopApp::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Action.StopApp(
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
+        this is_ StartAppProcess::class.java -> {
+            val data = this unpack_ StartAppProcess::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Action.StartAppProcess(
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
+        this is_ SetAppEnabled::class.java -> {
+            val data = this unpack_ SetAppEnabled::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            data.enable.select(
+                Action.EnableApp(
+                    apps = models.first,
+                    pkgSets = models.second
+                ),
+                Action.DisableApp(
+                    apps = models.first,
+                    pkgSets = models.second
+                )
+            )
+        }
+
+        this is_ SetAppSuspend::class.java -> {
+            val data = this unpack_ SetAppSuspend::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            data.suspend.select(
+                Action.SuspendApp(
+                    apps = models.first,
+                    pkgSets = models.second
+                ),
+                Action.UnsuspendApp(
+                    apps = models.first,
+                    pkgSets = models.second
+                )
+            )
+        }
+
         else -> null
     }
 }

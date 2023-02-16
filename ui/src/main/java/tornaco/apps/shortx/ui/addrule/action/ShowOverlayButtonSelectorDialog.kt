@@ -18,9 +18,9 @@ import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.addrule.models.Action
-import tornaco.apps.shortx.ui.addrule.models.toAction
-import tornaco.apps.shortx.ui.addrule.models.toProtoAction
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.*
 
 class ShowOverlayButtonSelectorState(
@@ -118,18 +118,24 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                         }, actions = overlayButtonItems[index].actions, addAction = { action ->
                             overlayButtonItems = overlayButtonItems.toMutableList().apply {
                                 val current = get(index)
-                                set(index,
-                                    current.copy(actions = current.actions.toMutableList().apply {
-                                        add(action)
-                                    }))
+                                set(
+                                    index,
+                                    current.copy(
+                                        actions = current.actions.toMutableList().apply {
+                                            add(action)
+                                        })
+                                )
                             }
                         }, removeAction = { action ->
                             overlayButtonItems = overlayButtonItems.toMutableList().apply {
                                 val current = get(index)
-                                set(index,
-                                    current.copy(actions = current.actions.toMutableList().apply {
-                                        remove(action)
-                                    }))
+                                set(
+                                    index,
+                                    current.copy(
+                                        actions = current.actions.toMutableList().apply {
+                                            remove(action)
+                                        })
+                                )
                             }
                         }, installedApps = state.installedApps
                         )

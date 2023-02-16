@@ -15,7 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.ui.addrule.AddRuleState
-import tornaco.apps.shortx.ui.addrule.models.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.dropdown.Dropdown
 import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu

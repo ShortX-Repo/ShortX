@@ -22,8 +22,8 @@ val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 private val defaultServiceStub = IShortX.Default()
 private val logger = Logger("ShortXManager")
 
-val shortXManager
-    get() = ShortXManager(
+val shortXManager by lazy {
+    ShortXManager(
         (ShortXManagerNative.shortX
             ?: Proxy.newProxyInstance(
                 IShortX::class.java.classLoader,
@@ -34,6 +34,7 @@ val shortXManager
                 }
             )) as IShortX
     )
+}
 
 class ShortXManager(private val service: IShortX) {
     fun isInstalled(): Boolean =

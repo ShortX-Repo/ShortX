@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.models
+package tornaco.apps.shortx.ui.addrule.condition.model
 
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg

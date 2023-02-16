@@ -24,10 +24,10 @@ import tornaco.apps.shortx.ui.addrule.action.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
-import tornaco.apps.shortx.ui.addrule.models.Condition
-import tornaco.apps.shortx.ui.addrule.models.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime

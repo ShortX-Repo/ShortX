@@ -14,9 +14,9 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.models.Action
-import tornaco.apps.shortx.ui.addrule.models.toAction
-import tornaco.apps.shortx.ui.addrule.models.toProtoAction
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.text.Collator
 import java.util.*

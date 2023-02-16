@@ -1,10 +1,7 @@
-package tornaco.apps.shortx.ui.addrule.models
+package tornaco.apps.shortx.ui.addrule.fact.model
 
-import tornaco.apps.shortx.core.App
-import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.*
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -12,6 +9,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 sealed interface Fact {
     data class KeyEvent(val keyCode: Int) : Fact
@@ -103,17 +101,19 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         }
         this is_ AppBecomeFg::class.java -> {
             val data = this unpack_ AppBecomeFg::class.java
-            Fact.AppBecomeForeground(apps = data.appsList.map { appPkg ->
-                val pkg = Pkg(appPkg.pkgName, appPkg.userId)
-                App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            }, pkgSets = data.pkgSetsList.mapNotNull { shortXManager.getPkgSetById(it) })
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppBecomeForeground(
+                apps = models.first,
+                pkgSets = models.second
+            )
         }
         this is_ AppBecomeBg::class.java -> {
             val data = this unpack_ AppBecomeBg::class.java
-            Fact.AppBecomeBackground(apps = data.appsList.map { appPkg ->
-                val pkg = Pkg(appPkg.pkgName, appPkg.userId)
-                App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
-            }, pkgSets = data.pkgSetsList.mapNotNull { shortXManager.getPkgSetById(it) })
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppBecomeBackground(
+                apps = models.first,
+                pkgSets = models.second
+            )
         }
         else -> {
             null

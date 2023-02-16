@@ -15,10 +15,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.models.Action
 import tornaco.apps.shortx.ui.base.*
 import kotlin.reflect.KClass
 
