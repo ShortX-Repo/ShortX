@@ -170,7 +170,7 @@ fun ListItem(
                     Text(
                         text = text1,
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                        maxLines = 3
+                        maxLines = 12
                     )
                 }
                 TinySpacer()
@@ -180,7 +180,7 @@ fun ListItem(
                     Text(
                         text = text2,
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                        maxLines = 3
+                        maxLines = 12
                     )
                 }
             }
@@ -240,7 +240,7 @@ fun ListItem(
                     Text(
                         text = text1,
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                        maxLines = 3
+                        maxLines = 12
                     )
                 }
                 TinySpacer()
@@ -250,7 +250,7 @@ fun ListItem(
                     Text(
                         text = text2,
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        maxLines = 3
+                        maxLines = 12
                     )
                 }
             }

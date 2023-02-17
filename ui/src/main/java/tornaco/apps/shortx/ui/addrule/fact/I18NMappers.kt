@@ -31,34 +31,38 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: Class<out Fact>): Pair<
 
 @Composable
 fun labelForFact(fact: Fact): List<String> {
+    val i18N = LocalI18N.current
+    return labelForFact(i18N, fact)
+}
+
+fun labelForFact(i18N: I18N, fact: Fact): List<String> {
     return when (fact) {
-        is Fact.ActivityStarted -> listOf(LocalI18N.current["ui.fact.activity.started"], fact.name)
+        is Fact.ActivityStarted -> listOf(i18N["ui.fact.activity.started"], fact.name)
         is Fact.EdgeGesture -> listOf(
-            LocalI18N.current["ui.fact.edge.gesture"],
+            i18N["ui.fact.edge.gesture"],
             "${fact.edge}",
             "${fact.gesture}"
         )
         is Fact.KeyEvent -> listOf(
-            LocalI18N.current["ui.fact.key.event"],
-            getLabelForKeyCode(keyCode = fact.keyCode)
+            i18N["ui.fact.key.event"],
+            getLabelForKeyCode(i18N, keyCode = fact.keyCode)
         )
-        Fact.ScreenOff -> listOf(LocalI18N.current["ui.fact.screen.off"])
-        Fact.ScreenOn -> listOf(LocalI18N.current["ui.fact.screen.on"])
-        Fact.UserPresent -> listOf(LocalI18N.current["ui.fact.screen.user.present"])
+        Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
+        Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
+        Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
         is Fact.Alarm -> {
-            val i18N = LocalI18N.current
             listOf(
-                LocalI18N.current["ui.fact.time.of.a.day.at", mapOf("time" to fact.timeOfADay.toDisplayTime())],
+                i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.timeOfADay.toDisplayTime())],
                 if (fact.repeatDays.isNo) {
-                    LocalI18N.current["ui.fact.time.of.a.day.repeat.at", mapOf(
-                        "days" to LocalI18N.current["ui.fact.time.of.a.day.repeat.no"]
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.no"]
                     )]
                 } else if (fact.repeatDays.isEveryDay) {
-                    LocalI18N.current["ui.fact.time.of.a.day.repeat.at", mapOf(
-                        "days" to LocalI18N.current["ui.fact.time.of.a.day.repeat.everyday"]
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.everyday"]
                     )]
                 } else {
-                    LocalI18N.current["ui.fact.time.of.a.day.repeat.at", mapOf(
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
                         "days" to fact.repeatDays.daysList.joinToString(
                             " "
                         ) {
@@ -68,23 +72,27 @@ fun labelForFact(fact: Fact): List<String> {
             )
         }
         is Fact.AppBecomeBackground -> mutableListOf(
-            LocalI18N.current["ui.fact.app.become.bg"]
+            i18N["ui.fact.app.become.bg"]
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
 
         is Fact.AppBecomeForeground -> mutableListOf(
-            LocalI18N.current["ui.fact.app.become.fg"]
+            i18N["ui.fact.app.become.fg"]
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
     }
 }
 
 @Composable
 private fun getLabelForKeyCode(keyCode: Int): String {
+    return getLabelForKeyCode(LocalI18N.current, keyCode)
+}
+
+private fun getLabelForKeyCode(i18N: I18N, keyCode: Int): String {
     return when (keyCode) {
-        KeyEvent.KEYCODE_VOLUME_DOWN -> LocalI18N.current["ui.keycode.label.volume.down"]
-        KeyEvent.KEYCODE_VOLUME_UP -> LocalI18N.current["ui.keycode.label.volume.up"]
-        KeyEvent.KEYCODE_BACK -> LocalI18N.current["ui.keycode.label.back"]
-        KeyEvent.KEYCODE_HOME -> LocalI18N.current["ui.keycode.label.home"]
-        KeyEvent.KEYCODE_POWER -> LocalI18N.current["ui.keycode.label.power"]
+        KeyEvent.KEYCODE_VOLUME_DOWN -> i18N["ui.keycode.label.volume.down"]
+        KeyEvent.KEYCODE_VOLUME_UP -> i18N["ui.keycode.label.volume.up"]
+        KeyEvent.KEYCODE_BACK -> i18N["ui.keycode.label.back"]
+        KeyEvent.KEYCODE_HOME -> i18N["ui.keycode.label.home"]
+        KeyEvent.KEYCODE_POWER -> i18N["ui.keycode.label.power"]
         else -> keyCode.toString()
     }
 }

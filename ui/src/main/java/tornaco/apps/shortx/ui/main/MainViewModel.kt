@@ -7,9 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
+import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.fact.labelForFact
+import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
@@ -48,22 +53,48 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadRules() {
         logger.d("loadRules")
         viewModelScope.launch {
-            val rules = shortXManager.getAllRules().map {
+            val rules = shortXManager.getAllRules().map { rule ->
                 RuleUM(
-                    id = it.id,
-                    title = it.title,
-                    description = it.description,
+                    id = rule.id,
+                    title = rule.title,
+                    description = rule.description.fallbackOnEmpty(
+                        translateRule(rule)
+                    ),
                     updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
-                        Date(it.lastUpdateTime)
+                        Date(rule.lastUpdateTime)
                     ),
-                    isEnabled = it.isEnabled
+                    isEnabled = rule.isEnabled
                 )
             }
             updateState {
                 copy(rules = rules)
             }
         }
+    }
+
+    private fun translateRule(rule: Rule): String {
+        val fact: String = rule.fact.toFact(shortXManager)?.let {
+            labelForFact(i18N, it).joinToString()
+        } ?: "N/A"
+
+        val condition = rule.conditionsList.mapNotNull {
+            it.toCondition(shortXManager)
+        }.joinToString {
+            labelForConditionSelector(i18N, it::class.java).joinToString()
+        }
+
+        val action = rule.actionsList.mapNotNull {
+            it.toAction(shortXManager)
+        }.joinToString {
+            labelAndDescriptionForActionSelector(i18N, it::class).first
+        }
+
+        return i18N["ui.rule.description.auto.template", mapOf(
+            "fact" to fact,
+            "condition" to condition,
+            "action" to action
+        )]
     }
 
     fun loadDirections() {

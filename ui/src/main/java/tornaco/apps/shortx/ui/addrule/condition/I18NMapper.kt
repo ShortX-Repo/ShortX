@@ -7,20 +7,25 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
+import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 
 @Composable
 fun labelForConditionSelector(condition: Class<out Condition>): List<String> {
+    return labelForConditionSelector(LocalI18N.current, condition)
+}
+
+fun labelForConditionSelector(i18N: I18N, condition: Class<out Condition>): List<String> {
     return when (condition) {
         Condition.CurrentForegroundApp::class.java -> {
-            listOf(LocalI18N.current["ui.dialog.title.current.app"])
+            listOf(i18N["ui.dialog.title.current.app"])
         }
         Condition.MVEL::class.java -> {
-            listOf(LocalI18N.current["ui.title.mvel"])
+            listOf(i18N["ui.title.mvel"])
         }
         Condition.TRUE::class.java -> {
             listOf(
-                LocalI18N.current["ui.conditions.true"]
+                i18N["ui.conditions.true"]
             )
         }
         else -> {
