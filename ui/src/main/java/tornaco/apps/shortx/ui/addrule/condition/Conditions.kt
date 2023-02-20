@@ -22,11 +22,12 @@ import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
+import kotlin.reflect.KClass
 
 @Composable
 fun Conditions(
     state: AddRuleState,
-    selectCondition: (Class<out Condition>) -> Unit,
+    selectCondition: (KClass<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
     setConditionOp: (Op) -> Unit
 ) {
@@ -66,9 +67,9 @@ fun Conditions(
                     DropdownSelector(
                         state = conditionSelectorState,
                         items = listOf(
-                            Condition.CurrentForegroundApp::class.java,
-                            Condition.MVEL::class.java,
-                            Condition.TRUE::class.java
+                            Condition.CurrentForegroundApp::class,
+                            Condition.MVEL::class,
+                            Condition.TRUE::class
                         ).map {
                             DropdownItem(
                                 labelLines = labelForConditionSelector(it),

@@ -12,19 +12,20 @@ import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import java.util.*
+import kotlin.reflect.KClass
 
 
-fun labelAndDescriptionForFactSelector(i18n: I18N, fact: Class<out Fact>): Pair<String, String?> {
+fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair<String, String?> {
     return when (fact) {
-        Fact.ActivityStarted::class.java -> i18n["ui.fact.activity.started"] to null
-        Fact.EdgeGesture::class.java -> i18n["ui.fact.edge.gesture"] to null
-        Fact.KeyEvent::class.java -> i18n["ui.fact.key.event"] to null
-        Fact.ScreenOff::class.java -> i18n["ui.fact.screen.off"] to null
-        Fact.ScreenOn::class.java -> i18n["ui.fact.screen.on"] to null
-        Fact.UserPresent::class.java -> i18n["ui.fact.screen.user.present"] to null
-        Fact.Alarm::class.java -> i18n["ui.fact.time.of.a.day"] to null
-        Fact.AppBecomeBackground::class.java -> i18n["ui.fact.app.become.bg"] to null
-        Fact.AppBecomeForeground::class.java -> i18n["ui.fact.app.become.fg"] to null
+        Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to null
+        Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
+        Fact.KeyEvent::class -> i18n["ui.fact.key.event"] to null
+        Fact.ScreenOff::class -> i18n["ui.fact.screen.off"] to null
+        Fact.ScreenOn::class -> i18n["ui.fact.screen.on"] to null
+        Fact.UserPresent::class -> i18n["ui.fact.screen.user.present"] to null
+        Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
+        Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
+        Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
         else -> "N/A" to null
     }
 }

@@ -9,21 +9,22 @@ import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
+import kotlin.reflect.KClass
 
 @Composable
-fun labelForConditionSelector(condition: Class<out Condition>): List<String> {
+fun labelForConditionSelector(condition: KClass<out Condition>): List<String> {
     return labelForConditionSelector(LocalI18N.current, condition)
 }
 
-fun labelForConditionSelector(i18N: I18N, condition: Class<out Condition>): List<String> {
+fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): List<String> {
     return when (condition) {
-        Condition.CurrentForegroundApp::class.java -> {
+        Condition.CurrentForegroundApp::class -> {
             listOf(i18N["ui.dialog.title.current.app"])
         }
-        Condition.MVEL::class.java -> {
+        Condition.MVEL::class -> {
             listOf(i18N["ui.title.mvel"])
         }
-        Condition.TRUE::class.java -> {
+        Condition.TRUE::class -> {
             listOf(
                 i18N["ui.conditions.true"]
             )
@@ -54,19 +55,19 @@ fun labelForCondition(condition: Condition): List<String> {
 }
 
 @Composable
-fun IconForConditionSelector(condition: Class<out Condition>) {
+fun IconForConditionSelector(condition: KClass<out Condition>) {
     when (condition) {
-        Condition.CurrentForegroundApp::class.java -> {
+        Condition.CurrentForegroundApp::class -> {
             Icon(
                 imageVector = Icons.Filled.Android, contentDescription = "CurrentForegroundApp"
             )
         }
-        Condition.MVEL::class.java -> {
+        Condition.MVEL::class -> {
             Icon(
                 imageVector = Icons.Filled.Code, contentDescription = "MVEL"
             )
         }
-        Condition.TRUE::class.java -> {
+        Condition.TRUE::class -> {
             Icon(
                 imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
             )

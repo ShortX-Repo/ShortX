@@ -7,13 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
-import tornaco.apps.shortx.ui.addrule.fact.labelForFact
+import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
@@ -75,13 +76,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     private fun translateRule(rule: Rule): String {
         val fact: String = rule.fact.toFact(shortXManager)?.let {
-            labelForFact(i18N, it).joinToString()
+            labelAndDescriptionForFactSelector(i18N, it::class).first
         } ?: "N/A"
 
         val condition = rule.conditionsList.mapNotNull {
             it.toCondition(shortXManager)
         }.joinToString {
-            labelForConditionSelector(i18N, it::class.java).joinToString()
+            labelForConditionSelector(i18N, it::class).joinToString()
         }
 
         val action = rule.actionsList.mapNotNull {
@@ -97,18 +98,14 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         )]
     }
 
-    fun loadDirections() {
-        logger.d("loadDirections")
+    fun loadDA() {
+        logger.d("loadDA")
         viewModelScope.launch {
             val das = shortXManager.getAllDirectAction().map { directAction ->
                 DirectActionUM(
                     id = directAction.id,
                     title = directAction.title,
-                    description = directAction.description.fallbackOnEmpty(directAction.actionsList.mapNotNull {
-                        it.toAction(shortXManager)
-                    }.joinToString {
-                        labelAndDescriptionForActionSelector(i18N, it::class).first
-                    }),
+                    description = translateDA(directAction),
                     updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
                         Date(directAction.lastUpdateTime)
@@ -120,6 +117,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             }
         }
     }
+
+    private fun translateDA(directAction: DirectAction) =
+        directAction.description.fallbackOnEmpty(directAction.actionsList.mapNotNull {
+            it.toAction(shortXManager)
+        }.joinToString {
+            labelAndDescriptionForActionSelector(i18N, it::class).first
+        })
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
@@ -138,7 +142,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun deleteDA(daId: String) {
         viewModelScope.launch {
             shortXManager.deleteDirectAction(daId)
-            loadDirections()
+            loadDA()
         }
     }
 

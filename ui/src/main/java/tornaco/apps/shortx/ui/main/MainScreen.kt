@@ -53,7 +53,7 @@ fun HomeScreen(
 
     LaunchedEffect(vm) {
         vm.loadRules()
-        vm.loadDirections()
+        vm.loadDA()
     }
 
     val navController = rememberNavController()

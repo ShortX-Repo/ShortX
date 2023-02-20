@@ -149,13 +149,13 @@ private fun ConditionSelectors(
 
     Conditions(state = state, selectCondition = { con ->
         when (con) {
-            Condition.CurrentForegroundApp::class.java -> {
+            Condition.CurrentForegroundApp::class -> {
                 currentPkgSelectorState.show()
             }
-            Condition.MVEL::class.java -> {
+            Condition.MVEL::class -> {
                 mvelConditionSelectorState.show()
             }
-            Condition.TRUE::class.java -> {
+            Condition.TRUE::class -> {
                 vm.addCondition(Condition.TRUE)
             }
         }
@@ -211,30 +211,30 @@ private fun FactSelectors(
 
     FactSelector(state) { fact ->
         when (fact) {
-            Fact.KeyEvent::class.java -> {
+            Fact.KeyEvent::class -> {
                 keyEventSelectorState.show()
             }
-            Fact.ActivityStarted::class.java -> {
+            Fact.ActivityStarted::class -> {
             }
-            Fact.EdgeGesture::class.java -> {
+            Fact.EdgeGesture::class -> {
                 edgeGestureSelectorState.show()
             }
-            Fact.ScreenOff::class.java -> {
+            Fact.ScreenOff::class -> {
                 vm.setFact(Fact.ScreenOff)
             }
-            Fact.ScreenOn::class.java -> {
+            Fact.ScreenOn::class -> {
                 vm.setFact(Fact.ScreenOn)
             }
-            Fact.UserPresent::class.java -> {
+            Fact.UserPresent::class -> {
                 vm.setFact(Fact.UserPresent)
             }
-            Fact.Alarm::class.java -> {
+            Fact.Alarm::class -> {
                 timeOfADaySelector.show()
             }
-            Fact.AppBecomeBackground::class.java -> {
+            Fact.AppBecomeBackground::class -> {
                 appBgPkgSelectorState.show()
             }
-            Fact.AppBecomeForeground::class.java -> {
+            Fact.AppBecomeForeground::class -> {
                 appFgPkgSelectorState.show()
             }
         }
