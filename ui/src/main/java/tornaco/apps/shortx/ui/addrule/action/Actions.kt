@@ -38,6 +38,11 @@ fun ActionSelectors(
     }
     ShellCommandSelector(state = shellCommandSelectorState)
 
+    val inputTextSelectorState = rememberInputTextSelectorState(onSelected = {
+        addAction(Action.InputText(it))
+    })
+    InputTextSelector(state = inputTextSelectorState)
+
     val toastSelectionState =
         rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
             message = null,
@@ -151,6 +156,7 @@ fun ActionSelectors(
                 action = action,
                 addAction = addAction,
                 shellCommandSelectorState = shellCommandSelectorState,
+                inputTextSelectorState = inputTextSelectorState,
                 toastSelectionState = toastSelectionState,
                 delaySelectionState = delaySelectionState,
                 mvelSelectorState = mvelSelectorState,
@@ -185,6 +191,7 @@ private fun onActionMenuSelected(
     action: KClass<out Action>,
     addAction: (Action) -> Unit,
     shellCommandSelectorState: ShellCommandSelectorState,
+    inputTextSelectorState: InputTextSelectorState,
     toastSelectionState: TextInputState,
     delaySelectionState: TextInputState,
     mvelSelectorState: MVELSelectorState,
@@ -203,6 +210,9 @@ private fun onActionMenuSelected(
         }
         Action.ShellCommand::class -> {
             shellCommandSelectorState.show()
+        }
+        Action.InputText::class -> {
+            inputTextSelectorState.show()
         }
         Action.ShowToast::class -> {
             toastSelectionState.show()

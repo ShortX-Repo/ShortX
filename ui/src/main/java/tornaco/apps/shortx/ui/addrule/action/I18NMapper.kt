@@ -22,6 +22,9 @@ fun labelAndDescriptionForActionSelector(
         Action.ShellCommand::class -> {
             i18N["ui.action.shell"] to null
         }
+        Action.InputText::class -> {
+            i18N["ui.action.input.text"] to null
+        }
         Action.Delay::class -> {
             i18N["ui.action.delay"] to null
         }
@@ -85,6 +88,9 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
         is Action.ShellCommand -> {
             listOf(i18N["ui.action.shell"], action.command)
+        }
+        is Action.InputText -> {
+            listOf(i18N["ui.action.input.text"], action.text)
         }
         is Action.Delay -> {
             listOf(i18N["ui.action.delay"], action.time.toString())
@@ -161,6 +167,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.ShellCommand::class -> {
             Icons.Outlined.Tag
+        }
+        Action.InputText::class -> {
+            Icons.Outlined.TextFields
         }
         Action.Delay::class -> {
             Icons.Outlined.Timer

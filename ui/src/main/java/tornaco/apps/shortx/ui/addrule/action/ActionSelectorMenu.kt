@@ -59,6 +59,13 @@ fun ActionSelectorMenu(
             }
 
             item(
+                Action.InputText::class,
+                labelAndDescriptionForActionSelector(i18N, Action.InputText::class)
+            ) {
+                icon(imageVectorForAction(Action.InputText::class))
+            }
+
+            item(
                 Action.Delay::class,
                 labelAndDescriptionForActionSelector(i18N, Action.Delay::class)
             ) {

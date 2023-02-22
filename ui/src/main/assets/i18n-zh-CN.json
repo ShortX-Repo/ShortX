@@ -64,6 +64,7 @@
   "ui.keycode.label.back": "返回",
   "ui.action.show.toast": "显示吐司",
   "ui.action.shell": "Shell 命令",
+  "ui.action.input.text": "输入文本",
   "ui.action.delay": "延迟",
   "ui.action.delay.input.message": "输入延迟的毫秒数",
   "ui.action.take.screenshot": "截屏",

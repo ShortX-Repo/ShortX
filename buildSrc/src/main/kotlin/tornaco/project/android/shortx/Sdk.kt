@@ -4,6 +4,18 @@ import org.gradle.internal.os.OperatingSystem
 import java.io.File
 import java.io.FileNotFoundException
 
+fun androidJarDir(version: Int): File {
+    val sdkDir = sdkDir()
+    val platformsDir = "$sdkDir/platforms/"
+
+    val versionDir = "${platformsDir}/android-$version"
+    val androidJarPath = "$versionDir/android.jar"
+    assert(File(androidJarPath).exists()) {
+        "Android jar file for version: $version not exists."
+    }
+    return File(androidJarPath)
+}
+
 fun buildTools(name: String): String {
     val sdkDir = sdkDir()
 

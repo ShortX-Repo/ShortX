@@ -39,7 +39,12 @@ class ActionEvaluatorImpl(
             tornaco.apps.shortx.services.rule.actor.TakeScreenshot(context, handler).invoke()
         } else if (action is_ ShellCommand::class.java) {
             val sc = action unpack_ ShellCommand::class.java
-            tornaco.apps.shortx.services.rule.actor.ShellCommand(context, sc.command).invoke()
+            tornaco.apps.shortx.services.rule.actor.ShellCommand(context, shortXContext, sc.command)
+                .invoke()
+        } else if (action is_ InputText::class.java) {
+            val sc = action unpack_ InputText::class.java
+            tornaco.apps.shortx.services.rule.actor.InputText(context, shortXContext, sc.text)
+                .invoke()
         } else if (action is_ ShowToast::class.java) {
             val t = action unpack_ ShowToast::class.java
             handler.postSafety {

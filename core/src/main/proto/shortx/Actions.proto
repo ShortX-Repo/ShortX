@@ -19,6 +19,10 @@ message ShellCommand {
   string command = 1;
 }
 
+message InputText {
+  string text = 1;
+}
+
 message ShowToast {
   string message = 1;
 }

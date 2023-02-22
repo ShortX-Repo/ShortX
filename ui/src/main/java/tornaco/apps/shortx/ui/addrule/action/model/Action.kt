@@ -16,6 +16,8 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 sealed interface Action {
     object TakeScreenshot : Action
     data class ShellCommand(val command: String) : Action
+    data class InputText(val text: String) : Action
+
     data class Delay(val time: Long) : Action
     data class ShowToast(val message: String) : Action
     data class MVEL(val expression: String) : Action
@@ -81,6 +83,9 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         is Action.ShellCommand -> {
             ShellCommand.newBuilder().setCommand(command).build()
+        }
+        is Action.InputText -> {
+            InputText.newBuilder().setText(text).build()
         }
         is Action.Delay -> {
             Delay.newBuilder().setTime(time).build()
@@ -154,6 +159,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ ShellCommand::class.java -> {
             val data = this unpack_ ShellCommand::class.java
             Action.ShellCommand(command = data.command)
+        }
+        this is_ InputText::class.java -> {
+            val data = this unpack_ InputText::class.java
+            Action.InputText(text = data.text)
         }
         this is_ ShowToast::class.java -> {
             val data = this unpack_ ShowToast::class.java

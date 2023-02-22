@@ -6,10 +6,12 @@ import android.content.Intent
 import android.os.IBinder
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.rule.action.su.ISu
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.util.AppServiceProxy
 
 class ShellCommand(
     private val context: Context,
+    private val shortXContext: ShortXContext,
     private val shellCommand: String,
 ) {
     operator fun invoke() {

@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import com.android.internal.view.IInputContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -8,9 +9,12 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.rule.fact.allTriggers
+import tornaco.apps.shortx.services33.InputMethodManagerV33
+import util.Reflections
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -179,5 +183,17 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         getDirectActionById(id)?.let {
             executeActions("executeDirectionActionById#${it.title}", it.actionsList)
         }
+    }
+
+    fun submitText() {
+        val se = ServiceRetriever(context.classLoader).getInputMethodManagerService()
+        logger.w("getInputMethodManagerService: $se")
+        @Suppress("UNCHECKED_CAST") val clients =
+            Reflections.getObjectField(se, "mCurFocusedWindowClient")
+        logger.w("getInputMethodManagerService: $clients")
+        val inputContext: IInputContext =
+            Reflections.getObjectField(clients, "inputContext") as IInputContext
+        logger.w("getInputMethodManagerService, inputContext: $inputContext")
+        InputMethodManagerV33().commitText(inputContext, "ABCDE")
     }
 }
