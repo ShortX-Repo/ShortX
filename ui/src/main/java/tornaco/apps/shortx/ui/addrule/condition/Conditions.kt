@@ -102,13 +102,15 @@ private fun OpSelector(
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         SmallTitle(LocalI18N.current["ui.condition.op"])
-        ListItem(titleLines = mutableListOf(
-            opTitle(op = state.conditionOp),
-        ).apply {
-            addAll(opDescription(op = state.conditionOp))
-        }, icon = {
-            IconForOp(state.conditionOp)
-        })
+        ListItem(
+            modifier = Modifier,
+            titleLines = mutableListOf(
+                opTitle(op = state.conditionOp),
+            ).apply {
+                addAll(opDescription(op = state.conditionOp))
+            }, icon = {
+                IconForOp(state.conditionOp)
+            })
 
         Box {
             FilledTonalButton(onClick = {

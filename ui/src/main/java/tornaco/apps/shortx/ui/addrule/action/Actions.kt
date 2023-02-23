@@ -295,6 +295,7 @@ private fun Actions(
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEach {
                 ListItem(
+                    modifier = Modifier,
                     titleLines = labelLinesForAction(action = it),
                     icon = {
                         Icon(imageVector = imageVectorForAction(action = it::class))
@@ -312,11 +313,15 @@ private fun Actions(
             }
 
             Box {
+                val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
+
+                })
+
                 var showActionSelectorMenu by remember {
                     mutableStateOf(false)
                 }
                 FilledTonalButton(onClick = {
-                    showActionSelectorMenu = true
+                    actionSortDialogState.show()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
@@ -330,6 +335,8 @@ private fun Actions(
                     showActionSelectorMenu = false
                     selectAction(it)
                 }
+
+                ActionSortDialog(state = actionSortDialogState)
             }
         }
     }

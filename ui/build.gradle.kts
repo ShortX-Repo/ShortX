@@ -21,29 +21,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        val noMinify = project.findProperty("no-minify")?.toString().toBoolean()
-        log("noMinify: $noMinify")
-
-        getByName("release") {
-            isMinifyEnabled = !noMinify
-            isShrinkResources = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-
-        getByName("debug") {
-            isMinifyEnabled = !noMinify
-            isShrinkResources = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
     setPublishNonDefault(true)
     flavorDimensions.add("market")
     productFlavors {
@@ -103,7 +80,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0-alpha01")
+    implementation("com.google.android.material:material:1.9.0-alpha02")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.6.1")
@@ -123,6 +100,7 @@ dependencies {
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))
+    implementation(project(":external:reorderable"))
 
     testImplementation("junit:junit:4.13.2")
 

@@ -25,13 +25,14 @@ const val PREFIX_MD_ICON = "md_icon://"
 
 @Composable
 fun ListItem(
+    modifier: Modifier = Modifier,
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
     action1: @Composable () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {

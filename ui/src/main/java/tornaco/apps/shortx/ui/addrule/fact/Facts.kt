@@ -33,7 +33,9 @@ fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> Unit) {
 
             Column {
                 state.fact?.let {
-                    ListItem(titleLines = labelForFact(fact = it),
+                    ListItem(
+                        modifier = Modifier,
+                        titleLines = labelForFact(fact = it),
                         icon = { Icon(imageVector = imageVectorForFact(it::class)) })
                 }
 
