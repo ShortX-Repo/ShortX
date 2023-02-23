@@ -107,7 +107,10 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                             vm.removeAction(action)
                         },
                         actions = state.actions,
-                        installedApps = state.installedApps
+                        installedApps = state.installedApps,
+                        sortActions = { sorted ->
+                            vm.sortActions(sorted)
+                        }
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

@@ -61,7 +61,7 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_APP_ICON),
-                                    style = MaterialTheme.typography.titleSmall
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         } else if (it.contains(PREFIX_MD_ICON)) {
@@ -74,11 +74,11 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_MD_ICON),
-                                    style = MaterialTheme.typography.titleSmall
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         } else {
-                            Text(text = it, style = MaterialTheme.typography.titleSmall)
+                            Text(text = it, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }

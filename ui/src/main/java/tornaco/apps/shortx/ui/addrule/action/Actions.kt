@@ -1,17 +1,16 @@
 package tornaco.apps.shortx.ui.addrule.action
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -31,6 +30,7 @@ fun ActionSelectors(
     removeAction: (Action) -> Unit,
     actions: List<Action>,
     installedApps: List<App>,
+    sortActions: (List<Action>) -> Unit = {},
 ) {
     // Actions
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
@@ -184,7 +184,9 @@ fun ActionSelectors(
                 }
                 else -> {}
             }
-        })
+        },
+        sortActions = sortActions
+    )
 }
 
 private fun onActionMenuSelected(
@@ -288,10 +290,31 @@ private fun Actions(
     actions: List<Action>,
     selectAction: (KClass<out Action>) -> Unit,
     removeAction: (Action) -> Unit,
-    onActionClick: (Action) -> Unit = {}
+    onActionClick: (Action) -> Unit = {},
+    sortActions: (List<Action>) -> Unit = {},
 ) {
+    val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
+        sortActions(it)
+    })
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        header()
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
+                header()
+            }
+
+            IconButton(onClick = {
+                actionSortDialogState.show()
+            }) {
+                Icon(imageVector = Icons.Outlined.Sort)
+            }
+        }
+
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEach {
                 ListItem(
@@ -313,15 +336,11 @@ private fun Actions(
             }
 
             Box {
-                val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
-
-                })
-
                 var showActionSelectorMenu by remember {
                     mutableStateOf(false)
                 }
                 FilledTonalButton(onClick = {
-                    actionSortDialogState.show()
+                    showActionSelectorMenu = true
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"

@@ -18,7 +18,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 
 
-class ActionSortState(val actions: List<Action>, val apply: (List<Action>) -> Unit) {
+class ActionSortState(val actions: List<Action>, val applySorted: (List<Action>) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -51,7 +51,7 @@ fun ActionSortDialog(state: ActionSortState) {
             DialogTitle(text = LocalI18N.current["ui.common.long.press.sort"])
         }, buttons = {
             TextButton(onClick = {
-
+                state.applySorted(data.value)
             }) {
                 Text(text = stringResource(id = android.R.string.ok))
             }

@@ -91,6 +91,12 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
         }
     }
 
+    fun sortActions(actions: List<Action>) {
+        updateState {
+            copy(actions = actions, daChanged = true)
+        }
+    }
+
     fun save() {
         viewModelScope.launch {
             val actions = state.value.actions

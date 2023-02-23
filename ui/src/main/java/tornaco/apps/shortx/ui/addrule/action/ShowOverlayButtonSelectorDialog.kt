@@ -113,31 +113,35 @@ fun ShowOverlayButtonSelector(state: ShowOverlayButtonSelectorState) {
                             }
                         }
 
-                        ActionSelectors(header = {
-                            SmallTitle(text = LocalI18N.current["ui.actions.title"])
-                        }, actions = overlayButtonItems[index].actions, addAction = { action ->
-                            overlayButtonItems = overlayButtonItems.toMutableList().apply {
-                                val current = get(index)
-                                set(
-                                    index,
-                                    current.copy(
-                                        actions = current.actions.toMutableList().apply {
-                                            add(action)
-                                        })
-                                )
-                            }
-                        }, removeAction = { action ->
-                            overlayButtonItems = overlayButtonItems.toMutableList().apply {
-                                val current = get(index)
-                                set(
-                                    index,
-                                    current.copy(
-                                        actions = current.actions.toMutableList().apply {
-                                            remove(action)
-                                        })
-                                )
-                            }
-                        }, installedApps = state.installedApps
+                        ActionSelectors(
+                            header = {
+                                SmallTitle(text = LocalI18N.current["ui.actions.title"])
+                            },
+                            actions = overlayButtonItems[index].actions, addAction = { action ->
+                                overlayButtonItems = overlayButtonItems.toMutableList().apply {
+                                    val current = get(index)
+                                    set(
+                                        index,
+                                        current.copy(
+                                            actions = current.actions.toMutableList().apply {
+                                                add(action)
+                                            })
+                                    )
+                                }
+                            },
+                            removeAction = { action ->
+                                overlayButtonItems = overlayButtonItems.toMutableList().apply {
+                                    val current = get(index)
+                                    set(
+                                        index,
+                                        current.copy(
+                                            actions = current.actions.toMutableList().apply {
+                                                remove(action)
+                                            })
+                                    )
+                                }
+                            },
+                            installedApps = state.installedApps
                         )
                     }
 

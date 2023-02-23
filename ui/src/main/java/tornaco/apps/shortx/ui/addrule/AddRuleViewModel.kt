@@ -145,6 +145,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         }
     }
 
+    fun sortActions(actions: List<Action>) {
+        updateState {
+            copy(actions = actions, ruleChanged = true)
+        }
+    }
+
     fun save() {
         viewModelScope.launch {
             val fact = state.value.fact ?: return@launch
