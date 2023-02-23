@@ -14,11 +14,10 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     fun submitText(text: String) {
         logger.d("submitText, imeService: $imeService")
-        @Suppress("UNCHECKED_CAST") val mCurFocusedWindowClient =
-            Reflections.getObjectField(imeService, "mCurFocusedWindowClient")
-        logger.d("submitText, mCurFocusedWindowClient: $mCurFocusedWindowClient")
-        val inputContext: IInputContext =
-            Reflections.getObjectField(mCurFocusedWindowClient, "inputContext") as IInputContext
+        @Suppress("UNCHECKED_CAST") val mCurInputContext =
+            Reflections.getObjectField(imeService, "mCurInputContext")
+        logger.d("submitText, mCurInputContext: $mCurInputContext")
+        val inputContext: IInputContext = mCurInputContext as IInputContext
         logger.d("submitText, inputContext: $inputContext")
         InputMethodManagerV33().commitText(inputContext, text)
     }

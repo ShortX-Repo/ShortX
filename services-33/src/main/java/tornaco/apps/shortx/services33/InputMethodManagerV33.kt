@@ -8,7 +8,7 @@ class InputMethodManagerV33 {
         input.commitText(
             InputConnectionCommandHeader(0),
             text,
-            text.length
+            1
         )
     }
 }
