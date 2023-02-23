@@ -1,9 +1,9 @@
-package tornaco.apps.shortx.services33
+package tornaco.apps.shortx.services33.input
 
 import com.android.internal.inputmethod.InputConnectionCommandHeader
 import com.android.internal.view.IInputContext
 
-class InputMethodManagerV33 {
+object InputContextV33 {
     fun commitText(input: IInputContext, text: String) {
         input.commitText(
             InputConnectionCommandHeader(0),

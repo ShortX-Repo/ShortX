@@ -4,7 +4,6 @@ import com.android.internal.view.IInputContext
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
-import tornaco.apps.shortx.services33.InputMethodManagerV33
 import util.Reflections
 
 class InputService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -19,6 +18,6 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext) 
         logger.d("submitText, mCurInputContext: $mCurInputContext")
         val inputContext: IInputContext = mCurInputContext as IInputContext
         logger.d("submitText, inputContext: $inputContext")
-        InputMethodManagerV33().commitText(inputContext, text)
+        InputContextCompat.commitText(inputContext, text)
     }
 }
