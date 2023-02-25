@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.unknownUserComponent
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.userManager
@@ -25,6 +26,9 @@ import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val _currentFgComponentName = MutableStateFlow(unknownUserComponent)
     val currentFgComponentName = _currentFgComponentName.asStateFlow()
+
+    private val _currentFgAppPkg = MutableStateFlow(unKnownPkg)
+    val currentFgAppPkg = _currentFgAppPkg.asStateFlow()
 
     private val pkgPools = mutableListOf<PkgPool>()
 
@@ -68,12 +72,6 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun onComponentMoveToBg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToBg: $componentName user: $userId")
-        shortXContext.rule.publishFact(
-            "onComponentMoveToBg",
-            AppBecomeBg.newBuilder().addApps(
-                AppPkg.newBuilder().setPkgName(componentName.packageName).setUserId(userId).build()
-            ).build()
-        )
     }
 
     fun onComponentMoveToFg(componentName: ComponentName, userId: Int) {
@@ -81,12 +79,28 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         _currentFgComponentName.value =
             UserComponent(Pkg(componentName.packageName, userId), componentName.className)
 
-        shortXContext.rule.publishFact(
-            "onComponentMoveToFg",
-            AppBecomeFg.newBuilder().addApps(
-                AppPkg.newBuilder().setPkgName(componentName.packageName).setUserId(userId).build()
-            ).build()
-        )
+        val lastFgPkg = _currentFgAppPkg.value
+        val currentFgPkg = Pkg(componentName.packageName, userId)
+        if (lastFgPkg != currentFgPkg) {
+            _currentFgAppPkg.value = currentFgPkg
+
+            shortXContext.rule.publishFact(
+                reason = "onComponentMoveToFg",
+                fact = AppBecomeFg.newBuilder().addApps(currentFgPkg).build(),
+                contextMap = mapOf(
+                    "componentName" to componentName.flattenToShortString(),
+                    "pkgName" to currentFgPkg.pkgName
+                )
+            )
+
+            shortXContext.rule.publishFact(
+                reason = "onComponentMoveToBg",
+                fact = AppBecomeBg.newBuilder().addApps(lastFgPkg).build(),
+                contextMap = mapOf(
+                    "pkgName" to lastFgPkg.pkgName
+                )
+            )
+        }
     }
 
     fun getInstalledApps(): List<App> {

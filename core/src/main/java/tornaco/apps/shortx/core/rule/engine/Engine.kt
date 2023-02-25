@@ -14,7 +14,7 @@ interface ConditionEvaluator {
 }
 
 interface ActionEvaluator {
-    suspend fun evaluate(action: ProtoAny)
+    suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any> = emptyMap())
 }
 
 interface Engine {
@@ -23,9 +23,13 @@ interface Engine {
     val factMatcher: FactMatcher
 
     fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean
-    suspend fun fire(fact: ProtoMessage, rules: List<Rule>)
+    suspend fun fire(
+        fact: ProtoMessage,
+        rules: List<Rule>,
+        contextMap: Map<String, Any> = emptyMap()
+    )
 
-    suspend fun executeAction(actions: List<ProtoAny>) {
+    suspend fun executeActions(actions: List<ProtoAny>, contextMap: Map<String, Any> = emptyMap()) {
         actions.forEach {
             actionEvaluator.evaluate(it)
         }
@@ -83,7 +87,7 @@ class DefaultRuleEngine(
         } != null
     }
 
-    override suspend fun fire(fact: ProtoMessage, rules: List<Rule>) {
+    override suspend fun fire(fact: ProtoMessage, rules: List<Rule>, contextMap: Map<String, Any>) {
         logger.d("fire: ${fact.javaClass}")
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.fact)) {
@@ -93,9 +97,10 @@ class DefaultRuleEngine(
                     listener.onConditionMatch(rule)
                     rule.actionsList.forEach {
                         listener.beforeEvaluateAction(rule, it)
-                        kotlin.runCatching { actionEvaluator.evaluate(it) }.onFailure { err ->
-                            logger.e(err, "Error evaluate action")
-                        }
+                        kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }
+                            .onFailure { err ->
+                                logger.e(err, "Error evaluate action")
+                            }
                         listener.afterEvaluateAction(rule, it)
                     }
                 } else {

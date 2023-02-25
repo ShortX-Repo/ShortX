@@ -14,6 +14,7 @@ import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
+import tornaco.apps.shortx.services.util.ContextMapUtil.inflateContextMap
 
 class ActionEvaluatorImpl(
     private val context: Context,
@@ -28,7 +29,7 @@ class ActionEvaluatorImpl(
         DataImpl(context, shortXContext)
     }
 
-    override suspend fun evaluate(action: ProtoAny) {
+    override suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any>) {
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
             tornaco.apps.shortx.services.rule.actor.StartActivity(
@@ -48,7 +49,8 @@ class ActionEvaluatorImpl(
         } else if (action is_ ShowToast::class.java) {
             val t = action unpack_ ShowToast::class.java
             handler.postSafety {
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, t.message.inflateContextMap(contextMap), Toast.LENGTH_SHORT)
+                    .show()
             }
         } else if (action is_ Delay::class.java) {
             val d = action unpack_ Delay::class.java

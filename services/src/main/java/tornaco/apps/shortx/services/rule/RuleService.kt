@@ -100,16 +100,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
     }
 
-    fun publishFact(reason: String, fact: ProtoMessage) {
+    fun publishFact(reason: String, fact: ProtoMessage, contextMap: Map<String, Any> = emptyMap()) {
         logger.d("publishFact: $reason, $fact")
         systemServiceScope.launchSafety {
-            engine.fire(fact, getAllRules().filter { rule -> rule.isEnabled })
+            engine.fire(
+                fact = fact,
+                rules = getAllRules().filter { rule -> rule.isEnabled },
+                contextMap = contextMap
+            )
         }
     }
 
     fun executeActions(reason: String, actions: List<ProtoAny>) = systemServiceScope.launchSafety {
         logger.d("executeActions: $reason, $actions")
-        engine.executeAction(actions)
+        engine.executeActions(actions)
     }
 
     fun addRule(rule: Rule) {
