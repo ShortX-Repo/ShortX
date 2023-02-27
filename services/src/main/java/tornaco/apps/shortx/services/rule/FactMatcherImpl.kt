@@ -1,10 +1,8 @@
 package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.proto.fact.Alarm
-import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
-import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
-import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.fact.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.engine.FactMatcher
@@ -38,6 +36,61 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val bgActual = actual as AppBecomeBg
             val bgRule = rule as AppBecomeBg
             matchAppBecomeBgOrFg(AppBecomeBgFactWrapper(bgActual), AppBecomeBgFactWrapper(bgRule))
+        }
+
+        register(WifiStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as WifiStatusChanged
+            val ruleStatus = rule as WifiStatusChanged
+            (ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa)
+                    && ruleStatus.ssid.isNullOrEmpty() || ruleStatus.ssid == actualStatus.ssid
+        }
+
+        register(BTStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as BTStatusChanged
+            val ruleStatus = rule as BTStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(LocationStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as LocationStatusChanged
+            val ruleStatus = rule as LocationStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(NFCStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as NFCStatusChanged
+            val ruleStatus = rule as NFCStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(FlashLightStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as FlashLightStatusChanged
+            val ruleStatus = rule as FlashLightStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(MobileDataStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as MobileDataStatusChanged
+            val ruleStatus = rule as MobileDataStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(HotSpotStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as HotSpotStatusChanged
+            val ruleStatus = rule as HotSpotStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(DarkModeStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as DarkModeStatusChanged
+            val ruleStatus = rule as DarkModeStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
+        }
+
+        register(DNDStatusChanged::class.java) { actual, rule ->
+            val actualStatus = actual as DNDStatusChanged
+            val ruleStatus = rule as DNDStatusChanged
+            ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
         }
     }
 

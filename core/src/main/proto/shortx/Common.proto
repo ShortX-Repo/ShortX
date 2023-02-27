@@ -28,3 +28,9 @@ message UserComponent {
 message Author {
   string name = 1;
 }
+
+enum OnOffAny {
+  On = 0;
+  Off = 1;
+  Any = 2;
+}

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule.fact
+package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.BroadcastReceiver
 import android.content.Context

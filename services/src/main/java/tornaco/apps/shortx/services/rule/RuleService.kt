@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
-import tornaco.apps.shortx.services.rule.fact.allTriggers
+import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {

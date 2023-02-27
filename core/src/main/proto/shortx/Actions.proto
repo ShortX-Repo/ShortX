@@ -112,3 +112,7 @@ message SetDarkModeEnabled {
 message SetFlashLightEnabled {
   bool enable = 1;
 }
+
+message SetLocationEnabled {
+  bool enable = 1;
+}

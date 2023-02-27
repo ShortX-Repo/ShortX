@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.rule.fact
+package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.core.proto.fact.Alarm

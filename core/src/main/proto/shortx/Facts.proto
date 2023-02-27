@@ -101,3 +101,40 @@ message AppBecomeBg {
   repeated AppPkg apps = 1;
   repeated string pkgSets = 2;
 }
+
+message BTStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message WifiStatusChanged {
+  OnOffAny ooa = 1;
+  string ssid = 2;
+}
+
+message MobileDataStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message NFCStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message FlashLightStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message LocationStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message HotSpotStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message DarkModeStatusChanged {
+  OnOffAny ooa = 1;
+}
+
+message DNDStatusChanged {
+  OnOffAny ooa = 1;
+}
