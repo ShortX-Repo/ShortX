@@ -8,4 +8,6 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     ScreenStateTrigger(context, shortXContext),
     AlarmTrigger(context, shortXContext),
     WifiStateTrigger(context, shortXContext),
+    BTStateTrigger(context, shortXContext),
+    LocationStateTrigger(context, shortXContext),
 )
