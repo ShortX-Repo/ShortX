@@ -10,4 +10,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     WifiStateTrigger(context, shortXContext),
     BTStateTrigger(context, shortXContext),
     LocationStateTrigger(context, shortXContext),
+    UiModeStateTrigger(context, shortXContext),
 )
