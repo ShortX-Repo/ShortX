@@ -2,24 +2,13 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.*
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.main.AppRoute
 
 @Composable
 fun ExtActions(addAction: (Action) -> Unit) {
-    val vm = hiltViewModel<ActionSelectorViewModel>()
-    LaunchedEffect(vm) {
-        vm.loadInstalledApps()
-    }
-    val state = vm.state.collectAsState()
-    val installedApps = state.value.installedApps
-
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
         addAction(Action.ShellCommand(cmd))
     }
@@ -45,18 +34,9 @@ fun ExtActions(addAction: (Action) -> Unit) {
     }
     MVELSelector(state = mvelSelectorState)
 
-    val showOverlayButtonSelectorState =
-        rememberShowOverlayButtonSelectorState(
-            installedApps = installedApps
-        ) { settings ->
-            val action = Action.ShowOverlay(
-                autoCollapse = settings.autoCollapse,
-                settings = settings.items.map { it.toOverlayButtonSetting() }
-            )
-            addAction(action)
-        }
-    ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
 
+    // For Overlay button selector
+    val navHost = LocalNavHostController.current
 
     val i18N = LocalI18N.current
     val actionItems = listOf(
@@ -116,12 +96,8 @@ fun ExtActions(addAction: (Action) -> Unit) {
                     addAction(Action.HideOverlay)
                 }
                 Action.ShowOverlay::class -> {
-                    showOverlayButtonSelectorState.show(
-                        ShowOverlayButtonSettings(
-                            false,
-                            emptyList()
-                        )
-                    )
+                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
+                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
                 }
             }
         })

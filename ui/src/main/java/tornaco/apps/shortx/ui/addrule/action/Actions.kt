@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.KEY_ACTION
 import tornaco.apps.shortx.ui.base.*
@@ -22,27 +21,14 @@ import tornaco.apps.shortx.ui.main.AppRoute
 
 @Composable
 fun ActionSelectors(
-    header: @Composable ColumnScope.() -> Unit = {
+    header: @Composable() (ColumnScope.() -> Unit) = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
     addAction: (Action) -> Unit,
     removeAction: (Action) -> Unit,
     actions: List<Action>,
-    installedApps: List<App>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
-    val showOverlayButtonSelectorState =
-        rememberShowOverlayButtonSelectorState(
-            installedApps = installedApps
-        ) { settings ->
-            val action = Action.ShowOverlay(
-                autoCollapse = settings.autoCollapse,
-                settings = settings.items.map { it.toOverlayButtonSetting() }
-            )
-            addAction(action)
-        }
-    ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
-
     Actions(
         header = header,
         actions = actions,
@@ -53,11 +39,7 @@ fun ActionSelectors(
         onActionClick = { action ->
             when (action) {
                 is Action.ShowOverlay -> {
-                    showOverlayButtonSelectorState.show(
-                        ShowOverlayButtonSettings(
-                            action.autoCollapse,
-                            action.settings.map { it.toOverlayButtonItem() })
-                    )
+
                 }
                 else -> {}
             }

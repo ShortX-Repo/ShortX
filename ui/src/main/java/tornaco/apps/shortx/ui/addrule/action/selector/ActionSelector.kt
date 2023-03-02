@@ -18,10 +18,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+private val logger = Logger("ExtActions")
 const val KEY_ACTION = "selector.key.action"
 
 enum class ActionCategory(val i18NKey: String, val icon: ImageVector) {
@@ -92,6 +94,24 @@ fun ActionSelector(
                         val addAction: (Action) -> Unit = {
                             navController.popBackWithResult(mapOf(KEY_ACTION to it))
                         }
+
+                        // For Overlay button selector
+                        val result =
+                            navController.getStateFlow<ShowOverlayButtonSettings?>(
+                                KEY_OVERLAY_BUTTON_SETTINGS,
+                                null
+                            )?.collectAsState()
+                        LaunchedEffect(result) {
+                            logger.d("KEY_OVERLAY_BUTTON_SETTINGS result: ${result?.value}")
+                            result?.value?.let { buttonSettings ->
+                                val action = Action.ShowOverlay(
+                                    autoCollapse = buttonSettings.autoCollapse,
+                                    settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
+                                )
+                                addAction(action)
+                            }
+                        }
+
                         when (selectedItem) {
                             ActionCategory.Ui.ordinal -> {
                                 UiActions(addAction = addAction)

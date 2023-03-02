@@ -8,6 +8,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelector
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
@@ -102,6 +103,10 @@ fun AppNavigationGraph(
 
         animateComposable(AppRoute.SelectAction.name) {
             ActionSelector()
+        }
+
+        animateComposable(AppRoute.SelectShowOverlayButton.name) {
+            ShowOverlayButtonSelector()
         }
     }
 }

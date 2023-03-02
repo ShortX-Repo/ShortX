@@ -4,6 +4,7 @@ enum class AppRoute {
     Home,
     AddRule,
     SelectAction,
+    SelectShowOverlayButton,
     AddDA,
     Settings,
     PkgSetList,
