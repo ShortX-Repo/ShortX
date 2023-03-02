@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -9,16 +10,21 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.KEY_ACTION
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.main.AppRoute
 import kotlin.reflect.KClass
 
 @Composable
@@ -297,6 +303,14 @@ private fun Actions(
         sortActions(it)
     })
 
+    val navHost = LocalNavHostController.current
+    val result =
+        navHost.getStateFlow<Action?>(KEY_ACTION, null)?.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(result) {
+        Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show()
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
 
         Row(
@@ -336,23 +350,15 @@ private fun Actions(
             }
 
             Box {
-                var showActionSelectorMenu by remember {
-                    mutableStateOf(false)
-                }
                 FilledTonalButton(onClick = {
-                    showActionSelectorMenu = true
+                    navHost.removeData<Action>(KEY_ACTION)
+                    navHost.navigate(AppRoute.SelectAction.name)
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
                     )
                     TinySpacer()
                     Text(LocalI18N.current["ui.actions.add"])
-                }
-
-                ActionSelectorMenu(isOpen = showActionSelectorMenu,
-                    setIsOpen = { showActionSelectorMenu = it }) {
-                    showActionSelectorMenu = false
-                    selectAction(it)
                 }
 
                 ActionSortDialog(state = actionSortDialogState)

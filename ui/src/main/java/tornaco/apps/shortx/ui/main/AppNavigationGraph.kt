@@ -2,26 +2,23 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelector
+import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 
-enum class AppRoute {
-    Home, AddRule, AddDA, Settings, PkgSetList, PkgSetDetails
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigationGraph(
-    appNavController: NavHostController,
 ) {
+    val appNavController = LocalNavHostController.current
     AnimatedNavHost(appNavController, startDestination = AppRoute.Home.name) {
         animateComposable(AppRoute.Home.name) {
             HomeScreen(
@@ -101,6 +98,10 @@ fun AppNavigationGraph(
                     appNavController.popBackStack()
                 }
             }
+        }
+
+        animateComposable(AppRoute.SelectAction.name) {
+            ActionSelector()
         }
     }
 }
