@@ -77,6 +77,7 @@
   "ui.condition.op.any.desc": "要求任何一个条件符合",
   "ui.condition.op.none.desc": "要求所有条件都不符合",
   "ui.condition.op.mvel.desc": "使用MVEL表达式来表述多条件操作",
+  "ui.title.select.action": "选择动作",
   "ui.action.hide.overlay": "隐藏悬浮工具",
   "ui.action.show.overlay": "显示悬浮工具",
   "ui.action.show.button.of": "第{index}个按钮",

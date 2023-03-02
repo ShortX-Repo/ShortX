@@ -14,6 +14,7 @@ object ClassPaths {
 
 object Compose {
     const val composeVersion = "1.3.0"
+    const val bomVersion = "2023.01.00"
 
     const val enro = "dev.enro:enro:2.0.0-alpha10"
     const val enroApt = "dev.enro:enro-processor:2.0.0-alpha10"

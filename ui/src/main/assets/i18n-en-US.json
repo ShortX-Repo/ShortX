@@ -78,6 +78,7 @@
   "ui.condition.op.none.desc": "Match none condition",
   "ui.condition.op.mvel.desc": "Match multiple conditions using MVEL expression",
   "ui.action.hide.overlay": "Hide Overlays",
+  "ui.title.select.action": "Select action",
   "ui.action.show.overlay": "Show Overlay",
   "ui.action.show.button.of": "Button of {index}",
   "ui.action.show.icon": "Icon",

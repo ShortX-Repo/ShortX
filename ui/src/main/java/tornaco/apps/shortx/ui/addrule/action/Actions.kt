@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.ui.addrule.action
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,17 +14,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.KEY_ACTION
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
-import kotlin.reflect.KClass
 
 @Composable
 fun ActionSelectors(
@@ -38,40 +31,6 @@ fun ActionSelectors(
     installedApps: List<App>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
-    // Actions
-    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-        addAction(Action.ShellCommand(cmd))
-    }
-    ShellCommandSelector(state = shellCommandSelectorState)
-
-    val inputTextSelectorState = rememberInputTextSelectorState(onSelected = {
-        addAction(Action.InputText(it))
-    })
-    InputTextSelector(state = inputTextSelectorState)
-
-    val toastSelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
-            message = null,
-            onSelected = {
-                addAction(Action.ShowToast(it))
-            })
-    TextInputDialog(state = toastSelectionState)
-
-    val delaySelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
-            message = LocalI18N.current["ui.action.delay.input.message"],
-            onSelected = {
-                addAction(Action.Delay(it.toLongOrNull() ?: 0))
-            })
-    TextInputDialog(state = delaySelectionState)
-
-    val mvelSelectorState = rememberMVELSelectorState(
-        title = LocalI18N.current["ui.title.mvel"]
-    ) { expression ->
-        addAction(Action.MVEL(expression))
-    }
-    MVELSelector(state = mvelSelectorState)
-
     val showOverlayButtonSelectorState =
         rememberShowOverlayButtonSelectorState(
             installedApps = installedApps
@@ -84,98 +43,10 @@ fun ActionSelectors(
         }
     ShowOverlayButtonSelector(state = showOverlayButtonSelectorState)
 
-    val launchAppSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val first = it[0]
-            val action = Action.LaunchApp(first.let { app ->
-                AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
-            }, appLabel = first.label)
-            addAction(action)
-        })
-    AppPkgSelector(state = launchAppSelectorState)
-
-    val stopAppSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.StopApp(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.StopApp(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = stopAppSelectorState)
-
-    val startAppProcessSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.StartAppProcess(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.StartAppProcess(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = startAppProcessSelectorState)
-
-    val enableAppProcessSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.EnableApp(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.EnableApp(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = enableAppProcessSelectorState)
-
-    val disableAppProcessSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.DisableApp(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.DisableApp(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = disableAppProcessSelectorState)
-
-    val suspendAppProcessSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.SuspendApp(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.SuspendApp(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = suspendAppProcessSelectorState)
-
-    val unsuspendAppProcessSelectorState =
-        rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.UnsuspendApp(it)
-            addAction(action)
-        }, onPkgSetSelected = {
-            val action = Action.UnsuspendApp(pkgSets = it)
-            addAction(action)
-        })
-    AppPkgSelector(state = unsuspendAppProcessSelectorState)
-
     Actions(
         header = header,
         actions = actions,
-        selectAction = { action: KClass<out Action> ->
-            onActionMenuSelected(
-                action = action,
-                addAction = addAction,
-                shellCommandSelectorState = shellCommandSelectorState,
-                inputTextSelectorState = inputTextSelectorState,
-                toastSelectionState = toastSelectionState,
-                delaySelectionState = delaySelectionState,
-                mvelSelectorState = mvelSelectorState,
-                showOverlayButtonSelectorState = showOverlayButtonSelectorState,
-                launchAppSelectorState = launchAppSelectorState,
-                stopAppSelectorState = stopAppSelectorState,
-                startAppProcessSelectorState = startAppProcessSelectorState,
-                enableAppProcessSelectorState = enableAppProcessSelectorState,
-                disableAppProcessSelectorState = disableAppProcessSelectorState,
-                suspendAppProcessSelectorState = suspendAppProcessSelectorState,
-                unsuspendAppProcessSelectorState = unsuspendAppProcessSelectorState,
-            )
-        },
+        addAction = addAction,
         removeAction = { action ->
             removeAction(action)
         },
@@ -195,106 +66,11 @@ fun ActionSelectors(
     )
 }
 
-private fun onActionMenuSelected(
-    action: KClass<out Action>,
-    addAction: (Action) -> Unit,
-    shellCommandSelectorState: ShellCommandSelectorState,
-    inputTextSelectorState: InputTextSelectorState,
-    toastSelectionState: TextInputState,
-    delaySelectionState: TextInputState,
-    mvelSelectorState: MVELSelectorState,
-    showOverlayButtonSelectorState: ShowOverlayButtonSelectorState,
-    launchAppSelectorState: AppPkgSelectorState,
-    stopAppSelectorState: AppPkgSelectorState,
-    startAppProcessSelectorState: AppPkgSelectorState,
-    enableAppProcessSelectorState: AppPkgSelectorState,
-    disableAppProcessSelectorState: AppPkgSelectorState,
-    suspendAppProcessSelectorState: AppPkgSelectorState,
-    unsuspendAppProcessSelectorState: AppPkgSelectorState,
-) {
-    when (action) {
-        Action.TakeScreenshot::class -> {
-            addAction(Action.TakeScreenshot)
-        }
-        Action.ShellCommand::class -> {
-            shellCommandSelectorState.show()
-        }
-        Action.InputText::class -> {
-            inputTextSelectorState.show()
-        }
-        Action.ShowToast::class -> {
-            toastSelectionState.show()
-        }
-        Action.Delay::class -> {
-            delaySelectionState.show()
-        }
-        Action.MVEL::class -> {
-            mvelSelectorState.show()
-        }
-        Action.HideOverlay::class -> {
-            addAction(Action.HideOverlay)
-        }
-        Action.ShowOverlay::class -> {
-            showOverlayButtonSelectorState.show(
-                ShowOverlayButtonSettings(
-                    false,
-                    emptyList()
-                )
-            )
-        }
-        Action.LaunchApp::class -> {
-            launchAppSelectorState.show()
-        }
-
-        Action.DisableBT::class,
-        Action.DisableDND::class,
-        Action.DisableDarkMode::class,
-        Action.DisableData::class,
-        Action.DisableFlashLight::class,
-        Action.DisableHotSpot::class,
-        Action.DisableNFC::class,
-        Action.DisableWifi::class,
-
-        Action.EnableBT::class,
-        Action.EnableDND::class,
-        Action.EnableDarkMode::class,
-        Action.EnableData::class,
-        Action.EnableFlashLight::class,
-        Action.EnableHotSpot::class,
-        Action.EnableNFC::class,
-        Action.EnableWifi::class -> {
-            action.objectInstance?.let {
-                addAction(it)
-            }
-        }
-
-        Action.StopApp::class -> {
-            stopAppSelectorState.show()
-        }
-        Action.StartAppProcess::class -> {
-            startAppProcessSelectorState.show()
-        }
-        Action.EnableApp::class -> {
-            enableAppProcessSelectorState.show()
-        }
-        Action.DisableApp::class -> {
-            disableAppProcessSelectorState.show()
-        }
-        Action.SuspendApp::class -> {
-            suspendAppProcessSelectorState.show()
-        }
-        Action.UnsuspendApp::class -> {
-            unsuspendAppProcessSelectorState.show()
-        }
-    }
-}
-
-
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
-    selectAction: (KClass<out Action>) -> Unit,
+    addAction: (Action) -> Unit,
     removeAction: (Action) -> Unit,
     onActionClick: (Action) -> Unit = {},
     sortActions: (List<Action>) -> Unit = {},
@@ -306,13 +82,13 @@ private fun Actions(
     val navHost = LocalNavHostController.current
     val result =
         navHost.getStateFlow<Action?>(KEY_ACTION, null)?.collectAsState()
-    val context = LocalContext.current
     LaunchedEffect(result) {
-        Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show()
+        result?.value?.let {
+            addAction(it)
+        }
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
