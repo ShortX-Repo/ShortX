@@ -16,6 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.KEY_ACTION
+import tornaco.apps.shortx.ui.addrule.action.selector.KEY_OVERLAY_BUTTON_SETTINGS
+import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
+import tornaco.apps.shortx.ui.addrule.action.selector.toOverlayButtonItem
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
 
@@ -29,6 +32,7 @@ fun ActionSelectors(
     actions: List<Action>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
+    val navHost = LocalNavHostController.current
     Actions(
         header = header,
         actions = actions,
@@ -39,7 +43,13 @@ fun ActionSelectors(
         onActionClick = { action ->
             when (action) {
                 is Action.ShowOverlay -> {
-
+                    val currentSettings = ShowOverlayButtonSettings(
+                        action.autoCollapse,
+                        action.settings.map { it.toOverlayButtonItem() }
+                    )
+                    navHost.currentBackStackEntry?.arguments?.putParcelable("settings", currentSettings)
+                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
+                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
                 }
                 else -> {}
             }

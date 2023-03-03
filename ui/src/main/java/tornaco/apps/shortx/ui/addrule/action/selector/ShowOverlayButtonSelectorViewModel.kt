@@ -25,8 +25,7 @@ import javax.inject.Inject
 
 data class OverlayButtonSelectorState(
     val installedApps: List<App> = emptyList(),
-    val initialData: ShowOverlayButtonSettings = ShowOverlayButtonSettings(false, emptyList()),
-    val items: List<OverlayButtonItem> = initialData.items,
+    val items: List<OverlayButtonItem> = emptyList(),
     val autoCollapse: Boolean = false,
     val canSave: Boolean = false
 )
@@ -61,6 +60,12 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     override fun initState(): OverlayButtonSelectorState {
         return OverlayButtonSelectorState()
+    }
+
+    fun initFrom(settings: ShowOverlayButtonSettings) {
+        updateState {
+            copy(items = settings.items, autoCollapse = settings.autoCollapse)
+        }
     }
 
     fun loadInstalledApps() {

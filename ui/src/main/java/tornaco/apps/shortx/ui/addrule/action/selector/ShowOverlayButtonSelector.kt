@@ -10,7 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -25,11 +28,14 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 const val KEY_OVERLAY_BUTTON_SETTINGS = "selector.key.overlay.button.settings"
 
 @Composable
-fun ShowOverlayButtonSelector() {
+fun ShowOverlayButtonSelector(currentSettings: ShowOverlayButtonSettings?) {
     val navController: NavController = LocalNavHostController.current
 
     val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>()
     LaunchedEffect(vm) {
+        currentSettings?.let {
+            vm.initFrom(it)
+        }
         vm.loadInstalledApps()
     }
     val state by vm.state.collectAsState()

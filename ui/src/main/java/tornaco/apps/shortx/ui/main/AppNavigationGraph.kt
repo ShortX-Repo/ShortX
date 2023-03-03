@@ -9,6 +9,7 @@ import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
@@ -106,7 +107,9 @@ fun AppNavigationGraph(
         }
 
         animateComposable(AppRoute.SelectShowOverlayButton.name) {
-            ShowOverlayButtonSelector()
+            // Directly extract the argument from previousBackStackEntry
+            val settings = appNavController.previousBackStackEntry?.arguments?.getParcelable<ShowOverlayButtonSettings>("settings")
+            ShowOverlayButtonSelector(settings)
         }
     }
 }
