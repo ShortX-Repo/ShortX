@@ -24,6 +24,14 @@ open class BaseRuleSettingsStore(
 
     suspend fun read() = readInternal()
 
+    fun addRules(rules: List<Rule>, write: Boolean = true) {
+        rules.forEach { rule ->
+            rulesCache.removeIf { it.id == rule.id }
+            rulesCache.add(rule)
+        }
+        if (write) postWrite()
+    }
+
     fun addRule(rule: Rule) {
         rulesCache.removeIf { it.id == rule.id }
         rulesCache.add(rule)

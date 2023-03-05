@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
+import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
@@ -71,6 +72,8 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             updateState {
                 copy(rules = rules)
             }
+
+            BackupAgent(context).backup()
         }
     }
 
