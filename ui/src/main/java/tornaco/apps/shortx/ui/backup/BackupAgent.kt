@@ -11,9 +11,8 @@ import tornaco.apps.shortx.core.util.ZipUtils
 import java.io.File
 
 class BackupAgent(private val context: Context) {
-
-    suspend fun backup() {
-        withContext(Dispatchers.IO) {
+    suspend fun backup(): File {
+        return withContext(Dispatchers.IO) {
             val allRules = shortXManager.getAllRules()
 
             val backupTempDir = File(context.cacheDir, "backup-${System.currentTimeMillis()}")
@@ -29,6 +28,8 @@ class BackupAgent(private val context: Context) {
                 "ShortX-Backup-${DateUtils.formatForFileName(System.currentTimeMillis())}.zip"
 
             ZipUtils.zip(backupTempDir.absolutePath, backupZipRootDir.absolutePath, name)
+
+            return@withContext File(backupZipRootDir, name)
         }
     }
 }

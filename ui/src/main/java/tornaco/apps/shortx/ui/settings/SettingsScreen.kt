@@ -8,19 +8,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.DeveloperMode
-import androidx.compose.material.icons.outlined.Extension
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -40,7 +36,11 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -55,17 +55,40 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
                         actions = {},
                         scrollBehavior = scrollBehavior
                     )
-                }) {
+                }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(it)
+                        .padding(paddingValues)
                         .padding(horizontal = 16.dp)
                         .animateContentSize()
                 ) {
+                    val i18N = LocalI18N.current
+                    LaunchedEffect(vm) {
+                        vm.backupPerformed.collectLatest {
+                            when (it) {
+                                is BackupResult.Success -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            i18N["ui.settings.toast.backup.complete", mapOf("path" to it.path)]
+                                        )
+                                    }
+                                }
+                                is BackupResult.Failed -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            i18N["ui.settings.toast.backup.error", mapOf("err" to it.error)],
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     PreferenceUi(mutableListOf<Preference>().apply {
                         addAll(generalSettings(state, vm, goToPkgSetList))
-                        addAll(devSettings(state, vm, goToPkgSetList))
+                        addAll(dataSettings(state, vm))
+                        addAll(devSettings(state, vm))
                         addAll(aboutSettings(state))
                     })
                 }
@@ -92,10 +115,30 @@ private fun generalSettings(
 )
 
 @Composable
+private fun dataSettings(
+    state: SettingsState,
+    vm: SettingsViewModel
+) = listOf(
+    Preference.Category(LocalI18N.current["ui.settings.data"]),
+    Preference.TextPreference(
+        icon = Icons.Outlined.Backup,
+        title = LocalI18N.current["ui.settings.data.backup.title"],
+        summary = LocalI18N.current["ui.settings.data.backup.summary"],
+        onClick = {
+            vm.backup()
+        }
+    ),
+    Preference.TextPreference(
+        icon = Icons.Outlined.Restore,
+        title = LocalI18N.current["ui.settings.data.restore.title"],
+        summary = LocalI18N.current["ui.settings.data.restore.summary"],
+    )
+)
+
+@Composable
 private fun devSettings(
     state: SettingsState,
-    vm: SettingsViewModel,
-    goToPkgSetList: () -> Unit
+    vm: SettingsViewModel
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
