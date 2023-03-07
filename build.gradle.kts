@@ -1,5 +1,7 @@
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
+import tornaco.project.android.shortx.Configs.outDir
+import tornaco.project.android.shortx.log
 
 buildscript {
     repositories {
@@ -29,3 +31,22 @@ androidGitVersion {
 
 sxVersionCode = androidGitVersion.code()
 sxVersionName = androidGitVersion.name()
+
+subprojects {
+    log("subprojects: ${this.name}")
+
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.addAll(
+            arrayOf(
+                "-Xmaxerrs",
+                "1000"))
+        options.encoding = "UTF-8"
+    }
+
+    buildDir = file("${outDir}${path.replace(":", File.separator)}")
+}
+
+rootProject.buildDir = outDir
+tasks["clean"].doLast {
+    delete(outDir)
+}

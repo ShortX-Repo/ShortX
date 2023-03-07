@@ -30,6 +30,7 @@ object Configs {
     val Project.resPrefix: String get() = "${this.name}_"
 
     val Project.outDir: File get() = rootProject.file("out")
+    val Project.magiskModuleBuildDir get() = File("${outDir}/magisk_module")
 
     const val KeyStorePath = "environment/keys/android.jks"
 
@@ -46,6 +47,30 @@ object Configs {
         return Configs["keyPassword"] ?: this.findProperty("keyPassword")?.toString() ?: ""
     }
 }
+
+object MagiskModConfigs {
+    /*
+       This name will be used in the name of the so file ("lib${moduleLibraryName}.so").
+       If this module need to support Riru pre-v24 (API < 24), moduleLibraryName must start with "riru_".
+    */
+    const val moduleLibraryName = "zygisk_shortX"
+
+    /*
+       Magisk module ID
+       Since Magisk use it to distinguish different modules, you should never change it.
+       Note, the older version of the template uses '-' instead of '_', if your are upgrading from
+       the older version, please pay attention.
+    */
+    const val magiskModuleId = "zygisk_shortX"
+
+    const val moduleName = "Zygisk - ShortX"
+    const val moduleAuthor = "Tornaco"
+    const val moduleDescription =
+        """Provides hooks for ShortX. Support Android11 & Android12. Requires Magisk 24.0+ and Zygisk"""
+    val moduleVersion = Configs.sxVersionName
+    val moduleVersionCode = Configs.sxVersionCode
+}
+
 
 @ExperimentalStdlibApi
 class ShortXBuildPlugin : Plugin<Project> {

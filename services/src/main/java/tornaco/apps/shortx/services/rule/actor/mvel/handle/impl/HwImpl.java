@@ -338,7 +338,7 @@ class FlashlightController {
 
     private synchronized void ensureHandler() {
         if (mHandler == null) {
-            HandlerThread thread = new HandlerThread("Thanox-FlashlightCtrl");
+            HandlerThread thread = new HandlerThread("ShortX-FlashlightCtrl");
             thread.start();
             mHandler = new Handler(thread.getLooper());
         }
