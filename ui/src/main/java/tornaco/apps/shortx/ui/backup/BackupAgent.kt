@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -18,19 +19,26 @@ import java.util.zip.ZipInputStream
 
 
 private const val RULE_FILE_NAME = "rule.pb"
+private const val DA_FILE_NAME = "da.pb"
 
 class BackupAgent(private val context: Context) {
     private val logger = Logger("BackupAgent")
 
     suspend fun backup(): File {
         return withContext(Dispatchers.IO) {
-            val allRules = shortXManager.getAllRules()
-
             val backupTempDir = File(context.cacheDir, "backup-${System.currentTimeMillis()}")
+
+            val allRules = shortXManager.getAllRules()
             val ruleStore = BaseRuleSettingsStore(this, File(backupTempDir, RULE_FILE_NAME))
 
             ruleStore.addRules(rules = allRules, write = false)
             ruleStore.write()
+
+
+            val allDAs = shortXManager.getAllDirectAction()
+            val daStore = BaseDirectActionSettingsStore(this, File(backupTempDir, DA_FILE_NAME))
+            daStore.addDirectActions(das = allDAs, write = false)
+            daStore.write()
 
             val backupZipRootDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -69,6 +77,19 @@ class BackupAgent(private val context: Context) {
                         // Disable this rule.
                         shortXManager.addRule(Rule.newBuilder(it).setIsEnabled(false).build())
                     }
+
+                    // DAs
+                    val daPb = File(tmpExtractedFile, DA_FILE_NAME)
+                    val daStore = BaseDirectActionSettingsStore(this, daPb)
+                    daStore.read()
+                    daStore.getAllDirectActions().forEach {
+                        logger.d("restore, add da: ${it.title}")
+                        shortXManager.addDirectAction(it)
+                    }
+
+                    // Clean up.
+                    tmpExtractedFile.deleteRecursively()
+                    tmpZipFile.deleteRecursively()
                 }
             }.onFailure {
                 logger.e(it, "restore err")

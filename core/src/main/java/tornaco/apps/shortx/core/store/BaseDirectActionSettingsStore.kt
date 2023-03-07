@@ -30,6 +30,14 @@ open class BaseDirectActionSettingsStore(
         postWrite()
     }
 
+    fun addDirectActions(das: List<DirectAction>, write: Boolean = true) {
+        das.forEach { da ->
+            dasCache.removeIf { it.id == da.id }
+            dasCache.add(da)
+        }
+        if (write) postWrite()
+    }
+
     fun deleteDirectAction(daId: String) {
         dasCache.removeIf { it.id == daId }
         postWrite()
