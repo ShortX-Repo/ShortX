@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,11 @@ sealed interface BackupResult {
     data class Failed(val error: String) : BackupResult
 }
 
+sealed interface RestoreResult {
+    object Success : RestoreResult
+    data class Failed(val error: String) : RestoreResult
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(@ApplicationContext private val context: Context) :
@@ -34,6 +40,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
 
     private val _backupPerformed = MutableSharedFlow<BackupResult>()
     val backupPerformed = _backupPerformed.asSharedFlow()
+
+    private val _restorePerformed = MutableSharedFlow<RestoreResult>()
+    val restorePerformed = _restorePerformed.asSharedFlow()
 
     override fun initState(): SettingsState {
         return SettingsState()
@@ -69,6 +78,18 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
             }.onFailure {
                 logger.e(it, "Backup error")
                 _backupPerformed.emit(BackupResult.Failed(it.message ?: "UNKNOWN ERR"))
+            }
+        }
+    }
+
+    fun restoreFrom(fileUri: Uri) {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                BackupAgent(context).restore(fileUri)
+                _restorePerformed.emit(RestoreResult.Success)
+            }.onFailure {
+                logger.e(it, "Restore error")
+                _restorePerformed.emit(RestoreResult.Failed(it.message ?: "UNKNOWN ERR"))
             }
         }
     }

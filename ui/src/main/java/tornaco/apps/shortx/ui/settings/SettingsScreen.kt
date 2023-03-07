@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,9 +87,41 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
                         }
                     }
 
+                    LaunchedEffect(vm) {
+                        vm.restorePerformed.collectLatest {
+                            when (it) {
+                                is RestoreResult.Success -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            i18N["ui.settings.toast.restore.complete"]
+                                        )
+                                    }
+                                }
+                                is RestoreResult.Failed -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            i18N["ui.settings.toast.backup.error", mapOf("err" to it.error)],
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    val pickFileLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.GetContent()
+                    ) { fileUri ->
+                        if (fileUri != null) {
+                            vm.restoreFrom(fileUri)
+                        }
+                    }
+
                     PreferenceUi(mutableListOf<Preference>().apply {
                         addAll(generalSettings(state, vm, goToPkgSetList))
-                        addAll(dataSettings(state, vm))
+                        addAll(dataSettings(state, vm, pickRestoreFile = {
+                            pickFileLauncher.launch("application/zip")
+                        }))
                         addAll(devSettings(state, vm))
                         addAll(aboutSettings(state))
                     })
@@ -117,7 +151,8 @@ private fun generalSettings(
 @Composable
 private fun dataSettings(
     state: SettingsState,
-    vm: SettingsViewModel
+    vm: SettingsViewModel,
+    pickRestoreFile: () -> Unit
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.data"]),
     Preference.TextPreference(
@@ -132,6 +167,9 @@ private fun dataSettings(
         icon = Icons.Outlined.Restore,
         title = LocalI18N.current["ui.settings.data.restore.title"],
         summary = LocalI18N.current["ui.settings.data.restore.summary"],
+        onClick = {
+            pickRestoreFile()
+        }
     )
 )
 

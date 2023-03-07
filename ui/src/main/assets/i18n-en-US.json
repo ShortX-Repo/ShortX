@@ -119,6 +119,8 @@
   "ui.settings.data.restore.summary": "Select a backup file to restore data to this device",
   "ui.settings.toast.backup.complete": "Data has been backed up to \n{path}",
   "ui.settings.toast.backup.error": "Failed to backup data: {err}",
+  "ui.settings.toast.restore.complete": "Restore success",
+  "ui.settings.toast.restore.error": "Restore fail: {err}",
   "ui.pkg.set.title": "Application Set",
   "ui.pkg.set.desc": "Classification of applications to make it easier to quickly select from a batch of applications",
   "ui.pkg.set.add.title": "Add Application Set",

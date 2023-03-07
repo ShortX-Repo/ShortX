@@ -1,22 +1,33 @@
 package tornaco.apps.shortx.ui.backup
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.util.zip.ZipInputStream
+
+
+private const val RULE_FILE_NAME = "rule.pb"
 
 class BackupAgent(private val context: Context) {
+    private val logger = Logger("BackupAgent")
+
     suspend fun backup(): File {
         return withContext(Dispatchers.IO) {
             val allRules = shortXManager.getAllRules()
 
             val backupTempDir = File(context.cacheDir, "backup-${System.currentTimeMillis()}")
-            val ruleStore = BaseRuleSettingsStore(this, File(backupTempDir, "rule.pb"))
+            val ruleStore = BaseRuleSettingsStore(this, File(backupTempDir, RULE_FILE_NAME))
 
             ruleStore.addRules(rules = allRules, write = false)
             ruleStore.write()
@@ -29,7 +40,55 @@ class BackupAgent(private val context: Context) {
 
             ZipUtils.zip(backupTempDir.absolutePath, backupZipRootDir.absolutePath, name)
 
+            backupTempDir.deleteRecursively()
+
             return@withContext File(backupZipRootDir, name)
         }
     }
+
+    suspend fun restore(uri: Uri) {
+        logger.d("restore: $uri")
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                context.contentResolver.openInputStream(uri).use { input ->
+                    if (input == null) throw FileNotFoundException("openInputStream failed")
+                    val tmpZipFile = File(context.cacheDir, "shortx-backup-tmp.zip")
+                    val tmpExtractedFile = File(context.cacheDir, "shortx-backup-tmp")
+                    tmpZipFile.outputStream().use {
+                        input.copyTo(it)
+                    }
+                    ZipUtils.unzip(tmpZipFile.absolutePath, tmpExtractedFile.absolutePath, false)
+                    logger.d("upzip to tmp: $tmpExtractedFile")
+
+                    // Rules
+                    val rulePb = File(tmpExtractedFile, RULE_FILE_NAME)
+                    val ruleStore = BaseRuleSettingsStore(this, rulePb)
+                    ruleStore.read()
+                    ruleStore.getAllRules().forEach {
+                        logger.d("restore, add rule: ${it.title}")
+                        // Disable this rule.
+                        shortXManager.addRule(Rule.newBuilder(it).setIsEnabled(false).build())
+                    }
+                }
+            }.onFailure {
+                logger.e(it, "restore err")
+                throw IOException(it)
+            }
+        }
+    }
+
+    private suspend fun <T> withZipFromUri(
+        context: Context,
+        uri: Uri, block: suspend (ZipInputStream) -> T
+    ): T =
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                context.contentResolver.openInputStream(uri).use { input ->
+                    if (input == null) throw FileNotFoundException("openInputStream failed")
+                    ZipInputStream(input).use {
+                        block.invoke(it)
+                    }
+                }
+            }.getOrThrow()
+        }
 }

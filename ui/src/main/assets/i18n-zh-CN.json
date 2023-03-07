@@ -119,6 +119,8 @@
   "ui.settings.data.restore.summary": "选择一个备份文件以恢复数据到本机",
   "ui.settings.toast.backup.complete": "数据已经备份到\n{path}",
   "ui.settings.toast.backup.error": "数据备份失败：{err}",
+  "ui.settings.toast.restore.complete": "数据恢复成功",
+  "ui.settings.toast.restore.error": "数据恢复失败：{err}",
   "ui.pkg.set.title": "应用集",
   "ui.pkg.set.desc": "把应用进行归类，方便快速选择一批应用",
   "ui.pkg.set.add.title": "创建应用集",
