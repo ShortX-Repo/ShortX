@@ -73,7 +73,12 @@ fun ExtActions(addAction: (Action) -> Unit) {
             Action.HideOverlay::class,
             labelAndDescriptionForActionSelector(i18N, Action.HideOverlay::class),
             imageVectorForAction(Action.HideOverlay::class)
-        )
+        ),
+        Item(
+            Action.Brk::class,
+            labelAndDescriptionForActionSelector(i18N, Action.Brk::class),
+            imageVectorForAction(Action.Brk::class)
+        ),
     )
 
     ActionList(
@@ -91,6 +96,9 @@ fun ExtActions(addAction: (Action) -> Unit) {
                 }
                 Action.MVEL::class -> {
                     mvelSelectorState.show()
+                }
+                Action.Brk::class -> {
+                    addAction(Action.Brk)
                 }
                 Action.HideOverlay::class -> {
                     addAction(Action.HideOverlay)

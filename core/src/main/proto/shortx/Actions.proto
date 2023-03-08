@@ -116,3 +116,6 @@ message SetFlashLightEnabled {
 message SetLocationEnabled {
   bool enable = 1;
 }
+
+message BreakActionExecute {
+}

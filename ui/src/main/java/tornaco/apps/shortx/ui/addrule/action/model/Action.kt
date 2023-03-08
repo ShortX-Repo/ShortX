@@ -18,17 +18,22 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 sealed interface Action : Parcelable {
     @Parcelize
     object TakeScreenshot : Action
+
     @Parcelize
     data class ShellCommand(val command: String) : Action
+
     @Parcelize
     data class InputText(val text: String) : Action
 
     @Parcelize
     data class Delay(val time: Long) : Action
+
     @Parcelize
     data class ShowToast(val message: String) : Action
+
     @Parcelize
     data class MVEL(val expression: String) : Action
+
     @Parcelize
     data class ShowOverlay(val autoCollapse: Boolean, val settings: List<OverlayButtonSetting>) :
         Action
@@ -38,6 +43,7 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
+
     @Parcelize
     data class StopApp(
         val apps: List<App> = emptyList(),
@@ -76,37 +82,54 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     object EnableBT : Action
+
     @Parcelize
     object EnableWifi : Action
+
     @Parcelize
     object EnableHotSpot : Action
+
     @Parcelize
     object EnableData : Action
+
     @Parcelize
     object EnableNFC : Action
+
     @Parcelize
     object EnableFlashLight : Action
+
     @Parcelize
     object EnableDND : Action
+
     @Parcelize
     object EnableDarkMode : Action
 
     @Parcelize
     object DisableBT : Action
+
     @Parcelize
     object DisableWifi : Action
+
     @Parcelize
     object DisableHotSpot : Action
+
     @Parcelize
     object DisableData : Action
+
     @Parcelize
     object DisableNFC : Action
+
     @Parcelize
     object DisableFlashLight : Action
+
     @Parcelize
     object DisableDND : Action
+
     @Parcelize
     object DisableDarkMode : Action
+
+    @Parcelize
+    object Brk : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -180,6 +203,9 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.UnsuspendApp -> {
             SetAppSuspend.newBuilder().setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
+        }
+        Action.Brk -> {
+            BreakActionExecute.newBuilder().build()
         }
     }
 }
@@ -327,6 +353,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     pkgSets = models.second
                 )
             )
+        }
+
+        this is_ BreakActionExecute::class.java -> {
+            Action.Brk
         }
 
         else -> null

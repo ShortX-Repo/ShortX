@@ -113,7 +113,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun executeActions(reason: String, actions: List<ProtoAny>) = systemServiceScope.launchSafety {
         logger.d("executeActions: $reason, $actions")
-        engine.executeActions(actions)
+        engine.evaluate(actions)
     }
 
     fun addRule(rule: Rule) {

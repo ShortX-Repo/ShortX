@@ -17,6 +17,8 @@ interface ActionEvaluator {
     suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any> = emptyMap())
 }
 
+class StopExecuteException(override val message: String) : RuntimeException()
+
 interface Engine {
     val conditionEvaluator: ConditionEvaluator
     val actionEvaluator: ActionEvaluator
@@ -29,11 +31,7 @@ interface Engine {
         contextMap: Map<String, Any> = emptyMap()
     )
 
-    suspend fun executeActions(actions: List<ProtoAny>, contextMap: Map<String, Any> = emptyMap()) {
-        actions.forEach {
-            actionEvaluator.evaluate(it)
-        }
-    }
+    suspend fun evaluate(actions: List<ProtoAny>, contextMap: Map<String, Any> = emptyMap())
 }
 
 interface EngineListener {
@@ -95,19 +93,33 @@ class DefaultRuleEngine(
                 val conditionRes = conditionEvaluator.evaluate(rule, rule.conditionsList)
                 if (conditionRes) {
                     listener.onConditionMatch(rule)
-                    rule.actionsList.forEach {
-                        listener.beforeEvaluateAction(rule, it)
-                        kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }
-                            .onFailure { err ->
-                                logger.e(err, "Error evaluate action")
-                            }
-                        listener.afterEvaluateAction(rule, it)
+                    kotlin.run loop@{
+                        rule.actionsList.forEach {
+                            listener.beforeEvaluateAction(rule, it)
+                            kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }
+                                .onFailure { err ->
+                                    logger.e(err, "Error evaluate action, stop execution")
+                                    return@loop
+                                }
+                            listener.afterEvaluateAction(rule, it)
+                        }
                     }
                 } else {
                     listener.onConditionNotMatch(rule)
                 }
             } else {
                 listener.onFactNotMatch(rule, rule.fact)
+            }
+        }
+    }
+
+    override suspend fun evaluate(actions: List<ProtoAny>, contextMap: Map<String, Any>) {
+        kotlin.run loop@{
+            actions.forEach {
+                kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }.onFailure { err ->
+                    logger.e(err, "Error evaluate action, stop execution")
+                    return@loop
+                }
             }
         }
     }

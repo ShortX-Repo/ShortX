@@ -69,6 +69,8 @@ fun labelAndDescriptionForActionSelector(
         Action.SuspendApp::class -> i18N["ui.action.suspend.app"] to null
         Action.UnsuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
 
+        Action.Brk::class -> i18N["ui.action.brk"] to null
+
         else -> {
             "N/A" to null
         }
@@ -157,6 +159,9 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.apps,
             action.pkgSets
         )
+        Action.Brk -> {
+            listOf(i18N["ui.action.brk"])
+        }
     }
 }
 
@@ -257,6 +262,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.UnsuspendApp::class -> {
             Icons.Outlined.VerifiedUser
+        }
+        Action.Brk::class -> {
+            Icons.Outlined.TurnSharpLeft
         }
 
 

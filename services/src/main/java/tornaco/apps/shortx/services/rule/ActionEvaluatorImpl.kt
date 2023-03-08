@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.engine.ActionEvaluator
+import tornaco.apps.shortx.core.rule.engine.StopExecuteException
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
@@ -20,8 +21,7 @@ class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler
-) :
-    ActionEvaluator {
+) : ActionEvaluator {
     private val hw by lazy {
         HwImpl(context, shortXContext)
     }
@@ -33,8 +33,7 @@ class ActionEvaluatorImpl(
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
             tornaco.apps.shortx.services.rule.actor.StartActivity(
-                context,
-                startActivity.componentNameAsString
+                context, startActivity.componentNameAsString
             ).invoke()
         } else if (action is_ TakeScreenshot::class.java) {
             tornaco.apps.shortx.services.rule.actor.TakeScreenshot(context, handler).invoke()
@@ -125,6 +124,8 @@ class ActionEvaluatorImpl(
                 d.appPkgList
             }
             shortXContext.appState.setAppSuspend(pkgs, d.suspend, "Action Eva- SetAppSuspend")
+        } else if (action is_ BreakActionExecute::class.java) {
+            throw StopExecuteException("BreakActionExecute action")
         }
     }
 }

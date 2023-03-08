@@ -25,7 +25,7 @@ plugins {
 
 androidGitVersion {
     prefix = "v"
-    codeFormat = "MNPBB"
+    codeFormat = "MNPBBB"
     baseCode = 1
 }
 
