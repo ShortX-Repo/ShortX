@@ -119,3 +119,11 @@ message SetLocationEnabled {
 
 message BreakActionExecute {
 }
+
+enum DialogAction {
+  Positive = 0;
+  Negative = 1;
+  Neutral = 2;
+  None = 3;
+}
+

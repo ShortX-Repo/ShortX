@@ -37,6 +37,8 @@ class ActionEvaluatorImpl(
             ).invoke()
         } else if (action is_ TakeScreenshot::class.java) {
             tornaco.apps.shortx.services.rule.actor.TakeScreenshot(context, handler).invoke()
+        } else if (action is_ ExpandNotification::class.java) {
+            tornaco.apps.shortx.services.rule.actor.ExpandNotification(context).invoke()
         } else if (action is_ ShellCommand::class.java) {
             val sc = action unpack_ ShellCommand::class.java
             tornaco.apps.shortx.services.rule.actor.ShellCommand(context, shortXContext, sc.command)
