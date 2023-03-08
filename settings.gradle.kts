@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":binder-retriever")
-
 
 rootProject.name = "ShortX"
 
@@ -38,3 +36,4 @@ include(":external:utils")
 include(":external:shell")
 include(":external:dateformatter")
 include(":external:reorderable")
+include(":prebuilts-gen")

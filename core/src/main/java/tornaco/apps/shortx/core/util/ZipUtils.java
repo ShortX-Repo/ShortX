@@ -53,10 +53,7 @@ public class ZipUtils {
     }
 
     public static void zip(String srcPath, String zipPath, String zipFileName) throws Exception {
-        if (TextUtils.isEmpty(srcPath) || TextUtils.isEmpty(zipPath) || TextUtils.isEmpty(zipFileName)) {
-            throw new NullPointerException();
-        }
-        CheckedOutputStream cos = null;
+        CheckedOutputStream cos;
         ZipOutputStream zos = null;
         try {
             File srcFile = new File(srcPath);

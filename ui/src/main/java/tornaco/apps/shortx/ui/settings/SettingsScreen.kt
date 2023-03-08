@@ -186,7 +186,17 @@ private fun devSettings(
         value = state.isDebugLogEnabled,
         onCheckChanged = { enable ->
             vm.setLogDebugEnable(enable)
-        })
+        }),
+
+
+    Preference.TextPreference(
+        icon = Icons.Outlined.Restore,
+        title = "Import prebuilt data",
+        summary = "Include prebuilt direct actions and rules.",
+        onClick = {
+            vm.importPrebuilts()
+        }
+    )
 )
 
 @Composable

@@ -93,4 +93,16 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
             }
         }
     }
+
+    fun importPrebuilts() {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                BackupAgent(context).restore("prebuilts/dev-all.zip")
+                _restorePerformed.emit(RestoreResult.Success)
+            }.onFailure {
+                logger.e(it, "Restore error")
+                _restorePerformed.emit(RestoreResult.Failed(it.message ?: "UNKNOWN ERR"))
+            }
+        }
+    }
 }
