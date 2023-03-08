@@ -104,6 +104,7 @@
   "ui.action.dark.mode": "Dark mode",
   "ui.action.system.settings": "Settings",
   "ui.action.brk": "Stop execute next actions",
+  "ui.action.show.dialog": "Show dialog",
   "ui.action.advanced": "Advanced",
   "ui.settings.about": "About",
   "ui.settings.data": "Data",

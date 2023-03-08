@@ -104,6 +104,7 @@
   "ui.action.dark.mode": "暗色模式",
   "ui.action.system.settings": "系统设置",
   "ui.action.brk": "停止执行后续动作",
+  "ui.action.show.dialog": "显示对话框",
   "ui.action.advanced": "高级",
   "ui.settings.about": "关于",
   "ui.settings.data": "数据",

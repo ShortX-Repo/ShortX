@@ -70,6 +70,7 @@ fun labelAndDescriptionForActionSelector(
         Action.UnsuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
 
         Action.Brk::class -> i18N["ui.action.brk"] to null
+        Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
 
         else -> {
             "N/A" to null
@@ -161,6 +162,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         )
         Action.Brk -> {
             listOf(i18N["ui.action.brk"])
+        }
+        is Action.ShowAlertDialog -> {
+            listOf(
+                i18N["ui.action.show.dialog"],
+                action.title,
+                action.message
+            )
         }
     }
 }
@@ -266,7 +274,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         Action.Brk::class -> {
             Icons.Outlined.TurnSharpLeft
         }
-
+        Action.ShowAlertDialog::class -> {
+            Icons.Outlined.Message
+        }
 
         else -> {
             Icons.Outlined.Settings

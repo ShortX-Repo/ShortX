@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor
 
 import android.app.AlertDialog
 import android.content.Context
+import android.view.WindowManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import tornaco.apps.shortx.core.proto.action.DialogAction
@@ -10,7 +11,7 @@ import tornaco.apps.shortx.core.proto.action.DialogAction
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShowDialog(val context: Context) {
 
-    suspend inline fun show(
+    suspend inline fun invoke(
         positiveButtonText: CharSequence? = null,
         negativeButtonText: CharSequence? = null,
         neutralButtonText: CharSequence? = null,
@@ -20,15 +21,15 @@ class ShowDialog(val context: Context) {
 
         var result: DialogAction = DialogAction.None
 
-        dialogBuilder.setPositiveButton(positiveButtonText) { _, _ ->
+        if (positiveButtonText != null) dialogBuilder.setPositiveButton(positiveButtonText) { _, _ ->
             result = DialogAction.Positive
         }
 
-        dialogBuilder.setNegativeButton(negativeButtonText) { _, _ ->
+        if (negativeButtonText != null) dialogBuilder.setNegativeButton(negativeButtonText) { _, _ ->
             result = DialogAction.Negative
         }
 
-        dialogBuilder.setNeutralButton(neutralButtonText) { _, _ ->
+        if (neutralButtonText != null) dialogBuilder.setNeutralButton(neutralButtonText) { _, _ ->
             result = DialogAction.Neutral
         }
 
@@ -36,7 +37,10 @@ class ShowDialog(val context: Context) {
             continuation.resume(result) {}
         }
 
-        val dialog = dialogBuilder.show()
+        val dialog = dialogBuilder.create().apply {
+            window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+            show()
+        }
 
         continuation.invokeOnCancellation {
             dialog.dismiss()

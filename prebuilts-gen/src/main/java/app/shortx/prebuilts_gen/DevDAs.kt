@@ -206,5 +206,31 @@ object DevDAs {
         DirectAction.newBuilder().setTitle("SetLocationEnabled-false")
             .setId(nextId())
             .addActions(SetLocationEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+
+        DirectAction.newBuilder().setTitle("BreakActionExecute")
+            .setId(nextId())
+            .addActions(BreakActionExecute.newBuilder().build().pack_()).build(),
+
+        DirectAction.newBuilder().setTitle("ShowAlertDialog")
+            .setId(nextId())
+            .addActions(
+                ShowAlertDialog.newBuilder()
+                    .setTitle("Example title")
+                    .setMessage("Example message, shortx is android app developed by Tornaco @2022.")
+                    .setPositive("SayHi")
+                    .addOnPositive(
+                        ShowToast.newBuilder().setMessage("Hello how are you~").build().pack_()
+                    )
+                    .setNegative("Cancel")
+                    .addOnNegative(
+                        ShowToast.newBuilder().setMessage("Cancel clicked, will show 2 toast")
+                            .build().pack_()
+                    )
+                    .addOnNegative(
+                        ShowToast.newBuilder().setMessage("See you later~ this is the 2nd toast")
+                            .build().pack_()
+                    )
+                    .build().pack_()
+            ).build(),
     )
 }

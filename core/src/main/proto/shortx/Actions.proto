@@ -127,3 +127,18 @@ enum DialogAction {
   None = 3;
 }
 
+message ShowAlertDialog {
+  string positive = 1;
+  repeated google.protobuf.Any onPositive = 2;
+
+  string negative = 3;
+  repeated google.protobuf.Any onNegative = 4;
+
+  string neutral = 5;
+  repeated google.protobuf.Any onNeutral = 6;
+
+  string title = 7;
+  string message = 8;
+  bool cancelable = 9;
+}
+

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.widget.Toast
@@ -10,9 +11,12 @@ import tornaco.apps.shortx.core.rule.engine.ActionEvaluator
 import tornaco.apps.shortx.core.rule.engine.StopExecuteException
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
+import tornaco.apps.shortx.services.rule.actor.ShowDialog
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
 import tornaco.apps.shortx.services.util.ContextMapUtil.inflateContextMap
@@ -22,6 +26,8 @@ class ActionEvaluatorImpl(
     private val shortXContext: ShortXContext,
     private val handler: Handler
 ) : ActionEvaluator {
+    private val logger = Logger("ActionEvaluatorImpl")
+
     private val hw by lazy {
         HwImpl(context, shortXContext)
     }
@@ -30,6 +36,7 @@ class ActionEvaluatorImpl(
     }
 
     override suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any>) {
+        logger.d("evaluate: ${action.javaClass}")
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
             tornaco.apps.shortx.services.rule.actor.StartActivity(
@@ -128,6 +135,45 @@ class ActionEvaluatorImpl(
             shortXContext.appState.setAppSuspend(pkgs, d.suspend, "Action Eva- SetAppSuspend")
         } else if (action is_ BreakActionExecute::class.java) {
             throw StopExecuteException("BreakActionExecute action")
+        } else if (action is_ ShowAlertDialog::class.java) {
+            val d = action unpack_ ShowAlertDialog::class.java
+            logger.d("ShowAlertDialog, showing")
+            val result = ShowDialog(context).invoke(
+                positiveButtonText = d.positive,
+                negativeButtonText = d.negative,
+                neutralButtonText = d.neutral
+            ) {
+                AlertDialog
+                    .Builder(it)
+                    .setTitle(d.title.fallbackOnEmpty(""))
+                    .setCancelable(d.cancelable)
+            }
+
+            logger.d("ShowAlertDialog, result is: $result")
+
+            when (result) {
+                DialogAction.Positive -> {
+                    if (d.onPositiveList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
+                        "ShowAlertDialog#Positive",
+                        d.onPositiveList
+                    )
+                }
+                DialogAction.Negative -> {
+                    if (d.onNegativeList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
+                        "ShowAlertDialog#Negative",
+                        d.onNegativeList
+                    )
+                }
+                DialogAction.Neutral -> {
+                    if (d.onNeutralList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
+                        "ShowAlertDialog#Neutral",
+                        d.onNeutralList
+                    )
+                }
+                DialogAction.UNRECOGNIZED, DialogAction.None -> {
+                    // Noop.
+                }
+            }
         }
     }
 }

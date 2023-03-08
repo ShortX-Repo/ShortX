@@ -130,6 +130,9 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     object Brk : Action
+
+    @Parcelize
+    data class ShowAlertDialog(val title: String, val message: String) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -206,6 +209,9 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         Action.Brk -> {
             BreakActionExecute.newBuilder().build()
+        }
+        is Action.ShowAlertDialog -> {
+            ShowAlertDialog.newBuilder().setTitle(title).setMessage(message).build()
         }
     }
 }
@@ -357,6 +363,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
 
         this is_ BreakActionExecute::class.java -> {
             Action.Brk
+        }
+
+        this is_ ShowAlertDialog::class.java -> {
+            val data = this unpack_ ShowAlertDialog::class.java
+            Action.ShowAlertDialog(
+                title = data.title,
+                message = data.message
+            )
         }
 
         else -> null
