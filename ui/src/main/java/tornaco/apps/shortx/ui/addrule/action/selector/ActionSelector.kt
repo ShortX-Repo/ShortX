@@ -96,19 +96,31 @@ fun ActionSelector(
                         }
 
                         // For Overlay button selector
-                        val result =
+                        val showOverlayButtonSelectorResult =
                             navController.getStateFlow<ShowOverlayButtonSettings?>(
                                 KEY_OVERLAY_BUTTON_SETTINGS,
                                 null
                             )?.collectAsState()
-                        LaunchedEffect(result) {
-                            logger.d("KEY_OVERLAY_BUTTON_SETTINGS result: ${result?.value}")
-                            result?.value?.let { buttonSettings ->
+                        LaunchedEffect(showOverlayButtonSelectorResult) {
+                            logger.d("KEY_OVERLAY_BUTTON_SETTINGS result: ${showOverlayButtonSelectorResult?.value}")
+                            showOverlayButtonSelectorResult?.value?.let { buttonSettings ->
                                 val action = Action.ShowOverlay(
                                     autoCollapse = buttonSettings.autoCollapse,
                                     settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
                                 )
                                 addAction(action)
+                            }
+                        }
+
+                        val showDialogSelectorResult =
+                            navController.getStateFlow<Action.ShowAlertDialog?>(
+                                KEY_DIALOG_SETTINGS,
+                                null
+                            )?.collectAsState()
+                        LaunchedEffect(showDialogSelectorResult) {
+                            logger.d("KEY_DIALOG_SETTINGS result: ${showDialogSelectorResult?.value}")
+                            showDialogSelectorResult?.value?.let { dialogAction ->
+                                addAction(dialogAction)
                             }
                         }
 

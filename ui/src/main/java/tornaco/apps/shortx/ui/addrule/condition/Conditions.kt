@@ -17,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.AddRuleState
-import tornaco.apps.shortx.ui.addrule.action.MVELSelector
-import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
+import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*

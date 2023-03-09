@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.rule.engine.StopExecuteException
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
@@ -145,7 +144,8 @@ class ActionEvaluatorImpl(
             ) {
                 AlertDialog
                     .Builder(it)
-                    .setTitle(d.title.fallbackOnEmpty(""))
+                    .setTitle(d.title)
+                    .setMessage(d.message)
                     .setCancelable(d.cancelable)
             }
 
@@ -153,22 +153,19 @@ class ActionEvaluatorImpl(
 
             when (result) {
                 DialogAction.Positive -> {
-                    if (d.onPositiveList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
-                        "ShowAlertDialog#Positive",
-                        d.onPositiveList
-                    )
+                    if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
+                        evaluate(it, contextMap)
+                    }
                 }
                 DialogAction.Negative -> {
-                    if (d.onNegativeList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
-                        "ShowAlertDialog#Negative",
-                        d.onNegativeList
-                    )
+                    if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
+                        evaluate(it, contextMap)
+                    }
                 }
                 DialogAction.Neutral -> {
-                    if (d.onNeutralList.isNullOrEmpty().not()) shortXContext.rule.executeActions(
-                        "ShowAlertDialog#Neutral",
-                        d.onNeutralList
-                    )
+                    if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
+                        evaluate(it, contextMap)
+                    }
                 }
                 DialogAction.UNRECOGNIZED, DialogAction.None -> {
                     // Noop.

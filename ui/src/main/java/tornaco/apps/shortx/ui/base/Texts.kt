@@ -1,9 +1,14 @@
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,4 +54,29 @@ fun DialogTitle(text: String) {
         text = text,
         style = MaterialTheme.typography.titleLarge
     )
+}
+
+@Composable
+fun TipBody(text: String) {
+    Text(
+        modifier = Modifier.padding(vertical = 12.dp),
+        text = text,
+        style = MaterialTheme.typography.bodySmall.copy(
+            fontSize = 10.sp
+        )
+    )
+}
+
+@Composable
+fun TipRow(text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(modifier = Modifier.size(8.dp), imageVector = Icons.Outlined.Lightbulb)
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 10.sp
+            )
+        )
+    }
 }

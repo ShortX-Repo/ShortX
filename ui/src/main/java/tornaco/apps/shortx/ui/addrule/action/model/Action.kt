@@ -8,10 +8,7 @@ import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
-import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.ProtoMessage
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
@@ -132,7 +129,17 @@ sealed interface Action : Parcelable {
     object Brk : Action
 
     @Parcelize
-    data class ShowAlertDialog(val title: String, val message: String) : Action
+    data class ShowAlertDialog(
+        val title: String,
+        val message: String,
+        val cancelable: Boolean = true,
+        val positiveText: String? = null,
+        val negativeText: String? = null,
+        val neutralText: String? = null,
+        val positiveActions: List<Action> = emptyList(),
+        val negativeActions: List<Action> = emptyList(),
+        val neutralActions: List<Action> = emptyList(),
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -211,7 +218,19 @@ fun Action.toProtoAction(): ProtoMessage {
             BreakActionExecute.newBuilder().build()
         }
         is Action.ShowAlertDialog -> {
-            ShowAlertDialog.newBuilder().setTitle(title).setMessage(message).build()
+            ShowAlertDialog.newBuilder()
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(cancelable)
+                .apply {
+                    positiveText?.let { positive = it }
+                    negativeText?.let { negative = it }
+                    neutralText?.let { neutral = it }
+                }
+                .addAllOnPositive(positiveActions.map { it.toProtoAction().pack_() })
+                .addAllOnNegative(negativeActions.map { it.toProtoAction().pack_() })
+                .addAllOnNeutral(neutralActions.map { it.toProtoAction().pack_() })
+                .build()
         }
     }
 }
@@ -369,7 +388,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ ShowAlertDialog::class.java
             Action.ShowAlertDialog(
                 title = data.title,
-                message = data.message
+                message = data.message,
+                cancelable = data.cancelable,
+                positiveText = data.positive,
+                negativeText = data.negative,
+                neutralText = data.neutral,
+                positiveActions = data.onPositiveList.mapNotNull { it.toAction(shortXManager) },
+                negativeActions = data.onNegativeList.mapNotNull { it.toAction(shortXManager) },
+                neutralActions = data.onNeutralList.mapNotNull { it.toAction(shortXManager) },
             )
         }
 

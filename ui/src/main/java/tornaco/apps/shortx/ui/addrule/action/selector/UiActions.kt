@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.main.AppRoute
 
 @Composable
 fun UiActions(addAction: (Action) -> Unit) {
@@ -31,10 +30,28 @@ fun UiActions(addAction: (Action) -> Unit) {
             Action.ShowToast::class,
             labelAndDescriptionForActionSelector(i18N, Action.ShowToast::class),
             imageVectorForAction(Action.ShowToast::class)
-        )
+        ),
 
+        Item(
+            Action.ShowOverlay::class,
+            labelAndDescriptionForActionSelector(i18N, Action.ShowOverlay::class),
+            imageVectorForAction(Action.ShowOverlay::class)
+        ),
+
+        Item(
+            Action.HideOverlay::class,
+            labelAndDescriptionForActionSelector(i18N, Action.HideOverlay::class),
+            imageVectorForAction(Action.HideOverlay::class)
+        ),
+
+        Item(
+            Action.ShowAlertDialog::class,
+            labelAndDescriptionForActionSelector(i18N, Action.ShowAlertDialog::class),
+            imageVectorForAction(Action.ShowAlertDialog::class)
+        ),
     )
 
+    val navHost = LocalNavHostController.current
     ActionList(
         actionItems = uiActionItems,
         itemSelected = {
@@ -44,6 +61,17 @@ fun UiActions(addAction: (Action) -> Unit) {
                 }
                 Action.TakeScreenshot::class -> {
                     addAction(Action.TakeScreenshot)
+                }
+                Action.HideOverlay::class -> {
+                    addAction(Action.HideOverlay)
+                }
+                Action.ShowOverlay::class -> {
+                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
+                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
+                }
+                Action.ShowAlertDialog::class -> {
+                    navHost.removeData<Action>(KEY_DIALOG_SETTINGS)
+                    navHost.navigate(AppRoute.SelectShowAlertDialog.name)
                 }
             }
         })

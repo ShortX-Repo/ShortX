@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.action
+package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.foundation.layout.Column
@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
-import tornaco.apps.shortx.ui.base.StandardSpacer
 
-class MVELSelectorState(val title: String, val message: String?, val onSelected: (String) -> Unit) {
+class InputTextSelectorState(val onSelected: (String) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -28,29 +28,25 @@ class MVELSelectorState(val title: String, val message: String?, val onSelected:
 }
 
 @Composable
-fun rememberMVELSelectorState(
-    title: String,
-    message: String? = null,
-    onSelected: (String) -> Unit
-): MVELSelectorState {
+fun rememberInputTextSelectorState(onSelected: (String) -> Unit): InputTextSelectorState {
     return remember {
-        MVELSelectorState(title, message, onSelected)
+        InputTextSelectorState(onSelected)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MVELSelector(state: MVELSelectorState) {
-    var expressionString by remember(state) {
+fun InputTextSelector(state: InputTextSelectorState) {
+    var textString by remember(state) {
         mutableStateOf("")
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = state.title)
+            DialogTitle(text = LocalI18N.current["ui.action.input.text"])
         }, buttons = {
             TextButton(onClick = {
-                if (expressionString.isNotBlank()) {
-                    state.onSelected(expressionString)
+                if (textString.isNotBlank()) {
+                    state.onSelected(textString)
                     state.dismiss()
                 }
             }) {
@@ -58,25 +54,20 @@ fun MVELSelector(state: MVELSelectorState) {
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                state.message?.let {
-                    Text(text = it, style = MaterialTheme.typography.titleSmall)
-                }
-                StandardSpacer()
-
                 TextField(
                     leadingIcon = {
-                        Icon(imageVector = Icons.Filled.Tag, contentDescription = "Expression")
+                        Icon(imageVector = Icons.Filled.Tag, contentDescription = "Text")
                     },
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
                     label = {
-                        Text(text = "Expression")
+                        Text(text = LocalI18N.current["ui.action.input.text"])
                     },
-                    value = expressionString,
+                    value = textString,
                     onValueChange = {
-                        expressionString = it
+                        textString = it
                     })
             }
         })

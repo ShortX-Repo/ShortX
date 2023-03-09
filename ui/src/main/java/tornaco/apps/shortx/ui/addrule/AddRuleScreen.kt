@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
-import tornaco.apps.shortx.ui.addrule.action.MVELSelector
-import tornaco.apps.shortx.ui.addrule.action.rememberMVELSelectorState
+import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition

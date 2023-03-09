@@ -46,5 +46,9 @@ fun Icon(
     imageVector: ImageVector,
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.material3.Icon(imageVector = imageVector, contentDescription = "Icon")
+    androidx.compose.material3.Icon(
+        modifier = modifier,
+        imageVector = imageVector,
+        contentDescription = "Icon"
+    )
 }

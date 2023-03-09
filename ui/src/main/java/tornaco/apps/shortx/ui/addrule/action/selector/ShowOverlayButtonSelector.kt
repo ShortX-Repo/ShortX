@@ -96,10 +96,10 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             }
             MDIconSelector(state = iconSelector)
             Column {
-                MediumTitle(text = LocalI18N.current["ui.action.show.button.of", mapOf("index" to "${index + 1}")])
+                MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    SmallTitle(LocalI18N.current["ui.action.show.icon"])
+                    SmallTitle(LocalI18N.current["ui.action.show.overlay.icon"])
                     TinySpacer()
                     TextButton(onClick = {
                         iconSelector.show()

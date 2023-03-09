@@ -7,7 +7,9 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.ShowDialogSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
 import tornaco.apps.shortx.ui.base.LocalNavHostController
@@ -108,8 +110,20 @@ fun AppNavigationGraph(
 
         animateComposable(AppRoute.SelectShowOverlayButton.name) {
             // Directly extract the argument from previousBackStackEntry
-            val settings = appNavController.previousBackStackEntry?.arguments?.getParcelable<ShowOverlayButtonSettings>("settings")
+            val settings =
+                appNavController.previousBackStackEntry?.arguments?.getParcelable<ShowOverlayButtonSettings>(
+                    "settings"
+                )
             ShowOverlayButtonSelector(settings)
+        }
+
+        animateComposable(AppRoute.SelectShowAlertDialog.name) {
+            // Directly extract the argument from previousBackStackEntry
+            val settings =
+                appNavController.previousBackStackEntry?.arguments?.getParcelable<Action.ShowAlertDialog>(
+                    "settings"
+                )
+            ShowDialogSelector(settings)
         }
     }
 }

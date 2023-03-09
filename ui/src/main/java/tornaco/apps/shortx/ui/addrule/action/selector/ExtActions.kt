@@ -2,10 +2,12 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.ui.addrule.action.*
+import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.main.AppRoute
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun ExtActions(addAction: (Action) -> Unit) {
@@ -34,10 +36,6 @@ fun ExtActions(addAction: (Action) -> Unit) {
     }
     MVELSelector(state = mvelSelectorState)
 
-
-    // For Overlay button selector
-    val navHost = LocalNavHostController.current
-
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Item(
@@ -64,17 +62,6 @@ fun ExtActions(addAction: (Action) -> Unit) {
         ),
 
         Item(
-            Action.ShowOverlay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShowOverlay::class),
-            imageVectorForAction(Action.ShowOverlay::class)
-        ),
-
-        Item(
-            Action.HideOverlay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.HideOverlay::class),
-            imageVectorForAction(Action.HideOverlay::class)
-        ),
-        Item(
             Action.Brk::class,
             labelAndDescriptionForActionSelector(i18N, Action.Brk::class),
             imageVectorForAction(Action.Brk::class)
@@ -99,13 +86,6 @@ fun ExtActions(addAction: (Action) -> Unit) {
                 }
                 Action.Brk::class -> {
                     addAction(Action.Brk)
-                }
-                Action.HideOverlay::class -> {
-                    addAction(Action.HideOverlay)
-                }
-                Action.ShowOverlay::class -> {
-                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
-                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
                 }
             }
         })
