@@ -12,8 +12,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.AutoMode
-import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -106,6 +104,14 @@ private fun ListItemOverflowMenu(
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit
 ) {
+    val deleteDialogState = rememberDeleteConfirmDialogState()
+    DeleteConfirmDialog(
+        state = deleteDialogState,
+        data = rule,
+        messageHint = { rule.title },
+        onDelete = onDelete
+    )
+
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(
@@ -120,21 +126,21 @@ private fun ListItemOverflowMenu(
             widthFraction = 0.3f,
             state = menuState,
             items = listOf(
+                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                    data = "edit",
+                    icon = {
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                    }),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                     data = "delete",
                     icon = {
                         Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
-                    }),
-                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-                    data = "edit",
-                    icon = {
-                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                     })
             ), onSelect = {
                 when (it.data) {
                     "delete" -> {
-                        onDelete(rule)
+                        deleteDialogState.show()
                     }
                     "edit" -> {
                         onEdit(rule)

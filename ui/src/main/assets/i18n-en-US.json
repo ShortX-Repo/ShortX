@@ -138,5 +138,6 @@
   "ui.pkg.set.add.title": "Add Application Set",
   "ui.pkg.set.add.input.label": "Input label of the Application Set",
   "ui.pkg.set.items.count": "{count} items",
-  "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager"
+  "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager",
+  "ui.delete.dialog.confirm": "Do you really want to delete {wht}?"
 }

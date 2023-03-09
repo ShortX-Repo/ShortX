@@ -138,5 +138,6 @@
   "ui.pkg.set.add.title": "创建应用集",
   "ui.pkg.set.add.input.label": "输入应用集的名称",
   "ui.pkg.set.items.count": "{count}个应用",
-  "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX"
+  "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX",
+  "ui.delete.dialog.confirm": "你确定要删除{wht}吗？"
 }

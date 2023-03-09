@@ -14,16 +14,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -202,6 +197,14 @@ private fun DAListItem(
 private fun ListItemOverflowMenu(
     da: DirectActionUM, onDelete: (DirectActionUM) -> Unit, onEdit: (DirectActionUM) -> Unit
 ) {
+    val deleteDialogState = rememberDeleteConfirmDialogState()
+    DeleteConfirmDialog(
+        state = deleteDialogState,
+        data = da,
+        messageHint = { da.title },
+        onDelete = onDelete
+    )
+
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(modifier = Modifier, onClick = {
@@ -211,20 +214,20 @@ private fun ListItemOverflowMenu(
         }
 
         DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-                data = "delete",
-                icon = {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
-                }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                 data = "edit",
                 icon = {
                     Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                }),
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                data = "delete",
+                icon = {
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
                 })
         ), onSelect = {
             when (it.data) {
                 "delete" -> {
-                    onDelete(da)
+                    deleteDialogState.show()
                 }
                 "edit" -> {
                     onEdit(da)
