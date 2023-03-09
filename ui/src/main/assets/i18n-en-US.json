@@ -86,6 +86,8 @@
   "ui.action.show.add.button": "Add button",
   "ui.action.category.app": "Apps",
   "ui.action.launch.app": "Launch app",
+  "ui.action.start.activity": "Start activity",
+  "ui.action.expand.notification": "Expand noti panel",
   "ui.action.stop.app": "Force stop app",
   "ui.action.start.app.process": "Start app process",
   "ui.action.disable.app": "Disable app",

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action
 
+import android.content.ComponentName
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
@@ -43,6 +44,9 @@ fun labelAndDescriptionForActionSelector(
         Action.LaunchApp::class -> {
             i18N["ui.action.launch.app"] to null
         }
+        Action.StartActivity::class -> {
+            i18N["ui.action.start.activity"] to null
+        }
 
         Action.DisableBT::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.DisableDND::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])] to null
@@ -71,6 +75,7 @@ fun labelAndDescriptionForActionSelector(
 
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
+        Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
 
         else -> {
             "N/A" to null
@@ -169,6 +174,25 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.title,
                 action.message
             )
+        }
+        is Action.StartActivity -> {
+            val name: ComponentName? = ComponentName.unflattenFromString(
+                action.componentNameAsString
+            )
+            if (name == null) {
+                listOf(
+                    i18N["ui.action.start.activity"]
+                )
+            } else {
+                listOf(
+                    i18N["ui.action.start.activity"],
+                    "${action.componentNameAsString}$PREFIX_APP_ICON${name.packageName}"
+                )
+            }
+
+        }
+        Action.ExpandNotification -> {
+            listOf(i18N["ui.action.expand.notification"])
         }
     }
 }
@@ -276,6 +300,12 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.ShowAlertDialog::class -> {
             Icons.Outlined.Message
+        }
+        Action.StartActivity::class -> {
+            Icons.Outlined.PhoneAndroid
+        }
+        Action.ExpandNotification::class -> {
+            Icons.Outlined.Notifications
         }
 
         else -> {

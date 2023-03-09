@@ -47,6 +47,15 @@ sealed interface Action : Parcelable {
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
+
+    @Parcelize
+    data class StartActivity(
+        val componentNameAsString: String
+    ) : Action
+
+    @Parcelize
+    object ExpandNotification : Action
+
     @Parcelize
     data class StartAppProcess(
         val apps: List<App> = emptyList(),
@@ -232,6 +241,12 @@ fun Action.toProtoAction(): ProtoMessage {
                 .addAllOnNeutral(neutralActions.map { it.toProtoAction().pack_() })
                 .build()
         }
+        is Action.StartActivity -> {
+            StartActivity.newBuilder().setComponentNameAsString(componentNameAsString).build()
+        }
+        Action.ExpandNotification -> {
+            ExpandNotification.newBuilder().build()
+        }
     }
 }
 
@@ -397,6 +412,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 negativeActions = data.onNegativeList.mapNotNull { it.toAction(shortXManager) },
                 neutralActions = data.onNeutralList.mapNotNull { it.toAction(shortXManager) },
             )
+        }
+
+        this is_ StartActivity::class.java -> {
+            val data = this unpack_ StartActivity::class.java
+            Action.StartActivity(data.componentNameAsString)
+        }
+        this is_ ExpandNotification::class.java -> {
+            Action.ExpandNotification
         }
 
         else -> null

@@ -86,6 +86,8 @@
   "ui.action.show.add.button": "添加按钮",
   "ui.action.category.app": "应用",
   "ui.action.launch.app": "打开应用",
+  "ui.action.start.activity": "启动活动",
+  "ui.action.expand.notification": "展开通知栏",
   "ui.action.stop.app": "强行停止应用",
   "ui.action.start.app.process": "启动应用进程",
   "ui.action.disable.app": "冻结应用",
