@@ -20,10 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import tornaco.apps.shortx.ui.base.ClickableBadge
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.ShortXAlertDialog
-import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
@@ -39,9 +36,36 @@ sealed class BottomNavItem(
         BottomNavItem("ui.feat.label.da", Icons.Filled.TouchApp, HomeBottomRoute.DirectActions)
 }
 
+@Composable
+fun HomeScreen() {
+    val appNavController = LocalNavHostController.current
+    val goToSettings: () -> Unit = {
+        appNavController.navigate(AppRoute.Settings.name)
+    }
+    val goToAddRule: () -> Unit = {
+        appNavController.navigate(AppRoute.AddRule.name)
+    }
+    val goToEditRule: (String) -> Unit = {
+        appNavController.navigate("${AppRoute.AddRule.name}?ruleId=$it")
+    }
+    val goToAddDA: () -> Unit = {
+        appNavController.navigate(AppRoute.AddDA.name)
+    }
+    val goToEditDA: (String) -> Unit = {
+        appNavController.navigate("${AppRoute.AddDA.name}?daId=$it")
+    }
+    HomeScreen(
+        goToSettings = goToSettings,
+        goToAddRule = goToAddRule,
+        goToEditRule = goToEditRule,
+        goToAddDA = goToAddDA,
+        goToEditDA = goToEditDA
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+private fun HomeScreen(
     goToSettings: () -> Unit,
     goToAddRule: () -> Unit,
     goToEditRule: (String) -> Unit,

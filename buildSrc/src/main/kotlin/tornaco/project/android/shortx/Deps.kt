@@ -42,3 +42,9 @@ object Hilt {
     const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
     const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:1.0.0"
 }
+
+object Lottie {
+    private const val version = "4.1.0"
+    const val composeLottie = "com.airbnb.android:lottie-compose:${version}"
+    const val lottie = "com.airbnb.android:lottie:${version}"
+}

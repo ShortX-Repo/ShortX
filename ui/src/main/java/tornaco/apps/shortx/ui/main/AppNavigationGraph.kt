@@ -23,25 +23,9 @@ import tornaco.apps.shortx.ui.settings.SettingsScreen
 fun AppNavigationGraph(
 ) {
     val appNavController = LocalNavHostController.current
-    AnimatedNavHost(appNavController, startDestination = AppRoute.Home.name) {
+    AnimatedNavHost(appNavController, startDestination = startDestination) {
         animateComposable(AppRoute.Home.name) {
-            HomeScreen(
-                goToSettings = {
-                    appNavController.navigate(AppRoute.Settings.name)
-                },
-                goToAddRule = {
-                    appNavController.navigate(AppRoute.AddRule.name)
-                },
-                goToEditRule = {
-                    appNavController.navigate("${AppRoute.AddRule.name}?ruleId=$it")
-                },
-                goToAddDA = {
-                    appNavController.navigate(AppRoute.AddDA.name)
-                },
-                goToEditDA = {
-                    appNavController.navigate("${AppRoute.AddDA.name}?daId=$it")
-                }
-            )
+            HomeScreen()
         }
 
         animateComposable(AppRoute.Settings.name) {
@@ -125,5 +109,7 @@ fun AppNavigationGraph(
                 )
             ShowDialogSelector(settings)
         }
+
+        appNavGraphHook()
     }
 }

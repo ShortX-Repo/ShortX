@@ -25,6 +25,7 @@ buildConfig {
 
     buildConfigField("String", "APP_SHELL_SERVICE_NAME", "\"tornaco.apps.shortx.ui.service.ShellService\"")
     buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"Settings\"")
+    buildConfigField("String", "PLAY_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmbQreguSE0X2zYOGeKzeNutbc7J5oYNFoOf3EKpYyli11M4/DhZ7+XJeYTMCKfskyF9va3cus2CrNNdgnoj074sVqE1MAPhPrH2t57eblJecb99xTwB071lQTkuj3HLteToCPjZbLN/PZMJ8LBCFraEyXZ8v/tH4yClf9XlTdAGPOU9xCsz9J1Jx/OMgcqBhvXDdKgtTjJ9Q5nvnQWX5Hcf+++LsZdC7xgnsKeEaa+TK39+2oA4659kSVcXptFfoCa/FOp7YF5cWDjazUTdA2LmO0bgnlUweOP0y10E23FcdkBvI+YsqsraxF1EZ+eu0BnnUkUp3a1TmfBDzAswFMQIDAQAB\"")
 }
 
 dependencies {

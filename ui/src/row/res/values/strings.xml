@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ui_app_name">ShoortX +</string>
+
+    <string name="lvl_checking_retry">Retry</string>
+    <string name="lvl_checking">Checking Licence from Play store</string>
+    <string name="lvl_check_ok">Good to go.</string>
+    <string name="lvl_check_not_ok">Failed.</string>
+    <string name="lvl_check_skip_for_now">Try later</string>
+    <string name="lvl_unlicensed_dialog_body">This application is not licensed.</string>
+    <string name="lvl_unlicensed_dialog_retry_body">Unable to validate license. Check to see if a network connection is available.</string>
+    <string name="lvl_unlicensed_dialog_error_tips">
+        1. Please check the network condition of your device to make sure you can access the Google Play Store\n
+        2. Please check your Google Service Framework to make sure it is enabled\n
+        3. Please check if your Google account is logged in correctly
+    </string>
 </resources>

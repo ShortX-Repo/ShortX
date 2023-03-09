@@ -1,6 +1,6 @@
 import tornaco.project.android.shortx.*
-import tornaco.project.android.shortx.Configs.resPrefix
 import tornaco.project.android.shortx.Compose.bomVersion
+import tornaco.project.android.shortx.Configs.resPrefix
 
 plugins {
     id("com.android.library")
@@ -102,6 +102,10 @@ dependencies {
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))
     implementation(project(":external:reorderable"))
+
+    val rowImplementation by configurations
+    rowImplementation(Lottie.composeLottie)
+    rowImplementation(Lottie.lottie)
 
     testImplementation("junit:junit:4.13.2")
 
