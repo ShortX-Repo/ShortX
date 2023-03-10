@@ -25,6 +25,8 @@
 
 # Proto
 -keep class tornaco.apps.shortx.core.proto** {*;}
+# Exclude protobuf classes
+-keep class com.google.protobuf.** { *; }
 
 -keep class ** implements android.os.Parcelable { *; }
 
