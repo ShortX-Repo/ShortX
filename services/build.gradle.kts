@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":services-33"))
     implementation(project(":external:utils"))
+    implementation(project(":external:picasso"))
 
     implementation(Coroutines.android)
     implementation(Coroutines.core)

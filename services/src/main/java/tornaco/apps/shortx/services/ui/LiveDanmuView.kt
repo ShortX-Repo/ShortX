@@ -61,13 +61,10 @@ class LiveDanmuView(
     private fun bindLaneViewItem(view: View, data: Any) {
         if (view is CardView && data is Danmu) {
             view.findViewById<ImageView>(android.R.id.icon1).let { imageView ->
-                imageView.visibility = GONE
-                data.toDrawable(context)?.let { drawable ->
-                    imageView.visibility = VISIBLE
-                    imageView.setImageDrawable(drawable)
-                }
+                imageView.visibility = VISIBLE
+                PicassoInitializer.get().load("https://i.imgur.com/DvpvklR.png")
+                    .into(imageView)
             }
-
             val textView = view.findViewById<TextView>(android.R.id.text1)
             textView.text = data.text
         }

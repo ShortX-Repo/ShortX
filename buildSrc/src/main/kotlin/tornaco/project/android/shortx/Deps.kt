@@ -24,6 +24,9 @@ object Others {
     const val glide = "com.github.bumptech.glide:glide:4.13.0"
     const val glideCompiler = "com.github.bumptech.glide:compiler:4.13.0"
     const val landscapistGlide = "com.github.skydoves:landscapist-glide:1.5.0"
+
+    const val okhttp = "com.squareup.okhttp3:okhttp:4.10.0"
+    const val okio = "com.squareup.okio:okio:3.2.0"
 }
 
 object Coroutines {

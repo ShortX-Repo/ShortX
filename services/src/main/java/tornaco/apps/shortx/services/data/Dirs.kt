@@ -7,6 +7,9 @@ object Dirs {
 
     private fun baseServerDir() = DirInit.baseServerDirMayInit()
 
+    fun baseServerCacheDir() = File(baseServerDir(), "cache")
+    fun picassoCacheDir() = File(baseServerCacheDir(), "picasso")
+
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")
 
