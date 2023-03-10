@@ -128,9 +128,6 @@ dependencies {
     implementation(project(":patch"))
     implementation(project(":core"))
 
-    implementation(Compose.enro)
-    kapt(Compose.enroApt)
-
     testImplementation("junit:junit:4.13.2")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

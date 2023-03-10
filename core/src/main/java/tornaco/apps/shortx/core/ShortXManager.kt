@@ -11,7 +11,9 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.core.util.Logger
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -185,6 +187,25 @@ class ShortXManager(private val service: IShortX) {
             getAllPkgSets(withPkgList).map {
                 PkgSet.parseFrom(it.byte)
             }
+        }
+    }
+
+
+    fun showDanmu(text: String, icon: String?) {
+        invokeService(Unit) {
+            showDanmu(text, icon)
+        }
+    }
+
+    fun getDanmuUISettings(): DanmuUISettings {
+        return invokeService(defaultDanmuUISettings) {
+            DanmuUISettings.parseFrom(danmuUISettings.byte)
+        }
+    }
+
+    fun setDanmuUISettings(settings: DanmuUISettings) {
+        invokeService(Unit) {
+            danmuUISettings = ByteArrayWrapper(settings.toByteArray())
         }
     }
 

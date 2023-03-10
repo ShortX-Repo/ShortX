@@ -9,5 +9,6 @@ enum class AppRoute {
     AddDA,
     Settings,
     PkgSetList,
-    PkgSetDetails
+    PkgSetDetails,
+    DanmuUISettings,
 }

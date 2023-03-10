@@ -102,6 +102,7 @@ dependencies {
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))
     implementation(project(":external:reorderable"))
+    implementation(project(":external:compose-color-picker"))
 
     val rowImplementation by configurations
     rowImplementation(Lottie.composeLottie)

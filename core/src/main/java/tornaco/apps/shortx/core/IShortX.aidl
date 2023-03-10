@@ -39,4 +39,9 @@ interface IShortX {
     List<ByteArrayWrapper> getAllPkgSets(boolean withPkgList);
     // Pkg Set end
 
+    // UI start
+    void showDanmu(String text, String icon);
+    ByteArrayWrapper getDanmuUISettings();
+    void setDanmuUISettings(in ByteArrayWrapper settings);
+    // UI end
 }

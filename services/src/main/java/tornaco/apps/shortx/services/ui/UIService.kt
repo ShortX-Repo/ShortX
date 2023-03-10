@@ -4,9 +4,13 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import tornaco.apps.shortx.core.doIfDebug
+import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.postSafety
 
 class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -36,5 +40,23 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                 liveDanmuView?.addDanmu(Danmu(icon, text))
             }
         }
+    }
+
+    fun getDanmuUISettings(): DanmuUISettings {
+        return DanmuUISettings.newBuilder()
+            .setAlpha(store.read(Settings.FloatSettings.DanmuAlpha))
+            .setBackgroundColor(store.read(Settings.IntSettings.DanmuBgColor))
+            .setDuration(store.read(Settings.IntSettings.DanmuDurationSeconds).toLong())
+            .setTextColor(store.read(Settings.IntSettings.DanmuTextColor))
+            .setTextSizeSp(store.read(Settings.IntSettings.DanmuTextSize))
+            .build()
+    }
+
+    fun setDanmuUISettings(settings: DanmuUISettings) {
+        store.write(Settings.FloatSettings.DanmuAlpha, settings.alpha)
+        store.write(Settings.IntSettings.DanmuBgColor, settings.backgroundColor)
+        store.write(Settings.IntSettings.DanmuDurationSeconds, settings.duration.toInt())
+        store.write(Settings.IntSettings.DanmuTextColor, settings.textColor)
+        store.write(Settings.IntSettings.DanmuTextSize, settings.textSizeSp)
     }
 }

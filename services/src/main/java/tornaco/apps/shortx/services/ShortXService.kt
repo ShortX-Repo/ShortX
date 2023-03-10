@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 
 @SuppressLint("StaticFieldLeak")
@@ -177,6 +178,18 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     }
                 ByteArrayWrapper(trimmed.toByteArray())
             }
+        }
+
+        override fun showDanmu(text: String, icon: String?) {
+            shortXContext.ui.showDanmu(icon = icon, text = text)
+        }
+
+        override fun getDanmuUISettings(): ByteArrayWrapper {
+            return ByteArrayWrapper(shortXContext.ui.getDanmuUISettings().toByteArray())
+        }
+
+        override fun setDanmuUISettings(settings: ByteArrayWrapper) {
+            shortXContext.ui.setDanmuUISettings(DanmuUISettings.parseFrom(settings.byte))
         }
     }
 }

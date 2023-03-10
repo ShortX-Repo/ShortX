@@ -15,9 +15,6 @@ object ClassPaths {
 object Compose {
     const val composeVersion = "1.3.0"
     const val bomVersion = "2023.01.00"
-
-    const val enro = "dev.enro:enro:2.0.0-alpha10"
-    const val enroApt = "dev.enro:enro-processor:2.0.0-alpha10"
 }
 
 object Others {
@@ -27,6 +24,8 @@ object Others {
 
     const val okhttp = "com.squareup.okhttp3:okhttp:4.10.0"
     const val okio = "com.squareup.okio:okio:3.2.0"
+
+    const val colorMath = "com.github.ajalt.colormath:colormath:3.2.1"
 }
 
 object Coroutines {

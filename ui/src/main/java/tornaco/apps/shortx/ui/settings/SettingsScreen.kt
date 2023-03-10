@@ -25,7 +25,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
+fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit, goToDanmuUISettings: () -> Unit) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
 
@@ -118,7 +118,7 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
                     }
 
                     PreferenceUi(mutableListOf<Preference>().apply {
-                        addAll(generalSettings(state, vm, goToPkgSetList))
+                        addAll(generalSettings(state, vm, goToPkgSetList, goToDanmuUISettings))
                         addAll(dataSettings(state, vm, pickRestoreFile = {
                             pickFileLauncher.launch("application/zip")
                         }))
@@ -135,7 +135,8 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit) {
 private fun generalSettings(
     state: SettingsState,
     vm: SettingsViewModel,
-    goToPkgSetList: () -> Unit
+    goToPkgSetList: () -> Unit,
+    goToDanmuUISettings: () -> Unit
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
@@ -144,6 +145,13 @@ private fun generalSettings(
         summary = LocalI18N.current["ui.pkg.set.desc"],
         onClick = {
             goToPkgSetList()
+        }
+    ),
+
+    Preference.TextPreference(icon = Icons.Outlined.Apps,
+        title = "Danmu settings",
+        onClick = {
+            goToDanmuUISettings()
         }
     ),
 )

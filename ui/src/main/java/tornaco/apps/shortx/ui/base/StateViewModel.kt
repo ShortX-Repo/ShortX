@@ -14,4 +14,8 @@ abstract class StateViewModel<T> :
         _state.value = block.invoke(_state.value)
     }
 
+    fun updateState(t: T) {
+        _state.value = t
+    }
+
 }

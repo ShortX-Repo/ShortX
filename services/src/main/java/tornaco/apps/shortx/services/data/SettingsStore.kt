@@ -15,6 +15,7 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     private val stringCache = mutableMapOf<String, String?>()
     private val boolCache = mutableMapOf<String, Boolean?>()
     private val intCache = mutableMapOf<String, Int?>()
+    private val floatCache = mutableMapOf<String, Float?>()
     private val stringMapCache = mutableMapOf<String, Map<String, String>>()
 
     private var job: Job? = null
@@ -27,6 +28,8 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
         logger.i(boolCache.mapToString())
         logger.i("intCache")
         logger.i(intCache.mapToString())
+        logger.i("floatCache")
+        logger.i(floatCache.mapToString())
         logger.i("stringMapCache")
         logger.i(stringMapCache.mapToString())
         logger.i("-----------------------")
@@ -49,6 +52,7 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
                 stringCache.putAll(stringSettingsMap)
                 boolCache.putAll(boolSettingsMap)
                 intCache.putAll(intSettingsMap)
+                floatCache.putAll(floatSettingsMap)
 
                 stringMapSettingsMap.forEach {
                     stringMapCache[it.key] = it.value.dataMap
@@ -74,6 +78,15 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
 
     fun putInt(key: String, value: Int) {
         intCache[key] = value
+        postWrite()
+    }
+
+    fun getFloat(key: String, defaultValue: Float): Float {
+        return floatCache[key] ?: defaultValue
+    }
+
+    fun putFloat(key: String, value: Float) {
+        floatCache[key] = value
         postWrite()
     }
 
@@ -113,6 +126,7 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
             putAllStringSettings(stringCache)
             putAllBoolSettings(boolCache)
             putAllIntSettings(intCache)
+            putAllFloatSettings(floatCache)
 
             stringMapCache.forEach {
                 putStringMapSettings(it.key, StringMap.newBuilder().putAllData(it.value).build())

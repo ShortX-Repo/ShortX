@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
+import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -33,6 +34,9 @@ fun AppNavigationGraph(
                 back = { appNavController.popBackStack() },
                 goToPkgSetList = {
                     appNavController.navigate(AppRoute.PkgSetList.name)
+                },
+                goToDanmuUISettings = {
+                    appNavController.navigate(AppRoute.DanmuUISettings.name)
                 })
         }
 
@@ -108,6 +112,10 @@ fun AppNavigationGraph(
                     "settings"
                 )
             ShowDialogSelector(settings)
+        }
+
+        animateComposable(AppRoute.DanmuUISettings.name) {
+            DanmuUISettingsScreen()
         }
 
         appNavGraphHook()
