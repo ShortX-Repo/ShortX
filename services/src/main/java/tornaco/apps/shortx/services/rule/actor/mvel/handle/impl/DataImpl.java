@@ -7,12 +7,14 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 
+import tornaco.apps.shortx.core.util.Logger;
 import tornaco.apps.shortx.services.ShortXContext;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.IData;
 
 @SuppressLint({"NewApi", "MissingPermission"})
 public
 class DataImpl implements IData {
+    private final Logger logger = new Logger("DataImpl");
 
     private final Context context;
     private final ShortXContext s;
@@ -25,18 +27,21 @@ class DataImpl implements IData {
     // Is it hidden before O?
     @Override
     public void setDataEnabled(boolean enable) {
+        logger.w("setDataEnabled " + enable);
         TelephonyManager telephonyManager = TelephonyManager.from(context);
         telephonyManager.setDataEnabled(enable);
     }
 
     @Override
     public void setDataEnabled(int subId, boolean enable) {
+        logger.w("setDataEnabled " + subId + ", " + enable);
         TelephonyManager telephonyManager = TelephonyManager.from(context);
         telephonyManager.setDataEnabled(subId, enable);
     }
 
     @Override
     public void setDataEnabledForSlot(int slotId, boolean enable) {
+        logger.w("setDataEnabledForSlot " + slotId + ", " + enable);
         SubscriptionInfo si = SubscriptionManager.from(context).getActiveSubscriptionInfoForSimSlotIndex(slotId);
         if (si == null) {
             return;
@@ -66,18 +71,21 @@ class DataImpl implements IData {
 
     @Override
     public void setDataNetworkType(int type) {
+        logger.w("setDataNetworkType " + type);
         TelephonyManager telephonyManager = TelephonyManager.from(context);
         telephonyManager.setDataNetworkType(type);
     }
 
     @Override
     public void setDataNetworkTypeForPhone(int phoneId, int type) {
+        logger.w("setDataNetworkTypeForPhone " + phoneId + ", " + type);
         TelephonyManager telephonyManager = TelephonyManager.from(context);
         telephonyManager.setDataNetworkTypeForPhone(phoneId, type);
     }
 
     @Override
     public void setDataNetworkTypeForSlot(int slotId, int type) {
+        logger.w("setDataNetworkTypeForSlot " + slotId + ", " + type);
         SubscriptionInfo si = SubscriptionManager.from(context).getActiveSubscriptionInfoForSimSlotIndex(slotId);
         if (si == null) {
             return;
