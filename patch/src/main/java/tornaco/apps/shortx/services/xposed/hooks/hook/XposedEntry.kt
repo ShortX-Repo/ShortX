@@ -9,18 +9,19 @@ import android.view.InputEvent
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Fields.mContext
+import tornaco.apps.shortx.core.platform.Methods
+import tornaco.apps.shortx.core.platform.Methods.filterInputEvent
+import tornaco.apps.shortx.core.platform.Methods.reportEvent
+import tornaco.apps.shortx.core.platform.Methods.start
+import tornaco.apps.shortx.core.platform.Methods.systemReady
+import tornaco.apps.shortx.core.platform.PackageNames.android
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.appWidgetServiceImplClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
-import tornaco.apps.shortx.services.xposed.hooks.hook.Fields.mContext
-import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.filterInputEvent
-import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.reportEvent
-import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.start
-import tornaco.apps.shortx.services.xposed.hooks.hook.Methods.systemReady
-import tornaco.apps.shortx.services.xposed.hooks.hook.PackageNames.android
 import util.Reflections
 
 class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {

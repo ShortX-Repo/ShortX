@@ -1,31 +1,13 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XposedHelpers
-
-object PackageNames {
-    const val android = "android"
-}
-
-object Methods {
-    const val start = "start"
-    const val systemReady = "systemReady"
-    const val filterInputEvent = "filterInputEvent"
-    const val reportEvent = "reportEvent"
-    const val getService = "getService"
-    const val onTransact = "onTransact"
-    const val print = "print"
-    const val startListening = "startListening"
-}
-
-object Fields {
-    const val mContext = "mContext"
-}
+import tornaco.apps.shortx.core.platform.ClassNames.AMS
 
 object Classes {
 
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.amsClass(): Class<*> {
-        return XposedHelpers.findClass("com.android.server.am.ActivityManagerService", this)
+        return XposedHelpers.findClass(AMS, this)
     }
 
     @Throws(ClassNotFoundException::class)

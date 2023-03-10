@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.app
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.UserInfo
 import android.os.UserHandle
@@ -17,11 +18,14 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.core.unknownUserComponent
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
 import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
+import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val _currentFgComponentName = MutableStateFlow(unknownUserComponent)
@@ -36,6 +40,10 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     private val enableAppPkg by lazy { PmSetAppEnabledApplicationPackageEnabler(context) }
     private val suspendAppPkg by lazy { PmSuspendApplicationPackageEnabler(context) }
+
+    private val ams by lazy {
+        ServiceRetriever(context.classLoader).getAMS()
+    }
 
     override fun systemReady() {
         super.systemReady()
@@ -176,6 +184,30 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun startAppProcess(appPkgList: List<AppPkg>, reason: String) {
         logger.w("startAppProcess, $appPkgList $reason")
+        systemServiceScope.launchSafety {
+            appPkgList.forEach { targetPkg ->
+                kotlin.runCatching {
+                    val info: ApplicationInfo? = PkgUtils.getApplicationInfoAsUser(
+                        context,
+                        targetPkg.pkgName,
+                        targetPkg.userId
+                    )
+                    logger.d("startAppProcess, app: $info ams: $ams")
+                    info?.let { app ->
+                        ams?.let {
+                            AMSFuncs.addAppLocked(
+                                it,
+                                app
+                            )
+                        }
+                    }
+                }.onFailure {
+                    logger.e(it, "startAppProcess got error")
+                }
+                // Not sure if this is really needed.
+                delay(200)
+            }
+        }
     }
 
     fun setAppEnabled(appPkgList: List<AppPkg>, enable: Boolean, reason: String) {

@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.services.android
 
+import tornaco.apps.shortx.core.platform.ClassNames
+import tornaco.apps.shortx.core.platform.lifecycleClassName
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
 
@@ -8,11 +10,20 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
     private val logger = Logger("AndroidServices")
 
     fun getInputMethodManagerService(): Any? = kotlin.runCatching {
-        val className = "com.android.server.inputmethod.InputMethodManagerService\$Lifecycle"
+        val className = ClassNames.INPUT_MANAGER_SERVICE.lifecycleClassName()
         val lifecycle = getService(Reflections.findClass(className, classLoader))
         return@runCatching Reflections.getObjectField(lifecycle, "mService")
     }.getOrElse {
         logger.e(it, "getInputMethodManagerService error")
+        null
+    }
+
+    fun getAMS(): Any? = kotlin.runCatching {
+        val className = ClassNames.AMS.lifecycleClassName()
+        val lifecycle = getService(Reflections.findClass(className, classLoader))
+        return@runCatching Reflections.getObjectField(lifecycle, "mService")
+    }.getOrElse {
+        logger.e(it, "getAMS error")
         null
     }
 
