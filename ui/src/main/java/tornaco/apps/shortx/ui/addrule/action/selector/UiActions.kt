@@ -33,6 +33,12 @@ fun UiActions(addAction: (Action) -> Unit) {
         ),
 
         Item(
+            Action.ShowDanmu::class,
+            labelAndDescriptionForActionSelector(i18N, Action.ShowDanmu::class),
+            imageVectorForAction(Action.ShowDanmu::class)
+        ),
+
+        Item(
             Action.ShowOverlay::class,
             labelAndDescriptionForActionSelector(i18N, Action.ShowOverlay::class),
             imageVectorForAction(Action.ShowOverlay::class)

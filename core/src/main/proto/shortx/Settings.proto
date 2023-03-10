@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-option java_package = "tornaco.apps.shortx.core.proto";
+option java_package = "tornaco.apps.shortx.core.proto.settings";
 option java_outer_classname = "OuterSettings";
 option java_multiple_files = true;
 
 import "google/protobuf/any.proto";
 
-message ActionSettings {
-  map<string, ActionSetting> data = 1;
-}
 
-message ActionSetting {
-  string actionName = 1;
-  repeated google.protobuf.Any payload = 2;
+message DanmuUISettings {
+  float alpha = 1;
+  int32 backgroundColor = 2;
+  int32 textColor = 3;
+  int32 textSizeSp = 4;
+  int64 duration = 5;
 }

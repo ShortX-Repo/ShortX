@@ -29,6 +29,9 @@ sealed interface Action : Parcelable {
     data class ShowToast(val message: String) : Action
 
     @Parcelize
+    data class ShowDanmu(val text: String, val icon: String?) : Action
+
+    @Parcelize
     data class MVEL(val expression: String) : Action
 
     @Parcelize
@@ -174,6 +177,13 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.ShowToast -> {
             ShowToast.newBuilder().setMessage(message).build()
         }
+        is Action.ShowDanmu -> {
+            ShowDanmu.newBuilder().setText(text).apply {
+                icon?.let {
+                    icon = it
+                }
+            }.build()
+        }
         is Action.MVEL -> {
             ExecuteMVEL.newBuilder().setExpression(expression).build()
         }
@@ -274,6 +284,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ ShowToast::class.java -> {
             val data = this unpack_ ShowToast::class.java
             Action.ShowToast(message = data.message)
+        }
+        this is_ ShowDanmu::class.java -> {
+            val data = this unpack_ ShowDanmu::class.java
+            Action.ShowDanmu(text = data.text, icon = data.icon)
         }
         this is_ Delay::class.java -> {
             val data = this unpack_ Delay::class.java

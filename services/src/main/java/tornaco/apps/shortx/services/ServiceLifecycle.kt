@@ -10,6 +10,7 @@ class ServiceLifecycle(shortXContext: ShortXContext) {
         shortXContext.gesture,
         shortXContext.watchDog,
         shortXContext.overlay,
+        shortXContext.ui,
         shortXContext.input,
     )
 

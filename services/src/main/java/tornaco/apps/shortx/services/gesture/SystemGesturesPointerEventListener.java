@@ -30,7 +30,7 @@ import android.view.MotionEvent;
 import java.io.PrintWriter;
 
 import tornaco.apps.shortx.core.util.ScreenUtilsKt;
-import tornaco.apps.shortx.services.ResExtKt;
+import tornaco.apps.shortx.services.ui.ResExtKt;
 
 /**
  * Listens for system-wide input gestures, firing callbacks when detected.

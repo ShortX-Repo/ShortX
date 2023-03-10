@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.util;
+package tornaco.apps.shortx.core.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
  * All right reserved.
  */
 
-abstract class ApkUtil {
+public abstract class ApkUtils {
 
     public static CharSequence loadNameByPkgName(Context context, String pkg) {
         PackageManager pm = context.getPackageManager();

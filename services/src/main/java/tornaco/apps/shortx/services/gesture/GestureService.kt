@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.ui.GuideLineView
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 3000L
 

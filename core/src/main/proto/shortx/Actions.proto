@@ -142,3 +142,7 @@ message ShowAlertDialog {
   bool cancelable = 9;
 }
 
+message ShowDanmu {
+  string text = 1;
+  string icon = 2;
+}

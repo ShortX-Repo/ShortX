@@ -6,6 +6,7 @@ import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
 import tornaco.apps.shortx.services.overlay.OverlayService
 import tornaco.apps.shortx.services.rule.RuleService
+import tornaco.apps.shortx.services.ui.UIService
 
 interface ShortXContext {
     val rule: RuleService
@@ -14,6 +15,7 @@ interface ShortXContext {
     val appState: AppStateService
     val pkgSet: PkgSetService
     val overlay: OverlayService
+    val ui: UIService
     val input: InputService
 }
 
@@ -24,5 +26,6 @@ class ShortXContextImpl : ShortXContext {
     override val appState = AppStateService(this)
     override val pkgSet = PkgSetService(this)
     override val overlay = OverlayService(this)
+    override val ui = UIService(this)
     override val input = InputService(this)
 }

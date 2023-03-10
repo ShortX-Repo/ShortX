@@ -42,6 +42,10 @@ object DevDAs {
             .setId(nextId())
             .addActions(ShowToast.newBuilder().setMessage("Hello how are you~").build().pack_())
             .build(),
+        DirectAction.newBuilder().setTitle("ShowDanmu")
+            .setId(nextId())
+            .addActions(ShowDanmu.newBuilder().setText("Hello how are you~").setIcon("app://com.android.settings").build().pack_())
+            .build(),
 
         DirectAction.newBuilder().setTitle("Delay")
             .setId(nextId())

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services
+package tornaco.apps.shortx.services.ui
 
 import android.annotation.SuppressLint
 import android.content.Context

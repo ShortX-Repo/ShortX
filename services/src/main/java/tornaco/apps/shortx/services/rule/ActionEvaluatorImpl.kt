@@ -171,6 +171,9 @@ class ActionEvaluatorImpl(
                     // Noop.
                 }
             }
+        } else if (action is_ ShowDanmu::class.java) {
+            val d = action unpack_ ShowDanmu::class.java
+            shortXContext.ui.showDanmu(d.icon, d.text)
         }
     }
 }

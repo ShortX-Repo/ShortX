@@ -20,6 +20,9 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowToast::class -> {
             i18N["ui.action.show.toast"] to null
         }
+        Action.ShowDanmu::class -> {
+            i18N["ui.action.show.danmu"] to null
+        }
         Action.ShellCommand::class -> {
             i18N["ui.action.shell"] to null
         }
@@ -95,6 +98,9 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)
+        }
+        is Action.ShowDanmu -> {
+            listOf(i18N["ui.action.show.danmu"], action.text)
         }
         is Action.ShellCommand -> {
             listOf(i18N["ui.action.shell"], action.command)
@@ -205,6 +211,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
     return when (action) {
         Action.ShowToast::class -> {
             Icons.Outlined.Message
+        }
+        Action.ShowDanmu::class -> {
+            Icons.Outlined.Chat
         }
         Action.ShellCommand::class -> {
             Icons.Outlined.Tag

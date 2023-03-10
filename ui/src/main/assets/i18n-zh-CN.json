@@ -64,6 +64,7 @@
   "ui.keycode.label.home": "主页",
   "ui.keycode.label.back": "返回",
   "ui.action.show.toast": "显示吐司",
+  "ui.action.show.danmu": "显示弹幕",
   "ui.action.shell": "Shell 命令",
   "ui.action.input.text": "输入文本",
   "ui.action.delay": "延迟",
