@@ -103,6 +103,7 @@
   "ui.action.hotspot": "Hotspot",
   "ui.action.flashlight": "Flash light",
   "ui.action.dnd": "DoNot disturb",
+  "ui.action.gps": "Location",
   "ui.action.dark.mode": "Dark mode",
   "ui.action.system.settings": "Settings",
   "ui.action.brk": "Stop execute next actions",

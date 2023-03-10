@@ -108,6 +108,9 @@ sealed interface Action : Parcelable {
     object EnableDND : Action
 
     @Parcelize
+    object EnableGPS : Action
+
+    @Parcelize
     object EnableDarkMode : Action
 
     @Parcelize
@@ -130,6 +133,9 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     object DisableDND : Action
+
+    @Parcelize
+    object DisableGPS : Action
 
     @Parcelize
     object DisableDarkMode : Action
@@ -183,6 +189,7 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         Action.DisableBT -> SetBTEnabled.newBuilder().setEnable(false).build()
         Action.DisableDND -> SetDNDEnabled.newBuilder().setEnable(false).build()
+        Action.DisableGPS -> SetGPSEnabled.newBuilder().setEnable(false).build()
         Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(false).build()
         Action.DisableData -> SetDataEnabled.newBuilder().setEnable(false).build()
         Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(false).build()
@@ -192,6 +199,7 @@ fun Action.toProtoAction(): ProtoMessage {
 
         Action.EnableBT -> SetBTEnabled.newBuilder().setEnable(true).build()
         Action.EnableDND -> SetDNDEnabled.newBuilder().setEnable(true).build()
+        Action.EnableGPS -> SetGPSEnabled.newBuilder().setEnable(true).build()
         Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(true).build()
         Action.EnableData -> SetDataEnabled.newBuilder().setEnable(true).build()
         Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(true).build()
@@ -320,6 +328,22 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableDND
             } else {
                 Action.DisableDND
+            }
+        }
+        this is_ SetGPSEnabled::class.java -> {
+            val data = this unpack_ SetGPSEnabled::class.java
+            if (data.enable) {
+                Action.EnableGPS
+            } else {
+                Action.DisableGPS
+            }
+        }
+        this is_ SetDataEnabled::class.java -> {
+            val data = this unpack_ SetDataEnabled::class.java
+            if (data.enable) {
+                Action.EnableData
+            } else {
+                Action.DisableData
             }
         }
         this is_ SetDarkModeEnabled::class.java -> {

@@ -103,6 +103,7 @@
   "ui.action.hotspot": "热点",
   "ui.action.flashlight": "手电筒",
   "ui.action.dnd": "勿扰模式",
+  "ui.action.gps": "定位",
   "ui.action.dark.mode": "暗色模式",
   "ui.action.system.settings": "系统设置",
   "ui.action.brk": "停止执行后续动作",
