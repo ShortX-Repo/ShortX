@@ -125,6 +125,7 @@
   "ui.settings.app.info": "App info",
   "ui.settings.core.info": "Framework info",
   "ui.settings.core.info.na": "Not activated",
+  "ui.settings.open.source.license": "Open source license",
   "ui.settings.enable.debug.log": "Enable Log",
   "ui.settings.enable.debug.log.description": "Open debug log output",
   "ui.settings.data.backup.title": "Backup data",

@@ -11,4 +11,5 @@ enum class AppRoute {
     PkgSetList,
     PkgSetDetails,
     DanmuUISettings,
+    ViewOpenSourceLicense,
 }

@@ -25,7 +25,12 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit, goToDanmuUISettings: () -> Unit) {
+fun SettingsScreen(
+    back: () -> Unit,
+    goToPkgSetList: () -> Unit,
+    goToDanmuUISettings: () -> Unit,
+    viewOpenSourceLicense: () -> Unit
+) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
 
@@ -63,6 +68,7 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit, goToDanmuUISett
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues)
                         .padding(horizontal = 16.dp)
+                        .padding(bottom = 32.dp)
                         .animateContentSize()
                 ) {
                     val i18N = LocalI18N.current
@@ -123,7 +129,7 @@ fun SettingsScreen(back: () -> Unit, goToPkgSetList: () -> Unit, goToDanmuUISett
                             pickFileLauncher.launch("application/zip")
                         }))
                         addAll(devSettings(state, vm))
-                        addAll(aboutSettings(state))
+                        addAll(aboutSettings(state, viewOpenSourceLicense))
                     })
                 }
             }
@@ -208,7 +214,10 @@ private fun devSettings(
 )
 
 @Composable
-private fun aboutSettings(state: SettingsState) = listOf(
+private fun aboutSettings(
+    state: SettingsState,
+    viewOpenSourceLicense: () -> Unit
+) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.about"]),
 
     Preference.ExpandablePreference(
@@ -223,7 +232,15 @@ private fun aboutSettings(state: SettingsState) = listOf(
                 } else {
                     LocalI18N.current["ui.settings.core.info.na"]
                 },
-                onClick = {})
+                onClick = {}
+            )
         ),
     ),
+
+    Preference.TextPreference(icon = Icons.Outlined.Extension,
+        title = LocalI18N.current["ui.settings.open.source.license"],
+        onClick = {
+            viewOpenSourceLicense()
+        }
+    )
 )

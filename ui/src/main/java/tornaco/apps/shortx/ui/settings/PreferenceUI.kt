@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -93,12 +95,16 @@ private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) 
 
 @Composable
 private fun TextPreferenceUi(preference: Preference.TextPreference) {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
-                preference.onClick?.invoke()
+                scope.launch {
+                    delay(128)
+                    preference.onClick?.invoke()
+                }
             }, verticalAlignment = Alignment.CenterVertically
     ) {
         Row(

@@ -25,6 +25,7 @@ buildConfig {
 
     buildConfigField("String", "APP_SHELL_SERVICE_NAME", "\"tornaco.apps.shortx.ui.service.ShellService\"")
     buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"Settings\"")
+    buildConfigField("String", "OPEN_SOURCE_LICENSE_URL", "\"https://github.com/Tornaco/ShortX-Release/blob/main/open_source_license.txt\"")
     buildConfigField("String", "PLAY_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmqDRzFFEKnhoclz6m0+9pkN8M/tokdZ6adHQhN9QXEwSy+w0OM4UZQwUOmmn9JvQd9/ibiGZbPK0Phmazvt3dVqgLYgOm0Z+qQFc2TnJ2SsxnjxilEt9HQvGLACH1OpNVxB3GgsXRyLPc4SqfUGtb9Wlh+qz4L01yLFhsq/AnSHQlQj37I+xYHUv0pZOSlkx7ORXJsTufXcEsL4Yc9dLHh7wEBWJqwuhQVT/BOIr1yipK1a3adzEnX6Iv1+yDmQy/EIfIt6jOJowOHMHW8MvtQ71c1WvuYfE4biS3xr2pybRxfipBEJBcdMdU+yMrsBzhp++QpGOxrfQitasmRB4twIDAQAB\"")
 }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -14,6 +15,8 @@ import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
+import tornaco.apps.shortx.ui.base.webview.WebViewScreen
+import tornaco.apps.shortx.ui.base.webview.WebViewTarget
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
@@ -37,6 +40,9 @@ fun AppNavigationGraph(
                 },
                 goToDanmuUISettings = {
                     appNavController.navigate(AppRoute.DanmuUISettings.name)
+                },
+                viewOpenSourceLicense = {
+                    appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
                 })
         }
 
@@ -116,6 +122,17 @@ fun AppNavigationGraph(
 
         animateComposable(AppRoute.DanmuUISettings.name) {
             DanmuUISettingsScreen()
+        }
+
+        animateComposable(AppRoute.ViewOpenSourceLicense.name) {
+            WebViewScreen(
+                target = WebViewTarget(
+                    "Open source license",
+                    BuildProp.OPEN_SOURCE_LICENSE_URL
+                )
+            ) {
+                appNavController.popBackStack()
+            }
         }
 
         appNavGraphHook()
