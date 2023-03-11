@@ -12,7 +12,6 @@ public class UIImpl implements IUI {
     private final Context context;
     private final ShortXContext s;
 
-
     public UIImpl(Context context, ShortXContext s) {
         this.context = context;
         this.s = s;

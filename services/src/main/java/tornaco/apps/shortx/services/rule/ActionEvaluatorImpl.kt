@@ -18,6 +18,8 @@ import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.actor.ShowDialog
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.SettingsImpl
+import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.UIImpl
 import tornaco.apps.shortx.services.util.ContextMapUtil.inflateContextMap
 
 class ActionEvaluatorImpl(
@@ -32,6 +34,14 @@ class ActionEvaluatorImpl(
     }
     private val data by lazy {
         DataImpl(context, shortXContext)
+    }
+
+    private val ui by lazy {
+        UIImpl(context, shortXContext)
+    }
+
+    private val settings by lazy {
+        SettingsImpl(context)
     }
 
     override suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any>) {
@@ -93,6 +103,9 @@ class ActionEvaluatorImpl(
         } else if (action is_ SetFlashLightEnabled::class.java) {
             val d = action unpack_ SetFlashLightEnabled::class.java
             if (d.enable) hw.enabledFlashlight() else hw.disableFlashlight()
+        } else if (action is_ SetDarkModeEnabled::class.java) {
+            val d = action unpack_ SetDarkModeEnabled::class.java
+            if (d.enable) settings.enableDarkMode() else settings.disableDarkMode()
         } else if (action is_ SetDataEnabled::class.java) {
             val d = action unpack_ SetDataEnabled::class.java
             if (d.hasSpecificSlotId) {

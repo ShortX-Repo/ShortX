@@ -2,11 +2,20 @@ package tornaco.apps.shortx.services.rule.actor.mvel.handle.impl
 
 import android.content.Context
 import android.content.res.Configuration
+import tornaco.apps.shortx.core.util.uiModeManager
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.ISettings
 
 class SettingsImpl(private val context: Context) : ISettings {
-    override fun setDarkModeEnabled(enabled: Boolean) {
+    private val uiModeManager by lazy {
+        context.uiModeManager
+    }
 
+    override fun enableDarkMode() {
+        uiModeManager.setNightModeActivated(true)
+    }
+
+    override fun disableDarkMode() {
+        uiModeManager.setNightModeActivated(false)
     }
 
     override fun isDarkModeEnabled(): Boolean {
