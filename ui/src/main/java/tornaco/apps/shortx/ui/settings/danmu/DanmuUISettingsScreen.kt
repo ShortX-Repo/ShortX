@@ -48,10 +48,6 @@ fun DanmuUISettingsScreen() {
     val viewModel = hiltViewModel<DanmuUISettingsViewModel>()
     val state by viewModel.state.collectAsState()
 
-    SideEffect {
-        viewModel.loadUISettings()
-    }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -85,9 +81,9 @@ fun DanmuUISettingsScreen() {
                 ) {
 
                     ItemCard("Background alpha") {
-                        Text(text = "${state.alpha}")
-                        Slider(value = state.alpha, onValueChange = {
-                            viewModel.updateUISettings(state.copy(alpha = it))
+                        Text(text = "${state.settings.alpha}")
+                        Slider(value = state.settings.alpha, onValueChange = {
+                            viewModel.updateUISettings(state.settings.copy(alpha = it))
                         })
                     }
                     StandardSpacer()
@@ -95,39 +91,39 @@ fun DanmuUISettingsScreen() {
 
                     val bgColorPickerState = remember(state) {
                         ColorPickerDialogState(
-                            colorInt = state.backgroundColor,
+                            colorInt = state.settings.backgroundColor,
                             onColorChanged = {
-                                viewModel.updateUISettings(state.copy(backgroundColor = it))
+                                viewModel.updateUISettings(state.settings.copy(backgroundColor = it))
                             })
                     }
                     ColorPickerDialog(state = bgColorPickerState)
                     ItemCard(itemLabel = "Background color") {
                         FilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = Color(
-                                state.backgroundColor
+                                state.settings.backgroundColor
                             )
                         ), onClick = { bgColorPickerState.show() }) {}
                     }
                     StandardSpacer()
 
                     ItemCard("Text size") {
-                        Text(text = "${state.textSizeSp}")
-                        Slider(value = state.textSizeSp.toFloat(),
+                        Text(text = "${state.settings.textSizeSp}")
+                        Slider(value = state.settings.textSizeSp.toFloat(),
                             steps = 32,
                             valueRange = 1f..32f,
                             onValueChange = {
-                                viewModel.updateUISettings(state.copy(textSizeSp = it.toInt()))
+                                viewModel.updateUISettings(state.settings.copy(textSizeSp = it.toInt()))
                             })
                     }
                     StandardSpacer()
 
                     ItemCard(itemLabel = "Duration") {
-                        Text(text = "${state.duration / 1000} seconds")
-                        Slider(value = (state.duration / 1000).toFloat(),
+                        Text(text = "${state.settings.duration / 1000} seconds")
+                        Slider(value = (state.settings.duration / 1000).toFloat(),
                             steps = 24,
                             valueRange = 1f..24f,
                             onValueChange = {
-                                viewModel.updateUISettings(state.copy(duration = it.toInt() * 1000L))
+                                viewModel.updateUISettings(state.settings.copy(duration = it.toInt() * 1000L))
                             })
                     }
                     StandardSpacer()
@@ -135,16 +131,16 @@ fun DanmuUISettingsScreen() {
 
                     val textColorPickerState = remember(state) {
                         ColorPickerDialogState(
-                            colorInt = state.textColor,
+                            colorInt = state.settings.textColor,
                             onColorChanged = {
-                                viewModel.updateUISettings(state.copy(textColor = it))
+                                viewModel.updateUISettings(state.settings.copy(textColor = it))
                             })
                     }
                     ColorPickerDialog(state = textColorPickerState)
                     ItemCard(itemLabel = "Text color") {
                         FilledTonalButton(colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = Color(
-                                state.textColor
+                                state.settings.textColor
                             )
                         ), onClick = { textColorPickerState.show() }) {}
                     }

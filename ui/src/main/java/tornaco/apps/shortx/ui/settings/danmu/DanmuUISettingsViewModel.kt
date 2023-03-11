@@ -31,6 +31,8 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 import javax.inject.Inject
 
+data class UISettingsState(val settings: UISettings)
+
 data class UISettings(
     val alpha: Float = 0f,
     val backgroundColor: Int = 0,
@@ -47,33 +49,32 @@ fun DanmuUISettings.toUISettings() = UISettings(
     duration = duration,
 )
 
-fun UISettings.toDanmuUISettings() =
+fun UISettings.toDanmuUISettings(): DanmuUISettings =
     DanmuUISettings.newBuilder().setAlpha(alpha).setBackgroundColor(backgroundColor)
         .setTextColor(textColor).setTextSizeSp(textSizeSp).setDuration(duration).build()
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext private val context: Context) :
-    StateViewModel<UISettings>() {
+    StateViewModel<UISettingsState>() {
 
     private var previewJob: Job? = null
-
-    fun loadUISettings() {
-        updateState(shortXManager.getDanmuUISettings().toUISettings())
-    }
+    private val logger = tornaco.apps.shortx.core.util.Logger("DanmuUISettingsViewModel")
 
     fun updateUISettings(settings: UISettings) {
+        logger.d("updateUISettings $settings")
         previewJob?.cancel()
-
-        updateState(settings)
-
+        updateState {
+            copy(settings = settings)
+        }
+        shortXManager.setDanmuUISettings(settings.toDanmuUISettings())
         previewJob = viewModelScope.launch {
-            delay(1000)
+            delay(300)
             shortXManager.showDanmu("Hello ShortX, Awesome", "app://${BuildProp.APP_PACKAGE_NAME}")
         }
     }
 
-    override fun initState(): UISettings {
-        return UISettings(0f, 0, 0, 0)
+    override fun initState(): UISettingsState {
+        return UISettingsState(shortXManager.getDanmuUISettings().toUISettings())
     }
 }

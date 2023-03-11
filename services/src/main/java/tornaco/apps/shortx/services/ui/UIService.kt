@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import tornaco.apps.shortx.core.doIfDebug
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
-import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
@@ -26,13 +25,17 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         PicassoInitializer.install(context)
     }
 
+    override fun systemReady() {
+        super.systemReady()
+    }
+
     fun showDanmu(icon: String?, text: String) {
         if (isSystemReady) {
             uiHandler.postSafety {
                 val viewAlive = liveDanmuView?.isAttached() ?: false
                 if (!viewAlive) {
                     liveDanmuView =
-                        LiveDanmuView(context, defaultDanmuUISettings).apply { attach() }
+                        LiveDanmuView(context, getDanmuUISettings()).apply { attach() }
                 }
                 doIfDebug {
                     logger.d("showDanmu: $liveDanmuView $icon $text")
@@ -58,5 +61,8 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         store.write(Settings.IntSettings.DanmuDurationSeconds, settings.duration.toInt())
         store.write(Settings.IntSettings.DanmuTextColor, settings.textColor)
         store.write(Settings.IntSettings.DanmuTextSize, settings.textSizeSp)
+
+        liveDanmuView?.detach()
+        liveDanmuView = null
     }
 }
