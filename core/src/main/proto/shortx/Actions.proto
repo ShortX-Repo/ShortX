@@ -35,6 +35,13 @@ message ExecuteMVEL {
   string expression = 1;
 }
 
+message RemoteExecuteMVEL {
+  string title = 1;
+  string description = 2;
+  string icon = 3;
+  string expression = 4;
+}
+
 message OverlayButtonSetting {
   repeated google.protobuf.Any actions = 1;
   string icon = 2;

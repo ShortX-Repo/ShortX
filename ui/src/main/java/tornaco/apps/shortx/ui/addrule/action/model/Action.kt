@@ -11,6 +11,9 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
+import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
+import tornaco.apps.shortx.ui.remote.toModel
+import tornaco.apps.shortx.ui.remote.toProto
 
 sealed interface Action : Parcelable {
     @Parcelize
@@ -33,6 +36,9 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     data class MVEL(val expression: String) : Action
+
+    @Parcelize
+    data class RemoteMVEL(val action: RemoteExecuteMVELAction) : Action
 
     @Parcelize
     data class ShowOverlay(val autoCollapse: Boolean, val settings: List<OverlayButtonSetting>) :
@@ -187,6 +193,9 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.MVEL -> {
             ExecuteMVEL.newBuilder().setExpression(expression).build()
         }
+        is Action.RemoteMVEL -> {
+            action.toProto()
+        }
         Action.HideOverlay -> {
             HideOverlayButton.newBuilder().build()
         }
@@ -296,6 +305,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ ExecuteMVEL::class.java -> {
             val data = this unpack_ ExecuteMVEL::class.java
             Action.MVEL(expression = data.expression)
+        }
+        this is_ RemoteExecuteMVEL::class.java -> {
+            val data = this unpack_ RemoteExecuteMVEL::class.java
+            Action.RemoteMVEL(action = data.toModel())
         }
         this is_ ShowOverlayButton::class.java -> {
             val data = this unpack_ ShowOverlayButton::class.java

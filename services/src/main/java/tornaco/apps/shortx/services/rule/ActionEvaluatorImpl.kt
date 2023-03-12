@@ -75,6 +75,9 @@ class ActionEvaluatorImpl(
         } else if (action is_ ExecuteMVEL::class.java) {
             val d = action unpack_ ExecuteMVEL::class.java
             MVELExecutor(context, shortXContext, d.expression).invoke()
+        } else if (action is_ RemoteExecuteMVEL::class.java) {
+            val d = action unpack_ RemoteExecuteMVEL::class.java
+            MVELExecutor(context, shortXContext, d.expression).invoke()
         } else if (action is_ ShowOverlayButton::class.java) {
             val d = action unpack_ ShowOverlayButton::class.java
             val buttonSettingsList = d.buttonSettingsList

@@ -10,18 +10,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
+import tornaco.apps.shortx.ui.remote.RemoteRepo
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
 data class SelectorState(
     val installedApps: List<App> = emptyList(),
+    val remoteActions: List<RemoteExecuteMVELAction> = emptyList()
 )
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ActionSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     ContextViewModel<SelectorState>(context) {
+
+    @Inject
+    lateinit var remoteRepo: RemoteRepo
 
     override fun initState(): SelectorState {
         return SelectorState()
@@ -37,6 +43,15 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext private va
             }
             updateState {
                 copy(installedApps = apps)
+            }
+        }
+    }
+
+    fun loadRemoteActions() {
+        viewModelScope.launch {
+            val actions = remoteRepo.getActions()
+            updateState {
+                copy(remoteActions = actions)
             }
         }
     }

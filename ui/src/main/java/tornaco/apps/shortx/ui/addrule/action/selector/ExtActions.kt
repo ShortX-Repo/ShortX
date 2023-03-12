@@ -70,7 +70,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
 
     ActionList(
         actionItems = actionItems,
-        itemSelected = {
+        itemSelected = { it ->
             when (it) {
                 Action.ShellCommand::class -> {
                     shellCommandSelectorState.show()

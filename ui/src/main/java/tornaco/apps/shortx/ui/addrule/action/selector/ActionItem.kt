@@ -29,21 +29,28 @@ import kotlin.reflect.KClass
 data class Item(
     val type: KClass<out Action>,
     val labelAndDescription: Pair<String, String?>,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val data: Any? = null
 )
 
 fun item(
     type: KClass<out Action>, label: String, icon: ImageVector
-) = Item(type, label to null, icon)
+) = Item(type = type, labelAndDescription = label to null, icon = icon)
 
 
 fun item(
     type: KClass<out Action>, label: String, description: String, icon: ImageVector
-) = Item(type, label to description, icon)
-
+) = Item(type = type, labelAndDescription = label to description, icon = icon)
 
 @Composable
 fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>) -> Unit) {
+    ActionList(actionItems = actionItems, itemSelected = { kClass, data ->
+        itemSelected(kClass)
+    })
+}
+
+@Composable
+fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>, data: Any?) -> Unit) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
         columns = StaggeredGridCells.Fixed(2),
@@ -56,12 +63,10 @@ fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>) -> Un
                 title = it.labelAndDescription.first,
                 text1 = it.labelAndDescription.second
             ) {
-                itemSelected(it.type)
+                itemSelected(it.type, it.data)
             }
         }
-
     }
-
 }
 
 @Composable

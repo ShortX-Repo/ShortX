@@ -60,7 +60,7 @@ fun UiActions(addAction: (Action) -> Unit) {
     val navHost = LocalNavHostController.current
     ActionList(
         actionItems = uiActionItems,
-        itemSelected = {
+        itemSelected = { it ->
             when (it) {
                 Action.ShowToast::class -> {
                     toastSelectionState.show()

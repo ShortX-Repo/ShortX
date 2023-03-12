@@ -118,6 +118,7 @@
   "ui.actions.dialog.button.optional": "留空即不展示该按钮",
   "ui.action.dialog.button.text": "按钮文本",
   "ui.action.advanced": "高级",
+  "ui.action.remote": "在线",
   "ui.settings.about": "关于",
   "ui.settings.data": "数据",
   "ui.settings.general": "通用",

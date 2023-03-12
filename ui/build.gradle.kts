@@ -98,6 +98,12 @@ dependencies {
 
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.7.1")
+
+    debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":external:shell"))

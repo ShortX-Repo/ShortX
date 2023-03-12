@@ -118,6 +118,7 @@
   "ui.actions.dialog.button.optional": "Won't show this button of text is empty",
   "ui.action.dialog.button.text": "Button text",
   "ui.action.advanced": "Advanced",
+  "ui.action.remote": "Online",
   "ui.settings.about": "About",
   "ui.settings.data": "Data",
   "ui.settings.general": "General",

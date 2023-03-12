@@ -107,7 +107,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     ActionList(
         actionItems = actionItems,
-        itemSelected = {
+        itemSelected = { it, _ ->
             when (it) {
                 Action.LaunchApp::class -> {
                     launchAppSelectorState.show()

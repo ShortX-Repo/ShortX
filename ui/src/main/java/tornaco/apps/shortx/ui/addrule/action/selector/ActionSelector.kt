@@ -6,10 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Extension
-import androidx.compose.material.icons.outlined.Preview
-import androidx.compose.material.icons.outlined.ToggleOn
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,7 +27,8 @@ enum class ActionCategory(val i18NKey: String, val icon: ImageVector) {
     Ui("UI", Icons.Outlined.Preview),
     Apps("ui.action.category.app", Icons.Outlined.Apps),
     Settings("ui.action.system.settings", Icons.Outlined.ToggleOn),
-    Advanced("ui.action.advanced", Icons.Outlined.Extension)
+    Advanced("ui.action.advanced", Icons.Outlined.Extension),
+    Remote("ui.action.remote", Icons.Outlined.Cloud)
 }
 
 @Composable
@@ -136,6 +134,9 @@ fun ActionSelector(
                             }
                             ActionCategory.Advanced.ordinal -> {
                                 ExtActions(addAction = addAction)
+                            }
+                            ActionCategory.Remote.ordinal -> {
+                                RemoteActions(addAction = addAction)
                             }
                             else -> {}
                         }

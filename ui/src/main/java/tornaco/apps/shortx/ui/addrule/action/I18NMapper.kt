@@ -204,6 +204,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         Action.ExpandNotification -> {
             listOf(i18N["ui.action.expand.notification"])
         }
+        is Action.RemoteMVEL -> {
+            listOf(
+                action.action.title,
+                action.action.description
+            )
+        }
     }
 }
 
@@ -325,6 +331,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.ExpandNotification::class -> {
             Icons.Outlined.Notifications
+        }
+        Action.RemoteMVEL::class -> {
+            Icons.Outlined.Cloud
         }
 
         else -> {
