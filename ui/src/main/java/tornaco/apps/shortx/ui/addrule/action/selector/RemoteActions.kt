@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.MDIcons
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
@@ -50,7 +52,7 @@ fun RemoteActions(addAction: (Action) -> Unit) {
                 itemSelected = { _, _ -> })
         }
         RemoteExecuteMVELActionLoadState.Error -> {
-
+            LoadError(modifier = Modifier.fillMaxSize())
         }
         is RemoteExecuteMVELActionLoadState.Success -> {
             val uiActionItems = actionState.data.map {

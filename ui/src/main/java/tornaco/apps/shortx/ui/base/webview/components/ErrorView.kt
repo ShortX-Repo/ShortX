@@ -94,7 +94,7 @@ fun ErrorView(
                     .padding(start = 32.dp, end = 32.dp)
                     .fillMaxWidth(),
                 painter = painterResource(
-                    id = R.drawable.ic_undraw_location_search_modified
+                    id = R.drawable.ui_load_error
                 ),
                 contentDescription = null,
             )
