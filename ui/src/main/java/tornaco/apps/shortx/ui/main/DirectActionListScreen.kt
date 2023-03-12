@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -24,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -120,6 +120,7 @@ private fun DirectActionItem(
         modifier = modifier,
         title = da.title,
         text1 = da.description,
+        icon = da.icon,
         overflow = {
             ListItemOverflowMenu(da, onDelete, onEdit)
         },
@@ -134,6 +135,7 @@ private fun DAListItem(
     title: String? = null,
     text1: String? = null,
     text2: String? = null,
+    icon: ImageVector,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
 ) {
@@ -153,7 +155,7 @@ private fun DAListItem(
             ColoredIcon(size = 32.dp, padding = 0.dp) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Filled.Commit,
+                    imageVector = icon,
                     contentDescription = "Icon"
                 )
             }

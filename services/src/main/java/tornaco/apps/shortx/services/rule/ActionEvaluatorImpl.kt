@@ -45,7 +45,6 @@ class ActionEvaluatorImpl(
     }
 
     override suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any>) {
-        logger.d("evaluate: ${action.javaClass}")
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
             tornaco.apps.shortx.services.rule.actor.StartActivity(

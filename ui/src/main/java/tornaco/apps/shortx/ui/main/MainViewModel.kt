@@ -2,6 +2,10 @@ package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Commit
+import androidx.compose.material.icons.outlined.Commit
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -10,7 +14,9 @@ import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
@@ -34,6 +40,7 @@ data class DirectActionUM(
     val title: String,
     val description: String,
     val updateTime: String,
+    val icon: ImageVector
 )
 
 data class MainState(
@@ -102,6 +109,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         logger.d("loadDA")
         viewModelScope.launch {
             val das = shortXManager.getAllDirectAction().map { directAction ->
+                val firstAction: Action? = directAction.actionsList?.let {
+                    if (it.isEmpty()) {
+                        null
+                    } else {
+                        it[0].toAction(shortXManager)
+                    }
+                }
                 DirectActionUM(
                     id = directAction.id,
                     title = directAction.title,
@@ -110,6 +124,11 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         context,
                         Date(directAction.lastUpdateTime)
                     ),
+                    icon = firstAction?.let {
+                        imageVectorForAction(
+                            it::class
+                        )
+                    } ?: Icons.Outlined.Commit
                 )
             }
             updateState {
