@@ -43,5 +43,7 @@ interface IShortX {
     void showDanmu(String text, String icon);
     ByteArrayWrapper getDanmuUISettings();
     void setDanmuUISettings(in ByteArrayWrapper settings);
+
+    Bitmap getAppIcon(String pkgName, int userId);
     // UI end
 }

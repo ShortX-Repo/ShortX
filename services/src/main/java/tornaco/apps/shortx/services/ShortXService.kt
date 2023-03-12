@@ -2,6 +2,8 @@ package tornaco.apps.shortx.services
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
@@ -12,6 +14,9 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.util.ApkUtils
+import tornaco.apps.shortx.core.util.BitmapUtils
+import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl()) {
@@ -190,6 +195,17 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun setDanmuUISettings(settings: ByteArrayWrapper) {
             shortXContext.ui.setDanmuUISettings(DanmuUISettings.parseFrom(settings.byte))
+        }
+
+        override fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
+            return runClearCallingIdentity {
+                val drawable: Drawable? = ApkUtils.loadIconByPkgName(context, pkgName)
+                drawable?.let {
+                    val badged =
+                        context.packageManager.getUserBadgedIcon(it, userIdToUserHandle(userId))
+                    BitmapUtils.getBitmap(context, badged)
+                }
+            }
         }
     }
 }

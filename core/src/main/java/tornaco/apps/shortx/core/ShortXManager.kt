@@ -2,6 +2,7 @@ package tornaco.apps.shortx.core
 
 import android.content.Context
 import android.content.pm.ParceledListSlice
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
@@ -206,6 +207,18 @@ class ShortXManager(private val service: IShortX) {
     fun setDanmuUISettings(settings: DanmuUISettings) {
         invokeService(Unit) {
             danmuUISettings = ByteArrayWrapper(settings.toByteArray())
+        }
+    }
+
+    fun getAppIcon(pkg: AppPkg): Bitmap? {
+        return invokeService(null) {
+            getAppIcon(pkg.pkgName, pkg.userId)
+        }
+    }
+
+    fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
+        return invokeService(null) {
+            getAppIcon(pkgName, userId)
         }
     }
 

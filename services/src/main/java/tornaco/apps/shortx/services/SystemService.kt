@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services
 
 import android.annotation.CallSuper
 import android.content.Context
+import android.os.Binder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
@@ -65,6 +66,21 @@ open class SystemService(val shortXContext: ShortXContext) {
         }
         return value
     }
+
+    fun <T> runClearCallingIdentity(action: () -> T?): T? {
+        val id = Binder.clearCallingIdentity()
+        return runCatching {
+            action()
+        }.fold(
+            onSuccess = {
+                Binder.restoreCallingIdentity(id)
+                it
+            }, onFailure = {
+                logger.e(it, "runClearCallingId")
+                Binder.restoreCallingIdentity(id)
+                null
+            })
+    }
 }
 
 val SystemService.systemServiceScope: CoroutineScope
@@ -77,6 +93,8 @@ val SystemService.systemServiceScope: CoroutineScope
         if (scope != null) {
             return scope
         }
-        return addTagIfAbsent(key,
-            CoroutineScope(SupervisorJob() + handler.asCoroutineDispatcher("HD#Scope")))
+        return addTagIfAbsent(
+            key,
+            CoroutineScope(SupervisorJob() + handler.asCoroutineDispatcher("HD#Scope"))
+        )
     }
