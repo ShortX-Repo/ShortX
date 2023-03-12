@@ -12,9 +12,5 @@ class RemoteRepo @Inject constructor(@ApplicationContext private val context: Co
         RemoteApi.create(context)
     }
 
-    suspend fun getActions(): List<RemoteExecuteMVELAction> =
-        kotlin.runCatching { api.getActions() }.getOrElse {
-            logger.e(it, "getActions")
-            emptyList()
-        }
+    suspend fun getActions(): List<RemoteExecuteMVELAction> = api.getActions()
 }

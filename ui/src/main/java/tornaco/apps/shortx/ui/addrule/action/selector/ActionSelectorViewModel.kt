@@ -16,9 +16,15 @@ import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
+interface RemoteExecuteMVELActionLoadState {
+    object Loading : RemoteExecuteMVELActionLoadState
+    object Error : RemoteExecuteMVELActionLoadState
+    data class Success(val data: List<RemoteExecuteMVELAction>) : RemoteExecuteMVELActionLoadState
+}
+
 data class SelectorState(
     val installedApps: List<App> = emptyList(),
-    val remoteActions: List<RemoteExecuteMVELAction> = emptyList()
+    val remoteActionsState: RemoteExecuteMVELActionLoadState = RemoteExecuteMVELActionLoadState.Loading
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -49,9 +55,19 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext private va
 
     fun loadRemoteActions() {
         viewModelScope.launch {
-            val actions = remoteRepo.getActions()
             updateState {
-                copy(remoteActions = actions)
+                copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Loading)
+            }
+            kotlin.runCatching {
+                val actions = remoteRepo.getActions()
+                updateState {
+                    copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Success(actions))
+                }
+            }.onFailure {
+                logger.e(it, "loadRemoteActions error")
+                updateState {
+                    copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Error)
+                }
             }
         }
     }

@@ -78,6 +78,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
+    implementation("com.google.accompanist:accompanist-placeholder-material:0.28.0")
 
     implementation("androidx.core:core-splashscreen:1.0.0")
 

@@ -50,15 +50,33 @@ fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>) -> Un
 }
 
 @Composable
-fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>, data: Any?) -> Unit) {
+fun ActionList(
+    actionItems: List<Item>,
+    itemSelected: (KClass<out Action>, data: Any?) -> Unit
+) {
+    ActionList(
+        modifier = Modifier, childModifier = Modifier,
+        actionItems = actionItems,
+        itemSelected = itemSelected
+    )
+}
+
+@Composable
+fun ActionList(
+    modifier: Modifier = Modifier,
+    childModifier: Modifier = Modifier,
+    actionItems: List<Item>,
+    itemSelected: (KClass<out Action>, data: Any?) -> Unit
+) {
     LazyVerticalStaggeredGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         columns = StaggeredGridCells.Fixed(2),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
 
         items(actionItems) {
             ActionItem(
+                modifier = childModifier,
                 icon = it.icon,
                 title = it.labelAndDescription.first,
                 text1 = it.labelAndDescription.second
