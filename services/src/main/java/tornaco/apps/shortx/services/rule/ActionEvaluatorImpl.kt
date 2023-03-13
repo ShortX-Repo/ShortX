@@ -167,16 +167,25 @@ class ActionEvaluatorImpl(
             }
         } else if (action is_ WhileLoop::class.java) {
             val d = action unpack_ WhileLoop::class.java
-            val delay = maxOf(500L, d.delay.toLong())
-            while (conditionEvaluator.evaluate(
-                    "WhileLoop", d.condOp, d.condOpPayload, d.conditionsList
-                )
-            ) {
-                if (d.actionsList.isNullOrEmpty().not()) d.actionsList.forEach {
-                    logger.d("evaluate one loop.")
-                    evaluate("WhileLoop", it, contextMap)
+            if (d.actionsList.isNullOrEmpty().not()) {
+                val delay = maxOf(500L, d.delay.toLong())
+                val repeat = if (d.repeatTimes <= 0) Int.MAX_VALUE else d.repeatTimes
+                logger.d("WhileLoop execute, repeat: $repeat")
+                var index = 0
+                while (
+                    index < repeat &&
+                    (d.conditionsList.isNullOrEmpty() || conditionEvaluator.evaluate(
+                        "WhileLoop", d.condOp, d.condOpPayload, d.conditionsList
+                    ))
+                ) {
+                    logger.d("WhileLoop inside: $index")
+                    d.actionsList.forEach {
+                        logger.d("evaluate one loop.")
+                        evaluate("WhileLoop", it, contextMap)
+                    }
+                    delay(delay)
+                    index += 1
                 }
-                delay(delay)
             }
             logger.d("WhileLoop complete")
         }

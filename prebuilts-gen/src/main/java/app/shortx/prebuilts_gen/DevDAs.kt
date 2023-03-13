@@ -1,7 +1,9 @@
 package app.shortx.prebuilts_gen
 
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import java.util.concurrent.atomic.AtomicInteger
@@ -245,6 +247,35 @@ object DevDAs {
                             .build().pack_()
                     )
                     .build().pack_()
+            ).build(),
+
+
+        DirectAction.newBuilder().setTitle("WhileLoop")
+            .setId(nextId())
+            .addActions(
+                WhileLoop.newBuilder()
+                    .setRepeatTimes(10)
+                    .addAllConditions(
+                        listOf(
+                            CurrentPkgList.newBuilder().addAllPkgs(
+                                listOf(
+                                    AppPkg.newBuilder().setPkgName(BuildProp.APP_PACKAGE_NAME)
+                                        .setUserId(0).build()
+                                )
+                            ).build().pack_()
+                        )
+                    )
+                    .addAllActions(
+                        listOf(
+                            ShowDanmu.newBuilder().setText("Danmu in the loop.")
+                                .setIcon("https://play-lh.googleusercontent.com/slZYN_wnlAZ4BmyTZZakwfwAGm8JE5btL7u7AifhqCtUuxhtVVxQ1mcgpGOYC7MsAaU=w480-h960-rw")
+                                .build()
+                                .pack_()
+                        )
+                    )
+                    .setDelay(2000)
+                    .build()
+                    .pack_()
             ).build(),
     )
 }

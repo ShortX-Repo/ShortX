@@ -162,4 +162,5 @@ message WhileLoop {
   ConditionOperatorPayload condOpPayload = 4;
 
   int32 delay = 5;
+  int32 repeatTimes = 6;
 }
