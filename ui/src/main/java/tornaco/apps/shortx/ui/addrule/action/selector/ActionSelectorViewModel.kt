@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
@@ -58,11 +60,15 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext private va
             updateState {
                 copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Loading)
             }
+            delay(500)
             kotlin.runCatching {
                 val actions = remoteRepo.getActions()
-                updateState {
-                    copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Success(actions))
+                actions.collectLatest {
+                    updateState {
+                        copy(remoteActionsState = RemoteExecuteMVELActionLoadState.Success(it))
+                    }
                 }
+                logger.d("loadRemoteActions complete.")
             }.onFailure {
                 logger.e(it, "loadRemoteActions error")
                 updateState {

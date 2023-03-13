@@ -1,25 +1,22 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.MDIcons
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RemoteActions(addAction: (Action) -> Unit) {
     val vm = hiltViewModel<ActionSelectorViewModel>()
@@ -28,28 +25,23 @@ fun RemoteActions(addAction: (Action) -> Unit) {
     }
     val state by vm.state.collectAsState()
 
+    val refreshing = state.remoteActionsState is RemoteExecuteMVELActionLoadState.Loading
+    val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
+        vm.loadRemoteActions()
+    })
+
+    Box(Modifier.pullRefresh(refreshState)) {
+        ActionContent(state, addAction)
+        PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
+    }
+}
+
+@Composable
+private fun ActionContent(
+    state: SelectorState, addAction: (Action) -> Unit
+) {
     when (val actionState = state.remoteActionsState) {
         RemoteExecuteMVELActionLoadState.Loading -> {
-            val uiActionItems = mutableListOf<Item>().apply {
-                repeat(2) {
-                    add(
-                        Item(
-                            type = Action.RemoteMVEL::class,
-                            labelAndDescription = "" to "",
-                            icon = Icons.Outlined.Apps,
-                        )
-                    )
-                }
-            }
-
-            ActionList(
-                childModifier = Modifier.placeholder(
-                    visible = true,
-                    color = ColorDefaults.backgroundSurfaceColor(),
-                    highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White)
-                ),
-                actionItems = uiActionItems,
-                itemSelected = { _, _ -> })
         }
         RemoteExecuteMVELActionLoadState.Error -> {
             LoadError(modifier = Modifier.fillMaxSize())
@@ -64,13 +56,11 @@ fun RemoteActions(addAction: (Action) -> Unit) {
                 )
             }
 
-            ActionList(
-                actionItems = uiActionItems,
-                itemSelected = { _, data ->
-                    data?.let {
-                        addAction(Action.RemoteMVEL(it as RemoteExecuteMVELAction))
-                    }
-                })
+            ActionList(actionItems = uiActionItems, itemSelected = { _, data ->
+                data?.let {
+                    addAction(Action.RemoteMVEL(it as RemoteExecuteMVELAction))
+                }
+            })
         }
     }
 }
