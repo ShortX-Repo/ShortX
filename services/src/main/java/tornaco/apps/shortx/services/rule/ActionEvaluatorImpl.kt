@@ -4,16 +4,18 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.widget.Toast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.engine.ActionEvaluator
+import tornaco.apps.shortx.core.rule.engine.ConditionEvaluator
 import tornaco.apps.shortx.core.rule.engine.StopExecuteException
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.actor.ShowDialog
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
@@ -25,7 +27,8 @@ import tornaco.apps.shortx.services.util.ContextMapUtil.inflateContextMap
 class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
-    private val handler: Handler
+    private val handler: Handler,
+    private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
 
@@ -44,7 +47,8 @@ class ActionEvaluatorImpl(
         SettingsImpl(context)
     }
 
-    override suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any>) {
+    override suspend fun evaluate(logTag: String, action: ProtoAny, contextMap: Map<String, Any>) {
+        logger.d("evaluate: $logTag")
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
             tornaco.apps.shortx.services.rule.actor.StartActivity(
@@ -64,7 +68,7 @@ class ActionEvaluatorImpl(
                 .invoke()
         } else if (action is_ ShowToast::class.java) {
             val t = action unpack_ ShowToast::class.java
-            handler.postSafety {
+            withContext(Dispatchers.Main) {
                 Toast.makeText(context, t.message.inflateContextMap(contextMap), Toast.LENGTH_SHORT)
                     .show()
             }
@@ -78,12 +82,16 @@ class ActionEvaluatorImpl(
             val d = action unpack_ RemoteExecuteMVEL::class.java
             MVELExecutor(context, shortXContext, d.expression).invoke()
         } else if (action is_ ShowOverlayButton::class.java) {
-            val d = action unpack_ ShowOverlayButton::class.java
-            val buttonSettingsList = d.buttonSettingsList
-            val autoCollapse = d.autoCollapse
-            shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList)
+            withContext(Dispatchers.Main) {
+                val d = action unpack_ ShowOverlayButton::class.java
+                val buttonSettingsList = d.buttonSettingsList
+                val autoCollapse = d.autoCollapse
+                shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList)
+            }
         } else if (action is_ HideOverlayButton::class.java) {
-            shortXContext.overlay.postHideAllOverlay()
+            withContext(Dispatchers.Main) {
+                shortXContext.overlay.postHideAllOverlay()
+            }
         } else if (action is_ LaunchApp::class.java) {
             val app = action unpack_ LaunchApp::class.java
             shortXContext.appState.launchApp(app.appPkg)
@@ -151,44 +159,66 @@ class ActionEvaluatorImpl(
             throw StopExecuteException("BreakActionExecute action")
         } else if (action is_ ShowAlertDialog::class.java) {
             val d = action unpack_ ShowAlertDialog::class.java
-            logger.d("ShowAlertDialog, showing")
-            val result = ShowDialog(context).invoke(
-                positiveButtonText = d.positive,
-                negativeButtonText = d.negative,
-                neutralButtonText = d.neutral
-            ) {
-                AlertDialog
-                    .Builder(it)
-                    .setTitle(d.title)
-                    .setMessage(d.message)
-                    .setCancelable(d.cancelable)
+            evaluateShowDialogAction(d, contextMap)
+        } else if (action is_ ShowDanmu::class.java) {
+            withContext(Dispatchers.Main) {
+                val d = action unpack_ ShowDanmu::class.java
+                shortXContext.ui.showDanmu(d.icon, d.text)
             }
+        } else if (action is_ WhileLoop::class.java) {
+            val d = action unpack_ WhileLoop::class.java
+            val delay = maxOf(500L, d.delay.toLong())
+            while (conditionEvaluator.evaluate(
+                    "WhileLoop", d.condOp, d.condOpPayload, d.conditionsList
+                )
+            ) {
+                if (d.actionsList.isNullOrEmpty().not()) d.actionsList.forEach {
+                    logger.d("evaluate one loop.")
+                    evaluate("WhileLoop", it, contextMap)
+                }
+                delay(delay)
+            }
+            logger.d("WhileLoop complete")
+        }
+    }
 
-            logger.d("ShowAlertDialog, result is: $result")
+    private suspend fun evaluateShowDialogAction(
+        d: ShowAlertDialog, contextMap: Map<String, Any>
+    ) = withContext(Dispatchers.Main) {
+        logger.d("ShowAlertDialog, showing")
+        val result = ShowDialog(context).invoke(
+            positiveButtonText = d.positive,
+            negativeButtonText = d.negative,
+            neutralButtonText = d.neutral
+        ) {
+            AlertDialog.Builder(it).setTitle(d.title).setMessage(d.message)
+                .setCancelable(d.cancelable)
+        }
 
+        logger.d("ShowAlertDialog, result is: $result")
+
+        withContext(Dispatchers.Default) {
+            logger.d("handle result: $result")
             when (result) {
                 DialogAction.Positive -> {
                     if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
-                        evaluate(it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextMap)
                     }
                 }
                 DialogAction.Negative -> {
                     if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
-                        evaluate(it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextMap)
                     }
                 }
                 DialogAction.Neutral -> {
                     if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
-                        evaluate(it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextMap)
                     }
                 }
                 DialogAction.UNRECOGNIZED, DialogAction.None -> {
                     // Noop.
                 }
             }
-        } else if (action is_ ShowDanmu::class.java) {
-            val d = action unpack_ ShowDanmu::class.java
-            shortXContext.ui.showDanmu(d.icon, d.text)
         }
     }
 }

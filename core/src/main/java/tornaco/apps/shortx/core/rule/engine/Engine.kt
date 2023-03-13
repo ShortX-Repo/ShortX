@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.core.rule.engine
 
+import tornaco.apps.shortx.core.proto.condition.ConditionOperator
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -10,11 +12,20 @@ interface FactMatcher {
 }
 
 interface ConditionEvaluator {
-    fun evaluate(rule: Rule, conditions: List<ProtoAny>): Boolean
+    fun evaluate(
+        logTag: String,
+        condOp: ConditionOperator,
+        condOpPayload: ConditionOperatorPayload,
+        conditions: List<ProtoAny>
+    ): Boolean
 }
 
 interface ActionEvaluator {
-    suspend fun evaluate(action: ProtoAny, contextMap: Map<String, Any> = emptyMap())
+    suspend fun evaluate(
+        logTag: String,
+        action: ProtoAny,
+        contextMap: Map<String, Any> = emptyMap()
+    )
 }
 
 class StopExecuteException(override val message: String) : RuntimeException()
@@ -31,7 +42,11 @@ interface Engine {
         contextMap: Map<String, Any> = emptyMap()
     )
 
-    suspend fun evaluate(actions: List<ProtoAny>, contextMap: Map<String, Any> = emptyMap())
+    suspend fun evaluate(
+        logTag: String,
+        actions: List<ProtoAny>,
+        contextMap: Map<String, Any> = emptyMap()
+    )
 }
 
 interface EngineListener {
@@ -81,7 +96,12 @@ class DefaultRuleEngine(
 
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         return rules.filterInvalid().firstOrNull {
-            factMatcher.match(fact, it.fact) && conditionEvaluator.evaluate(it, it.conditionsList)
+            factMatcher.match(fact, it.fact) && conditionEvaluator.evaluate(
+                it.title,
+                it.condOp,
+                it.condOpPayload,
+                it.conditionsList
+            )
         } != null
     }
 
@@ -90,13 +110,24 @@ class DefaultRuleEngine(
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.fact)) {
                 listener.onFactMatch(rule, rule.fact)
-                val conditionRes = conditionEvaluator.evaluate(rule, rule.conditionsList)
+                val conditionRes = conditionEvaluator.evaluate(
+                    rule.title,
+                    rule.condOp,
+                    rule.condOpPayload,
+                    rule.conditionsList
+                )
                 if (conditionRes) {
                     listener.onConditionMatch(rule)
                     kotlin.run loop@{
                         rule.actionsList.forEach {
                             listener.beforeEvaluateAction(rule, it)
-                            kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }
+                            kotlin.runCatching {
+                                actionEvaluator.evaluate(
+                                    rule.title,
+                                    it,
+                                    contextMap
+                                )
+                            }
                                 .onFailure { err ->
                                     logger.e(err, "Error evaluate action, stop execution")
                                     return@loop
@@ -113,13 +144,18 @@ class DefaultRuleEngine(
         }
     }
 
-    override suspend fun evaluate(actions: List<ProtoAny>, contextMap: Map<String, Any>) {
+    override suspend fun evaluate(
+        logTag: String,
+        actions: List<ProtoAny>,
+        contextMap: Map<String, Any>
+    ) {
         kotlin.run loop@{
             actions.forEach {
-                kotlin.runCatching { actionEvaluator.evaluate(it, contextMap) }.onFailure { err ->
-                    logger.e(err, "Error evaluate action, stop execution")
-                    return@loop
-                }
+                kotlin.runCatching { actionEvaluator.evaluate(logTag, it, contextMap) }
+                    .onFailure { err ->
+                        logger.e(err, "Error evaluate action, stop execution")
+                        return@loop
+                    }
             }
         }
     }

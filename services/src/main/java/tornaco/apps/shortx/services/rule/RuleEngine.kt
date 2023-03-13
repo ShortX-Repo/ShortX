@@ -12,10 +12,11 @@ object RuleEngineFactory {
     private fun newActionEvaluator(
         context: Context,
         shortXContext: ShortXContext,
-        handler: Handler
-    ) = ActionEvaluatorImpl(context, shortXContext, handler)
+        handler: Handler,
+        conditionEvaluator: ConditionEvaluator
+    ) = ActionEvaluatorImpl(context, shortXContext, handler, conditionEvaluator)
 
-    private fun newFactMatcher( shortXContext: ShortXContext) = FactMatcherImpl(shortXContext)
+    private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl(shortXContext)
 
     fun newRuleEngine(
         shortXContext: ShortXContext,
@@ -29,7 +30,8 @@ object RuleEngineFactory {
         actionEvaluator: ActionEvaluator = newActionEvaluator(
             androidContext,
             shortXContext,
-            handler
+            handler,
+            conditionEvaluator
         ),
         listener: EngineListener = LogEngineListener("RuleEngine"),
     ) = DefaultRuleEngine(

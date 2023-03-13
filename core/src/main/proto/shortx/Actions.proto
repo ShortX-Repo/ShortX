@@ -6,6 +6,7 @@ option java_multiple_files = true;
 
 import "google/protobuf/any.proto";
 import "shortx/Common.proto";
+import "shortx/Conditions.proto";
 
 message NoAction {}
 message TakeScreenshot {}
@@ -152,4 +153,13 @@ message ShowAlertDialog {
 message ShowDanmu {
   string text = 1;
   string icon = 2;
+}
+
+message WhileLoop {
+  repeated google.protobuf.Any conditions = 1;
+  repeated google.protobuf.Any actions = 2;
+  ConditionOperator condOp = 3;
+  ConditionOperatorPayload condOpPayload = 4;
+
+  int32 delay = 5;
 }

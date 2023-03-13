@@ -8,26 +8,30 @@ class Logger(private val tag: String = "-") {
 
     fun d(any: Any?) {
         if (BuildProp.APP_IS_DEBUG) {
-            logAdapter(Log.DEBUG, fullTag, "$any")
+            logAdapter(Log.DEBUG, fullTag, "[${Thread.currentThread().name}] $any")
         }
     }
 
     fun i(any: Any?) {
         if (BuildProp.APP_IS_DEBUG) {
-            logAdapter(Log.INFO, fullTag, "$any")
+            logAdapter(Log.INFO, fullTag, "[${Thread.currentThread().name}] $any")
         }
     }
 
     fun w(any: Any?) {
-        logAdapter(Log.WARN, fullTag, "$any")
+        logAdapter(Log.WARN, fullTag, "[${Thread.currentThread().name}] $any")
     }
 
     fun e(any: Any?) {
-        logAdapter(Log.ERROR, fullTag, "$any")
+        logAdapter(Log.ERROR, fullTag, "[${Thread.currentThread().name}] $any")
     }
 
     fun e(throwable: Throwable, any: Any?) {
-        logAdapter(Log.ERROR, fullTag, "$any --- ${Log.getStackTraceString(throwable)}")
+        logAdapter(
+            Log.ERROR,
+            fullTag,
+            "[${Thread.currentThread().name}] $any --- ${Log.getStackTraceString(throwable)}"
+        )
     }
 }
 

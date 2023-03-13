@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -14,6 +16,12 @@ import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+    private val ruleServiceScope by lazy {
+        CoroutineScope(
+            SupervisorJob()
+        )
+    }
+
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }
@@ -62,7 +70,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             if (engine.shouldFire(enabledRules, fact)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
-                    systemServiceScope.launchSafety {
+                    ruleServiceScope.launchSafety {
                         engine.fire(
                             fact = fact,
                             rules = enabledRules
@@ -81,7 +89,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
             if (engine.shouldFire(enabledRules, fact)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                systemServiceScope.launchSafety {
+                ruleServiceScope.launchSafety {
                     engine.fire(
                         fact = fact,
                         rules = enabledRules
@@ -102,7 +110,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun publishFact(reason: String, fact: ProtoMessage, contextMap: Map<String, Any> = emptyMap()) {
         logger.d("publishFact: $reason, $fact")
-        systemServiceScope.launchSafety {
+        ruleServiceScope.launchSafety {
             engine.fire(
                 fact = fact,
                 rules = getAllRules().filter { rule -> rule.isEnabled },
@@ -111,9 +119,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
     }
 
-    fun executeActions(reason: String, actions: List<ProtoAny>) = systemServiceScope.launchSafety {
+    fun executeActions(reason: String, actions: List<ProtoAny>) = ruleServiceScope.launchSafety {
         logger.d("executeActions: $reason, $actions")
-        engine.evaluate(actions)
+        engine.evaluate(reason, actions)
     }
 
     fun addRule(rule: Rule) {

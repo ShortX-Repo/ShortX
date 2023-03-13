@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import tornaco.apps.shortx.core.proto.condition.*
-import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.engine.ConditionEvaluator
 import tornaco.apps.shortx.core.rule.is_
@@ -58,9 +57,14 @@ class ConditionEvaluatorImpl(
         }
     }
 
-    override fun evaluate(rule: Rule, conditions: List<ProtoAny>): Boolean {
-        logger.d("evaluate rule condition: ${rule.title} ${rule.condOp} condition size: ${conditions.size}")
-        return when (rule.condOp) {
+    override fun evaluate(
+        logTag: String,
+        condOp: ConditionOperator,
+        condOpPayload: ConditionOperatorPayload,
+        conditions: List<ProtoAny>
+    ): Boolean {
+        logger.d("evaluate rule condition: $logTag $condOp condition size: ${conditions.size}")
+        return when (condOp) {
             ConditionOperator.ALL -> {
                 conditions.all { tryEvaluate(it) }
             }
@@ -71,7 +75,7 @@ class ConditionEvaluatorImpl(
                 conditions.none { tryEvaluate(it) }
             }
             ConditionOperator.MVEL -> {
-                val expression = rule.condOpPayload.expression
+                val expression = condOpPayload.expression
                 if (expression.isNullOrBlank()) return false
 
                 val varMap = mutableMapOf<String, Any>()

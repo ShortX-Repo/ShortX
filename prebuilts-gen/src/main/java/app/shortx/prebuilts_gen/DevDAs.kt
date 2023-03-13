@@ -44,7 +44,10 @@ object DevDAs {
             .build(),
         DirectAction.newBuilder().setTitle("ShowDanmu")
             .setId(nextId())
-            .addActions(ShowDanmu.newBuilder().setText("Hello how are you~").setIcon("app://com.android.settings").build().pack_())
+            .addActions(
+                ShowDanmu.newBuilder().setText("Hello how are you~")
+                    .setIcon("app://com.android.settings").build().pack_()
+            )
             .build(),
 
         DirectAction.newBuilder().setTitle("Delay")
@@ -214,6 +217,13 @@ object DevDAs {
         DirectAction.newBuilder().setTitle("BreakActionExecute")
             .setId(nextId())
             .addActions(BreakActionExecute.newBuilder().build().pack_()).build(),
+
+        DirectAction.newBuilder().setTitle("While true mvel")
+            .setId(nextId())
+            .addActions(
+                ExecuteMVEL.newBuilder().setExpression("while(true) {Thread.sleep(1000);}").build()
+                    .pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("ShowAlertDialog")
             .setId(nextId())
