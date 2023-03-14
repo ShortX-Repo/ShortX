@@ -81,6 +81,7 @@ fun labelAndDescriptionForActionSelector(
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
+        Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
 
         else -> {
             "N/A" to null
@@ -210,6 +211,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.action.description
             )
         }
+        is Action.WhileLoop -> {
+            listOf(
+                i18N["ui.action.while.loop"]
+            )
+        }
     }
 }
 
@@ -334,6 +340,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.RemoteMVEL::class -> {
             Icons.Outlined.Cloud
+        }
+        Action.WhileLoop::class -> {
+            Icons.Outlined.Loop
         }
 
         else -> {

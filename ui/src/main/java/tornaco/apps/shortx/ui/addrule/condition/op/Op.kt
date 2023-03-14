@@ -1,12 +1,18 @@
 package tornaco.apps.shortx.ui.addrule.condition.op
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 
-sealed interface Op {
+sealed interface Op : Parcelable {
+    @Parcelize
     object All : Op
+    @Parcelize
     object Any : Op
+    @Parcelize
     object None : Op
+    @Parcelize
     data class MVEL(val expression: String) : Op
 }
 

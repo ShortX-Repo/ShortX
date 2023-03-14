@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
@@ -15,9 +17,12 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 
-sealed interface Condition {
+sealed interface Condition : Parcelable {
+    @Parcelize
     data class CurrentForegroundApp(val apps: List<App>, val pkgSets: List<PkgSet>) : Condition
+    @Parcelize
     data class MVEL(val expression: String) : Condition
+    @Parcelize
     object TRUE : Condition
 }
 

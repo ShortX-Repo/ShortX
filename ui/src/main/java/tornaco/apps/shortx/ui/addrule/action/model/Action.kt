@@ -7,9 +7,16 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.toModel
@@ -153,6 +160,15 @@ sealed interface Action : Parcelable {
     object Brk : Action
 
     @Parcelize
+    data class WhileLoop(
+        val conditions: List<Condition>,
+        val actions: List<Action>,
+        val delay: Long,
+        val repeat: Int,
+        val op: Op
+    ) : Action
+
+    @Parcelize
     data class ShowAlertDialog(
         val title: String,
         val message: String,
@@ -273,6 +289,24 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         Action.ExpandNotification -> {
             ExpandNotification.newBuilder().build()
+        }
+        is Action.WhileLoop -> {
+            WhileLoop.newBuilder()
+                .setDelay(delay.toInt())
+                .setRepeatTimes(repeat)
+                .addAllActions(actions.map { it.toProtoAction().pack_() })
+                .addAllConditions(conditions.map { it.toProtoCondition().pack_() })
+                .setCondOp(op.toConditionOperator())
+                .apply {
+                    if (op is Op.MVEL) {
+                        condOpPayload =
+                            ConditionOperatorPayload
+                                .newBuilder()
+                                .setExpression(op.expression)
+                                .build()
+                    }
+                }
+                .build()
         }
     }
 }
@@ -471,6 +505,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         }
         this is_ ExpandNotification::class.java -> {
             Action.ExpandNotification
+        }
+        this is_ WhileLoop::class.java -> {
+            val data = this unpack_ WhileLoop::class.java
+            Action.WhileLoop(
+                delay = data.delay.toLong(),
+                repeat = data.repeatTimes,
+                conditions = data.conditionsList.mapNotNull { it.toCondition(shortXManager) },
+                actions = data.actionsList.mapNotNull { it.toAction(shortXManager) },
+                op = data.condOp.toOp(data.condOpPayload)
+            )
         }
 
         else -> null
