@@ -234,6 +234,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun registerJobStatusListener(listener: IJobStatusListener) {
+        invokeService(Unit) {
+            registerJobStatusListener(listener)
+        }
+    }
+
+    fun unregisterJobStatusListener(listener: IJobStatusListener) {
+        invokeService(Unit) {
+            unregisterJobStatusListener(listener)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

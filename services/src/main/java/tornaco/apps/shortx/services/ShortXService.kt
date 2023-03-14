@@ -215,5 +215,13 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun cancelJobs(jobs: List<String>) {
             shortXContext.rule.cancelJobs(jobs)
         }
+
+        override fun registerJobStatusListener(listener: IJobStatusListener) {
+            shortXContext.rule.registerJobStatusListener(listener)
+        }
+
+        override fun unregisterJobStatusListener(listener: IJobStatusListener) {
+            shortXContext.rule.unregisterJobStatusListener(listener)
+        }
     }
 }

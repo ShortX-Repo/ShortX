@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import android.os.RemoteCallbackList
+import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -24,17 +26,38 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         DirectActionSettingsStore(systemServiceScope)
     }
 
-    private val engine by lazy {
-        RuleEngineFactory.newRuleEngine(
-            shortXContext = shortXContext, androidContext = context, handler = handler
-        )
-    }
-
     private val allTriggers by lazy {
         allTriggers(context, shortXContext)
     }
 
     private val ruleChangeListeners = mutableListOf<() -> Unit>()
+    private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
+
+    private val engine by lazy {
+        RuleEngineFactory.newRuleEngine(
+            shortXContext = shortXContext,
+            androidContext = context,
+            handler = handler,
+            onJobStarted = { id ->
+                jobStatusListeners.broadcast {
+                    kotlin.runCatching { it.onJobStarted(id) }
+                        .onFailure { logger.e(it, "call onJobStarted") }
+                }
+            },
+            onJobCompleted = { id ->
+                jobStatusListeners.broadcast {
+                    kotlin.runCatching { it.onJobCompleted(id) }
+                        .onFailure { logger.e(it, "call onJobCompleted") }
+                }
+            },
+            onJobCancelled = { id ->
+                jobStatusListeners.broadcast {
+                    kotlin.runCatching { it.onJobCancelled(id) }
+                        .onFailure { logger.e(it, "call onJobCancelled") }
+                }
+            },
+        )
+    }
 
     override fun start(context: Context) {
         super.start(context)
@@ -182,5 +205,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         getDirectActionById(id)?.let {
             executeActions(id, "executeDirectionActionById#${it.title}", it.actionsList)
         }
+    }
+
+    fun registerJobStatusListener(listener: IJobStatusListener) {
+        jobStatusListeners.register(listener)
+    }
+
+    fun unregisterJobStatusListener(listener: IJobStatusListener) {
+        jobStatusListeners.unregister(listener)
     }
 }

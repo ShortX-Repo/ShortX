@@ -63,6 +63,9 @@ class DefaultRuleEngine(
     override val factMatcher: FactMatcher,
     override val conditionEvaluator: ConditionEvaluator,
     override val actionEvaluator: ActionEvaluator,
+    private val onJobStarted: (String) -> Unit,
+    private val onJobCompleted: (String) -> Unit,
+    private val onJobCancelled: (String) -> Unit,
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -109,9 +112,11 @@ class DefaultRuleEngine(
                     }
                 }
                 jobs.add(JobRecord(rule.id, job))
+                onJobStarted(rule.id)
                 job.invokeOnCompletion {
                     logger.d("job for rule: ${rule.title} complete, err: $it")
                     jobs.remove(JobRecord(rule.id, job))
+                    onJobCompleted(rule.id)
                 }
             }
         }
@@ -136,9 +141,11 @@ class DefaultRuleEngine(
             }
         }
         jobs.add(JobRecord(id, job))
+        onJobStarted(id)
         job.invokeOnCompletion {
             logger.d("job for id: $id complete.")
             jobs.remove(JobRecord(id, job))
+            onJobCompleted(id)
         }
     }
 
@@ -146,6 +153,7 @@ class DefaultRuleEngine(
         val canceled = jobs.filter(filter).onEach {
             logger.d("cancel job: $it")
             it.job.cancel()
+            onJobCancelled(it.id)
         }
         jobs.removeAll(canceled)
     }

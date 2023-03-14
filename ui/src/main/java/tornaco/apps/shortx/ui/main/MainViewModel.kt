@@ -8,8 +8,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -53,6 +56,43 @@ data class MainState(
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     ContextViewModel<MainState>(context) {
+    private val jobStatusListener = object : IJobStatusListener.Stub() {
+        override fun onJobStarted(id: String?) {
+            logger.d("onJobStarted: $id")
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) {
+                    loadDA()
+                }
+            }
+        }
+
+        override fun onJobCompleted(id: String?) {
+            logger.d("onJobCompleted: $id")
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) {
+                    loadDA()
+                }
+            }
+        }
+
+        override fun onJobCancelled(id: String?) {
+            logger.d("onJobCancelled: $id")
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) {
+                    loadDA()
+                }
+            }
+        }
+    }
+
+    init {
+        shortXManager.registerJobStatusListener(jobStatusListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterJobStatusListener(jobStatusListener)
+    }
 
     override fun initState(): MainState {
         return MainState(isActivated = shortXManager.isInstalled())
@@ -108,38 +148,41 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadDA() {
         logger.d("loadDA")
         viewModelScope.launch {
-            val activeJobs = shortXManager.getActiveJobs().apply {
-                logger.d("activeJobs: $this")
-            }
-            val das = shortXManager.getAllDirectAction().map { directAction ->
-                val firstAction: Action? = directAction.actionsList?.let {
-                    if (it.isEmpty()) {
-                        null
-                    } else {
-                        it[0].toAction(shortXManager)
-                    }
+            withContext(Dispatchers.IO) {
+                val activeJobs = shortXManager.getActiveJobs().apply {
+                    logger.d("activeJobs: $this")
                 }
-                DirectActionUM(
-                    id = directAction.id,
-                    title = directAction.title,
-                    description = translateDA(directAction),
-                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                        context,
-                        Date(directAction.lastUpdateTime)
-                    ),
-                    icon = firstAction?.let {
-                        imageVectorForAction(
-                            it::class
-                        )
-                    } ?: Icons.Outlined.Commit,
-                    runningInsCount = activeJobs.count {
-                        it == directAction.id
+                val das = shortXManager.getAllDirectAction().map { directAction ->
+                    val firstAction: Action? = directAction.actionsList?.let {
+                        if (it.isEmpty()) {
+                            null
+                        } else {
+                            it[0].toAction(shortXManager)
+                        }
                     }
-                )
+                    DirectActionUM(
+                        id = directAction.id,
+                        title = directAction.title,
+                        description = translateDA(directAction),
+                        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                            context,
+                            Date(directAction.lastUpdateTime)
+                        ),
+                        icon = firstAction?.let {
+                            imageVectorForAction(
+                                it::class
+                            )
+                        } ?: Icons.Outlined.Commit,
+                        runningInsCount = activeJobs.count {
+                            it == directAction.id
+                        }
+                    )
+                }
+                updateState {
+                    copy(das = das)
+                }
             }
-            updateState {
-                copy(das = das)
-            }
+
         }
     }
 

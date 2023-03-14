@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.core;
 
+import tornaco.apps.shortx.core.IJobStatusListener;
+
 interface IShortX {
     Version version();
     String fingerprint();
@@ -50,4 +52,7 @@ interface IShortX {
     // List with rule id or DA id
     List<String> getActiveJobs();
     void cancelJobs(in List<String> jobs);
+
+    void registerJobStatusListener(in IJobStatusListener listener);
+    void unregisterJobStatusListener(in IJobStatusListener listener);
 }

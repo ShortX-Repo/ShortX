@@ -34,12 +34,18 @@ object RuleEngineFactory {
             handler,
             conditionEvaluator
         ),
+        onJobStarted: (String) -> Unit,
+        onJobCompleted: (String) -> Unit,
+        onJobCancelled: (String) -> Unit,
         scope: CoroutineScope = CoroutineScope(SupervisorJob())
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
         actionEvaluator = actionEvaluator,
         scope = scope,
+        onJobStarted = onJobStarted,
+        onJobCompleted = onJobCompleted,
+        onJobCancelled = onJobCancelled,
     )
 }
 

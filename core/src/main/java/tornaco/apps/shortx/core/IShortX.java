@@ -121,6 +121,12 @@ public interface IShortX extends android.os.IInterface
     @Override public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException
     {
     }
+    @Override public void registerJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -490,6 +496,24 @@ public interface IShortX extends android.os.IInterface
           java.util.List<java.lang.String> _arg0;
           _arg0 = data.createStringArrayList();
           this.cancelJobs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerJobStatusListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IJobStatusListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IJobStatusListener.Stub.asInterface(data.readStrongBinder());
+          this.registerJobStatusListener(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterJobStatusListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IJobStatusListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IJobStatusListener.Stub.asInterface(data.readStrongBinder());
+          this.unregisterJobStatusListener(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -1157,6 +1181,44 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void registerJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerJobStatusListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerJobStatusListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterJobStatusListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterJobStatusListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1187,6 +1249,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getAppIcon = (android.os.IBinder.FIRST_CALL_TRANSACTION + 25);
     static final int TRANSACTION_getActiveJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 26);
     static final int TRANSACTION_cancelJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
+    static final int TRANSACTION_registerJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
+    static final int TRANSACTION_unregisterJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1247,4 +1311,6 @@ public interface IShortX extends android.os.IInterface
 
   public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException;
   public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException;
+  public void registerJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
+  public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
 }
