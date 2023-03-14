@@ -2,7 +2,8 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import android.os.Handler
-import tornaco.apps.shortx.core.rule.engine.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import tornaco.apps.shortx.services.ShortXContext
 
 object RuleEngineFactory {
@@ -33,12 +34,12 @@ object RuleEngineFactory {
             handler,
             conditionEvaluator
         ),
-        listener: EngineListener = LogEngineListener("RuleEngine"),
+        scope: CoroutineScope = CoroutineScope(SupervisorJob())
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
         actionEvaluator = actionEvaluator,
-        listener = listener
+        scope = scope,
     )
 }
 

@@ -222,6 +222,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getActiveJobs(): List<String> {
+        return invokeService(emptyList()) {
+            activeJobs
+        }
+    }
+
+    fun cancelJobs(jobs: List<String>) {
+        invokeService(Unit) {
+            cancelJobs(jobs)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

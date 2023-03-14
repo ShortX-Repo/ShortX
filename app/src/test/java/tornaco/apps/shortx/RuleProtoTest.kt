@@ -1,7 +1,6 @@
 package tornaco.apps.shortx
 
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -10,7 +9,6 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkg
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
-import tornaco.apps.shortx.core.rule.engine.EngineListener
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -40,11 +38,15 @@ class RuleProtoTest {
             Assert.assertTrue(this.fact is_ KeyEvent::class.java)
             Assert.assertEquals((this.fact unpack_ KeyEvent::class.java).keyCode, 20)
             Assert.assertTrue(this.conditionsList[0].is_(CurrentPkg::class.java))
-            Assert.assertEquals(this.conditionsList[0].unpack_(CurrentPkg::class.java).pkgName,
-                "com.example.pkg")
+            Assert.assertEquals(
+                this.conditionsList[0].unpack_(CurrentPkg::class.java).pkgName,
+                "com.example.pkg"
+            )
             Assert.assertTrue(this.actionsList[0].is_(StartActivity::class.java))
-            Assert.assertEquals(this.actionsList[0].unpack_(StartActivity::class.java).componentNameAsString,
-                "name")
+            Assert.assertEquals(
+                this.actionsList[0].unpack_(StartActivity::class.java).componentNameAsString,
+                "name"
+            )
         }
     }
 
@@ -63,21 +65,13 @@ class RuleProtoTest {
             .addAllActions(actions)
             .build()
 
-        val listener = mockk<EngineListener>(relaxed = true)
-
         RuleEngineFactory.newRuleEngine(
             shortXContext = mockk(),
             androidContext = mockk(),
-            handler = mockk(),
-            listener = listener
+            handler = mockk()
         ).fire(
             KeyEvent.newBuilder().setKeyCode(20).build(),
             listOf(rule)
         )
-
-        verify {
-            listener.onFactMatch(rule, any())
-            listener.beforeEvaluateAction(rule, any())
-        }
     }
 }

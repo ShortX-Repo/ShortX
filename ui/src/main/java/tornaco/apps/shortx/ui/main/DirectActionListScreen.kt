@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ fun DirectActionListScreen(
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
     onDirectActionClick: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -94,6 +96,7 @@ fun DirectActionListScreen(
                         },
                         onDelete = onDelete,
                         onEdit = onEdit,
+                        stopAllJobs = stopAllJobs
                     )
 
                     if (colorAnimStarted) Spacer(
@@ -115,16 +118,21 @@ private fun DirectActionItem(
     onClick: () -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
 ) {
     DAListItem(
         modifier = modifier,
         title = da.title,
         text1 = da.description,
         icon = da.icon,
+        runningInsCount = da.runningInsCount,
         overflow = {
             ListItemOverflowMenu(da, onDelete, onEdit)
         },
         onClick = onClick,
+        stopAllJobs = {
+            stopAllJobs(da)
+        }
     )
 }
 
@@ -135,9 +143,11 @@ private fun DAListItem(
     title: String? = null,
     text1: String? = null,
     text2: String? = null,
+    runningInsCount: Int = 0,
     icon: ImageVector,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
+    stopAllJobs: () -> Unit
 ) {
     Column(modifier = modifier
         .fillMaxWidth()
@@ -190,6 +200,26 @@ private fun DAListItem(
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                     maxLines = 8
                 )
+            }
+        }
+
+        if (runningInsCount > 0) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$runningInsCount jobs running",
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                    maxLines = 1
+                )
+
+                IconButton(onClick = {
+                    stopAllJobs()
+                }) {
+                    Icon(imageVector = Icons.Outlined.StopCircle)
+                }
             }
         }
     }

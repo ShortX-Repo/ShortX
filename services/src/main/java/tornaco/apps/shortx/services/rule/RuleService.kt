@@ -1,27 +1,22 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
-import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
+import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
+import tornaco.apps.shortx.services.systemServiceScope
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    private val ruleServiceScope by lazy {
-        CoroutineScope(
-            SupervisorJob()
-        )
-    }
-
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }
@@ -70,12 +65,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             if (engine.shouldFire(enabledRules, fact)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
-                    ruleServiceScope.launchSafety {
-                        engine.fire(
-                            fact = fact,
-                            rules = enabledRules
-                        )
-                    }
+                    engine.fire(fact = fact, rules = enabledRules)
                 }
                 // False means consume.
                 return@onKeyEvent false
@@ -89,12 +79,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
             if (engine.shouldFire(enabledRules, fact)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                ruleServiceScope.launchSafety {
-                    engine.fire(
-                        fact = fact,
-                        rules = enabledRules
-                    )
-                }
+                engine.fire(fact = fact, rules = enabledRules)
                 return@onGestureEvent true
             }
             false
@@ -110,18 +95,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun publishFact(reason: String, fact: ProtoMessage, contextMap: Map<String, Any> = emptyMap()) {
         logger.d("publishFact: $reason, $fact")
-        ruleServiceScope.launchSafety {
-            engine.fire(
-                fact = fact,
-                rules = getAllRules().filter { rule -> rule.isEnabled },
-                contextMap = contextMap
-            )
-        }
+        engine.fire(
+            fact = fact,
+            rules = getAllRules().filter { rule -> rule.isEnabled },
+            contextMap = contextMap
+        )
     }
 
-    fun executeActions(reason: String, actions: List<ProtoAny>) = ruleServiceScope.launchSafety {
-        logger.d("executeActions: $reason, $actions")
-        engine.evaluate(reason, actions)
+    fun executeActions(id: String, reason: String, actions: List<ProtoAny>) {
+        logger.d("executeActions: $reason, $actions $id")
+        engine.evaluate(id = id, logTag = reason, actions = actions)
     }
 
     fun addRule(rule: Rule) {
@@ -152,6 +135,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             allTriggers.forEach {
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
+        }
+    }
+
+    fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
+
+    fun cancelJobs(jobs: List<String>) {
+        engine.cancelJobs {
+            jobs.contains(it.id)
         }
     }
 
@@ -189,7 +180,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun executeDirectionActionById(id: String) {
         getDirectActionById(id)?.let {
-            executeActions("executeDirectionActionById#${it.title}", it.actionsList)
+            executeActions(id, "executeDirectionActionById#${it.title}", it.actionsList)
         }
     }
 }

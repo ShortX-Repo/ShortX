@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.outlined.Commit
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
@@ -40,7 +39,8 @@ data class DirectActionUM(
     val title: String,
     val description: String,
     val updateTime: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val runningInsCount: Int
 )
 
 data class MainState(
@@ -108,6 +108,9 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadDA() {
         logger.d("loadDA")
         viewModelScope.launch {
+            val activeJobs = shortXManager.getActiveJobs().apply {
+                logger.d("activeJobs: $this")
+            }
             val das = shortXManager.getAllDirectAction().map { directAction ->
                 val firstAction: Action? = directAction.actionsList?.let {
                     if (it.isEmpty()) {
@@ -128,7 +131,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         imageVectorForAction(
                             it::class
                         )
-                    } ?: Icons.Outlined.Commit
+                    } ?: Icons.Outlined.Commit,
+                    runningInsCount = activeJobs.count {
+                        it == directAction.id
+                    }
                 )
             }
             updateState {
@@ -168,6 +174,12 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun executeDA(da: DirectActionUM) {
         viewModelScope.launch {
             shortXManager.executeDirectionActionById(da.id)
+        }
+    }
+
+    fun stopJobs(da: DirectActionUM) {
+        viewModelScope.launch {
+            shortXManager.cancelJobs(listOf(da.id))
         }
     }
 }

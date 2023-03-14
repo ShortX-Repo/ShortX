@@ -111,6 +111,16 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // UI end
+    // List with rule id or DA id
+
+    @Override public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -464,6 +474,23 @@ public interface IShortX extends android.os.IInterface
           else {
             reply.writeInt(0);
           }
+          return true;
+        }
+        case TRANSACTION_getActiveJobs:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<java.lang.String> _result = this.getActiveJobs();
+          reply.writeNoException();
+          reply.writeStringList(_result);
+          return true;
+        }
+        case TRANSACTION_cancelJobs:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<java.lang.String> _arg0;
+          _arg0 = data.createStringArrayList();
+          this.cancelJobs(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -1088,6 +1115,48 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // UI end
+      // List with rule id or DA id
+
+      @Override public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<java.lang.String> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getActiveJobs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActiveJobs();
+          }
+          _reply.readException();
+          _result = _reply.createStringArrayList();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStringList(jobs);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_cancelJobs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().cancelJobs(jobs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1116,6 +1185,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 23);
     static final int TRANSACTION_setDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 24);
     static final int TRANSACTION_getAppIcon = (android.os.IBinder.FIRST_CALL_TRANSACTION + 25);
+    static final int TRANSACTION_getActiveJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 26);
+    static final int TRANSACTION_cancelJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1171,4 +1242,9 @@ public interface IShortX extends android.os.IInterface
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDanmuUISettings() throws android.os.RemoteException;
   public void setDanmuUISettings(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper settings) throws android.os.RemoteException;
   public android.graphics.Bitmap getAppIcon(java.lang.String pkgName, int userId) throws android.os.RemoteException;
+  // UI end
+  // List with rule id or DA id
+
+  public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException;
+  public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException;
 }

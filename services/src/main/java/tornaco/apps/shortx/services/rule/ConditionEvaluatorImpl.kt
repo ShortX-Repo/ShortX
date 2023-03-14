@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import tornaco.apps.shortx.core.proto.condition.*
 import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.engine.ConditionEvaluator
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger

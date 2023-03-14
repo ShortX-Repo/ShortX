@@ -207,5 +207,13 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 }
             }
         }
+
+        override fun getActiveJobs(): List<String> {
+            return shortXContext.rule.getActiveJobs()
+        }
+
+        override fun cancelJobs(jobs: List<String>) {
+            shortXContext.rule.cancelJobs(jobs)
+        }
     }
 }

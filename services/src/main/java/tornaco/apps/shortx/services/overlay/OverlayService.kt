@@ -72,6 +72,7 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
                 settings = settings.map { it.icon }
             ) {
                 shortXContext.rule.executeActions(
+                    "Overlay//NO_ID",
                     "Overlay Button #$it click",
                     settings[it].actionsList
                 )

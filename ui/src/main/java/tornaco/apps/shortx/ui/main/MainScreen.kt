@@ -147,9 +147,9 @@ private fun HomeScreen(
                     }) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
-                }) {
+                }) { paddingValues ->
                 Column(
-                    modifier = Modifier.padding(it),
+                    modifier = Modifier.padding(paddingValues),
                 ) {
                     BottomNavigationGraph(navController = navController,
                         state = state,
@@ -173,6 +173,9 @@ private fun HomeScreen(
                         },
                         onEditDA = { da ->
                             goToEditDA(da.id)
+                        },
+                        stopAllJobs = {
+                            vm.stopJobs(it)
                         })
 
                     if (isShowActiveDialog) {
@@ -233,6 +236,7 @@ private fun BottomNavigationGraph(
     onDeleteDA: (DirectActionUM) -> Unit,
     onEditDA: (DirectActionUM) -> Unit,
     onDAClick: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
 ) {
     NavHost(navController, startDestination = BottomNavItem.DirectActions.screenRoute.name) {
         composable(BottomNavItem.Rules.screenRoute.name) {
@@ -250,7 +254,8 @@ private fun BottomNavigationGraph(
                 state = state,
                 onDelete = onDeleteDA,
                 onEdit = onEditDA,
-                onDirectActionClick = onDAClick
+                onDirectActionClick = onDAClick,
+                stopAllJobs = stopAllJobs
             )
         }
     }

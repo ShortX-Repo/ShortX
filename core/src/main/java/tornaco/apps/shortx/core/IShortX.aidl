@@ -46,4 +46,8 @@ interface IShortX {
 
     Bitmap getAppIcon(String pkgName, int userId);
     // UI end
+
+    // List with rule id or DA id
+    List<String> getActiveJobs();
+    void cancelJobs(in List<String> jobs);
 }
