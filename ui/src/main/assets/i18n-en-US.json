@@ -48,6 +48,8 @@
   "ui.common.edit": "Edit",
   "ui.common.settings": "Settings",
   "ui.common.long.press.sort": "Press to sort",
+  "ui.common.stop": "Stop",
+  "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",
   "ui.fact.app.become.fg": "App Become Foreground",

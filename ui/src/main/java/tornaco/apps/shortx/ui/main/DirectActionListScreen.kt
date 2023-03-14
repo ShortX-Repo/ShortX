@@ -2,9 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -205,20 +203,34 @@ private fun DAListItem(
 
         if (runningInsCount > 0) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "$runningInsCount jobs running",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                    maxLines = 1
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 1.dp
+                    )
+                    SmallSpacer()
+                    Text(
+                        text = LocalI18N.current["ui.title.jobs.count", mapOf("count" to "$runningInsCount")],
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        maxLines = 1
+                    )
+                }
 
                 IconButton(onClick = {
                     stopAllJobs()
                 }) {
-                    Icon(imageVector = Icons.Outlined.StopCircle)
+                    Icon(
+                        imageVector = Icons.Outlined.StopCircle,
+                        contentDescription = "Stop",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }

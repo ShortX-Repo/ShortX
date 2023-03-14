@@ -48,6 +48,8 @@
   "ui.common.edit": "编辑",
   "ui.common.settings": "设置",
   "ui.common.long.press.sort": "长按拖动排序",
+  "ui.common.stop": "停止",
+  "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",
   "ui.fact.app.become.fg": "应用进入前台",
