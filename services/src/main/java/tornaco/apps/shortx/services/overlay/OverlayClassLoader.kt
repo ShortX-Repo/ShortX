@@ -30,7 +30,8 @@ class OverlayClassLoader(private val context: Context) {
         initialPos: android.util.Pair<Int, Int>,
         onPosChange: Consumer<android.util.Pair<Int, Int>>,
         autoCollapse: Boolean,
-        settings: List<String>,
+        icons: List<String>,
+        labels: List<String>,
         onClick: (Int) -> Unit
     ): Any? {
         return overlayClass?.let {
@@ -41,6 +42,7 @@ class OverlayClassLoader(private val context: Context) {
                         android.util.Pair::class.java,
                         Consumer::class.java,
                         List::class.java,
+                        List::class.java,
                         Boolean::class.java,
                         Consumer::class.java
                     )
@@ -48,7 +50,8 @@ class OverlayClassLoader(private val context: Context) {
                     context,
                     initialPos,
                     onPosChange,
-                    settings,
+                    icons,
+                    labels,
                     autoCollapse,
                     object : Consumer<Int> {
                         override fun accept(button: Int) {

@@ -8,20 +8,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.MDIcons
+import tornaco.apps.shortx.ui.base.TinySpacer
 
 const val BUTTON_COUNT = 6
 
@@ -56,19 +56,20 @@ private class ExpandState(private val scope: CoroutineScope) {
 @Composable
 fun OverlayContent(
     autoCollapse: Boolean,
-    settings: List<String>,
+    icons: List<String>,
+    labels: List<String>,
     onButtonClick: (Int) -> Unit,
     motionEventSpy: (MotionEvent) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
 
-    val expandState by remember(settings) {
+    val expandState by remember(icons) {
         mutableStateOf(ExpandState(scope))
     }
 
     if (autoCollapse) {
-        LaunchedEffect(settings) {
+        LaunchedEffect(icons) {
             expandState.scheduleCollapse()
         }
     }
@@ -116,11 +117,19 @@ fun OverlayContent(
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
                     Column {
-                        settings.forEachIndexed { index, icon ->
+                        icons.forEachIndexed { index, icon ->
+                            val label = labels[index]
                             IconButton(onClick = {
                                 onButtonClick(index)
                             }) {
                                 IconForButton(icon)
+                            }
+                            if (label.isNotEmpty()) {
+                                TinySpacer()
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
+                                )
                             }
                         }
                     }

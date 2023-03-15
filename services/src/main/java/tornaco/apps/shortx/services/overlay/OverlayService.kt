@@ -69,7 +69,8 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
                     }
                 },
 
-                settings = settings.map { it.icon }
+                icons = settings.map { it.icon },
+                labels = settings.map { it.label ?: "Label" }
             ) {
                 shortXContext.rule.executeActions(
                     "Overlay//NO_ID",

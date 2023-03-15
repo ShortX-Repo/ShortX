@@ -39,16 +39,17 @@ data class ShowOverlayButtonSettings(
 @Parcelize
 data class OverlayButtonItem(
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,
+    val label: String = "",
     val actions: List<Action> = emptyList()
 ) : Parcelable
 
 fun OverlayButtonItem.toOverlayButtonSetting(): OverlayButtonSetting {
-    return OverlayButtonSetting.newBuilder().setIcon(icon)
+    return OverlayButtonSetting.newBuilder().setIcon(icon).setLabel(label)
         .addAllActions(actions.map { it.toProtoAction().pack_() }).build()
 }
 
 fun OverlayButtonSetting.toOverlayButtonItem(): OverlayButtonItem {
-    return OverlayButtonItem(icon = icon, actions = actionsList.mapNotNull {
+    return OverlayButtonItem(icon = icon, label = label, actions = actionsList.mapNotNull {
         it.toAction(shortXManager = shortXManager)
     })
 }
@@ -63,6 +64,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
     }
 
     fun initFrom(settings: ShowOverlayButtonSettings) {
+        logger.d("initFrom: $settings")
         updateState {
             copy(items = settings.items, autoCollapse = settings.autoCollapse)
         }
@@ -83,6 +85,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
     }
 
     fun addAction(index: Int, action: Action) {
+        logger.d("addAction: $index $action current state size: ${state.value.items.size}")
         updateState {
             copy(
                 items = items.toMutableList().apply {
@@ -125,6 +128,17 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         }
     }
 
+    fun updateLabel(index: Int, label: String) {
+        updateState {
+            copy(
+                items = items.toMutableList().apply {
+                    val current = get(index)
+                    set(index, current.copy(label = label))
+                }
+            )
+        }
+    }
+
     fun setAutoCollapse(autoCollapse: Boolean) {
         updateState {
             copy(
@@ -141,5 +155,6 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 }
             )
         }
+        logger.d("addButton after, items size: ${state.value.items.size}")
     }
 }

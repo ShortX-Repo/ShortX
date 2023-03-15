@@ -32,7 +32,8 @@ class ComposeOverlay(
     context: Context,
     private val initialPos: android.util.Pair<Int, Int>,
     private val onPosChange: Consumer<android.util.Pair<Int, Int>>,
-    private val settings: List<String>,
+    private val icons: List<String>,
+    private val labels: List<String>,
     private val autoCollapse: Boolean,
     private val onButtonClick: Consumer<Int>
 ) : FrameLayout(context), java.util.function.Function<String, Boolean> {
@@ -110,7 +111,8 @@ class ComposeOverlay(
             setContent {
                 OverlayContent(
                     autoCollapse = autoCollapse,
-                    settings = settings,
+                    icons = icons,
+                    labels = labels,
                     motionEventSpy = {
                         touchListener.onTouch(
                             this@ComposeOverlay, it
@@ -132,7 +134,7 @@ class ComposeOverlay(
     }
 
     fun show() {
-        logger.d("show: $settings, initialPos: $initialPos")
+        logger.d("show: $icons, initialPos: $initialPos")
         if (!isAttachedToWindow) {
             overlayLP.title = "ShortX-ComposeOverlay"
             val windowManager = context.windowManager

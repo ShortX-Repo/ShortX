@@ -98,6 +98,10 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             Column {
                 MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
 
+                OutlinedTextField(value = item.label, onValueChange = {
+                    vm.updateLabel(index, it)
+                })
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SmallTitle(LocalI18N.current["ui.action.show.overlay.icon"])
                     TinySpacer()
