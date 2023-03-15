@@ -9,13 +9,10 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
-import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
-import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
-import tornaco.apps.shortx.services.systemServiceScope
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -39,21 +36,27 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             androidContext = context,
             handler = handler,
             onJobStarted = { id ->
-                jobStatusListeners.broadcast {
-                    kotlin.runCatching { it.onJobStarted(id) }
-                        .onFailure { logger.e(it, "call onJobStarted") }
+                systemServiceScope.launchSafety {
+                    jobStatusListeners.broadcast {
+                        kotlin.runCatching { it.onJobStarted(id) }
+                            .onFailure { logger.e(it, "call onJobStarted") }
+                    }
                 }
             },
             onJobCompleted = { id ->
-                jobStatusListeners.broadcast {
-                    kotlin.runCatching { it.onJobCompleted(id) }
-                        .onFailure { logger.e(it, "call onJobCompleted") }
+                systemServiceScope.launchSafety {
+                    jobStatusListeners.broadcast {
+                        kotlin.runCatching { it.onJobCompleted(id) }
+                            .onFailure { logger.e(it, "call onJobCompleted") }
+                    }
                 }
             },
             onJobCancelled = { id ->
-                jobStatusListeners.broadcast {
-                    kotlin.runCatching { it.onJobCancelled(id) }
-                        .onFailure { logger.e(it, "call onJobCancelled") }
+                systemServiceScope.launchSafety {
+                    jobStatusListeners.broadcast {
+                        kotlin.runCatching { it.onJobCancelled(id) }
+                            .onFailure { logger.e(it, "call onJobCancelled") }
+                    }
                 }
             },
         )

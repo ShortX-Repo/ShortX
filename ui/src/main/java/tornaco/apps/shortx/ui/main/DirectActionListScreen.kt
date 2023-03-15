@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -201,9 +202,11 @@ private fun DAListItem(
             }
         }
 
-        if (runningInsCount > 0) {
+        AnimatedVisibility(visible = runningInsCount > 0) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

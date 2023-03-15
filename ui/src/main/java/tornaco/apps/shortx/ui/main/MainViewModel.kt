@@ -8,9 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -56,32 +54,22 @@ data class MainState(
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     ContextViewModel<MainState>(context) {
+    private var loadDAJob: Job? = null
+
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            viewModelScope.launch {
-                withContext(Dispatchers.Main) {
-                    loadDA()
-                }
-            }
+            delayLoadDA(200)
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            viewModelScope.launch {
-                withContext(Dispatchers.Main) {
-                    loadDA()
-                }
-            }
+            delayLoadDA(200)
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            viewModelScope.launch {
-                withContext(Dispatchers.Main) {
-                    loadDA()
-                }
-            }
+            delayLoadDA(200)
         }
     }
 
@@ -192,6 +180,14 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         }.joinToString {
             labelAndDescriptionForActionSelector(i18N, it::class).first
         })
+
+    private fun delayLoadDA(delay: Long) {
+        loadDAJob?.cancel()
+        loadDAJob = viewModelScope.launch {
+            delay(delay)
+            loadDA()
+        }
+    }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
