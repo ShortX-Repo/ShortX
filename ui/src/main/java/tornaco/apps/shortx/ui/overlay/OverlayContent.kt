@@ -11,8 +11,10 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,8 +22,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.MDIcons
-import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.clickableWithRipple
 
 const val BUTTON_COUNT = 6
 
@@ -88,7 +92,14 @@ fun OverlayContent(
     }) {
         Card(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = ColorDefaults.backgroundSurfaceColor().copy(
+                    alpha = if (expandState.isExpand) {
+                        0.8f
+                    } else 0.4f
+                )
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -116,20 +127,30 @@ fun OverlayContent(
 
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .width(48.dp)
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = CenterHorizontally
+                    ) {
                         icons.forEachIndexed { index, icon ->
-                            val label = labels[index]
-                            IconButton(onClick = {
-                                onButtonClick(index)
-                            }) {
-                                IconForButton(icon)
-                            }
-                            if (label.isNotEmpty()) {
-                                TinySpacer()
-                                Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
-                                )
+                            Column(
+                                horizontalAlignment = CenterHorizontally,
+                                verticalArrangement = Arrangement.Top
+                            ) {
+                                val label = labels[index]
+                                IconButtonContainer(onClick = {
+                                    onButtonClick(index)
+                                }) {
+                                    IconForButton(icon)
+                                }
+                                if (label.isNotEmpty()) {
+                                    Text(
+                                        modifier = Modifier.offset(y = (-4).dp),
+                                        text = label,
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -142,4 +163,17 @@ fun OverlayContent(
 @Composable
 private fun IconForButton(icon: String) {
     Icon(imageVector = MDIcons.filled(icon), contentDescription = icon)
+}
+
+@Composable
+private fun IconButtonContainer(onClick: () -> Unit, icon: @Composable () -> Unit) {
+    Box(modifier = Modifier
+        .clip(ShortXCardRoundedCornerShape)
+        .clickableWithRipple {
+            onClick()
+        }
+        .padding(4.dp)
+    ) {
+        icon()
+    }
 }
