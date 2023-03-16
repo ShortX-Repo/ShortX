@@ -17,8 +17,9 @@
 
 package tornaco.apps.shortx.ui.base
 
-import android.R
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +32,40 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ShortFullScreenXDialog(
+    onDismissRequest: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            shape = RoundedCornerShape(
+                topStart = 28.dp,
+                topEnd = 28.dp,
+                bottomEnd = 0.dp,
+                bottomStart = 0.dp
+            ),
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation
+        ) {
+            BackHandler {
+                onDismissRequest()
+            }
+            content()
+        }
+    }
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -152,12 +187,12 @@ fun <T> DeleteConfirmDialog(
             },
             confirmButton = {
                 TextButton(onClick = { onDelete(data) }) {
-                    Text(text = stringResource(id = R.string.ok))
+                    Text(text = stringResource(id = android.R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { state.dismiss() }) {
-                    Text(text = stringResource(id = R.string.cancel))
+                    Text(text = stringResource(id = android.R.string.cancel))
                 }
             },
             title = {

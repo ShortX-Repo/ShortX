@@ -8,11 +8,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
-import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.ShowDialogSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
@@ -96,28 +91,6 @@ fun AppNavigationGraph(
                     appNavController.popBackStack()
                 }
             }
-        }
-
-        animateComposable(AppRoute.SelectAction.name) {
-            ActionSelector()
-        }
-
-        animateComposable(AppRoute.SelectShowOverlayButton.name) {
-            // Directly extract the argument from previousBackStackEntry
-            val settings =
-                appNavController.previousBackStackEntry?.arguments?.getParcelable<ShowOverlayButtonSettings>(
-                    "settings"
-                )
-            ShowOverlayButtonSelector(settings)
-        }
-
-        animateComposable(AppRoute.SelectShowAlertDialog.name) {
-            // Directly extract the argument from previousBackStackEntry
-            val settings =
-                appNavController.previousBackStackEntry?.arguments?.getParcelable<Action.ShowAlertDialog>(
-                    "settings"
-                )
-            ShowDialogSelector(settings)
         }
 
         animateComposable(AppRoute.DanmuUISettings.name) {

@@ -17,7 +17,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -75,7 +75,7 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                     TitleAndDescription(state, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ActionSelectors(
+                    ActionContent(
                         addAction = { action ->
                             vm.addAction(
                                 action

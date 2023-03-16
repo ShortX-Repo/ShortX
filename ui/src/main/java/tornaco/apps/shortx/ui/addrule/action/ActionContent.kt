@@ -10,20 +10,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.KEY_ACTION
-import tornaco.apps.shortx.ui.addrule.action.selector.KEY_OVERLAY_BUTTON_SETTINGS
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberActionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.action.selector.toOverlayButtonItem
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.main.AppRoute
 
 @Composable
-fun ActionSelectors(
+fun ActionContent(
     header: @Composable() (ColumnScope.() -> Unit) = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
@@ -32,7 +29,6 @@ fun ActionSelectors(
     actions: List<Action>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
-    val navHost = LocalNavHostController.current
     Actions(
         header = header,
         actions = actions,
@@ -47,9 +43,7 @@ fun ActionSelectors(
                         action.autoCollapse,
                         action.settings.map { it.toOverlayButtonItem() }
                     )
-                    navHost.currentBackStackEntry?.arguments?.putParcelable("settings", currentSettings)
-                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
-                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
+                    TODO()
                 }
                 else -> {}
             }
@@ -70,15 +64,6 @@ private fun Actions(
     val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
         sortActions(it)
     })
-
-    val navHost = LocalNavHostController.current
-    val result =
-        navHost.getStateFlow<Action?>(KEY_ACTION, null)?.collectAsState()
-    LaunchedEffect(result) {
-        result?.value?.let {
-            addAction(it)
-        }
-    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -117,10 +102,14 @@ private fun Actions(
                     onClick = { onActionClick(it) })
             }
 
+            val actionSelectorState = rememberActionSelectorDialogState(onSelected = {
+                addAction(it)
+            })
+            ActionSelectorDialog(state = actionSelectorState)
+
             Box {
                 FilledTonalButton(onClick = {
-                    navHost.removeData<Action>(KEY_ACTION)
-                    navHost.navigate(AppRoute.SelectAction.name)
+                    actionSelectorState.show()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"

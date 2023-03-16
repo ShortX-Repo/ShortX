@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
@@ -97,7 +97,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     ConditionSelectors(state, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ActionSelectors(
+                    ActionContent(
                         addAction = { action ->
                             vm.addAction(
                                 action

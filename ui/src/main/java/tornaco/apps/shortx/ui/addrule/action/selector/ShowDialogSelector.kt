@@ -10,32 +10,58 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import tornaco.apps.shortx.core.proto.action.DialogAction
-import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
-const val KEY_DIALOG_SETTINGS = "selector.show.dialog.settings"
+class ShowDialogSettingsDialogState(
+    val currentSettings: Action.ShowAlertDialog?,
+    val onSelected: (Action.ShowAlertDialog) -> Unit
+) {
+    var isShowing by mutableStateOf(false)
+
+    fun show() {
+        isShowing = true
+    }
+
+    fun dismiss() {
+        isShowing = false
+    }
+}
 
 @Composable
-fun ShowDialogSelector(currentSettings: Action.ShowAlertDialog?) {
-    val navController: NavController = LocalNavHostController.current
+fun rememberShowDialogSettingsDialogState(
+    currentSettings: Action.ShowAlertDialog?,
+    onSelected: (Action.ShowAlertDialog) -> Unit
+): ShowDialogSettingsDialogState {
+    return remember {
+        ShowDialogSettingsDialogState(currentSettings, onSelected)
+    }
+}
 
+@Composable
+fun ShowDialogSettingsDialog(state: ShowDialogSettingsDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            ShowDialogSelector(state)
+        }
+    }
+}
+
+@Composable
+private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
     val vm = hiltViewModel<ShowDialogSelectorViewModel>()
     LaunchedEffect(vm) {
-        currentSettings?.let {
+        dialogState.currentSettings?.let {
             vm.initFrom(it)
         }
     }
@@ -52,17 +78,15 @@ fun ShowDialogSelector(currentSettings: Action.ShowAlertDialog?) {
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { LocalI18N.current["ui.action.show.dialog"] },
                         navigationIcon = {
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = {
+                                dialogState.dismiss()
+                            }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
                         },
                         actions = {
                             IconButton(onClick = {
-                                navController.popBackWithResult(
-                                    mapOf(
-                                        KEY_DIALOG_SETTINGS to state
-                                    )
-                                )
+                                dialogState.onSelected(state)
                             }) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }
@@ -233,7 +257,7 @@ private fun ButtonSettings(
     TinySpacer()
 
 
-    ActionSelectors(
+    ActionContent(
         header = {
             SmallTitle(text = LocalI18N.current["ui.actions.title"])
         }, addAction = { action ->

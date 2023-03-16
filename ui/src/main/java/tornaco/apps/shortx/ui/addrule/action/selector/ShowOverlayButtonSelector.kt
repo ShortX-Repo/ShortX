@@ -10,30 +10,56 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import tornaco.apps.shortx.ui.addrule.action.ActionSelectors
+import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
-const val KEY_OVERLAY_BUTTON_SETTINGS = "selector.key.overlay.button.settings"
+class ShowOverlayButtonDialogState(
+    val currentSettings: ShowOverlayButtonSettings?,
+    val onSelected: (ShowOverlayButtonSettings) -> Unit
+) {
+    var isShowing by mutableStateOf(false)
+
+    fun show() {
+        isShowing = true
+    }
+
+    fun dismiss() {
+        isShowing = false
+    }
+}
 
 @Composable
-fun ShowOverlayButtonSelector(currentSettings: ShowOverlayButtonSettings?) {
-    val navController: NavController = LocalNavHostController.current
+fun rememberShowOverlayButtonDialogState(
+    currentSettings: ShowOverlayButtonSettings?,
+    onSelected: (ShowOverlayButtonSettings) -> Unit
+): ShowOverlayButtonDialogState {
+    return remember {
+        ShowOverlayButtonDialogState(currentSettings, onSelected)
+    }
+}
 
+@Composable
+fun ShowOverlayButtonDialog(state: ShowOverlayButtonDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            ShowOverlayButtonSelector(state)
+        }
+    }
+}
+
+@Composable
+private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState) {
     val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>()
     LaunchedEffect(vm) {
-        currentSettings?.let {
+        dialogState.currentSettings?.let {
             vm.initFrom(it)
         }
         vm.loadInstalledApps()
@@ -51,17 +77,17 @@ fun ShowOverlayButtonSelector(currentSettings: ShowOverlayButtonSettings?) {
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { LocalI18N.current["ui.action.show.overlay"] },
                         navigationIcon = {
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = {
+                                dialogState.dismiss()
+                            }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
                         },
                         actions = {
                             IconButton(onClick = {
-                                navController.popBackWithResult(
-                                    mapOf(
-                                        KEY_OVERLAY_BUTTON_SETTINGS to ShowOverlayButtonSettings(
-                                            autoCollapse = state.autoCollapse, items = state.items
-                                        )
+                                dialogState.onSelected(
+                                    ShowOverlayButtonSettings(
+                                        autoCollapse = state.autoCollapse, items = state.items
                                     )
                                 )
                             }) {
@@ -114,7 +140,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                     }
                 }
 
-                ActionSelectors(
+                ActionContent(
                     header = {
                         SmallTitle(text = LocalI18N.current["ui.actions.title"])
                     }, addAction = { action ->

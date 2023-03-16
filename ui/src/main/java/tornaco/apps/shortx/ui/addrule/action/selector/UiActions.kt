@@ -5,8 +5,9 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.main.AppRoute
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun UiActions(addAction: (Action) -> Unit) {
@@ -57,7 +58,23 @@ fun UiActions(addAction: (Action) -> Unit) {
         ),
     )
 
-    val navHost = LocalNavHostController.current
+    val overlayButtonState = rememberShowOverlayButtonDialogState(
+        currentSettings = null,
+        onSelected = { buttonSettings ->
+            val action = Action.ShowOverlay(
+                autoCollapse = buttonSettings.autoCollapse,
+                settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
+            )
+            addAction(action)
+        }
+    )
+    ShowOverlayButtonDialog(state = overlayButtonState)
+
+    val showDialogSettingsState = rememberShowDialogSettingsDialogState(null) {
+        addAction(it)
+    }
+    ShowDialogSettingsDialog(state = showDialogSettingsState)
+
     ActionList(
         actionItems = uiActionItems,
         itemSelected = { it ->
@@ -72,12 +89,10 @@ fun UiActions(addAction: (Action) -> Unit) {
                     addAction(Action.HideOverlay)
                 }
                 Action.ShowOverlay::class -> {
-                    navHost.removeData<Action>(KEY_OVERLAY_BUTTON_SETTINGS)
-                    navHost.navigate(AppRoute.SelectShowOverlayButton.name)
+                    overlayButtonState.show()
                 }
                 Action.ShowAlertDialog::class -> {
-                    navHost.removeData<Action>(KEY_DIALOG_SETTINGS)
-                    navHost.navigate(AppRoute.SelectShowAlertDialog.name)
+                    showDialogSettingsState.show()
                 }
             }
         })
