@@ -26,16 +26,7 @@ fun ActionContent(
     actions: List<Action>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
-    val overlayButtonState = rememberShowOverlayButtonDialogState(
-        onSelected = { buttonSettings ->
-            val action = Action.ShowOverlay(
-                autoCollapse = buttonSettings.autoCollapse,
-                settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
-            )
-            addAction(action)
-        }
-    )
-    ShowOverlayButtonDialog(state = overlayButtonState)
+    val subSelectorStates = uiActionSubSelectors(addAction)
 
     Actions(
         header = header,
@@ -51,7 +42,10 @@ fun ActionContent(
                         action.autoCollapse,
                         action.settings.map { it.toOverlayButtonItem() }
                     )
-                    overlayButtonState.show(currentSettings)
+                    subSelectorStates.overlayButtonState.show(currentSettings)
+                }
+                is Action.ShowAlertDialog -> {
+                    subSelectorStates.showDialogSettingsState.show(action)
                 }
                 else -> {}
             }

@@ -24,12 +24,13 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 class ShowDialogSettingsDialogState(
-    val currentSettings: Action.ShowAlertDialog?,
     val onSelected: (Action.ShowAlertDialog) -> Unit
 ) {
     var isShowing by mutableStateOf(false)
+    var currentSettings: Action.ShowAlertDialog? = null
 
-    fun show() {
+    fun show(currentSettings: Action.ShowAlertDialog? = null) {
+        this.currentSettings = currentSettings
         isShowing = true
     }
 
@@ -40,11 +41,10 @@ class ShowDialogSettingsDialogState(
 
 @Composable
 fun rememberShowDialogSettingsDialogState(
-    currentSettings: Action.ShowAlertDialog?,
     onSelected: (Action.ShowAlertDialog) -> Unit
 ): ShowDialogSettingsDialogState {
     return remember {
-        ShowDialogSettingsDialogState(currentSettings, onSelected)
+        ShowDialogSettingsDialogState(onSelected)
     }
 }
 
@@ -87,6 +87,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                         actions = {
                             IconButton(onClick = {
                                 dialogState.onSelected(state)
+                                dialogState.dismiss()
                             }) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }

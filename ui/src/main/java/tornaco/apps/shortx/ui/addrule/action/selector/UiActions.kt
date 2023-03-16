@@ -7,18 +7,11 @@ import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelecto
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun UiActions(addAction: (Action) -> Unit) {
-    val toastSelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
-            message = null,
-            onSelected = {
-                addAction(Action.ShowToast(it))
-            })
-    TextInputDialog(state = toastSelectionState)
-
     val i18N = LocalI18N.current
     val uiActionItems = listOf(
         Item(
@@ -58,6 +51,47 @@ fun UiActions(addAction: (Action) -> Unit) {
         ),
     )
 
+    val subSelectorStates = uiActionSubSelectors(addAction)
+
+    ActionList(
+        actionItems = uiActionItems,
+        itemSelected = { it ->
+            when (it) {
+                Action.ShowToast::class -> {
+                    subSelectorStates.toastSelectionState.show()
+                }
+                Action.TakeScreenshot::class -> {
+                    addAction(Action.TakeScreenshot)
+                }
+                Action.HideOverlay::class -> {
+                    addAction(Action.HideOverlay)
+                }
+                Action.ShowOverlay::class -> {
+                    subSelectorStates.overlayButtonState.show()
+                }
+                Action.ShowAlertDialog::class -> {
+                    subSelectorStates.showDialogSettingsState.show()
+                }
+            }
+        })
+}
+
+data class UiActionSubSelectorStates(
+    val toastSelectionState: TextInputState,
+    val overlayButtonState: ShowOverlayButtonDialogState,
+    val showDialogSettingsState: ShowDialogSettingsDialogState,
+)
+
+@Composable
+fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates {
+    val toastSelectionState =
+        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
+            message = null,
+            onSelected = {
+                addAction(Action.ShowToast(it))
+            })
+    TextInputDialog(state = toastSelectionState)
+
     val overlayButtonState = rememberShowOverlayButtonDialogState(
         onSelected = { buttonSettings ->
             val action = Action.ShowOverlay(
@@ -69,30 +103,14 @@ fun UiActions(addAction: (Action) -> Unit) {
     )
     ShowOverlayButtonDialog(state = overlayButtonState)
 
-    val showDialogSettingsState = rememberShowDialogSettingsDialogState(null) {
+    val showDialogSettingsState = rememberShowDialogSettingsDialogState {
         addAction(it)
     }
     ShowDialogSettingsDialog(state = showDialogSettingsState)
 
-    ActionList(
-        actionItems = uiActionItems,
-        itemSelected = { it ->
-            when (it) {
-                Action.ShowToast::class -> {
-                    toastSelectionState.show()
-                }
-                Action.TakeScreenshot::class -> {
-                    addAction(Action.TakeScreenshot)
-                }
-                Action.HideOverlay::class -> {
-                    addAction(Action.HideOverlay)
-                }
-                Action.ShowOverlay::class -> {
-                    overlayButtonState.show()
-                }
-                Action.ShowAlertDialog::class -> {
-                    showDialogSettingsState.show()
-                }
-            }
-        })
+    return UiActionSubSelectorStates(
+        toastSelectionState,
+        overlayButtonState,
+        showDialogSettingsState
+    )
 }
