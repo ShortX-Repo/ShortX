@@ -59,7 +59,6 @@ fun UiActions(addAction: (Action) -> Unit) {
     )
 
     val overlayButtonState = rememberShowOverlayButtonDialogState(
-        currentSettings = null,
         onSelected = { buttonSettings ->
             val action = Action.ShowOverlay(
                 autoCollapse = buttonSettings.autoCollapse,

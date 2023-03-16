@@ -13,10 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorDialog
-import tornaco.apps.shortx.ui.addrule.action.selector.ShowOverlayButtonSettings
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberActionSelectorDialogState
-import tornaco.apps.shortx.ui.addrule.action.selector.toOverlayButtonItem
+import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
 
 @Composable
@@ -29,6 +26,17 @@ fun ActionContent(
     actions: List<Action>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
+    val overlayButtonState = rememberShowOverlayButtonDialogState(
+        onSelected = { buttonSettings ->
+            val action = Action.ShowOverlay(
+                autoCollapse = buttonSettings.autoCollapse,
+                settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
+            )
+            addAction(action)
+        }
+    )
+    ShowOverlayButtonDialog(state = overlayButtonState)
+
     Actions(
         header = header,
         actions = actions,
@@ -43,7 +51,7 @@ fun ActionContent(
                         action.autoCollapse,
                         action.settings.map { it.toOverlayButtonItem() }
                     )
-                    TODO()
+                    overlayButtonState.show(currentSettings)
                 }
                 else -> {}
             }

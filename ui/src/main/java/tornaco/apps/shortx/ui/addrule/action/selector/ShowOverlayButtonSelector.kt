@@ -22,12 +22,14 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 class ShowOverlayButtonDialogState(
-    val currentSettings: ShowOverlayButtonSettings?,
     val onSelected: (ShowOverlayButtonSettings) -> Unit
 ) {
     var isShowing by mutableStateOf(false)
 
-    fun show() {
+    var currentSettings: ShowOverlayButtonSettings? = null
+
+    fun show(currentSettings: ShowOverlayButtonSettings? = null) {
+        this.currentSettings = currentSettings
         isShowing = true
     }
 
@@ -38,11 +40,10 @@ class ShowOverlayButtonDialogState(
 
 @Composable
 fun rememberShowOverlayButtonDialogState(
-    currentSettings: ShowOverlayButtonSettings?,
     onSelected: (ShowOverlayButtonSettings) -> Unit
 ): ShowOverlayButtonDialogState {
     return remember {
-        ShowOverlayButtonDialogState(currentSettings, onSelected)
+        ShowOverlayButtonDialogState(onSelected)
     }
 }
 
@@ -58,10 +59,12 @@ fun ShowOverlayButtonDialog(state: ShowOverlayButtonDialogState) {
 @Composable
 private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState) {
     val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>()
-    LaunchedEffect(vm) {
+    LaunchedEffect(dialogState.currentSettings) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)
         }
+    }
+    LaunchedEffect(vm) {
         vm.loadInstalledApps()
     }
     val state by vm.state.collectAsState()
@@ -90,6 +93,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                                         autoCollapse = state.autoCollapse, items = state.items
                                     )
                                 )
+                                dialogState.dismiss()
                             }) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }
