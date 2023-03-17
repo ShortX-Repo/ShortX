@@ -72,6 +72,9 @@ fun UiActions(addAction: (Action) -> Unit) {
                 Action.ShowAlertDialog::class -> {
                     subSelectorStates.showDialogSettingsState.show()
                 }
+                Action.ShowDanmu::class -> {
+                    subSelectorStates.showDanmuSettingsState.show()
+                }
             }
         })
 }
@@ -80,6 +83,7 @@ data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
     val overlayButtonState: ShowOverlayButtonDialogState,
     val showDialogSettingsState: ShowDialogSettingsDialogState,
+    val showDanmuSettingsState: ShowDanmuSettingsDialogState
 )
 
 @Composable
@@ -104,14 +108,20 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     )
     ShowOverlayButtonDialog(state = overlayButtonState)
 
+    val showDanmuSettingsState = rememberShowDanmuSettingsDialogState {
+        addAction(it)
+    }
+    ShowDanmuSettingsDialog(state = showDanmuSettingsState)
+
     val showDialogSettingsState = rememberShowDialogSettingsDialogState {
         addAction(it)
     }
     ShowDialogSettingsDialog(state = showDialogSettingsState)
 
     return UiActionSubSelectorStates(
-        toastSelectionState,
-        overlayButtonState,
-        showDialogSettingsState
+        toastSelectionState = toastSelectionState,
+        overlayButtonState = overlayButtonState,
+        showDialogSettingsState = showDialogSettingsState,
+        showDanmuSettingsState = showDanmuSettingsState
     )
 }

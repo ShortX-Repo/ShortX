@@ -67,6 +67,8 @@
   "ui.keycode.label.back": "Back",
   "ui.action.show.toast": "Show toast",
   "ui.action.show.danmu": "Show danmu",
+  "ui.action.danmu.text": "Message",
+  "ui.action.danmu.icon": "Icon(optional)",
   "ui.action.shell": "Shell command",
   "ui.action.input.text": "Input text",
   "ui.action.delay": "Delay",

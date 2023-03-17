@@ -189,6 +189,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     fun addDirectAction(da: DirectAction) {
+        logger.d("addDirectAction: $da")
         dasSettingsStore.addDirectAction(da)
     }
 

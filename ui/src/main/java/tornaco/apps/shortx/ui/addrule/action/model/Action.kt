@@ -232,7 +232,7 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         is Action.ShowDanmu -> {
             ShowDanmu.newBuilder().setId(id).setText(text).apply {
-                icon?.let {
+                this@toProtoAction.icon?.let {
                     icon = it
                 }
             }.build()

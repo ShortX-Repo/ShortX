@@ -48,6 +48,9 @@ fun ActionContent(
                 is Action.ShowAlertDialog -> {
                     subSelectorStates.showDialogSettingsState.show(action)
                 }
+                is Action.ShowDanmu -> {
+                    subSelectorStates.showDanmuSettingsState.show(action)
+                }
                 else -> {}
             }
         },
