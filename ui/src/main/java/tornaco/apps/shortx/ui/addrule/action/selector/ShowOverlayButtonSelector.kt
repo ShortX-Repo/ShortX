@@ -90,7 +90,9 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                             IconButton(onClick = {
                                 dialogState.onSelected(
                                     ShowOverlayButtonSettings(
-                                        autoCollapse = state.autoCollapse, items = state.items
+                                        id = state.id,
+                                        autoCollapse = state.autoCollapse,
+                                        items = state.items
                                     )
                                 )
                                 dialogState.dismiss()

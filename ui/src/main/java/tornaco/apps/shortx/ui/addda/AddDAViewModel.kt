@@ -78,7 +78,12 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
     fun addAction(action: Action) {
         updateState {
             copy(actions = actions.toMutableList().apply {
-                add(action)
+                val existingIndex = indexOfFirst { it.id == action.id }
+                if (existingIndex >= 0) {
+                    set(existingIndex, action)
+                } else {
+                    add(action)
+                }
             }, daChanged = true)
         }
     }

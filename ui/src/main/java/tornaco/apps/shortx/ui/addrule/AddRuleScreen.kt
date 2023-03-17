@@ -99,10 +99,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 
                     ActionContent(
                         addAction = { action ->
-                            vm.
-                            addAction(
-                                action
-                            )
+                            vm.addAction(action)
                         },
                         removeAction = { action ->
                             vm.removeAction(action)

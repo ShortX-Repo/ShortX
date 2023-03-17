@@ -95,6 +95,7 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     val overlayButtonState = rememberShowOverlayButtonDialogState(
         onSelected = { buttonSettings ->
             val action = Action.ShowOverlay(
+                id = buttonSettings.id,
                 autoCollapse = buttonSettings.autoCollapse,
                 settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
             )

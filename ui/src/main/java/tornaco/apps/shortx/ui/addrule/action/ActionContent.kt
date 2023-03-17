@@ -39,8 +39,9 @@ fun ActionContent(
             when (action) {
                 is Action.ShowOverlay -> {
                     val currentSettings = ShowOverlayButtonSettings(
-                        action.autoCollapse,
-                        action.settings.map { it.toOverlayButtonItem() }
+                        id = action.id,
+                        autoCollapse = action.autoCollapse,
+                        items = action.settings.map { it.toOverlayButtonItem() }
                     )
                     subSelectorStates.overlayButtonState.show(currentSettings)
                 }

@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -27,11 +28,13 @@ data class OverlayButtonSelectorState(
     val installedApps: List<App> = emptyList(),
     val items: List<OverlayButtonItem> = emptyList(),
     val autoCollapse: Boolean = false,
-    val canSave: Boolean = false
+    val canSave: Boolean = false,
+    val id: String = defaultNewActionId()
 )
 
 @Parcelize
 data class ShowOverlayButtonSettings(
+    val id: String,
     val autoCollapse: Boolean,
     val items: List<OverlayButtonItem>
 ) : Parcelable
@@ -66,7 +69,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
     fun initFrom(settings: ShowOverlayButtonSettings) {
         logger.d("initFrom: $settings")
         updateState {
-            copy(items = settings.items, autoCollapse = settings.autoCollapse)
+            copy(id = settings.id, items = settings.items, autoCollapse = settings.autoCollapse)
         }
     }
 

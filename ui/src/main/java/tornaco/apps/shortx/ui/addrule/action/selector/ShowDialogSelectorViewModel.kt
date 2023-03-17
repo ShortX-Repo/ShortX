@@ -23,7 +23,7 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext privat
     }
 
     fun initFrom(settings: Action.ShowAlertDialog) {
-
+        updateState(settings)
     }
 
     fun updateTitle(title: String) {
@@ -92,7 +92,12 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext privat
     fun addPositiveAction(action: Action) {
         updateState {
             copy(positiveActions = positiveActions.toMutableList().apply {
-                add(action)
+                val existingIndex = indexOfFirst { it.id == action.id }
+                if (existingIndex >= 0) {
+                    set(existingIndex, action)
+                } else {
+                    add(action)
+                }
             })
         }
     }
@@ -100,7 +105,12 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext privat
     fun addNegativeAction(action: Action) {
         updateState {
             copy(negativeActions = negativeActions.toMutableList().apply {
-                add(action)
+                val existingIndex = indexOfFirst { it.id == action.id }
+                if (existingIndex >= 0) {
+                    set(existingIndex, action)
+                } else {
+                    add(action)
+                }
             })
         }
     }
@@ -108,7 +118,12 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext privat
     fun addNeutralAction(action: Action) {
         updateState {
             copy(neutralActions = neutralActions.toMutableList().apply {
-                add(action)
+                val existingIndex = indexOfFirst { it.id == action.id }
+                if (existingIndex >= 0) {
+                    set(existingIndex, action)
+                } else {
+                    add(action)
+                }
             })
         }
     }
