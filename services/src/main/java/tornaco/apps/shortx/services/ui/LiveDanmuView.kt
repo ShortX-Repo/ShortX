@@ -16,12 +16,15 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.internal.R
+import com.squareup.picasso3.CropCircleTransformation
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ui.widget.CardView
 import util.Reflections
+
+private val CropCircleTransformation = CropCircleTransformation()
 
 @SuppressLint("ViewConstructor")
 class LiveDanmuView(
@@ -66,6 +69,7 @@ class LiveDanmuView(
                 } else {
                     imageView.visibility = VISIBLE
                     PicassoInitializer.get().load(data.icon)
+                        .transform(CropCircleTransformation)
                         .into(imageView)
                 }
             }
@@ -98,9 +102,9 @@ class LiveDanmuView(
         linearLayout.layoutParams = linearLayoutLP
 
         val imageView = ImageView(context)
-        val imageViewLP = LinearLayout.LayoutParams(24.dp, 24.dp)
+        val imageViewLP = LinearLayout.LayoutParams(28.dp, 28.dp)
         imageViewLP.gravity = Gravity.CENTER
-        imageViewLP.setMargins(12.dp, 2.dp, 12.dp, 2.dp)
+        imageViewLP.setMargins(6.dp, 0.dp, 6.dp, 0.dp)
         imageView.id = android.R.id.icon1
         imageView.layoutParams = imageViewLP
 
