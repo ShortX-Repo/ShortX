@@ -105,4 +105,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
             }
         }
     }
+
+    fun resetData() {
+        logger.w("resetData")
+        viewModelScope.launch {
+            kotlin.runCatching {
+                BackupAgent(context).resetAllData()
+            }
+        }
+    }
 }

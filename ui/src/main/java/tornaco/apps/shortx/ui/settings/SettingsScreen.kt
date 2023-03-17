@@ -20,7 +20,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,11 +125,28 @@ fun SettingsScreen(
                         }
                     }
 
+                    val deleteDialogState = rememberDeleteConfirmDialogState()
+                    DeleteConfirmDialog(
+                        titleKey = "ui.settings.data.reset.title",
+                        state = deleteDialogState,
+                        data = "",
+                        messageHint = { i18N["ui.settings.data.reset.dialog.hint"] },
+                        onDelete = {
+                            vm.resetData()
+                        }
+                    )
+
                     PreferenceUi(mutableListOf<Preference>().apply {
                         addAll(generalSettings(state, vm, goToPkgSetList, goToDanmuUISettings))
-                        addAll(dataSettings(state, vm, pickRestoreFile = {
-                            pickFileLauncher.launch("application/zip")
-                        }))
+                        addAll(dataSettings(
+                            state = state,
+                            vm = vm,
+                            pickRestoreFile = {
+                                pickFileLauncher.launch("application/zip")
+                            }, resetData = {
+                                deleteDialogState.show()
+                            })
+                        )
                         addAll(devSettings(state, vm))
                         addAll(aboutSettings(state, viewOpenSourceLicense))
                     })
@@ -166,7 +185,8 @@ private fun generalSettings(
 private fun dataSettings(
     state: SettingsState,
     vm: SettingsViewModel,
-    pickRestoreFile: () -> Unit
+    pickRestoreFile: () -> Unit,
+    resetData: () -> Unit,
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.data"]),
     Preference.TextPreference(
@@ -184,6 +204,14 @@ private fun dataSettings(
         onClick = {
             pickRestoreFile()
         }
+    ),
+    Preference.TextPreference(
+        icon = Icons.Outlined.LockReset,
+        title = LocalI18N.current["ui.settings.data.reset.title"],
+        summary = LocalI18N.current["ui.settings.data.reset.summary"],
+        onClick = {
+            resetData()
+        }
     )
 )
 
@@ -191,7 +219,7 @@ private fun dataSettings(
 private fun devSettings(
     state: SettingsState,
     vm: SettingsViewModel
-) = listOf(
+) = mutableListOf(
     Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
     Preference.SwitchPreference(icon = Icons.Outlined.DeveloperMode,
@@ -201,17 +229,18 @@ private fun devSettings(
         onCheckChanged = { enable ->
             vm.setLogDebugEnable(enable)
         }),
-
-
-    Preference.TextPreference(
-        icon = Icons.Outlined.Restore,
-        title = "Import prebuilt data",
-        summary = "Include prebuilt direct actions and rules.",
-        onClick = {
-            vm.importPrebuilts()
-        }
-    )
-)
+).apply {
+    if (BuildProp.APP_IS_DEBUG) {
+        add(Preference.TextPreference(
+            icon = Icons.Outlined.Download,
+            title = "Import prebuilt data",
+            summary = "Include prebuilt direct actions and rules.",
+            onClick = {
+                vm.importPrebuilts()
+            }
+        ))
+    }
+}
 
 @Composable
 private fun aboutSettings(

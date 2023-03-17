@@ -74,6 +74,20 @@ class BackupAgent(private val context: Context) {
         }
     }
 
+    suspend fun resetAllData() {
+        logger.w("resetAllData")
+        withContext(Dispatchers.IO) {
+            shortXManager.getAllRules().forEach {
+                logger.w("Delete rule: ${it.title}")
+                shortXManager.deleteRule(it.id)
+            }
+            shortXManager.getAllDirectAction().forEach {
+                logger.w("Delete da: ${it.title}")
+                shortXManager.deleteDirectAction(it.id)
+            }
+        }
+    }
+
     suspend fun restore(input: InputStream) {
         logger.d("restore: $input")
         withContext(Dispatchers.IO) {

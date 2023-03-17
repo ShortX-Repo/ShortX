@@ -174,6 +174,7 @@ fun rememberDeleteConfirmDialogState(): DeleteConfirmDialogState {
 
 @Composable
 fun <T> DeleteConfirmDialog(
+    titleKey: I18NKey = "ui.common.delete",
     state: DeleteConfirmDialogState,
     data: T,
     messageHint: (T) -> String = { "" },
@@ -186,7 +187,10 @@ fun <T> DeleteConfirmDialog(
                 state.dismiss()
             },
             confirmButton = {
-                TextButton(onClick = { onDelete(data) }) {
+                TextButton(onClick = {
+                    onDelete(data)
+                    state.dismiss()
+                }) {
                     Text(text = stringResource(id = android.R.string.ok))
                 }
             },
@@ -196,7 +200,7 @@ fun <T> DeleteConfirmDialog(
                 }
             },
             title = {
-                Text(text = i18N["ui.common.delete"])
+                Text(text = i18N[titleKey])
             },
             text = {
                 Text(text = i18N["ui.delete.dialog.confirm", mapOf("wht" to messageHint(data))])
