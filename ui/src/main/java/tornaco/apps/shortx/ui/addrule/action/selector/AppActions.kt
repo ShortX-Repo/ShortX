@@ -25,7 +25,7 @@ fun AppActions(addAction: (Action) -> Unit) {
     val launchAppSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
             val first = it[0]
-            val action = Action.LaunchApp(first.let { app ->
+            val action = Action.LaunchApp(appPkg = first.let { app ->
                 AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName).build()
             }, appLabel = first.label)
             addAction(action)
@@ -34,7 +34,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val stopAppSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.StopApp(it)
+            val action = Action.StopApp(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
             val action = Action.StopApp(pkgSets = it)
@@ -44,7 +44,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val startAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.StartAppProcess(it)
+            val action = Action.StartAppProcess(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
             val action = Action.StartAppProcess(pkgSets = it)
@@ -54,7 +54,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val enableAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.EnableApp(it)
+            val action = Action.EnableApp(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
             val action = Action.EnableApp(pkgSets = it)
@@ -64,7 +64,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val disableAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.DisableApp(it)
+            val action = Action.DisableApp(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
             val action = Action.DisableApp(pkgSets = it)
@@ -74,7 +74,7 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val suspendAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.SuspendApp(it)
+            val action = Action.SuspendApp(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
             val action = Action.SuspendApp(pkgSets = it)
@@ -84,10 +84,10 @@ fun AppActions(addAction: (Action) -> Unit) {
 
     val unsuspendAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
-            val action = Action.UnsuspendApp(it)
+            val action = Action.UnSuspendApp(apps = it)
             addAction(action)
         }, onPkgSetSelected = {
-            val action = Action.UnsuspendApp(pkgSets = it)
+            val action = Action.UnSuspendApp(pkgSets = it)
             addAction(action)
         })
     AppPkgSelector(state = unsuspendAppProcessSelectorState)
@@ -100,7 +100,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.EnableApp::class,
         Action.DisableApp::class,
         Action.SuspendApp::class,
-        Action.UnsuspendApp::class,
+        Action.UnSuspendApp::class,
     ).map {
         Item(it, labelAndDescriptionForActionSelector(i18N, it), imageVectorForAction(it))
     }
@@ -127,7 +127,7 @@ fun AppActions(addAction: (Action) -> Unit) {
                 Action.SuspendApp::class -> {
                     suspendAppProcessSelectorState.show()
                 }
-                Action.UnsuspendApp::class -> {
+                Action.UnSuspendApp::class -> {
                     unsuspendAppProcessSelectorState.show()
                 }
             }

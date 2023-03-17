@@ -6,6 +6,7 @@ import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
+import kotlin.reflect.full.createInstance
 
 @Composable
 fun SettingsActions(addAction: (Action) -> Unit) {
@@ -131,9 +132,7 @@ fun SettingsActions(addAction: (Action) -> Unit) {
                 Action.EnableHotSpot::class,
                 Action.EnableNFC::class,
                 Action.EnableWifi::class -> {
-                    actionKClass.objectInstance?.let {
-                        addAction(it)
-                    }
+                    addAction(actionKClass.createInstance())
                 }
             }
         }

@@ -61,10 +61,10 @@ fun UiActions(addAction: (Action) -> Unit) {
                     subSelectorStates.toastSelectionState.show()
                 }
                 Action.TakeScreenshot::class -> {
-                    addAction(Action.TakeScreenshot)
+                    addAction(Action.TakeScreenshot())
                 }
                 Action.HideOverlay::class -> {
-                    addAction(Action.HideOverlay)
+                    addAction(Action.HideOverlay())
                 }
                 Action.ShowOverlay::class -> {
                     subSelectorStates.overlayButtonState.show()
@@ -88,7 +88,7 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
             message = null,
             onSelected = {
-                addAction(Action.ShowToast(it))
+                addAction(Action.ShowToast(message = it))
             })
     TextInputDialog(state = toastSelectionState)
 

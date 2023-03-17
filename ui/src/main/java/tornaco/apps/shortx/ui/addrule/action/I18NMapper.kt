@@ -76,7 +76,7 @@ fun labelAndDescriptionForActionSelector(
         Action.EnableApp::class -> i18N["ui.action.enable.app"] to null
         Action.DisableApp::class -> i18N["ui.action.disable.app"] to null
         Action.SuspendApp::class -> i18N["ui.action.suspend.app"] to null
-        Action.UnsuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
+        Action.UnSuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
 
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
@@ -112,13 +112,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.Delay -> {
             listOf(i18N["ui.action.delay"], action.time.toString())
         }
-        Action.TakeScreenshot -> {
+        is Action.TakeScreenshot -> {
             listOf(i18N["ui.action.take.screenshot"])
         }
         is Action.MVEL -> {
             listOf(i18N["ui.title.mvel"], action.expression)
         }
-        Action.HideOverlay -> {
+        is Action.HideOverlay -> {
             listOf(i18N["ui.action.hide.overlay"])
         }
         is Action.ShowOverlay -> {
@@ -131,25 +131,25 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             "${action.appLabel}$PREFIX_APP_ICON${action.appPkg.pkgName}"
         )
 
-        Action.DisableBT -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])])
-        Action.DisableDND -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])])
-        Action.DisableGPS -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])])
-        Action.DisableDarkMode -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dark.mode"])])
-        Action.DisableData -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.data"])])
-        Action.DisableFlashLight -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.flashlight"])])
-        Action.DisableHotSpot -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.hotspot"])])
-        Action.DisableNFC -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.nfc"])])
-        Action.DisableWifi -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.wifi"])])
+        is Action.DisableBT -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])])
+        is Action.DisableDND -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])])
+        is Action.DisableGPS -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])])
+        is Action.DisableDarkMode -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dark.mode"])])
+        is Action.DisableData -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.data"])])
+        is Action.DisableFlashLight -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.flashlight"])])
+        is Action.DisableHotSpot -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.hotspot"])])
+        is Action.DisableNFC -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.nfc"])])
+        is Action.DisableWifi -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.wifi"])])
 
-        Action.EnableBT -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])])
-        Action.EnableDND -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])])
-        Action.EnableGPS -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])])
-        Action.EnableDarkMode -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])])
-        Action.EnableData -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])])
-        Action.EnableFlashLight -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])])
-        Action.EnableHotSpot -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])])
-        Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
-        Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
+        is Action.EnableBT -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])])
+        is Action.EnableDND -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])])
+        is Action.EnableGPS -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])])
+        is Action.EnableDarkMode -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])])
+        is Action.EnableData -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])])
+        is Action.EnableFlashLight -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])])
+        is Action.EnableHotSpot -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])])
+        is Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
+        is Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
 
 
         is Action.StopApp -> mutableListOf(i18N["ui.action.stop.app"]).labelLinesFromAppsAndPkgSets(
@@ -172,11 +172,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.apps,
             action.pkgSets
         )
-        is Action.UnsuspendApp -> mutableListOf(i18N["ui.action.unsuspend.app"]).labelLinesFromAppsAndPkgSets(
+        is Action.UnSuspendApp -> mutableListOf(i18N["ui.action.unsuspend.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
-        Action.Brk -> {
+        is Action.Brk -> {
             listOf(i18N["ui.action.brk"])
         }
         is Action.ShowAlertDialog -> {
@@ -202,7 +202,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             }
 
         }
-        Action.ExpandNotification -> {
+        is Action.ExpandNotification -> {
             listOf(i18N["ui.action.expand.notification"])
         }
         is Action.RemoteMVEL -> {
@@ -323,7 +323,7 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         Action.SuspendApp::class -> {
             Icons.Outlined.AdminPanelSettings
         }
-        Action.UnsuspendApp::class -> {
+        Action.UnSuspendApp::class -> {
             Icons.Outlined.VerifiedUser
         }
         Action.Brk::class -> {

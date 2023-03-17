@@ -127,7 +127,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.appItems(
             Action.EnableApp::class,
             Action.DisableApp::class,
             Action.SuspendApp::class,
-            Action.UnsuspendApp::class,
+            Action.UnSuspendApp::class,
         ).forEach {
             item(
                 it,

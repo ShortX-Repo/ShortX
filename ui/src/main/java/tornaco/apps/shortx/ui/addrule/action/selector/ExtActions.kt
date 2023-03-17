@@ -12,12 +12,12 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 @Composable
 fun ExtActions(addAction: (Action) -> Unit) {
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-        addAction(Action.ShellCommand(cmd))
+        addAction(Action.ShellCommand(command = cmd))
     }
     ShellCommandSelector(state = shellCommandSelectorState)
 
     val inputTextSelectorState = rememberInputTextSelectorState(onSelected = {
-        addAction(Action.InputText(it))
+        addAction(Action.InputText(text = it))
     })
     InputTextSelector(state = inputTextSelectorState)
 
@@ -25,14 +25,14 @@ fun ExtActions(addAction: (Action) -> Unit) {
         rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
             message = LocalI18N.current["ui.action.delay.input.message"],
             onSelected = {
-                addAction(Action.Delay(it.toLongOrNull() ?: 0))
+                addAction(Action.Delay(time = it.toLongOrNull() ?: 0))
             })
     TextInputDialog(state = delaySelectionState)
 
     val mvelSelectorState = rememberMVELSelectorState(
         title = LocalI18N.current["ui.title.mvel"]
     ) { expression ->
-        addAction(Action.MVEL(expression))
+        addAction(Action.MVEL(expression = expression))
     }
     MVELSelector(state = mvelSelectorState)
 
@@ -85,7 +85,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
                     mvelSelectorState.show()
                 }
                 Action.Brk::class -> {
-                    addAction(Action.Brk)
+                    addAction(Action.Brk())
                 }
             }
         })

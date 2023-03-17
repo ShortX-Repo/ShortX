@@ -68,7 +68,7 @@ private fun ActionContent(
 
             ActionList(actionItems = uiActionItems, itemSelected = { _, data ->
                 data?.let {
-                    addAction(Action.RemoteMVEL(it as RemoteExecuteMVELAction))
+                    addAction(Action.RemoteMVEL(action = it as RemoteExecuteMVELAction))
                 }
             })
         }

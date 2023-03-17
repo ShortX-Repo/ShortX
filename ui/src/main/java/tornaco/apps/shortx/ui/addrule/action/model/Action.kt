@@ -21,44 +21,67 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.toModel
 import tornaco.apps.shortx.ui.remote.toProto
+import java.util.*
+
+fun defaultNewActionId() = UUID.randomUUID().toString()
 
 sealed interface Action : Parcelable {
-    @Parcelize
-    object TakeScreenshot : Action
+    val id: String
 
     @Parcelize
-    data class ShellCommand(val command: String) : Action
+    data class TakeScreenshot(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    data class InputText(val text: String) : Action
-
-    @Parcelize
-    data class Delay(val time: Long) : Action
-
-    @Parcelize
-    data class ShowToast(val message: String) : Action
-
-    @Parcelize
-    data class ShowDanmu(val text: String, val icon: String?) : Action
-
-    @Parcelize
-    data class MVEL(val expression: String) : Action
-
-    @Parcelize
-    data class RemoteMVEL(val action: RemoteExecuteMVELAction) : Action
-
-    @Parcelize
-    data class ShowOverlay(val autoCollapse: Boolean, val settings: List<OverlayButtonSetting>) :
+    data class ShellCommand(override val id: String = defaultNewActionId(), val command: String) :
         Action
 
     @Parcelize
-    object HideOverlay : Action
+    data class InputText(override val id: String = defaultNewActionId(), val text: String) : Action
 
     @Parcelize
-    data class LaunchApp(val appPkg: AppPkg, val appLabel: String) : Action
+    data class Delay(override val id: String = defaultNewActionId(), val time: Long) : Action
+
+    @Parcelize
+    data class ShowToast(override val id: String = defaultNewActionId(), val message: String) :
+        Action
+
+    @Parcelize
+    data class ShowDanmu(
+        override val id: String = defaultNewActionId(),
+        val text: String,
+        val icon: String?
+    ) : Action
+
+    @Parcelize
+    data class MVEL(override val id: String = defaultNewActionId(), val expression: String) : Action
+
+    @Parcelize
+    data class RemoteMVEL(
+        override val id: String = defaultNewActionId(),
+        val action: RemoteExecuteMVELAction
+    ) : Action
+
+    @Parcelize
+    data class ShowOverlay(
+        override val id: String = defaultNewActionId(),
+        val autoCollapse: Boolean,
+        val settings: List<OverlayButtonSetting>
+    ) :
+        Action
+
+    @Parcelize
+    data class HideOverlay(override val id: String = defaultNewActionId()) : Action
+
+    @Parcelize
+    data class LaunchApp(
+        override val id: String = defaultNewActionId(),
+        val appPkg: AppPkg,
+        val appLabel: String
+    ) : Action
 
     @Parcelize
     data class StopApp(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
@@ -66,101 +89,108 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     data class StartActivity(
+        override val id: String = defaultNewActionId(),
         val componentNameAsString: String
     ) : Action
 
     @Parcelize
-    object ExpandNotification : Action
+    data class ExpandNotification(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
     data class StartAppProcess(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
     @Parcelize
     data class EnableApp(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
     @Parcelize
     data class DisableApp(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
     @Parcelize
     data class SuspendApp(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
     @Parcelize
-    data class UnsuspendApp(
+    data class UnSuspendApp(
+        override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Action
 
     @Parcelize
-    object EnableBT : Action
+    data class EnableBT(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableWifi : Action
+    data class EnableWifi(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableHotSpot : Action
+    data class EnableHotSpot(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableData : Action
+    data class EnableData(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableNFC : Action
+    data class EnableNFC(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableFlashLight : Action
+    data class EnableFlashLight(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableDND : Action
+    data class EnableDND(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableGPS : Action
+    data class EnableGPS(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object EnableDarkMode : Action
+    data class EnableDarkMode(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableBT : Action
+    data class DisableBT(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableWifi : Action
+    data class DisableWifi(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableHotSpot : Action
+    data class DisableHotSpot(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableData : Action
+    data class DisableData(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableNFC : Action
+    data class DisableNFC(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableFlashLight : Action
+    data class DisableFlashLight(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableDND : Action
+    data class DisableDND(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableGPS : Action
+    data class DisableGPS(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object DisableDarkMode : Action
+    data class DisableDarkMode(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
-    object Brk : Action
+    data class Brk(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
     data class WhileLoop(
+        override val id: String = defaultNewActionId(),
         val conditions: List<Condition>,
         val actions: List<Action>,
         val delay: Long,
@@ -170,6 +200,7 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     data class ShowAlertDialog(
+        override val id: String = defaultNewActionId(),
         val title: String,
         val message: String,
         val cancelable: Boolean = true,
@@ -185,92 +216,97 @@ sealed interface Action : Parcelable {
 fun Action.toProtoAction(): ProtoMessage {
     return when (this) {
         is Action.TakeScreenshot -> {
-            TakeScreenshot.newBuilder().build()
+            TakeScreenshot.newBuilder().setId(id).build()
         }
         is Action.ShellCommand -> {
-            ShellCommand.newBuilder().setCommand(command).build()
+            ShellCommand.newBuilder().setId(id).setCommand(command).build()
         }
         is Action.InputText -> {
-            InputText.newBuilder().setText(text).build()
+            InputText.newBuilder().setId(id).setText(text).build()
         }
         is Action.Delay -> {
-            Delay.newBuilder().setTime(time).build()
+            Delay.newBuilder().setId(id).setTime(time).build()
         }
         is Action.ShowToast -> {
-            ShowToast.newBuilder().setMessage(message).build()
+            ShowToast.newBuilder().setId(id).setMessage(message).build()
         }
         is Action.ShowDanmu -> {
-            ShowDanmu.newBuilder().setText(text).apply {
+            ShowDanmu.newBuilder().setId(id).setText(text).apply {
                 icon?.let {
                     icon = it
                 }
             }.build()
         }
         is Action.MVEL -> {
-            ExecuteMVEL.newBuilder().setExpression(expression).build()
+            ExecuteMVEL.newBuilder().setId(id).setExpression(expression).build()
         }
         is Action.RemoteMVEL -> {
             action.toProto()
         }
-        Action.HideOverlay -> {
-            HideOverlayButton.newBuilder().build()
+        is Action.HideOverlay -> {
+            HideOverlayButton.newBuilder().setId(id).build()
         }
         is Action.ShowOverlay -> {
-            ShowOverlayButton.newBuilder().setAutoCollapse(autoCollapse)
+            ShowOverlayButton.newBuilder().setId(id).setAutoCollapse(autoCollapse)
                 .addAllButtonSettings(settings).build()
         }
         is Action.LaunchApp -> {
-            LaunchApp.newBuilder().setAppPkg(appPkg).build()
+            LaunchApp.newBuilder().setId(id).setAppPkg(appPkg).build()
         }
-        Action.DisableBT -> SetBTEnabled.newBuilder().setEnable(false).build()
-        Action.DisableDND -> SetDNDEnabled.newBuilder().setEnable(false).build()
-        Action.DisableGPS -> SetGPSEnabled.newBuilder().setEnable(false).build()
-        Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(false).build()
-        Action.DisableData -> SetDataEnabled.newBuilder().setEnable(false).build()
-        Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(false).build()
-        Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setEnable(false).build()
-        Action.DisableNFC -> SetNFCEnabled.newBuilder().setEnable(false).build()
-        Action.DisableWifi -> SetWifiEnabled.newBuilder().setEnable(false).build()
+        is Action.DisableBT -> SetBTEnabled.newBuilder().setId(id).setEnable(false).build()
+        is Action.DisableDND -> SetDNDEnabled.newBuilder().setId(id).setEnable(false).build()
+        is Action.DisableGPS -> SetGPSEnabled.newBuilder().setId(id).setEnable(false).build()
+        is Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setId(id).setEnable(false)
+            .build()
+        is Action.DisableData -> SetDataEnabled.newBuilder().setId(id).setEnable(false).build()
+        is Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setId(id).setEnable(false)
+            .build()
+        is Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setId(id).setEnable(false)
+            .build()
+        is Action.DisableNFC -> SetNFCEnabled.newBuilder().setId(id).setEnable(false).build()
+        is Action.DisableWifi -> SetWifiEnabled.newBuilder().setId(id).setEnable(false).build()
 
-        Action.EnableBT -> SetBTEnabled.newBuilder().setEnable(true).build()
-        Action.EnableDND -> SetDNDEnabled.newBuilder().setEnable(true).build()
-        Action.EnableGPS -> SetGPSEnabled.newBuilder().setEnable(true).build()
-        Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setEnable(true).build()
-        Action.EnableData -> SetDataEnabled.newBuilder().setEnable(true).build()
-        Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setEnable(true).build()
-        Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setEnable(true).build()
-        Action.EnableNFC -> SetNFCEnabled.newBuilder().setEnable(true).build()
-        Action.EnableWifi -> SetWifiEnabled.newBuilder().setEnable(true).build()
+        is Action.EnableBT -> SetBTEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableDND -> SetDNDEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableGPS -> SetGPSEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setId(id).setEnable(true)
+            .build()
+        is Action.EnableData -> SetDataEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setId(id).setEnable(true)
+            .build()
+        is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableNFC -> SetNFCEnabled.newBuilder().setId(id).setEnable(true).build()
+        is Action.EnableWifi -> SetWifiEnabled.newBuilder().setId(id).setEnable(true).build()
 
         is Action.DisableApp -> {
-            SetAppEnabled.newBuilder().setEnable(false)
+            SetAppEnabled.newBuilder().setId(id).setEnable(false)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
         is Action.EnableApp -> {
-            SetAppEnabled.newBuilder().setEnable(true)
+            SetAppEnabled.newBuilder().setId(id).setEnable(true)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
         is Action.StartAppProcess -> {
-            StartAppProcess.newBuilder()
+            StartAppProcess.newBuilder().setId(id)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
         is Action.StopApp -> {
-            StopApp.newBuilder()
+            StopApp.newBuilder().setId(id)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
         is Action.SuspendApp -> {
-            SetAppSuspend.newBuilder().setSuspend(true)
+            SetAppSuspend.newBuilder().setId(id).setSuspend(true)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
-        is Action.UnsuspendApp -> {
-            SetAppSuspend.newBuilder().setSuspend(false)
+        is Action.UnSuspendApp -> {
+            SetAppSuspend.newBuilder().setId(id).setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg }).build()
         }
-        Action.Brk -> {
-            BreakActionExecute.newBuilder().build()
+        is Action.Brk -> {
+            BreakActionExecute.newBuilder().setId(id).build()
         }
         is Action.ShowAlertDialog -> {
-            ShowAlertDialog.newBuilder()
+            ShowAlertDialog.newBuilder().setId(id)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(cancelable)
@@ -285,13 +321,14 @@ fun Action.toProtoAction(): ProtoMessage {
                 .build()
         }
         is Action.StartActivity -> {
-            StartActivity.newBuilder().setComponentNameAsString(componentNameAsString).build()
+            StartActivity.newBuilder().setId(id).setComponentNameAsString(componentNameAsString)
+                .build()
         }
-        Action.ExpandNotification -> {
-            ExpandNotification.newBuilder().build()
+        is Action.ExpandNotification -> {
+            ExpandNotification.newBuilder().setId(id).build()
         }
         is Action.WhileLoop -> {
-            WhileLoop.newBuilder()
+            WhileLoop.newBuilder().setId(id)
                 .setDelay(delay.toInt())
                 .setRepeatTimes(repeat)
                 .addAllActions(actions.map { it.toProtoAction().pack_() })
@@ -314,121 +351,127 @@ fun Action.toProtoAction(): ProtoMessage {
 fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
     return when {
         this is_ TakeScreenshot::class.java -> {
-            Action.TakeScreenshot
+            val data = this unpack_ TakeScreenshot::class.java
+            Action.TakeScreenshot(data.id)
         }
         this is_ ShellCommand::class.java -> {
             val data = this unpack_ ShellCommand::class.java
-            Action.ShellCommand(command = data.command)
+            Action.ShellCommand(id = data.id, command = data.command)
         }
         this is_ InputText::class.java -> {
             val data = this unpack_ InputText::class.java
-            Action.InputText(text = data.text)
+            Action.InputText(id = data.id, text = data.text)
         }
         this is_ ShowToast::class.java -> {
             val data = this unpack_ ShowToast::class.java
-            Action.ShowToast(message = data.message)
+            Action.ShowToast(id = data.id, message = data.message)
         }
         this is_ ShowDanmu::class.java -> {
             val data = this unpack_ ShowDanmu::class.java
-            Action.ShowDanmu(text = data.text, icon = data.icon)
+            Action.ShowDanmu(id = data.id, text = data.text, icon = data.icon)
         }
         this is_ Delay::class.java -> {
             val data = this unpack_ Delay::class.java
-            Action.Delay(time = data.time)
+            Action.Delay(id = data.id, time = data.time)
         }
         this is_ ExecuteMVEL::class.java -> {
             val data = this unpack_ ExecuteMVEL::class.java
-            Action.MVEL(expression = data.expression)
+            Action.MVEL(id = data.id, expression = data.expression)
         }
         this is_ RemoteExecuteMVEL::class.java -> {
             val data = this unpack_ RemoteExecuteMVEL::class.java
-            Action.RemoteMVEL(action = data.toModel())
+            Action.RemoteMVEL(id = data.id, action = data.toModel())
         }
         this is_ ShowOverlayButton::class.java -> {
             val data = this unpack_ ShowOverlayButton::class.java
-            Action.ShowOverlay(autoCollapse = data.autoCollapse, settings = data.buttonSettingsList)
+            Action.ShowOverlay(
+                id = data.id,
+                autoCollapse = data.autoCollapse,
+                settings = data.buttonSettingsList
+            )
         }
         this is_ HideOverlayButton::class.java -> {
-            Action.HideOverlay
+            val data = this unpack_ HideOverlayButton::class.java
+            Action.HideOverlay(id = data.id)
         }
 
         this is_ LaunchApp::class.java -> {
             val data = this unpack_ LaunchApp::class.java
             val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
             val appLabel = shortXManager.getAppLabel(pkg)
-            Action.LaunchApp(data.appPkg, appLabel = appLabel)
+            Action.LaunchApp(id = data.id, appPkg = data.appPkg, appLabel = appLabel)
         }
 
         this is_ SetWifiEnabled::class.java -> {
             val data = this unpack_ SetWifiEnabled::class.java
             if (data.enable) {
-                Action.EnableWifi
+                Action.EnableWifi(id = data.id)
             } else {
-                Action.DisableWifi
+                Action.DisableWifi(id = data.id)
             }
         }
         this is_ SetBTEnabled::class.java -> {
             val data = this unpack_ SetBTEnabled::class.java
             if (data.enable) {
-                Action.EnableBT
+                Action.EnableBT(id = data.id)
             } else {
-                Action.DisableBT
+                Action.DisableBT(id = data.id)
             }
         }
         this is_ SetNFCEnabled::class.java -> {
             val data = this unpack_ SetNFCEnabled::class.java
             if (data.enable) {
-                Action.EnableNFC
+                Action.EnableNFC(id = data.id)
             } else {
-                Action.DisableNFC
+                Action.DisableNFC(id = data.id)
             }
         }
         this is_ SetDNDEnabled::class.java -> {
             val data = this unpack_ SetDNDEnabled::class.java
             if (data.enable) {
-                Action.EnableDND
+                Action.EnableDND(id = data.id)
             } else {
-                Action.DisableDND
+                Action.DisableDND(id = data.id)
             }
         }
         this is_ SetGPSEnabled::class.java -> {
             val data = this unpack_ SetGPSEnabled::class.java
             if (data.enable) {
-                Action.EnableGPS
+                Action.EnableGPS(id = data.id)
             } else {
-                Action.DisableGPS
+                Action.DisableGPS(id = data.id)
             }
         }
         this is_ SetDataEnabled::class.java -> {
             val data = this unpack_ SetDataEnabled::class.java
             if (data.enable) {
-                Action.EnableData
+                Action.EnableData(id = data.id)
             } else {
-                Action.DisableData
+                Action.DisableData(id = data.id)
             }
         }
         this is_ SetDarkModeEnabled::class.java -> {
             val data = this unpack_ SetDarkModeEnabled::class.java
             if (data.enable) {
-                Action.EnableDarkMode
+                Action.EnableDarkMode(id = data.id)
             } else {
-                Action.DisableDarkMode
+                Action.DisableDarkMode(id = data.id)
             }
         }
         this is_ SetFlashLightEnabled::class.java -> {
             val data = this unpack_ SetFlashLightEnabled::class.java
             if (data.enable) {
-                Action.EnableFlashLight
+                Action.EnableFlashLight(id = data.id)
             } else {
-                Action.DisableFlashLight
+                Action.DisableFlashLight(id = data.id)
             }
         }
         this is_ SetHotSpotEnabled::class.java -> {
             val data = this unpack_ SetHotSpotEnabled::class.java
             if (data.enable) {
-                Action.EnableHotSpot
+                Action.EnableHotSpot(id = data.id)
             } else {
-                Action.DisableHotSpot
+                Action.DisableHotSpot(id = data.id)
             }
         }
 
@@ -436,6 +479,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ StopApp::class.java
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.StopApp(
+                id = data.id,
                 apps = models.first,
                 pkgSets = models.second
             )
@@ -445,6 +489,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ StartAppProcess::class.java
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.StartAppProcess(
+                id = data.id,
                 apps = models.first,
                 pkgSets = models.second
             )
@@ -455,10 +500,12 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             data.enable.select(
                 Action.EnableApp(
+                    id = data.id,
                     apps = models.first,
                     pkgSets = models.second
                 ),
                 Action.DisableApp(
+                    id = data.id,
                     apps = models.first,
                     pkgSets = models.second
                 )
@@ -470,10 +517,12 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             data.suspend.select(
                 Action.SuspendApp(
+                    id = data.id,
                     apps = models.first,
                     pkgSets = models.second
                 ),
-                Action.UnsuspendApp(
+                Action.UnSuspendApp(
+                    id = data.id,
                     apps = models.first,
                     pkgSets = models.second
                 )
@@ -481,12 +530,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         }
 
         this is_ BreakActionExecute::class.java -> {
-            Action.Brk
+            val data = this unpack_ BreakActionExecute::class.java
+            Action.Brk(id = data.id)
         }
 
         this is_ ShowAlertDialog::class.java -> {
             val data = this unpack_ ShowAlertDialog::class.java
             Action.ShowAlertDialog(
+                id = data.id,
                 title = data.title,
                 message = data.message,
                 cancelable = data.cancelable,
@@ -501,14 +552,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
 
         this is_ StartActivity::class.java -> {
             val data = this unpack_ StartActivity::class.java
-            Action.StartActivity(data.componentNameAsString)
+            Action.StartActivity(id = data.id, data.componentNameAsString)
         }
         this is_ ExpandNotification::class.java -> {
-            Action.ExpandNotification
+            val data = this unpack_ ExpandNotification::class.java
+            Action.ExpandNotification(id = data.id)
         }
         this is_ WhileLoop::class.java -> {
             val data = this unpack_ WhileLoop::class.java
             Action.WhileLoop(
+                id = data.id,
                 delay = data.delay.toLong(),
                 repeat = data.repeatTimes,
                 conditions = data.conditionsList.mapNotNull { it.toCondition(shortXManager) },

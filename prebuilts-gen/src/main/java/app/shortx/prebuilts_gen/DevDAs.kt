@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -17,55 +18,74 @@ object DevDAs {
     val all = listOf(
         DirectAction.newBuilder().setTitle("NoAction")
             .setId(nextId())
-            .addActions(NoAction.newBuilder().build().pack_()).build(),
+            .addActions(NoAction.newBuilder().setId(UUID.randomUUID().toString()).build().pack_())
+            .build(),
         DirectAction.newBuilder().setTitle("TakeScreenshot")
             .setId(nextId())
-            .addActions(TakeScreenshot.newBuilder().build().pack_()).build(),
+            .addActions(
+                TakeScreenshot.newBuilder().setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("ExpandNotification")
             .setId(nextId())
-            .addActions(ExpandNotification.newBuilder().build().pack_()).build(),
+            .addActions(
+                ExpandNotification.newBuilder().setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("StartActivity")
             .setId(nextId())
             .addActions(
                 StartActivity.newBuilder()
-                    .setComponentNameAsString("com.android.settings/.Settings").build().pack_()
+                    .setComponentNameAsString("com.android.settings/.Settings")
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
         DirectAction.newBuilder().setTitle("ShellCommand")
             .setId(nextId())
-            .addActions(ShellCommand.newBuilder().setCommand("input keyevent 4").build().pack_())
+            .addActions(
+                ShellCommand.newBuilder().setCommand("input keyevent 4")
+                    .setId(UUID.randomUUID().toString()).build().pack_()
+            )
             .build(),
 
         DirectAction.newBuilder().setTitle("InputText")
             .setId(nextId())
-            .addActions(InputText.newBuilder().setText("Hello world.").build().pack_()).build(),
+            .addActions(
+                InputText.newBuilder().setText("Hello world.").setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("ShowToast")
             .setId(nextId())
-            .addActions(ShowToast.newBuilder().setMessage("Hello how are you~").build().pack_())
+            .addActions(
+                ShowToast.newBuilder().setMessage("Hello how are you~")
+                    .setId(UUID.randomUUID().toString()).build().pack_()
+            )
             .build(),
         DirectAction.newBuilder().setTitle("ShowDanmu")
             .setId(nextId())
             .addActions(
                 ShowDanmu.newBuilder().setText("Hello how are you~")
-                    .setIcon("app://com.android.settings").build().pack_()
+                    .setIcon("app://com.android.settings").setId(UUID.randomUUID().toString())
+                    .build().pack_()
             )
             .build(),
 
         DirectAction.newBuilder().setTitle("Delay")
             .setId(nextId())
-            .addActions(Delay.newBuilder().build().pack_()).build(),
+            .addActions(Delay.newBuilder().setId(UUID.randomUUID().toString()).build().pack_())
+            .build(),
 
         DirectAction.newBuilder().setTitle("ExecuteMVEL")
             .setId(nextId())
             .addActions(
                 ExecuteMVEL.newBuilder().setExpression("ui.showShortToast(\"TOAST EXAMPLE\")")
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
         DirectAction.newBuilder().setTitle("HideOverlayButton")
             .setId(nextId())
-            .addActions(HideOverlayButton.newBuilder().build().pack_()).build(),
+            .addActions(
+                HideOverlayButton.newBuilder().setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("ShowOverlayButton")
             .setId(nextId())
@@ -91,7 +111,7 @@ object DevDAs {
             .addActions(
                 LaunchApp.newBuilder().setAppPkg(
                     AppPkg.newBuilder().setPkgName("com.android.settings").setUserId(0).build()
-                ).build().pack_()
+                ).setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
         DirectAction.newBuilder().setTitle("StopApp")
@@ -99,7 +119,7 @@ object DevDAs {
             .addActions(
                 StopApp.newBuilder().addAppPkg(
                     AppPkg.newBuilder().setPkgName("com.android.settings").setUserId(0).build()
-                ).build().pack_()
+                ).setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
 
@@ -109,7 +129,7 @@ object DevDAs {
                 SetAppEnabled.newBuilder()
                     .setEnable(true)
                     .addAppPkg(AppPkg.newBuilder().setUserId(0).setPkgName("com.android.camera"))
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
         DirectAction.newBuilder().setTitle("SetAppEnabled-false")
@@ -118,7 +138,7 @@ object DevDAs {
                 SetAppEnabled.newBuilder()
                     .setEnable(false)
                     .addAppPkg(AppPkg.newBuilder().setUserId(0).setPkgName("com.android.camera"))
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
         DirectAction.newBuilder().setTitle("SetAppSuspend-true")
@@ -127,7 +147,7 @@ object DevDAs {
                 SetAppSuspend.newBuilder()
                     .setSuspend(true)
                     .addAppPkg(AppPkg.newBuilder().setUserId(0).setPkgName("com.android.camera"))
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
         DirectAction.newBuilder().setTitle("SetAppSuspend-false")
             .setId(nextId())
@@ -135,90 +155,152 @@ object DevDAs {
                 SetAppSuspend.newBuilder()
                     .setSuspend(false)
                     .addAppPkg(AppPkg.newBuilder().setUserId(0).setPkgName("com.android.camera"))
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
         DirectAction.newBuilder().setTitle("StartAppProcess")
             .setId(nextId())
             .addActions(
                 StartAppProcess.newBuilder()
                     .addAppPkg(AppPkg.newBuilder().setUserId(0).setPkgName("com.android.camera"))
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
 
         DirectAction.newBuilder().setTitle("SetWifiEnabled-true")
             .setId(nextId())
-            .addActions(SetWifiEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetWifiEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetWifiEnabled-false")
             .setId(nextId())
-            .addActions(SetWifiEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetWifiEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetBTEnabled-true")
             .setId(nextId())
-            .addActions(SetBTEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetBTEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetBTEnabled-false")
             .setId(nextId())
-            .addActions(SetBTEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetBTEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetHotSpotEnabled-true")
             .setId(nextId())
-            .addActions(SetHotSpotEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetHotSpotEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetHotSpotEnabled-false")
             .setId(nextId())
-            .addActions(SetHotSpotEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetHotSpotEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetGPSEnabled-true")
             .setId(nextId())
-            .addActions(SetGPSEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetGPSEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetGPSEnabled-false")
             .setId(nextId())
-            .addActions(SetGPSEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetGPSEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetDataEnabled-true")
             .setId(nextId())
-            .addActions(SetDataEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetDataEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetDataEnabled-false")
             .setId(nextId())
-            .addActions(SetDataEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetDataEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetNFCEnabled-true")
             .setId(nextId())
-            .addActions(SetNFCEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetNFCEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetNFCEnabled-false")
             .setId(nextId())
-            .addActions(SetNFCEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetNFCEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetDNDEnabled-true")
             .setId(nextId())
-            .addActions(SetDNDEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetDNDEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetDNDEnabled-false")
             .setId(nextId())
-            .addActions(SetDNDEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetDNDEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetDarkModeEnabled-true")
             .setId(nextId())
-            .addActions(SetDarkModeEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetDarkModeEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetDarkModeEnabled-false")
             .setId(nextId())
-            .addActions(SetDarkModeEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetDarkModeEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetFlashLightEnabled-true")
             .setId(nextId())
-            .addActions(SetFlashLightEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetFlashLightEnabled.newBuilder().setEnable(true)
+                    .setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetFlashLightEnabled-false")
             .setId(nextId())
-            .addActions(SetFlashLightEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetFlashLightEnabled.newBuilder().setEnable(false)
+                    .setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("SetLocationEnabled-true")
             .setId(nextId())
-            .addActions(SetLocationEnabled.newBuilder().setEnable(true).build().pack_()).build(),
+            .addActions(
+                SetLocationEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
         DirectAction.newBuilder().setTitle("SetLocationEnabled-false")
             .setId(nextId())
-            .addActions(SetLocationEnabled.newBuilder().setEnable(false).build().pack_()).build(),
+            .addActions(
+                SetLocationEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
+                    .build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("BreakActionExecute")
             .setId(nextId())
-            .addActions(BreakActionExecute.newBuilder().build().pack_()).build(),
+            .addActions(
+                BreakActionExecute.newBuilder().setId(UUID.randomUUID().toString()).build().pack_()
+            ).build(),
 
         DirectAction.newBuilder().setTitle("While true mvel")
             .setId(nextId())
@@ -235,18 +317,19 @@ object DevDAs {
                     .setMessage("Example message, shortx is android app developed by Tornaco @2022.")
                     .setPositive("SayHi")
                     .addOnPositive(
-                        ShowToast.newBuilder().setMessage("Hello how are you~").build().pack_()
+                        ShowToast.newBuilder().setMessage("Hello how are you~")
+                            .setId(UUID.randomUUID().toString()).build().pack_()
                     )
                     .setNegative("Cancel")
                     .addOnNegative(
                         ShowToast.newBuilder().setMessage("Cancel clicked, will show 2 toast")
-                            .build().pack_()
+                            .setId(UUID.randomUUID().toString()).build().pack_()
                     )
                     .addOnNegative(
                         ShowToast.newBuilder().setMessage("See you later~ this is the 2nd toast")
-                            .build().pack_()
+                            .setId(UUID.randomUUID().toString()).build().pack_()
                     )
-                    .build().pack_()
+                    .setId(UUID.randomUUID().toString()).build().pack_()
             ).build(),
 
 
