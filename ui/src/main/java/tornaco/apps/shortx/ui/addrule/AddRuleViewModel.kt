@@ -43,6 +43,7 @@ data class AddRuleState(
     val conditionOp: Op = Op.All,
     val actions: List<Action> = emptyList(),
     val isEditRule: Boolean = false,
+    val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
     val isEnabled: Boolean = false
@@ -171,6 +172,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
             }
             val rule = Rule.newBuilder()
                 .setId(state.value.id)
+                .setCreateTime(state.value.createTime)
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setFact(protoFact)
                 .setTitle(
@@ -212,6 +214,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
         ruleId?.let { id ->
             viewModelScope.launch {
                 shortXManager.getRuleById(id)?.let { rule ->
+                    logger.d("initFromRule: $rule")
                     updateState {
                         copy(
                             id = rule.id,
@@ -226,6 +229,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext private val conte
                             conditionOp = rule.condOp.toOp(rule.condOpPayload),
                             actions = rule.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditRule = true,
+                            createTime = rule.createTime,
                             isEnabled = rule.isEnabled
                         )
                     }

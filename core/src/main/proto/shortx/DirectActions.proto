@@ -12,11 +12,12 @@ message DirectAction {
 
   string id = 2;
   int64 lastUpdateTime = 3;
+  int64 createTime = 4;
 
-  Author author = 4;
+  Author author = 5;
 
-  string title = 5;
-  string description = 6;
+  string title = 6;
+  string description = 7;
 }
 
 message DirectActionList {

@@ -28,6 +28,7 @@ data class AddDirectActionState(
     val description: String = "",
     val actions: List<Action> = emptyList(),
     val isEditDirectAction: Boolean = false,
+    val createTime: Long = System.currentTimeMillis(),
     val daChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
 )
@@ -111,6 +112,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
             }
             val da = DirectAction.newBuilder()
                 .setId(state.value.id)
+                .setCreateTime(state.value.createTime)
                 .setLastUpdateTime(System.currentTimeMillis())
                 .setTitle(state.value.title.fallbackOnEmpty(Date().toString()))
                 .apply {
@@ -136,6 +138,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
         daId?.let { id ->
             viewModelScope.launch {
                 shortXManager.getDirectActionById(id)?.let { da ->
+                    logger.d("initFromDirectAction: $da")
                     updateState {
                         copy(
                             id = da.id,
@@ -143,6 +146,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext private v
                             description = da.description,
                             actions = da.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditDirectAction = true,
+                            createTime = da.createTime
                         )
                     }
                 }

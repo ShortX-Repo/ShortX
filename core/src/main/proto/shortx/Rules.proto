@@ -16,16 +16,17 @@ message Rule {
   string id = 4;
   int32 priority = 5;
   int64 lastUpdateTime = 6;
+  int64 createTime = 7;
 
-  Author author = 7;
+  Author author = 8;
 
-  string title = 8;
-  string description = 9;
+  string title = 9;
+  string description = 10;
 
-  bool isEnabled = 10;
+  bool isEnabled = 11;
 
-  ConditionOperator condOp = 11;
-  ConditionOperatorPayload condOpPayload = 12;
+  ConditionOperator condOp = 12;
+  ConditionOperatorPayload condOpPayload = 13;
 }
 
 message RuleList {

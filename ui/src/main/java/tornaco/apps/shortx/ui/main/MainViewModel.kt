@@ -32,6 +32,7 @@ data class RuleUM(
     val title: String,
     val description: String,
     val updateTime: String,
+    val createTime: String,
     val isEnabled: Boolean,
 )
 
@@ -40,6 +41,7 @@ data class DirectActionUM(
     val title: String,
     val description: String,
     val updateTime: String,
+    val createTime: String,
     val icon: ImageVector,
     val runningInsCount: Int
 )
@@ -89,22 +91,30 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadRules() {
         logger.d("loadRules")
         viewModelScope.launch {
-            val rules = shortXManager.getAllRules().map { rule ->
-                RuleUM(
-                    id = rule.id,
-                    title = rule.title,
-                    description = rule.description.fallbackOnEmpty(
-                        translateRule(rule)
-                    ),
-                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                        context,
-                        Date(rule.lastUpdateTime)
-                    ),
-                    isEnabled = rule.isEnabled
-                )
-            }
-            updateState {
-                copy(rules = rules)
+            withContext(Dispatchers.IO) {
+                val rules = shortXManager.getAllRules()
+                    .sortedByDescending { it.createTime }
+                    .map { rule ->
+                    RuleUM(
+                        id = rule.id,
+                        title = rule.title,
+                        description = rule.description.fallbackOnEmpty(
+                            translateRule(rule)
+                        ),
+                        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                            context,
+                            Date(rule.lastUpdateTime)
+                        ),
+                        createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                            context,
+                            Date(rule.createTime)
+                        ),
+                        isEnabled = rule.isEnabled
+                    )
+                }
+                updateState {
+                    copy(rules = rules)
+                }
             }
         }
     }
@@ -140,7 +150,9 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
-                val das = shortXManager.getAllDirectAction().map { directAction ->
+                val das = shortXManager.getAllDirectAction()
+                    .sortedByDescending { it.createTime }
+                    .map { directAction ->
                     val firstAction: Action? = directAction.actionsList?.let {
                         if (it.isEmpty()) {
                             null
@@ -155,6 +167,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                             context,
                             Date(directAction.lastUpdateTime)
+                        ),
+                        createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                            context,
+                            Date(directAction.createTime)
                         ),
                         icon = firstAction?.let {
                             imageVectorForAction(
