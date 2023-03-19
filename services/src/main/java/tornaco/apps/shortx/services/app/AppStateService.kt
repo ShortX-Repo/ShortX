@@ -10,25 +10,23 @@ import android.os.UserHandle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import tornaco.apps.shortx.core.Pkg
-import tornaco.apps.shortx.core.UserComponent
+import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppComponent
+import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
-import tornaco.apps.shortx.core.unKnownPkg
-import tornaco.apps.shortx.core.unknownUserComponent
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
-import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
-import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
+import tornaco.apps.shortx.services.app.pm.*
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    private val _currentFgComponentName = MutableStateFlow(unknownUserComponent)
+    private val _currentFgComponentName = MutableStateFlow(unknownAppComponent)
     val currentFgComponentName = _currentFgComponentName.asStateFlow()
 
     private val _currentFgAppPkg = MutableStateFlow(unKnownPkg)
@@ -85,7 +83,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     fun onComponentMoveToFg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToFg: $componentName user: $userId")
         _currentFgComponentName.value =
-            UserComponent(Pkg(componentName.packageName, userId), componentName.className)
+            AppComponent(Pkg(componentName.packageName, userId), componentName.className)
 
         val lastFgPkg = _currentFgAppPkg.value
         val currentFgPkg = Pkg(componentName.packageName, userId)
@@ -226,5 +224,71 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 if (suspend) suspendAppPkg.disable(it) else suspendAppPkg.enable(it)
             }
         }
+    }
+
+    fun getActivities(
+        userId: Int,
+        packageName: String
+    ): List<AppComponentInfo> {
+        val pm = context.packageManager
+        return runClearCallingIdentity {
+            ComponentUtil.getActivities(context, packageName)
+                .mapNotNull {
+                    ComponentMapper.activityInfoToAppComponentInfo(userId, pm, it)
+                }
+        } ?: emptyList()
+    }
+
+    fun getReceivers(
+        userId: Int,
+        packageName: String
+    ): List<AppComponentInfo> {
+        val pm = context.packageManager
+        return runClearCallingIdentity {
+            ComponentUtil.getBroadcasts(context, packageName)
+                .mapNotNull {
+                    ComponentMapper.activityInfoToAppComponentInfo(userId, pm, it)
+                }
+        } ?: emptyList()
+    }
+
+    fun getServices(userId: Int, packageName: String): List<AppComponentInfo> {
+        val pm = context.packageManager
+        return runClearCallingIdentity {
+            ComponentUtil.getServices(context, packageName)
+                .mapNotNull {
+                    ComponentMapper.serviceInfoToAppComponentInfo(userId, pm, it)
+                }
+        } ?: emptyList()
+    }
+
+    fun getProviders(userId: Int, packageName: String): List<AppComponentInfo> {
+        val pm = context.packageManager
+        return runClearCallingIdentity {
+            ComponentUtil.getProviders(context, packageName)
+                .mapNotNull {
+                    ComponentMapper.providerInfoToAppComponentInfo(userId, pm, it)
+                }
+        } ?: emptyList()
+    }
+
+    fun setComponentEnabledSetting(
+        component: AppComponent,
+        newState: Int,
+        flags: Int
+    ) {
+        PMSFuncs.setComponentEnabledSetting(
+            component.pkg.userId,
+            component.toComponentName(),
+            newState,
+            flags
+        )
+    }
+
+    fun getComponentEnabledSetting(component: AppComponent): Int {
+        return PMSFuncs.getComponentEnabledSetting(
+            component.pkg.userId,
+            component.toComponentName()
+        )
     }
 }

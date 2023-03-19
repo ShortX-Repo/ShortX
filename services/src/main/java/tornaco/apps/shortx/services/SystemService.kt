@@ -66,21 +66,21 @@ open class SystemService(val shortXContext: ShortXContext) {
         }
         return value
     }
+}
 
-    fun <T> runClearCallingIdentity(action: () -> T?): T? {
-        val id = Binder.clearCallingIdentity()
-        return runCatching {
-            action()
-        }.fold(
-            onSuccess = {
-                Binder.restoreCallingIdentity(id)
-                it
-            }, onFailure = {
-                logger.e(it, "runClearCallingId")
-                Binder.restoreCallingIdentity(id)
-                null
-            })
-    }
+fun <T> runClearCallingIdentity(action: () -> T?): T? {
+    val id = Binder.clearCallingIdentity()
+    return runCatching {
+        action()
+    }.fold(
+        onSuccess = {
+            Binder.restoreCallingIdentity(id)
+            it
+        }, onFailure = {
+            Logger().e(it, "runClearCallingIdentity")
+            Binder.restoreCallingIdentity(id)
+            null
+        })
 }
 
 val SystemService.systemServiceScope: CoroutineScope

@@ -1,12 +1,15 @@
 package tornaco.apps.shortx.core
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.pm.ParceledListSlice
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppComponent
+import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -243,6 +246,59 @@ class ShortXManager(private val service: IShortX) {
     fun unregisterJobStatusListener(listener: IJobStatusListener) {
         invokeService(Unit) {
             unregisterJobStatusListener(listener)
+        }
+    }
+
+
+    fun getActivities(
+        pkg: AppPkg
+    ): List<AppComponentInfo> {
+        return invokeService(emptyList()) {
+            getActivities(pkg.userId, pkg.pkgName).map {
+                AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun getReceivers(
+        pkg: AppPkg
+    ): List<AppComponentInfo> {
+        return invokeService(emptyList()) {
+            getReceivers(pkg.userId, pkg.pkgName).map {
+                AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun getServices(pkg: AppPkg): List<AppComponentInfo> {
+        return invokeService(emptyList()) {
+            getServices(pkg.userId, pkg.pkgName).map {
+                AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun getProviders(pkg: AppPkg): List<AppComponentInfo> {
+        return invokeService(emptyList()) {
+            getProviders(pkg.userId, pkg.pkgName).map {
+                AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun setComponentEnabledSetting(
+        component: AppComponent,
+        newState: Int,
+        flags: Int
+    ) {
+        invokeService(Unit) {
+            setComponentEnabledSetting(ByteArrayWrapper(component.toByteArray()), newState, flags)
+        }
+    }
+
+    fun getComponentEnabledSetting(component: AppComponent): Int {
+        return invokeService(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT) {
+            getComponentEnabledSetting(ByteArrayWrapper(component.toByteArray()))
         }
     }
 

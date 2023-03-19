@@ -20,9 +20,15 @@ message App {
   AppCategory category = 3;
 }
 
-message UserComponent {
+message AppComponent {
   AppPkg pkg = 1;
   string className = 2;
+}
+
+message AppComponentInfo {
+    AppComponent component = 1;
+    string label = 2;
+    int32 enableSetting = 3;
 }
 
 message Author {

@@ -55,4 +55,14 @@ interface IShortX {
 
     void registerJobStatusListener(in IJobStatusListener listener);
     void unregisterJobStatusListener(in IJobStatusListener listener);
+
+    // Components start
+    List<ByteArrayWrapper> getActivities(int userId, String packageName);
+    List<ByteArrayWrapper> getReceivers(int userId, String packageName);
+    List<ByteArrayWrapper> getServices(int userId, String packageName);
+    List<ByteArrayWrapper> getProviders(int userId, String packageName);
+
+    void setComponentEnabledSetting(/*AppComponent*/in ByteArrayWrapper component, int newState, int flags);
+    int getComponentEnabledSetting(/*AppComponent*/in ByteArrayWrapper component);
+    // Components end
 }

@@ -127,6 +127,31 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException
     {
     }
+    // Components start
+
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReceivers(int userId, java.lang.String packageName) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getServices(int userId, java.lang.String packageName) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getProviders(int userId, java.lang.String packageName) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void setComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component, int newState, int flags) throws android.os.RemoteException
+    {
+    }
+    @Override public int getComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component) throws android.os.RemoteException
+    {
+      return 0;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -515,6 +540,87 @@ public interface IShortX extends android.os.IInterface
           _arg0 = tornaco.apps.shortx.core.IJobStatusListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterJobStatusListener(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getActivities:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getActivities(_arg0, _arg1);
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getReceivers:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getReceivers(_arg0, _arg1);
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getServices:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getServices(_arg0, _arg1);
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getProviders:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getProviders(_arg0, _arg1);
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_setComponentEnabledSetting:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          int _arg1;
+          _arg1 = data.readInt();
+          int _arg2;
+          _arg2 = data.readInt();
+          this.setComponentEnabledSetting(_arg0, _arg1, _arg2);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getComponentEnabledSetting:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          int _result = this.getComponentEnabledSetting(_arg0);
+          reply.writeNoException();
+          reply.writeInt(_result);
           return true;
         }
         default:
@@ -1219,6 +1325,150 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Components start
+
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(userId);
+          _data.writeString(packageName);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getActivities, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActivities(userId, packageName);
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReceivers(int userId, java.lang.String packageName) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(userId);
+          _data.writeString(packageName);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getReceivers, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getReceivers(userId, packageName);
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getServices(int userId, java.lang.String packageName) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(userId);
+          _data.writeString(packageName);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getServices, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getServices(userId, packageName);
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getProviders(int userId, java.lang.String packageName) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(userId);
+          _data.writeString(packageName);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getProviders, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getProviders(userId, packageName);
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void setComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component, int newState, int flags) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((component!=null)) {
+            _data.writeInt(1);
+            component.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          _data.writeInt(newState);
+          _data.writeInt(flags);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setComponentEnabledSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setComponentEnabledSetting(component, newState, flags);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public int getComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        int _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((component!=null)) {
+            _data.writeInt(1);
+            component.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getComponentEnabledSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getComponentEnabledSetting(component);
+          }
+          _reply.readException();
+          _result = _reply.readInt();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1251,6 +1501,12 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_cancelJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
     static final int TRANSACTION_registerJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
     static final int TRANSACTION_unregisterJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
+    static final int TRANSACTION_getActivities = (android.os.IBinder.FIRST_CALL_TRANSACTION + 30);
+    static final int TRANSACTION_getReceivers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 31);
+    static final int TRANSACTION_getServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 32);
+    static final int TRANSACTION_getProviders = (android.os.IBinder.FIRST_CALL_TRANSACTION + 33);
+    static final int TRANSACTION_setComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 34);
+    static final int TRANSACTION_getComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 35);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1313,4 +1569,12 @@ public interface IShortX extends android.os.IInterface
   public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException;
   public void registerJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
   public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
+  // Components start
+
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReceivers(int userId, java.lang.String packageName) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getServices(int userId, java.lang.String packageName) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getProviders(int userId, java.lang.String packageName) throws android.os.RemoteException;
+  public void setComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component, int newState, int flags) throws android.os.RemoteException;
+  public int getComponentEnabledSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component) throws android.os.RemoteException;
 }

@@ -22,10 +22,10 @@ import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.fact.AppPkgSelector
 import tornaco.apps.shortx.ui.addrule.condition.Conditions
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N

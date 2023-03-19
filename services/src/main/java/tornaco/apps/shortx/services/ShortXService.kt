@@ -223,5 +223,55 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun unregisterJobStatusListener(listener: IJobStatusListener) {
             shortXContext.rule.unregisterJobStatusListener(listener)
         }
+
+        override fun getActivities(
+            userId: Int,
+            packageName: String
+        ): List<ByteArrayWrapper> {
+            return shortXContext.appState.getActivities(userId, packageName).map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getReceivers(
+            userId: Int,
+            packageName: String
+        ): List<ByteArrayWrapper> {
+            return shortXContext.appState.getReceivers(userId, packageName).map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getServices(userId: Int, packageName: String): List<ByteArrayWrapper> {
+            return shortXContext.appState.getServices(userId, packageName).map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getProviders(
+            userId: Int,
+            packageName: String
+        ): List<ByteArrayWrapper> {
+            return shortXContext.appState.getProviders(userId, packageName).map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun setComponentEnabledSetting(
+            component: ByteArrayWrapper,
+            newState: Int,
+            flags: Int
+        ) {
+            shortXContext.appState.setComponentEnabledSetting(
+                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byte),
+                newState, flags
+            )
+        }
+
+        override fun getComponentEnabledSetting(component: ByteArrayWrapper): Int {
+            return shortXContext.appState.getComponentEnabledSetting(
+                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byte)
+            )
+        }
     }
 }
