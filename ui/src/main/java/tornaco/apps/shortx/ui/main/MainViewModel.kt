@@ -95,23 +95,23 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
                     .map { rule ->
-                    RuleUM(
-                        id = rule.id,
-                        title = rule.title,
-                        description = rule.description.fallbackOnEmpty(
-                            translateRule(rule)
-                        ),
-                        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                            context,
-                            Date(rule.lastUpdateTime)
-                        ),
-                        createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                            context,
-                            Date(rule.createTime)
-                        ),
-                        isEnabled = rule.isEnabled
-                    )
-                }
+                        RuleUM(
+                            id = rule.id,
+                            title = rule.title,
+                            description = rule.description.fallbackOnEmpty(
+                                translateRule(rule)
+                            ),
+                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(rule.lastUpdateTime)
+                            ),
+                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(rule.createTime)
+                            ),
+                            isEnabled = rule.isEnabled
+                        )
+                    }
                 updateState {
                     copy(rules = rules)
                 }
@@ -153,35 +153,35 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 val das = shortXManager.getAllDirectAction()
                     .sortedByDescending { it.createTime }
                     .map { directAction ->
-                    val firstAction: Action? = directAction.actionsList?.let {
-                        if (it.isEmpty()) {
-                            null
-                        } else {
-                            it[0].toAction(shortXManager)
+                        val firstAction: Action? = directAction.actionsList?.let {
+                            if (it.isEmpty()) {
+                                null
+                            } else {
+                                it[0].toAction(shortXManager)
+                            }
                         }
+                        DirectActionUM(
+                            id = directAction.id,
+                            title = directAction.title,
+                            description = translateDA(directAction),
+                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(directAction.lastUpdateTime)
+                            ),
+                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(directAction.createTime)
+                            ),
+                            icon = firstAction?.let {
+                                imageVectorForAction(
+                                    it::class
+                                )
+                            } ?: Icons.Outlined.Commit,
+                            runningInsCount = activeJobs.count {
+                                it == directAction.id
+                            }
+                        )
                     }
-                    DirectActionUM(
-                        id = directAction.id,
-                        title = directAction.title,
-                        description = translateDA(directAction),
-                        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                            context,
-                            Date(directAction.lastUpdateTime)
-                        ),
-                        createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                            context,
-                            Date(directAction.createTime)
-                        ),
-                        icon = firstAction?.let {
-                            imageVectorForAction(
-                                it::class
-                            )
-                        } ?: Icons.Outlined.Commit,
-                        runningInsCount = activeJobs.count {
-                            it == directAction.id
-                        }
-                    )
-                }
                 updateState {
                     copy(das = das)
                 }
@@ -237,4 +237,14 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             shortXManager.cancelJobs(listOf(da.id))
         }
     }
+
+    fun daToShareString(da: DirectActionUM): String? =
+        shortXManager.getDirectActionById(da.id)?.toByteArray()?.let {
+            Base64.getEncoder().encodeToString(it)
+        }
+
+    fun ruleToShareString(rule: RuleUM): String? =
+        shortXManager.getRuleById(rule.id)?.toByteArray()?.let {
+            Base64.getEncoder().encodeToString(it)
+        }
 }

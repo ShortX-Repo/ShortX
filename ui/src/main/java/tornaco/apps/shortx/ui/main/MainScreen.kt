@@ -148,6 +148,10 @@ private fun HomeScreen(
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
                 }) { paddingValues ->
+
+                val shareDialogState = rememberShareDialogState("share.shortx")
+                ShareDialog(state = shareDialogState)
+
                 Column(
                     modifier = Modifier.padding(paddingValues),
                 ) {
@@ -158,6 +162,11 @@ private fun HomeScreen(
                         },
                         editRule = { rule ->
                             goToEditRule(rule.id)
+                        },
+                        shareRule = { um ->
+                            vm.ruleToShareString(um)?.let {
+                                shareDialogState.show(it)
+                            }
                         },
                         setRuleEnabled = { id, enable ->
                             vm.setRuleEnabled(id, enable)
@@ -176,6 +185,11 @@ private fun HomeScreen(
                         },
                         stopAllJobs = {
                             vm.stopJobs(it)
+                        },
+                        onShareDA = { um ->
+                            vm.daToShareString(um)?.let {
+                                shareDialogState.show(it)
+                            }
                         })
 
                     if (isShowActiveDialog) {
@@ -231,10 +245,12 @@ private fun BottomNavigationGraph(
     state: MainState,
     deleteRule: (RuleUM) -> Unit,
     editRule: (RuleUM) -> Unit,
+    shareRule: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
     onDeleteDA: (DirectActionUM) -> Unit,
     onEditDA: (DirectActionUM) -> Unit,
+    onShareDA: (DirectActionUM) -> Unit,
     onDAClick: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
@@ -245,6 +261,7 @@ private fun BottomNavigationGraph(
                 setRuleEnabled = setRuleEnabled,
                 onDelete = deleteRule,
                 onEdit = editRule,
+                onShare = shareRule,
                 onRuleClick = onRuleClick
             )
         }
@@ -254,6 +271,7 @@ private fun BottomNavigationGraph(
                 state = state,
                 onDelete = onDeleteDA,
                 onEdit = onEditDA,
+                onShare = onShareDA,
                 onDirectActionClick = onDAClick,
                 stopAllJobs = stopAllJobs
             )

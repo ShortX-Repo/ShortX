@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ fun RuleScreen(
     state: MainState,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
+    onShare: (RuleUM) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
@@ -66,6 +68,7 @@ fun RuleScreen(
                     setRuleEnabled = setRuleEnabled,
                     onDelete = onDelete,
                     onEdit = onEdit,
+                    onShare = onShare,
                 )
             }
         }
@@ -79,6 +82,7 @@ private fun RuleItem(
     setRuleEnabled: (String, Boolean) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
+    onShare: (RuleUM) -> Unit,
 ) {
     ListItem(
         icon = {
@@ -90,7 +94,7 @@ private fun RuleItem(
         text1 = rule.description,
         text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
         overflow = {
-            ListItemOverflowMenu(rule, onDelete, onEdit)
+            ListItemOverflowMenu(rule, onDelete, onEdit, onShare)
         },
         checked = rule.isEnabled,
         onClick = onClick,
@@ -102,7 +106,8 @@ private fun RuleItem(
 private fun ListItemOverflowMenu(
     rule: RuleUM,
     onDelete: (RuleUM) -> Unit,
-    onEdit: (RuleUM) -> Unit
+    onEdit: (RuleUM) -> Unit,
+    onShare: (RuleUM) -> Unit,
 ) {
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
@@ -132,6 +137,12 @@ private fun ListItemOverflowMenu(
                         Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                     }),
                 DropdownItem(
+                    labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                    data = "share",
+                    icon = {
+                        Icon(imageVector = Icons.Outlined.Share, contentDescription = "Share")
+                    }),
+                DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                     data = "delete",
                     icon = {
@@ -144,6 +155,9 @@ private fun ListItemOverflowMenu(
                     }
                     "edit" -> {
                         onEdit(rule)
+                    }
+                    "share" -> {
+                        onShare(rule)
                     }
                     else -> {}
                 }

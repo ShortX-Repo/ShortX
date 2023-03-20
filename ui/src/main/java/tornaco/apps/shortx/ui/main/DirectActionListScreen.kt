@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,6 +39,7 @@ fun DirectActionListScreen(
     state: MainState,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
     onDirectActionClick: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
@@ -95,6 +97,7 @@ fun DirectActionListScreen(
                         },
                         onDelete = onDelete,
                         onEdit = onEdit,
+                        onShare = onShare,
                         stopAllJobs = stopAllJobs
                     )
 
@@ -117,6 +120,7 @@ private fun DirectActionItem(
     onClick: () -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     DAListItem(
@@ -126,7 +130,7 @@ private fun DirectActionItem(
         icon = da.icon,
         runningInsCount = da.runningInsCount,
         overflow = {
-            ListItemOverflowMenu(da, onDelete, onEdit)
+            ListItemOverflowMenu(da, onDelete, onEdit, onShare)
         },
         onClick = onClick,
         stopAllJobs = {
@@ -242,7 +246,10 @@ private fun DAListItem(
 
 @Composable
 private fun ListItemOverflowMenu(
-    da: DirectActionUM, onDelete: (DirectActionUM) -> Unit, onEdit: (DirectActionUM) -> Unit
+    da: DirectActionUM,
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
 ) {
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
@@ -266,6 +273,11 @@ private fun ListItemOverflowMenu(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
                 }),
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                data = "share",
+                icon = {
+                    Icon(imageVector = Icons.Outlined.Share, contentDescription = "Share")
+                }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                 data = "delete",
                 icon = {
@@ -278,6 +290,9 @@ private fun ListItemOverflowMenu(
                 }
                 "edit" -> {
                     onEdit(da)
+                }
+                "share" -> {
+                    onShare(da)
                 }
                 else -> {}
             }
