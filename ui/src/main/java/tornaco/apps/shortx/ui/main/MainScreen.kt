@@ -2,10 +2,12 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ContentPaste
+import androidx.compose.material.icons.outlined.FileCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -134,19 +136,24 @@ private fun HomeScreen(
                     BottomNavigationContent(navController)
                 },
                 floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        when (navController.currentBackStackEntry?.destination?.route) {
-                            HomeBottomRoute.Rules.name -> {
-                                goToAddRule()
+                    Fab(
+                        onClipboardClick = {
+
+                        },
+                        onFileClick = {
+
+                        },
+                        onCreateClick = {
+                            when (navController.currentBackStackEntry?.destination?.route) {
+                                HomeBottomRoute.Rules.name -> {
+                                    goToAddRule()
+                                }
+                                HomeBottomRoute.DirectActions.name -> {
+                                    goToAddDA()
+                                }
+                                else -> {}
                             }
-                            HomeBottomRoute.DirectActions.name -> {
-                                goToAddDA()
-                            }
-                            else -> {}
-                        }
-                    }) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
-                    }
+                        })
                 }) { paddingValues ->
 
                 val shareDialogState = rememberShareDialogState("share.shortx")
@@ -198,6 +205,48 @@ private fun HomeScreen(
                         })
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Fab(
+    onClipboardClick: () -> Unit,
+    onFileClick: () -> Unit,
+    onCreateClick: () -> Unit,
+) {
+    val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
+        MultiFabItem(
+            id = "file",
+            icon = Icons.Outlined.FileCopy,
+            label = "File"
+        ),
+        MultiFabItem(
+            id = "clipboard",
+            icon = Icons.Outlined.ContentPaste,
+            label = LocalI18N.current["ui.common.share.clipboard"]
+        ),
+        MultiFabItem(
+            id = "new",
+            icon = Icons.Outlined.Add,
+            label = "New"
+        )
+    )
+    MultiFloatingActionButton(
+        srcIcon = Icons.Outlined.Add,
+        showLabels = true,
+        items = expandFbItemList
+    ) {
+        when (it.id) {
+            "clipboard" -> {
+                onClipboardClick()
+            }
+            "file" -> {
+                onFileClick()
+            }
+            "new" -> {
+                onCreateClick()
             }
         }
     }

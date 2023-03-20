@@ -247,4 +247,12 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         shortXManager.getRuleById(rule.id)?.toByteArray()?.let {
             Base64.getEncoder().encodeToString(it)
         }
+
+    fun parseShareContent(content: String): Rule? {
+        return kotlin.runCatching {
+            Rule.parseFrom(Base64.getDecoder().decode(content))?.apply {
+                requireNotNull(this.title) { "Title is null. invalid rule?" }
+            }
+        }.getOrNull()
+    }
 }
