@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.foundation.clickable
@@ -5,13 +7,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,6 +23,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class AppPkgSelectorState(
     val installedApps: List<App>,
@@ -84,50 +88,80 @@ fun rememberAppPkgSelectorState(
 }
 
 @Composable
-fun AppPkgSelector(state: AppPkgSelectorState) {
+fun AppPkgSelectorDialog(state: AppPkgSelectorState) {
     if (state.isShow) {
-        var selectedTabIndex by remember {
-            mutableStateOf(0)
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            AppPkgSelector(state)
         }
+    }
+}
 
-        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(
-                text = LocalI18N.current["ui.dialog.title.select.app"],
-            )
-        }, buttons = {
-            TextButton(onClick = {
-                if (selectedTabIndex == 0) {
-                    state.onAppListSelected(state.selectedApps)
-                } else {
-                    state.onPkgSetSelected(state.selectedPkgSets)
-                }
-                state.dismiss()
-            }) {
-                Text(text = stringResource(id = android.R.string.ok))
+@Composable
+private fun AppPkgSelector(state: AppPkgSelectorState) {
+    ShortXTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ) {
+            var selectedTabIndex by remember {
+                mutableStateOf(0)
             }
-        }, content = {
-            TabRow(selectedTabIndex = selectedTabIndex) {
-                val titles = listOf(
-                    LocalI18N.current["ui.dialog.title.select.app"],
-                    LocalI18N.current["ui.pkg.set.title"]
-                )
-                titles.forEachIndexed { index, title ->
-                    Tab(selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        text = {
-                            Text(
-                                text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
-                            )
-                        })
-                }
-            }
+            Scaffold(modifier = Modifier,
+                topBar = {
+                    MediumTopAppBar(
+                        modifier = Modifier,
+                        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = ColorDefaults.backgroundSurfaceColor()),
+                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                state.dismiss()
+                            }) {
+                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                if (selectedTabIndex == 0) {
+                                    state.onAppListSelected(state.selectedApps)
+                                } else {
+                                    state.onPkgSetSelected(state.selectedPkgSets)
+                                }
+                                state.dismiss()
 
-            if (selectedTabIndex == 0) {
-                AppListContent(state)
-            } else {
-                PkgSetContent(state)
+                            }) {
+                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                            }
+                        }
+                    )
+                }) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
+                    TabRow(selectedTabIndex = selectedTabIndex) {
+                        val titles = listOf(
+                            LocalI18N.current["ui.dialog.title.select.app"],
+                            LocalI18N.current["ui.pkg.set.title"]
+                        )
+                        titles.forEachIndexed { index, title ->
+                            Tab(selected = selectedTabIndex == index,
+                                onClick = { selectedTabIndex = index },
+                                text = {
+                                    Text(
+                                        text = title, maxLines = 2, overflow = TextOverflow.Ellipsis
+                                    )
+                                })
+                        }
+                    }
+
+                    if (selectedTabIndex == 0) {
+                        AppListContent(state)
+                    } else {
+                        PkgSetContent(state)
+                    }
+                }
             }
-        })
+        }
     }
 }
 
@@ -141,8 +175,7 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
     }
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(fraction = 0.68f)
+            .fillMaxSize()
     ) {
         items(state.pkgSets) {
             ListItem(
@@ -173,15 +206,12 @@ private fun AppListContent(state: AppPkgSelectorState) {
     val searchBarState = rememberSearchBarState(state.installedApps.size)
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(fraction = 0.68f)
+            .fillMaxSize()
     ) {
         item {
             SearchBar(searchBarState)
         }
-        items(state.installedApps.filter {
-            searchBarState.keyword.isBlank() || it.label.contains(searchBarState.keyword)
-        }) {
+        items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
             AppItem(
                 app = it,
                 isSelected = state.selectedApps.contains(it),

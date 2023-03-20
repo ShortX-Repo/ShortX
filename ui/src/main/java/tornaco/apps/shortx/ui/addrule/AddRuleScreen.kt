@@ -136,7 +136,7 @@ private fun ConditionSelectors(
                     )
                 )
             })
-    AppPkgSelector(currentPkgSelectorState)
+    AppPkgSelectorDialog(currentPkgSelectorState)
 
     val mvelConditionSelectorState =
         rememberMVELSelectorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
@@ -196,7 +196,7 @@ private fun FactSelectors(
         }, onPkgSetSelected = {
             vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
         })
-    AppPkgSelector(appBgPkgSelectorState)
+    AppPkgSelectorDialog(appBgPkgSelectorState)
 
     val appFgPkgSelectorState =
         rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
@@ -204,7 +204,7 @@ private fun FactSelectors(
         }, onPkgSetSelected = {
             vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
         })
-    AppPkgSelector(appFgPkgSelectorState)
+    AppPkgSelectorDialog(appFgPkgSelectorState)
 
     val appComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),

@@ -9,7 +9,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 
@@ -30,7 +30,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             }, appLabel = first.label)
             addAction(action)
         })
-    AppPkgSelector(state = launchAppSelectorState)
+    AppPkgSelectorDialog(state = launchAppSelectorState)
 
     val stopAppSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -40,7 +40,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.StopApp(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = stopAppSelectorState)
+    AppPkgSelectorDialog(state = stopAppSelectorState)
 
     val startAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -50,7 +50,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.StartAppProcess(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = startAppProcessSelectorState)
+    AppPkgSelectorDialog(state = startAppProcessSelectorState)
 
     val enableAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -60,7 +60,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.EnableApp(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = enableAppProcessSelectorState)
+    AppPkgSelectorDialog(state = enableAppProcessSelectorState)
 
     val disableAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -70,7 +70,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.DisableApp(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = disableAppProcessSelectorState)
+    AppPkgSelectorDialog(state = disableAppProcessSelectorState)
 
     val suspendAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -80,7 +80,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.SuspendApp(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = suspendAppProcessSelectorState)
+    AppPkgSelectorDialog(state = suspendAppProcessSelectorState)
 
     val unsuspendAppProcessSelectorState =
         rememberAppPkgSelectorState(apps = installedApps, onAppListSelected = {
@@ -90,7 +90,7 @@ fun AppActions(addAction: (Action) -> Unit) {
             val action = Action.UnSuspendApp(pkgSets = it)
             addAction(action)
         })
-    AppPkgSelector(state = unsuspendAppProcessSelectorState)
+    AppPkgSelectorDialog(state = unsuspendAppProcessSelectorState)
 
     val i18N = LocalI18N.current
     val actionItems = arrayOf(

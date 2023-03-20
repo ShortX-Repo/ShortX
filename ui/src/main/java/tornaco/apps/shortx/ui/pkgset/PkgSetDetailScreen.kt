@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelector
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -50,7 +50,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                     vm.addApps(it)
                 }
             )
-            AppPkgSelector(state = appSelectorDialogState)
+            AppPkgSelectorDialog(state = appSelectorDialogState)
 
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

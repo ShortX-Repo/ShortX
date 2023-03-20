@@ -102,9 +102,7 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
         stickyHeader {
             SearchBar(searchBarState)
         }
-        items(state.installedApps.filter {
-            searchBarState.keyword.isBlank() || it.label.contains(searchBarState.keyword)
-        }) {
+        items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
             AppItem(
                 app = it,
                 onClick = { app ->
