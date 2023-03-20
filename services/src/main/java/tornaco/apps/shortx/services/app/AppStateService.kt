@@ -10,6 +10,7 @@ import android.os.UserHandle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.*
+import tornaco.apps.shortx.services.os.UserEvent
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -47,22 +49,45 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         super.systemReady()
         systemServiceScope.launchSafety {
             getUsers().forEach {
-                val pool = PkgPool(
-                    context = context,
-                    handler = handler,
-                    userId = it.id,
-                    onPackageUpdateFinished = { changed ->
-                        handler.postSafety {
-                            onPackageChangedListeners.forEach { it(changed) }
-                        }
-                    }).apply {
-
-                    init()
-                    load()
-                }
+                val pool = initPoolForUser(it.id)
                 pkgPools.add(pool)
             }
         }
+
+        systemServiceScope.launchSafety {
+            shortXContext.user.userEvent.collectLatest { event ->
+                when (event) {
+                    is UserEvent.Added -> {
+                        if (pkgPools.firstOrNull { it.userId == event.userId } == null) {
+                            logger.w("User added: ${event.userId}, init pool for it.")
+                            val pool = initPoolForUser(event.userId)
+                            pkgPools.add(pool)
+                        }
+                    }
+                    is UserEvent.Removed -> {
+                        logger.w("User removed: ${event.userId}, remove pool for it.")
+                        pkgPools.removeIf { it.userId == event.userId }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun initPoolForUser(id: Int): PkgPool {
+        val pool = PkgPool(
+            context = context,
+            handler = handler,
+            userId = id,
+            onPackageUpdateFinished = { changed ->
+                handler.postSafety {
+                    onPackageChangedListeners.forEach { it(changed) }
+                }
+            }).apply {
+
+            init()
+            load()
+        }
+        return pool
     }
 
     override fun shutdown() {

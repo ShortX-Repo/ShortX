@@ -12,6 +12,7 @@ class ServiceLifecycle(shortXContext: ShortXContext) {
         shortXContext.overlay,
         shortXContext.ui,
         shortXContext.input,
+        shortXContext.user,
     )
 
     fun start(context: Context) {
