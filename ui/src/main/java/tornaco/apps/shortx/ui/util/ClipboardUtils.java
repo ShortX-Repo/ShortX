@@ -12,4 +12,15 @@ public class ClipboardUtils {
             cmb.setPrimaryClip(ClipData.newPlainText(name, string));
         }
     }
+
+    public static String readClipboard(Context context) {
+        ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cmb != null && cmb.hasPrimaryClip()) {
+
+            ClipData.Item item = cmb.getPrimaryClip().getItemAt(0);
+            if (item == null) return null;
+            return String.valueOf(item.getText());
+        }
+        return null;
+    }
 }

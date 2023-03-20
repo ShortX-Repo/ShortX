@@ -251,8 +251,20 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun parseShareContent(content: String): Rule? {
         return kotlin.runCatching {
             Rule.parseFrom(Base64.getDecoder().decode(content))?.apply {
+                requireNotNull(this.id) { "Id is null. invalid rule?" }
                 requireNotNull(this.title) { "Title is null. invalid rule?" }
             }
         }.getOrNull()
+    }
+
+    fun importRule(rule: Rule) {
+        viewModelScope.launch {
+            val refined =
+                Rule.newBuilder(rule).setId(UUID.randomUUID().toString()).setIsEnabled(false)
+                    .build()
+            shortXManager.addRule(refined)
+
+            loadRules()
+        }
     }
 }

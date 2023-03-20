@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 enum class HomeBottomRoute {
     Rules, DirectActions
@@ -136,9 +138,20 @@ private fun HomeScreen(
                     BottomNavigationContent(navController)
                 },
                 floatingActionButton = {
+                    val context = LocalContext.current
                     Fab(
                         onClipboardClick = {
-
+                            when (navController.currentBackStackEntry?.destination?.route) {
+                                HomeBottomRoute.Rules.name -> {
+                                    vm.parseShareContent(ClipboardUtils.readClipboard(context))
+                                        ?.let {
+                                            vm.importRule(it)
+                                        }
+                                }
+                                HomeBottomRoute.DirectActions.name -> {
+                                }
+                                else -> {}
+                            }
                         },
                         onFileClick = {
 
