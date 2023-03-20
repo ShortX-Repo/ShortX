@@ -22,10 +22,8 @@ import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.AppPkgSelector
-import tornaco.apps.shortx.ui.addrule.condition.Conditions
+import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.fact.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -208,12 +206,26 @@ private fun FactSelectors(
         })
     AppPkgSelector(appFgPkgSelectorState)
 
+    val appComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        onAppComponentSelected = {
+
+        }
+    )
+    AppComponentSelectorDialog(appComponentSelectorState)
+
+    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+        appComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = singleAppSelectorState)
+
     FactSelector(state) { fact ->
         when (fact) {
             Fact.KeyEvent::class -> {
                 keyEventSelectorState.show()
             }
             Fact.ActivityStarted::class -> {
+                singleAppSelectorState.show()
             }
             Fact.EdgeGesture::class -> {
                 edgeGestureSelectorState.show()

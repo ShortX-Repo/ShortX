@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.toComponentName
+import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -32,18 +33,20 @@ enum class ComponentType {
 }
 
 class AppComponentSelectorState(
-    val pkg: AppPkg,
     val types: List<ComponentType>,
     val onAppComponentSelected: (List<AppComponentInfo>) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
+    var pkg: AppPkg = unKnownPkg
+
     private var _selectedAppComponents by mutableStateOf(emptyList<AppComponentInfo>())
     val selectedAppComponents get() = _selectedAppComponents
 
 
-    fun show() {
+    fun show(pkg: AppPkg) {
+        this.pkg = pkg
         _isShow = true
     }
 
@@ -69,12 +72,11 @@ class AppComponentSelectorState(
 
 @Composable
 fun rememberAppComponentSelectorState(
-    pkg: AppPkg,
     types: List<ComponentType>,
     onAppComponentSelected: (List<AppComponentInfo>) -> Unit
 ): AppComponentSelectorState {
     return remember {
-        AppComponentSelectorState(pkg, types, onAppComponentSelected)
+        AppComponentSelectorState(types, onAppComponentSelected)
     }
 }
 
@@ -86,7 +88,6 @@ fun AppComponentSelectorDialog(state: AppComponentSelectorState) {
         }
     }
 }
-
 
 @Composable
 private fun AppComponentSelector(state: AppComponentSelectorState) {
