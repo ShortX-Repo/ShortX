@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -103,11 +104,19 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                         title = { Text(text = LocalI18N.current["ui.title.select.action"]) },
                         actions = {
                             IconButton(onClick = {
+                                state.onAppComponentSelected(state.selectedAppComponents)
+                                state.dismiss()
+                            }) {
+                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
                                 state.dismiss()
                             }) {
                                 Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
                             }
-                        },
+                        }
                     )
                 }) { paddingValues ->
                 Column(

@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package tornaco.apps.shortx.ui.addrule.condition
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,7 +66,7 @@ private fun SingleAppPkgSelector(state: SingleAppPkgSelectorState) {
                         modifier = Modifier,
                         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = ColorDefaults.backgroundSurfaceColor()),
                         title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
-                        actions = {
+                        navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()
                             }) {
@@ -98,7 +99,7 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        item {
+        stickyHeader {
             SearchBar(searchBarState)
         }
         items(state.installedApps.filter {

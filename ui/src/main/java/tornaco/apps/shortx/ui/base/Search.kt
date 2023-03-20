@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun rememberSearchBarState(itemCount: Int): SearchBarState {
-    return remember {
+    return remember(itemCount) {
         SearchBarState(itemCount)
     }
 }
