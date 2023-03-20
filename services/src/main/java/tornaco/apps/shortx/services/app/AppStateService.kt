@@ -316,4 +316,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             component.toComponentName()
         )
     }
+
+    fun getAppComponentInfo(component: AppComponent): AppComponentInfo? {
+        return null
+    }
 }

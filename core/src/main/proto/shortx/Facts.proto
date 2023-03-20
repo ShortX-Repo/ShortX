@@ -138,3 +138,7 @@ message DarkModeStatusChanged {
 message DNDStatusChanged {
   OnOffAny ooa = 1;
 }
+
+message ActivityStarted {
+  repeated AppComponent components = 1;
+}

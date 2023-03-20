@@ -273,5 +273,15 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byte)
             )
         }
+
+        override fun getAppComponentInfo(component: ByteArrayWrapper): ByteArrayWrapper? {
+            return shortXContext.appState.getAppComponentInfo(
+                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(
+                    component.byte
+                )
+            )?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
     }
 }

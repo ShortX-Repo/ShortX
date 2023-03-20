@@ -64,5 +64,7 @@ interface IShortX {
 
     void setComponentEnabledSetting(/*AppComponent*/in ByteArrayWrapper component, int newState, int flags);
     int getComponentEnabledSetting(/*AppComponent*/in ByteArrayWrapper component);
+
+    ByteArrayWrapper getAppComponentInfo(/*AppComponent*/in ByteArrayWrapper component);
     // Components end
 }

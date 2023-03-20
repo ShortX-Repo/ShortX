@@ -302,6 +302,14 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getAppComponentInfo(component: AppComponent): AppComponentInfo? {
+        return invokeService(null) {
+            getAppComponentInfo(ByteArrayWrapper(component.toByteArray())).let {
+                AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

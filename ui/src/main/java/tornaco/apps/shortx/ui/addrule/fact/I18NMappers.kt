@@ -6,11 +6,13 @@ import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -38,7 +40,13 @@ fun labelForFact(fact: Fact): List<String> {
 
 fun labelForFact(i18N: I18N, fact: Fact): List<String> {
     return when (fact) {
-        is Fact.ActivityStarted -> listOf(i18N["ui.fact.activity.started"], fact.name)
+        is Fact.ActivityStarted -> mutableListOf(i18N["ui.fact.activity.started"]).apply {
+            addAll(fact.components.map {
+                "${
+                    it.toComponentName().flattenToShortString()
+                }$PREFIX_APP_ICON${it.pkg.pkgName}"
+            })
+        }
         is Fact.EdgeGesture -> listOf(
             i18N["ui.fact.edge.gesture"],
             "${fact.edge}",

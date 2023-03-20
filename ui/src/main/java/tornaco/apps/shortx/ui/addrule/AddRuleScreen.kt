@@ -209,7 +209,7 @@ private fun FactSelectors(
     val appComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
         onAppComponentSelected = {
-
+            vm.setFact(Fact.ActivityStarted(it.map { it.component }))
         }
     )
     AppComponentSelectorDialog(appComponentSelectorState)
