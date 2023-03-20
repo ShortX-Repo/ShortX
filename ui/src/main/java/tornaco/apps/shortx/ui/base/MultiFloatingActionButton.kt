@@ -72,8 +72,8 @@ fun MultiFloatingActionButton(
                 modifier = Modifier
                     .padding(
                         bottom = shrinkListAnim[index].dp,
-                        top = 5.dp,
-                        end = 30.dp
+                        top = 6.dp,
+                        end = 6.dp
                     )
                     .alpha(animateFloatAsState(alphaAnim).value)
             ) {
@@ -107,7 +107,7 @@ fun MultiFloatingActionButton(
             }
         }
         FloatingActionButton(
-            modifier = Modifier.padding(0.dp, end = 25.dp),
+            modifier = Modifier,
             onClick = {
                 currentState.value =
                     if (currentState.value == MultiFabState.Collapsed) MultiFabState.Expanded else MultiFabState.Collapsed
