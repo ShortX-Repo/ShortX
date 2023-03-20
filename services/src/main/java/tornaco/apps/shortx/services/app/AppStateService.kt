@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.util.PkgUtils
@@ -132,6 +133,13 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 )
             )
         }
+
+        shortXContext.rule.publishFact(
+            "onComponentMoveToFg",
+            ActivityStarted.newBuilder().addComponents(componentName.toAppComponent(userId))
+                .build(),
+            emptyMap()
+        )
     }
 
     fun getInstalledApps(): List<App> {

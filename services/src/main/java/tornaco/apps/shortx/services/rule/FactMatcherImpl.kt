@@ -37,6 +37,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchAppBecomeBgOrFg(AppBecomeBgFactWrapper(bgActual), AppBecomeBgFactWrapper(bgRule))
         }
 
+        register(ActivityStarted::class.java) { actual, rule ->
+            val aa = actual as ActivityStarted
+            val ra = rule as ActivityStarted
+            ra.componentsList.containsAll(aa.componentsList)
+        }
+
         register(WifiStatusChanged::class.java) { actual, rule ->
             val actualStatus = actual as WifiStatusChanged
             val ruleStatus = rule as WifiStatusChanged
