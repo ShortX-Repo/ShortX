@@ -248,11 +248,20 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             Base64.getEncoder().encodeToString(it)
         }
 
-    fun parseShareContent(content: String): Rule? {
+    fun parseShareContentRule(content: String): Rule? {
         return kotlin.runCatching {
             Rule.parseFrom(Base64.getDecoder().decode(content))?.apply {
                 requireNotNull(this.id) { "Id is null. invalid rule?" }
                 requireNotNull(this.title) { "Title is null. invalid rule?" }
+            }
+        }.getOrNull()
+    }
+
+    fun parseShareContentDA(content: String): DirectAction? {
+        return kotlin.runCatching {
+            DirectAction.parseFrom(Base64.getDecoder().decode(content))?.apply {
+                requireNotNull(this.id) { "Id is null. invalid da?" }
+                requireNotNull(this.title) { "Title is null. invalid da?" }
             }
         }.getOrNull()
     }
@@ -265,6 +274,17 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             shortXManager.addRule(refined)
 
             loadRules()
+        }
+    }
+
+    fun importDA(da: DirectAction) {
+        viewModelScope.launch {
+            val refined =
+                DirectAction.newBuilder(da).setId(UUID.randomUUID().toString())
+                    .build()
+            shortXManager.addDirectAction(refined)
+
+            loadDA()
         }
     }
 }

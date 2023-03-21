@@ -143,12 +143,16 @@ private fun HomeScreen(
                         onClipboardClick = {
                             when (navController.currentBackStackEntry?.destination?.route) {
                                 HomeBottomRoute.Rules.name -> {
-                                    vm.parseShareContent(ClipboardUtils.readClipboard(context))
+                                    vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
                                         ?.let {
                                             vm.importRule(it)
                                         }
                                 }
                                 HomeBottomRoute.DirectActions.name -> {
+                                    vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
+                                        ?.let {
+                                            vm.importDA(it)
+                                        }
                                 }
                                 else -> {}
                             }
