@@ -47,7 +47,6 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualStatus = actual as WifiStatusChanged
             val ruleStatus = rule as WifiStatusChanged
             (ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa)
-                    && ruleStatus.ssid.isNullOrEmpty() || ruleStatus.ssid == actualStatus.ssid
         }
 
         register(BTStatusChanged::class.java) { actual, rule ->

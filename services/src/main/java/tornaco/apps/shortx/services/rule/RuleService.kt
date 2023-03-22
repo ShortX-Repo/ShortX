@@ -120,7 +120,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     fun publishFact(reason: String, fact: ProtoMessage, contextMap: Map<String, Any> = emptyMap()) {
-        logger.d("publishFact: $reason, $fact")
+        logger.d("publishFact: $reason")
         engine.fire(
             fact = fact,
             rules = getAllRules().filter { rule -> rule.isEnabled },

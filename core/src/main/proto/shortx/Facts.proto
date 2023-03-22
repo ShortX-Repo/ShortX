@@ -111,6 +111,11 @@ message WifiStatusChanged {
   string ssid = 2;
 }
 
+message WifiConnectionStatusChanged {
+  string ssid = 1;
+  bool isConnected = 2;
+}
+
 message MobileDataStatusChanged {
   OnOffAny ooa = 1;
 }

@@ -20,7 +20,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("Wifi ${onOffAny.name}")
-                    .setFact(WifiStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(WifiStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -34,7 +34,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("BT ${onOffAny.name}")
-                    .setFact(BTStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(BTStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -48,7 +48,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("NFC ${onOffAny.name}")
-                    .setFact(NFCStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(NFCStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -62,7 +62,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("DarkMode ${onOffAny.name}")
-                    .setFact(DarkModeStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(DarkModeStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -77,7 +77,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("DND ${onOffAny.name}")
-                    .setFact(DNDStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(DNDStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -91,7 +91,7 @@ object DevRules {
                 Rule.newBuilder()
                     .setId(nextId())
                     .setTitle("Location ${onOffAny.name}")
-                    .setFact(LocationStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_())
+                    .setFact(LocationStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -107,7 +107,7 @@ object DevRules {
                     .setId(nextId())
                     .setTitle("MobileData ${onOffAny.name}")
                     .setFact(
-                        MobileDataStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_()
+                        MobileDataStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
                     )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
@@ -124,7 +124,7 @@ object DevRules {
                     .setId(nextId())
                     .setTitle("FlashLight ${onOffAny.name}")
                     .setFact(
-                        FlashLightStatusChanged.newBuilder().setOoa(OnOffAny.On).build().pack_()
+                        FlashLightStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
                     )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
