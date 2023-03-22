@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -85,10 +86,60 @@ fun FactSelectors(
     SingleAppSelectorDialog(state = singleAppSelectorState)
 
 
-    val wifiSelectorState = rememberOnOffAnyStateSelectorState(title = "Wifi") {
-        vm.setFact(Fact.WifiStatusChanged(it))
-    }
+    val wifiSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
+            vm.setFact(Fact.WifiStatusChanged(it))
+        }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
+
+    val btSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {
+            vm.setFact(Fact.BTStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(btSelectorState)
+
+    val dndSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dnd.state.changed"]) {
+            vm.setFact(Fact.DNDStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(dndSelectorState)
+
+    val locationSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.location.state.changed"]) {
+            vm.setFact(Fact.LocationStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(locationSelectorState)
+
+    val darkModeSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dark.mode.state.changed"]) {
+            vm.setFact(Fact.DarkModeStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(darkModeSelectorState)
+
+    val mobileDataSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.mobile.data.state.changed"]) {
+            vm.setFact(Fact.MobileDataStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(mobileDataSelectorState)
+
+    val flashLightSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.flash.light.state.changed"]) {
+            vm.setFact(Fact.FlashLightStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(flashLightSelectorState)
+
+    val nfcSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.nfc.state.changed"]) {
+            vm.setFact(Fact.NFCStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(nfcSelectorState)
+
+    val hotspotSelectorState =
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.hotspot.state.changed"]) {
+            vm.setFact(Fact.HotSpotStatusChanged(it))
+        }
+    OnOffAnyStateSelectorDialog(hotspotSelectorState)
+
 
     FactSelector(state) { fact ->
         when (fact) {
@@ -121,6 +172,30 @@ fun FactSelectors(
             }
             Fact.WifiStatusChanged::class -> {
                 wifiSelectorState.show()
+            }
+            Fact.BTStatusChanged::class -> {
+                btSelectorState.show()
+            }
+            Fact.DNDStatusChanged::class -> {
+                dndSelectorState.show()
+            }
+            Fact.DarkModeStatusChanged::class -> {
+                darkModeSelectorState.show()
+            }
+            Fact.FlashLightStatusChanged::class -> {
+                flashLightSelectorState.show()
+            }
+            Fact.HotSpotStatusChanged::class -> {
+                hotspotSelectorState.show()
+            }
+            Fact.LocationStatusChanged::class -> {
+                locationSelectorState.show()
+            }
+            Fact.MobileDataStatusChanged::class -> {
+                mobileDataSelectorState.show()
+            }
+            Fact.NFCStatusChanged::class -> {
+                nfcSelectorState.show()
             }
         }
     }
@@ -221,9 +296,28 @@ private fun FactSelectorMenu(
 
         item(
             Fact.WifiStatusChanged::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.WifiStatusChanged::class)
+            i18N["ui.fact.system.settings"] to null
         ) {
-            icon(imageVectorForFact(Fact.WifiStatusChanged::class))
+            icon(Icons.Outlined.Settings)
+
+            listOf(
+                Fact.WifiStatusChanged::class,
+                Fact.BTStatusChanged::class,
+                Fact.LocationStatusChanged::class,
+                Fact.NFCStatusChanged::class,
+                Fact.MobileDataStatusChanged::class,
+                Fact.HotSpotStatusChanged::class,
+                Fact.DarkModeStatusChanged::class,
+                Fact.FlashLightStatusChanged::class,
+
+                ).forEach {
+                item(
+                    it,
+                    labelAndDescriptionForFactSelector(i18N, it)
+                ) {
+                    icon(imageVectorForFact(it))
+                }
+            }
         }
 
         item(Fact.AppBecomeForeground::class, i18N["ui.fact.app.bg.state"] to null) {
@@ -253,16 +347,24 @@ private fun FactSelectorMenu(
 
 private fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
     return when (fact) {
-        Fact.ActivityStarted::class -> Icons.Filled.Update
-        Fact.EdgeGesture::class -> Icons.Filled.Gesture
-        Fact.KeyEvent::class -> Icons.Filled.Keyboard
-        Fact.ScreenOff::class -> Icons.Filled.Lock
-        Fact.ScreenOn::class -> Icons.Filled.Smartphone
-        Fact.UserPresent::class -> Icons.Filled.LockOpen
-        Fact.Alarm::class -> Icons.Filled.Alarm
-        Fact.AppBecomeBackground::class -> Icons.Filled.FiberDvr
-        Fact.AppBecomeForeground::class -> Icons.Filled.Aod
-        Fact.WifiStatusChanged::class -> Icons.Filled.Wifi
+        Fact.ActivityStarted::class -> Icons.Outlined.Update
+        Fact.EdgeGesture::class -> Icons.Outlined.Gesture
+        Fact.KeyEvent::class -> Icons.Outlined.Keyboard
+        Fact.ScreenOff::class -> Icons.Outlined.Lock
+        Fact.ScreenOn::class -> Icons.Outlined.Smartphone
+        Fact.UserPresent::class -> Icons.Outlined.LockOpen
+        Fact.Alarm::class -> Icons.Outlined.Alarm
+        Fact.AppBecomeBackground::class -> Icons.Outlined.FiberDvr
+        Fact.AppBecomeForeground::class -> Icons.Outlined.Aod
+        Fact.WifiStatusChanged::class -> Icons.Outlined.Wifi
+        Fact.BTStatusChanged::class -> Icons.Outlined.Bluetooth
+        Fact.LocationStatusChanged::class -> Icons.Outlined.LocationOn
+        Fact.NFCStatusChanged::class -> Icons.Outlined.Nfc
+        Fact.MobileDataStatusChanged::class -> Icons.Outlined.MobiledataOff
+        Fact.HotSpotStatusChanged::class -> Icons.Outlined.WifiTethering
+        Fact.DarkModeStatusChanged::class -> Icons.Outlined.DarkMode
+        Fact.FlashLightStatusChanged::class -> Icons.Outlined.FlashlightOn
+
         else -> {
             Icons.Filled.Warning
         }

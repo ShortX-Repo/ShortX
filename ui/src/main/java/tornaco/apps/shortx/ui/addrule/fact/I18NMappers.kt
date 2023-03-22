@@ -30,6 +30,32 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
         Fact.WifiStatusChanged::class -> i18n["ui.fact.wifi.state.changed"] to null
+
+        Fact.BTStatusChanged::class -> {
+            i18n["ui.fact.bt.state.changed"] to null
+        }
+        Fact.DNDStatusChanged::class -> {
+            i18n["ui.fact.dnd.state.changed"] to null
+        }
+        Fact.DarkModeStatusChanged::class -> {
+            i18n["ui.fact.dark.mode.state.changed"] to null
+        }
+        Fact.FlashLightStatusChanged::class -> {
+            i18n["ui.fact.flash.light.state.changed"] to null
+        }
+        Fact.HotSpotStatusChanged::class -> {
+            i18n["ui.fact.hotspot.state.changed"] to null
+        }
+        Fact.LocationStatusChanged::class -> {
+            i18n["ui.fact.location.state.changed"] to null
+        }
+        Fact.MobileDataStatusChanged::class -> {
+            i18n["ui.fact.mobile.data.state.changed"] to null
+        }
+        Fact.NFCStatusChanged::class -> {
+            i18n["ui.fact.nfc.state.changed"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -92,6 +118,54 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.WifiStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.wifi.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.BTStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.bt.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.DNDStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.dnd.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.DarkModeStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.dark.mode.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.FlashLightStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.flash.light.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.HotSpotStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.hotspot.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.LocationStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.location.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.MobileDataStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.mobile.data.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
+        is Fact.NFCStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.nfc.state.changed"],
                 fact.state.label(i18N)
             )
         }

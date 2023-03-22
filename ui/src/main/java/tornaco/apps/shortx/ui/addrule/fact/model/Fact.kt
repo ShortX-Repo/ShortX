@@ -36,6 +36,14 @@ sealed interface Fact {
     ) : Fact
 
     data class WifiStatusChanged(val state: OnOffAny) : Fact
+    data class BTStatusChanged(val state: OnOffAny) : Fact
+    data class MobileDataStatusChanged(val state: OnOffAny) : Fact
+    data class LocationStatusChanged(val state: OnOffAny) : Fact
+    data class NFCStatusChanged(val state: OnOffAny) : Fact
+    data class DNDStatusChanged(val state: OnOffAny) : Fact
+    data class HotSpotStatusChanged(val state: OnOffAny) : Fact
+    data class FlashLightStatusChanged(val state: OnOffAny) : Fact
+    data class DarkModeStatusChanged(val state: OnOffAny) : Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -79,6 +87,46 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.BTStatusChanged -> {
+            BTStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.DNDStatusChanged -> {
+            DNDStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.FlashLightStatusChanged -> {
+            FlashLightStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.HotSpotStatusChanged -> {
+            HotSpotStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.LocationStatusChanged -> {
+            LocationStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.MobileDataStatusChanged -> {
+            MobileDataStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.NFCStatusChanged -> {
+            NFCStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
+        }
+        is Fact.DarkModeStatusChanged -> {
+            DarkModeStatusChanged.newBuilder()
                 .setOoa(state)
                 .build()
         }
@@ -135,6 +183,38 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         this is_ WifiStatusChanged::class.java -> {
             val data = this unpack_ WifiStatusChanged::class.java
             Fact.WifiStatusChanged(data.ooa)
+        }
+        this is_ BTStatusChanged::class.java -> {
+            val data = this unpack_ BTStatusChanged::class.java
+            Fact.BTStatusChanged(data.ooa)
+        }
+        this is_ HotSpotStatusChanged::class.java -> {
+            val data = this unpack_ HotSpotStatusChanged::class.java
+            Fact.HotSpotStatusChanged(data.ooa)
+        }
+        this is_ NFCStatusChanged::class.java -> {
+            val data = this unpack_ NFCStatusChanged::class.java
+            Fact.NFCStatusChanged(data.ooa)
+        }
+        this is_ LocationStatusChanged::class.java -> {
+            val data = this unpack_ LocationStatusChanged::class.java
+            Fact.LocationStatusChanged(data.ooa)
+        }
+        this is_ MobileDataStatusChanged::class.java -> {
+            val data = this unpack_ MobileDataStatusChanged::class.java
+            Fact.MobileDataStatusChanged(data.ooa)
+        }
+        this is_ FlashLightStatusChanged::class.java -> {
+            val data = this unpack_ FlashLightStatusChanged::class.java
+            Fact.FlashLightStatusChanged(data.ooa)
+        }
+        this is_ DNDStatusChanged::class.java -> {
+            val data = this unpack_ DNDStatusChanged::class.java
+            Fact.DNDStatusChanged(data.ooa)
+        }
+        this is_ DarkModeStatusChanged::class.java -> {
+            val data = this unpack_ DarkModeStatusChanged::class.java
+            Fact.DarkModeStatusChanged(data.ooa)
         }
         else -> {
             null
