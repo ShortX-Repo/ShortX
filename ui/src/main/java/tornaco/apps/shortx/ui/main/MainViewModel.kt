@@ -23,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.LoadState
 import java.util.*
 import javax.inject.Inject
 
@@ -48,8 +49,8 @@ data class DirectActionUM(
 
 data class MainState(
     val isActivated: Boolean = false,
-    val rules: List<RuleUM> = emptyList(),
-    val das: List<DirectActionUM> = emptyList()
+    val rules: LoadState<List<RuleUM>> = LoadState.Loading,
+    val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -91,6 +92,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadRules() {
         logger.d("loadRules")
         viewModelScope.launch {
+            updateState { copy(rules = LoadState.Loading) }
             withContext(Dispatchers.IO) {
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
@@ -113,7 +115,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         )
                     }
                 updateState {
-                    copy(rules = rules)
+                    copy(rules = LoadState.Success(rules))
                 }
             }
         }
@@ -146,6 +148,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadDA() {
         logger.d("loadDA")
         viewModelScope.launch {
+            updateState { copy(das = LoadState.Loading) }
             withContext(Dispatchers.IO) {
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
@@ -183,7 +186,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         )
                     }
                 updateState {
-                    copy(das = das)
+                    copy(das = LoadState.Success(das))
                 }
             }
 

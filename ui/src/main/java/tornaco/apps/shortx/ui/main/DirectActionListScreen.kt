@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 
 const val EXECUTE_ANIM_DURATION = 600
 
@@ -43,70 +44,74 @@ fun DirectActionListScreen(
     onDirectActionClick: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
-    LazyVerticalStaggeredGrid(
-        modifier = Modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-    ) {
-        items(items = state.das, key = { it.id }) { da ->
-            var colorAnimStarted by remember {
-                mutableStateOf(false)
-            }
-            var scaleAnimStarted by remember {
-                mutableStateOf(false)
-            }
-            val widthPercent by animateFloatAsState(
-                targetValue = if (!colorAnimStarted) 0f else 1f,
-                animationSpec = tween(EXECUTE_ANIM_DURATION),
-                finishedListener = {
-                    colorAnimStarted = false
+    if (state.das.isSuccess() && state.das.data.isNullOrEmpty()) {
+        EmptyList(modifier = Modifier.fillMaxSize())
+    } else if (state.das.isSuccess()) {
+        LazyVerticalStaggeredGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = StaggeredGridCells.Fixed(2),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+        ) {
+            items(items = state.das.data.orEmpty(), key = { it.id }) { da ->
+                var colorAnimStarted by remember {
+                    mutableStateOf(false)
                 }
-            )
-            val scalePercent by animateFloatAsState(
-                targetValue = if (scaleAnimStarted) 0.96f else 1f,
-                animationSpec = spring(),
-                finishedListener = {
-                    scaleAnimStarted = false
+                var scaleAnimStarted by remember {
+                    mutableStateOf(false)
                 }
-            )
-            var itemSize by remember {
-                mutableStateOf(Pair(0.dp, 0.dp))
-            }
-            val density = LocalDensity.current
+                val widthPercent by animateFloatAsState(
+                    targetValue = if (!colorAnimStarted) 0f else 1f,
+                    animationSpec = tween(EXECUTE_ANIM_DURATION),
+                    finishedListener = {
+                        colorAnimStarted = false
+                    }
+                )
+                val scalePercent by animateFloatAsState(
+                    targetValue = if (scaleAnimStarted) 0.96f else 1f,
+                    animationSpec = spring(),
+                    finishedListener = {
+                        scaleAnimStarted = false
+                    }
+                )
+                var itemSize by remember {
+                    mutableStateOf(Pair(0.dp, 0.dp))
+                }
+                val density = LocalDensity.current
 
-            Card(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .scale(scalePercent),
-                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                shape = ShortXCardRoundedCornerShape,
-                elevation = 0.dp
-            ) {
-                Box {
-                    DirectActionItem(
-                        modifier = Modifier.onSizeChanged {
-                            itemSize = with(density) {
-                                it.width.toDp() to it.height.toDp()
-                            }
-                        },
-                        da = da,
-                        onClick = {
-                            onDirectActionClick(da)
-                            colorAnimStarted = true
-                            scaleAnimStarted = true
-                        },
-                        onDelete = onDelete,
-                        onEdit = onEdit,
-                        onShare = onShare,
-                        stopAllJobs = stopAllJobs
-                    )
+                Card(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .scale(scalePercent),
+                    backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                    shape = ShortXCardRoundedCornerShape,
+                    elevation = 0.dp
+                ) {
+                    Box {
+                        DirectActionItem(
+                            modifier = Modifier.onSizeChanged {
+                                itemSize = with(density) {
+                                    it.width.toDp() to it.height.toDp()
+                                }
+                            },
+                            da = da,
+                            onClick = {
+                                onDirectActionClick(da)
+                                colorAnimStarted = true
+                                scaleAnimStarted = true
+                            },
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onShare = onShare,
+                            stopAllJobs = stopAllJobs
+                        )
 
-                    if (colorAnimStarted) Spacer(
-                        modifier = Modifier
-                            .width((itemSize.first * widthPercent))
-                            .height(itemSize.second)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.06f))
-                    )
+                        if (colorAnimStarted) Spacer(
+                            modifier = Modifier
+                                .width((itemSize.first * widthPercent))
+                                .height(itemSize.second)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.06f))
+                        )
+                    }
                 }
             }
         }

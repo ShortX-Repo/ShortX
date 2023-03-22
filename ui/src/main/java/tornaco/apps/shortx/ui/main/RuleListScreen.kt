@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 
 @Composable
 fun RuleScreen(
@@ -32,44 +33,51 @@ fun RuleScreen(
     onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-    ) {
-        items(
-            items = state.rules,
-            key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
-
-            var scaleAnimStarted by remember {
-                mutableStateOf(false)
-            }
-            val scalePercent by animateFloatAsState(
-                targetValue = if (scaleAnimStarted) 0.99f else 1f,
-                animationSpec = spring(),
-                finishedListener = {
-                    scaleAnimStarted = false
-                }
-            )
-
-            Card(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .scale(scalePercent),
-                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                shape = ShortXCardRoundedCornerShape,
-                elevation = 0.dp
+    when {
+        state.rules.isSuccess() && state.rules.data.isNullOrEmpty() -> {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        }
+        state.rules.isSuccess() -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
             ) {
-                RuleItem(
-                    rule = rule,
-                    onClick = {
-                        onRuleClick(rule)
-                        scaleAnimStarted = true
-                    },
-                    setRuleEnabled = setRuleEnabled,
-                    onDelete = onDelete,
-                    onEdit = onEdit,
-                    onShare = onShare,
-                )
+                items(
+                    items = state.rules.data.orEmpty(),
+                    key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+
+                    var scaleAnimStarted by remember {
+                        mutableStateOf(false)
+                    }
+                    val scalePercent by animateFloatAsState(
+                        targetValue = if (scaleAnimStarted) 0.99f else 1f,
+                        animationSpec = spring(),
+                        finishedListener = {
+                            scaleAnimStarted = false
+                        }
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .scale(scalePercent),
+                        backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                        shape = ShortXCardRoundedCornerShape,
+                        elevation = 0.dp
+                    ) {
+                        RuleItem(
+                            rule = rule,
+                            onClick = {
+                                onRuleClick(rule)
+                                scaleAnimStarted = true
+                            },
+                            setRuleEnabled = setRuleEnabled,
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onShare = onShare,
+                        )
+                    }
+                }
             }
         }
     }

@@ -1,9 +1,7 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -11,12 +9,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.R
 
+sealed interface LoadState<out T> {
+    data class Success<T>(val data: T) : LoadState<T>
+    object Loading : LoadState<Nothing>
+    data class Error(val err: Throwable? = null) : LoadState<Nothing>
+
+    fun isLoading() = this is Loading
+    fun isSuccess() = this is Success
+
+    val <T> LoadState<T>.data: T?
+        get() = (this as? LoadState.Success)?.data
+}
+
 @Composable
 fun LoadError(modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             modifier = Modifier
                 .padding(start = 32.dp, end = 32.dp)
+                .offset(y = (-80).dp)
                 .fillMaxWidth(),
             painter = painterResource(
                 id = R.drawable.ui_load_error
@@ -26,15 +41,21 @@ fun LoadError(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
-fun NetworkError(modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+fun EmptyList(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             modifier = Modifier
                 .padding(start = 32.dp, end = 32.dp)
+                .offset(y = (-80).dp)
                 .fillMaxWidth(),
             painter = painterResource(
-                id = R.drawable.ui_network_error
+                id = R.drawable.ui_empty_list
             ),
             contentDescription = null,
         )
