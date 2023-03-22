@@ -25,10 +25,8 @@ import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.*
-import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,95 +159,6 @@ private fun ConditionSelectors(
     }, setConditionOp = {
         vm.setConditionOp(it)
     })
-}
-
-@Composable
-private fun FactSelectors(
-    vm: AddRuleViewModel, state: AddRuleState
-) {
-    // Fact selectors
-    val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
-        vm.setFact(Fact.KeyEvent(code))
-    })
-    KeyEventSelector(keyEventSelectorState)
-
-    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(selected = { eg ->
-        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
-    }, showEdgeHint = {
-        vm.showEdgeHint(it)
-    })
-    EdgeGestureSelector(edgeGestureSelectorState)
-
-    val timeOfADaySelector = rememberAlarmSelectorState(
-        initialRepeat = emptyArray(),
-        initialTime = LocalTime.now()
-    ) { alarm ->
-        // Use rule id as alarm tag.
-        vm.setFact(Fact.Alarm(state.id, alarm.triggerAt, alarm.repeat))
-    }
-    AlarmSelector(timeOfADaySelector)
-
-    // Condition selectors
-    val appBgPkgSelectorState =
-        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
-            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
-        }, onPkgSetSelected = {
-            vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
-        })
-    AppPkgSelectorDialog(appBgPkgSelectorState)
-
-    val appFgPkgSelectorState =
-        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
-            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
-        }, onPkgSetSelected = {
-            vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
-        })
-    AppPkgSelectorDialog(appFgPkgSelectorState)
-
-    val appComponentSelectorState = rememberAppComponentSelectorState(
-        types = listOf(ComponentType.Activity),
-        onAppComponentSelected = {
-            vm.setFact(Fact.ActivityStarted(it.map { it.component }))
-        }
-    )
-    AppComponentSelectorDialog(appComponentSelectorState)
-
-    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
-        appComponentSelectorState.show(it.pkg)
-    }
-    SingleAppSelectorDialog(state = singleAppSelectorState)
-
-    FactSelector(state) { fact ->
-        when (fact) {
-            Fact.KeyEvent::class -> {
-                keyEventSelectorState.show()
-            }
-            Fact.ActivityStarted::class -> {
-                singleAppSelectorState.show()
-            }
-            Fact.EdgeGesture::class -> {
-                edgeGestureSelectorState.show()
-            }
-            Fact.ScreenOff::class -> {
-                vm.setFact(Fact.ScreenOff)
-            }
-            Fact.ScreenOn::class -> {
-                vm.setFact(Fact.ScreenOn)
-            }
-            Fact.UserPresent::class -> {
-                vm.setFact(Fact.UserPresent)
-            }
-            Fact.Alarm::class -> {
-                timeOfADaySelector.show()
-            }
-            Fact.AppBecomeBackground::class -> {
-                appBgPkgSelectorState.show()
-            }
-            Fact.AppBecomeForeground::class -> {
-                appFgPkgSelectorState.show()
-            }
-        }
-    }
 }
 
 @Composable

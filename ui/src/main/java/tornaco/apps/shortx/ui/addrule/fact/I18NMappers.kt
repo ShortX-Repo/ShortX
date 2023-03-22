@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
+import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
@@ -28,6 +29,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
+        Fact.WifiStatusChanged::class -> i18n["ui.fact.wifi.state.changed"] to null
         else -> "N/A" to null
     }
 }
@@ -87,6 +89,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.AppBecomeForeground -> mutableListOf(
             i18N["ui.fact.app.become.fg"]
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        is Fact.WifiStatusChanged -> {
+            mutableListOf(
+                i18N["ui.fact.wifi.state.changed"],
+                fact.state.label(i18N)
+            )
+        }
     }
 }
 
@@ -144,4 +152,21 @@ fun TimeOfADay.toDisplayTime(): String {
         set(Calendar.SECOND, 0)
     }.time
     return DateUtils.formatShortForMessageTime(date.time)
+}
+
+fun OnOffAny.label(i18n: I18N): String {
+    return when (this) {
+        OnOffAny.On -> {
+            i18n["ui.common.on"]
+        }
+        OnOffAny.Off -> {
+            i18n["ui.common.off"]
+        }
+        OnOffAny.Any -> {
+            i18n["ui.common.any"]
+        }
+        OnOffAny.UNRECOGNIZED -> {
+            "UNRECOGNIZED"
+        }
+    }
 }

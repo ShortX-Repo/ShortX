@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.*
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -33,6 +34,8 @@ sealed interface Fact {
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
     ) : Fact
+
+    data class WifiStatusChanged(val state: OnOffAny) : Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -73,6 +76,11 @@ fun Fact.toProtoFact(): ProtoMessage {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.id }).build()
+        }
+        is Fact.WifiStatusChanged -> {
+            WifiStatusChanged.newBuilder()
+                .setOoa(state)
+                .build()
         }
     }
 }
@@ -123,6 +131,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         this is_ ActivityStarted::class.java -> {
             val data = this unpack_ ActivityStarted::class.java
             Fact.ActivityStarted(data.componentsList)
+        }
+        this is_ WifiStatusChanged::class.java -> {
+            val data = this unpack_ WifiStatusChanged::class.java
+            Fact.WifiStatusChanged(data.ooa)
         }
         else -> {
             null

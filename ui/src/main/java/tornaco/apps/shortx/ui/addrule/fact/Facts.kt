@@ -15,14 +15,120 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.ui.addrule.AddRuleState
+import tornaco.apps.shortx.ui.addrule.AddRuleViewModel
+import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.dropdown.Dropdown
 import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu
+import java.time.LocalTime
 import kotlin.reflect.KClass
 
+
 @Composable
-fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> Unit) {
+fun FactSelectors(
+    vm: AddRuleViewModel, state: AddRuleState
+) {
+    // Fact selectors
+    val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
+        vm.setFact(Fact.KeyEvent(code))
+    })
+    KeyEventSelector(keyEventSelectorState)
+
+    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(selected = { eg ->
+        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
+    }, showEdgeHint = {
+        vm.showEdgeHint(it)
+    })
+    EdgeGestureSelector(edgeGestureSelectorState)
+
+    val timeOfADaySelector = rememberAlarmSelectorState(
+        initialRepeat = emptyArray(),
+        initialTime = LocalTime.now()
+    ) { alarm ->
+        // Use rule id as alarm tag.
+        vm.setFact(Fact.Alarm(state.id, alarm.triggerAt, alarm.repeat))
+    }
+    AlarmSelector(timeOfADaySelector)
+
+    // Condition selectors
+    val appBgPkgSelectorState =
+        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
+            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
+        }, onPkgSetSelected = {
+            vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
+        })
+    AppPkgSelectorDialog(appBgPkgSelectorState)
+
+    val appFgPkgSelectorState =
+        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
+            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
+        }, onPkgSetSelected = {
+            vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
+        })
+    AppPkgSelectorDialog(appFgPkgSelectorState)
+
+    val appComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        onAppComponentSelected = {
+            vm.setFact(Fact.ActivityStarted(it.map { it.component }))
+        }
+    )
+    AppComponentSelectorDialog(appComponentSelectorState)
+
+    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+        appComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = singleAppSelectorState)
+
+
+    val wifiSelectorState = rememberOnOffAnyStateSelectorState(title = "Wifi") {
+        vm.setFact(Fact.WifiStatusChanged(it))
+    }
+    OnOffAnyStateSelectorDialog(wifiSelectorState)
+
+    FactSelector(state) { fact ->
+        when (fact) {
+            Fact.KeyEvent::class -> {
+                keyEventSelectorState.show()
+            }
+            Fact.ActivityStarted::class -> {
+                singleAppSelectorState.show()
+            }
+            Fact.EdgeGesture::class -> {
+                edgeGestureSelectorState.show()
+            }
+            Fact.ScreenOff::class -> {
+                vm.setFact(Fact.ScreenOff)
+            }
+            Fact.ScreenOn::class -> {
+                vm.setFact(Fact.ScreenOn)
+            }
+            Fact.UserPresent::class -> {
+                vm.setFact(Fact.UserPresent)
+            }
+            Fact.Alarm::class -> {
+                timeOfADaySelector.show()
+            }
+            Fact.AppBecomeBackground::class -> {
+                appBgPkgSelectorState.show()
+            }
+            Fact.AppBecomeForeground::class -> {
+                appFgPkgSelectorState.show()
+            }
+            Fact.WifiStatusChanged::class -> {
+                wifiSelectorState.show()
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
@@ -113,6 +219,13 @@ private fun FactSelectorMenu(
             icon(imageVectorForFact(Fact.Alarm::class))
         }
 
+        item(
+            Fact.WifiStatusChanged::class,
+            labelAndDescriptionForFactSelector(i18N, Fact.WifiStatusChanged::class)
+        ) {
+            icon(imageVectorForFact(Fact.WifiStatusChanged::class))
+        }
+
         item(Fact.AppBecomeForeground::class, i18N["ui.fact.app.bg.state"] to null) {
             icon(imageVectorForFact(Fact.AppBecomeForeground::class))
             item(
@@ -149,6 +262,7 @@ private fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
         Fact.Alarm::class -> Icons.Filled.Alarm
         Fact.AppBecomeBackground::class -> Icons.Filled.FiberDvr
         Fact.AppBecomeForeground::class -> Icons.Filled.Aod
+        Fact.WifiStatusChanged::class -> Icons.Filled.Wifi
         else -> {
             Icons.Filled.Warning
         }
