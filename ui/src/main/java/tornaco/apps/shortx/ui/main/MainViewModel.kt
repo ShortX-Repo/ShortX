@@ -89,10 +89,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         return MainState(isActivated = shortXManager.isInstalled())
     }
 
-    fun loadRules() {
+    fun loadRules(showLoading: Boolean = true) {
         logger.d("loadRules")
         viewModelScope.launch {
-            updateState { copy(rules = LoadState.Loading) }
+            if (showLoading) updateState { copy(rules = LoadState.Loading) }
             withContext(Dispatchers.IO) {
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
@@ -145,10 +145,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         )]
     }
 
-    fun loadDA() {
+    fun loadDA(showLoading: Boolean = true) {
         logger.d("loadDA")
         viewModelScope.launch {
-            updateState { copy(das = LoadState.Loading) }
+            if (showLoading) updateState { copy(das = LoadState.Loading) }
             withContext(Dispatchers.IO) {
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
@@ -204,28 +204,28 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         loadDAJob?.cancel()
         loadDAJob = viewModelScope.launch {
             delay(delay)
-            loadDA()
+            loadDA(false)
         }
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
             shortXManager.setRuleEnabled(ruleId, enable)
-            loadRules()
+            loadRules(false)
         }
     }
 
     fun deleteRule(ruleId: String) {
         viewModelScope.launch {
             shortXManager.deleteRule(ruleId)
-            loadRules()
+            loadRules(false)
         }
     }
 
     fun deleteDA(daId: String) {
         viewModelScope.launch {
             shortXManager.deleteDirectAction(daId)
-            loadDA()
+            loadDA(false)
         }
     }
 
