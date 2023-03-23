@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
@@ -306,6 +307,34 @@ class ShortXManager(private val service: IShortX) {
         return invokeService(null) {
             getAppComponentInfo(ByteArrayWrapper(component.toByteArray())).let {
                 AppComponentInfo.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun addGlobalVar(gv: GlobalVar) {
+        invokeService(Unit) {
+            addGlobalVar(ByteArrayWrapper(gv.toByteArray()))
+        }
+    }
+
+    fun deleteGlobalVar(id: String) {
+        invokeService(Unit) {
+            deleteGlobalVar(id)
+        }
+    }
+
+    fun getGlobalVarById(id: String): GlobalVar? {
+        return invokeService(null) {
+            getGlobalVarById(id)?.let {
+                GlobalVar.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun getAllGlobalVars(): List<GlobalVar> {
+        return invokeService(emptyList()) {
+            allGlobalVars.mapNotNull {
+                GlobalVar.parseFrom(it.byte)
             }
         }
     }

@@ -67,4 +67,12 @@ interface IShortX {
 
     ByteArrayWrapper getAppComponentInfo(/*AppComponent*/in ByteArrayWrapper component);
     // Components end
+
+
+    // Global var start
+    void addGlobalVar(in ByteArrayWrapper gv);
+    void deleteGlobalVar(String id);
+    ByteArrayWrapper getGlobalVarById(String id);
+    List<ByteArrayWrapper> getAllGlobalVars();
+    // Global var end
 }

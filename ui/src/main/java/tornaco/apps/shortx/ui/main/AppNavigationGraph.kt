@@ -12,6 +12,8 @@ import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
+import tornaco.apps.shortx.ui.gvar.GlobalVarDetailScreen
+import tornaco.apps.shortx.ui.gvar.GlobalVarListScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
@@ -32,6 +34,9 @@ fun AppNavigationGraph(
                 back = { appNavController.popBackStack() },
                 goToPkgSetList = {
                     appNavController.navigate(AppRoute.PkgSetList.name)
+                },
+                goToGV = {
+                    appNavController.navigate(AppRoute.GlobalVarList.name)
                 },
                 goToDanmuUISettings = {
                     appNavController.navigate(AppRoute.DanmuUISettings.name)
@@ -88,6 +93,30 @@ fun AppNavigationGraph(
             val id = backStackEntry.arguments?.getString("id")
             id?.let {
                 PkgSetDetailScreen(id = id) {
+                    appNavController.popBackStack()
+                }
+            }
+        }
+
+        animateComposable(AppRoute.GlobalVarList.name) {
+            GlobalVarListScreen(back = {
+                appNavController.popBackStack()
+            }, goToDetail = {
+                appNavController.navigate("${AppRoute.GlobalDetails.name}?id=$it")
+            })
+        }
+
+        animateComposable(
+            "${AppRoute.GlobalDetails.name}?id={id}",
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType
+                defaultValue = null
+                nullable = true
+            })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            id?.let {
+                GlobalVarDetailScreen(id = id) {
                     appNavController.popBackStack()
                 }
             }

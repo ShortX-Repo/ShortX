@@ -10,6 +10,7 @@ import android.os.ServiceManager
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
@@ -280,6 +281,26 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     component.byte
                 )
             )?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun addGlobalVar(gv: ByteArrayWrapper) {
+            shortXContext.rule.addGlobalVar(GlobalVar.parseFrom(gv.byte))
+        }
+
+        override fun deleteGlobalVar(id: String) {
+            shortXContext.rule.deleteGlobalVar(id)
+        }
+
+        override fun getGlobalVarById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getGlobalVarById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllGlobalVars(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllGlobalVars().map {
                 ByteArrayWrapper(it.toByteArray())
             }
         }

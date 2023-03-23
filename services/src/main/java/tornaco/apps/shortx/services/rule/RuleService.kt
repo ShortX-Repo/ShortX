@@ -6,11 +6,13 @@ import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
+import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 
@@ -21,6 +23,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
     private val dasSettingsStore: DirectActionSettingsStore by lazy {
         DirectActionSettingsStore(systemServiceScope)
+    }
+
+    private val globalVarStore: GlobalVarStore by lazy {
+        GlobalVarStore(systemServiceScope)
     }
 
     private val allTriggers by lazy {
@@ -70,6 +76,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         super.systemReady()
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
+        globalVarStore.readBlocking()
         installListeners()
     }
 
@@ -217,5 +224,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun unregisterJobStatusListener(listener: IJobStatusListener) {
         jobStatusListeners.unregister(listener)
+    }
+
+    fun addGlobalVar(gv: GlobalVar) {
+        globalVarStore.addGlobalVar(gv)
+    }
+
+    fun deleteGlobalVar(id: String) {
+        globalVarStore.deleteGlobalVar(id)
+    }
+
+    fun getGlobalVarById(id: String): GlobalVar? {
+        return globalVarStore.getGlobalVarById(id)
+    }
+
+    fun getAllGlobalVars(): List<GlobalVar> {
+        return globalVarStore.getAllGlobalVars()
     }
 }

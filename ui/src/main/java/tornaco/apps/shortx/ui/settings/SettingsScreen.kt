@@ -30,6 +30,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 fun SettingsScreen(
     back: () -> Unit,
     goToPkgSetList: () -> Unit,
+    goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
@@ -137,7 +138,15 @@ fun SettingsScreen(
                     )
 
                     PreferenceUi(mutableListOf<Preference>().apply {
-                        addAll(generalSettings(state, vm, goToPkgSetList, goToDanmuUISettings))
+                        addAll(
+                            generalSettings(
+                                state = state,
+                                vm = vm,
+                                goToPkgSetList = goToPkgSetList,
+                                goToGV = goToGV,
+                                goToDanmuUISettings = goToDanmuUISettings
+                            )
+                        )
                         addAll(dataSettings(
                             state = state,
                             vm = vm,
@@ -161,6 +170,7 @@ private fun generalSettings(
     state: SettingsState,
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
+    goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
@@ -173,7 +183,15 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Icons.Outlined.Apps,
+    Preference.TextPreference(icon = Icons.Outlined.DataArray,
+        title = LocalI18N.current["ui.global.var.title"],
+        summary = LocalI18N.current["ui.global.var.desc"],
+        onClick = {
+            goToGV()
+        }
+    ),
+
+    Preference.TextPreference(icon = Icons.Outlined.Message,
         title = "Danmu settings",
         onClick = {
             goToDanmuUISettings()
