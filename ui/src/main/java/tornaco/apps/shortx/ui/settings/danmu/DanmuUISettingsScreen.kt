@@ -44,7 +44,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DanmuUISettingsScreen() {
+fun DanmuUISettingsScreen(back: () -> Unit) {
     val viewModel = hiltViewModel<DanmuUISettingsViewModel>()
     val state by viewModel.state.collectAsState()
 
@@ -61,8 +61,9 @@ fun DanmuUISettingsScreen() {
                                 text = "Danmu"
                             )
                         },
-                        actions = {
+                        navigationIcon = {
                             IconButton(onClick = {
+                                back()
                             }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Close,

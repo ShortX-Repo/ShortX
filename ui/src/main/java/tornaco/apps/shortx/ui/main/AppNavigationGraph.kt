@@ -123,7 +123,9 @@ fun AppNavigationGraph(
         }
 
         animateComposable(AppRoute.DanmuUISettings.name) {
-            DanmuUISettingsScreen()
+            DanmuUISettingsScreen {
+                appNavController.popBackStack()
+            }
         }
 
         animateComposable(AppRoute.ViewOpenSourceLicense.name) {
