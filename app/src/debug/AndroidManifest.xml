@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="tornaco.apps.shortx">
+
+
+    <application
+        android:name=".DebugShortXApp"
+        tools:ignore="MissingApplicationIcon"
+        tools:replace="android:name" />
+
+</manifest>

@@ -111,14 +111,7 @@ private fun HomeScreen(
                                 )
                             },
                             actions = {
-                                IconButton(onClick = {
-                                    goToSettings()
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Settings,
-                                        contentDescription = "Settings"
-                                    )
-                                }
+                                AppBarActions(goToSettings)
                             },
                             scrollBehavior = scrollBehavior,
                         )
@@ -131,6 +124,8 @@ private fun HomeScreen(
                                     isShowActiveDialog = true
                                 }
                             }
+                        }, actions = {
+                            AppBarActions(goToSettings)
                         })
                     }
                 },
@@ -139,38 +134,34 @@ private fun HomeScreen(
                 },
                 floatingActionButton = {
                     val context = LocalContext.current
-                    Fab(
-                        onClipboardClick = {
-                            when (navController.currentBackStackEntry?.destination?.route) {
-                                HomeBottomRoute.Rules.name -> {
-                                    vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
-                                        ?.let {
-                                            vm.importRule(it)
-                                        }
-                                }
-                                HomeBottomRoute.DirectActions.name -> {
-                                    vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
-                                        ?.let {
-                                            vm.importDA(it)
-                                        }
-                                }
-                                else -> {}
+                    Fab(onClipboardClick = {
+                        when (navController.currentBackStackEntry?.destination?.route) {
+                            HomeBottomRoute.Rules.name -> {
+                                vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
+                                    ?.let {
+                                        vm.importRule(it)
+                                    }
                             }
-                        },
-                        onFileClick = {
+                            HomeBottomRoute.DirectActions.name -> {
+                                vm.parseShareContentDA(ClipboardUtils.readClipboard(context))?.let {
+                                        vm.importDA(it)
+                                    }
+                            }
+                            else -> {}
+                        }
+                    }, onFileClick = {
 
-                        },
-                        onCreateClick = {
-                            when (navController.currentBackStackEntry?.destination?.route) {
-                                HomeBottomRoute.Rules.name -> {
-                                    goToAddRule()
-                                }
-                                HomeBottomRoute.DirectActions.name -> {
-                                    goToAddDA()
-                                }
-                                else -> {}
+                    }, onCreateClick = {
+                        when (navController.currentBackStackEntry?.destination?.route) {
+                            HomeBottomRoute.Rules.name -> {
+                                goToAddRule()
                             }
-                        })
+                            HomeBottomRoute.DirectActions.name -> {
+                                goToAddDA()
+                            }
+                            else -> {}
+                        }
+                    })
                 }) { paddingValues ->
 
                 val shareDialogState = rememberShareDialogState("share.shortx")
@@ -228,6 +219,18 @@ private fun HomeScreen(
 }
 
 @Composable
+private fun AppBarActions(goToSettings: () -> Unit) {
+    IconButton(onClick = {
+        goToSettings()
+    }) {
+        Icon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Settings"
+        )
+    }
+}
+
+@Composable
 private fun Fab(
     onClipboardClick: () -> Unit,
     onFileClick: () -> Unit,
@@ -235,25 +238,17 @@ private fun Fab(
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
-            id = "file",
-            icon = Icons.Outlined.FileCopy,
-            label = "File"
-        ),
-        MultiFabItem(
+            id = "file", icon = Icons.Outlined.FileCopy, label = "File"
+        ), MultiFabItem(
             id = "clipboard",
             icon = Icons.Outlined.ContentPaste,
             label = LocalI18N.current["ui.common.share.clipboard"]
-        ),
-        MultiFabItem(
-            id = "new",
-            icon = Icons.Outlined.Add,
-            label = "New"
+        ), MultiFabItem(
+            id = "new", icon = Icons.Outlined.Add, label = "New"
         )
     )
     MultiFloatingActionButton(
-        srcIcon = Icons.Outlined.Add,
-        showLabels = true,
-        items = expandFbItemList
+        srcIcon = Icons.Outlined.Add, showLabels = true, items = expandFbItemList
     ) {
         when (it.id) {
             "clipboard" -> {
@@ -274,8 +269,7 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.DirectActions,
-        BottomNavItem.Rules
+        BottomNavItem.DirectActions, BottomNavItem.Rules
     )
     NavigationBar(modifier = Modifier.fillMaxWidth()) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

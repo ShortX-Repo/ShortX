@@ -373,7 +373,10 @@ object ShortXManagerNative {
             )
         )
 
-    val shortX: IShortX? get() = getServiceOrNull2()
+    // For debug purpose.
+    var shortXInjection: IShortX? = null
+
+    val shortX: IShortX? get() = shortXInjection ?: getServiceOrNull2()
 
     private fun getServiceOrNull2(): IShortX? {
         return kotlin.runCatching {

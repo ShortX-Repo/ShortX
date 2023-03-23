@@ -6,8 +6,8 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
 
 @HiltAndroidApp
-class ShortXApp : Application() {
-    private val logger = Logger("ShortXApp")
+open class ShortXApp : Application() {
+    protected val logger = Logger("ShortXApp")
 
     override fun onCreate() {
         super.onCreate()

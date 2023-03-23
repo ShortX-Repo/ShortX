@@ -9,10 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.io.File
 import javax.inject.Inject
 
@@ -21,6 +23,7 @@ data class SettingsState(
     val coreVersion: Version = Version("N/A", 0),
     val coreFP: String = "N/A",
     val isDebugLogEnabled: Boolean = false,
+    val installFakeService: Boolean = false
 )
 
 sealed interface BackupResult {
@@ -44,6 +47,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
     private val _restorePerformed = MutableSharedFlow<RestoreResult>()
     val restorePerformed = _restorePerformed.asSharedFlow()
 
+    private val pref by lazy { Pref(context) }
+
     override fun initState(): SettingsState {
         return SettingsState()
     }
@@ -56,6 +61,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
                 coreFP = shortXManager.fingerprint(),
                 isDebugLogEnabled = shortXManager.isLogDebugEnable()
             )
+        }
+
+        viewModelScope.launch {
+            pref.installFakeServiceFlow.collectLatest {
+                logger.d("installFakeServiceFlow changed: $it")
+                updateState { copy(installFakeService = it) }
+            }
         }
     }
 
@@ -112,6 +124,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
             kotlin.runCatching {
                 BackupAgent(context).resetAllData()
             }
+        }
+    }
+
+    fun setInstallFakeService(value: Boolean) {
+        viewModelScope.launch {
+            pref.setInstallFakeService(value)
         }
     }
 }

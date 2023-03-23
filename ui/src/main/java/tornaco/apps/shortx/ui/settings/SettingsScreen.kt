@@ -257,6 +257,16 @@ private fun devSettings(
                 vm.importPrebuilts()
             }
         ))
+
+        add(Preference.SwitchPreference(
+            icon = Icons.Outlined.Insights,
+            title = "Install fake service",
+            summary = "For debug purpose, restart app to take effect",
+            value = state.installFakeService,
+            onCheckChanged = { enable ->
+                vm.setInstallFakeService(enable)
+            }
+        ))
     }
 }
 
