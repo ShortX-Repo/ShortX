@@ -15,9 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.DataArray
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,13 +50,10 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val addGlobalVarDialogState =
-                rememberTextInputState(
-                    title = LocalI18N.current["ui.pkg.set.add.title"],
-                    message = LocalI18N.current["ui.pkg.set.add.input.label"],
-                    onSelected = {
-                        vm.createGlobalVar(it)
-                    })
-            TextInputDialog(addGlobalVarDialogState)
+                rememberNewGlobalVarState {
+                    vm.createGlobalVar(it.first, it.second)
+                }
+            NewGlobalVarDialog(addGlobalVarDialogState)
 
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -81,11 +78,11 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                     }) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
-                }) {
+                }) { paddingValues ->
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize(),
                     columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = it
+                    contentPadding = paddingValues
                 ) {
                     items(state.globalVars) {
                         androidx.compose.material.Card(
@@ -96,14 +93,18 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                             elevation = 0.dp
                         ) {
                             GlobalVarListItem(modifier = Modifier,
-                                title = it.name,
+                                name = it.name,
+                                type = it.type.toType()?.label() ?: "?",
                                 overflow = {
                                     ListItemOverflowMenu(
                                         pkgSet = it,
-                                        onDelete = {},
+                                        onDelete = {
+                                            vm.delete(it.id)
+                                        },
                                         onEdit = {}
                                     )
-                                }, onClick = {
+                                },
+                                onClick = {
                                     goToDetail(it.id)
                                 })
                         }
@@ -118,9 +119,8 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 @Composable
 private fun GlobalVarListItem(
     modifier: Modifier,
-    title: String? = null,
-    text1: String? = null,
-    text2: String? = null,
+    name: String? = null,
+    type: String,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
 ) {
@@ -140,8 +140,8 @@ private fun GlobalVarListItem(
             ColoredIcon(size = 32.dp, padding = 0.dp) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Outlined.Folder,
-                    contentDescription = "Apps"
+                    imageVector = Icons.Outlined.DataArray,
+                    contentDescription = "Var"
                 )
             }
 
@@ -151,31 +151,16 @@ private fun GlobalVarListItem(
         }
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            title?.let {
+            name?.let {
                 Text(
-                    text = title, style = MaterialTheme.typography.titleMedium.copy(
+                    text = name, style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = 16.sp, fontWeight = FontWeight.W600
                     )
                 )
             }
-            TinySpacer()
-            text1?.let {
-                Text(
-                    text = text1,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                    maxLines = 3
-                )
-            }
-            TinySpacer()
-            TinySpacer()
-            TinySpacer()
-            text2?.let {
-                Text(
-                    text = text2,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                    maxLines = 3
-                )
-            }
+            MediumSpacer()
+            Text(type, fontSize = 12.sp)
+            StandardSpacer()
         }
     }
 }

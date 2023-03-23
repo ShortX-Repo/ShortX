@@ -168,5 +168,6 @@
   "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX",
   "ui.delete.dialog.confirm": "你确定要删除{wht}吗？",
   "ui.global.var.title": "全局变量",
+  "ui.global.var.name": "变量名称",
   "ui.global.var.desc": "查看和管理全局变量"
 }

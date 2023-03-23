@@ -15,6 +15,9 @@ message GlobalVar {
   string name = 1;
   google.protobuf.Any var = 2;
 
+  // Type indicator, just set default value.
+  google.protobuf.Any type = 3;
+
   string id = 100;
 }
 

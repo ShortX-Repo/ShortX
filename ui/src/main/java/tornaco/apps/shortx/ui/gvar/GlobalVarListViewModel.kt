@@ -28,11 +28,20 @@ class GlobalVarListViewModel : StateViewModel<GlobalVarListState>() {
         }
     }
 
-    fun createGlobalVar(name: String) {
+    fun createGlobalVar(name: String, globalVarType: GlobalVarType) {
         shortXManager.addGlobalVar(
-            GlobalVar.newBuilder().setName(name).setId(UUID.randomUUID().toString()).build()
+            GlobalVar.newBuilder().setName(name).setId(UUID.randomUUID().toString())
+                .setType(globalVarType.toProtoType())
+                .build()
         )
         loadState()
+    }
+
+    fun delete(id: String) {
+        viewModelScope.launch {
+            shortXManager.deleteGlobalVar(id)
+            loadState()
+        }
     }
 
 }
