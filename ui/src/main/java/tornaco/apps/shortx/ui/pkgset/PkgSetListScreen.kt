@@ -155,7 +155,7 @@ private fun PkgSetListItem(
             title?.let {
                 Text(
                     text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp, fontWeight = FontWeight.W600
+                        fontSize = 16.sp,
                     )
                 )
             }

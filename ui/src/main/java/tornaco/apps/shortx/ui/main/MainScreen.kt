@@ -171,7 +171,6 @@ private fun HomeScreen(
                 Column(
                     modifier = Modifier.padding(paddingValues),
                 ) {
-
                     if (state.isFrameworkUpdated) {
                         Card(
                             modifier = Modifier

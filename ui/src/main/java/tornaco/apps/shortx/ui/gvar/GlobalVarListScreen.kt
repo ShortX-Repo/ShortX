@@ -149,7 +149,7 @@ private fun GlobalVarListItem(
             name?.let {
                 Text(
                     text = name, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp, fontWeight = FontWeight.W600
+                        fontSize = 16.sp,
                     )
                 )
             }

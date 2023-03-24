@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.base.*
@@ -187,7 +186,7 @@ private fun DAListItem(
             title?.let {
                 Text(
                     text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp, fontWeight = FontWeight.W600
+                        fontSize = 16.sp
                     )
                 )
             }

@@ -47,7 +47,12 @@ class ShortXManager(private val service: IShortX) {
     val isInstalled get() = kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
 
     val isFrameworkUpdated
-        get() = kotlin.runCatching { isInstalled && service.fingerprint() != BuildProp.BUILD_FINGERPRINT }
+        get() = kotlin.runCatching {
+            isInstalled && service.fingerprint()
+                .apply { logger.d("service.fingerprint(): $this") } != BuildProp.BUILD_FINGERPRINT.apply {
+                logger.d("BuildProp.BUILD_FINGERPRINT: $this")
+            }
+        }
             .getOrElse { false }
 
     fun version(): Version {
