@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
@@ -12,6 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -93,6 +97,10 @@ private fun HomeScreen(
         mutableStateOf(false)
     }
 
+    var enableBlur by remember {
+        mutableStateOf(false)
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -135,41 +143,58 @@ private fun HomeScreen(
                 },
                 floatingActionButton = {
                     val context = LocalContext.current
-                    Fab(onClipboardClick = {
-                        when (navController.currentBackStackEntry?.destination?.route) {
-                            HomeBottomRoute.Rules.name -> {
-                                vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
-                                    ?.let {
-                                        vm.importRule(it)
-                                    }
-                            }
-                            HomeBottomRoute.DirectActions.name -> {
-                                vm.parseShareContentDA(ClipboardUtils.readClipboard(context))?.let {
-                                    vm.importDA(it)
+                    Fab(
+                        onClipboardClick = {
+                            when (navController.currentBackStackEntry?.destination?.route) {
+                                HomeBottomRoute.Rules.name -> {
+                                    vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
+                                        ?.let {
+                                            vm.importRule(it)
+                                        }
                                 }
+                                HomeBottomRoute.DirectActions.name -> {
+                                    vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
+                                        ?.let {
+                                            vm.importDA(it)
+                                        }
+                                }
+                                else -> {}
                             }
-                            else -> {}
-                        }
-                    }, onFileClick = {
+                        },
+                        onFileClick = {
 
-                    }, onCreateClick = {
-                        when (navController.currentBackStackEntry?.destination?.route) {
-                            HomeBottomRoute.Rules.name -> {
-                                goToAddRule()
+                        },
+                        onCreateClick = {
+                            when (navController.currentBackStackEntry?.destination?.route) {
+                                HomeBottomRoute.Rules.name -> {
+                                    goToAddRule()
+                                }
+                                HomeBottomRoute.DirectActions.name -> {
+                                    goToAddDA()
+                                }
+                                else -> {}
                             }
-                            HomeBottomRoute.DirectActions.name -> {
-                                goToAddDA()
-                            }
-                            else -> {}
-                        }
-                    })
+                        },
+                        onExpanded = {
+                            enableBlur = true
+                        },
+                        onCollapsed = {
+                            enableBlur = false
+                        })
                 }) { paddingValues ->
 
                 val shareDialogState = rememberShareDialogState("share.shortx")
                 ShareDialog(state = shareDialogState)
 
                 Column(
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .let {
+                            if (enableBlur) {
+                                it.blur(4.dp)
+                            } else it
+                        },
                 ) {
                     if (state.isFrameworkUpdated) {
                         Card(
@@ -245,6 +270,14 @@ private fun HomeScreen(
                         })
                     }
                 }
+
+                if (enableBlur) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
+                        .clickable { }) {
+                    }
+                }
             }
         }
     }
@@ -267,6 +300,8 @@ private fun Fab(
     onClipboardClick: () -> Unit,
     onFileClick: () -> Unit,
     onCreateClick: () -> Unit,
+    onCollapsed: () -> Unit = {},
+    onExpanded: () -> Unit = {},
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
@@ -280,20 +315,24 @@ private fun Fab(
         )
     )
     MultiFloatingActionButton(
-        srcIcon = Icons.Outlined.Add, showLabels = true, items = expandFbItemList
-    ) {
-        when (it.id) {
-            "clipboard" -> {
-                onClipboardClick()
+        srcIcon = Icons.Outlined.Add,
+        showLabels = true,
+        items = expandFbItemList,
+        onCollapsed = onCollapsed,
+        onExpanded = onExpanded,
+        onFabItemClicked = {
+            when (it.id) {
+                "clipboard" -> {
+                    onClipboardClick()
+                }
+                "file" -> {
+                    onFileClick()
+                }
+                "new" -> {
+                    onCreateClick()
+                }
             }
-            "file" -> {
-                onFileClick()
-            }
-            "new" -> {
-                onCreateClick()
-            }
-        }
-    }
+        })
 }
 
 @Composable

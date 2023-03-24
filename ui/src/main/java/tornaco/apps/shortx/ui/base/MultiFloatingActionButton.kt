@@ -29,7 +29,9 @@ fun MultiFloatingActionButton(
     srcIcon: ImageVector,
     showLabels: Boolean = true,
     items: List<MultiFabItem>,
-    onFabItemClicked: (item: MultiFabItem) -> Unit
+    onCollapsed: () -> Unit = {},
+    onExpanded: () -> Unit = {},
+    onFabItemClicked: (item: MultiFabItem) -> Unit,
 ) {
     val currentState = remember { mutableStateOf(MultiFabState.Collapsed) }
     val transition = updateTransition(targetState = currentState, label = "")
@@ -96,6 +98,7 @@ fun MultiFloatingActionButton(
                     onClick = {
                         currentState.value = MultiFabState.Collapsed
                         onFabItemClicked(item)
+                        onCollapsed()
                     }
                 ) {
                     Icon(
@@ -111,6 +114,11 @@ fun MultiFloatingActionButton(
             onClick = {
                 currentState.value =
                     if (currentState.value == MultiFabState.Collapsed) MultiFabState.Expanded else MultiFabState.Collapsed
+                if (currentState.value == MultiFabState.Collapsed) {
+                    onCollapsed()
+                } else {
+                    onExpanded()
+                }
             }) {
             Icon(
                 imageVector = srcIcon,
