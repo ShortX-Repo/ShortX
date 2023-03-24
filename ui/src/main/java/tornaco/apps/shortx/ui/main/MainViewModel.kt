@@ -49,6 +49,7 @@ data class DirectActionUM(
 
 data class MainState(
     val isActivated: Boolean = false,
+    val isFrameworkUpdated: Boolean = false,
     val rules: LoadState<List<RuleUM>> = LoadState.Loading,
     val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
 )
@@ -86,7 +87,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     }
 
     override fun initState(): MainState {
-        return MainState(isActivated = shortXManager.isInstalled())
+        return MainState(
+            isActivated = shortXManager.isInstalled,
+            isFrameworkUpdated = shortXManager.isFrameworkUpdated
+        )
     }
 
     fun loadRules(showLoading: Boolean = true) {
@@ -289,5 +293,9 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
             loadDA()
         }
+    }
+
+    fun reboot() {
+        shortXManager.reboot()
     }
 }

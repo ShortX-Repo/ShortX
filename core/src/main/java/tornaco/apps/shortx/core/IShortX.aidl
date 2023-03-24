@@ -75,4 +75,6 @@ interface IShortX {
     ByteArrayWrapper getGlobalVarById(String id);
     List<ByteArrayWrapper> getAllGlobalVars();
     // Global var end
+
+    void reboot(String reason);
 }

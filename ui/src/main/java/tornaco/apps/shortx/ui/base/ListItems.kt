@@ -162,7 +162,6 @@ fun ListItem(
                         text = title,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.W600
                         )
                     )
                 }
@@ -232,7 +231,6 @@ fun ListItem(
                         text = title,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.W600
                         )
                     )
                 }

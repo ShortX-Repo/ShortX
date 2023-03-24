@@ -56,7 +56,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext private val cont
     fun loadState() {
         updateState {
             copy(
-                isActivated = shortXManager.isInstalled(),
+                isActivated = shortXManager.isInstalled,
                 coreVersion = shortXManager.version(),
                 coreFP = shortXManager.fingerprint(),
                 isDebugLogEnabled = shortXManager.isLogDebugEnable()

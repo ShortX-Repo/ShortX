@@ -1,4 +1,5 @@
 {
+  "ui.framework.updated": "The core of ShortX has been updated, please reboot your device in time; of course you can continue to experience, but if you encounter some issues, it is recommended that you reboot immediately启",
   "ui.dialog.title.select.app": "Select app",
   "ui.dialog.title.current.app": "App in Foreground",
   "ui.search.title.search.n.items": "Search {count} items",
@@ -54,6 +55,7 @@
   "ui.common.on": "On",
   "ui.common.off": "Off",
   "ui.common.any": "Any",
+  "ui.common.reboot": "Reboot",
   "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",

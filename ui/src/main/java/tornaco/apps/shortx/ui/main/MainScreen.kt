@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -144,8 +145,8 @@ private fun HomeScreen(
                             }
                             HomeBottomRoute.DirectActions.name -> {
                                 vm.parseShareContentDA(ClipboardUtils.readClipboard(context))?.let {
-                                        vm.importDA(it)
-                                    }
+                                    vm.importDA(it)
+                                }
                             }
                             else -> {}
                         }
@@ -170,6 +171,38 @@ private fun HomeScreen(
                 Column(
                     modifier = Modifier.padding(paddingValues),
                 ) {
+
+                    if (state.isFrameworkUpdated) {
+                        Card(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    LocalI18N.current["ui.framework.updated"],
+                                )
+
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    FilledTonalButton(
+                                        colors = ButtonDefaults.filledTonalButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.onError
+                                        ),
+                                        onClick = {
+                                            vm.reboot()
+                                        }) {
+                                        Text(text = LocalI18N.current["ui.common.reboot"])
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     BottomNavigationGraph(navController = navController,
                         state = state,
                         deleteRule = { rule ->

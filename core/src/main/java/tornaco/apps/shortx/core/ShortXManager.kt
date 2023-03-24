@@ -44,8 +44,11 @@ val shortXManager by lazy {
 }
 
 class ShortXManager(private val service: IShortX) {
-    fun isInstalled(): Boolean =
-        kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
+    val isInstalled get() = kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
+
+    val isFrameworkUpdated
+        get() = kotlin.runCatching { isInstalled && service.fingerprint() != BuildProp.BUILD_FINGERPRINT }
+            .getOrElse { false }
 
     fun version(): Version {
         return invokeService(Version("?", 0)) {
@@ -56,6 +59,12 @@ class ShortXManager(private val service: IShortX) {
     fun fingerprint(): String {
         return invokeService("?") {
             fingerprint()
+        }
+    }
+
+    fun reboot(reason: String = "Noop") {
+        invokeService(Unit) {
+            reboot(reason)
         }
     }
 

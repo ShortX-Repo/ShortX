@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
+import tornaco.apps.shortx.core.util.powerManager
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl()) {
@@ -302,6 +303,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun getAllGlobalVars(): List<ByteArrayWrapper> {
             return shortXContext.rule.getAllGlobalVars().map {
                 ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        @SuppressLint("MissingPermission")
+        override fun reboot(reason: String?) {
+            logger.w("reboot: $reason")
+            handler.postSafety {
+                context.powerManager.reboot(null)
             }
         }
     }

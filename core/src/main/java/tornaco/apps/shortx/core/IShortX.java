@@ -173,6 +173,11 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Global var end
+
+    @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -710,6 +715,15 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllGlobalVars();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_reboot:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.reboot(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -1683,6 +1697,27 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Global var end
+
+      @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(reason);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_reboot, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().reboot(reason);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1726,6 +1761,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_deleteGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
     static final int TRANSACTION_getGlobalVarById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
     static final int TRANSACTION_getAllGlobalVars = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
+    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1804,4 +1840,7 @@ public interface IShortX extends android.os.IInterface
   public void deleteGlobalVar(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGlobalVarById(java.lang.String id) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGlobalVars() throws android.os.RemoteException;
+  // Global var end
+
+  public void reboot(java.lang.String reason) throws android.os.RemoteException;
 }
