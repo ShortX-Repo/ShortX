@@ -1,4 +1,5 @@
 {
+  "ui.privacy.statement.title": "隐私协议",
   "ui.framework.updated": "ShortX的核心已经更新，请及时重启设备；当然你也可以继续体验，但是如果你遇到一些故障，建议你立刻重启",
   "ui.dialog.title.current.app": "应用在前台",
   "ui.dialog.title.select.app": "选择应用",

@@ -3,6 +3,8 @@ package tornaco.apps.shortx.ui.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Settings
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,6 +33,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.AssetUtils
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 enum class HomeBottomRoute {
@@ -152,12 +156,14 @@ private fun HomeScreen(
                                             vm.importRule(it)
                                         }
                                 }
+
                                 HomeBottomRoute.DirectActions.name -> {
                                     vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
                                         ?.let {
                                             vm.importDA(it)
                                         }
                                 }
+
                                 else -> {}
                             }
                         },
@@ -169,9 +175,11 @@ private fun HomeScreen(
                                 HomeBottomRoute.Rules.name -> {
                                     goToAddRule()
                                 }
+
                                 HomeBottomRoute.DirectActions.name -> {
                                     goToAddDA()
                                 }
+
                                 else -> {}
                             }
                         },
@@ -269,6 +277,12 @@ private fun HomeScreen(
                             isShowActiveDialog = false
                         })
                     }
+
+                    if (!state.isPrivacyStatementAccepted && !isShowActiveDialog) {
+                        PrivacyStatementDialog {
+                            vm.acceptPrivacyStatement()
+                        }
+                    }
                 }
 
                 if (enableBlur) {
@@ -325,9 +339,11 @@ private fun Fab(
                 "clipboard" -> {
                     onClipboardClick()
                 }
+
                 "file" -> {
                     onFileClick()
                 }
+
                 "new" -> {
                     onCreateClick()
                 }
@@ -419,6 +435,37 @@ private fun ActiveDialog(
         Text(text = LocalI18N.current["ui.settings.core.info.na"])
     }, text = {
         Text(text = LocalI18N.current["ui.active.dialog.message"])
+    }, onDismissRequest = onDismissRequest, confirmButton = {
+        TextButton(onClick = {
+            onDismissRequest()
+        }) {
+            Text(text = stringResource(android.R.string.ok))
+        }
+    })
+}
+
+
+@Composable
+private fun PrivacyStatementDialog(
+    onDismissRequest: () -> Unit,
+) {
+    val context = LocalContext.current
+    val privacyAgreement = remember {
+        AssetUtils.readFileToString(context, "privacy/privacy_agreement.html")
+    }
+    ShortXAlertDialog(title = {
+        Text(text = LocalI18N.current["ui.privacy.statement.title"])
+    }, text = {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(fraction = 0.64f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = HtmlCompat.fromHtml(privacyAgreement, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                    .toAnnotatedString()
+            )
+        }
     }, onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = {
             onDismissRequest()

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -24,6 +25,7 @@ import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
 import javax.inject.Inject
 
@@ -50,6 +52,7 @@ data class DirectActionUM(
 data class MainState(
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
+    val isPrivacyStatementAccepted: Boolean = false,
     val rules: LoadState<List<RuleUM>> = LoadState.Loading,
     val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
 )
@@ -58,6 +61,7 @@ data class MainState(
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     ContextViewModel<MainState>(context) {
+    private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
@@ -79,6 +83,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     init {
         shortXManager.registerJobStatusListener(jobStatusListener)
+
+        viewModelScope.launch {
+            pref.privacyStatementAcceptedFlow.collectLatest {
+                logger.d("isPrivacyStatementAccepted changed: $it")
+                updateState { copy(isPrivacyStatementAccepted = it) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -89,7 +100,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     override fun initState(): MainState {
         return MainState(
             isActivated = shortXManager.isInstalled,
-            isFrameworkUpdated = shortXManager.isFrameworkUpdated
+            isFrameworkUpdated = shortXManager.isFrameworkUpdated,
         )
     }
 
@@ -297,5 +308,11 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     fun reboot() {
         shortXManager.reboot()
+    }
+
+    fun acceptPrivacyStatement() {
+        viewModelScope.launch {
+            pref.setPrivacyStatementAccepted(true)
+        }
     }
 }

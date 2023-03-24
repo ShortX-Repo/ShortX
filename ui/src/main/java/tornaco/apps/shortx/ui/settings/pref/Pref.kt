@@ -12,10 +12,15 @@ import kotlinx.coroutines.flow.map
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 
 private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_service")
+private val PRIVACY_STATEMENT_ACCEPTED_KEY = booleanPreferencesKey("privacy_statement_accepted")
 
 class Pref(val context: Context) {
     val installFakeServiceFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[INSTALL_FAKE_SERVICE_KEY] ?: false
+    }
+
+    val privacyStatementAcceptedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PRIVACY_STATEMENT_ACCEPTED_KEY] ?: false
     }
 
     suspend fun setInstallFakeService(value: Boolean) {
@@ -23,4 +28,11 @@ class Pref(val context: Context) {
             settings[INSTALL_FAKE_SERVICE_KEY] = value
         }
     }
+
+    suspend fun setPrivacyStatementAccepted(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[PRIVACY_STATEMENT_ACCEPTED_KEY] = value
+        }
+    }
+
 }
