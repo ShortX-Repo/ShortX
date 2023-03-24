@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,6 +77,24 @@ fun TipRow(text: String) {
             text = text,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontSize = 10.sp
+            )
+        )
+    }
+}
+
+@Composable
+fun CategoryTitle(title: String) {
+    Box(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 12.sp
             )
         )
     }

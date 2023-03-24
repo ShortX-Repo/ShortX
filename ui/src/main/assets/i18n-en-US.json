@@ -169,5 +169,7 @@
   "ui.delete.dialog.confirm": "Do you really want to delete {wht}?",
   "ui.global.var.title": "Global var",
   "ui.global.var.name": "Var name",
+  "ui.global.var.value": "Var value",
+  "ui.global.var.input.value": "Please input value",
   "ui.global.var.desc": "Manage and view global variables"
 }

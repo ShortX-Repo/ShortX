@@ -1,0 +1,124 @@
+package tornaco.apps.shortx.ui.gvar
+
+import tornaco.apps.shortx.core.proto.gv.*
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.pack_
+
+enum class GlobalVarType {
+    Int,
+    IntList,
+    Bool,
+    BoolList,
+    String,
+    StringList,
+}
+
+fun GlobalVarType.label(): String {
+    return when (this) {
+        GlobalVarType.Int -> "int"
+        GlobalVarType.IntList -> "int list"
+        GlobalVarType.Bool -> "bool"
+        GlobalVarType.BoolList -> "bool list"
+        GlobalVarType.String -> "string"
+        GlobalVarType.StringList -> "string list"
+    }
+}
+
+fun GlobalVarType.toProtoType(): ProtoAny = when (this) {
+    GlobalVarType.Int -> Int64Var.getDefaultInstance().pack_()
+    GlobalVarType.IntList -> Int64ListVar.getDefaultInstance().pack_()
+    GlobalVarType.Bool -> BoolVar.getDefaultInstance().pack_()
+    GlobalVarType.BoolList -> BoolListVar.getDefaultInstance().pack_()
+    GlobalVarType.String -> StringVar.getDefaultInstance().pack_()
+    GlobalVarType.StringList -> StringListVar.getDefaultInstance().pack_()
+}
+
+fun ProtoAny.toType(): GlobalVarType? {
+    return when {
+        this is_ (Int64Var::class.java) -> {
+            GlobalVarType.Int
+        }
+        this is_ (Int64ListVar::class.java) -> {
+            GlobalVarType.IntList
+        }
+        this is_ (BoolVar::class.java) -> {
+            GlobalVarType.Bool
+        }
+        this is_ (BoolListVar::class.java) -> {
+            GlobalVarType.BoolList
+        }
+        this is_ (StringVar::class.java) -> {
+            GlobalVarType.String
+        }
+        this is_ (StringListVar::class.java) -> {
+            GlobalVarType.StringList
+        }
+        else -> {
+            null
+        }
+    }
+}
+
+fun GlobalVar.valueString(): String = valueList().joinToString()
+
+fun GlobalVar.valueList(): List<String> = when (this.`var`.toType()) {
+    GlobalVarType.Int -> {
+        val v = this.`var`.unpack(Int64Var::class.java)
+        listOf(v.value.toString())
+    }
+    GlobalVarType.IntList -> {
+        val v = this.`var`.unpack(Int64ListVar::class.java)
+        v.valuesList.map { it.toString() }
+    }
+    GlobalVarType.Bool -> {
+        val v = this.`var`.unpack(BoolVar::class.java)
+        listOf(v.value.toString())
+    }
+    GlobalVarType.BoolList -> {
+        val v = this.`var`.unpack(BoolListVar::class.java)
+        v.valuesList.map { it.toString() }
+    }
+    GlobalVarType.String -> {
+        val v = this.`var`.unpack(StringVar::class.java)
+        listOf(v.value)
+    }
+    GlobalVarType.StringList -> {
+        val v = this.`var`.unpack(StringListVar::class.java)
+        v.valuesList
+    }
+    null -> {
+        listOf("NO VALUE")
+    }
+}
+
+fun GlobalVar.isList(): Boolean = listOf(
+    GlobalVarType.StringList,
+    GlobalVarType.IntList,
+    GlobalVarType.BoolList
+).contains(this.type.toType())
+
+fun String.toVarValue(type: GlobalVarType?): ProtoAny? {
+    return when (type) {
+        GlobalVarType.Int, GlobalVarType.IntList -> {
+            kotlin.runCatching { this.toLong() }.getOrNull()?.let {
+                Int64Var.newBuilder().setValue(it)
+                    .build().pack_()
+            }
+        }
+
+        GlobalVarType.Bool, GlobalVarType.BoolList -> {
+            kotlin.runCatching { this.toBoolean() }.getOrNull()?.let {
+                BoolVar.newBuilder()
+                    .setValue(it).build()
+                    .pack_()
+            }
+        }
+        GlobalVarType.String, GlobalVarType.StringList -> {
+            StringVar.newBuilder().setValue(this).build().pack_()
+        }
+        else -> {
+            null
+        }
+    }
+}

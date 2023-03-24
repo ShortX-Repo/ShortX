@@ -3,13 +3,13 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 
 class TextInputState(
     val title: String,
@@ -60,23 +60,19 @@ fun TextInputDialog(state: TextInputState) {
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.message?.let {
-                    Text(text = it, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                     StandardSpacer()
                 }
 
-                TextField(leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.TextFields,
-                        contentDescription = state.title
-                    )
-                },
+                TextField(
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    label = {
-                        Text(text = state.title)
-                    },
                     value = expressionString,
                     onValueChange = {
                         expressionString = it

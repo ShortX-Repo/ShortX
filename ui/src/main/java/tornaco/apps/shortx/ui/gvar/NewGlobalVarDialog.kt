@@ -39,7 +39,7 @@ fun rememberNewGlobalVarState(
 @Composable
 fun NewGlobalVarDialog(state: NewGlobalVarState) {
     var name by remember(state) {
-        mutableStateOf("")
+        mutableStateOf("Var-" + System.currentTimeMillis())
     }
     var type by remember(state) {
         mutableStateOf(GlobalVarType.String)

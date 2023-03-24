@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.DataArray
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
@@ -94,6 +93,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         ) {
                             GlobalVarListItem(modifier = Modifier,
                                 name = it.name,
+                                value = it.valueString(),
                                 type = it.type.toType()?.label() ?: "?",
                                 overflow = {
                                     ListItemOverflowMenu(
@@ -120,6 +120,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 private fun GlobalVarListItem(
     modifier: Modifier,
     name: String? = null,
+    value: String? = null,
     type: String,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
@@ -137,13 +138,7 @@ private fun GlobalVarListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ColoredIcon(size = 32.dp, padding = 0.dp) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Outlined.DataArray,
-                    contentDescription = "Var"
-                )
-            }
+            MD3Badge(text = type)
 
             Column(horizontalAlignment = Alignment.End) {
                 overflow()
@@ -159,7 +154,7 @@ private fun GlobalVarListItem(
                 )
             }
             MediumSpacer()
-            Text(type, fontSize = 12.sp)
+            Text(value ?: "", fontSize = 12.sp)
             StandardSpacer()
         }
     }

@@ -13,13 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.ui.base.MediumSpacer
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.*
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
@@ -57,20 +53,7 @@ private fun PreferenceUi(preference: Preference) {
 
 @Composable
 private fun CategoryUi(preference: Preference.Category) {
-    Box(
-        modifier = Modifier
-            .padding(top = 24.dp)
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Text(
-            text = preference.title,
-            style = MaterialTheme.typography.titleSmall.copy(
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 12.sp
-            )
-        )
-    }
+    CategoryTitle(title = preference.title)
 }
 
 
