@@ -12,4 +12,6 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     LocationStateTrigger(context, shortXContext),
     UiModeStateTrigger(context, shortXContext),
     ConnectivityStateTrigger(context, shortXContext),
+    TorchStateTrigger(context, shortXContext),
+    DNDStateTrigger(context, shortXContext),
 )
