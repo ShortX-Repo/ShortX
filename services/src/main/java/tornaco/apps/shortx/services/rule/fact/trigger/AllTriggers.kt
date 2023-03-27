@@ -11,4 +11,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     BTStateTrigger(context, shortXContext),
     LocationStateTrigger(context, shortXContext),
     UiModeStateTrigger(context, shortXContext),
+    ConnectivityStateTrigger(context, shortXContext),
 )
