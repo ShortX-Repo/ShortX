@@ -4,6 +4,7 @@ import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
+import tornaco.apps.shortx.services.notification.NotificationService
 import tornaco.apps.shortx.services.os.UserService
 import tornaco.apps.shortx.services.overlay.OverlayService
 import tornaco.apps.shortx.services.rule.RuleService
@@ -19,6 +20,21 @@ interface ShortXContext {
     val ui: UIService
     val input: InputService
     val user: UserService
+    val notification: NotificationService
+
+    val allServices
+        get() = listOf(
+            appState,
+            pkgSet,
+            rule,
+            gesture,
+            watchDog,
+            overlay,
+            ui,
+            input,
+            user,
+            notification,
+        )
 }
 
 class ShortXContextImpl : ShortXContext {
@@ -31,4 +47,5 @@ class ShortXContextImpl : ShortXContext {
     override val ui = UIService(this)
     override val input = InputService(this)
     override val user = UserService(this)
+    override val notification = NotificationService(this)
 }

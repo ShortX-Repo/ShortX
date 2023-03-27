@@ -147,3 +147,26 @@ message DNDStatusChanged {
 message ActivityStarted {
   repeated AppComponent components = 1;
 }
+
+message Notification {
+  string title = 1;
+  string contentText = 2;
+  AppPkg owner = 3;
+  string notificationId = 4;
+  string notificationChannel = 5;
+  bool isFgService = 6;
+}
+
+message NotificationPosted {
+  Notification record = 1;
+}
+
+message NotificationRemoved {
+  Notification record = 1;
+  bool byUser = 2;
+}
+
+message NotificationUpdated {
+  Notification old = 1;
+  Notification new = 2;
+}

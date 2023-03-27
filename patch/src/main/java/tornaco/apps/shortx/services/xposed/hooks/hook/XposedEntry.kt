@@ -115,29 +115,41 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
         beforeMethod(
             lpparam.classLoader.notificationUsageStatsClass(),
             Methods.registerPostedByApp
-        ) {
-            logger.d("registerPostedByApp: ${it.args}")
+        ) { methodHookParam ->
+            logger.d("registerPostedByApp: ${methodHookParam.args}")
+            methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
+                ShortXService.shortXContext.notification.registerPostedByApp(it)
+            }
         }
 
         beforeMethod(
             lpparam.classLoader.notificationUsageStatsClass(),
             Methods.registerUpdatedByApp
-        ) {
-            logger.d("registerUpdatedByApp: ${it.args}")
+        ) { methodHookParam ->
+            logger.d("registerUpdatedByApp: ${methodHookParam.args}")
+            methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
+                ShortXService.shortXContext.notification.registerUpdatedByApp(it)
+            }
         }
 
         beforeMethod(
             lpparam.classLoader.notificationUsageStatsClass(),
             Methods.registerRemovedByApp
-        ) {
-            logger.d("registerRemovedByApp: ${it.args}")
+        ) { methodHookParam ->
+            logger.d("registerRemovedByApp: ${methodHookParam.args}")
+            methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
+                ShortXService.shortXContext.notification.registerRemovedByApp(it)
+            }
         }
 
         beforeMethod(
             lpparam.classLoader.notificationUsageStatsClass(),
             Methods.registerDismissedByUser
-        ) {
-            logger.d("registerDismissedByUser: ${it.args}")
+        ) { methodHookParam ->
+            logger.d("registerDismissedByUser: ${methodHookParam.args}")
+            methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
+                ShortXService.shortXContext.notification.registerDismissedByUser(it)
+            }
         }
     }
 
