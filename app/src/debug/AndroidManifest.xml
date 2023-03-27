@@ -7,6 +7,18 @@
     <application
         android:name=".DebugShortXApp"
         tools:ignore="MissingApplicationIcon"
-        tools:replace="android:name" />
+        tools:replace="android:name">
+
+        <activity
+            android:name=".DemoActivity"
+            android:exported="true"
+            android:label="Demo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
 
 </manifest>

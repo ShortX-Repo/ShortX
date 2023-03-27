@@ -122,6 +122,23 @@ dependencies {
     implementation(Hilt.hiltNavigationCompose)
     kapt(Hilt.googleAndroidCompiler)
 
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0-beta01")
+    implementation("androidx.core:core-ktx:1.9.0")
+    // Note: Do not upgrade this lib, ComposeOverlay.
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Import the Compose BOM
+    implementation(platform("androidx.compose:compose-bom:${tornaco.project.android.shortx.Compose.bomVersion}"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material:material-icons-extended")
+
     implementation(project(":ui"))
 
     implementation(project(":services"))

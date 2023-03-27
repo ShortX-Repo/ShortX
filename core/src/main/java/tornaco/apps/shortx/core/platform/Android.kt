@@ -13,11 +13,16 @@ object Methods {
     const val onTransact = "onTransact"
     const val print = "print"
     const val startListening = "startListening"
+    const val registerPostedByApp = "registerPostedByApp"
+    const val registerUpdatedByApp = "registerUpdatedByApp"
+    const val registerRemovedByApp = "registerRemovedByApp"
+    const val registerDismissedByUser = "registerDismissedByUser"
 }
 
 object ClassNames {
     const val AMS = "com.android.server.am.ActivityManagerService"
     const val INPUT_MANAGER_SERVICE = "com.android.server.inputmethod.InputMethodManagerService"
+    const val NOTIFICATION_USAGE_STATS_SERVICE = "com.android.server.notification.NotificationUsageStats"
 }
 
 object Fields {

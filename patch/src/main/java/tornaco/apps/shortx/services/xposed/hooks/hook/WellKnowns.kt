@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
+import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 
 object Classes {
 
@@ -46,5 +47,10 @@ object Classes {
             this
         )
 
-
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.notificationUsageStatsClass(): Class<*> =
+        XposedHelpers.findClass(
+            NOTIFICATION_USAGE_STATS_SERVICE,
+            this
+        )
 }

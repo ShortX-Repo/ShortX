@@ -21,6 +21,7 @@ import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.appWidgetServiceImplClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
+import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.notificationUsageStatsClass
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
 import util.Reflections
 
@@ -105,6 +106,38 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     hookParam.result = ParceledListSlice(listOf(bundle))
                 }
             }
+
+            hookNotificationUsageStats(lpparam)
+        }
+    }
+
+    private fun hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackageParam) {
+        beforeMethod(
+            lpparam.classLoader.notificationUsageStatsClass(),
+            Methods.registerPostedByApp
+        ) {
+            logger.d("registerPostedByApp: ${it.args}")
+        }
+
+        beforeMethod(
+            lpparam.classLoader.notificationUsageStatsClass(),
+            Methods.registerUpdatedByApp
+        ) {
+            logger.d("registerUpdatedByApp: ${it.args}")
+        }
+
+        beforeMethod(
+            lpparam.classLoader.notificationUsageStatsClass(),
+            Methods.registerRemovedByApp
+        ) {
+            logger.d("registerRemovedByApp: ${it.args}")
+        }
+
+        beforeMethod(
+            lpparam.classLoader.notificationUsageStatsClass(),
+            Methods.registerDismissedByUser
+        ) {
+            logger.d("registerDismissedByUser: ${it.args}")
         }
     }
 
