@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.AddRuleViewModel
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
@@ -197,6 +196,36 @@ fun FactSelectors(
             Fact.NFCStatusChanged::class -> {
                 nfcSelectorState.show()
             }
+            Fact.NotificationPosted::class -> {
+                vm.setFact(
+                    Fact.NotificationPosted(
+                        n = Fact.Notification(
+                            apps = emptyList(),
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }
+            Fact.NotificationUpdated::class -> {
+                vm.setFact(
+                    Fact.NotificationUpdated(
+                        n = Fact.Notification(
+                            apps = emptyList(),
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }
+            Fact.NotificationRemoved::class -> {
+                vm.setFact(
+                    Fact.NotificationRemoved(
+                        n = Fact.Notification(
+                            apps = emptyList(),
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }
         }
     }
 }
@@ -335,6 +364,28 @@ private fun FactSelectorMenu(
                 icon(imageVectorForFact(Fact.AppBecomeBackground::class))
             }
         }
+
+        item(Fact.NotificationPosted::class, i18N["ui.fact.n"] to null) {
+            icon(imageVectorForFact(Fact.NotificationPosted::class))
+            item(
+                Fact.NotificationPosted::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.NotificationPosted::class)
+            ) {
+                icon(imageVectorForFact(Fact.NotificationPosted::class))
+            }
+            item(
+                Fact.NotificationUpdated::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.NotificationUpdated::class)
+            ) {
+                icon(imageVectorForFact(Fact.NotificationUpdated::class))
+            }
+            item(
+                Fact.NotificationRemoved::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.NotificationRemoved::class)
+            ) {
+                icon(imageVectorForFact(Fact.NotificationRemoved::class))
+            }
+        }
     }
 
     Dropdown(
@@ -344,30 +395,3 @@ private fun FactSelectorMenu(
         onDismiss = { setIsOpen(false) },
     )
 }
-
-private fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
-    return when (fact) {
-        Fact.ActivityStarted::class -> Icons.Outlined.Update
-        Fact.EdgeGesture::class -> Icons.Outlined.Gesture
-        Fact.KeyEvent::class -> Icons.Outlined.Keyboard
-        Fact.ScreenOff::class -> Icons.Outlined.Lock
-        Fact.ScreenOn::class -> Icons.Outlined.Smartphone
-        Fact.UserPresent::class -> Icons.Outlined.LockOpen
-        Fact.Alarm::class -> Icons.Outlined.Alarm
-        Fact.AppBecomeBackground::class -> Icons.Outlined.FiberDvr
-        Fact.AppBecomeForeground::class -> Icons.Outlined.Aod
-        Fact.WifiStatusChanged::class -> Icons.Outlined.Wifi
-        Fact.BTStatusChanged::class -> Icons.Outlined.Bluetooth
-        Fact.LocationStatusChanged::class -> Icons.Outlined.LocationOn
-        Fact.NFCStatusChanged::class -> Icons.Outlined.Nfc
-        Fact.MobileDataStatusChanged::class -> Icons.Outlined.MobiledataOff
-        Fact.HotSpotStatusChanged::class -> Icons.Outlined.WifiTethering
-        Fact.DarkModeStatusChanged::class -> Icons.Outlined.DarkMode
-        Fact.FlashLightStatusChanged::class -> Icons.Outlined.FlashlightOn
-
-        else -> {
-            Icons.Filled.Warning
-        }
-    }
-}
-

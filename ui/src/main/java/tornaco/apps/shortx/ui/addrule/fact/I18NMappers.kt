@@ -1,7 +1,11 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import android.view.KeyEvent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -54,6 +58,15 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         }
         Fact.NFCStatusChanged::class -> {
             i18n["ui.fact.nfc.state.changed"] to null
+        }
+        Fact.NotificationPosted::class -> {
+            i18n["ui.fact.n.posted"] to null
+        }
+        Fact.NotificationUpdated::class -> {
+            i18n["ui.fact.n.updated"] to null
+        }
+        Fact.NotificationRemoved::class -> {
+            i18n["ui.fact.n.removed"] to null
         }
 
         else -> "N/A" to null
@@ -169,6 +182,27 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 fact.state.label(i18N)
             )
         }
+        is Fact.NotificationPosted -> {
+            mutableListOf(
+                i18N["ui.fact.n.posted"],
+                fact.n.titleRegex,
+                fact.n.contentRegex
+            ).filterNotNull()
+        }
+        is Fact.NotificationRemoved -> {
+            mutableListOf(
+                i18N["ui.fact.n.removed"],
+                fact.n.titleRegex,
+                fact.n.contentRegex
+            ).filterNotNull()
+        }
+        is Fact.NotificationUpdated -> {
+            mutableListOf(
+                i18N["ui.fact.n.updated"],
+                fact.n.titleRegex,
+                fact.n.contentRegex
+            ).filterNotNull()
+        }
     }
 }
 
@@ -241,6 +275,35 @@ fun OnOffAny.label(i18n: I18N): String {
         }
         OnOffAny.UNRECOGNIZED -> {
             "UNRECOGNIZED"
+        }
+    }
+}
+
+fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
+    return when (fact) {
+        Fact.ActivityStarted::class -> Icons.Outlined.Update
+        Fact.EdgeGesture::class -> Icons.Outlined.Gesture
+        Fact.KeyEvent::class -> Icons.Outlined.Keyboard
+        Fact.ScreenOff::class -> Icons.Outlined.Lock
+        Fact.ScreenOn::class -> Icons.Outlined.Smartphone
+        Fact.UserPresent::class -> Icons.Outlined.LockOpen
+        Fact.Alarm::class -> Icons.Outlined.Alarm
+        Fact.AppBecomeBackground::class -> Icons.Outlined.FiberDvr
+        Fact.AppBecomeForeground::class -> Icons.Outlined.Aod
+        Fact.WifiStatusChanged::class -> Icons.Outlined.Wifi
+        Fact.BTStatusChanged::class -> Icons.Outlined.Bluetooth
+        Fact.LocationStatusChanged::class -> Icons.Outlined.LocationOn
+        Fact.NFCStatusChanged::class -> Icons.Outlined.Nfc
+        Fact.MobileDataStatusChanged::class -> Icons.Outlined.MobiledataOff
+        Fact.HotSpotStatusChanged::class -> Icons.Outlined.WifiTethering
+        Fact.DarkModeStatusChanged::class -> Icons.Outlined.DarkMode
+        Fact.FlashLightStatusChanged::class -> Icons.Outlined.FlashlightOn
+        Fact.NotificationPosted::class -> Icons.Outlined.Notifications
+        Fact.NotificationUpdated::class -> Icons.Outlined.Notifications
+        Fact.NotificationRemoved::class -> Icons.Outlined.Notifications
+
+        else -> {
+            Icons.Filled.Warning
         }
     }
 }

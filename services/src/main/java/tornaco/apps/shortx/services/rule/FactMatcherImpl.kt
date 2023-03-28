@@ -96,7 +96,77 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val ruleStatus = rule as DNDStatusChanged
             ruleStatus.ooa == OnOffAny.Any || ruleStatus.ooa == actualStatus.ooa
         }
+
+        register(NotificationPosted::class.java) { actual, rule ->
+            val actualN = (actual as NotificationPosted).record
+            val ruleN = (rule as NotificationPosted).record
+
+            val pkgListActual = actualN.appsList
+
+            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
+                ruleN.pkgSetsList.flatMap {
+                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                }
+            } else {
+                ruleN.appsList
+            }
+
+            nullEmptyOrEq(
+                ruleN.notificationChannel to actualN.notificationChannel,
+                ruleN.title to actualN.title,
+                ruleN.contentText to actualN.contentText
+            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+        }
+
+        register(NotificationUpdated::class.java) { actual, rule ->
+            val actualN = (actual as NotificationUpdated).new
+            val ruleN = (rule as NotificationUpdated).new
+
+            val pkgListActual = actualN.appsList
+
+            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
+                ruleN.pkgSetsList.flatMap {
+                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                }
+            } else {
+                ruleN.appsList
+            }
+
+            nullEmptyOrEq(
+                ruleN.notificationChannel to actualN.notificationChannel,
+                ruleN.title to actualN.title,
+                ruleN.contentText to actualN.contentText
+            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+        }
+
+        register(NotificationRemoved::class.java) { actual, rule ->
+            val actualN = (actual as NotificationRemoved).record
+            val ruleN = (rule as NotificationRemoved).record
+
+            val pkgListActual = actualN.appsList
+
+            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
+                ruleN.pkgSetsList.flatMap {
+                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                }
+            } else {
+                ruleN.appsList
+            }
+
+            nullEmptyOrEq(
+                ruleN.notificationChannel to actualN.notificationChannel,
+                ruleN.title to actualN.title,
+                ruleN.contentText to actualN.contentText
+            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+        }
     }
+
+    private fun nullEmptyOrEq(vararg ruleAndActuals: Pair<String?, String>) = ruleAndActuals.all {
+        nullEmptyOrEq(it.first, it.second)
+    }
+
+    private fun nullEmptyOrEq(ruleField: String?, actualField: String) =
+        ruleField.isNullOrEmpty() || ruleField == actualField
 
     private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, f: ProtoMessage) -> Boolean) {
         factValueMatchers[clazz] = matcher

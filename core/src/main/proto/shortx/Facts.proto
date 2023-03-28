@@ -151,10 +151,13 @@ message ActivityStarted {
 message Notification {
   string title = 1;
   string contentText = 2;
-  AppPkg owner = 3;
-  string notificationId = 4;
-  string notificationChannel = 5;
-  bool isFgService = 6;
+
+  repeated AppPkg apps = 3;
+  repeated string pkgSets = 4;
+
+  string notificationId = 5;
+  string notificationChannel = 6;
+  bool isFgService = 7;
 }
 
 message NotificationPosted {

@@ -44,6 +44,25 @@ sealed interface Fact {
     data class HotSpotStatusChanged(val state: OnOffAny) : Fact
     data class FlashLightStatusChanged(val state: OnOffAny) : Fact
     data class DarkModeStatusChanged(val state: OnOffAny) : Fact
+
+    data class Notification(
+        val apps: List<App>,
+        val pkgSets: List<PkgSet> = emptyList(),
+        val titleRegex: String? = null,
+        val contentRegex: String? = null
+    )
+
+    data class NotificationPosted(
+        val n: Notification
+    ) : Fact
+
+    data class NotificationRemoved(
+        val n: Notification
+    ) : Fact
+
+    data class NotificationUpdated(
+        val n: Notification
+    ) : Fact
 }
 
 fun Fact.toProtoFact(): ProtoMessage {
@@ -128,6 +147,48 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.DarkModeStatusChanged -> {
             DarkModeStatusChanged.newBuilder()
                 .setOoa(state)
+                .build()
+        }
+        is Fact.NotificationPosted -> {
+            NotificationPosted.newBuilder()
+                .setRecord(
+                    Notification.newBuilder()
+                        .addAllApps(n.apps.map { it.pkg })
+                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .apply {
+                            n.titleRegex?.let { title = it }
+                            n.contentRegex?.let { contentText = it }
+                        }
+                        .build()
+                )
+                .build()
+        }
+        is Fact.NotificationRemoved -> {
+            NotificationRemoved.newBuilder()
+                .setRecord(
+                    Notification.newBuilder()
+                        .addAllApps(n.apps.map { it.pkg })
+                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .apply {
+                            n.titleRegex?.let { title = it }
+                            n.contentRegex?.let { contentText = it }
+                        }
+                        .build()
+                )
+                .build()
+        }
+        is Fact.NotificationUpdated -> {
+            NotificationUpdated.newBuilder()
+                .setNew(
+                    Notification.newBuilder()
+                        .addAllApps(n.apps.map { it.pkg })
+                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .apply {
+                            n.titleRegex?.let { title = it }
+                            n.contentRegex?.let { contentText = it }
+                        }
+                        .build()
+                )
                 .build()
         }
     }
@@ -216,6 +277,49 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data = this unpack_ DarkModeStatusChanged::class.java
             Fact.DarkModeStatusChanged(data.ooa)
         }
+
+        this is_ NotificationPosted::class.java -> {
+            val data = this unpack_ NotificationPosted::class.java
+            val models =
+                (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.NotificationPosted(
+                n = Fact.Notification(
+                    apps = models.first,
+                    pkgSets = models.second,
+                    titleRegex = data.record.title,
+                    contentRegex = data.record.contentText
+                )
+            )
+        }
+
+        this is_ NotificationRemoved::class.java -> {
+            val data = this unpack_ NotificationRemoved::class.java
+            val models =
+                (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.NotificationRemoved(
+                n = Fact.Notification(
+                    apps = models.first,
+                    pkgSets = models.second,
+                    titleRegex = data.record.title,
+                    contentRegex = data.record.contentText
+                )
+            )
+        }
+
+        this is_ NotificationUpdated::class.java -> {
+            val data = this unpack_ NotificationUpdated::class.java
+            val models =
+                (data.new.appsList to data.new.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.NotificationUpdated(
+                n = Fact.Notification(
+                    apps = models.first,
+                    pkgSets = models.second,
+                    titleRegex = data.new.title,
+                    contentRegex = data.new.contentText
+                )
+            )
+        }
+
         else -> {
             null
         }

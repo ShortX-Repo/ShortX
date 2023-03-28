@@ -20,7 +20,7 @@ fun Any.androidNotificationRecordToNotification(): Notification? {
             .setTitle(getTitle(n))
             .setContentText(getContent(n))
             .setIsFgService(isFgService)
-            .setOwner(
+            .addApps(
                 AppPkg.newBuilder()
                     .setUserId(getNormalizedUserId(sbn))
                     .setPkgName(sbn.packageName)

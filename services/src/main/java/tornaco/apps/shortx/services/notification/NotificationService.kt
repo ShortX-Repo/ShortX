@@ -25,7 +25,8 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerUpdatedByApp",
-                NotificationUpdated.newBuilder().setNew(n).build()
+                NotificationUpdated.newBuilder().setNew(n).build(),
+                n.contextMap()
             )
         }
     }
@@ -35,7 +36,8 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
-                NotificationRemoved.newBuilder().setByUser(true).setRecord(n).build()
+                NotificationRemoved.newBuilder().setByUser(true).setRecord(n).build(),
+                n.contextMap()
             )
         }
     }
@@ -45,8 +47,16 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
-                NotificationRemoved.newBuilder().setByUser(false).setRecord(n).build()
+                NotificationRemoved.newBuilder().setByUser(false).setRecord(n).build(),
+                n.contextMap()
             )
         }
     }
+
+    private fun Notification.contextMap() = mapOf(
+        "title" to title,
+        "contentText" to contentText,
+        "pkgName" to appsList.first().pkgName,
+        "userId" to appsList.first().userId,
+    )
 }
