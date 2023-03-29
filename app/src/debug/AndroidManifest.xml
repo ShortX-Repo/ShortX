@@ -14,8 +14,8 @@
             android:exported="true"
             android:label="Demo">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="tornaco.apps.shortx.action.demo" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

@@ -160,7 +160,10 @@ class ActionEvaluatorImpl(
         } else if (action is_ ShowDanmu::class.java) {
             withContext(Dispatchers.Main) {
                 val d = action unpack_ ShowDanmu::class.java
-                shortXContext.ui.showDanmu(d.icon, d.text.inflateContextMap(contextMap))
+                shortXContext.ui.showDanmu(
+                    d.icon.inflateContextMap(contextMap),
+                    d.text.inflateContextMap(contextMap)
+                )
             }
         } else if (action is_ WhileLoop::class.java) {
             val d = action unpack_ WhileLoop::class.java

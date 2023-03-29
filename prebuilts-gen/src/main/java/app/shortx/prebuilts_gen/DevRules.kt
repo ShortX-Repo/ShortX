@@ -19,6 +19,31 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
+                    .setTitle("Danmu notification")
+                    .setFact(
+                        NotificationUpdated.newBuilder().build().pack_()
+                    )
+                    .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
+                    .addAllActions(
+                        listOf(
+                            ShowDanmu.newBuilder()
+                                .setIcon("app://\$pkgName")
+                                .setText("\$title\n\$contentText").build()
+                                .pack_()
+                        )
+                    )
+                    .build()
+            )
+
+
+
+
+
+            add(
+                Rule.newBuilder()
+                    .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("Wifi ${onOffAny.name}")
                     .setFact(WifiStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -33,6 +58,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("BT ${onOffAny.name}")
                     .setFact(BTStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -47,6 +73,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("NFC ${onOffAny.name}")
                     .setFact(NFCStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -61,6 +88,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("DarkMode ${onOffAny.name}")
                     .setFact(DarkModeStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -76,6 +104,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("DND ${onOffAny.name}")
                     .setFact(DNDStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -90,6 +119,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("Location ${onOffAny.name}")
                     .setFact(LocationStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
@@ -105,6 +135,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("MobileData ${onOffAny.name}")
                     .setFact(
                         MobileDataStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
@@ -122,6 +153,7 @@ object DevRules {
             add(
                 Rule.newBuilder()
                     .setId(nextId())
+                    .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("FlashLight ${onOffAny.name}")
                     .setFact(
                         FlashLightStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()

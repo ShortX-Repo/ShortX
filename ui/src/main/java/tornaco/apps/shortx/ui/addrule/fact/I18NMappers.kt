@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
@@ -185,23 +186,23 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.NotificationPosted -> {
             mutableListOf(
                 i18N["ui.fact.n.posted"],
-                fact.n.titleRegex,
-                fact.n.contentRegex
-            ).filterNotNull()
+                fact.n.titleRegex.fallbackOnEmpty(""),
+                fact.n.contentRegex.fallbackOnEmpty("")
+            ).filterNot { it.isBlank() }
         }
         is Fact.NotificationRemoved -> {
             mutableListOf(
                 i18N["ui.fact.n.removed"],
-                fact.n.titleRegex,
-                fact.n.contentRegex
-            ).filterNotNull()
+                fact.n.titleRegex.fallbackOnEmpty(""),
+                fact.n.contentRegex.fallbackOnEmpty("")
+            ).filterNot { it.isBlank() }
         }
         is Fact.NotificationUpdated -> {
             mutableListOf(
                 i18N["ui.fact.n.updated"],
-                fact.n.titleRegex,
-                fact.n.contentRegex
-            ).filterNotNull()
+                fact.n.titleRegex.fallbackOnEmpty(""),
+                fact.n.contentRegex.fallbackOnEmpty("")
+            ).filterNot { it.isBlank() }
         }
     }
 }
