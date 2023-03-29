@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.notification
 
+import tornaco.apps.shortx.core.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
@@ -54,9 +55,9 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
     }
 
     private fun Notification.contextMap() = mapOf(
-        "title" to title,
-        "contentText" to contentText,
-        "pkgName" to appsList.first().pkgName,
-        "userId" to appsList.first().userId,
+        ContextDataMapping.NotificationRemoved.title.name to title,
+        ContextDataMapping.NotificationRemoved.contentText.name to contentText,
+        ContextDataMapping.NotificationRemoved.pkgName.name to appsList.first().pkgName,
+        ContextDataMapping.NotificationRemoved.userId.name to appsList.first().userId,
     )
 }

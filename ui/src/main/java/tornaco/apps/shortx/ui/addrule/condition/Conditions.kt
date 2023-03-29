@@ -41,7 +41,9 @@ fun Conditions(
             Column(modifier = Modifier.fillMaxWidth()) {
                 state.conditions.forEach {
                     ListItem(titleLines = labelForCondition(condition = it), icon = {
-                        IconForCondition(it)
+                        ColoredIcon(size = 36.dp) {
+                            IconForCondition(it)
+                        }
                     }, action1 = {
                         IconButton(onClick = {
                             removeCondition(it)

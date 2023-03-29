@@ -178,5 +178,8 @@
   "ui.global.var.name": "Var name",
   "ui.global.var.value": "Var value",
   "ui.global.var.input.value": "Please input value",
-  "ui.global.var.desc": "Manage and view global variables"
+  "ui.global.var.desc": "Manage and view global variables",
+  "ui.context.data.title": "Context variables",
+  "ui.context.data.message": "Context variables refer to some variables contained in an Fact when it is triggered. You can access these variables in Conditions or Actions with a $ prefix.\n\n{obj} contains below context variables",
+  "ui.context.data.example": "Access this variable by: {eg}"
 }

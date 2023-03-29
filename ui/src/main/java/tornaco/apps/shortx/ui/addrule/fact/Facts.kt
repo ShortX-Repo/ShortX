@@ -11,16 +11,18 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import tornaco.apps.shortx.ui.addrule.AddRuleState
-import tornaco.apps.shortx.ui.addrule.AddRuleViewModel
+import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.contextData
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.dropdown.Dropdown
 import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu
@@ -241,12 +243,33 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                 mutableStateOf(false)
             }
 
+            val contextDataInfoDialogState = rememberContextDataInfoDialogState()
+            ContextDataInfoDialog(state = contextDataInfoDialogState)
+            val i18N = LocalI18N.current
+
             Column {
                 state.fact?.let {
                     ListItem(
                         modifier = Modifier,
                         titleLines = labelForFact(fact = it),
-                        icon = { Icon(imageVector = imageVectorForFact(it::class)) })
+                        icon = {
+                            ColoredIcon(size = 36.dp) {
+                                Icon(imageVector = imageVectorForFact(it::class))
+                            }
+                        },
+                        action1 = {
+                            if (it.contextData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    contextDataInfoDialogState.show(
+                                        labelAndDescriptionForFactSelector(i18N, it::class).first,
+                                        it.contextData
+                                    )
+                                }) {
+                                    Icon(imageVector = Icons.Outlined.DataObject)
+                                }
+                            }
+                        }
+                    )
                 }
 
                 FilledTonalButton(onClick = {

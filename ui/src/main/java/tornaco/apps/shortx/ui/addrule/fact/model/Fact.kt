@@ -11,6 +11,8 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.ui.addrule.ContextData
+import tornaco.apps.shortx.ui.addrule.contextData
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 sealed interface Fact {
@@ -325,3 +327,5 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         }
     }
 }
+
+val Fact.contextData: List<ContextData> get() = this::class.contextData()

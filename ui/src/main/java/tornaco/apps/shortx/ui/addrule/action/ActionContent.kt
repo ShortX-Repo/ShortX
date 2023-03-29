@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
@@ -94,7 +95,9 @@ private fun Actions(
                     modifier = Modifier,
                     titleLines = labelLinesForAction(action = it),
                     icon = {
-                        Icon(imageVector = imageVectorForAction(action = it::class))
+                        ColoredIcon(size = 36.dp) {
+                            Icon(imageVector = imageVectorForAction(action = it::class))
+                        }
                     },
                     action1 = {
                         IconButton(onClick = {

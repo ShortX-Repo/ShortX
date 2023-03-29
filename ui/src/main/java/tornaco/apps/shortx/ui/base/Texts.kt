@@ -58,6 +58,15 @@ fun DialogTitle(text: String) {
 }
 
 @Composable
+fun DialogMessage(text: String) {
+    Text(
+        modifier = Modifier.padding(8.dp),
+        text = text,
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
 fun TipBody(text: String) {
     Text(
         modifier = Modifier.padding(vertical = 12.dp),

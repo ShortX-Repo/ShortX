@@ -5,16 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Commit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.MobileFriendly
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +25,7 @@ fun ListItem(
     modifier: Modifier = Modifier,
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
-    action1: @Composable () -> Unit = {},
+    action1: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -85,7 +82,9 @@ fun ListItem(
             }
         }
 
-        action1()
+        Column(verticalArrangement = Arrangement.Center) {
+            action1()
+        }
     }
 }
 
@@ -200,6 +199,7 @@ fun ListItem(
 
 @Composable
 fun ListItem(
+    icon: (@Composable () -> Unit)? = null,
     title: String? = null,
     text1: String? = null,
     text2: String? = null,
@@ -223,7 +223,7 @@ fun ListItem(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = CenterVertically
         ) {
-            Icon(imageVector = Icons.Filled.Commit, contentDescription = "Icon")
+            icon?.invoke()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
                 title?.let {
@@ -286,6 +286,27 @@ fun ListItem2Preview() {
                 text1 = "Text1",
                 text2 = "Text2",
                 onClick = {}
+            )
+        }
+    }
+}
+
+
+@Composable
+@Preview
+fun ListItem3Preview() {
+    LazyColumn {
+        items(10) {
+            ListItem(titleLines = listOf(
+                "Title",
+                "Message"
+            ),
+                onClick = {},
+                action1 = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Filled.MobileFriendly)
+                    }
+                }
             )
         }
     }
