@@ -9,15 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ContentPaste
-import androidx.compose.material.icons.outlined.FileCopy
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -208,28 +205,20 @@ private fun HomeScreen(
                         Card(
                             modifier = Modifier
                                 .padding(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp)
                             ) {
-                                Text(
-                                    LocalI18N.current["ui.framework.updated"],
-                                )
-
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.CenterEnd
-                                ) {
-                                    FilledTonalButton(
-                                        colors = ButtonDefaults.filledTonalButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.onError
-                                        ),
-                                        onClick = {
-                                            vm.reboot()
-                                        }) {
-                                        Text(text = LocalI18N.current["ui.common.reboot"])
-                                    }
+                                Row {
+                                    Icon(
+                                        modifier = Modifier.offset(y = 2.dp),
+                                        imageVector = Icons.Outlined.TipsAndUpdates
+                                    )
+                                    MediumSpacer()
+                                    Text(
+                                        LocalI18N.current["ui.framework.updated"],
+                                    )
                                 }
                             }
                         }
