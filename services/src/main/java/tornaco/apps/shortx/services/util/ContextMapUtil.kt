@@ -1,13 +1,15 @@
 package tornaco.apps.shortx.services.util
 
+import tornaco.apps.shortx.services.rule.ContextData
+
 object ContextMapUtil {
-    fun String.inflateContextMap(contextMap: Map<String, Any> = emptyMap()): String {
+    fun String.inflateContextMap(contextData: ContextData): String {
         var res = this
-        if (contextMap.isEmpty()) {
+        if (contextData.isEmpty()) {
             return res
         }
-        contextMap.forEach {
-            res = res.replace("\$${it.key}", it.value.toString(), false)
+        contextData.forEach {
+            res = res.replace("\$${it.first}", it.second.toString(), false)
         }
         return res
     }

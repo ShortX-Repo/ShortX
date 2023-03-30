@@ -35,7 +35,6 @@ class WifiStateTrigger(override val context: Context, override val shortXContext
                             reason = "Wifi state changed",
                             fact = WifiStatusChanged.newBuilder()
                                 .setOoa(lastWifiState.select(OnOffAny.On, OnOffAny.Off)).build(),
-                            contextMap = emptyMap()
                         )
                     }
                 }

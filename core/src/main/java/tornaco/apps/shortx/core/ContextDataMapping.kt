@@ -23,4 +23,8 @@ object ContextDataMapping {
         title("Title of the notification"),
         contentText("Content text of the notification")
     }
+
+    enum class ExecuteMVEL(val description: String) {
+        mvelRet("The return value of the MVEL expression")
+    }
 }

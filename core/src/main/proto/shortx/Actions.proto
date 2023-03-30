@@ -202,3 +202,18 @@ message WhileLoop {
   int32 repeatTimes = 6;
   string id = 100;
 }
+
+message WriteGlobalVar {
+  string varId = 1;
+  string valueAsString = 2;
+
+  string id = 100;
+}
+
+// For list
+message AddToGlobalVar {
+  string varId = 1;
+  string valueAsString = 2;
+
+  string id = 100;
+}

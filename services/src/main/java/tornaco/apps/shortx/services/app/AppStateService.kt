@@ -119,7 +119,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             shortXContext.rule.publishFact(
                 reason = "onComponentMoveToFg",
                 fact = AppBecomeFg.newBuilder().addApps(currentFgPkg).build(),
-                contextMap = mapOf(
+                initialContextData = mapOf(
                     "componentName" to componentName.flattenToShortString(),
                     "pkgName" to currentFgPkg.pkgName
                 )
@@ -128,7 +128,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             shortXContext.rule.publishFact(
                 reason = "onComponentMoveToBg",
                 fact = AppBecomeBg.newBuilder().addApps(lastFgPkg).build(),
-                contextMap = mapOf(
+                initialContextData = mapOf(
                     "pkgName" to lastFgPkg.pkgName
                 )
             )
@@ -137,8 +137,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         shortXContext.rule.publishFact(
             "onComponentMoveToFg",
             ActivityStarted.newBuilder().addComponents(componentName.toAppComponent(userId))
-                .build(),
-            emptyMap()
+                .build()
         )
     }
 

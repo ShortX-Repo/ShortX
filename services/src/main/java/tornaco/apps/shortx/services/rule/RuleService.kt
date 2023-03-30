@@ -98,7 +98,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             if (engine.shouldFire(enabledRules, fact)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
-                    engine.fire(fact = fact, rules = enabledRules)
+                    engine.fire(
+                        fact = fact,
+                        rules = enabledRules
+                    )
                 }
                 // False means consume.
                 return@onKeyEvent false
@@ -126,18 +129,32 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
     }
 
-    fun publishFact(reason: String, fact: ProtoMessage, contextMap: Map<String, Any> = emptyMap()) {
+    fun publishFact(
+        reason: String,
+        fact: ProtoMessage,
+        initialContextData: Map<String, Any> = emptyMap()
+    ) {
         logger.d("publishFact: $reason")
         engine.fire(
             fact = fact,
             rules = getAllRules().filter { rule -> rule.isEnabled },
-            contextMap = contextMap
+            initialContextData = initialContextData
         )
     }
 
-    fun executeActions(id: String, reason: String, actions: List<ProtoAny>) {
+    fun executeActions(
+        id: String,
+        reason: String,
+        actions: List<ProtoAny>,
+        initialContextData: Map<String, Any> = emptyMap()
+    ) {
         logger.d("executeActions: $reason, $actions $id")
-        engine.evaluate(id = id, logTag = reason, actions = actions)
+        engine.evaluate(
+            id = id,
+            logTag = reason,
+            actions = actions,
+            initialContextData = initialContextData
+        )
     }
 
     fun addRule(rule: Rule) {

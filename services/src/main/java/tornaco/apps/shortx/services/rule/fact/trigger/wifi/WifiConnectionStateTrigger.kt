@@ -50,7 +50,7 @@ class WifiConnectionStateTrigger(override val context: Context, override val sho
                     fact = WifiStatusChanged.newBuilder()
                         .setSsid(ws.ssid ?: "")
                         .setOoa(ws.enabled.select(OnOffAny.On, OnOffAny.Off)).build(),
-                    contextMap = mapOf(
+                    initialContextData = mapOf(
                         "ssid" to ws.ssid.fallbackOnEmpty(""),
                         "enabled" to ws.enabled.toString(),
                         "statusLabel" to ws.statusLabel.fallbackOnEmpty("")

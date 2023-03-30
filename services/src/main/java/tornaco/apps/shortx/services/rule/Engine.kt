@@ -27,7 +27,7 @@ interface ActionEvaluator {
     suspend fun evaluate(
         logTag: String,
         action: ProtoAny,
-        contextMap: Map<String, Any> = emptyMap()
+        contextData: ContextData
     )
 }
 
@@ -43,14 +43,14 @@ interface Engine {
     fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
-        contextMap: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any> = emptyMap()
     )
 
     fun evaluate(
         id: String,
         logTag: String,
         actions: List<ProtoAny>,
-        contextMap: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any> = emptyMap()
     )
 
     fun cancelJobs(filter: (JobRecord) -> Boolean)
@@ -81,10 +81,11 @@ class DefaultRuleEngine(
         } != null
     }
 
-    override fun fire(fact: ProtoMessage, rules: List<Rule>, contextMap: Map<String, Any>) {
+    override fun fire(fact: ProtoMessage, rules: List<Rule>, initialContextData: Map<String, Any>) {
         logger.d("fire: ${fact.javaClass}")
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.fact)) {
+                val contextData = ContextData.obtain(initialContextData)
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
                     val conditionRes = conditionEvaluator.evaluate(
@@ -100,13 +101,12 @@ class DefaultRuleEngine(
                                     actionEvaluator.evaluate(
                                         rule.title,
                                         it,
-                                        contextMap
+                                        contextData
                                     )
+                                }.onFailure { err ->
+                                    logger.e(err, "Error evaluate action, stop execution")
+                                    return@loop
                                 }
-                                    .onFailure { err ->
-                                        logger.e(err, "Error evaluate action, stop execution")
-                                        return@loop
-                                    }
                             }
                         }
                     }
@@ -116,6 +116,7 @@ class DefaultRuleEngine(
                 job.invokeOnCompletion {
                     logger.d("job for rule: ${rule.title} complete, err: $it")
                     jobs.remove(JobRecord(rule.id, job))
+                    contextData.recycle()
                     onJobCompleted(rule.id)
                 }
             }
@@ -126,13 +127,14 @@ class DefaultRuleEngine(
         id: String,
         logTag: String,
         actions: List<ProtoAny>,
-        contextMap: Map<String, Any>
+        initialContextData: Map<String, Any>
     ) {
+        val contextData = ContextData.obtain(initialContextData)
         val job = scope.launchSafety {
             logger.d("job for id: $id start.")
             kotlin.run loop@{
                 actions.forEach {
-                    kotlin.runCatching { actionEvaluator.evaluate(logTag, it, contextMap) }
+                    kotlin.runCatching { actionEvaluator.evaluate(logTag, it, contextData) }
                         .onFailure { err ->
                             logger.e(err, "Error evaluate action, stop execution")
                             return@loop
@@ -145,6 +147,7 @@ class DefaultRuleEngine(
         job.invokeOnCompletion {
             logger.d("job for id: $id complete.")
             jobs.remove(JobRecord(id, job))
+            contextData.recycle()
             onJobCompleted(id)
         }
     }

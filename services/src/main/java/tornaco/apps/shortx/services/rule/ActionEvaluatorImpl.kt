@@ -7,6 +7,7 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -44,7 +45,7 @@ class ActionEvaluatorImpl(
         SettingsImpl(context)
     }
 
-    override suspend fun evaluate(logTag: String, action: ProtoAny, contextMap: Map<String, Any>) {
+    override suspend fun evaluate(logTag: String, action: ProtoAny, contextData: ContextData) {
         logger.d("evaluate: $logTag")
         if (action is_ StartActivity::class.java) {
             val startActivity = action unpack_ StartActivity::class.java
@@ -66,7 +67,11 @@ class ActionEvaluatorImpl(
         } else if (action is_ ShowToast::class.java) {
             val t = action unpack_ ShowToast::class.java
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, t.message.inflateContextMap(contextMap), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    context,
+                    t.message.inflateContextMap(contextData),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             }
         } else if (action is_ Delay::class.java) {
@@ -74,10 +79,14 @@ class ActionEvaluatorImpl(
             delay(maxOf(0, d.time))
         } else if (action is_ ExecuteMVEL::class.java) {
             val d = action unpack_ ExecuteMVEL::class.java
-            MVELExecutor(context, shortXContext, d.expression).invoke()
+            MVELExecutor(context, shortXContext, d.expression).invoke().apply {
+                contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
+            }
         } else if (action is_ RemoteExecuteMVEL::class.java) {
             val d = action unpack_ RemoteExecuteMVEL::class.java
-            MVELExecutor(context, shortXContext, d.expression).invoke()
+            MVELExecutor(context, shortXContext, d.expression).invoke().apply {
+                contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
+            }
         } else if (action is_ ShowOverlayButton::class.java) {
             withContext(Dispatchers.Main) {
                 val d = action unpack_ ShowOverlayButton::class.java
@@ -156,13 +165,13 @@ class ActionEvaluatorImpl(
             throw StopExecuteException("BreakActionExecute action")
         } else if (action is_ ShowAlertDialog::class.java) {
             val d = action unpack_ ShowAlertDialog::class.java
-            evaluateShowDialogAction(d, contextMap)
+            evaluateShowDialogAction(d, contextData)
         } else if (action is_ ShowDanmu::class.java) {
             withContext(Dispatchers.Main) {
                 val d = action unpack_ ShowDanmu::class.java
                 shortXContext.ui.showDanmu(
-                    d.icon.inflateContextMap(contextMap),
-                    d.text.inflateContextMap(contextMap)
+                    d.icon.inflateContextMap(contextData),
+                    d.text.inflateContextMap(contextData)
                 )
             }
         } else if (action is_ WhileLoop::class.java) {
@@ -181,7 +190,7 @@ class ActionEvaluatorImpl(
                     logger.d("WhileLoop inside: $index")
                     d.actionsList.forEach {
                         logger.d("evaluate one loop.")
-                        evaluate("WhileLoop", it, contextMap)
+                        evaluate("WhileLoop", it, contextData)
                     }
                     delay(delay)
                     index += 1
@@ -192,7 +201,7 @@ class ActionEvaluatorImpl(
     }
 
     private suspend fun evaluateShowDialogAction(
-        d: ShowAlertDialog, contextMap: Map<String, Any>
+        d: ShowAlertDialog, contextData: ContextData
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowAlertDialog, showing")
         val result = ShowDialog(context).invoke(
@@ -211,17 +220,17 @@ class ActionEvaluatorImpl(
             when (result) {
                 DialogAction.Positive -> {
                     if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
-                        evaluate("ShowAlertDialog", it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextData)
                     }
                 }
                 DialogAction.Negative -> {
                     if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
-                        evaluate("ShowAlertDialog", it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextData)
                     }
                 }
                 DialogAction.Neutral -> {
                     if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
-                        evaluate("ShowAlertDialog", it, contextMap)
+                        evaluate("ShowAlertDialog", it, contextData)
                     }
                 }
                 DialogAction.UNRECOGNIZED, DialogAction.None -> {
