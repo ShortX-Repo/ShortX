@@ -260,7 +260,7 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                                         it.contextData
                                     )
                                 }) {
-                                    Icon(imageVector = Icons.Outlined.VapingRooms)
+                                    Icon(imageVector = Icons.Outlined.AttachMoney)
                                 }
                                 VerticalDivider(modifier = Modifier.height(24.dp))
                             }
