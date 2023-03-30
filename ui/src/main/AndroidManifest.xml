@@ -13,6 +13,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DemoActivity"
+            android:exported="false"
+            android:label="Demo">
+            <intent-filter>
+                <action android:name="tornaco.apps.shortx.action.demo" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"

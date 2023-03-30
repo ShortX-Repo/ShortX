@@ -115,29 +115,9 @@ android {
 }
 
 dependencies {
-    val rowImplementation by configurations
-    val prcImplementation by configurations
-
     implementation(Hilt.library)
     implementation(Hilt.hiltNavigationCompose)
     kapt(Hilt.googleAndroidCompiler)
-
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0-beta01")
-    implementation("androidx.core:core-ktx:1.9.0")
-    // Note: Do not upgrade this lib, ComposeOverlay.
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:${tornaco.project.android.shortx.Compose.bomVersion}"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material:material-icons-extended")
 
     implementation(project(":ui"))
 
@@ -149,10 +129,10 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.3")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.3.3")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
 
     testImplementation("io.mockk:mockk:1.13.2")
 }

@@ -86,8 +86,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0-beta01")
     implementation("androidx.core:core-ktx:1.9.0")
     // Note: Do not upgrade this lib, ComposeOverlay.
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
@@ -102,13 +102,14 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.7.1")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
 
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
+    implementation(project(":services"))
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))
@@ -123,8 +124,8 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.3")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.3.3")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
 }

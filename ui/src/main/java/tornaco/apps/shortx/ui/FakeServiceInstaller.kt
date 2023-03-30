@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui
 
 import android.content.Context
 import tornaco.apps.shortx.core.IShortX

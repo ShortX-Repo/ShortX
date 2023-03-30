@@ -1,4 +1,4 @@
-package tornaco.apps.shortx
+package tornaco.apps.shortx.ui
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
