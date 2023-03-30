@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -82,10 +83,12 @@ private fun Actions(
                 header()
             }
 
-            IconButton(onClick = {
-                actionSortDialogState.show()
-            }) {
-                Icon(imageVector = Icons.Outlined.Sort)
+            AnimatedVisibility(visible = actions.size > 1) {
+                IconButton(onClick = {
+                    actionSortDialogState.show()
+                }) {
+                    Icon(imageVector = Icons.Outlined.Sort)
+                }
             }
         }
 
