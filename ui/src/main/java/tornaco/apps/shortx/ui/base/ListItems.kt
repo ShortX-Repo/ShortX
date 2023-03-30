@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.MobileFriendly
-import androidx.compose.material3.*
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -25,7 +27,7 @@ fun ListItem(
     modifier: Modifier = Modifier,
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
-    action1: @Composable ColumnScope.() -> Unit = {},
+    action1: @Composable RowScope.() -> Unit = {},
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -82,7 +84,7 @@ fun ListItem(
             }
         }
 
-        Column(verticalArrangement = Arrangement.Center) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             action1()
         }
     }

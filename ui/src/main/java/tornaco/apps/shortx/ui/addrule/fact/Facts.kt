@@ -3,16 +3,11 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -265,8 +260,16 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                                         it.contextData
                                     )
                                 }) {
-                                    Icon(imageVector = Icons.Outlined.DataObject)
+                                    Icon(imageVector = Icons.Outlined.VapingRooms)
                                 }
+                                VerticalDivider(modifier = Modifier.height(24.dp))
+                            }
+
+                            IconButton(onClick = {
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close, contentDescription = "Remove"
+                                )
                             }
                         }
                     )

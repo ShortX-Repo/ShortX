@@ -176,8 +176,11 @@ class ComposeOverlay(
         val lifecycleOwner = MyLifecycleOwner()
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        ViewTreeLifecycleOwner.set(this, lifecycleOwner)
-        ViewTreeViewModelStoreOwner.set(this) { viewModelStore }
+        setViewTreeLifecycleOwner(lifecycleOwner)
+        setViewTreeViewModelStoreOwner(object : ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore
+                get() = viewModelStore
+        })
         setViewTreeSavedStateRegistryOwner(lifecycleOwner)
         val coroutineContext = AndroidUiDispatcher.CurrentThread
         val runRecomposeScope = CoroutineScope(coroutineContext)
@@ -240,12 +243,12 @@ internal class MyLifecycleOwner : SavedStateRegistryOwner {
      */
     val isInitialized: Boolean
         get() = true
+
+    override val lifecycle: Lifecycle
+        get() = mLifecycleRegistry
     override val savedStateRegistry: SavedStateRegistry
         get() = mSavedStateRegistryController.savedStateRegistry
 
-    override fun getLifecycle(): Lifecycle {
-        return mLifecycleRegistry
-    }
 
     fun setCurrentState(state: Lifecycle.State) {
         mLifecycleRegistry.currentState = state

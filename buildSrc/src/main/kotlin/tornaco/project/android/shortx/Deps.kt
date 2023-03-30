@@ -8,13 +8,13 @@ object ClassPaths {
     const val gradleBuilderModel = "com.android.tools.build:builder-model:$gradleVersion"
     const val androidToolsCommon = "com.android.tools:common:30.0.1"
 
-    const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
+    const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
 }
 
 
 object Compose {
-    const val composeVersion = "1.3.0"
-    const val bomVersion = "2023.01.00"
+    const val composeVersion = "1.4.0"
+    const val bomVersion = "2023.03.00"
 }
 
 object Others {
@@ -32,12 +32,12 @@ object Coroutines {
     private const val version = "1.5.0-RC"
     const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
-    const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0"
+    const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0"
     const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
 }
 
 object Hilt {
-    private const val version = "2.42"
+    private const val version = "2.45"
     const val googleAndroidCompiler = "com.google.dagger:hilt-android-compiler:$version"
     const val testing = "com.google.dagger:hilt-android-testing:$version"
     const val library = "com.google.dagger:hilt-android:$version"
