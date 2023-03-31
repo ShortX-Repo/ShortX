@@ -107,6 +107,9 @@ dependencies {
     debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
 
+    // https://github.com/AmrDeveloper/CodeView
+    implementation("io.github.amrdeveloper:codeview:1.3.8")
+
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":services"))

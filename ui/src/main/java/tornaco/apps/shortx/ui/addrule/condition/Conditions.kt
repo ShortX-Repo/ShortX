@@ -17,11 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.AddRuleState
-import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import kotlin.reflect.KClass
 
 @Composable
@@ -125,13 +125,13 @@ private fun OpSelector(
                 Text(text = LocalI18N.current["ui.condition.op.edit"])
             }
 
-            val mvelSelectorState = rememberMVELSelectorState(
+            val mvelSelectorState = rememberCodeEditorState(
                 title = LocalI18N.current["ui.title.mvel"],
                 message = LocalI18N.current["ui.condition.op.mvel"],
                 onSelected = {
                     setConditionOp(Op.MVEL(it))
                 })
-            MVELSelector(state = mvelSelectorState)
+            CodeEditorDialog(state = mvelSelectorState)
             DropdownSelector(
                 state = opSelectorState, items = listOf(
                     DropdownItem(

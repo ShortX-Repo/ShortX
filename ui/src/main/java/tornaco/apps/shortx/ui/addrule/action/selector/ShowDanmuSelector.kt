@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -69,12 +68,11 @@ private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier,
                 topBar = {
-                    MediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    TopAppBar(
+                        modifier = Modifier,
                         title = { LocalI18N.current["ui.action.show.dialog"] },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -91,8 +89,7 @@ private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }
 
-                        },
-                        scrollBehavior = scrollBehavior
+                        }
                     )
                 }) {
                 Content(paddingValues = it, vm = vm)

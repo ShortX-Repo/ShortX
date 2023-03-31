@@ -57,6 +57,9 @@ fun ActionContent(
                 is Action.ShowDanmu -> {
                     subSelectorStates.showDanmuSettingsState.show(action)
                 }
+                is Action.MVEL -> {
+                    subSelectorStates.mvelEditorState.show(action.expression)
+                }
                 else -> {}
             }
         },

@@ -8,6 +8,9 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
+import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.CodeEditorState
+import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
@@ -83,7 +86,8 @@ data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
     val overlayButtonState: ShowOverlayButtonDialogState,
     val showDialogSettingsState: ShowDialogSettingsDialogState,
-    val showDanmuSettingsState: ShowDanmuSettingsDialogState
+    val showDanmuSettingsState: ShowDanmuSettingsDialogState,
+    val mvelEditorState: CodeEditorState,
 )
 
 @Composable
@@ -118,10 +122,19 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     ShowDialogSettingsDialog(state = showDialogSettingsState)
 
+    val mvelEditorState = rememberCodeEditorState(
+        title = LocalI18N.current["ui.title.mvel"],
+        onSelected = {
+            addAction(Action.MVEL(expression = it))
+        }
+    )
+    CodeEditorDialog(state = mvelEditorState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
         showDialogSettingsState = showDialogSettingsState,
-        showDanmuSettingsState = showDanmuSettingsState
+        showDanmuSettingsState = showDanmuSettingsState,
+        mvelEditorState = mvelEditorState,
     )
 }

@@ -21,6 +21,8 @@ import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util._dp
+import tornaco.apps.shortx.core.util.isUsingNightModeResources
 import tornaco.apps.shortx.services.ui.widget.CardView
 import util.Reflections
 
@@ -55,7 +57,7 @@ class LiveDanmuView(
         windowManager = getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val screenHeight = windowManager.defaultDisplay.height
         val rootLP = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, screenHeight / 2)
-        rootLP.setMargins(0, 72.dp, 0, 0)
+        rootLP.setMargins(0, 72._dp, 0, 0)
         addView(rootContainer, rootLP)
 
         alpha = uiSettings.alpha
@@ -79,7 +81,7 @@ class LiveDanmuView(
     }
 
     private fun createLaneItemView(context: Context): CardView {
-        val cardView = CardView(context, 20.dp).apply {
+        val cardView = CardView(context, 20._dp).apply {
             if (uiSettings.backgroundColor == DANMU_COLOR_AUTO) {
                 applyDayNightMode(this)
             } else {
@@ -102,9 +104,9 @@ class LiveDanmuView(
         linearLayout.layoutParams = linearLayoutLP
 
         val imageView = ImageView(context)
-        val imageViewLP = LinearLayout.LayoutParams(28.dp, 28.dp)
+        val imageViewLP = LinearLayout.LayoutParams(28._dp, 28._dp)
         imageViewLP.gravity = Gravity.CENTER
-        imageViewLP.setMargins(6.dp, 0.dp, 6.dp, 0.dp)
+        imageViewLP.setMargins(6._dp, 0._dp, 6._dp, 0._dp)
         imageView.id = android.R.id.icon1
         imageView.layoutParams = imageViewLP
 

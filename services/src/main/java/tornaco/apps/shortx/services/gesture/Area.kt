@@ -4,10 +4,10 @@ import android.annotation.ColorInt
 import android.graphics.Color
 import android.graphics.RectF
 import tornaco.apps.shortx.core.proto.fact.Edge
-import tornaco.apps.shortx.services.ui.dp
+import tornaco.apps.shortx.core.util._dp
 
 val defaultHotSeatSize by lazy {
-    16.dp
+    16._dp
 }
 
 data class HotSeat(val area: Edge, @ColorInt val color: Int)

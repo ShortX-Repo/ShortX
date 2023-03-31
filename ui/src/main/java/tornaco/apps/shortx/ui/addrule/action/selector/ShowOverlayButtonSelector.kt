@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
@@ -73,11 +72,10 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(modifier = Modifier,
                 topBar = {
-                    MediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    TopAppBar(
+                        modifier = Modifier,
                         title = { LocalI18N.current["ui.action.show.overlay"] },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -101,7 +99,6 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                             }
 
                         },
-                        scrollBehavior = scrollBehavior
                     )
                 }) {
                 Content(paddingValues = it, vm = vm)

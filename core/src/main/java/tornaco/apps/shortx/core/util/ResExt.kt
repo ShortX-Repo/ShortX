@@ -15,21 +15,21 @@
  *
  */
 
-package tornaco.apps.shortx.services.ui
+package tornaco.apps.shortx.core.util
 
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.util.TypedValue
 
-val Int.dp: Int
+val Int._dp: Int
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         this.toFloat(),
         Resources.getSystem().displayMetrics
     ).toInt()
 
-val Int.sp: Float
+val Int._sp: Float
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_SP,
         this.toFloat(),

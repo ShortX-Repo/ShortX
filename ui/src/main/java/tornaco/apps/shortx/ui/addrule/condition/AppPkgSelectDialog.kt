@@ -107,9 +107,8 @@ private fun AppPkgSelector(state: AppPkgSelectorState) {
             }
             Scaffold(modifier = Modifier,
                 topBar = {
-                    MediumTopAppBar(
+                    TopAppBar(
                         modifier = Modifier,
-                        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = ColorDefaults.backgroundSurfaceColor()),
                         title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
                         navigationIcon = {
                             IconButton(onClick = {

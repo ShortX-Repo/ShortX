@@ -98,9 +98,8 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    MediumTopAppBar(
+                    TopAppBar(
                         modifier = Modifier,
-                        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = ColorDefaults.backgroundSurfaceColor()),
                         title = { Text(text = LocalI18N.current["ui.title.select.action"]) },
                         actions = {
                             IconButton(onClick = {

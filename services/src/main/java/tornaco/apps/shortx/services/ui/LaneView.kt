@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.elvishew.xlog.XLog
+import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Async
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Sync
 import java.util.*
@@ -36,7 +37,7 @@ class LaneView @JvmOverloads constructor(
      */
     var verticalGap: Int = 5
         set(value) {
-            field = value.dp
+            field = value._dp
         }
 
     /**
@@ -44,7 +45,7 @@ class LaneView @JvmOverloads constructor(
      */
     var horizontalGap: Int = 5
         set(value) {
-            field = value.dp
+            field = value._dp
         }
 
     /**

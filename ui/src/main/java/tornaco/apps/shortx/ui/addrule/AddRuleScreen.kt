@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
-import tornaco.apps.shortx.ui.addrule.action.selector.MVELSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberMVELSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,10 +137,10 @@ private fun ConditionSelectors(
     AppPkgSelectorDialog(currentPkgSelectorState)
 
     val mvelConditionSelectorState =
-        rememberMVELSelectorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
+        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
             vm.addCondition(Condition.MVEL(expression))
         }
-    MVELSelector(state = mvelConditionSelectorState)
+    CodeEditorDialog(state = mvelConditionSelectorState)
 
     Conditions(state = state, selectCondition = { con ->
         when (con) {

@@ -1,5 +1,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
     <!-- The background color, preferably the same as your normal theme -->
-    <item android:drawable="@color/ui_mi_org" />
+    <item android:drawable="@color/md_blue_grey_400" />
 </layer-list>

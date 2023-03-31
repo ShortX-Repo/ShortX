@@ -7,6 +7,8 @@ import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelecto
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
@@ -29,12 +31,12 @@ fun ExtActions(addAction: (Action) -> Unit) {
             })
     TextInputDialog(state = delaySelectionState)
 
-    val mvelSelectorState = rememberMVELSelectorState(
+    val mvelSelectorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"]
     ) { expression ->
         addAction(Action.MVEL(expression = expression))
     }
-    MVELSelector(state = mvelSelectorState)
+    CodeEditorDialog(state = mvelSelectorState)
 
     val i18N = LocalI18N.current
     val actionItems = listOf(

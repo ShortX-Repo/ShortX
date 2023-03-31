@@ -29,8 +29,8 @@ import android.view.MotionEvent;
 
 import java.io.PrintWriter;
 
+import tornaco.apps.shortx.core.util.ResExtKt;
 import tornaco.apps.shortx.core.util.ScreenUtilsKt;
-import tornaco.apps.shortx.services.ui.ResExtKt;
 
 /**
  * Listens for system-wide input gestures, firing callbacks when detected.
@@ -79,7 +79,7 @@ public class SystemGesturesPointerEventListener {
         Log.w(TAG, "screenSize: " + screenSize);
 
         // r.getDimensionPixelSize(com.android.internal.R.dimen.system_gestures_start_threshold)
-        int defaultThreshold = ResExtKt.getDp(12);
+        int defaultThreshold = ResExtKt.get_dp(12);
         try {
             int resId = Resources.getSystem().getIdentifier("system_gestures_start_threshold", "dimen", "android");
             // /2 means we use less than system distance to block some touch events.
