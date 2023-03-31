@@ -1,18 +1,25 @@
 package tornaco.apps.shortx.ui.addrule
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Output
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.ContextDataMapping
 import tornaco.apps.shortx.core.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.Icon
 import kotlin.reflect.KClass
 
 val logger = Logger("ContextData")
 
 data class ContextData(
-    val key: String,
-    val description: String,
-    val accessExample: String
+    val key: String, val description: String, val accessExample: String
 )
 
 @Suppress("UNCHECKED_CAST")
@@ -53,5 +60,12 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
         else -> {
             emptyList()
         }
+    }
+}
+
+@Composable
+fun ContextDataIcon() {
+    ColoredIcon(size = 24.dp, color = MaterialTheme.colorScheme.surface) {
+        Icon(modifier = Modifier.size(16.dp), imageVector = Icons.Outlined.Output)
     }
 }

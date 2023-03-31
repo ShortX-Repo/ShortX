@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -15,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.contextData
@@ -121,7 +121,7 @@ private fun Actions(
                                     it.contextData
                                 )
                             }) {
-                                Icon(imageVector = Icons.Outlined.AttachMoney)
+                                ContextDataIcon()
                             }
                             VerticalDivider(modifier = Modifier.height(24.dp))
                         }
