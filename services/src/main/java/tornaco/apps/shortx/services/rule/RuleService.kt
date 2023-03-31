@@ -14,6 +14,7 @@ import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
+import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 
 
@@ -232,6 +233,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun executeDirectionActionById(id: String) {
         getDirectActionById(id)?.let {
             executeActions(id, "executeDirectionActionById#${it.title}", it.actionsList)
+        }
+    }
+
+    fun executeMVEL(expression: String): String {
+        return kotlin.runCatching {
+            "${MVELExecutor(context, shortXContext, expression).invoke()}"
+        }.getOrElse {
+            logger.e(it, "executeMVEL fail")
+            it.message ?: it.javaClass.name
         }
     }
 

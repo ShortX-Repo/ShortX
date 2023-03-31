@@ -158,6 +158,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.executeDirectionActionById(id)
         }
 
+        override fun executeMVEL(expression: String): String {
+            return shortXContext.rule.executeMVEL(expression)
+        }
+
         override fun addPkgSet(set: ByteArrayWrapper) {
             shortXContext.pkgSet.addPkgSet(PkgSet.parseFrom(set.byte))
         }

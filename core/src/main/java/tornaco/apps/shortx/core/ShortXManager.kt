@@ -181,6 +181,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun executeMVEL(expression: String): String {
+        return invokeService("") {
+            executeMVEL(expression)
+        }
+    }
+
     fun addPkgSet(pkgSet: PkgSet) {
         invokeService(Unit) {
             addPkgSet(ByteArrayWrapper(pkgSet.toByteArray()))

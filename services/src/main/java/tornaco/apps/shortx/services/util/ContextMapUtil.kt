@@ -9,7 +9,7 @@ object ContextMapUtil {
             return res
         }
         contextData.forEach {
-            res = res.replace("\$${it.first}", it.second.toString(), false)
+            res = res.replace("\$${it.first}", "${it.second}", false)
         }
         return res
     }

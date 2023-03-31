@@ -77,4 +77,6 @@ interface IShortX {
     // Global var end
 
     void reboot(String reason);
+
+    String executeMVEL(String expression);
 }

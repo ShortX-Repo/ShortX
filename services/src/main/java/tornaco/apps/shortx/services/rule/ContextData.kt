@@ -13,13 +13,13 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
             } ?: ContextData(initialData)
     }
 
-    private val map: MutableMap<String, Any> by lazy {
-        mutableMapOf<String, Any>().apply {
+    private val map: MutableMap<String, Any?> by lazy {
+        mutableMapOf<String, Any?>().apply {
             putAll(initialData)
         }
     }
 
-    fun add(key: String, value: Any) {
+    fun add(key: String, value: Any?) {
         require(!map.containsKey(key)) {
             "Key: $key dup."
         }
@@ -28,7 +28,7 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
 
     fun isEmpty() = map.isEmpty()
 
-    fun forEach(action: (Pair<String, Any>) -> Unit) = map.forEach {
+    fun forEach(action: (Pair<String, Any?>) -> Unit) = map.forEach {
         action(it.key to it.value)
     }
 

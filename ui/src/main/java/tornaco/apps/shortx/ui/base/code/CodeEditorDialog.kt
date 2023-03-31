@@ -6,10 +6,12 @@ package tornaco.apps.shortx.ui.base.code
 import android.graphics.Color
 import android.view.Gravity
 import android.widget.ArrayAdapter
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import com.amrdeveloper.codeview.CodeView
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util._sp
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
@@ -34,15 +37,23 @@ class CodeEditorState(
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
+    private var _output by mutableStateOf("")
+    val output get() = _output
+
     var currentText: String = ""
 
     fun show(initialText: String = "") {
         this.currentText = initialText
+        this._output = ""
         _isShow = true
     }
 
     fun dismiss() {
         _isShow = false
+    }
+
+    fun setOutput(output: String) {
+        _output = output
     }
 }
 
@@ -87,6 +98,15 @@ private fun CodeEditor(
                     },
                     actions = {
                         IconButton(onClick = {
+                            state.setOutput(shortXManager.executeMVEL(state.currentText))
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.PlayArrow,
+                                contentDescription = "Evaluate"
+                            )
+                        }
+
+                        IconButton(onClick = {
                             state.onSelected(state.currentText)
                             state.dismiss()
                         }) {
@@ -104,8 +124,24 @@ private fun CodeEditor(
                 ) {
                     state.message?.let {
                         Text(text = it, style = MaterialTheme.typography.titleSmall)
+                        StandardSpacer()
                     }
-                    StandardSpacer()
+
+                    AnimatedVisibility(visible = state.output.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 72.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = state.output,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        StandardSpacer()
+                    }
 
                     AndroidView(modifier = Modifier
                         .fillMaxSize()
@@ -118,6 +154,7 @@ private fun CodeEditor(
                                 doAfterTextChanged {
                                     it?.toString()?.let { text ->
                                         state.currentText = text
+                                        state.setOutput("")
                                     }
                                 }
                             }
