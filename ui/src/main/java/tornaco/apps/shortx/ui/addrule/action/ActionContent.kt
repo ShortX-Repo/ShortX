@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -14,8 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*
+import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
 
 @Composable
@@ -92,6 +96,10 @@ private fun Actions(
             }
         }
 
+        val contextDataInfoDialogState = rememberContextDataInfoDialogState()
+        ContextDataInfoDialog(state = contextDataInfoDialogState)
+        val i18N = LocalI18N.current
+
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEach {
                 ListItem(
@@ -103,6 +111,18 @@ private fun Actions(
                         }
                     },
                     action1 = {
+                        if (it.contextData.isNotEmpty()) {
+                            IconButton(onClick = {
+                                contextDataInfoDialogState.show(
+                                    labelAndDescriptionForActionSelector(i18N, it::class).first,
+                                    it.contextData
+                                )
+                            }) {
+                                Icon(imageVector = Icons.Outlined.AttachMoney)
+                            }
+                            VerticalDivider(modifier = Modifier.height(24.dp))
+                        }
+
                         IconButton(onClick = {
                             removeAction(it)
                         }) {

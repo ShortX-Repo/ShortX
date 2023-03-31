@@ -11,12 +11,14 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
+import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.toModel
@@ -573,3 +575,5 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         else -> null
     }
 }
+
+val Action.contextData: List<ContextData> get() = this::class.actionContextData()

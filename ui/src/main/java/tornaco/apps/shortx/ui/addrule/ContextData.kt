@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule
 import tornaco.apps.shortx.core.ContextDataMapping
 import tornaco.apps.shortx.core.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import kotlin.reflect.KClass
 
@@ -27,7 +28,7 @@ private inline fun <reified T : Enum<T>> dats(): List<ContextData> = runCatching
     emptyList()
 }
 
-fun KClass<out Fact>.contextData(): List<ContextData> {
+fun KClass<out Fact>.factContextData(): List<ContextData> {
     return when (this) {
         Fact.NotificationPosted::class -> {
             dats<ContextDataMapping.NotificationPosted>()
@@ -37,6 +38,17 @@ fun KClass<out Fact>.contextData(): List<ContextData> {
         }
         Fact.NotificationRemoved::class -> {
             dats<ContextDataMapping.NotificationRemoved>()
+        }
+        else -> {
+            emptyList()
+        }
+    }
+}
+
+fun KClass<out Action>.actionContextData(): List<ContextData> {
+    return when (this) {
+        Action.MVEL::class, Action.RemoteMVEL::class -> {
+            dats<ContextDataMapping.ExecuteMVEL>()
         }
         else -> {
             emptyList()
