@@ -26,16 +26,76 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 const val EXECUTE_ANIM_DURATION = 600
 
 @Composable
-fun DirectActionListScreen(
+fun DirectActionListScreen() {
+    val vm = hiltViewModel<MainViewModel>()
+    val state by vm.state.collectAsState()
+
+    LaunchedEffect(vm) {
+        vm.loadDA()
+    }
+
+    val appNavController = LocalNavHostController.current
+    val context = LocalContext.current
+
+    MainScaffold(
+        state = state,
+        appBarTitleKey = "ui.feat.label.da",
+        goToSettings = {
+            appNavController.navigate(AppRoute.Settings.name)
+        },
+        onClipboardClick = {
+            vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
+                ?.let {
+                    vm.importDA(it)
+                }
+        },
+        onAddClick = {
+            appNavController.navigate(AppRoute.AddDA.name)
+        },
+        acceptPrivacyStatement = {
+            vm.acceptPrivacyStatement()
+        }
+    ) {
+        val shareDialogState = rememberShareDialogState("share.shortx")
+        ShareDialog(state = shareDialogState)
+
+        DirectActionListContent(
+            state = state,
+            onDelete = { da ->
+                vm.deleteDA(da.id)
+            },
+            onEdit = {
+                appNavController.navigate("${AppRoute.AddDA.name}?daId=${it.id}")
+            },
+            onShare = { um ->
+                vm.daToShareString(um)?.let {
+                    shareDialogState.show(it)
+                }
+            },
+            onDirectActionClick = { da ->
+                vm.executeDA(da)
+            },
+            stopAllJobs = {
+                vm.stopJobs(it)
+            }
+        )
+    }
+}
+
+@Composable
+private fun DirectActionListContent(
     state: MainState,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,

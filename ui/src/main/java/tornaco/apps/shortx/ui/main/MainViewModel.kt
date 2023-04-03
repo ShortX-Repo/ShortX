@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
 import javax.inject.Inject
@@ -53,6 +54,8 @@ data class MainState(
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
     val isPrivacyStatementAccepted: Boolean = false,
+    val isShowRuleDescription: Boolean = true,
+    val ruleColumnCount: Int = DEFAULT_RULE_COLUMN_COUNT,
     val rules: LoadState<List<RuleUM>> = LoadState.Loading,
     val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
 )
@@ -134,6 +137,11 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 }
             }
         }
+    }
+
+    fun toggleRuleColumnCount() {
+        val count = if (state.value.ruleColumnCount == 1) 2 else 1
+        updateState { copy(ruleColumnCount = count) }
     }
 
     private fun translateRule(rule: Rule): String {

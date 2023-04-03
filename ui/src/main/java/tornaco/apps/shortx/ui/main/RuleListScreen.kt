@@ -20,12 +20,73 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.util.ClipboardUtils
+
 
 @Composable
-fun RuleScreen(
+fun RuleScreen() {
+    val vm = hiltViewModel<MainViewModel>()
+    val state by vm.state.collectAsState()
+
+    LaunchedEffect(vm) {
+        vm.loadRules()
+    }
+
+    val appNavController = LocalNavHostController.current
+    val context = LocalContext.current
+    MainScaffold(
+        state = state,
+        appBarTitleKey = "ui.feat.label.rule",
+        goToSettings = {
+            appNavController.navigate(AppRoute.Settings.name)
+        },
+        onClipboardClick = {
+            vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
+                ?.let {
+                    vm.importRule(it)
+                }
+        },
+        onAddClick = {
+            appNavController.navigate(AppRoute.AddRule.name)
+        },
+        acceptPrivacyStatement = {
+            vm.acceptPrivacyStatement()
+        }
+    ) {
+        val shareDialogState = rememberShareDialogState("share.shortx")
+        ShareDialog(state = shareDialogState)
+
+        RuleContent(
+            state = state,
+            onDelete = { rule ->
+                vm.deleteRule(rule.id)
+            },
+            onEdit = { rule ->
+                appNavController.navigate("${AppRoute.AddDA.name}?daId=${rule.id}")
+            },
+            onShare = { um ->
+                vm.ruleToShareString(um)?.let {
+                    shareDialogState.show(it)
+                }
+            },
+            onRuleClick = { rule ->
+                vm.setRuleEnabled(rule.id, !rule.isEnabled)
+            },
+            setRuleEnabled = { id, enable ->
+                vm.setRuleEnabled(id, enable)
+            }
+        )
+    }
+
+}
+
+@Composable
+private fun RuleContent(
     state: MainState,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
