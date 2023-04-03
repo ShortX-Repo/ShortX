@@ -18,6 +18,8 @@ message GlobalVar {
   // Type indicator, just set default value.
   google.protobuf.Any type = 3;
 
+  int64 updateTimeMillis = 4;
+
   string id = 100;
 }
 

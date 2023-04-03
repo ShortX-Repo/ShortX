@@ -47,7 +47,12 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
             },
             onDismissRequest = { state.dismiss() }) {
 
-            DialogMessage(text = LocalI18N.current["ui.context.data.message", mapOf("obj" to state.objName)])
+            DialogMessage(
+                text = LocalI18N.current["ui.context.data.message", mapOf(
+                    "obj" to state.objName,
+                    "accessor" to "{NAME}"
+                )]
+            )
 
             state.contextData.forEach {
                 ContextDataItem(

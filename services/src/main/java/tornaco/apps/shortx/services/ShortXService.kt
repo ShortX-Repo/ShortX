@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -308,6 +309,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             return shortXContext.rule.getAllGlobalVars().map {
                 ByteArrayWrapper(it.toByteArray())
             }
+        }
+
+        override fun registerGlobalVarObs(obs: IGlobalVarObserver) {
+            shortXContext.rule.registerGlobalVarObs(obs)
+        }
+
+        override fun unregisterGlobalVarObs(obs: IGlobalVarObserver) {
+            shortXContext.rule.unregisterGlobalVarObs(obs)
         }
 
         @SuppressLint("MissingPermission")

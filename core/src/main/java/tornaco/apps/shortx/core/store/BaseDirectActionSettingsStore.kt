@@ -6,8 +6,6 @@ import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.util.Logger
 import java.io.File
 
-private const val WRITE_DELAY = 3000L
-
 open class BaseDirectActionSettingsStore(
     private val scope: CoroutineScope,
     private val storeFile: File

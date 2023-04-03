@@ -5,6 +5,6 @@ import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
 
 class RuleSettingsStore(scope: CoroutineScope) :
     BaseRuleSettingsStore(
-        scope,
-        Dirs.dataStoreFile("rules")
+        scope = scope,
+        storeFile = Dirs.dataStoreFile("rules")
     )

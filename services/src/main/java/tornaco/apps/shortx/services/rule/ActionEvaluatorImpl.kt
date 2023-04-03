@@ -7,7 +7,9 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -20,7 +22,6 @@ import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.DataImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.SettingsImpl
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.UIImpl
-import tornaco.apps.shortx.services.util.ContextMapUtil.inflateContextMap
 
 class ActionEvaluatorImpl(
     private val context: Context,

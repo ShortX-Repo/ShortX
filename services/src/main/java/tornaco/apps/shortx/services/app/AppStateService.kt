@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
@@ -120,8 +121,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 reason = "onComponentMoveToFg",
                 fact = AppBecomeFg.newBuilder().addApps(currentFgPkg).build(),
                 initialContextData = mapOf(
-                    "componentName" to componentName.flattenToShortString(),
-                    "pkgName" to currentFgPkg.pkgName
+                    ContextDataMapping.AppBecomeFg.componentName.name to componentName.flattenToShortString(),
+                    ContextDataMapping.AppBecomeFg.pkgName.name to currentFgPkg.pkgName
                 )
             )
 
@@ -129,7 +130,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 reason = "onComponentMoveToBg",
                 fact = AppBecomeBg.newBuilder().addApps(lastFgPkg).build(),
                 initialContextData = mapOf(
-                    "pkgName" to lastFgPkg.pkgName
+                    ContextDataMapping.AppBecomeBg.pkgName.name to lastFgPkg.pkgName
                 )
             )
         }
@@ -137,7 +138,11 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         shortXContext.rule.publishFact(
             "onComponentMoveToFg",
             ActivityStarted.newBuilder().addComponents(componentName.toAppComponent(userId))
-                .build()
+                .build(),
+            initialContextData = mapOf(
+                ContextDataMapping.ActivityStarted.pkgName.name to lastFgPkg.pkgName,
+                ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
+            )
         )
     }
 

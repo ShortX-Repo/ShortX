@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.Rule

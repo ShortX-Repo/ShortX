@@ -173,6 +173,12 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public void registerGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException
+    {
+    }
     // Global var end
 
     @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
@@ -719,6 +725,24 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllGlobalVars();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_registerGlobalVarObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IGlobalVarObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IGlobalVarObserver.Stub.asInterface(data.readStrongBinder());
+          this.registerGlobalVarObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterGlobalVarObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IGlobalVarObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IGlobalVarObserver.Stub.asInterface(data.readStrongBinder());
+          this.unregisterGlobalVarObs(_arg0);
+          reply.writeNoException();
           return true;
         }
         case TRANSACTION_reboot:
@@ -1711,6 +1735,44 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void registerGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerGlobalVarObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerGlobalVarObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterGlobalVarObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterGlobalVarObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       // Global var end
 
       @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
@@ -1796,8 +1858,10 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_deleteGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
     static final int TRANSACTION_getGlobalVarById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
     static final int TRANSACTION_getAllGlobalVars = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
-    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
-    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
+    static final int TRANSACTION_registerGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
+    static final int TRANSACTION_unregisterGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
+    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
+    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1876,6 +1940,8 @@ public interface IShortX extends android.os.IInterface
   public void deleteGlobalVar(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGlobalVarById(java.lang.String id) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGlobalVars() throws android.os.RemoteException;
+  public void registerGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
+  public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
   // Global var end
 
   public void reboot(java.lang.String reason) throws android.os.RemoteException;

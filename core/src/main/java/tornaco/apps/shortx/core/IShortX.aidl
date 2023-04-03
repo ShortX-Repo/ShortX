@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.core;
 
 import tornaco.apps.shortx.core.IJobStatusListener;
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 
 interface IShortX {
     Version version();
@@ -74,6 +75,10 @@ interface IShortX {
     void deleteGlobalVar(String id);
     ByteArrayWrapper getGlobalVarById(String id);
     List<ByteArrayWrapper> getAllGlobalVars();
+
+    void registerGlobalVarObs(in IGlobalVarObserver obs);
+    void unregisterGlobalVarObs(in IGlobalVarObserver obs);
+
     // Global var end
 
     void reboot(String reason);

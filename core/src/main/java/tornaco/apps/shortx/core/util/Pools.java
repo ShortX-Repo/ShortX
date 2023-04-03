@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tornaco.apps.shortx.services.ui;
+package tornaco.apps.shortx.core.util;
 
 /**
  * Helper class for crating pools of objects. An example use looks like this:

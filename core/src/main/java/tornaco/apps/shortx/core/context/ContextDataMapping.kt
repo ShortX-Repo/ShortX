@@ -1,7 +1,7 @@
-package tornaco.apps.shortx.core
+package tornaco.apps.shortx.core.context
 
 object ContextDataMapping {
-    inline fun <reified T : Enum<T>> T.accessExample() = "\$${name}"
+    inline fun <reified T : Enum<T>> T.accessExample() = "{${name}}"
 
     enum class NotificationUpdated(val description: String) {
         userId("The user id"),
@@ -26,5 +26,19 @@ object ContextDataMapping {
 
     enum class ExecuteMVEL(val description: String) {
         mvelRet("The return value of the MVEL expression")
+    }
+
+    enum class ActivityStarted(val description: String) {
+        pkgName("App package name of the started Activity"),
+        componentName("Short string of the started Activity component name")
+    }
+
+    enum class AppBecomeFg(val description: String) {
+        pkgName("App package name of the FG Activity"),
+        componentName("Short string of the FG Activity component name")
+    }
+
+    enum class AppBecomeBg(val description: String) {
+        pkgName("App package name of the BG Activity"),
     }
 }

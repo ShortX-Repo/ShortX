@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -65,6 +66,12 @@ fun OverlayContent(
     onButtonClick: (Int) -> Unit,
     motionEventSpy: (MotionEvent) -> Unit
 ) {
+    val vm = viewModel<OverlayViewModel>()
+    LaunchedEffect(labels) {
+        vm.init(labels)
+    }
+    val state by vm.state.collectAsState()
+    val formattedValues = state.formattedValues
 
     val scope = rememberCoroutineScope()
 
@@ -133,12 +140,12 @@ fun OverlayContent(
                             .padding(vertical = 8.dp),
                         horizontalAlignment = CenterHorizontally
                     ) {
-                        icons.forEachIndexed { index, icon ->
+                        formattedValues.forEachIndexed { index, label ->
                             Column(
                                 horizontalAlignment = CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                val label = labels[index]
+                                val icon = icons[index]
                                 IconButtonContainer(onClick = {
                                     onButtonClick(index)
                                 }) {

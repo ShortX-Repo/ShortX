@@ -1,6 +1,6 @@
-package tornaco.apps.shortx.services.rule
+package tornaco.apps.shortx.core.context
 
-import tornaco.apps.shortx.services.ui.Pools
+import tornaco.apps.shortx.core.util.Pools
 
 
 class ContextData private constructor(initialData: Map<String, Any> = emptyMap()) {
@@ -13,7 +13,7 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
             } ?: ContextData(initialData)
     }
 
-    private val map: MutableMap<String, Any?> by lazy {
+    val map: MutableMap<String, Any?> by lazy {
         mutableMapOf<String, Any?>().apply {
             putAll(initialData)
         }
@@ -25,8 +25,6 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
         }
         map[key] = value
     }
-
-    fun isEmpty() = map.isEmpty()
 
     fun forEach(action: (Pair<String, Any?>) -> Unit) = map.forEach {
         action(it.key to it.value)

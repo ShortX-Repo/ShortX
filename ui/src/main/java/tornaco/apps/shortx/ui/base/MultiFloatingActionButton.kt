@@ -38,9 +38,9 @@ fun MultiFloatingActionButton(
     val rotateAnim: Float by transition.animateFloat(
         transitionSpec = {
             if (targetState.value == MultiFabState.Expanded) {
-                spring(stiffness = Spring.StiffnessLow)
+                tween(durationMillis = 200)
             } else {
-                spring(stiffness = Spring.StiffnessMedium)
+                tween(durationMillis = 330)
             }
         }, label = ""
     ) { state ->
@@ -60,9 +60,9 @@ fun MultiFloatingActionButton(
             }
         }, label = "", transitionSpec = {
             if (targetState.value == MultiFabState.Expanded) {
-                spring(stiffness = Spring.StiffnessLow, dampingRatio = 0.58F)
+                tween(durationMillis = 200)
             } else {
-                spring(stiffness = Spring.StiffnessMedium)
+                tween(durationMillis = 300)
             }
         })
         shrinkListAnim.add(index, shrinkAnim)
@@ -87,7 +87,6 @@ fun MultiFloatingActionButton(
                         modifier = Modifier
                             .clip(ShortXCardRoundedCornerShape)
                             .background(color = MaterialTheme.colorScheme.secondary)
-                            .alpha(animateFloatAsState(alphaAnim).value)
                             .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp)
                     )
                     Spacer(modifier = Modifier.width(16.dp))

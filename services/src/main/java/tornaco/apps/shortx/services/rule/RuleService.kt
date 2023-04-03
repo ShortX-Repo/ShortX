@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.*
@@ -27,7 +28,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     private val globalVarStore: GlobalVarStore by lazy {
-        GlobalVarStore(systemServiceScope)
+        GlobalVarStore(
+            scope = systemServiceScope,
+            onAddOrUpdate = { gv ->
+                globalVarObs.broadcast {
+                    kotlin.runCatching { it.onAddOrUpdate(gv.id) }
+                        .onFailure { logger.e(it, "Call onAddOrUpdate") }
+                }
+            },
+            onDelete = { gv ->
+                globalVarObs.broadcast {
+                    kotlin.runCatching { it.onDelete(gv.id) }
+                        .onFailure { logger.e(it, "Call onDelete") }
+                }
+            })
     }
 
     private val allTriggers by lazy {
@@ -36,6 +50,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     private val ruleChangeListeners = mutableListOf<() -> Unit>()
     private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
+
+    private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
 
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
@@ -267,5 +283,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun getAllGlobalVars(): List<GlobalVar> {
         return globalVarStore.getAllGlobalVars()
+    }
+
+    fun registerGlobalVarObs(obs: IGlobalVarObserver) {
+        globalVarObs.register(obs)
+    }
+
+    fun unregisterGlobalVarObs(obs: IGlobalVarObserver) {
+        globalVarObs.unregister(obs)
     }
 }

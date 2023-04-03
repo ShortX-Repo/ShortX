@@ -28,16 +28,13 @@ object DevRules {
                     .addAllActions(
                         listOf(
                             ShowDanmu.newBuilder()
-                                .setIcon("app://\$pkgName")
-                                .setText("\$title\n\$contentText").build()
+                                .setIcon("app://{pkgName}")
+                                .setText("{title}\n{contentText}").build()
                                 .pack_()
                         )
                     )
                     .build()
             )
-
-
-
 
 
             add(

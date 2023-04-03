@@ -5,4 +5,4 @@ import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 
 class DirectActionSettingsStore(
     scope: CoroutineScope,
-) : BaseDirectActionSettingsStore(scope, Dirs.dataStoreFile("das"))
+) : BaseDirectActionSettingsStore(scope = scope, storeFile = Dirs.dataStoreFile("das"))

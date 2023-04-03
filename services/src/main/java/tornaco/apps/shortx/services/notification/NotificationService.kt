@@ -1,6 +1,6 @@
 package tornaco.apps.shortx.services.notification
 
-import tornaco.apps.shortx.core.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved

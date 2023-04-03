@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.elvishew.xlog.XLog
+import tornaco.apps.shortx.core.util.Pools
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Async
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Sync

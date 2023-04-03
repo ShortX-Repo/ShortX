@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.core.util.Logger
@@ -356,6 +357,18 @@ class ShortXManager(private val service: IShortX) {
             allGlobalVars.mapNotNull {
                 GlobalVar.parseFrom(it.byte)
             }
+        }
+    }
+
+    fun registerGlobalVarObs(obs: IGlobalVarObserver) {
+        invokeService(Unit) {
+            registerGlobalVarObs(obs)
+        }
+    }
+
+    fun unregisterGlobalVarObs(obs: IGlobalVarObserver) {
+        invokeService(Unit) {
+            unregisterGlobalVarObs(obs)
         }
     }
 

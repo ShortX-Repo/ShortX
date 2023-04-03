@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -98,7 +98,7 @@ private fun HomeScreen(
         mutableStateOf(false)
     }
 
-    var enableBlur by remember {
+    var enableFabMask by remember {
         mutableStateOf(false)
     }
 
@@ -181,10 +181,10 @@ private fun HomeScreen(
                             }
                         },
                         onExpanded = {
-                            enableBlur = true
+                            enableFabMask = true
                         },
                         onCollapsed = {
-                            enableBlur = false
+                            enableFabMask = false
                         })
                 }) { paddingValues ->
 
@@ -196,7 +196,7 @@ private fun HomeScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
                         .let {
-                            if (enableBlur) {
+                            if (enableFabMask) {
                                 it.blur(4.dp)
                             } else it
                         },
@@ -274,11 +274,13 @@ private fun HomeScreen(
                     }
                 }
 
-                if (enableBlur) {
+                if (enableFabMask) {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
-                        .clickable { }) {
+                        .pointerInput(key1 = "MASK") {
+
+                        }) {
                     }
                 }
             }

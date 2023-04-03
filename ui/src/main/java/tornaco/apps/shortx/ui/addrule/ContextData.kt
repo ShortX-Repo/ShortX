@@ -7,8 +7,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.ContextDataMapping
-import tornaco.apps.shortx.core.ContextDataMapping.accessExample
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -45,6 +45,18 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
         }
         Fact.NotificationRemoved::class -> {
             dats<ContextDataMapping.NotificationRemoved>()
+        }
+        Fact.AppBecomeBackground::class -> {
+            dats<ContextDataMapping.AppBecomeBg>()
+        }
+        Fact.AppBecomeForeground::class -> {
+            dats<ContextDataMapping.AppBecomeFg>()
+        }
+        Fact.ActivityStarted::class -> {
+            dats<ContextDataMapping.ActivityStarted>()
+        }
+        Fact.AnyActivityStarted::class -> {
+            dats<ContextDataMapping.ActivityStarted>()
         }
         else -> {
             emptyList()
