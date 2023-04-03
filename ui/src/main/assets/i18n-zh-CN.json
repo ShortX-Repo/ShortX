@@ -23,6 +23,8 @@
   "ui.fact.screen.user.present": "屏幕解锁",
   "ui.fact.screen": "屏幕状态",
   "ui.fact.activity.started": "Activity启动",
+  "ui.fact.activity.started.any": "所有活动",
+  "ui.fact.activity.started.specific": "指定的活动",
   "ui.fact.key.event": "按键事件",
   "ui.fact.edge.gesture": "边缘手势",
   "ui.fact.time.of.a.day": "时间",

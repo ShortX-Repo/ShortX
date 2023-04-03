@@ -25,7 +25,8 @@ import kotlin.reflect.KClass
 
 fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair<String, String?> {
     return when (fact) {
-        Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to null
+        Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.specific"]
+        Fact.AnyActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.any"]
         Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
         Fact.KeyEvent::class -> i18n["ui.fact.key.event"] to null
         Fact.ScreenOff::class -> i18n["ui.fact.screen.off"] to null
@@ -89,6 +90,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 }$PREFIX_APP_ICON${it.pkg.pkgName}"
             })
         }
+        is Fact.AnyActivityStarted -> listOf(
+            i18N["ui.fact.activity.started"],
+            i18N["ui.fact.activity.started.any"]
+        )
         is Fact.EdgeGesture -> listOf(
             i18N["ui.fact.edge.gesture"],
             "${fact.edge}",
@@ -283,6 +288,7 @@ fun OnOffAny.label(i18n: I18N): String {
 fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
     return when (fact) {
         Fact.ActivityStarted::class -> Icons.Outlined.Update
+        Fact.AnyActivityStarted::class -> Icons.Outlined.Update
         Fact.EdgeGesture::class -> Icons.Outlined.Gesture
         Fact.KeyEvent::class -> Icons.Outlined.Keyboard
         Fact.ScreenOff::class -> Icons.Outlined.Lock

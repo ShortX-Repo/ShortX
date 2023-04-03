@@ -17,6 +17,8 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 sealed interface Fact {
     data class KeyEvent(val keyCode: Int) : Fact
+
+    object AnyActivityStarted : Fact
     data class ActivityStarted(val components: List<AppComponent>) : Fact
 
     data class EdgeGesture(val edge: Edge, val gesture: Gesture) : Fact
@@ -76,6 +78,9 @@ fun Fact.toProtoFact(): ProtoMessage {
             ActivityStarted.newBuilder()
                 .addAllComponents(components)
                 .build()
+        }
+        Fact.AnyActivityStarted -> {
+            ActivityStarted.newBuilder().build()
         }
         is Fact.EdgeGesture -> {
             EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).build()
@@ -241,7 +246,11 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         }
         this is_ ActivityStarted::class.java -> {
             val data = this unpack_ ActivityStarted::class.java
-            Fact.ActivityStarted(data.componentsList)
+            if (data.componentsList.isEmpty()) {
+                Fact.AnyActivityStarted
+            } else {
+                Fact.ActivityStarted(data.componentsList)
+            }
         }
         this is_ WifiStatusChanged::class.java -> {
             val data = this unpack_ WifiStatusChanged::class.java

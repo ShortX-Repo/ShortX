@@ -70,8 +70,8 @@ fun FactSelectors(
 
     val appComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
-        onAppComponentSelected = {
-            vm.setFact(Fact.ActivityStarted(it.map { it.component }))
+        onAppComponentSelected = { infoList ->
+            vm.setFact(Fact.ActivityStarted(infoList.map { it.component }))
         }
     )
     AppComponentSelectorDialog(appComponentSelectorState)
@@ -144,6 +144,9 @@ fun FactSelectors(
             }
             Fact.ActivityStarted::class -> {
                 singleAppSelectorState.show()
+            }
+            Fact.AnyActivityStarted::class -> {
+                vm.setFact(Fact.AnyActivityStarted)
             }
             Fact.EdgeGesture::class -> {
                 edgeGestureSelectorState.show()
@@ -313,6 +316,12 @@ private fun FactSelectorMenu(
             labelAndDescriptionForFactSelector(i18N, Fact.ActivityStarted::class)
         ) {
             icon(imageVectorForFact(Fact.ActivityStarted::class))
+        }
+        item(
+            Fact.AnyActivityStarted::class,
+            labelAndDescriptionForFactSelector(i18N, Fact.AnyActivityStarted::class)
+        ) {
+            icon(imageVectorForFact(Fact.AnyActivityStarted::class))
         }
         item(
             Fact.EdgeGesture::class,

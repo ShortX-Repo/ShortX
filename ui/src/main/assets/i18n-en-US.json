@@ -23,6 +23,8 @@
   "ui.fact.screen.user.present": "Screen Unlock",
   "ui.fact.screen": "Screen",
   "ui.fact.activity.started": "Activity Start",
+  "ui.fact.activity.started.any": "Any activity",
+  "ui.fact.activity.started.specific": "Specific activity",
   "ui.fact.key.event": "Key Event",
   "ui.fact.edge.gesture": "Edge Gesture",
   "ui.fact.time.of.a.day": "Time Of",
