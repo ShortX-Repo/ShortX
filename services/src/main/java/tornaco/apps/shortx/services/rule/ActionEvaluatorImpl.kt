@@ -11,9 +11,8 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.*
-import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
@@ -198,6 +197,18 @@ class ActionEvaluatorImpl(
                 }
             }
             logger.d("WhileLoop complete")
+        } else if (action is_ WriteGlobalVar::class.java) {
+            val d = action unpack_ WriteGlobalVar::class.java
+            shortXContext.rule.getGlobalVarById(d.varId)?.let { globalVar ->
+                val currentVar = globalVar.`var`
+                val type = currentVar.toType()
+                val newValue = d.valueAsString.inflateContextMap(contextData).toVarValue(type)
+                newValue?.let {
+                    shortXContext.rule.addGlobalVar(
+                        GlobalVar.newBuilder(globalVar).setVar(it).build()
+                    )
+                }
+            }
         }
     }
 

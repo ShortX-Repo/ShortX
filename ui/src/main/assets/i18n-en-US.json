@@ -119,6 +119,7 @@
   "ui.action.start.activity": "Start activity",
   "ui.action.expand.notification": "Expand noti panel",
   "ui.action.while.loop": "Action loop",
+  "ui.action.write.global.var": "Write global var",
   "ui.action.stop.app": "Force stop app",
   "ui.action.start.app.process": "Start app process",
   "ui.action.disable.app": "Disable app",

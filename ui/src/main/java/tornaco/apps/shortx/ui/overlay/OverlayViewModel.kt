@@ -7,7 +7,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.ui.base.StateViewModel
-import tornaco.apps.shortx.ui.gvar.valueList
+import tornaco.apps.shortx.core.rule.valueList
 
 data class OverlayState(
     val values: List<String> = emptyList(),

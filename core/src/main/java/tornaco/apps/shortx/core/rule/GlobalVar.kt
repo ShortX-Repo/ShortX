@@ -1,9 +1,6 @@
-package tornaco.apps.shortx.ui.gvar
+package tornaco.apps.shortx.core.rule
 
 import tornaco.apps.shortx.core.proto.gv.*
-import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.pack_
 
 enum class GlobalVarType {
     Int,

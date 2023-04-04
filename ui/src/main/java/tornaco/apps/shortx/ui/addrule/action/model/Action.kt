@@ -12,13 +12,13 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.ContextData
+import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
-import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.toModel
@@ -213,6 +213,14 @@ sealed interface Action : Parcelable {
         val negativeActions: List<Action> = emptyList(),
         val neutralActions: List<Action> = emptyList(),
     ) : Action
+
+    @Parcelize
+    data class WriteGV(
+        override val id: String = defaultNewActionId(),
+        val valueAsString: String,
+        val varId: String,
+        val varName: String
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -345,6 +353,13 @@ fun Action.toProtoAction(): ProtoMessage {
                                 .build()
                     }
                 }
+                .build()
+        }
+        is Action.WriteGV -> {
+            WriteGlobalVar.newBuilder()
+                .setId(id)
+                .setVarId(varId)
+                .setValueAsString(valueAsString)
                 .build()
         }
     }
@@ -569,6 +584,15 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 conditions = data.conditionsList.mapNotNull { it.toCondition(shortXManager) },
                 actions = data.actionsList.mapNotNull { it.toAction(shortXManager) },
                 op = data.condOp.toOp(data.condOpPayload)
+            )
+        }
+        this is_ WriteGlobalVar::class.java -> {
+            val data = this unpack_ WriteGlobalVar::class.java
+            Action.WriteGV(
+                id = data.id,
+                varId = data.varId,
+                valueAsString = data.valueAsString,
+                varName = shortXManager.getGlobalVarById(data.varId)?.name ?: "N/A"
             )
         }
 

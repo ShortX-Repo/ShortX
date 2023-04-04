@@ -40,7 +40,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(ActivityStarted::class.java) { actual, rule ->
             val aa = actual as ActivityStarted
             val ra = rule as ActivityStarted
-            ra.componentsList.containsAll(aa.componentsList)
+            (ra.componentsList.isEmpty() || ra.componentsList.containsAll(aa.componentsList))
         }
 
         register(WifiStatusChanged::class.java) { actual, rule ->

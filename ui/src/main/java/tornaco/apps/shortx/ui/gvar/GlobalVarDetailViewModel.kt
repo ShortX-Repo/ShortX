@@ -6,9 +6,7 @@ import tornaco.apps.shortx.core.proto.gv.BoolListVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.Int64ListVar
 import tornaco.apps.shortx.core.proto.gv.StringListVar
-import tornaco.apps.shortx.core.rule.ProtoAny
-import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 

@@ -38,6 +38,11 @@ fun ExtActions(addAction: (Action) -> Unit) {
     }
     CodeEditorDialog(state = mvelSelectorState)
 
+    val writeGVSelectorState = rememberWriteGVDialogState {
+        addAction(it)
+    }
+    WriteGVDialog(writeGVSelectorState)
+
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Item(
@@ -68,6 +73,11 @@ fun ExtActions(addAction: (Action) -> Unit) {
             labelAndDescriptionForActionSelector(i18N, Action.Brk::class),
             imageVectorForAction(Action.Brk::class)
         ),
+        Item(
+            Action.WriteGV::class,
+            labelAndDescriptionForActionSelector(i18N, Action.WriteGV::class),
+            imageVectorForAction(Action.WriteGV::class)
+        ),
     )
 
     ActionList(
@@ -88,6 +98,9 @@ fun ExtActions(addAction: (Action) -> Unit) {
                 }
                 Action.Brk::class -> {
                     addAction(Action.Brk())
+                }
+                Action.WriteGV::class -> {
+                    writeGVSelectorState.show()
                 }
             }
         })

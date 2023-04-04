@@ -82,6 +82,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
+        Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
 
         else -> {
             "N/A" to null
@@ -216,6 +217,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.while.loop"]
             )
         }
+        is Action.WriteGV -> {
+            listOf(
+                i18N["ui.action.write.global.var"],
+                action.varName,
+                action.valueAsString
+            )
+        }
     }
 }
 
@@ -343,6 +351,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.WhileLoop::class -> {
             Icons.Outlined.Loop
+        }
+        Action.WriteGV::class -> {
+            Icons.Outlined.Edit
         }
 
         else -> {

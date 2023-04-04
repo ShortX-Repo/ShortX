@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import tornaco.apps.shortx.core.rule.GlobalVarType
+import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.ui.base.*
 
 class NewGlobalVarState(
