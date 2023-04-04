@@ -45,10 +45,12 @@ fun ColoredIcon(
 fun Icon(
     imageVector: ImageVector,
     modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current
 ) {
     androidx.compose.material3.Icon(
         modifier = modifier,
         imageVector = imageVector,
+        tint = tint,
         contentDescription = "Icon"
     )
 }

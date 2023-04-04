@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Commit
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
@@ -21,7 +22,9 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.fact.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
@@ -38,6 +41,8 @@ data class RuleUM(
     val updateTime: String,
     val createTime: String,
     val isEnabled: Boolean,
+    val factIcon: ImageVector,
+    val actionIcon: ImageVector,
 )
 
 data class DirectActionUM(
@@ -122,6 +127,14 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
                     .map { rule ->
+                        val firstFact: Fact? = rule.fact?.toFact(shortXManager)
+                        val firstAction: Action? = rule.actionsList?.let {
+                            if (it.isEmpty()) {
+                                null
+                            } else {
+                                it[0].toAction(shortXManager)
+                            }
+                        }
                         RuleUM(
                             id = rule.id,
                             title = rule.title,
@@ -136,7 +149,17 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                                 context,
                                 Date(rule.createTime)
                             ),
-                            isEnabled = rule.isEnabled
+                            isEnabled = rule.isEnabled,
+                            factIcon = firstFact?.let {
+                                imageVectorForFact(
+                                    it::class
+                                )
+                            } ?: Icons.Outlined.AutoAwesome,
+                            actionIcon = firstAction?.let {
+                                imageVectorForAction(
+                                    it::class
+                                )
+                            } ?: Icons.Outlined.AutoAwesome,
                         )
                     }
                 updateState {

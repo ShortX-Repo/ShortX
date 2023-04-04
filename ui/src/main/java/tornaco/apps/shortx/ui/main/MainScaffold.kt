@@ -60,8 +60,8 @@ fun MainScaffold(
                             )
                         },
                         actions = {
-                            SettingsAppBarActions(goToSettings)
                             appBarActions()
+                            SettingsAppBarActions(goToSettings)
                         },
                         scrollBehavior = scrollBehavior,
                     )

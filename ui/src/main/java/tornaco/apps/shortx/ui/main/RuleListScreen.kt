@@ -13,9 +13,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.ViewColumn
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -187,12 +186,11 @@ private fun RuleItem(
 ) {
     ListItem(
         icon = {
-            ColoredIcon(size = 32.dp) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Filled.AutoAwesome,
-                    contentDescription = "Icon"
-                )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RuleIcon(rule = rule, arrow = Icons.Filled.ArrowDropDown)
             }
         },
         title = rule.title,
@@ -230,12 +228,11 @@ private fun RuleItem2(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ColoredIcon(size = 32.dp, padding = 0.dp) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Filled.AutoAwesome,
-                    contentDescription = "Icon"
-                )
+            Row(
+                modifier = Modifier.weight(1f, fill = false),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RuleIcon(rule)
             }
 
             Column(horizontalAlignment = Alignment.End) {
@@ -284,6 +281,31 @@ private fun RuleItem2(
             }
         }
 
+    }
+}
+
+@Composable
+private fun RuleIcon(rule: RuleUM, arrow: ImageVector = Icons.Filled.ArrowRight) {
+    ColoredIcon(size = 32.dp, padding = 0.dp) {
+        Icon(
+            modifier = Modifier.size(16.dp),
+            imageVector = rule.factIcon,
+            contentDescription = "Icon"
+        )
+    }
+
+    Icon(
+        modifier = Modifier.size(18.dp),
+        imageVector = arrow,
+        tint = MaterialTheme.colorScheme.surfaceVariant
+    )
+
+    ColoredIcon(size = 32.dp, padding = 0.dp) {
+        Icon(
+            modifier = Modifier.size(16.dp),
+            imageVector = rule.actionIcon,
+            contentDescription = "Icon"
+        )
     }
 }
 
