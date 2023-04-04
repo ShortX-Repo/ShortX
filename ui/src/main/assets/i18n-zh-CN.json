@@ -59,6 +59,7 @@
   "ui.common.off": "关闭",
   "ui.common.any": "任意",
   "ui.common.reboot": "重启",
+  "ui.common.reboot.message": "你确定要立即重启设备吗？",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

@@ -59,6 +59,7 @@
   "ui.common.off": "Off",
   "ui.common.any": "Any",
   "ui.common.reboot": "Reboot",
+  "ui.common.reboot.message": "Do you really want to reboot your device now?",
   "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",

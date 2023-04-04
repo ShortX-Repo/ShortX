@@ -18,7 +18,7 @@ private val PRIVACY_STATEMENT_ACCEPTED_KEY = booleanPreferencesKey("privacy_stat
 private val UI_RULE_SHOW_DESCRIPTION = booleanPreferencesKey("ui_rule_show_description")
 private val UI_RULE_COLUMN_COUNT = intPreferencesKey("ui_rule_column_count")
 
-const val DEFAULT_RULE_COLUMN_COUNT = 1
+const val DEFAULT_RULE_COLUMN_COUNT = 2
 
 class Pref(val context: Context) {
     val installFakeServiceFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->

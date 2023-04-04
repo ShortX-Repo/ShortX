@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -103,6 +104,9 @@ fun MainScaffold(
             val shareDialogState = rememberShareDialogState("share.shortx")
             ShareDialog(state = shareDialogState)
 
+            val rebootDialogState = rememberRebootConfirmDialogState()
+            RebootConfirmDialog(state = rebootDialogState)
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -120,7 +124,11 @@ fun MainScaffold(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier
+                                .clickable {
+                                    rebootDialogState.show()
+                                }
+                                .padding(16.dp)
                         ) {
                             Row {
                                 Icon(

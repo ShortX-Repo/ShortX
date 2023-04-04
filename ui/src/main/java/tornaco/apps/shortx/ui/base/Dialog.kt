@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import tornaco.apps.shortx.core.shortXManager
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -204,6 +205,58 @@ fun <T> DeleteConfirmDialog(
             },
             text = {
                 Text(text = i18N["ui.delete.dialog.confirm", mapOf("wht" to messageHint(data))])
+            })
+    }
+}
+
+
+class RebootConfirmDialogState {
+    var isShowing by mutableStateOf(false)
+
+    fun show() {
+        isShowing = true
+    }
+
+    fun dismiss() {
+        isShowing = false
+    }
+}
+
+@Composable
+fun rememberRebootConfirmDialogState(): RebootConfirmDialogState {
+    return remember {
+        RebootConfirmDialogState()
+    }
+}
+
+@Composable
+fun RebootConfirmDialog(
+    state: RebootConfirmDialogState,
+) {
+    if (state.isShowing) {
+        val i18N = LocalI18N.current
+        ShortXAlertDialog(
+            onDismissRequest = {
+                state.dismiss()
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    shortXManager.reboot("RebootConfirmDialog")
+                    state.dismiss()
+                }) {
+                    Text(text = stringResource(id = android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { state.dismiss() }) {
+                    Text(text = stringResource(id = android.R.string.cancel))
+                }
+            },
+            title = {
+                Text(text = i18N["ui.common.reboot"])
+            },
+            text = {
+                Text(text = i18N["ui.common.reboot.message"])
             })
     }
 }
