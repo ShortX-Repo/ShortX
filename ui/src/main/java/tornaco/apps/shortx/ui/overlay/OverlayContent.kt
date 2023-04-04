@@ -16,6 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +29,7 @@ import tornaco.apps.shortx.ui.base.MDIcons
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
 
-const val BUTTON_COUNT = 6
+private val minWidth = 48.dp
 
 private class ExpandState(private val scope: CoroutineScope) {
     private var _isExpand by mutableStateOf(true)
@@ -117,7 +118,7 @@ fun OverlayContent(
                 // Expand tool.
                 AnimatedVisibility(visible = !expandState.isExpand) {
                     Box(modifier = Modifier
-                        .width(48.dp)
+                        .widthIn(min = minWidth)
                         .height(24.dp)
                         .clickable {
                             expandState.expand()
@@ -136,25 +137,35 @@ fun OverlayContent(
                 AnimatedVisibility(visible = expandState.isExpand) {
                     Column(
                         modifier = Modifier
-                            .width(48.dp)
+                            .widthIn(min = minWidth)
                             .padding(vertical = 8.dp),
                         horizontalAlignment = CenterHorizontally
                     ) {
                         formattedValues.forEachIndexed { index, label ->
                             Column(
+                                modifier = Modifier.clickableWithRipple {
+                                    onButtonClick(index)
+                                },
                                 horizontalAlignment = CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 val icon = icons[index]
-                                IconButtonContainer(onClick = {
-                                    onButtonClick(index)
-                                }) {
-                                    IconForButton(icon)
+
+                                if (icon.isNotBlank()) {
+                                    IconButtonContainer(onClick = {
+                                        onButtonClick(index)
+                                    }) {
+                                        IconForButton(icon)
+                                    }
                                 }
+
                                 if (label.isNotEmpty()) {
                                     Text(
-                                        modifier = Modifier.offset(y = (-4).dp),
+                                        modifier = Modifier
+                                            .offset(y = (-4).dp)
+                                            .padding(horizontal = 4.dp),
                                         text = label,
+                                        textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
                                     )
                                 }
