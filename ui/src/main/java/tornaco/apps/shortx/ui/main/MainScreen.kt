@@ -53,6 +53,7 @@ fun HomeScreen() {
             ) {
                 BottomNavigationGraph(
                     modifier = Modifier
+                        .fillMaxSize()
                         .weight(1f, fill = false),
                     navController = navController
                 )

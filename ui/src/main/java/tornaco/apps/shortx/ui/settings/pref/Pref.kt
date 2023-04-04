@@ -29,6 +29,10 @@ class Pref(val context: Context) {
         preferences[PRIVACY_STATEMENT_ACCEPTED_KEY] ?: false
     }
 
+    val uiRuleColumnCount: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[UI_RULE_COLUMN_COUNT] ?: DEFAULT_RULE_COLUMN_COUNT
+    }
+
     suspend fun setInstallFakeService(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[INSTALL_FAKE_SERVICE_KEY] = value

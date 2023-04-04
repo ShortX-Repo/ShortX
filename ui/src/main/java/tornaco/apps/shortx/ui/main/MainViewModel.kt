@@ -93,6 +93,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 updateState { copy(isPrivacyStatementAccepted = it) }
             }
         }
+
+        viewModelScope.launch {
+            pref.uiRuleColumnCount.collectLatest {
+                logger.d("uiRuleColumnCount changed: $it")
+                updateState { copy(ruleColumnCount = it) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -141,7 +148,9 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     fun toggleRuleColumnCount() {
         val count = if (state.value.ruleColumnCount == 1) 2 else 1
-        updateState { copy(ruleColumnCount = count) }
+        viewModelScope.launch {
+            Pref(context).setColumnCount(count)
+        }
     }
 
     private fun translateRule(rule: Rule): String {

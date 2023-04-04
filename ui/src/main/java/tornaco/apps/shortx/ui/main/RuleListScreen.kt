@@ -1,27 +1,34 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.filled.ViewColumn
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
@@ -42,6 +49,16 @@ fun RuleScreen() {
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.rule",
+        appBarActions = {
+            androidx.compose.material3.IconButton(onClick = {
+                vm.toggleRuleColumnCount()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.ViewColumn,
+                    contentDescription = "Column"
+                )
+            }
+        },
         goToSettings = {
             appNavController.navigate(AppRoute.Settings.name)
         },
@@ -67,7 +84,7 @@ fun RuleScreen() {
                 vm.deleteRule(rule.id)
             },
             onEdit = { rule ->
-                appNavController.navigate("${AppRoute.AddDA.name}?daId=${rule.id}")
+                appNavController.navigate("${AppRoute.AddRule.name}?ruleId=${rule.id}")
             },
             onShare = { um ->
                 vm.ruleToShareString(um)?.let {
@@ -99,8 +116,9 @@ private fun RuleContent(
             EmptyList(modifier = Modifier.fillMaxSize())
         }
         state.rules.isSuccess() -> {
-            LazyColumn(
+            LazyVerticalStaggeredGrid(
                 modifier = Modifier.fillMaxSize(),
+                columns = StaggeredGridCells.Fixed(state.ruleColumnCount),
                 contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
             ) {
                 items(
@@ -126,17 +144,31 @@ private fun RuleContent(
                         shape = ShortXCardRoundedCornerShape,
                         elevation = 0.dp
                     ) {
-                        RuleItem(
-                            rule = rule,
-                            onClick = {
-                                onRuleClick(rule)
-                                scaleAnimStarted = true
-                            },
-                            setRuleEnabled = setRuleEnabled,
-                            onDelete = onDelete,
-                            onEdit = onEdit,
-                            onShare = onShare,
-                        )
+                        if (state.ruleColumnCount == 1) {
+                            RuleItem(
+                                rule = rule,
+                                onClick = {
+                                    onRuleClick(rule)
+                                    scaleAnimStarted = true
+                                },
+                                setRuleEnabled = setRuleEnabled,
+                                onDelete = onDelete,
+                                onEdit = onEdit,
+                                onShare = onShare,
+                            )
+                        } else {
+                            RuleItem2(
+                                rule = rule,
+                                onClick = {
+                                    onRuleClick(rule)
+                                    scaleAnimStarted = true
+                                },
+                                setRuleEnabled = setRuleEnabled,
+                                onDelete = onDelete,
+                                onEdit = onEdit,
+                                onShare = onShare,
+                            )
+                        }
                     }
                 }
             }
@@ -155,8 +187,12 @@ private fun RuleItem(
 ) {
     ListItem(
         icon = {
-            ColoredIcon {
-                Icon(imageVector = Icons.Filled.AutoAwesome, contentDescription = "Icon")
+            ColoredIcon(size = 32.dp) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = Icons.Filled.AutoAwesome,
+                    contentDescription = "Icon"
+                )
             }
         },
         title = rule.title,
@@ -169,6 +205,86 @@ private fun RuleItem(
         onClick = onClick,
         onCheckedChange = { setRuleEnabled(rule.id, it) }
     )
+}
+
+
+@Composable
+private fun RuleItem2(
+    rule: RuleUM,
+    onClick: () -> Unit,
+    setRuleEnabled: (String, Boolean) -> Unit,
+    onDelete: (RuleUM) -> Unit,
+    onEdit: (RuleUM) -> Unit,
+    onShare: (RuleUM) -> Unit,
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clip(ShortXCardRoundedCornerShape)
+        .clickable {
+            onClick()
+        }) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ColoredIcon(size = 32.dp, padding = 0.dp) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = Icons.Filled.AutoAwesome,
+                    contentDescription = "Icon"
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                ListItemOverflowMenu(rule, onDelete, onEdit, onShare)
+            }
+        }
+
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(
+                text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp
+                )
+            )
+            TinySpacer()
+            Text(
+                text = rule.description,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                maxLines = 8
+            )
+            TinySpacer()
+            TinySpacer()
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f, fill = false),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(modifier = Modifier.size(12.dp), imageVector = Icons.Outlined.Update)
+                    TinySpacer()
+                    Text(
+                        text = rule.updateTime,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 10.sp),
+                    )
+                }
+                Switch(
+                    modifier = Modifier,
+                    checked = rule.isEnabled,
+                    onCheckedChange = {
+                        setRuleEnabled(rule.id, it)
+                    }
+                )
+            }
+        }
+
+    }
 }
 
 @Composable

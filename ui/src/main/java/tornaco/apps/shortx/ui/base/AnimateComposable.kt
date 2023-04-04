@@ -3,8 +3,7 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NamedNavArgument
@@ -13,7 +12,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
 
-val animSpec = spring<IntOffset>(stiffness = 300f)
+val animSpec = tween<IntOffset>(durationMillis = 300)
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.animateComposable(
