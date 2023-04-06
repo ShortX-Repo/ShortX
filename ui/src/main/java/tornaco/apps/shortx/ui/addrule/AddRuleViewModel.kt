@@ -39,14 +39,15 @@ data class AddRuleState(
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,
-    val conditions: List<Condition> = emptyList(),
+    val conditions: List<Condition> = listOf(Condition.TRUE),
     val conditionOp: Op = Op.All,
     val actions: List<Action> = emptyList(),
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
-    val isEnabled: Boolean = false
+    val isEnabled: Boolean = false,
+    val showConditionSection: Boolean = false
 )
 
 @SuppressLint("StaticFieldLeak")

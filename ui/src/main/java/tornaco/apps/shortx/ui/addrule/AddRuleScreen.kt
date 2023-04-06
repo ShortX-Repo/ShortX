@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -90,8 +91,10 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     FactSelectors(vm, state)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    ConditionSelectors(state, vm)
-                    Spacer(modifier = Modifier.size(24.dp))
+                    AnimatedVisibility(visible = state.showConditionSection) {
+                        ConditionSelectors(state, vm)
+                        Spacer(modifier = Modifier.size(24.dp))
+                    }
 
                     ActionContent(
                         addAction = { action ->
