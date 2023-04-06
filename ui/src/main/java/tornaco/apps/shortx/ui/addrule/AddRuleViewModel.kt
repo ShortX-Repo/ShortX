@@ -35,7 +35,7 @@ import java.util.*
 import javax.inject.Inject
 
 data class AddRuleState(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = "rule-" + UUID.randomUUID().toString(),
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,

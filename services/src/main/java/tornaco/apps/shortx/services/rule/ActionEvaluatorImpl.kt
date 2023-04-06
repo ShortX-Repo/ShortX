@@ -92,11 +92,16 @@ class ActionEvaluatorImpl(
                 val d = action unpack_ ShowOverlayButton::class.java
                 val buttonSettingsList = d.buttonSettingsList
                 val autoCollapse = d.autoCollapse
-                shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList)
+                shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList, d.tag)
             }
         } else if (action is_ HideOverlayButton::class.java) {
+            val d = action unpack_ HideOverlayButton::class.java
             withContext(Dispatchers.Main) {
-                shortXContext.overlay.postHideAllOverlay()
+                if (d.overlayTagsList.isNullOrEmpty()) {
+                    shortXContext.overlay.postHideAllOverlay()
+                } else {
+                    shortXContext.overlay.postHideOverlay(d.overlayTagsList)
+                }
             }
         } else if (action is_ LaunchApp::class.java) {
             val app = action unpack_ LaunchApp::class.java

@@ -13,7 +13,8 @@ import tornaco.apps.shortx.services.postSafety
 
 internal data class ShowingOverlay(
     val token: java.util.function.Function<String, Boolean>,
-    val settings: List<OverlayButtonSetting>
+    val settings: List<OverlayButtonSetting>,
+    val tag: String
 )
 
 class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -43,14 +44,15 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
 
     fun postShowOverlay(
         autoCollapse: Boolean,
-        settings: List<OverlayButtonSetting>
+        settings: List<OverlayButtonSetting>,
+        tag: String
     ) = mainHandler.postSafety {
-        logger.d("showOverlay, current showing: $showingOverlays, settings: $settings")
+        logger.d("showOverlay: $tag, current showing: $showingOverlays, settings: $settings")
 
         if (showingOverlays.any {
-                it.settings == settings
+                it.tag == tag
             }) {
-            logger.d("showOverlay skip since has showing for same settings.")
+            logger.d("showOverlay skip since has showing for same owner.")
             return@postSafety
         }
 
@@ -80,13 +82,29 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
             } as java.util.function.Function<String, Boolean>
 
 
-        showingOverlays.add(ShowingOverlay(overlayIns, settings).apply {
-            token.show()
-        })
+        showingOverlays.add(
+            ShowingOverlay(
+                token = overlayIns,
+                settings = settings,
+                tag = tag
+            ).apply {
+                token.show()
+            })
     }
 
     fun postHideAllOverlay() = mainHandler.postSafety {
+        logger.d("postHideAllOverlay")
         hideAllOverlay()
+    }
+
+    fun postHideOverlay(tags: List<String>) = mainHandler.postSafety {
+        logger.d("postHideOverlay: $tags")
+        showingOverlays.filter { tags.contains(it.tag) }.apply {
+            showingOverlays.removeAll(this)
+            forEach {
+                it.token.dismiss()
+            }
+        }
     }
 
     private fun hideAllOverlay() {

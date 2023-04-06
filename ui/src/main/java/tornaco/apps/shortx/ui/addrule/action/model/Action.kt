@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import lang3.RandomStringUtils
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
@@ -67,12 +68,18 @@ sealed interface Action : Parcelable {
     data class ShowOverlay(
         override val id: String = defaultNewActionId(),
         val autoCollapse: Boolean,
-        val settings: List<OverlayButtonSetting>
-    ) :
-        Action
+        val settings: List<OverlayButtonSetting>,
+        val tag: String = RandomStringUtils.randomAlphabetic(8).lowercase()
+    ) : Action
 
     @Parcelize
-    data class HideOverlay(override val id: String = defaultNewActionId()) : Action
+    data class HideAllOverlay(override val id: String = defaultNewActionId()) : Action
+
+    @Parcelize
+    data class HideOverlay(
+        override val id: String = defaultNewActionId(),
+        val tags: List<String>
+    ) : Action
 
     @Parcelize
     data class LaunchApp(
@@ -253,8 +260,11 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.RemoteMVEL -> {
             action.toProto()
         }
-        is Action.HideOverlay -> {
+        is Action.HideAllOverlay -> {
             HideOverlayButton.newBuilder().setId(id).build()
+        }
+        is Action.HideOverlay -> {
+            HideOverlayButton.newBuilder().setId(id).addAllOverlayTags(tags).build()
         }
         is Action.ShowOverlay -> {
             ShowOverlayButton.newBuilder().setId(id).setAutoCollapse(autoCollapse)
@@ -409,7 +419,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         }
         this is_ HideOverlayButton::class.java -> {
             val data = this unpack_ HideOverlayButton::class.java
-            Action.HideOverlay(id = data.id)
+            if (data.overlayTagsList.isEmpty()) {
+                Action.HideAllOverlay(id = data.id)
+            } else {
+                Action.HideOverlay(
+                    id = data.id,
+                    tags = data.overlayTagsList
+                )
+            }
         }
 
         this is_ LaunchApp::class.java -> {

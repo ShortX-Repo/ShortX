@@ -23,7 +23,7 @@ import java.util.*
 import javax.inject.Inject
 
 data class AddDirectActionState(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = "DA" + UUID.randomUUID().toString(),
     val title: String = "",
     val description: String = "",
     val actions: List<Action> = emptyList(),

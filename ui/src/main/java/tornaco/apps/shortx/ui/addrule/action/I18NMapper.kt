@@ -38,6 +38,9 @@ fun labelAndDescriptionForActionSelector(
         Action.MVEL::class -> {
             i18N["ui.title.mvel"] to null
         }
+        Action.HideAllOverlay::class -> {
+            i18N["ui.action.hide.all.overlay"] to null
+        }
         Action.HideOverlay::class -> {
             i18N["ui.action.hide.overlay"] to null
         }
@@ -119,8 +122,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.MVEL -> {
             listOf(i18N["ui.title.mvel"], action.expression)
         }
+        is Action.HideAllOverlay -> {
+            listOf(i18N["ui.action.hide.all.overlay"])
+        }
         is Action.HideOverlay -> {
-            listOf(i18N["ui.action.hide.overlay"])
+            listOf(
+                i18N["ui.action.hide.overlay"],
+                (action.tags.joinToString())
+            )
         }
         is Action.ShowOverlay -> {
             mutableListOf(i18N["ui.action.show.overlay"]).apply {
@@ -250,7 +259,7 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         Action.MVEL::class -> {
             Icons.Outlined.Code
         }
-        Action.HideOverlay::class -> {
+        Action.HideAllOverlay::class -> {
             Icons.Outlined.Window
         }
         Action.ShowOverlay::class -> {

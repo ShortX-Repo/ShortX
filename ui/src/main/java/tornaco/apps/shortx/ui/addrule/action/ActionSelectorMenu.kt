@@ -87,10 +87,10 @@ fun ActionSelectorMenu(
             }
 
             item(
-                Action.HideOverlay::class,
-                labelAndDescriptionForActionSelector(i18N, Action.HideOverlay::class)
+                Action.HideAllOverlay::class,
+                labelAndDescriptionForActionSelector(i18N, Action.HideAllOverlay::class)
             ) {
-                icon(imageVectorForAction(Action.HideOverlay::class))
+                icon(imageVectorForAction(Action.HideAllOverlay::class))
             }
         }
 

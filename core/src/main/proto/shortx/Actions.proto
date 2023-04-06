@@ -66,13 +66,15 @@ message OverlayButtonSetting {
 
 message HideOverlayButton {
   string id = 100;
-  string overlayId = 1;
+
+  repeated string overlayTags = 1;
 }
 
 message ShowOverlayButton {
   repeated OverlayButtonSetting buttonSettings = 1;
   bool autoCollapse = 2;
-  bool overlayId = 3;
+  string tag = 3;
+
   string id = 100;
 }
 

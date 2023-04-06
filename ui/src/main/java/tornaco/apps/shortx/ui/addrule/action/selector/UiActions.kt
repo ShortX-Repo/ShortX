@@ -48,6 +48,12 @@ fun UiActions(addAction: (Action) -> Unit) {
         ),
 
         Item(
+            Action.HideAllOverlay::class,
+            labelAndDescriptionForActionSelector(i18N, Action.HideAllOverlay::class),
+            imageVectorForAction(Action.HideAllOverlay::class)
+        ),
+
+        Item(
             Action.ShowAlertDialog::class,
             labelAndDescriptionForActionSelector(i18N, Action.ShowAlertDialog::class),
             imageVectorForAction(Action.ShowAlertDialog::class)
@@ -66,8 +72,11 @@ fun UiActions(addAction: (Action) -> Unit) {
                 Action.TakeScreenshot::class -> {
                     addAction(Action.TakeScreenshot())
                 }
+                Action.HideAllOverlay::class -> {
+                    addAction(Action.HideAllOverlay())
+                }
                 Action.HideOverlay::class -> {
-                    addAction(Action.HideOverlay())
+                    subSelectorStates.hideOverlayDialogState.show()
                 }
                 Action.ShowOverlay::class -> {
                     subSelectorStates.overlayButtonState.show()
@@ -88,6 +97,7 @@ data class UiActionSubSelectorStates(
     val showDialogSettingsState: ShowDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val mvelEditorState: CodeEditorState,
+    val hideOverlayDialogState: HideOverlayDialogState
 )
 
 @Composable
@@ -130,11 +140,17 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     )
     CodeEditorDialog(state = mvelEditorState)
 
+    val hideOverlayDialogState = rememberHideOverlayDialogState {
+        addAction(it)
+    }
+    HideOverlayDialog(state = hideOverlayDialogState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
         showDialogSettingsState = showDialogSettingsState,
         showDanmuSettingsState = showDanmuSettingsState,
         mvelEditorState = mvelEditorState,
+        hideOverlayDialogState = hideOverlayDialogState
     )
 }
