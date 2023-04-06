@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +75,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { LocalI18N.current["ui.action.show.overlay"] },
+                        title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -90,7 +89,8 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                                     ShowOverlayButtonSettings(
                                         id = state.id,
                                         autoCollapse = state.autoCollapse,
-                                        items = state.items
+                                        items = state.items,
+                                        tag = state.tag
                                     )
                                 )
                                 dialogState.dismiss()
@@ -124,53 +124,70 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                 vm.updateIcon(index, it)
             }
             MDIconSelector(state = iconSelector)
-            Column {
-                MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
 
-                OutlinedTextField(value = item.label, onValueChange = {
-                    vm.updateLabel(index, it)
-                })
+            OutlinedCard(
+                modifier = Modifier,
+                colors = CardDefaults.cardColors()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
+                    StandardSpacer()
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SmallTitle(LocalI18N.current["ui.action.show.overlay.icon"])
-                    TinySpacer()
-                    TextButton(onClick = {
-                        iconSelector.show()
-                    }) {
-                        Icon(
-                            imageVector = MDIcons.filled(item.icon), contentDescription = item.icon
-                        )
+                    Column(verticalArrangement = Arrangement.Center) {
+                        SmallTitle(LocalI18N.current["ui.action.show.overlay.text"])
+                        OutlinedTextField(value = item.label, onValueChange = {
+                            vm.updateLabel(index, it)
+                        })
                     }
+                    StandardSpacer()
+
+                    Column(verticalArrangement = Arrangement.Center) {
+                        SmallTitle(LocalI18N.current["ui.action.show.overlay.icon"])
+                        TextButton(onClick = {
+                            iconSelector.show()
+                        }) {
+                            Icon(
+                                imageVector = MDIcons.filled(item.icon),
+                                contentDescription = item.icon
+                            )
+                        }
+                    }
+
+                    ActionContent(
+                        header = {
+                            SmallTitle(text = LocalI18N.current["ui.actions.title"])
+                        }, addAction = { action ->
+                            vm.addAction(index, action)
+                        },
+                        removeAction = { action ->
+                            vm.removeAction(index, action)
+                        },
+                        actions = state.items[index].actions
+                    )
                 }
-
-                ActionContent(
-                    header = {
-                        SmallTitle(text = LocalI18N.current["ui.actions.title"])
-                    }, addAction = { action ->
-                        vm.addAction(index, action)
-                    },
-                    removeAction = { action ->
-                        vm.removeAction(index, action)
-                    },
-                    actions = state.items[index].actions
-                )
             }
-
-            StandardSpacer()
-            Divider(modifier = Modifier.fillMaxWidth())
-            StandardSpacer()
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            SmallTitle(LocalI18N.current["ui.action.show.overlay.tag"])
+            TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
+            OutlinedTextField(value = state.tag, onValueChange = {
+                vm.updateTag(it)
+            })
+        }
+
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.show.auto.collapse"])
-
-            StandardSpacer()
-
             Switch(checked = state.autoCollapse, onCheckedChange = {
                 vm.setAutoCollapse(it)
             })
         }
-
 
         StandardSpacer()
 

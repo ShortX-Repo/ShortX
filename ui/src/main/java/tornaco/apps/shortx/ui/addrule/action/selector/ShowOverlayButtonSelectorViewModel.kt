@@ -29,6 +29,7 @@ data class OverlayButtonSelectorState(
     val items: List<OverlayButtonItem> = emptyList(),
     val autoCollapse: Boolean = false,
     val canSave: Boolean = false,
+    val tag: String = "",
     val id: String = defaultNewActionId()
 )
 
@@ -36,7 +37,8 @@ data class OverlayButtonSelectorState(
 data class ShowOverlayButtonSettings(
     val id: String,
     val autoCollapse: Boolean,
-    val items: List<OverlayButtonItem>
+    val items: List<OverlayButtonItem>,
+    val tag: String
 ) : Parcelable
 
 @Parcelize
@@ -69,7 +71,12 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
     fun initFrom(settings: ShowOverlayButtonSettings) {
         logger.d("initFrom: $settings")
         updateState {
-            copy(id = settings.id, items = settings.items, autoCollapse = settings.autoCollapse)
+            copy(
+                id = settings.id,
+                items = settings.items,
+                autoCollapse = settings.autoCollapse,
+                tag = settings.tag
+            )
         }
     }
 
@@ -138,6 +145,14 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                     val current = get(index)
                     set(index, current.copy(label = label))
                 }
+            )
+        }
+    }
+
+    fun updateTag(tag: String) {
+        updateState {
+            copy(
+                tag = tag
             )
         }
     }

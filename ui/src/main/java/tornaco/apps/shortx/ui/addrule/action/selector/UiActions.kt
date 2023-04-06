@@ -115,7 +115,8 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
             val action = Action.ShowOverlay(
                 id = buttonSettings.id,
                 autoCollapse = buttonSettings.autoCollapse,
-                settings = buttonSettings.items.map { it.toOverlayButtonSetting() }
+                settings = buttonSettings.items.map { it.toOverlayButtonSetting() },
+                tag = buttonSettings.tag
             )
             addAction(action)
         }

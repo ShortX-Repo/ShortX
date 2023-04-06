@@ -30,7 +30,7 @@ fun MediumTitle(text: String) {
         modifier = Modifier.padding(vertical = 12.dp),
         text = text,
         style = MaterialTheme.typography.titleMedium.copy(
-            fontWeight = FontWeight.W600,
+            fontWeight = FontWeight.W500,
             fontSize = 18.sp
         )
     )
@@ -42,8 +42,8 @@ fun SmallTitle(text: String) {
         modifier = Modifier.padding(vertical = 12.dp),
         text = text,
         style = MaterialTheme.typography.titleSmall.copy(
-            fontWeight = FontWeight.W600,
-            fontSize = 16.sp
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp
         )
     )
 }

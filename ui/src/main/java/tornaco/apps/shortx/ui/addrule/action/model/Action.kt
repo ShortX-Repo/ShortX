@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule.action.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import lang3.RandomStringUtils
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.*
@@ -69,7 +68,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         val autoCollapse: Boolean,
         val settings: List<OverlayButtonSetting>,
-        val tag: String = RandomStringUtils.randomAlphabetic(8).lowercase()
+        val tag: String
     ) : Action
 
     @Parcelize
@@ -267,8 +266,12 @@ fun Action.toProtoAction(): ProtoMessage {
             HideOverlayButton.newBuilder().setId(id).addAllOverlayTags(tags).build()
         }
         is Action.ShowOverlay -> {
-            ShowOverlayButton.newBuilder().setId(id).setAutoCollapse(autoCollapse)
-                .addAllButtonSettings(settings).build()
+            ShowOverlayButton.newBuilder()
+                .setId(id)
+                .setAutoCollapse(autoCollapse)
+                .setTag(tag)
+                .addAllButtonSettings(settings)
+                .build()
         }
         is Action.LaunchApp -> {
             LaunchApp.newBuilder().setId(id).setAppPkg(appPkg).build()
@@ -414,7 +417,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowOverlay(
                 id = data.id,
                 autoCollapse = data.autoCollapse,
-                settings = data.buttonSettingsList
+                settings = data.buttonSettingsList,
+                tag = data.tag
             )
         }
         this is_ HideOverlayButton::class.java -> {
