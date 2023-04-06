@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.TouchApp
@@ -51,12 +48,17 @@ fun HomeScreen() {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                BottomNavigationGraph(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f, fill = false),
-                    navController = navController
-                )
+                        .weight(1f, fill = false)
+                ) {
+                    BottomNavigationGraph(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        navController = navController
+                    )
+                }
 
                 BottomNavigationContent(
                     modifier = Modifier
