@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui
+package tornaco.apps.shortx.ui.demo
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,7 +51,7 @@ private fun createNotificationChannelIfNeed(context: Context) {
 }
 
 @Composable
-fun ColumnScope.NotificationDemo() {
+fun NotificationDemo() {
     val context = LocalContext.current
     FilledTonalButton(onClick = {
         mockNotification(
