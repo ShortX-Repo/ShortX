@@ -25,6 +25,7 @@ object MapUtils {
                         longitude + "&title=" + title + "&content=" + content + "&traffic=on"
             )
         )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -55,6 +56,7 @@ object MapUtils {
                         "&bounds=" + lLatitude + "," + lLongitude + "," + rLatitude + "," + rLongitude)
             )
         )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -69,6 +71,7 @@ object MapUtils {
             "android.intent.action.VIEW",
             Uri.parse("baidumap://map/navi?location=$latitude,$longitude")
         )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -92,6 +95,7 @@ object MapUtils {
                         "mode=transit&sy=0&index=0&target=0")
             )
         )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -120,6 +124,7 @@ object MapUtils {
             )
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -143,6 +148,7 @@ object MapUtils {
             )
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -157,6 +163,7 @@ object MapUtils {
             Uri.parse("androidamap://myLocation?sourceApplication=$appName")
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -170,7 +177,7 @@ object MapUtils {
     fun openGaodeNaviMap(
         context: Context,
         appName: String,
-        poiname: String,
+        poiName: String,
         latitude: String,
         longitude: String
     ) {
@@ -178,10 +185,11 @@ object MapUtils {
             "android.intent.action.VIEW",
             Uri.parse(
                 ("androidamap://navi?sourceApplication=" + appName + "&poiname=" +
-                        poiname + "&lat=" + latitude + "&lon=" + longitude + "&dev=1&style=2")
+                        poiName + "&lat=" + latitude + "&lon=" + longitude + "&dev=1&style=2")
             )
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -199,6 +207,7 @@ object MapUtils {
             Uri.parse("androidamap://bus?sourceApplication=$appName&busname=$busName&city=$city")
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -213,6 +222,7 @@ object MapUtils {
             Uri.parse("androidamap://rootmap?sourceApplication=$appName")
         )
         intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 }

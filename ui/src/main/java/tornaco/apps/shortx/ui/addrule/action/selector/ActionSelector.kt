@@ -15,13 +15,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.Icon
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: ImageVector) {
     Ui("UI", Icons.Outlined.Preview),
     Apps("ui.action.category.app", Icons.Outlined.Apps),
     Settings("ui.action.system.settings", Icons.Outlined.ToggleOn),
+    Life("ui.action.life", Icons.Outlined.DirectionsBike),
     Advanced("ui.action.advanced", Icons.Outlined.Extension),
     Remote("ui.action.remote", Icons.Outlined.Cloud)
 }
@@ -125,6 +129,9 @@ private fun ActionSelector(
                             }
                             ActionCategory.Advanced.ordinal -> {
                                 ExtActions(addAction = addAction)
+                            }
+                            ActionCategory.Life.ordinal -> {
+                                LifeActions(addAction = addAction)
                             }
                             ActionCategory.Remote.ordinal -> {
                                 RemoteActions(addAction = addAction)

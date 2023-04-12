@@ -219,3 +219,21 @@ message AddToGlobalVar {
 
   string id = 100;
 }
+
+message MapNav {
+  Location loc = 1;
+  string poi = 2;
+  MapApp app = 3;
+
+  string id = 100;
+}
+
+enum MapApp {
+  Baidu = 0;
+  Gaode = 1;
+}
+
+message Location {
+  string latitude = 1;
+  string longitude = 2;
+}

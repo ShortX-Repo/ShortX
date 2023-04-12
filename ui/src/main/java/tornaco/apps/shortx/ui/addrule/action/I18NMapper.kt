@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
@@ -86,6 +87,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
+        Action.MapNav::class -> i18N["ui.action.map.nav"] to null
 
         else -> {
             "N/A" to null
@@ -233,6 +235,20 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.valueAsString
             )
         }
+        is Action.MapNav -> listOf(
+            i18N["ui.action.map.nav"],
+            when (action.mapApp) {
+                MapApp.Gaode -> {
+                    i18N["ui.action.map.gaode"]
+                }
+                MapApp.Baidu -> {
+                    i18N["ui.action.map.baidu"]
+                }
+                else -> {
+                    "N/A"
+                }
+            }
+        )
     }
 }
 
@@ -363,6 +379,9 @@ fun imageVectorForAction(action: KClass<out Action>): ImageVector {
         }
         Action.WriteGV::class -> {
             Icons.Outlined.Edit
+        }
+        Action.MapNav::class -> {
+            Icons.Outlined.Navigation
         }
 
         else -> {

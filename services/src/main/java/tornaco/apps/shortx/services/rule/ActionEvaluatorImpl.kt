@@ -14,6 +14,8 @@ import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.MapUtils
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.actor.ShowDialog
@@ -212,6 +214,32 @@ class ActionEvaluatorImpl(
                     shortXContext.rule.addGlobalVar(
                         GlobalVar.newBuilder(globalVar).setVar(it).build()
                     )
+                }
+            }
+        } else if (action is_ MapNav::class.java) {
+            val d = action unpack_ MapNav::class.java
+            val app = d.app
+            if (app == MapApp.Baidu) {
+                kotlin.runCatching {
+                    MapUtils.openBaiduNaviMap(
+                        context = context,
+                        longitude = d.loc.longitude.toString(),
+                        latitude = d.loc.latitude.toString()
+                    )
+                }.onFailure {
+                    logger.e(it, "Baidu Nav error")
+                }
+            } else if (app == MapApp.Gaode) {
+                kotlin.runCatching {
+                    MapUtils.openGaodeNaviMap(
+                        context = context,
+                        appName = "ShortX",
+                        poiName = d.poi.fallbackOnEmpty("Destination"),
+                        latitude = d.loc.latitude.toString(),
+                        longitude = d.loc.longitude.toString()
+                    )
+                }.onFailure {
+                    logger.e(it, "Gaode Nav error")
                 }
             }
         }

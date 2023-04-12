@@ -227,6 +227,15 @@ sealed interface Action : Parcelable {
         val varId: String,
         val varName: String
     ) : Action
+
+    @Parcelize
+    data class MapNav(
+        override val id: String = defaultNewActionId(),
+        val latitude: String,
+        val longitude: String,
+        val poi: String,
+        val mapApp: MapApp
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -373,6 +382,19 @@ fun Action.toProtoAction(): ProtoMessage {
                 .setId(id)
                 .setVarId(varId)
                 .setValueAsString(valueAsString)
+                .build()
+        }
+        is Action.MapNav -> {
+            MapNav.newBuilder()
+                .setId(id)
+                .setApp(mapApp)
+                .setLoc(
+                    Location.newBuilder()
+                        .setLatitude(latitude)
+                        .setLongitude(longitude)
+                        .build()
+                )
+                .setPoi(poi)
                 .build()
         }
     }
@@ -614,6 +636,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 varId = data.varId,
                 valueAsString = data.valueAsString,
                 varName = shortXManager.getGlobalVarById(data.varId)?.name ?: "N/A"
+            )
+        }
+        this is_ MapNav::class.java -> {
+            val data = this unpack_ MapNav::class.java
+            Action.MapNav(
+                id = data.id,
+                longitude = data.loc.longitude,
+                latitude = data.loc.latitude,
+                poi = data.poi,
+                mapApp = data.app
             )
         }
 

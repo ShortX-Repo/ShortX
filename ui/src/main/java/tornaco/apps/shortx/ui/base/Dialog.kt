@@ -35,7 +35,6 @@ import androidx.compose.ui.window.DialogProperties
 import tornaco.apps.shortx.core.shortXManager
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ShortFullScreenXDialog(
     onDismissRequest: () -> Unit,

@@ -123,7 +123,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateIcon(index, it)
             }
-            MDIconSelector(state = iconSelector)
+            MDIconSelectorDialog(state = iconSelector)
 
             OutlinedCard(
                 modifier = Modifier,

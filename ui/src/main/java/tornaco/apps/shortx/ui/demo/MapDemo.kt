@@ -13,7 +13,7 @@ fun MapDemo() {
         MapUtils.openGaodeNaviMap(
             context = context,
             appName = "shortx",
-            poiname = "poi",
+            poiName = "poi",
             latitude = "34.34",
             longitude = "108.94"
         )
