@@ -14,12 +14,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
+const val BAIDU_LOC_PICK_URL = "http://api.map.baidu.com/lbsapi/getpoint/index.html"
+const val GAODE_LOC_PICK_URL = "https://lbs.amap.com/tools/picker"
 
 class MapNavDialogState(
     val onSelected: (Action.MapNav) -> Unit
@@ -57,17 +62,17 @@ fun MapNavDialog(state: MapNavDialogState) {
 
 @Composable
 private fun MapNavSelector(dialogState: MapNavDialogState) {
-    var latitude by remember {
-        mutableStateOf("")
+    var latitude by remember(dialogState.currentSettings) {
+        mutableStateOf(dialogState.currentSettings?.latitude ?: "")
     }
-    var longitude by remember {
-        mutableStateOf("")
+    var longitude by remember(dialogState.currentSettings) {
+        mutableStateOf(dialogState.currentSettings?.longitude ?: "")
     }
-    var poi by remember {
-        mutableStateOf("")
+    var poi by remember(dialogState.currentSettings) {
+        mutableStateOf(dialogState.currentSettings?.poi ?: "")
     }
-    var mapApp by remember {
-        mutableStateOf(MapApp.Gaode)
+    var mapApp by remember((dialogState.currentSettings)) {
+        mutableStateOf(dialogState.currentSettings?.mapApp ?: MapApp.Gaode)
     }
 
     ShortXTheme {
@@ -118,27 +123,36 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     TipBody(i18N["ui.action.map.nav"])
-                    FilledTonalButton(onClick = {
+
+                    ListItem(title = when (mapApp) {
+                        MapApp.Gaode -> {
+                            i18N["ui.action.map.gaode"]
+                        }
+                        MapApp.Baidu -> {
+                            i18N["ui.action.map.baidu"]
+                        }
+                        else -> {
+                            "N/A"
+                        }
+                    }, onClick = {
                         mapApp = if (mapApp == MapApp.Baidu) {
                             MapApp.Gaode
                         } else {
                             MapApp.Baidu
                         }
-                    }) {
-                        Text(
-                            text = when (mapApp) {
-                                MapApp.Gaode -> {
-                                    i18N["ui.action.map.gaode"]
-                                }
-                                MapApp.Baidu -> {
-                                    i18N["ui.action.map.baidu"]
-                                }
-                                else -> {
-                                    "N/A"
-                                }
+                    }, action1 = {
+                        val context = LocalContext.current
+                        FilledTonalButton(onClick = {
+                            if (mapApp == MapApp.Gaode) {
+                                BrowserUtils.launch(context, GAODE_LOC_PICK_URL)
+                            } else {
+                                BrowserUtils.launch(context, BAIDU_LOC_PICK_URL)
                             }
-                        )
-                    }
+
+                        }) {
+                            Text(i18N["ui.action.map.nav.pick.loc"])
+                        }
+                    })
                     StandardSpacer()
                     StandardSpacer()
 
@@ -152,7 +166,6 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         onValueChange = {
                             latitude = it
                         })
-                    StandardSpacer()
                     StandardSpacer()
 
                     TipBody(i18N["ui.action.map.nav.longitude"])

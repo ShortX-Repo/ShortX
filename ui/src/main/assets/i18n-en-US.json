@@ -127,6 +127,7 @@
   "ui.action.map.nav": "Quick map navigation",
   "ui.action.map.nav.longitude": "Longitude",
   "ui.action.map.nav.latitude": "Latitude",
+  "ui.action.map.nav.pick.loc": "Pick location",
   "ui.action.map.baidu": "Baidu Map",
   "ui.action.map.gaode": "Gaode Map",
   "ui.action.map.poi": "Poi (optional)",

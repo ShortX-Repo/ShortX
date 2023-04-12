@@ -21,6 +21,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
+import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 
 @Composable
 fun ActionContent(
@@ -32,7 +34,20 @@ fun ActionContent(
     actions: List<Action>,
     sortActions: (List<Action>) -> Unit = {},
 ) {
-    val subSelectorStates = uiActionSubSelectors(addAction)
+    val uiActionSubSelectorStates = uiActionSubSelectors(addAction)
+
+    val mvelEditorState = rememberCodeEditorState(
+        title = LocalI18N.current["ui.title.mvel"],
+        onSelected = {
+            addAction(Action.MVEL(expression = it))
+        }
+    )
+    CodeEditorDialog(state = mvelEditorState)
+
+    val mapNavDialogState = rememberMapNavDialogState {
+        addAction(it)
+    }
+    MapNavDialog(state = mapNavDialogState)
 
     Actions(
         header = header,
@@ -50,16 +65,19 @@ fun ActionContent(
                         items = action.settings.map { it.toOverlayButtonItem() },
                         tag = action.tag
                     )
-                    subSelectorStates.overlayButtonState.show(currentSettings)
+                    uiActionSubSelectorStates.overlayButtonState.show(currentSettings)
                 }
                 is Action.ShowAlertDialog -> {
-                    subSelectorStates.showDialogSettingsState.show(action)
+                    uiActionSubSelectorStates.showDialogSettingsState.show(action)
                 }
                 is Action.ShowDanmu -> {
-                    subSelectorStates.showDanmuSettingsState.show(action)
+                    uiActionSubSelectorStates.showDanmuSettingsState.show(action)
                 }
                 is Action.MVEL -> {
-                    subSelectorStates.mvelEditorState.show(action.expression)
+                    mvelEditorState.show(action.expression)
+                }
+                is Action.MapNav -> {
+                    mapNavDialogState.show(action)
                 }
                 else -> {}
             }

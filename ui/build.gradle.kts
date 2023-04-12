@@ -84,12 +84,13 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0-beta01")
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.0")
     // Note: Do not upgrade this lib, ComposeOverlay.
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.browser:browser:1.5.0")
 
     // Import the Compose BOM
     implementation(platform("androidx.compose:compose-bom:$bomVersion"))
