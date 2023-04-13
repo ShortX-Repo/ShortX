@@ -1,0 +1,3 @@
+[submodule "RemixIcon"]
+	path = RemixIcon
+	url = git@github.com:Tornaco/RemixIcon.git
