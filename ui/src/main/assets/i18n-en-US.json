@@ -50,6 +50,7 @@
   "ui.update.time": "Last update: {date}",
   "ui.common.delete": "Delete",
   "ui.common.edit": "Edit",
+  "ui.common.create.shortcut": "Create shortcut",
   "ui.common.share": "Share",
   "ui.common.settings": "Settings",
   "ui.common.long.press.sort": "Press to sort",

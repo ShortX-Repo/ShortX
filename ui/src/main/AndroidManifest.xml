@@ -23,6 +23,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".shortcut.ActionShortcutActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@style/UiTheme.Shortcut" />
+
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"

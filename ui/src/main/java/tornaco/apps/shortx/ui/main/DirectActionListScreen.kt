@@ -14,10 +14,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.StopCircle
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 const val EXECUTE_ANIM_DURATION = 600
@@ -315,6 +313,8 @@ private fun ListItemOverflowMenu(
     onEdit: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
         state = deleteDialogState,
@@ -332,6 +332,11 @@ private fun ListItemOverflowMenu(
         }
 
         DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
+                data = "shortcut",
+                icon = {
+                    Icon(imageVector = Icons.Outlined.Shortcut, contentDescription = "Shortcut")
+                }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                 data = "edit",
                 icon = {
@@ -349,6 +354,10 @@ private fun ListItemOverflowMenu(
                 })
         ), onSelect = {
             when (it.data) {
+                "shortcut" -> {
+                    da.icon
+                    ActionShortcutActivity.addShortcut(context, da)
+                }
                 "delete" -> {
                     deleteDialogState.show()
                 }

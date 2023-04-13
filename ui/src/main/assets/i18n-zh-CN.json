@@ -50,6 +50,7 @@
   "ui.update.time": "更新时间：{date}",
   "ui.common.delete": "删除",
   "ui.common.edit": "编辑",
+  "ui.common.create.shortcut": "桌面快捷方式",
   "ui.common.share": "分享",
   "ui.common.settings": "设置",
   "ui.common.long.press.sort": "长按拖动排序",
