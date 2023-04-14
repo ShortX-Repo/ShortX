@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LoadError
-import tornaco.apps.shortx.ui.base.MDIcons
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -61,7 +60,7 @@ private fun ActionContent(
                 Item(
                     type = Action.RemoteMVEL::class,
                     labelAndDescription = it.title to it.description,
-                    icon = MDIcons.outlined(it.icon),
+                    icon = it.icon,
                     data = it
                 )
             }

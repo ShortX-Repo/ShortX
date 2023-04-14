@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -113,7 +113,7 @@ private fun Actions(
                 IconButton(onClick = {
                     actionSortDialogState.show()
                 }) {
-                    Icon(imageVector = Icons.Outlined.Sort)
+                    RemixIcon(Remix.Editor.sort_asc)
                 }
             }
         }
@@ -129,7 +129,7 @@ private fun Actions(
                     titleLines = labelLinesForAction(action = it),
                     icon = {
                         ColoredIcon(size = 36.dp) {
-                            Icon(imageVector = imageVectorForAction(action = it::class))
+                            RemixIcon(remixName = imageVectorForAction(action = it::class))
                         }
                     },
                     action1 = {

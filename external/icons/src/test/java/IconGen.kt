@@ -79,7 +79,13 @@ class IconGen {
         val all = mapOf(
                 ${iconMap.map { "\"${it.key}\" to remixIcons${it.key}" }.joinToString(",\n")}
             )
+            
+            
+        val allFlat = all.flattenMap()
+
+
         }
+                
     """.trimIndent()
 
         println(kotlinFileCode)

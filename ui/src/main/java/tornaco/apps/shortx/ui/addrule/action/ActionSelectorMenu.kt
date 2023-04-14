@@ -3,9 +3,9 @@
 package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -26,7 +26,7 @@ fun ActionSelectorMenu(
             Action.ShowToast::class,
             "UI"
         ) {
-            icon(Icons.Outlined.Preview)
+            icon(Remix.Communication.message_3_line)
 
             item(
                 Action.TakeScreenshot::class,
@@ -49,7 +49,7 @@ fun ActionSelectorMenu(
             Action.ShellCommand::class,
             i18N["ui.action.advanced"]
         ) {
-            icon(Icons.Outlined.Extension)
+            icon(Remix.System.function_line)
 
             item(
                 Action.ShellCommand::class,
@@ -98,7 +98,7 @@ fun ActionSelectorMenu(
             Action.EnableWifi::class,
             i18N["ui.action.system.settings"]
         ) {
-            icon(Icons.Outlined.ToggleOn)
+            icon(Remix.System.settings_4_line)
             systemSettingsItems(i18N)
         }
     }
@@ -118,7 +118,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.appItems(
         Action.LaunchApp::class,
         i18N["ui.action.category.app"]
     ) {
-        icon(Icons.Outlined.Apps)
+        icon(Remix.System.apps_line)
 
         arrayOf(
             Action.LaunchApp::class,
@@ -146,7 +146,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableWifi::class,
         i18N["ui.action.wifi"]
     ) {
-        icon(Icons.Outlined.Wifi)
+        icon(Remix.Device.wifi_line)
 
         item(
             Action.EnableWifi::class,
@@ -167,7 +167,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableBT::class,
         i18N["ui.action.bt"]
     ) {
-        icon(Icons.Outlined.Bluetooth)
+        icon(Remix.Device.bluetooth_line)
 
         item(
             Action.EnableBT::class,
@@ -189,7 +189,8 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableData::class,
         i18N["ui.action.data"]
     ) {
-        icon(Icons.Outlined.SignalCellular0Bar)
+        // TODO Icon
+        icon(Remix.Device.wifi_line)
 
         item(
             Action.EnableData::class,
@@ -210,7 +211,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableHotSpot::class,
         i18N["ui.action.hotspot"]
     ) {
-        icon(Icons.Outlined.WifiTethering)
+        icon(Remix.Device.hotspot_line)
 
         item(
             Action.EnableHotSpot::class,
@@ -231,7 +232,8 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableNFC::class,
         i18N["ui.action.nfc"]
     ) {
-        icon(Icons.Outlined.Nfc)
+        // TODO Icon
+        icon(Remix.Device.wifi_line)
 
         item(
             Action.EnableNFC::class,
@@ -252,7 +254,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableDND::class,
         i18N["ui.action.dnd"]
     ) {
-        icon(Icons.Outlined.DoNotDisturb)
+        icon(Remix.Weather.moon_line)
 
         item(
             Action.EnableDND::class,
@@ -273,7 +275,8 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableFlashLight::class,
         i18N["ui.action.flashlight"]
     ) {
-        icon(Icons.Outlined.FlashlightOn)
+        icon(Remix.Others.lightbulb_flash_line)
+
 
         item(
             Action.EnableFlashLight::class,
@@ -294,7 +297,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableDarkMode::class,
         i18N["ui.action.dark.mode"]
     ) {
-        icon(Icons.Outlined.DarkMode)
+        icon(Remix.Weather.sun_line)
 
         item(
             Action.EnableDarkMode::class,

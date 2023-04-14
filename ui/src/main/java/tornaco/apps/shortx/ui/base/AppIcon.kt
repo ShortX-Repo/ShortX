@@ -17,8 +17,6 @@
 
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -35,7 +33,7 @@ fun AppIcon(modifier: Modifier, pkg: AppPkg) {
         imageModel = pkg,
         // Crop, Fit, Inside, FillHeight, FillWidth, None
         contentScale = ContentScale.Crop,
-        error = Icons.Filled.Android,
+        error = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_android_fill,
         requestBuilder = {
             GlideApp.with(LocalContext.current.applicationContext).asDrawable()
                 .transition(withCrossFade())

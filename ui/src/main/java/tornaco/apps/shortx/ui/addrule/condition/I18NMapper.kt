@@ -1,14 +1,13 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import kotlin.reflect.KClass
 
 @Composable
@@ -58,18 +57,18 @@ fun labelForCondition(condition: Condition): List<String> {
 fun IconForConditionSelector(condition: KClass<out Condition>) {
     when (condition) {
         Condition.CurrentForegroundApp::class -> {
-            Icon(
-                imageVector = Icons.Filled.Android, contentDescription = "CurrentForegroundApp"
+            RemixIcon(
+                remixName = Remix.Logos.android_line
             )
         }
         Condition.MVEL::class -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            RemixIcon(
+                remixName = Remix.Development.code_line
             )
         }
         Condition.TRUE::class -> {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
+            RemixIcon(
+                remixName = Remix.System.check_line
             )
         }
     }
@@ -80,18 +79,18 @@ fun IconForConditionSelector(condition: KClass<out Condition>) {
 fun IconForCondition(condition: Condition) {
     when (condition) {
         is Condition.CurrentForegroundApp -> {
-            Icon(
-                imageVector = Icons.Filled.Android, contentDescription = "CurrentForegroundApp"
+            RemixIcon(
+                remixName = Remix.Logos.android_line
             )
         }
         is Condition.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            RemixIcon(
+                remixName = Remix.Development.code_line
             )
         }
         Condition.TRUE -> {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle, contentDescription = "True"
+            RemixIcon(
+                remixName = Remix.System.check_line
             )
         }
     }
@@ -141,25 +140,26 @@ fun opDescription(op: Op): List<String> {
 fun IconForOp(op: Op) {
     when (op) {
         Op.All -> {
-            Icon(
-                imageVector = Icons.Filled.SelectAll, contentDescription = "All"
+            RemixIcon(
+                remixName = Remix.System.check_double_line
             )
         }
         Op.Any -> {
-            Icon(
-                imageVector = Icons.Filled.Analytics, contentDescription = "Any"
+            RemixIcon(
+                remixName = Remix.System.check_double_line
             )
         }
 
         Op.None -> {
-            Icon(
-                imageVector = Icons.Filled.InsertInvitation, contentDescription = "None"
+            // TODO Icon
+            RemixIcon(
+                remixName = Remix.System.check_double_line
             )
         }
 
         is Op.MVEL -> {
-            Icon(
-                imageVector = Icons.Filled.Code, contentDescription = "MVEL"
+            RemixIcon(
+                remixName = Remix.Development.code_line
             )
         }
     }

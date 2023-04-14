@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,12 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import github.tornaco.shortx.android.icon.Remix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.ColorDefaults
-import tornaco.apps.shortx.ui.base.MDIcons
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
 
@@ -123,12 +122,11 @@ fun OverlayContent(
                         .clickable {
                             expandState.expand()
                         }) {
-                        Icon(
+                        RemixIcon(
                             modifier = Modifier
                                 .size(16.dp)
                                 .align(Alignment.Center),
-                            imageVector = Icons.Filled.ExpandMore,
-                            contentDescription = "Expand"
+                            remixName = Remix.Arrows.arrow_drop_down_line,
                         )
                     }
                 }
@@ -180,7 +178,7 @@ fun OverlayContent(
 
 @Composable
 private fun IconForButton(icon: String) {
-    Icon(imageVector = MDIcons.filled(icon), contentDescription = icon)
+    RemixIcon(remixName = icon)
 }
 
 @Composable

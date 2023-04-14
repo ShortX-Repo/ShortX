@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
@@ -252,7 +253,7 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                         titleLines = labelForFact(fact = it),
                         icon = {
                             ColoredIcon(size = 36.dp) {
-                                Icon(imageVector = imageVectorForFact(it::class))
+                                RemixIcon(remixName = imageVectorForFact(it::class))
                             }
                         },
                         action1 = {
@@ -362,7 +363,7 @@ private fun FactSelectorMenu(
             Fact.WifiStatusChanged::class,
             i18N["ui.fact.system.settings"] to null
         ) {
-            icon(Icons.Outlined.Settings)
+            icon(Remix.System.settings_3_line)
 
             listOf(
                 Fact.WifiStatusChanged::class,

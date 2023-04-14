@@ -1,21 +1,19 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoMode
-import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -25,12 +23,17 @@ enum class HomeBottomRoute {
 }
 
 sealed class BottomNavItem(
-    var title: String, var icon: ImageVector, var screenRoute: HomeBottomRoute
+    var title: String, var icon: String, var screenRoute: HomeBottomRoute
 ) {
-    object Rules : BottomNavItem("ui.feat.label.rule", Icons.Filled.AutoMode, HomeBottomRoute.Rules)
+    object Rules :
+        BottomNavItem("ui.feat.label.rule", Remix.Weather.sparkling_line, HomeBottomRoute.Rules)
 
     object DirectActions :
-        BottomNavItem("ui.feat.label.da", Icons.Filled.TouchApp, HomeBottomRoute.DirectActions)
+        BottomNavItem(
+            "ui.feat.label.da",
+            Remix.Weather.sparkling_line,
+            HomeBottomRoute.DirectActions
+        )
 }
 
 
@@ -83,7 +86,7 @@ private fun BottomNavigationContent(
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(icon = {
-                Icon(imageVector = item.icon, contentDescription = item.title)
+                RemixIcon(remixName = item.icon)
             },
                 label = {
                     Text(text = LocalI18N.current[item.title], fontSize = 9.sp)

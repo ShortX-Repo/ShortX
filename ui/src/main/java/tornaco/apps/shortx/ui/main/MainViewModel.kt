@@ -2,13 +2,10 @@ package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Commit
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import github.tornaco.shortx.android.icon.Remix
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
@@ -41,8 +38,8 @@ data class RuleUM(
     val updateTime: String,
     val createTime: String,
     val isEnabled: Boolean,
-    val factIcon: ImageVector,
-    val actionIcon: ImageVector,
+    val factIcon: String,
+    val actionIcon: String,
 )
 
 data class DirectActionUM(
@@ -51,7 +48,7 @@ data class DirectActionUM(
     val description: String,
     val updateTime: String,
     val createTime: String,
-    val icon: ImageVector,
+    val icon: String,
     val runningInsCount: Int
 )
 
@@ -154,12 +151,12 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                                 imageVectorForFact(
                                     it::class
                                 )
-                            } ?: Icons.Outlined.AutoAwesome,
+                            } ?: Remix.Weather.sparkling_line,
                             actionIcon = firstAction?.let {
                                 imageVectorForAction(
                                     it::class
                                 )
-                            } ?: Icons.Outlined.AutoAwesome,
+                            } ?: Remix.Weather.sparkling_line,
                         )
                     }
                 updateState {
@@ -234,7 +231,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                                 imageVectorForAction(
                                     it::class
                                 )
-                            } ?: Icons.Outlined.Commit,
+                            } ?: Remix.Weather.sparkling_line,
                             runningInsCount = activeJobs.count {
                                 it == directAction.id
                             }

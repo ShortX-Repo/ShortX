@@ -3,8 +3,6 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MobileFriendly
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -17,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.Pkg
 
 const val PREFIX_APP_ICON = "app_icon://"
@@ -66,9 +65,9 @@ fun ListItem(
                         } else if (it.contains(PREFIX_MD_ICON)) {
                             val iconName = it.substringAfter(PREFIX_MD_ICON)
                             Row(verticalAlignment = CenterVertically) {
-                                Icon(
+                                RemixIcon(
                                     modifier = Modifier.size(16.dp),
-                                    imageVector = MDIcons.outlined(iconName)
+                                    remixName = iconName
                                 )
                                 SmallSpacer()
                                 Text(
@@ -306,7 +305,7 @@ fun ListItem3Preview() {
                 onClick = {},
                 action1 = {
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.MobileFriendly)
+                        RemixIcon(remixName = Remix.System.alarm_warning_line)
                     }
                 }
             )

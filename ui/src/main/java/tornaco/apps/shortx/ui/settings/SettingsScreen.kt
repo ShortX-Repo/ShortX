@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import github.tornaco.shortx.android.icon.Remix
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
@@ -175,7 +176,7 @@ private fun generalSettings(
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
-    Preference.TextPreference(icon = Icons.Outlined.Apps,
+    Preference.TextPreference(icon = Remix.System.apps_line,
         title = LocalI18N.current["ui.pkg.set.title"],
         summary = LocalI18N.current["ui.pkg.set.desc"],
         onClick = {
@@ -183,7 +184,7 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Icons.Outlined.DataArray,
+    Preference.TextPreference(icon = Remix.Document.file_list_line,
         title = LocalI18N.current["ui.global.var.title"],
         summary = LocalI18N.current["ui.global.var.desc"],
         onClick = {
@@ -191,7 +192,7 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Icons.Outlined.Message,
+    Preference.TextPreference(icon = Remix.Communication.message_line,
         title = "Danmu settings",
         onClick = {
             goToDanmuUISettings()
@@ -208,7 +209,8 @@ private fun dataSettings(
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.data"]),
     Preference.TextPreference(
-        icon = Icons.Outlined.Backup,
+        // TODO Icon
+        icon = Remix.System.settings_3_line,
         title = LocalI18N.current["ui.settings.data.backup.title"],
         summary = LocalI18N.current["ui.settings.data.backup.summary"],
         onClick = {
@@ -216,7 +218,8 @@ private fun dataSettings(
         }
     ),
     Preference.TextPreference(
-        icon = Icons.Outlined.Restore,
+        // TODO Icon
+        icon = Remix.System.settings_3_line,
         title = LocalI18N.current["ui.settings.data.restore.title"],
         summary = LocalI18N.current["ui.settings.data.restore.summary"],
         onClick = {
@@ -224,7 +227,8 @@ private fun dataSettings(
         }
     ),
     Preference.TextPreference(
-        icon = Icons.Outlined.LockReset,
+        // TODO Icon
+        icon = Remix.System.settings_3_line,
         title = LocalI18N.current["ui.settings.data.reset.title"],
         summary = LocalI18N.current["ui.settings.data.reset.summary"],
         onClick = {
@@ -240,7 +244,8 @@ private fun devSettings(
 ) = mutableListOf(
     Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
-    Preference.SwitchPreference(icon = Icons.Outlined.DeveloperMode,
+    // TODO Icon
+    Preference.SwitchPreference(icon = Remix.Development.code_box_line,
         title = LocalI18N.current["ui.settings.enable.debug.log"],
         summary = LocalI18N.current["ui.settings.enable.debug.log.description"],
         value = state.isDebugLogEnabled,
@@ -250,7 +255,7 @@ private fun devSettings(
 ).apply {
     if (BuildProp.APP_IS_DEBUG) {
         add(Preference.TextPreference(
-            icon = Icons.Outlined.Download,
+            icon = Remix.System.download_line,
             title = "Import prebuilt data",
             summary = "Include prebuilt direct actions and rules.",
             onClick = {
@@ -259,7 +264,7 @@ private fun devSettings(
         ))
 
         add(Preference.SwitchPreference(
-            icon = Icons.Outlined.Insights,
+            icon = Remix.Device.install_line,
             title = "Install fake service",
             summary = "For debug purpose, restart app to take effect",
             value = state.installFakeService,
@@ -278,11 +283,11 @@ private fun aboutSettings(
     Preference.Category(LocalI18N.current["ui.settings.about"]),
 
     Preference.ExpandablePreference(
-        icon = Icons.Outlined.Info,
+        icon = Remix.System.information_line,
         title = LocalI18N.current["ui.settings.app.info"],
         summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
         preferences = listOf(
-            Preference.TextPreference(icon = Icons.Outlined.Extension,
+            Preference.TextPreference(icon = Remix.Device.instance_line,
                 title = LocalI18N.current["ui.settings.core.info"],
                 summary = if (state.isActivated) {
                     "${state.coreVersion.name}\n${state.coreVersion.code}"
@@ -294,7 +299,7 @@ private fun aboutSettings(
         ),
     ),
 
-    Preference.TextPreference(icon = Icons.Outlined.Extension,
+    Preference.TextPreference(icon = Remix.Logos.open_source_line,
         title = LocalI18N.current["ui.settings.open.source.license"],
         onClick = {
             viewOpenSourceLicense()

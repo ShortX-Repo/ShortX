@@ -24,10 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.base.AppIcon
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -90,23 +87,20 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                     contentPadding = paddingValues
                 ) {
                     stickyHeader {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp, top = 16.dp),
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.TextFields,
-                                    contentDescription = ""
-                                )
-                            },
-                            label = {
-                                Text(LocalI18N.current["ui.pkg.set.add.input.label"])
-                            },
-                            value = state.label,
-                            onValueChange = { value ->
-                                vm.updateLabel(value)
-                            })
+                        Column {
+                            TipBody(text = LocalI18N.current["ui.pkg.set.add.input.label"])
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp, top = 16.dp),
+                                placeholder = {
+                                    Text(LocalI18N.current["ui.pkg.set.add.input.label"])
+                                },
+                                value = state.label,
+                                onValueChange = { value ->
+                                    vm.updateLabel(value)
+                                })
+                        }
                     }
 
                     items(state.apps) {

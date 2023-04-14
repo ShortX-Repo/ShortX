@@ -9,7 +9,7 @@ class MenuItem<T : Any> {
     lateinit var title: String
     var description: String? = null
 
-    var icon: ImageVector? = null
+    var icon: String? = null
 
     var parent: MenuItem<T>? = null
 

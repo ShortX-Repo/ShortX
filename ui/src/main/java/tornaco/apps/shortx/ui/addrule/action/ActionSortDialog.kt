@@ -76,7 +76,7 @@ fun ActionSortDialog(state: ActionSortState) {
                             modifier = Modifier.scale(scale.value),
                             titleLines = labelLinesForAction(action = item),
                             icon = {
-                                Icon(imageVector = imageVectorForAction(action = item::class))
+                                RemixIcon(remixName = imageVectorForAction(action = item::class))
                             }
                         )
                     }

@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.ui.R
 
 @Composable
 fun ColoredIcon(
@@ -54,3 +57,22 @@ fun Icon(
         contentDescription = "Icon"
     )
 }
+
+@Composable
+fun RemixIcon(
+    remixName: String,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current
+) {
+    androidx.compose.material3.Icon(
+        modifier = modifier,
+        painter = painterResource(
+            id = allFlat[remixName] ?: R.drawable.ui_ic_baseline_developer_mode_24
+        ),
+        tint = tint,
+        contentDescription = "Icon"
+    )
+}
+
+val allFlat: Map<String, Int> =
+    Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }

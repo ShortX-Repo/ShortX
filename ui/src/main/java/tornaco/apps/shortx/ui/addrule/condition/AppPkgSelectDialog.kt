@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.base.*
@@ -179,7 +179,7 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
         items(state.pkgSets) {
             ListItem(
                 icon = {
-                    Icon(imageVector = Icons.Outlined.Folder)
+                    RemixIcon(remixName = Remix.Document.folder_2_line)
                 },
                 titleLines = listOf(
                     it.label,

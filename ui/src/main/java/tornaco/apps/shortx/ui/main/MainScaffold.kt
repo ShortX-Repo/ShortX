@@ -10,9 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ContentPaste
-import androidx.compose.material.icons.outlined.FileCopy
-import androidx.compose.material.icons.outlined.TipsAndUpdates
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.util.AssetUtils
@@ -131,9 +129,9 @@ fun MainScaffold(
                                 .padding(16.dp)
                         ) {
                             Row {
-                                Icon(
+                                RemixIcon(
                                     modifier = Modifier.offset(y = 2.dp),
-                                    imageVector = Icons.Outlined.TipsAndUpdates
+                                    remixName = Remix.System.alarm_warning_line
                                 )
                                 MediumSpacer()
                                 Text(
@@ -244,13 +242,15 @@ private fun Fab(
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
-            id = "file", icon = Icons.Outlined.FileCopy, label = "File"
-        ), MultiFabItem(
+            id = "file", icon = Remix.Document.file_line, label = "File"
+        ),
+        MultiFabItem(
             id = "clipboard",
-            icon = Icons.Outlined.ContentPaste,
+            icon = Remix.Document.clipboard_line,
             label = LocalI18N.current["ui.common.share.clipboard"]
-        ), MultiFabItem(
-            id = "new", icon = Icons.Outlined.Add, label = "New"
+        ),
+        MultiFabItem(
+            id = "new", icon = Remix.System.add_line, label = "New"
         )
     )
     MultiFloatingActionButton(

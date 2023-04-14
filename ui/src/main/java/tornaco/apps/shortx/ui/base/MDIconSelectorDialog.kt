@@ -14,11 +14,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.ui.base.MDIcons.filled
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class MDIconSelectorState(val onSelected: (String) -> Unit) {
@@ -57,6 +58,10 @@ private fun MDIconSelector(state: MDIconSelectorState) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+            var selectedTabIndex by remember {
+                mutableStateOf(0)
+            }
+
             Scaffold(
                 modifier = Modifier,
                 topBar = {
@@ -73,48 +78,67 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                         actions = {
                         }
                     )
-                }) {
+                }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it)
+                        .padding(paddingValues)
                 ) {
-                    val icons: List<String> = filled().keys.toList()
-                    val searchBarState = rememberSearchBarState(icons.size)
+                    val iconCategories: List<String> = Remix.all.keys.toList()
+                    ScrollableTabRow(selectedTabIndex = selectedTabIndex) {
+                        iconCategories.forEachIndexed { index, categoryName ->
+                            Tab(selected = selectedTabIndex == index,
+                                onClick = { selectedTabIndex = index },
+                                text = {
+                                    Text(
+                                        text = categoryName,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                })
+                        }
+                    }
+
+                    val searchBarState = rememberSearchBarState(iconCategories.size)
                     SearchBar(searchBarState)
+
+                    val icons =
+                        remember(selectedTabIndex, searchBarState.keyword) {
+                            Remix.all[iconCategories[selectedTabIndex]]!!.filterKeys {
+                                searchBarState.keyword.isBlank() || it.contains(searchBarState.keyword)
+                            }.map { it.key to it.value }
+                        }
 
                     LazyVerticalGrid(
                         modifier = Modifier
                             .fillMaxSize(),
                         columns = GridCells.Fixed(3),
                         content = {
-                            itemsIndexed(icons.filter {
-                                searchBarState.keyword.isBlank() || it.contains(searchBarState.keyword)
-                            }) { _, name ->
-                                filled()[name]?.let { vector ->
-                                    Column(
-                                        modifier = Modifier
-                                            .clickable {
-                                                state.onSelected(name)
-                                                state.dismiss()
-                                            }
-                                            .padding(16.dp),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.size(32.dp),
-                                            imageVector = vector,
-                                            contentDescription = name
-                                        )
-                                        TinySpacer()
-                                        Text(
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 8.sp),
-                                            text = name,
-                                            overflow = TextOverflow.Visible,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
+
+
+                            itemsIndexed(icons) { _, nameAndResId ->
+                                Column(
+                                    modifier = Modifier
+                                        .clickable {
+                                            state.onSelected(nameAndResId.first)
+                                            state.dismiss()
+                                        }
+                                        .padding(16.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(32.dp),
+                                        painter = painterResource(id = nameAndResId.second),
+                                        contentDescription = nameAndResId.first
+                                    )
+                                    TinySpacer()
+                                    Text(
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 8.sp),
+                                        text = nameAndResId.first,
+                                        overflow = TextOverflow.Visible,
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         })

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 class DropDownMenuBuilder<T : Any> {
     var menu: MenuItem<T> = MenuItem<T>()
 
-    fun icon(value: ImageVector) {
+    fun icon(value: String) {
         menu.icon = value
     }
 

@@ -6,28 +6,27 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.Icon
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-enum class ActionCategory(val i18NKey: String, val icon: ImageVector) {
-    Ui("UI", Icons.Outlined.Preview),
-    Apps("ui.action.category.app", Icons.Outlined.Apps),
-    Settings("ui.action.system.settings", Icons.Outlined.ToggleOn),
-    Life("ui.action.life", Icons.Outlined.DirectionsBike),
-    Advanced("ui.action.advanced", Icons.Outlined.Extension),
-    Remote("ui.action.remote", Icons.Outlined.Cloud)
+enum class ActionCategory(val i18NKey: String, val icon: String) {
+    Ui("UI", Remix.Design.layout_2_line),
+    Apps("ui.action.category.app", Remix.System.apps_2_line),
+    Settings("ui.action.system.settings", Remix.System.settings_2_line),
+    Life("ui.action.life", Remix.Map.riding_line),
+    Advanced("ui.action.advanced", Remix.System.function_line),
+    Remote("ui.action.remote", Remix.Business.cloud_line)
 }
 
 class ActionSelectorDialogState(val onSelected: (Action) -> Unit) {
@@ -98,7 +97,7 @@ private fun ActionSelector(
                     ) {
                         items.forEachIndexed { index, item ->
                             NavigationRailItem(
-                                icon = { Icon(imageVector = icons[index]) },
+                                icon = { RemixIcon(remixName = icons[index]) },
                                 label = { Text(LocalI18N.current[item]) },
                                 selected = selectedItem == index,
                                 onClick = { selectedItem = index }

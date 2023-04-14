@@ -4,15 +4,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.base.*
@@ -98,7 +96,7 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             preference.icon?.let {
-                Icon(imageVector = it, contentDescription = preference.title)
+                RemixIcon(remixName = it)
             }
             StandardSpacer()
             Column(modifier = Modifier) {
@@ -144,7 +142,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             preference.icon?.let {
-                Icon(imageVector = it, contentDescription = preference.title)
+                RemixIcon(remixName = it)
             }
             StandardSpacer()
             Column(modifier = Modifier) {
@@ -213,14 +211,12 @@ private fun ExpandableContainer(
 
                 Crossfade(targetState = expandState == ExpandableState.Expand) { isExpand ->
                     if (isExpand) {
-                        Icon(
-                            imageVector = Icons.Outlined.ExpandLess,
-                            contentDescription = "ExpandLess"
+                        RemixIcon(
+                            remixName = Remix.Arrows.arrow_drop_up_line,
                         )
                     } else {
-                        Icon(
-                            imageVector = Icons.Outlined.ExpandMore,
-                            contentDescription = "ExpandMore"
+                        RemixIcon(
+                            remixName = Remix.Arrows.arrow_drop_down_line,
                         )
                     }
                 }

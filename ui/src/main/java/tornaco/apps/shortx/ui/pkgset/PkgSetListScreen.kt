@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -139,10 +139,9 @@ private fun PkgSetListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(size = 32.dp, padding = 0.dp) {
-                Icon(
+                RemixIcon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Outlined.Folder,
-                    contentDescription = "Apps"
+                    remixName = Remix.Document.folder_4_line
                 )
             }
 

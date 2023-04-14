@@ -8,9 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowLeft
-import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,11 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.ui.base.RemixIcon
 
 // https://github.com/AndroidPoet/Dropdown
 
@@ -158,9 +156,9 @@ fun Space() {
 
 /*[MenuItemIcon] icon properties. */
 @Composable
-fun MenuItemIcon(icon: ImageVector, tint: Color) {
-    Icon(
-        modifier = Modifier.size(24.dp), imageVector = icon, contentDescription = null, tint = tint
+fun MenuItemIcon(icon: String, tint: Color) {
+    RemixIcon(
+        modifier = Modifier.size(24.dp), remixName = icon, tint = tint
     )
 }
 
@@ -221,7 +219,8 @@ fun CascadeHeaderItem(
 ) {
     MenuItem(onClick = { onClick() }) {
         MenuItemIcon(
-            icon = Icons.Rounded.ArrowLeft, tint = contentColor.copy(alpha = ContentAlpha.medium)
+            icon = Remix.Arrows.arrow_left_line,
+            tint = contentColor.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.width(4.dp))
         MenuItemText(
@@ -239,7 +238,7 @@ fun <T> ParentItem(
     id: T,
     title: String,
     description: String?,
-    icon: ImageVector?,
+    icon: String?,
     contentColor: Color,
     onClick: (T) -> Unit,
 ) {
@@ -267,7 +266,7 @@ fun <T> ParentItem(
             }
         }
         Space()
-        MenuItemIcon(icon = Icons.Rounded.ArrowRight, tint = contentColor)
+        MenuItemIcon(icon = Remix.Arrows.arrow_right_line, tint = contentColor)
     }
 }
 
@@ -277,7 +276,7 @@ fun <T> ChildItem(
     id: T,
     title: String,
     description: String?,
-    icon: ImageVector?,
+    icon: String?,
     contentColor: Color,
     onClick: (T) -> Unit,
 ) {

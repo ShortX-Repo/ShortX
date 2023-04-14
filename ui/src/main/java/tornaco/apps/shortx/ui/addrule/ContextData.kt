@@ -1,19 +1,18 @@
 package tornaco.apps.shortx.ui.addrule
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Output
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.Icon
+import tornaco.apps.shortx.ui.base.RemixIcon
 import kotlin.reflect.KClass
 
 val logger = Logger("ContextData")
@@ -78,6 +77,6 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
 @Composable
 fun ContextDataIcon() {
     ColoredIcon(size = 24.dp, color = MaterialTheme.colorScheme.surface) {
-        Icon(modifier = Modifier.size(16.dp), imageVector = Icons.Outlined.Output)
+        RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.Document.file_list_line)
     }
 }

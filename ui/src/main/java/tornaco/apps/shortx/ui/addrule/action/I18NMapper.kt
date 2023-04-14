@@ -1,10 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.action
 
 import android.content.ComponentName
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -252,140 +250,144 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     }
 }
 
-fun imageVectorForAction(action: KClass<out Action>): ImageVector {
+fun imageVectorForAction(action: KClass<out Action>): String {
     return when (action) {
         Action.ShowToast::class -> {
-            Icons.Outlined.Message
+            Remix.Communication.chat_2_line
         }
         Action.ShowDanmu::class -> {
-            Icons.Outlined.Chat
+            Remix.Communication.chat_1_line
         }
         Action.ShellCommand::class -> {
-            Icons.Outlined.Tag
+            Remix.Development.terminal_box_line
         }
         Action.InputText::class -> {
-            Icons.Outlined.TextFields
+            Remix.Editor.text
         }
         Action.Delay::class -> {
-            Icons.Outlined.Timer
+            Remix.System.timer_line
         }
         Action.TakeScreenshot::class -> {
-            Icons.Outlined.Devices
+            Remix.Design.screenshot_line
         }
         Action.MVEL::class -> {
-            Icons.Outlined.Code
+            Remix.Development.code_line
         }
         Action.HideAllOverlay::class -> {
-            Icons.Outlined.Window
+            Remix.Business.window_line
         }
         Action.ShowOverlay::class -> {
-            Icons.Outlined.Window
+            Remix.Business.window_2_line
         }
         Action.LaunchApp::class -> {
-            Icons.Outlined.OpenInNew
+            Remix.Arrows.arrow_right_up_line
         }
 
         Action.DisableBT::class -> {
-            Icons.Outlined.BluetoothDisabled
+            Remix.Device.bluetooth_line
         }
         Action.DisableDND::class -> {
-            Icons.Outlined.DoDisturbOff
+            Remix.Weather.moon_line
         }
         Action.DisableGPS::class -> {
-            Icons.Outlined.LocationOff
+            Remix.Device.gps_line
         }
         Action.DisableDarkMode::class -> {
-            Icons.Outlined.DarkMode
+            Remix.Weather.sun_line
         }
         Action.DisableData::class -> {
-            Icons.Outlined.SignalCellular0Bar
+            // TODO Icon
+            Remix.Weather.moon_line
         }
         Action.DisableFlashLight::class -> {
-            Icons.Outlined.FlashlightOff
+            Remix.Others.lightbulb_line
         }
         Action.DisableHotSpot::class -> {
-            Icons.Outlined.WifiTetheringOff
+            Remix.Device.hotspot_line
         }
         Action.DisableNFC::class -> {
-            Icons.Outlined.Nfc
+            // TODO Icon
+            Remix.Device.hotspot_line
         }
         Action.DisableWifi::class -> {
-            Icons.Outlined.WifiOff
+            Remix.Device.wifi_off_line
         }
 
         Action.EnableBT::class -> {
-            Icons.Outlined.Bluetooth
+            Remix.Device.bluetooth_connect_line
         }
         Action.EnableDND::class -> {
-            Icons.Outlined.DoNotDisturb
+            Remix.Weather.moon_line
         }
         Action.EnableGPS::class -> {
-            Icons.Outlined.LocationOn
+            Remix.Device.gps_line
         }
         Action.EnableDarkMode::class -> {
-            Icons.Outlined.DarkMode
+            Remix.Weather.sun_line
         }
         Action.EnableData::class -> {
-            Icons.Outlined.SignalCellular4Bar
+            // TODO Icon
+            Remix.Weather.moon_line
         }
         Action.EnableFlashLight::class -> {
-            Icons.Outlined.FlashlightOn
+            Remix.Others.lightbulb_line
         }
         Action.EnableHotSpot::class -> {
-            Icons.Outlined.WifiTethering
+            Remix.Device.hotspot_line
         }
         Action.EnableNFC::class -> {
-            Icons.Outlined.Nfc
+            // TODO Icon
+            Remix.Device.hotspot_line
         }
         Action.EnableWifi::class -> {
-            Icons.Outlined.Wifi
+            Remix.Device.wifi_line
         }
 
         Action.StopApp::class -> {
-            Icons.Outlined.StopCircle
+            Remix.Media.stop_line
         }
         Action.StartAppProcess::class -> {
-            Icons.Outlined.PlayArrow
+            Remix.Media.play_line
         }
         Action.EnableApp::class -> {
-            Icons.Outlined.ToggleOn
+            Remix.System.toggle_line
         }
         Action.DisableApp::class -> {
-            Icons.Outlined.AcUnit
+            Remix.System.toggle_fill
         }
         Action.SuspendApp::class -> {
-            Icons.Outlined.AdminPanelSettings
+            Remix.UserAndFaces.admin_line
         }
         Action.UnSuspendApp::class -> {
-            Icons.Outlined.VerifiedUser
+            Remix.UserAndFaces.admin_line
         }
         Action.Brk::class -> {
-            Icons.Outlined.TurnSharpLeft
+            Remix.System.close_circle_line
         }
         Action.ShowAlertDialog::class -> {
-            Icons.Outlined.Message
+            Remix.Communication.chat_4_line
         }
         Action.StartActivity::class -> {
-            Icons.Outlined.PhoneAndroid
+            Remix.Logos.android_line
         }
         Action.ExpandNotification::class -> {
-            Icons.Outlined.Notifications
+            Remix.Media.notification_line
         }
         Action.RemoteMVEL::class -> {
-            Icons.Outlined.Cloud
+            Remix.Business.cloud_line
         }
         Action.WhileLoop::class -> {
-            Icons.Outlined.Loop
+            Remix.System.loop_left_line
         }
         Action.WriteGV::class -> {
-            Icons.Outlined.Edit
+            Remix.Document.file_edit_line
         }
         Action.MapNav::class -> {
-            Icons.Outlined.Navigation
+            Remix.Map.navigation_line
         }
 
         else -> {
-            Icons.Outlined.Settings
+            Remix.Document.file_unknow_line
         }
     }
 }

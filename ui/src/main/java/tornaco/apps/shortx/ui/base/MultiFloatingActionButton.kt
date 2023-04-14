@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FloatingActionButton
@@ -100,10 +103,9 @@ fun MultiFloatingActionButton(
                         onCollapsed()
                     }
                 ) {
-                    Icon(
+                    RemixIcon(
                         modifier = Modifier.size(16.dp),
-                        imageVector = item.icon,
-                        contentDescription = item.label
+                        remixName = item.icon,
                     )
                 }
             }
@@ -130,7 +132,7 @@ fun MultiFloatingActionButton(
 
 class MultiFabItem(
     val id: String,
-    val icon: ImageVector,
+    val icon: String,
     val label: String,
 )
 

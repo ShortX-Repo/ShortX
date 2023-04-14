@@ -98,7 +98,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material:material-icons-extended")
 
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
@@ -119,6 +118,7 @@ dependencies {
     implementation(project(":external:utils"))
     implementation(project(":external:reorderable"))
     implementation(project(":external:compose-color-picker"))
+    implementation(project(":external:icons"))
 
     val rowImplementation by configurations
     rowImplementation(Lottie.composeLottie)

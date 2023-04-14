@@ -1,11 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import android.view.KeyEvent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -285,32 +282,35 @@ fun OnOffAny.label(i18n: I18N): String {
     }
 }
 
-fun imageVectorForFact(fact: KClass<out Fact>): ImageVector {
+fun imageVectorForFact(fact: KClass<out Fact>): String {
     return when (fact) {
-        Fact.ActivityStarted::class -> Icons.Outlined.Update
-        Fact.AnyActivityStarted::class -> Icons.Outlined.Update
-        Fact.EdgeGesture::class -> Icons.Outlined.Gesture
-        Fact.KeyEvent::class -> Icons.Outlined.Keyboard
-        Fact.ScreenOff::class -> Icons.Outlined.Lock
-        Fact.ScreenOn::class -> Icons.Outlined.Smartphone
-        Fact.UserPresent::class -> Icons.Outlined.LockOpen
-        Fact.Alarm::class -> Icons.Outlined.Alarm
-        Fact.AppBecomeBackground::class -> Icons.Outlined.FiberDvr
-        Fact.AppBecomeForeground::class -> Icons.Outlined.Aod
-        Fact.WifiStatusChanged::class -> Icons.Outlined.Wifi
-        Fact.BTStatusChanged::class -> Icons.Outlined.Bluetooth
-        Fact.LocationStatusChanged::class -> Icons.Outlined.LocationOn
-        Fact.NFCStatusChanged::class -> Icons.Outlined.Nfc
-        Fact.MobileDataStatusChanged::class -> Icons.Outlined.MobiledataOff
-        Fact.HotSpotStatusChanged::class -> Icons.Outlined.WifiTethering
-        Fact.DarkModeStatusChanged::class -> Icons.Outlined.DarkMode
-        Fact.FlashLightStatusChanged::class -> Icons.Outlined.FlashlightOn
-        Fact.NotificationPosted::class -> Icons.Outlined.Notifications
-        Fact.NotificationUpdated::class -> Icons.Outlined.Notifications
-        Fact.NotificationRemoved::class -> Icons.Outlined.Notifications
+        Fact.ActivityStarted::class -> Remix.Logos.android_line
+        Fact.AnyActivityStarted::class -> Remix.Logos.android_line
+        // TODO Icon
+        Fact.EdgeGesture::class -> Remix.Editor.sketching
+        Fact.KeyEvent::class -> Remix.Device.keyboard_line
+        Fact.ScreenOff::class -> Remix.Device.phone_lock_line
+        Fact.ScreenOn::class -> Remix.Device.phone_line
+        Fact.UserPresent::class -> Remix.Device.smartphone_line
+        Fact.Alarm::class -> Remix.System.alarm_line
+        Fact.AppBecomeBackground::class -> Remix.System.refresh_line
+        Fact.AppBecomeForeground::class -> Remix.System.star_line
+        Fact.WifiStatusChanged::class -> Remix.Device.wifi_line
+        Fact.BTStatusChanged::class -> Remix.Device.bluetooth_line
+        Fact.LocationStatusChanged::class -> Remix.Device.gps_line
+        // TODO Icon
+        Fact.NFCStatusChanged::class -> Remix.Device.smartphone_line
+        // TODO Icon
+        Fact.MobileDataStatusChanged::class -> Remix.Device.wifi_off_line
+        Fact.HotSpotStatusChanged::class -> Remix.Device.hotspot_line
+        Fact.DarkModeStatusChanged::class -> Remix.Weather.sun_line
+        Fact.FlashLightStatusChanged::class -> Remix.Others.lightbulb_line
+        Fact.NotificationPosted::class -> Remix.System.notification_badge_line
+        Fact.NotificationUpdated::class -> Remix.System.notification_badge_line
+        Fact.NotificationRemoved::class -> Remix.System.notification_badge_line
 
         else -> {
-            Icons.Filled.Warning
+            Remix.Document.file_unknow_line
         }
     }
 }

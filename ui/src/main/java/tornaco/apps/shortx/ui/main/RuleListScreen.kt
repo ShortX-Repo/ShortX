@@ -24,11 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -52,10 +52,13 @@ fun RuleScreen() {
             androidx.compose.material3.IconButton(onClick = {
                 vm.toggleRuleColumnCount()
             }) {
-                Icon(
-                    imageVector = Icons.Filled.ViewColumn,
-                    contentDescription = "Column"
-                )
+                if (state.ruleColumnCount == 1) {
+                    RemixIcon(remixName = Remix.Design.layout_column_line)
+                } else {
+                    RemixIcon(
+                        remixName = Remix.Design.layout_row_line
+                    )
+                }
             }
         },
         goToSettings = {
@@ -190,7 +193,7 @@ private fun RuleItem(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RuleIcon(rule = rule, arrow = Icons.Filled.ArrowDropDown)
+                RuleIcon(rule = rule, arrow = Remix.Arrows.arrow_down_line)
             }
         },
         title = rule.title,
@@ -264,7 +267,10 @@ private fun RuleItem2(
                     modifier = Modifier.weight(1f, fill = false),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(modifier = Modifier.size(12.dp), imageVector = Icons.Outlined.Update)
+                    RemixIcon(
+                        modifier = Modifier.size(12.dp),
+                        remixName = Remix.System.refresh_line
+                    )
                     TinySpacer()
                     Text(
                         text = rule.updateTime,
@@ -285,26 +291,24 @@ private fun RuleItem2(
 }
 
 @Composable
-private fun RuleIcon(rule: RuleUM, arrow: ImageVector = Icons.Filled.ArrowRight) {
+private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
     ColoredIcon(size = 32.dp, padding = 0.dp) {
-        Icon(
+        RemixIcon(
             modifier = Modifier.size(16.dp),
-            imageVector = rule.factIcon,
-            contentDescription = "Icon"
+            remixName = rule.factIcon,
         )
     }
 
-    Icon(
+    RemixIcon(
         modifier = Modifier.size(18.dp),
-        imageVector = arrow,
+        remixName = arrow,
         tint = MaterialTheme.colorScheme.surfaceVariant
     )
 
     ColoredIcon(size = 32.dp, padding = 0.dp) {
-        Icon(
+        RemixIcon(
             modifier = Modifier.size(16.dp),
-            imageVector = rule.actionIcon,
-            contentDescription = "Icon"
+            remixName = rule.actionIcon,
         )
     }
 }
@@ -341,19 +345,19 @@ private fun ListItemOverflowMenu(
                 DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                     data = "edit",
                     icon = {
-                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                        RemixIcon(Remix.Design.edit_line)
                     }),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.share"]),
                     data = "share",
                     icon = {
-                        Icon(imageVector = Icons.Outlined.Share, contentDescription = "Share")
+                        RemixIcon(Remix.System.external_link_line)
                     }),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.delete"]),
                     data = "delete",
                     icon = {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+                        RemixIcon(Remix.System.delete_bin_4_line)
                     })
             ), onSelect = {
                 when (it.data) {

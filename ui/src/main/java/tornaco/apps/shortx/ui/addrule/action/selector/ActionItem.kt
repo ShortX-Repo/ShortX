@@ -9,37 +9,32 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.ColorDefaults
-import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.*
 import kotlin.reflect.KClass
 
 data class Item(
     val type: KClass<out Action>,
     val labelAndDescription: Pair<String, String?>,
-    val icon: ImageVector,
+    val icon: String,
     val data: Any? = null
 )
 
 fun item(
-    type: KClass<out Action>, label: String, icon: ImageVector
+    type: KClass<out Action>, label: String, icon: String
 ) = Item(type = type, labelAndDescription = label to null, icon = icon)
 
 
 fun item(
-    type: KClass<out Action>, label: String, description: String, icon: ImageVector
+    type: KClass<out Action>, label: String, description: String, icon: String
 ) = Item(type = type, labelAndDescription = label to description, icon = icon)
 
 @Composable
@@ -90,7 +85,7 @@ fun ActionList(
 @Composable
 fun ActionItem(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    icon: String,
     title: String,
     text1: String? = null,
     onClick: () -> Unit,
@@ -115,10 +110,9 @@ fun ActionItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ColoredIcon(size = 32.dp, padding = 0.dp) {
-                    Icon(
+                    RemixIcon(
                         modifier = Modifier.size(16.dp),
-                        imageVector = icon,
-                        contentDescription = "Icon"
+                        remixName = icon,
                     )
                 }
 

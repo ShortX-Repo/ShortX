@@ -4,14 +4,15 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class InputTextSelectorState(val onSelected: (String) -> Unit) {
@@ -56,7 +57,7 @@ fun InputTextSelector(state: InputTextSelectorState) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 TextField(
                     leadingIcon = {
-                        Icon(imageVector = Icons.Filled.Tag, contentDescription = "Text")
+                        RemixIcon(remixName = Remix.Editor.text)
                     },
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(

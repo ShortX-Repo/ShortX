@@ -150,10 +150,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                         TextButton(onClick = {
                             iconSelector.show()
                         }) {
-                            Icon(
-                                imageVector = MDIcons.filled(item.icon),
-                                contentDescription = item.icon
-                            )
+                            RemixIcon(item.icon)
                         }
                     }
 
