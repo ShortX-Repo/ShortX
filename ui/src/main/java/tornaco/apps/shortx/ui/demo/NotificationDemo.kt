@@ -6,12 +6,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.util.BitmapUtils
 import java.util.*
 
 @SuppressLint("MissingPermission")
@@ -62,5 +67,30 @@ fun NotificationDemo() {
         )
     }) {
         Text(text = "Notification & Update")
+    }
+
+    FilledTonalButton(onClick = {
+        NotificationPoster(
+            context,
+            "silence",
+            "important",
+            null,
+            getIcon = {
+                Icon.createWithResource(context, Remix.allFlat[it]!!)
+            },
+            getBitmap = {
+                BitmapUtils.getBitmap(context, Remix.allFlat[it]!!)!!
+            }
+        ).invoke(
+            PostNotification.newBuilder()
+                .setTag("demo")
+                .setSmallIcon(Remix.Communication.chat_smile_line)
+                .setLargeIcon(Remix.Logos.bard_line)
+                .setTitle("This is title")
+                .setMessage("This is message")
+                .build()
+        )
+    }) {
+        Text(text = "Poster")
     }
 }

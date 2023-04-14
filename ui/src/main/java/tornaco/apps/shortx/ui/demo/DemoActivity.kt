@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui
+package tornaco.apps.shortx.ui.demo
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

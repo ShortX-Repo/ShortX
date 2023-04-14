@@ -237,3 +237,20 @@ message Location {
   string latitude = 1;
   string longitude = 2;
 }
+
+message PostNotification {
+  string tag = 1;
+  string  title = 2;
+  string message = 3;
+  bool isImportant = 4;
+
+  string largeIcon = 5;
+  string smallIcon = 6;
+
+  bool vibrate = 7;
+  bool sound = 8;
+
+  AppPkg pkgToLaunchOnClick = 9;
+
+  string id = 100;
+}

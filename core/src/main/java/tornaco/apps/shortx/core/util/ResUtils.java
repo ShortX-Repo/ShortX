@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.ui.widget;
+package tornaco.apps.shortx.core.util;
 
 import android.content.Context;
 import android.content.res.Resources;

@@ -14,7 +14,7 @@
         </activity>
 
         <activity
-            android:name=".DemoActivity"
+            android:name=".demo.DemoActivity"
             android:exported="false"
             android:label="Demo">
             <intent-filter>

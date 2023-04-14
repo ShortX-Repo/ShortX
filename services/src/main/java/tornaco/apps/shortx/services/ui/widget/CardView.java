@@ -29,6 +29,8 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import tornaco.apps.shortx.core.util.ResUtils;
+
 
 /**
  * A FrameLayout with a rounded corner background and shadow.
