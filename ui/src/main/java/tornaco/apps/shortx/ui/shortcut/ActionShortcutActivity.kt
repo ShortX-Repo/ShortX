@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.elvishew.xlog.XLog
+import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
@@ -39,12 +41,21 @@ class ActionShortcutActivity : Activity() {
 
         fun addShortcut(context: Context, action: DirectActionUM) {
             if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
-                val drawable = ResourcesCompat.getDrawable(
+                val actionIconDrawable = ResourcesCompat.getDrawable(
                     context.resources,
-                    R.drawable.ui_ic_baseline_developer_mode_24,
+                    Remix.allFlat[action.icon]!!,
                     null
                 )
-                val resource: Bitmap? = BitmapUtils.getBitmap(context, drawable)
+                val templateDrawable =
+                    ResourcesCompat.getDrawable(
+                        context.resources,
+                        R.drawable.ui_ic_shortcut_template,
+                        null
+                    )
+                val ld = templateDrawable as LayerDrawable
+                ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
+
+                val resource: Bitmap? = BitmapUtils.getBitmap(context, templateDrawable)
                 val shortcutInfoIntent = createIntent(context, action.id)
                 shortcutInfoIntent.action = Intent.ACTION_VIEW
                 val info = ShortcutInfoCompat.Builder(context, "ShortX-Action-" + action.id)
