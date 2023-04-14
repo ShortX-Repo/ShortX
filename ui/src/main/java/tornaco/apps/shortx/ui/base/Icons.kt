@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import github.tornaco.shortx.android.icon.Remix
+import github.tornaco.shortx.android.icon.Remix.allFlat
 import tornaco.apps.shortx.ui.R
 
 @Composable
@@ -73,6 +74,3 @@ fun RemixIcon(
         contentDescription = "Icon"
     )
 }
-
-val allFlat: Map<String, Int> =
-    Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }

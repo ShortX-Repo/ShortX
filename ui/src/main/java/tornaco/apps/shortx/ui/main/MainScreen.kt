@@ -31,7 +31,7 @@ sealed class BottomNavItem(
     object DirectActions :
         BottomNavItem(
             "ui.feat.label.da",
-            Remix.Weather.sparkling_line,
+            Remix.Map.space_ship_line,
             HomeBottomRoute.DirectActions
         )
 }

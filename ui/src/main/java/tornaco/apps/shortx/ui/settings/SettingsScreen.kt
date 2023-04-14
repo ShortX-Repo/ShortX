@@ -209,8 +209,7 @@ private fun dataSettings(
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.data"]),
     Preference.TextPreference(
-        // TODO Icon
-        icon = Remix.System.settings_3_line,
+        icon = Remix.Device.save_3_line,
         title = LocalI18N.current["ui.settings.data.backup.title"],
         summary = LocalI18N.current["ui.settings.data.backup.summary"],
         onClick = {
@@ -218,8 +217,7 @@ private fun dataSettings(
         }
     ),
     Preference.TextPreference(
-        // TODO Icon
-        icon = Remix.System.settings_3_line,
+        icon = Remix.System.download_2_line,
         title = LocalI18N.current["ui.settings.data.restore.title"],
         summary = LocalI18N.current["ui.settings.data.restore.summary"],
         onClick = {
@@ -227,8 +225,7 @@ private fun dataSettings(
         }
     ),
     Preference.TextPreference(
-        // TODO Icon
-        icon = Remix.System.settings_3_line,
+        icon = Remix.System.history_line,
         title = LocalI18N.current["ui.settings.data.reset.title"],
         summary = LocalI18N.current["ui.settings.data.reset.summary"],
         onClick = {
@@ -244,8 +241,7 @@ private fun devSettings(
 ) = mutableListOf(
     Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
-    // TODO Icon
-    Preference.SwitchPreference(icon = Remix.Development.code_box_line,
+    Preference.SwitchPreference(icon = Remix.Document.article_line,
         title = LocalI18N.current["ui.settings.enable.debug.log"],
         summary = LocalI18N.current["ui.settings.enable.debug.log.description"],
         value = state.isDebugLogEnabled,

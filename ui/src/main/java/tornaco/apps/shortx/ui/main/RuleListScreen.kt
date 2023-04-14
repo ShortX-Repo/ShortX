@@ -351,7 +351,7 @@ private fun ListItemOverflowMenu(
                     labelLines = listOf(LocalI18N.current["ui.common.share"]),
                     data = "share",
                     icon = {
-                        RemixIcon(Remix.System.external_link_line)
+                        RemixIcon(Remix.System.share_line)
                     }),
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current["ui.common.delete"]),

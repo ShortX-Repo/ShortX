@@ -286,7 +286,6 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
     return when (fact) {
         Fact.ActivityStarted::class -> Remix.Logos.android_line
         Fact.AnyActivityStarted::class -> Remix.Logos.android_line
-        // TODO Icon
         Fact.EdgeGesture::class -> Remix.Editor.sketching
         Fact.KeyEvent::class -> Remix.Device.keyboard_line
         Fact.ScreenOff::class -> Remix.Device.phone_lock_line
@@ -298,10 +297,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.WifiStatusChanged::class -> Remix.Device.wifi_line
         Fact.BTStatusChanged::class -> Remix.Device.bluetooth_line
         Fact.LocationStatusChanged::class -> Remix.Device.gps_line
-        // TODO Icon
-        Fact.NFCStatusChanged::class -> Remix.Device.smartphone_line
-        // TODO Icon
-        Fact.MobileDataStatusChanged::class -> Remix.Device.wifi_off_line
+        Fact.NFCStatusChanged::class -> Remix.Device.nfc_fill
+        Fact.MobileDataStatusChanged::class -> Remix.Arrows.arrow_up_down_line
         Fact.HotSpotStatusChanged::class -> Remix.Device.hotspot_line
         Fact.DarkModeStatusChanged::class -> Remix.Weather.sun_line
         Fact.FlashLightStatusChanged::class -> Remix.Others.lightbulb_line

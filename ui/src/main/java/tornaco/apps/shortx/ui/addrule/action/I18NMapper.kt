@@ -276,6 +276,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.HideAllOverlay::class -> {
             Remix.Business.window_line
         }
+        Action.HideOverlay::class -> {
+            Remix.Business.window_line
+        }
         Action.ShowOverlay::class -> {
             Remix.Business.window_2_line
         }
@@ -296,8 +299,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Weather.sun_line
         }
         Action.DisableData::class -> {
-            // TODO Icon
-            Remix.Weather.moon_line
+            Remix.Arrows.arrow_up_down_line
         }
         Action.DisableFlashLight::class -> {
             Remix.Others.lightbulb_line
@@ -306,8 +308,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.hotspot_line
         }
         Action.DisableNFC::class -> {
-            // TODO Icon
-            Remix.Device.hotspot_line
+            Remix.Device.nfc_fill
         }
         Action.DisableWifi::class -> {
             Remix.Device.wifi_off_line
@@ -326,8 +327,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Weather.sun_line
         }
         Action.EnableData::class -> {
-            // TODO Icon
-            Remix.Weather.moon_line
+            Remix.Arrows.arrow_up_down_line
         }
         Action.EnableFlashLight::class -> {
             Remix.Others.lightbulb_line
@@ -336,8 +336,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.hotspot_line
         }
         Action.EnableNFC::class -> {
-            // TODO Icon
-            Remix.Device.hotspot_line
+            Remix.Device.nfc_fill
         }
         Action.EnableWifi::class -> {
             Remix.Device.wifi_line

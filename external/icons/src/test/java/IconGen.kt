@@ -81,7 +81,7 @@ class IconGen {
             )
             
             
-        val allFlat = all.flattenMap()
+        val allFlat: Map<String, Int> = Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }
 
 
         }

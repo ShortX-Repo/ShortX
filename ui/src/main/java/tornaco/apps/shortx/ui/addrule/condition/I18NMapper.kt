@@ -146,14 +146,13 @@ fun IconForOp(op: Op) {
         }
         Op.Any -> {
             RemixIcon(
-                remixName = Remix.System.check_double_line
+                remixName = Remix.Editor.asterisk
             )
         }
 
         Op.None -> {
-            // TODO Icon
             RemixIcon(
-                remixName = Remix.System.check_double_line
+                remixName = Remix.System.checkbox_blank_circle_line
             )
         }
 

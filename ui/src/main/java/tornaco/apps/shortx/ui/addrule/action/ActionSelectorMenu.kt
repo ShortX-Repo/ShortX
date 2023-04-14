@@ -189,8 +189,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableData::class,
         i18N["ui.action.data"]
     ) {
-        // TODO Icon
-        icon(Remix.Device.wifi_line)
+        icon(Remix.Arrows.arrow_up_down_line)
 
         item(
             Action.EnableData::class,
@@ -232,8 +231,7 @@ private fun DropDownMenuBuilder<KClass<out Action>>.systemSettingsItems(
         Action.EnableNFC::class,
         i18N["ui.action.nfc"]
     ) {
-        // TODO Icon
-        icon(Remix.Device.wifi_line)
+        icon(Remix.Device.nfc_fill)
 
         item(
             Action.EnableNFC::class,

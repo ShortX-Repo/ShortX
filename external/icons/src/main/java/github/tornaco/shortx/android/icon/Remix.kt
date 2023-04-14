@@ -3631,6 +3631,7 @@ object Remix {
         val database_fill = "database-fill"
         val cast_line = "cast-line"
         val gamepad_line = "gamepad-line"
+        val nfc_fill = "nfc-fill"
         val radar_fill = "radar-fill"
         val signal_wifi_error_fill = "signal-wifi-error-fill"
         val save_fill = "save-fill"
@@ -3797,6 +3798,7 @@ object Remix {
         Device.database_fill to R.drawable.ic_remix_database_fill,
         Device.cast_line to R.drawable.ic_remix_cast_line,
         Device.gamepad_line to R.drawable.ic_remix_gamepad_line,
+        Device.nfc_fill to R.drawable.ic_remix_nfc_fill,
         Device.radar_fill to R.drawable.ic_remix_radar_fill,
         Device.signal_wifi_error_fill to R.drawable.ic_remix_signal_wifi_error_fill,
         Device.save_fill to R.drawable.ic_remix_save_fill,
@@ -5075,5 +5077,6 @@ object Remix {
     )
 
 
+    val allFlat = Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }
 }
                 
