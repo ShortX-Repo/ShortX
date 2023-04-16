@@ -105,6 +105,19 @@ sealed interface Action : Parcelable {
     data class ExpandNotification(override val id: String = defaultNewActionId()) : Action
 
     @Parcelize
+    data class PostNotification(
+        override val id: String = defaultNewActionId(),
+        val tag: String,
+        val title: String,
+        val message: String,
+        val largeIcon: String,
+        val smallIcon: String,
+        val isImportant: Boolean,
+        val vibrate: Boolean,
+        val sound: Boolean,
+    ) : Action
+
+    @Parcelize
     data class StartAppProcess(
         override val id: String = defaultNewActionId(),
         val apps: List<App> = emptyList(),
@@ -397,6 +410,19 @@ fun Action.toProtoAction(): ProtoMessage {
                 .setPoi(poi)
                 .build()
         }
+        is Action.PostNotification -> {
+            PostNotification.newBuilder()
+                .setId(id)
+                .setTag(tag)
+                .setMessage(message)
+                .setTitle(title)
+                .setSmallIcon(smallIcon)
+                .setLargeIcon(largeIcon)
+                .setIsImportant(isImportant)
+                .setSound(sound)
+                .setVibrate(vibrate)
+                .build()
+        }
     }
 }
 
@@ -646,6 +672,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 latitude = data.loc.latitude,
                 poi = data.poi,
                 mapApp = data.app
+            )
+        }
+        this is_ PostNotification::class.java -> {
+            val data = this unpack_ PostNotification::class.java
+            Action.PostNotification(
+                id = data.id,
+                tag = data.tag,
+                message = data.message,
+                title = data.title,
+                largeIcon = data.largeIcon,
+                smallIcon = data.smallIcon,
+                vibrate = data.vibrate,
+                sound = data.sound,
+                isImportant = data.isImportant
             )
         }
 

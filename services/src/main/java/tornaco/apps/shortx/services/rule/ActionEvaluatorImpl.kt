@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.*
@@ -241,6 +242,11 @@ class ActionEvaluatorImpl(
                 }.onFailure {
                     logger.e(it, "Gaode Nav error")
                 }
+            }
+        } else if (action is_ PostNotification::class.java) {
+            withContext(Dispatchers.Main) {
+                val d = action unpack_ PostNotification::class.java
+                shortXContext.notification.notificationPoster.invoke(d)
             }
         }
     }

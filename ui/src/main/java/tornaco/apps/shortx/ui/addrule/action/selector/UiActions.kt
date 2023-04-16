@@ -33,6 +33,18 @@ fun UiActions(addAction: (Action) -> Unit) {
         ),
 
         Item(
+            Action.ExpandNotification::class,
+            labelAndDescriptionForActionSelector(i18N, Action.ExpandNotification::class),
+            imageVectorForAction(Action.ExpandNotification::class)
+        ),
+
+        Item(
+            Action.PostNotification::class,
+            labelAndDescriptionForActionSelector(i18N, Action.PostNotification::class),
+            imageVectorForAction(Action.PostNotification::class)
+        ),
+
+        Item(
             Action.ShowOverlay::class,
             labelAndDescriptionForActionSelector(i18N, Action.ShowOverlay::class),
             imageVectorForAction(Action.ShowOverlay::class)
@@ -84,6 +96,12 @@ fun UiActions(addAction: (Action) -> Unit) {
                 Action.ShowDanmu::class -> {
                     subSelectorStates.showDanmuSettingsState.show()
                 }
+                Action.ExpandNotification::class -> {
+                    addAction(Action.ExpandNotification())
+                }
+                Action.PostNotification::class -> {
+                    subSelectorStates.postNotificationDialogState.show()
+                }
             }
         })
 }
@@ -94,6 +112,7 @@ data class UiActionSubSelectorStates(
     val showDialogSettingsState: ShowDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
+    val postNotificationDialogState: PostNotificationDialogState,
 )
 
 @Composable
@@ -134,11 +153,17 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     HideOverlayDialog(state = hideOverlayDialogState)
 
+    val postNotificationDialogState = rememberPostNotificationDialogState {
+        addAction(it)
+    }
+    PostNotificationSelectorDialog(postNotificationDialogState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
         showDialogSettingsState = showDialogSettingsState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
+        postNotificationDialogState = postNotificationDialogState,
     )
 }

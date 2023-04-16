@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import github.tornaco.shortx.android.icon.Remix
 import github.tornaco.shortx.android.icon.Remix.allFlat
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
 
 @Composable
@@ -67,9 +67,14 @@ fun RemixIcon(
 ) {
     androidx.compose.material3.Icon(
         modifier = modifier,
-        painter = painterResource(
-            id = allFlat[remixName] ?: R.drawable.ui_ic_baseline_developer_mode_24
-        ),
+        painter = runCatching {
+            painterResource(
+                id = allFlat[remixName] ?: R.drawable.ui_ic_baseline_developer_mode_24
+            )
+        }.getOrElse {
+            Logger("RemixIcon").e(it, "WTF???")
+            painterResource(id = R.drawable.ui_ic_baseline_developer_mode_24)
+        },
         tint = tint,
         contentDescription = "Icon"
     )

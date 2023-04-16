@@ -26,6 +26,7 @@ class NotificationPoster(
     private val logger = Logger("NotificationPoster")
 
     operator fun invoke(notification: PostNotification) {
+        logger.d("post: ${notification.tag}")
         with(notification) {
             val importantChannel = createImportantNotificationChannel(context)
             val silenceChannel = createSilenceNotificationChannel(context)

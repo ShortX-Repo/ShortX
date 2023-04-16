@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.services.notification
 
+import tornaco.apps.shortx.core.AppResources
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
@@ -11,6 +14,24 @@ import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
 class NotificationService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+    private val appRes by lazy { AppResources(context, BuildProp.APP_PACKAGE_NAME) }
+
+    val notificationPoster by lazy {
+        NotificationPoster(
+            context,
+            "ShortX silence",
+            "ShortX alert",
+            "ShortX",
+            getIcon = {
+                appRes.getIcon(it)
+            },
+            getBitmap = {
+                appRes.getBitmap(it)
+            }
+        )
+    }
+
+
     fun registerPostedByApp(n: Notification) {
         logger.d("registerPostedByApp: $n")
         systemServiceScope.launchSafety {

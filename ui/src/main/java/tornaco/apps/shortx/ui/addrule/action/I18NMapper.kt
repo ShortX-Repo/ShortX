@@ -86,6 +86,7 @@ fun labelAndDescriptionForActionSelector(
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
+        Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
 
         else -> {
             "N/A" to null
@@ -247,6 +248,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 }
             }
         )
+        is Action.PostNotification -> {
+            listOf(
+                i18N["ui.action.post.notification"],
+                action.tag,
+                action.title,
+                action.message
+            )
+        }
     }
 }
 
@@ -370,6 +379,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Logos.android_line
         }
         Action.ExpandNotification::class -> {
+            Remix.System.notification_badge_line
+        }
+        Action.PostNotification::class -> {
             Remix.Media.notification_line
         }
         Action.RemoteMVEL::class -> {
