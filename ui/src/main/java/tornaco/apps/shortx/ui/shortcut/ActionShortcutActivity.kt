@@ -11,10 +11,10 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.elvishew.xlog.XLog
-import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.remixResId
 import tornaco.apps.shortx.ui.main.DirectActionUM
 
 private const val KEY_ACTION_ID = "key_action_id"
@@ -43,7 +43,7 @@ class ActionShortcutActivity : Activity() {
             if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
                 val actionIconDrawable = ResourcesCompat.getDrawable(
                     context.resources,
-                    Remix.allFlat[action.icon]!!,
+                    context.remixResId(action.icon),
                     null
                 )
                 val templateDrawable =

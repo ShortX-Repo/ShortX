@@ -3,7 +3,7 @@ import org.junit.Test
 import java.io.File
 
 class IconGen {
-    private val sourceFile = File("src/main/java/github/tornaco/shortx/android/icon/Remix.kt")
+    private val sourceFile = File("../../core/src/main/java/tornaco/apps/shortx/core/res/Remix.kt")
 
     @Test
     fun gen() {
@@ -38,10 +38,8 @@ class IconGen {
         }
 
         val kotlinFileCode: String = """
-        package github.tornaco.shortx.android.icon
+        package tornaco.apps.shortx.core.res
         
-        import github.tornaco.shortx.android.third.party.icons.R
-
         object Remix {
         
            
@@ -68,7 +66,7 @@ class IconGen {
                     entry.value.joinToString(",\n") {
                         "${entry.key}.${
                             it.replace("ic_remix_", "").addPrefixIfStartWithDigit()
-                        } to R.drawable.$it"
+                        } to \"$it\""
                     }
                 })
             """.trimIndent()
@@ -81,7 +79,7 @@ class IconGen {
             )
             
             
-        val allFlat: Map<String, Int> = Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }
+        val allFlat = Remix.all.values.flatMap { it.entries }.associate { it.key to it.value }
 
 
         }

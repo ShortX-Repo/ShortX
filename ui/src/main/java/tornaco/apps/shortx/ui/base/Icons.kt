@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.base
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,15 +12,17 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import github.tornaco.shortx.android.icon.Remix.allFlat
+import tornaco.apps.shortx.core.res.Remix.allFlat
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
 
@@ -65,17 +69,26 @@ fun RemixIcon(
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current
 ) {
+    val context = LocalContext.current
+    val resId = remember(remixName) {
+        context.remixResId(remixName)
+    }
     androidx.compose.material3.Icon(
         modifier = modifier,
         painter = runCatching {
             painterResource(
-                id = allFlat[remixName] ?: R.drawable.ui_ic_baseline_developer_mode_24
+                id = resId
             )
         }.getOrElse {
-            Logger("RemixIcon").e(it, "WTF???")
+            Logger("RemixIcon").e(it, "Fail on: $remixName")
             painterResource(id = R.drawable.ui_ic_baseline_developer_mode_24)
         },
         tint = tint,
         contentDescription = "Icon"
     )
+}
+
+@SuppressLint("DiscouragedApi")
+fun Context.remixResId(remixName: String): Int {
+    return resources.getIdentifier(allFlat[remixName], "drawable", packageName)
 }

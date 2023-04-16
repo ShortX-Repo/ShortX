@@ -14,12 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class MDIconSelectorState(val onSelected: (String) -> Unit) {
@@ -127,10 +126,9 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                                     verticalArrangement = Arrangement.Center,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Icon(
+                                    RemixIcon(
                                         modifier = Modifier.size(32.dp),
-                                        painter = painterResource(id = nameAndResId.second),
-                                        contentDescription = nameAndResId.first
+                                        remixName = nameAndResId.first
                                     )
                                     TinySpacer()
                                     Text(

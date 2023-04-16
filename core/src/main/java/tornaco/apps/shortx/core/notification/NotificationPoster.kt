@@ -20,13 +20,13 @@ class NotificationPoster(
     private val silenceNotificationChannelLabel: String,
     private val importNotificationChannelLabel: String,
     private val overrideName: String? = null,
-    private val getIcon: (String) -> android.graphics.drawable.Icon,
+    private val getIcon: (String) -> android.graphics.drawable.Icon?,
     private val getBitmap: (String) -> Bitmap?,
 ) {
     private val logger = Logger("NotificationPoster")
 
     operator fun invoke(notification: PostNotification) {
-        logger.d("post: ${notification.tag}")
+        logger.d("post: ${notification.tag} ${notification.smallIcon}")
         with(notification) {
             val importantChannel = createImportantNotificationChannel(context)
             val silenceChannel = createSilenceNotificationChannel(context)
@@ -102,7 +102,9 @@ class NotificationPoster(
             val n = builder.build()
 
             if (smallIcon.isNotEmpty()) {
-                n.smallIcon = getIcon(smallIcon)
+                getIcon(smallIcon)?.let {
+                    n.smallIcon = it
+                }
             }
 
             overrideName?.let {

@@ -5,7 +5,7 @@ package tornaco.apps.shortx.ui.addrule.action
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N

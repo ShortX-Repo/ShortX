@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.util.Logger

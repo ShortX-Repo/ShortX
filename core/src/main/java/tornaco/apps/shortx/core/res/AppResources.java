@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.core;
+package tornaco.apps.shortx.core.res;
 
 import static android.content.Context.CONTEXT_IGNORE_SECURITY;
 
@@ -12,13 +12,14 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import tornaco.apps.shortx.core.BuildProp;
 import tornaco.apps.shortx.core.util.Logger;
 import tornaco.apps.shortx.core.util.PkgUtils;
 
 public class AppResources {
 
     private static final Logger LOGGER = new Logger("AppResources");
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = BuildProp.APP_IS_DEBUG;
 
     private static final Map<Object, String> S_STRING_RES_CACHE = new HashMap<>();
     private static final Map<Object, String[]> S_STRING_ARRAY_RES_CACHE = new HashMap<>();

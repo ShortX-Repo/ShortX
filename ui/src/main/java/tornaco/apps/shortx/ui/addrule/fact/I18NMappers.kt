@@ -2,7 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact
 
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.common.OnOffAny

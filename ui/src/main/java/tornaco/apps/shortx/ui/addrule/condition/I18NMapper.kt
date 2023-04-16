@@ -1,7 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.runtime.Composable
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets

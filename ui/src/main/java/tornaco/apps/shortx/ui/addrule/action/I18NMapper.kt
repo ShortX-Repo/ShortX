@@ -2,7 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action
 
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
-import github.tornaco.shortx.android.icon.Remix
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets

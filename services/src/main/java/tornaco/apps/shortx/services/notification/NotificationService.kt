@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.notification
 
-import tornaco.apps.shortx.core.AppResources
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.NotificationPoster
@@ -8,13 +7,20 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
 class NotificationService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    private val appRes by lazy { AppResources(context, BuildProp.APP_PACKAGE_NAME) }
+    private val appRes by lazy {
+        AppResources(
+            context,
+            BuildProp.APP_PACKAGE_NAME
+        )
+    }
 
     val notificationPoster by lazy {
         NotificationPoster(
@@ -22,8 +28,11 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
             "ShortX silence",
             "ShortX alert",
             "ShortX",
-            getIcon = {
-                appRes.getIcon(it)
+            getIcon = { remixNam ->
+                val resName = Remix.allFlat[remixNam]
+                resName?.let {
+                    appRes.getIcon(it)
+                }
             },
             getBitmap = {
                 appRes.getBitmap(it)

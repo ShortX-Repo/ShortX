@@ -13,10 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import github.tornaco.shortx.android.icon.Remix
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
+import tornaco.apps.shortx.ui.base.remixResId
 import java.util.*
 
 @SuppressLint("MissingPermission")
@@ -76,10 +77,10 @@ fun NotificationDemo() {
             "important",
             null,
             getIcon = {
-                Icon.createWithResource(context, Remix.allFlat[it]!!)
+                Icon.createWithResource(context, context.remixResId(it))
             },
             getBitmap = {
-                BitmapUtils.getBitmap(context, Remix.allFlat[it]!!)!!
+                BitmapUtils.getBitmap(context, context.remixResId(it))!!
             }
         ).invoke(
             PostNotification.newBuilder()
