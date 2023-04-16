@@ -21,7 +21,7 @@ class NotificationPoster(
     private val importNotificationChannelLabel: String,
     private val overrideName: String? = null,
     private val getIcon: (String) -> android.graphics.drawable.Icon,
-    private val getBitmap: (String) -> Bitmap,
+    private val getBitmap: (String) -> Bitmap?,
 ) {
     private val logger = Logger("NotificationPoster")
 
@@ -79,8 +79,10 @@ class NotificationPoster(
                 .setStyle(style)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))
 
-            largeIcon?.let {
-                builder.setLargeIcon(getBitmap(it))
+            if (largeIcon.isNotEmpty()) {
+                getBitmap(largeIcon)?.let {
+                    builder.setLargeIcon(it)
+                }
             }
 
             pendingIntent?.let {
@@ -99,8 +101,8 @@ class NotificationPoster(
 
             val n = builder.build()
 
-            smallIcon?.let {
-                n.smallIcon = getIcon(it)
+            if (smallIcon.isNotEmpty()) {
+                n.smallIcon = getIcon(smallIcon)
             }
 
             overrideName?.let {
