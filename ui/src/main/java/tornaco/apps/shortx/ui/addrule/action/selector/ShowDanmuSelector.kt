@@ -56,7 +56,7 @@ fun ShowDanmuSettingsDialog(state: ShowDanmuSettingsDialogState) {
 
 @Composable
 private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
-    val vm = hiltViewModel<ShowDanmuSelectorViewModel>()
+    val vm = hiltViewModel<ShowDanmuSelectorViewModel>().apply { resetState() }
     LaunchedEffect(vm) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)

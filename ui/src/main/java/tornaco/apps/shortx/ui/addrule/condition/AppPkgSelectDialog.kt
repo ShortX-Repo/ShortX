@@ -169,7 +169,7 @@ private fun AppPkgSelector(state: AppPkgSelectorState) {
 
 @Composable
 private fun PkgSetContent(selectorState: AppPkgSelectorState) {
-    val vm = hiltViewModel<PkgSetListViewModel>()
+    val vm = hiltViewModel<PkgSetListViewModel>().apply { resetState() }
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {

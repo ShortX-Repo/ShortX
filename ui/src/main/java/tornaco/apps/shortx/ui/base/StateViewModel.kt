@@ -18,4 +18,7 @@ abstract class StateViewModel<T> :
         _state.value = t
     }
 
+    fun resetState() {
+        updateState(initState())
+    }
 }

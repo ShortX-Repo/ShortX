@@ -71,6 +71,7 @@ fun DirectActionListScreen() {
 
         DirectActionListContent(
             state = state,
+            showOverflowMenu = true,
             onDelete = { da ->
                 vm.deleteDA(da.id)
             },
@@ -93,16 +94,18 @@ fun DirectActionListScreen() {
 }
 
 @Composable
-private fun DirectActionListContent(
+fun DirectActionListContent(
+    modifier: Modifier = Modifier,
     state: MainState,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
-    onDirectActionClick: (DirectActionUM) -> Unit,
-    stopAllJobs: (DirectActionUM) -> Unit
+    showOverflowMenu: Boolean = false,
+    onDelete: (DirectActionUM) -> Unit = {},
+    onEdit: (DirectActionUM) -> Unit = {},
+    onShare: (DirectActionUM) -> Unit = {},
+    onDirectActionClick: (DirectActionUM) -> Unit = {},
+    stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
     if (state.das.isSuccess() && state.das.data.isNullOrEmpty()) {
-        EmptyList(modifier = Modifier.fillMaxSize())
+        EmptyList(modifier = modifier.fillMaxSize())
     } else if (state.das.isSuccess()) {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
@@ -151,6 +154,7 @@ private fun DirectActionListContent(
                                 }
                             },
                             da = da,
+                            showOverflowMenu = showOverflowMenu,
                             onClick = {
                                 onDirectActionClick(da)
                                 colorAnimStarted = true
@@ -179,6 +183,7 @@ private fun DirectActionListContent(
 private fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
+    showOverflowMenu: Boolean,
     onClick: () -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
@@ -192,7 +197,7 @@ private fun DirectActionItem(
         icon = da.icon,
         runningInsCount = da.runningInsCount,
         overflow = {
-            ListItemOverflowMenu(da, onDelete, onEdit, onShare)
+            if (showOverflowMenu) ListItemOverflowMenu(da, onDelete, onEdit, onShare)
         },
         onClick = onClick,
         stopAllJobs = {

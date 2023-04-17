@@ -18,6 +18,7 @@ class FromDADialogSelectorViewModel @Inject constructor(@ApplicationContext cont
     ContextViewModel<FromDASelectorState>(context) {
 
     override fun initState(): FromDASelectorState {
+        logger.d("initState")
         return FromDASelectorState(
             data = Action.FromDA(daId = "", title = null, description = null),
         )
@@ -29,6 +30,7 @@ class FromDADialogSelectorViewModel @Inject constructor(@ApplicationContext cont
     }
 
     fun selectDA(daId: String) {
+        logger.d("selectDA: $daId")
         val da = shortXManager.getDirectActionById(daId)
         updateState {
             copy(

@@ -56,7 +56,7 @@ fun ShowOverlayButtonDialog(state: ShowOverlayButtonDialogState) {
 
 @Composable
 private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState) {
-    val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>()
+    val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>().apply { resetState() }
     LaunchedEffect(dialogState.currentSettings) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)

@@ -58,7 +58,7 @@ fun ShowDialogSettingsDialog(state: ShowDialogSettingsDialogState) {
 
 @Composable
 private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
-    val vm = hiltViewModel<ShowDialogSelectorViewModel>()
+    val vm = hiltViewModel<ShowDialogSelectorViewModel>().apply { resetState() }
     LaunchedEffect(vm) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)

@@ -60,7 +60,7 @@ fun GlobalVarSelectorDialog(state: GlobalVarSelectorState) {
 
 @Composable
 private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
-    val vm = hiltViewModel<GlobalVarListViewModel>()
+    val vm = hiltViewModel<GlobalVarListViewModel>().apply { resetState() }
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {

@@ -56,7 +56,7 @@ fun PostNotificationSelectorDialog(state: PostNotificationDialogState) {
 
 @Composable
 private fun PostNotificationSelector(dialogState: PostNotificationDialogState) {
-    val vm = hiltViewModel<PostNotificationSelectorViewModel>()
+    val vm = hiltViewModel<PostNotificationSelectorViewModel>().apply { resetState() }
     LaunchedEffect(dialogState.currentSettings) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)

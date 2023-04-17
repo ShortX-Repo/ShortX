@@ -55,7 +55,7 @@ fun WriteGVDialog(state: WriteGVDialogState) {
 
 @Composable
 private fun WriteGVSelector(dialogState: WriteGVDialogState) {
-    val vm = hiltViewModel<WriteGVSelectorViewModel>()
+    val vm = hiltViewModel<WriteGVSelectorViewModel>().apply { resetState() }
     val state = vm.state.collectAsState()
 
     ShortXTheme {

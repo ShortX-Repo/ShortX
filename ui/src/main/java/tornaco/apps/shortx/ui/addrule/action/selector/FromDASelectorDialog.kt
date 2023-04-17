@@ -3,7 +3,10 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,12 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
-import tornaco.apps.shortx.ui.base.SmallTitle
-import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -60,7 +62,7 @@ fun FromDASelectorDialog(state: FromDADialogState) {
 
 @Composable
 private fun FromDASelector(dialogState: FromDADialogState) {
-    val vm = hiltViewModel<FromDADialogSelectorViewModel>()
+    val vm = hiltViewModel<FromDADialogSelectorViewModel>().apply { resetState() }
     LaunchedEffect(dialogState.currentSettings) {
         dialogState.currentSettings?.let {
             vm.initFrom(it)
@@ -77,7 +79,7 @@ private fun FromDASelector(dialogState: FromDADialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.post.notification"]) },
+                        title = { Text(LocalI18N.current["ui.action.from.da"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -87,41 +89,53 @@ private fun FromDASelector(dialogState: FromDADialogState) {
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(state.data)
-                                dialogState.dismiss()
+                                if (state.data.daId.isNotBlank()) {
+                                    dialogState.onSelected(state.data)
+                                    dialogState.dismiss()
+                                }
                             }) {
                                 Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
                             }
 
                         },
                     )
-                }) {
-                Content(paddingValues = it, vm = vm)
+                }) { paddingValues ->
+
+                val daSelectorState = rememberDADialogState {
+                    vm.selectDA(it.id)
+                }
+                DASelectorDialog(daSelectorState)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .padding(paddingValues)
+                        .animateContentSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+
+                    StandardSpacer()
+                    Column(verticalArrangement = Arrangement.Center) {
+                        SmallTitle(LocalI18N.current["ui.title.select.action"])
+
+                        if (state.data.daId.isNotBlank()) {
+                            ListItem(titleLines = labelLinesForAction(action = state.data),
+                                icon = {
+                                    ColoredIcon(size = 36.dp) {
+                                        RemixIcon(remixName = imageVectorForAction(action = Action.FromDA::class))
+                                    }
+                                })
+                        }
+                        FilledTonalIconButton(onClick = {
+                            daSelectorState.show()
+                        }) {
+                            RemixIcon(remixName = Remix.System.settings_2_line)
+                        }
+                    }
+                }
             }
         }
     }
 
-}
-
-@Composable
-private fun Content(paddingValues: PaddingValues, vm: FromDADialogSelectorViewModel) {
-    val state by vm.state.collectAsState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(paddingValues)
-            .animateContentSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-
-        StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.title.select.action"])
-
-
-
-            vm.selectDA(shortXManager.getAllDirectAction().first().id)
-        }
-    }
 }
