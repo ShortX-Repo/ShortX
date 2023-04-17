@@ -11,6 +11,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.elvishew.xlog.XLog
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
@@ -27,6 +28,9 @@ class ActionShortcutActivity : Activity() {
         super.onCreate(savedInstanceState)
         val id: String? = intent.getStringExtra(KEY_ACTION_ID)
         logger.i("ActionShortcutActivity, action: $id")
+        id?.let {
+            shortXManager.executeDirectionActionById(it)
+        }
         finishAffinity()
     }
 
