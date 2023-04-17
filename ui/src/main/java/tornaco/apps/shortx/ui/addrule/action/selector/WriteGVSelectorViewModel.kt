@@ -14,7 +14,7 @@ fun Action.WriteGV.isValid() = varId.isNotEmpty() && varName.isNotEmpty()
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<Action.WriteGV>(context) {
 
     override fun initState(): Action.WriteGV {

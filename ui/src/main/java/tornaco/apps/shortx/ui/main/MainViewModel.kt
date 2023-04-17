@@ -2,16 +2,19 @@ package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Parcelable
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import tornaco.apps.shortx.core.res.Remix
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.parcelize.Parcelize
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
@@ -24,6 +27,7 @@ import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -42,6 +46,7 @@ data class RuleUM(
     val actionIcon: String,
 )
 
+@Parcelize
 data class DirectActionUM(
     val id: String,
     val title: String,
@@ -50,7 +55,7 @@ data class DirectActionUM(
     val createTime: String,
     val icon: String,
     val runningInsCount: Int
-)
+) : Parcelable
 
 data class MainState(
     val isActivated: Boolean = false,
@@ -62,9 +67,54 @@ data class MainState(
     val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
 )
 
+
+private fun DirectAction.toDirectActionUM(
+    context: Context,
+    shortXManager: ShortXManager,
+    i18N: I18N,
+    activeJobs: List<String>
+): DirectActionUM {
+    val firstAction: Action? = this.actionsList?.let {
+        if (it.isEmpty()) {
+            null
+        } else {
+            it[0].toAction(shortXManager)
+        }
+    }
+
+    return DirectActionUM(
+        id = this.id,
+        title = this.title,
+        description = translateDA(shortXManager, i18N),
+        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+            context,
+            Date(this.lastUpdateTime)
+        ),
+        createTime = FuzzyDateTimeFormatter.getTimeAgo(
+            context,
+            Date(this.createTime)
+        ),
+        icon = firstAction?.let {
+            imageVectorForAction(
+                it::class
+            )
+        } ?: Remix.Weather.sparkling_line,
+        runningInsCount = activeJobs.count {
+            it == this.id
+        }
+    )
+}
+
+private fun DirectAction.translateDA(shortXManager: ShortXManager, i18N: I18N) =
+    this.description.fallbackOnEmpty(this.actionsList.mapNotNull {
+        it.toAction(shortXManager)
+    }.joinToString {
+        labelAndDescriptionForActionSelector(i18N, it::class).first
+    })
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class MainViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<MainState>(context) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
@@ -208,34 +258,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                 val das = shortXManager.getAllDirectAction()
                     .sortedByDescending { it.createTime }
                     .map { directAction ->
-                        val firstAction: Action? = directAction.actionsList?.let {
-                            if (it.isEmpty()) {
-                                null
-                            } else {
-                                it[0].toAction(shortXManager)
-                            }
-                        }
-                        DirectActionUM(
-                            id = directAction.id,
-                            title = directAction.title,
-                            description = translateDA(directAction),
-                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(directAction.lastUpdateTime)
-                            ),
-                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(directAction.createTime)
-                            ),
-                            icon = firstAction?.let {
-                                imageVectorForAction(
-                                    it::class
-                                )
-                            } ?: Remix.Weather.sparkling_line,
-                            runningInsCount = activeJobs.count {
-                                it == directAction.id
-                            }
-                        )
+                        directAction.toDirectActionUM(context, shortXManager, i18N, activeJobs)
                     }
                 updateState {
                     copy(das = LoadState.Success(das))
@@ -244,13 +267,6 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
         }
     }
-
-    private fun translateDA(directAction: DirectAction) =
-        directAction.description.fallbackOnEmpty(directAction.actionsList.mapNotNull {
-            it.toAction(shortXManager)
-        }.joinToString {
-            labelAndDescriptionForActionSelector(i18N, it::class).first
-        })
 
     private fun delayLoadDA(delay: Long) {
         loadDAJob?.cancel()

@@ -254,3 +254,9 @@ message PostNotification {
 
   string id = 100;
 }
+
+message FromDA {
+  string daId = 1;
+
+  string id = 100;
+}

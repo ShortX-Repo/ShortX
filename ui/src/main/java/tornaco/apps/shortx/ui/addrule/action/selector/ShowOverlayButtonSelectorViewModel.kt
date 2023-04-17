@@ -61,7 +61,7 @@ fun OverlayButtonSetting.toOverlayButtonItem(): OverlayButtonItem {
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<OverlayButtonSelectorState>(context) {
 
     override fun initState(): OverlayButtonSelectorState {

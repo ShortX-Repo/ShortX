@@ -18,9 +18,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -28,7 +28,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class AppPkgSelectorState(
     val installedApps: List<App>,
     val onAppListSelected: (List<App>) -> Unit,
-    val onPkgSetSelected: (List<PkgSet>) -> Unit
+    val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
@@ -80,7 +80,7 @@ class AppPkgSelectorState(
 fun rememberAppPkgSelectorState(
     apps: List<App>,
     onAppListSelected: (List<App>) -> Unit = {},
-    onPkgSetSelected: (List<PkgSet>) -> Unit = {}
+    onPkgSetSelected: ((List<PkgSet>) -> Unit)? = null
 ): AppPkgSelectorState {
     return remember(apps) {
         AppPkgSelectorState(apps, onAppListSelected, onPkgSetSelected)
@@ -122,7 +122,7 @@ private fun AppPkgSelector(state: AppPkgSelectorState) {
                                 if (selectedTabIndex == 0) {
                                     state.onAppListSelected(state.selectedApps)
                                 } else {
-                                    state.onPkgSetSelected(state.selectedPkgSets)
+                                    state.onPkgSetSelected?.invoke(state.selectedPkgSets)
                                 }
                                 state.dismiss()
 
@@ -138,10 +138,13 @@ private fun AppPkgSelector(state: AppPkgSelectorState) {
                         .padding(paddingValues)
                 ) {
                     TabRow(selectedTabIndex = selectedTabIndex) {
-                        val titles = listOf(
+                        val titles = mutableListOf(
                             LocalI18N.current["ui.dialog.title.select.app"],
-                            LocalI18N.current["ui.pkg.set.title"]
-                        )
+                        ).apply {
+                            if (state.onPkgSetSelected != null) {
+                                add(LocalI18N.current["ui.pkg.set.title"])
+                            }
+                        }
                         titles.forEachIndexed { index, title ->
                             Tab(selected = selectedTabIndex == index,
                                 onClick = { selectedTabIndex = index },

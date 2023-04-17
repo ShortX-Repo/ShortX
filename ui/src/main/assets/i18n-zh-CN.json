@@ -122,6 +122,8 @@
   "ui.action.category.app": "应用",
   "ui.action.launch.app": "打开应用",
   "ui.action.start.activity": "启动活动",
+  "ui.action.from.da": "执行一键指令",
+  "ui.action.from.da.not.found": "一键指令已经不存在，请重新设定",
   "ui.action.expand.notification": "展开通知栏",
   "ui.action.post.notification": "显示通知",
   "ui.action.post.notification.tag": "标签",

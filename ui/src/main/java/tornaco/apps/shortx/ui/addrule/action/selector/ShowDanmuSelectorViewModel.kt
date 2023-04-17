@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class ShowDanmuSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class ShowDanmuSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<Action.ShowDanmu>(context) {
 
     override fun initState(): Action.ShowDanmu {

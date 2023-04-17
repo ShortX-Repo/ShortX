@@ -52,7 +52,7 @@ data class AddRuleState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class AddRuleViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<AddRuleState>(context) {
 
     private val _ruleSaved = MutableSharedFlow<String>()

@@ -5,8 +5,8 @@ import android.content.Context
 import tornaco.apps.shortx.core.util.Logger
 
 @SuppressLint("StaticFieldLeak")
-abstract class ContextViewModel<T> constructor(private val context: Context) : StateViewModel<T>() {
-    protected val shortXManager = tornaco.apps.shortx.core.shortXManager
+abstract class ContextViewModel<T> constructor(val context: Context) : StateViewModel<T>() {
+    val shortXManager = tornaco.apps.shortx.core.shortXManager
     protected val logger = Logger(javaClass.simpleName)
-    protected val i18N = i18NIns
+    val i18N = i18NIns
 }

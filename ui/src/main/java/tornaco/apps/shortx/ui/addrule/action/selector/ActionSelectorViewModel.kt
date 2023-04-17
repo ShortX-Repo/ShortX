@@ -31,7 +31,7 @@ data class SelectorState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class ActionSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<SelectorState>(context) {
 
     @Inject

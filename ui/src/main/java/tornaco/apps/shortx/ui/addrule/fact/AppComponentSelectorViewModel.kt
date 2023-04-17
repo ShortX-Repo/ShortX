@@ -24,7 +24,7 @@ data class AppComponentStates(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<AppComponentStates>(context) {
 
     override fun initState(): AppComponentStates {

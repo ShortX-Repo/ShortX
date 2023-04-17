@@ -43,8 +43,18 @@ fun ExtActions(addAction: (Action) -> Unit) {
     }
     WriteGVDialog(writeGVSelectorState)
 
+    val fromDASelectorState = rememberFromDADialogState {
+        addAction(it)
+    }
+    FromDASelectorDialog(state = fromDASelectorState)
+
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Item(
+            Action.FromDA::class,
+            labelAndDescriptionForActionSelector(i18N, Action.FromDA::class),
+            imageVectorForAction(Action.FromDA::class)
+        ),
         Item(
             Action.ShellCommand::class,
             labelAndDescriptionForActionSelector(i18N, Action.ShellCommand::class),
@@ -101,6 +111,9 @@ fun ExtActions(addAction: (Action) -> Unit) {
                 }
                 Action.WriteGV::class -> {
                     writeGVSelectorState.show()
+                }
+                Action.FromDA::class -> {
+                    fromDASelectorState.show()
                 }
             }
         })

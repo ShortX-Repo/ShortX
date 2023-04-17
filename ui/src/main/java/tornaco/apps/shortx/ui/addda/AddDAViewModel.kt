@@ -35,7 +35,7 @@ data class AddDirectActionState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class AddDirectActionViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<AddDirectActionState>(context) {
 
     private val _daSaved = MutableSharedFlow<String>()

@@ -249,6 +249,14 @@ sealed interface Action : Parcelable {
         val poi: String,
         val mapApp: MapApp
     ) : Action
+
+    @Parcelize
+    data class FromDA(
+        override val id: String = defaultNewActionId(),
+        val daId: String,
+        val title: String?,
+        val description: String?
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -422,6 +430,9 @@ fun Action.toProtoAction(): ProtoMessage {
                 .setSound(sound)
                 .setVibrate(vibrate)
                 .build()
+        }
+        is Action.FromDA -> {
+            FromDA.newBuilder().setId(id).setDaId(daId).build()
         }
     }
 }
@@ -686,6 +697,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 vibrate = data.vibrate,
                 sound = data.sound,
                 isImportant = data.isImportant
+            )
+        }
+
+        this is_ FromDA::class.java -> {
+            val data = this unpack_ FromDA::class.java
+            val da = shortXManager.getDirectActionById(data.daId)
+            Action.FromDA(
+                id = data.id, daId = data.daId,
+                title = da?.title,
+                description = da?.description
             )
         }
 

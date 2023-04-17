@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<Action.ShowAlertDialog>(context) {
 
     override fun initState(): Action.ShowAlertDialog {

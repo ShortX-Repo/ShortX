@@ -55,7 +55,7 @@ fun UISettings.toDanmuUISettings(): DanmuUISettings =
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
     StateViewModel<UISettingsState>() {
 
     private var previewJob: Job? = null

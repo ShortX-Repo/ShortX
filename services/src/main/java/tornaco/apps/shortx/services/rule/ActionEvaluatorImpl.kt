@@ -10,7 +10,6 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
-import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.*
@@ -248,6 +247,9 @@ class ActionEvaluatorImpl(
                 val d = action unpack_ PostNotification::class.java
                 shortXContext.notification.notificationPoster.invoke(d)
             }
+        } else if (action is_ FromDA::class.java) {
+            val d = action unpack_ FromDA::class.java
+            shortXContext.rule.executeDirectionActionById(d.id)
         }
     }
 

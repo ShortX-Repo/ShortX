@@ -15,7 +15,7 @@ data class PostNotificationSelectorState(
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<PostNotificationSelectorState>(context) {
 
     override fun initState(): PostNotificationSelectorState {

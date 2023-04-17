@@ -2,13 +2,14 @@ package tornaco.apps.shortx.ui.addrule.action
 
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
+import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
 import kotlin.reflect.KClass
 
 fun labelAndDescriptionForActionSelector(
@@ -87,6 +88,7 @@ fun labelAndDescriptionForActionSelector(
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
+        Action.FromDA::class -> i18N["ui.action.from.da"] to null
 
         else -> {
             "N/A" to null
@@ -256,6 +258,20 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.message
             )
         }
+        is Action.FromDA -> {
+            mutableListOf(
+                i18N["ui.action.from.da"],
+            ).apply {
+                if (action.title != null) {
+                    add(action.title)
+                    if (!action.description.isNullOrBlank()) {
+                        add(action.description)
+                    }
+                } else {
+                    add(i18N["ui.action.from.da.not.found"] + "${PREFIX_MD_ICON}${Remix.System.alert_line}")
+                }
+            }
+        }
     }
 }
 
@@ -395,6 +411,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
         Action.MapNav::class -> {
             Remix.Map.navigation_line
+        }
+        Action.FromDA::class -> {
+            Remix.Editor.link
         }
 
         else -> {
