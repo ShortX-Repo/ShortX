@@ -7,13 +7,12 @@ import android.graphics.PixelFormat
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import androidx.annotation.Keep
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Recomposer
-import androidx.compose.ui.platform.AbstractComposeView
-import androidx.compose.ui.platform.AndroidUiDispatcher
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.compositionContext
+import androidx.compose.ui.platform.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
@@ -21,6 +20,8 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
@@ -106,19 +107,22 @@ class ComposeOverlay(
         val wrapContent = LayoutParams(
             LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
         )
+        val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
 
         val composeView = ComposeView(context).apply {
             setContent {
-                OverlayContent(
-                    autoCollapse = autoCollapse,
-                    icons = icons,
-                    labels = labels,
-                    motionEventSpy = {
-                        touchListener.onTouch(
-                            this@ComposeOverlay, it
-                        )
-                    },
-                    onButtonClick = { onButtonClick.accept(it) })
+                CompositionLocalProvider(LocalContext provides appResources.appContext) {
+                    OverlayContent(
+                        autoCollapse = autoCollapse,
+                        icons = icons,
+                        labels = labels,
+                        motionEventSpy = {
+                            touchListener.onTouch(
+                                this@ComposeOverlay, it
+                            )
+                        },
+                        onButtonClick = { onButtonClick.accept(it) })
+                }
             }
             isFocusable = false
             isClickable = false

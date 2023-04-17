@@ -22,9 +22,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.Remix.allFlat
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.R
 
 @Composable
 fun ColoredIcon(
@@ -81,7 +81,7 @@ fun RemixIcon(
             )
         }.getOrElse {
             Logger("RemixIcon").e(it, "Fail on: $remixName")
-            painterResource(id = R.drawable.ui_ic_baseline_developer_mode_24)
+            painterResource(id = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_bug_line)
         },
         tint = tint,
         contentDescription = "Icon"
@@ -90,5 +90,9 @@ fun RemixIcon(
 
 @SuppressLint("DiscouragedApi")
 fun Context.remixResId(remixName: String): Int {
-    return resources.getIdentifier(allFlat[remixName], "drawable", packageName)
+    return resources.getIdentifier(
+        allFlat[remixName] ?: allFlat[Remix.Development.bug_line],
+        "drawable",
+        packageName
+    )
 }

@@ -140,7 +140,7 @@ public class AppResources {
         return Icon.createWithResource(getContext(), android.R.drawable.stat_sys_warning);
     }
 
-    private Context getAppContext() {
+    public Context getAppContext() {
         Context context = getContext();
         if (context == null) {
             LOGGER.e("Context is null!!!");

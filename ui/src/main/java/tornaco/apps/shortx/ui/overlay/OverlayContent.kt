@@ -18,11 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import tornaco.apps.shortx.core.res.Remix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -122,11 +123,11 @@ fun OverlayContent(
                         .clickable {
                             expandState.expand()
                         }) {
-                        RemixIcon(
+                        IconForButton(
                             modifier = Modifier
                                 .size(16.dp)
                                 .align(Alignment.Center),
-                            remixName = Remix.Arrows.arrow_drop_down_line,
+                            icon = Remix.Arrows.arrow_drop_down_line,
                         )
                     }
                 }
@@ -153,7 +154,7 @@ fun OverlayContent(
                                     IconButtonContainer(onClick = {
                                         onButtonClick(index)
                                     }) {
-                                        IconForButton(icon)
+                                        IconForButton(icon = icon)
                                     }
                                 }
 
@@ -177,8 +178,8 @@ fun OverlayContent(
 }
 
 @Composable
-private fun IconForButton(icon: String) {
-    RemixIcon(remixName = icon)
+private fun IconForButton(modifier: Modifier = Modifier, icon: String) {
+    RemixIcon(modifier = modifier, remixName = icon)
 }
 
 @Composable
@@ -192,4 +193,8 @@ private fun IconButtonContainer(onClick: () -> Unit, icon: @Composable () -> Uni
     ) {
         icon()
     }
+}
+
+val LocalAppResources = staticCompositionLocalOf<AppResources> {
+    error("CompositionLocal LocalAppResources not present")
 }
