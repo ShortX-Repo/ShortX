@@ -197,7 +197,15 @@ private fun DirectActionItem(
         icon = da.icon,
         runningInsCount = da.runningInsCount,
         overflow = {
-            if (showOverflowMenu) ListItemOverflowMenu(da, onDelete, onEdit, onShare)
+            if (showOverflowMenu) {
+                ListItemOverflowMenu(da, onDelete, onEdit, onShare)
+            } else {
+                IconButton(modifier = Modifier, onClick = {
+                }) {
+                    onClick()
+                }
+
+            }
         },
         onClick = onClick,
         stopAllJobs = {
