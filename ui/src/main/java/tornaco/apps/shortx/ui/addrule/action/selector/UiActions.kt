@@ -73,6 +73,12 @@ fun UiActions(addAction: (Action) -> Unit) {
             labelAndDescriptionForActionSelector(i18N, Action.FindAndClickViewByText::class),
             imageVectorForAction(Action.FindAndClickViewByText::class)
         ),
+
+        Item(
+            Action.WaitForIdle::class,
+            labelAndDescriptionForActionSelector(i18N, Action.WaitForIdle::class),
+            imageVectorForAction(Action.WaitForIdle::class)
+        ),
     )
 
     val subSelectorStates = uiActionSubSelectors(addAction)
@@ -110,6 +116,9 @@ fun UiActions(addAction: (Action) -> Unit) {
                 }
                 Action.FindAndClickViewByText::class -> {
                     subSelectorStates.findAndClickViewByTextSelectorState.show()
+                }
+                Action.WaitForIdle::class -> {
+                    addAction(Action.WaitForIdle())
                 }
             }
         })

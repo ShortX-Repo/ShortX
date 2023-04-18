@@ -252,7 +252,13 @@ class ActionEvaluatorImpl(
             shortXContext.rule.executeDirectionActionById(d.id)
         } else if (action is_ FindAndClickViewByText::class.java) {
             val d = action unpack_ FindAndClickViewByText::class.java
-            shortXContext.wm.findAndClickViewByText(text = d.text, isRegex = d.isRegex)
+            shortXContext.wm.findAndClickViewByText(
+                text = d.text,
+                isRegex = d.isRegex,
+                timeout = d.timeout
+            )
+        } else if (action is_ WaitForIdle::class.java) {
+            shortXContext.wm.waitForIdle()
         }
     }
 

@@ -338,7 +338,14 @@ message FromDA {
 message FindAndClickViewByText {
   string text = 1;
   bool isRegex = 2;
+  int64 timeout = 3;
 
+
+  string note = 99;
+  string id = 100;
+}
+
+message WaitForIdle {
 
   string note = 99;
   string id = 100;

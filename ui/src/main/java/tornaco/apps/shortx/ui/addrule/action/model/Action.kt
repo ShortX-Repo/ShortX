@@ -365,6 +365,12 @@ sealed interface Action : Parcelable {
         val text: String,
         val isRegex: Boolean
     ) : Action
+
+    @Parcelize
+    data class WaitForIdle(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -564,6 +570,12 @@ fun Action.toProtoAction(): ProtoMessage {
         is Action.FindAndClickViewByText -> {
             FindAndClickViewByText.newBuilder().setId(id).setText(text).setIsRegex(isRegex)
                 .setNote(note).build()
+        }
+        is Action.WaitForIdle -> {
+            WaitForIdle.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .build()
         }
     }
 }
@@ -889,6 +901,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 text = data.text,
                 isRegex = data.isRegex
+            )
+        }
+        this is_ WaitForIdle::class.java -> {
+            val data = this unpack_ WaitForIdle::class.java
+            Action.WaitForIdle(
+                id = data.id,
+                note = data.note
             )
         }
 

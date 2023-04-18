@@ -33,6 +33,18 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         automationManager.disconnect()
     }
 
+    fun waitForIdle(): Boolean {
+        if (!isSystemReady) return false
+        if (!automationManager.isConnected) {
+            logger.w("findAndClickViewByViewIdInternal, not connected.")
+            return false
+        }
+        val uiDevice = UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+        uiDevice.waitForIdle()
+        logger.d("waitForIdle finish")
+        return true
+    }
+
     fun findAndClickViewByText(
         text: String,
         isRegex: Boolean = false,
