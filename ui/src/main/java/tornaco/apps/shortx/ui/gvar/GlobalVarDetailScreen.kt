@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.ui.base.*
@@ -61,7 +62,7 @@ fun GlobalVarDetailScreen(id: String, back: () -> Unit) {
                             IconButton(onClick = {
                                 back()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                         scrollBehavior = scrollBehavior

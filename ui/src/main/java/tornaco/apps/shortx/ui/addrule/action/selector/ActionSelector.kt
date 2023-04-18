@@ -4,8 +4,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -74,7 +72,7 @@ private fun ActionSelector(
                             IconButton(onClick = {
                                 state.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                     )

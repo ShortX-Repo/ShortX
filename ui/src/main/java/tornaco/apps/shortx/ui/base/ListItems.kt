@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.res.Remix
 
 const val PREFIX_APP_ICON = "app_icon://"
 const val PREFIX_MD_ICON = "md_icon://"
@@ -83,7 +83,7 @@ fun ListItem(
             }
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = CenterVertically) {
             action1()
         }
     }

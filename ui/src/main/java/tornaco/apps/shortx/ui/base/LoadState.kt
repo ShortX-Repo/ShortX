@@ -18,7 +18,7 @@ sealed interface LoadState<out T> {
     fun isSuccess() = this is Success
 
     val <T> LoadState<T>.data: T?
-        get() = (this as? LoadState.Success)?.data
+        get() = (this as? Success)?.data
 }
 
 @Composable

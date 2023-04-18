@@ -8,10 +8,13 @@ import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 sealed interface Op : Parcelable {
     @Parcelize
     object All : Op
+
     @Parcelize
     object Any : Op
+
     @Parcelize
     object None : Op
+
     @Parcelize
     data class MVEL(val expression: String) : Op
 }

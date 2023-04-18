@@ -20,8 +20,10 @@ import tornaco.apps.shortx.core.rule.unpack_
 sealed interface Condition : Parcelable {
     @Parcelize
     data class CurrentForegroundApp(val apps: List<App>, val pkgSets: List<PkgSet>) : Condition
+
     @Parcelize
     data class MVEL(val expression: String) : Condition
+
     @Parcelize
     object TRUE : Condition
 }

@@ -7,9 +7,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,8 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
@@ -90,7 +87,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                             IconButton(onClick = {
                                 dialogState.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                         actions = {
@@ -107,7 +104,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                                     dialogState.dismiss()
                                 }
                             }) {
-                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                                RemixIcon(remixName = Remix.System.check_line)
                             }
 
                         }

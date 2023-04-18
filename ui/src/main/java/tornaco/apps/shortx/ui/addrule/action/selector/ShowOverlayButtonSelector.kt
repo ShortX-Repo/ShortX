@@ -6,14 +6,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -80,7 +78,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                             IconButton(onClick = {
                                 dialogState.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                         actions = {
@@ -95,7 +93,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                                 )
                                 dialogState.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                                RemixIcon(remixName = Remix.System.check_line)
                             }
 
                         },

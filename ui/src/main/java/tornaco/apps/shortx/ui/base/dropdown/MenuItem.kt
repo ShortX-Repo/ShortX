@@ -1,7 +1,5 @@
 package tornaco.apps.shortx.ui.base.dropdown
 
-import androidx.compose.ui.graphics.vector.ImageVector
-
 /*[MenuItem]  generic menu item with title and icon. */
 class MenuItem<T : Any> {
     lateinit var id: T

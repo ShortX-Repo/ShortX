@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -148,9 +147,7 @@ private fun Actions(
                         IconButton(onClick = {
                             removeAction(it)
                         }) {
-                            Icon(
-                                imageVector = Icons.Filled.Close, contentDescription = "Remove"
-                            )
+                            RemixIcon(remixName = Remix.System.close_line)
                         }
                     },
                     onClick = { onActionClick(it) })

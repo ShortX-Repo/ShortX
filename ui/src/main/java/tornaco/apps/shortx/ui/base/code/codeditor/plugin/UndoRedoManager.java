@@ -149,7 +149,7 @@ public class UndoRedoManager {
     }
 
     private enum ActionType {
-        INSERT, DELETE, PASTE, NOT_DEF;
+        INSERT, DELETE, PASTE, NOT_DEF
     }
 
     private final class TextChangeWatcher implements TextWatcher {

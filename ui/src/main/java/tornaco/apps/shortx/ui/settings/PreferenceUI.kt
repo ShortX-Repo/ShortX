@@ -10,9 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.res.Remix
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 
 @Composable

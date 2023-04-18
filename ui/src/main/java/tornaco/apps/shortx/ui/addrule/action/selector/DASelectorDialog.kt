@@ -4,13 +4,13 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.main.DirectActionListContent
 import tornaco.apps.shortx.ui.main.DirectActionUM
@@ -72,7 +72,7 @@ private fun DASelector(dialogState: DADialogState) {
                             IconButton(onClick = {
                                 dialogState.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                         actions = {

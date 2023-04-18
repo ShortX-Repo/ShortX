@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.*
@@ -59,7 +60,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                             IconButton(onClick = {
                                 back()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         },
                         actions = {
@@ -67,7 +68,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                                 vm.save()
                                 back()
                             }) {
-                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                                RemixIcon(remixName = Remix.System.check_line)
                             }
                         },
                         scrollBehavior = scrollBehavior
@@ -159,10 +160,7 @@ private fun AppItem(
                 }
 
                 IconButton(onClick = { removeApp(app) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Remove"
-                    )
+                    RemixIcon(remixName = Remix.System.close_line)
                 }
             }
         }

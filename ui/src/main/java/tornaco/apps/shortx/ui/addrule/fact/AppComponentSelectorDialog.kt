@@ -6,9 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.addrule.action.selector.*
@@ -106,14 +104,14 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                                 state.onAppComponentSelected(state.selectedAppComponents)
                                 state.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Check, contentDescription = "Done")
+                                RemixIcon(remixName = Remix.System.check_line)
                             }
                         },
                         navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()
                             }) {
-                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                             }
                         }
                     )

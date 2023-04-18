@@ -271,9 +271,7 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
 
                             IconButton(onClick = {
                             }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Close, contentDescription = "Remove"
-                                )
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         }
                     )

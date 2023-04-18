@@ -37,8 +37,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -65,10 +67,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                             IconButton(onClick = {
                                 back()
                             }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = "Close"
-                                )
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         scrollBehavior = scrollBehavior,

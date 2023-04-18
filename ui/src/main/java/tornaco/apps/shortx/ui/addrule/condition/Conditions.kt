@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -16,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleState
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -48,9 +48,7 @@ fun Conditions(
                         IconButton(onClick = {
                             removeCondition(it)
                         }) {
-                            Icon(
-                                imageVector = Icons.Filled.Close, contentDescription = "Remove"
-                            )
+                            RemixIcon(remixName = Remix.System.close_line)
                         }
                     }, onClick = {})
                 }

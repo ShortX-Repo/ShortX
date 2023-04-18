@@ -3,11 +3,11 @@ package tornaco.apps.shortx.ui.overlay
 import android.icu.text.MessageFormat
 import androidx.lifecycle.viewModelScope
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.ui.base.StateViewModel
-import tornaco.apps.shortx.core.rule.valueList
 
 data class OverlayState(
     val values: List<String> = emptyList(),

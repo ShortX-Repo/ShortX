@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import com.amrdeveloper.codeview.CodeView
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util._sp
 import tornaco.apps.shortx.ui.addrule.action.selector.*
@@ -93,7 +93,7 @@ private fun CodeEditor(
                         IconButton(onClick = {
                             state.dismiss()
                         }) {
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Back")
+                            RemixIcon(remixName = Remix.Arrows.arrow_left_line)
                         }
                     },
                     actions = {

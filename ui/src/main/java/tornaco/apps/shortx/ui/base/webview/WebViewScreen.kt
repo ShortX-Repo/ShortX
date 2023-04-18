@@ -35,8 +35,6 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,7 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.webview.components.ErrorView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -147,10 +147,7 @@ fun WebViewSkeleton(
                         title = { Text(title) },
                         navigationIcon = {
                             IconButton(onClick = { goBack() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = "Close"
-                                )
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                     )

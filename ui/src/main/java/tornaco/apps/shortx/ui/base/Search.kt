@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.res.Remix
 
 fun List<App>.filterSearchKeyword(keyword: String?): List<App> {
     return if (keyword.isNullOrBlank()) this else filter {
@@ -79,9 +79,7 @@ fun SearchTextField(searchBarState: SearchBarState) {
                 IconButton(onClick = {
                     searchBarState.inputKeyword("")
                 }) {
-                    Icon(
-                        imageVector = Icons.Filled.Close, contentDescription = "Clear keywords"
-                    )
+                    RemixIcon(remixName = Remix.System.close_line)
                 }
             }
         },

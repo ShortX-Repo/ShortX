@@ -70,7 +70,7 @@ class ActionShortcutActivity : Activity() {
                 ShortcutManagerCompat.requestPinShortcut(
                     context,
                     info,
-                    ShortcutReceiver.getPinRequestAcceptedIntent(context).getIntentSender()
+                    ShortcutReceiver.getPinRequestAcceptedIntent(context).intentSender
                 )
             }
         }

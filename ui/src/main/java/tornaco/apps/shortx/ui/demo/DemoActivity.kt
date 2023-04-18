@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.demo.MapDemo
-import tornaco.apps.shortx.ui.demo.NotificationDemo
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class DemoActivity : BaseActivity() {
