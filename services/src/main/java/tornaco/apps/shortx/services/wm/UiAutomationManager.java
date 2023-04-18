@@ -1,0 +1,376 @@
+package tornaco.apps.shortx.services.wm;
+
+import android.accessibilityservice.AccessibilityGestureEvent;
+import android.accessibilityservice.AccessibilityServiceInfo;
+import android.accessibilityservice.IAccessibilityServiceClient;
+import android.accessibilityservice.IAccessibilityServiceConnection;
+import android.app.UiAutomation;
+import android.app.UiAutomationConnection;
+import android.graphics.Bitmap;
+import android.graphics.Region;
+import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
+import android.os.RemoteException;
+import android.os.SystemClock;
+import android.view.InputEvent;
+import android.view.KeyEvent;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityInteractionClient;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
+
+import androidx.test.uiautomator.adapter.IUiAutomation;
+
+import com.elvishew.xlog.XLog;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import util.Reflections;
+
+public class UiAutomationManager extends IAccessibilityServiceClient.Stub implements IUiAutomation {
+
+    private final AtomicInteger connectionId = new AtomicInteger(AccessibilityInteractionClient.NO_ID);
+    private UiAutomationConnection connection;
+
+    private final Object syncLock = new Object();
+
+    private final ArrayList<AccessibilityEvent> mEventQueue = new ArrayList<>();
+    private boolean mWaitingForEventDelivery;
+    private long mLastEventTimeMillis;
+
+    boolean isConnected() {
+        return connectionId.get() != AccessibilityInteractionClient.NO_ID;
+    }
+
+    void connect() {
+        synchronized (syncLock) {
+            XLog.w("UiAutomationManager connect");
+            if (connectionId.get() != AccessibilityInteractionClient.NO_ID) {
+                // Already has a connection.
+                XLog.v("connect Already has a connection.");
+                return;
+            }
+            connection = new UiAutomationConnection();
+            connection.connect(this, UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES);
+        }
+    }
+
+    void disconnect() {
+        synchronized (syncLock) {
+            XLog.w("UiAutomationManager disconnect");
+            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+                // no connection.
+                XLog.v("disconnect no connection");
+                return;
+            }
+            if (connection == null) {
+                XLog.v("disconnect connection == null.");
+                return;
+            }
+            XLog.v("disconnect now.");
+            connection.disconnect();
+            connectionId.set(AccessibilityInteractionClient.NO_ID);
+            connection = null;
+        }
+    }
+
+    @Override
+    public List<AccessibilityWindowInfo> getWindows() {
+        return null;
+    }
+
+
+    public AccessibilityNodeInfo getRootInActiveWindow() {
+        synchronized (syncLock) {
+            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+                XLog.e("getRootInActiveWindow, not connected...");
+                return null;
+            }
+            return AccessibilityInteractionClient.getInstance().getRootInActiveWindow(connectionId.get());
+        }
+    }
+
+    @Override
+    public ParcelFileDescriptor executeShellCommand(String cmd) {
+        return null;
+    }
+
+    @Override
+    public Bitmap takeScreenshot() {
+        return null;
+    }
+
+    @Override
+    public AccessibilityEvent executeAndWaitForEvent(Runnable command,
+                                                     UiAutomation.AccessibilityEventFilter filter,
+                                                     long timeoutMillis) throws TimeoutException {
+        // Acquire the lock and prepare for receiving events.
+        synchronized (syncLock) {
+            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+                XLog.e("executeAndWaitForEvent, not connected...");
+                return null;
+            }
+            mEventQueue.clear();
+            // Prepare to wait for an event.
+            mWaitingForEventDelivery = true;
+        }
+
+        // Note: We have to release the lock since calling out with this lock held
+        // can bite. We will correctly filter out events from other interactions,
+        // so starting to collect events before running the action is just fine.
+
+        // We will ignore events from previous interactions.
+        final long executionStartTimeMillis = SystemClock.uptimeMillis();
+        // Execute the command *without* the lock being held.
+        command.run();
+
+        List<AccessibilityEvent> receivedEvents = new ArrayList<>();
+
+        // Acquire the lock and wait for the event.
+        try {
+            // Wait for the event.
+            final long startTimeMillis = SystemClock.uptimeMillis();
+            while (true) {
+                List<AccessibilityEvent> localEvents;
+                synchronized (syncLock) {
+                    localEvents = new ArrayList<>(mEventQueue);
+                    mEventQueue.clear();
+                }
+                // Drain the event queue
+                while (!localEvents.isEmpty()) {
+                    AccessibilityEvent event = localEvents.remove(0);
+                    // Ignore events from previous interactions.
+                    if (event.getEventTime() < executionStartTimeMillis) {
+                        continue;
+                    }
+                    if (filter.accept(event)) {
+                        return event;
+                    }
+                    receivedEvents.add(event);
+                }
+                // Check if timed out and if not wait.
+                final long elapsedTimeMillis = SystemClock.uptimeMillis() - startTimeMillis;
+                final long remainingTimeMillis = timeoutMillis - elapsedTimeMillis;
+                if (remainingTimeMillis <= 0) {
+                    throw new TimeoutException("Expected event not received within: "
+                            + timeoutMillis + " ms among: " + receivedEvents);
+                }
+                synchronized (syncLock) {
+                    if (mEventQueue.isEmpty()) {
+                        try {
+                            syncLock.wait(remainingTimeMillis);
+                        } catch (InterruptedException ie) {
+                            /* ignore */
+                        }
+                    }
+                }
+            }
+        } finally {
+            int size = receivedEvents.size();
+            for (int i = 0; i < size; i++) {
+                receivedEvents.get(i).recycle();
+            }
+
+            synchronized (syncLock) {
+                mWaitingForEventDelivery = false;
+                mEventQueue.clear();
+                syncLock.notifyAll();
+            }
+        }
+    }
+
+    @Override
+    public AccessibilityServiceInfo getServiceInfo() {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            XLog.e("getServiceInfo, not connected...");
+            return null;
+        }
+        final IAccessibilityServiceConnection connection;
+        synchronized (syncLock) {
+            connection = AccessibilityInteractionClient.getConnection(connectionId.get());
+        }
+        // Calling out without a lock held.
+        if (connection != null) {
+            try {
+                return connection.getServiceInfo();
+            } catch (RemoteException re) {
+                XLog.e("Error while getting AccessibilityServiceInfo", re);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void setServiceInfo(AccessibilityServiceInfo info) {
+
+    }
+
+    public boolean injectInputEvent(InputEvent event, boolean sync) {
+        synchronized (syncLock) {
+            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+                XLog.e("injectInputEvent, not connected...");
+                return false;
+            }
+            try {
+                return UiAutomationConnectionCompat.injectInputEvent(connection, event, sync);
+            } catch (Throwable throwable) {
+                XLog.e("Error while injecting input event!", throwable);
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public boolean performGlobalAction(int action) {
+        return false;
+    }
+
+    @Override
+    public void setRotation(int rotation) {
+
+    }
+
+    @Override
+    public void setOnAccessibilityEventListener(UiAutomation.OnAccessibilityEventListener listener) {
+
+    }
+
+    @Override
+    public void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis) throws TimeoutException {
+        synchronized (syncLock) {
+            if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+                XLog.e("onAccessibilityEvent, not connected...");
+                return;
+            }
+
+            final long startTimeMillis = SystemClock.uptimeMillis();
+            if (mLastEventTimeMillis <= 0) {
+                mLastEventTimeMillis = startTimeMillis;
+            }
+
+            while (true) {
+                final long currentTimeMillis = SystemClock.uptimeMillis();
+                // Did we get idle state within the global timeout?
+                final long elapsedGlobalTimeMillis = currentTimeMillis - startTimeMillis;
+                final long remainingGlobalTimeMillis =
+                        globalTimeoutMillis - elapsedGlobalTimeMillis;
+                if (remainingGlobalTimeMillis <= 0) {
+                    throw new TimeoutException("No idle state with idle timeout: "
+                            + idleTimeoutMillis + " within global timeout: "
+                            + globalTimeoutMillis);
+                }
+                // Did we get an idle state within the idle timeout?
+                final long elapsedIdleTimeMillis = currentTimeMillis - mLastEventTimeMillis;
+                final long remainingIdleTimeMillis = idleTimeoutMillis - elapsedIdleTimeMillis;
+                if (remainingIdleTimeMillis <= 0) {
+                    return;
+                }
+                try {
+                    syncLock.wait(remainingIdleTimeMillis);
+                } catch (InterruptedException ie) {
+                    /* ignore */
+                }
+            }
+        }
+    }
+
+    @Override
+    public void init(IAccessibilityServiceConnection connection, int id, IBinder iBinder) {
+        synchronized (syncLock) {
+            XLog.w("IAccessibilityServiceConnection init. %s %s %s", connection, id, iBinder);
+            if (connection != null) {
+                try {
+                    connectionId.set(id);
+                    Reflections.callStaticMethod(AccessibilityInteractionClient.class,
+                            "addConnection",
+                            id, connection);
+                } catch (Throwable e) {
+                    XLog.e("UiAutomationManager#init addConnection", e);
+                    try {
+                        AccessibilityInteractionClient.addConnection(id, connection);
+                    } catch (Throwable e2) {
+                        XLog.e("UiAutomationManager#init addConnection2", e2);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent event, boolean b) {
+        if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
+            XLog.e("onAccessibilityEvent, not connected...");
+            return;
+        }
+        synchronized (syncLock) {
+            mLastEventTimeMillis = event.getEventTime();
+            if (mWaitingForEventDelivery) {
+                mEventQueue.add(AccessibilityEvent.obtain(event));
+            }
+            syncLock.notifyAll();
+        }
+    }
+
+    @Override
+    public void onInterrupt() throws RemoteException {
+
+    }
+
+    @Override
+    public void onGesture(AccessibilityGestureEvent gestureEvent) throws RemoteException {
+
+    }
+
+    @Override
+    public void clearAccessibilityCache() throws RemoteException {
+
+    }
+
+    @Override
+    public void onKeyEvent(KeyEvent event, int sequence) throws RemoteException {
+
+    }
+
+    @Override
+    public void onMagnificationChanged(int displayId, Region region, float scale, float centerX, float centerY) throws RemoteException {
+
+    }
+
+    @Override
+    public void onSoftKeyboardShowModeChanged(int showMode) throws RemoteException {
+
+    }
+
+    @Override
+    public void onPerformGestureResult(int sequence, boolean completedSuccessfully) throws RemoteException {
+
+    }
+
+    @Override
+    public void onFingerprintCapturingGesturesChanged(boolean capturing) throws RemoteException {
+
+    }
+
+    @Override
+    public void onFingerprintGesture(int gesture) throws RemoteException {
+
+    }
+
+    @Override
+    public void onAccessibilityButtonClicked(int displayId) throws RemoteException {
+
+    }
+
+    @Override
+    public void onAccessibilityButtonAvailabilityChanged(boolean available) throws RemoteException {
+
+    }
+
+    @Override
+    public void onSystemActionsChanged() throws RemoteException {
+
+    }
+}

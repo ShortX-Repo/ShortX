@@ -22,11 +22,19 @@ class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContex
     }
 }
 
-fun Handler.postSafety(runnable: () -> Unit) {
-    post {
-        kotlin.runCatching { runnable() }.onFailure {
-            shortXContext.watchDog.onFatalError(it)
+fun Handler.postSafety(delay: Long = 0L, runnable: () -> Unit) {
+    if (delay == 0L) {
+        post {
+            kotlin.runCatching { runnable() }.onFailure {
+                shortXContext.watchDog.onFatalError(it)
+            }
         }
+    } else {
+        postDelayed({
+            kotlin.runCatching { runnable() }.onFailure {
+                shortXContext.watchDog.onFatalError(it)
+            }
+        }, delay)
     }
 }
 
