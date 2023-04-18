@@ -32,6 +32,8 @@ buildConfig {
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
     api("com.google.protobuf:protobuf-java:3.17.2")
+    // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util
+    api("com.google.protobuf:protobuf-java-util:3.22.3")
 
     implementation(tornaco.project.android.shortx.Coroutines.android)
     implementation(tornaco.project.android.shortx.Coroutines.core)

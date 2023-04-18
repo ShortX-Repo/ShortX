@@ -14,6 +14,8 @@ import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.toJson
+import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
@@ -310,18 +312,14 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     fun daToShareString(da: DirectActionUM): String? =
-        shortXManager.getDirectActionById(da.id)?.toByteArray()?.let {
-            Base64.getEncoder().encodeToString(it)
-        }
+        shortXManager.getDirectActionById(da.id)?.toJson()
 
     fun ruleToShareString(rule: RuleUM): String? =
-        shortXManager.getRuleById(rule.id)?.toByteArray()?.let {
-            Base64.getEncoder().encodeToString(it)
-        }
+        shortXManager.getRuleById(rule.id)?.toJson()
 
     fun parseShareContentRule(content: String): Rule? {
         return kotlin.runCatching {
-            Rule.parseFrom(Base64.getDecoder().decode(content))?.apply {
+            Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
                 requireNotNull(this.id) { "Id is null. invalid rule?" }
                 requireNotNull(this.title) { "Title is null. invalid rule?" }
             }
@@ -330,10 +328,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun parseShareContentDA(content: String): DirectAction? {
         return kotlin.runCatching {
-            DirectAction.parseFrom(Base64.getDecoder().decode(content))?.apply {
-                requireNotNull(this.id) { "Id is null. invalid da?" }
-                requireNotNull(this.title) { "Title is null. invalid da?" }
-            }
+            DirectAction.parseFrom(DirectAction.newBuilder().toProto(content).toByteArray())
+                ?.apply {
+                    requireNotNull(this.id) { "Id is null. invalid da?" }
+                    requireNotNull(this.title) { "Title is null. invalid da?" }
+                }
         }.getOrNull()
     }
 
