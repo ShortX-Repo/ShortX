@@ -257,6 +257,13 @@ sealed interface Action : Parcelable {
         val title: String?,
         val description: String?
     ) : Action
+
+    @Parcelize
+    data class FindAndClickViewByText(
+        override val id: String = defaultNewActionId(),
+        val text: String,
+        val isRegex: Boolean
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -433,6 +440,9 @@ fun Action.toProtoAction(): ProtoMessage {
         }
         is Action.FromDA -> {
             FromDA.newBuilder().setId(id).setDaId(daId).build()
+        }
+        is Action.FindAndClickViewByText -> {
+            FindAndClickViewByText.newBuilder().setId(id).setText(text).setIsRegex(isRegex).build()
         }
     }
 }
@@ -707,6 +717,15 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id, daId = data.daId,
                 title = da?.title,
                 description = da?.description
+            )
+        }
+
+        this is_ FindAndClickViewByText::class.java -> {
+            val data = this unpack_ FindAndClickViewByText::class.java
+            Action.FindAndClickViewByText(
+                id = data.id,
+                text = data.text,
+                isRegex = data.isRegex
             )
         }
 

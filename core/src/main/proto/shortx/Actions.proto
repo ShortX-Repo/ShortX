@@ -260,3 +260,10 @@ message FromDA {
 
   string id = 100;
 }
+
+message FindAndClickViewByText {
+  string text = 1;
+  bool isRegex = 2;
+
+  string id = 100;
+}

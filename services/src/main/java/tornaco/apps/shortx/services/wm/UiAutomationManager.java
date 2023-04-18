@@ -21,16 +21,20 @@ import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.test.uiautomator.adapter.IUiAutomation;
 
-import com.elvishew.xlog.XLog;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import tornaco.apps.shortx.core.util.Logger;
+import tornaco.apps.shortx.core.util.OsUtils;
 import util.Reflections;
 
 public class UiAutomationManager extends IAccessibilityServiceClient.Stub implements IUiAutomation {
+    public static final int FLAG_PREFETCH_DESCENDANTS_HYBRID = 0x00000004;
+
+
+    private static final Logger LOGGER = new Logger("UiAutomationManager");
 
     private final AtomicInteger connectionId = new AtomicInteger(AccessibilityInteractionClient.NO_ID);
     private UiAutomationConnection connection;
@@ -47,10 +51,10 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     void connect() {
         synchronized (syncLock) {
-            XLog.w("UiAutomationManager connect");
+            LOGGER.w("UiAutomationManager connect");
             if (connectionId.get() != AccessibilityInteractionClient.NO_ID) {
                 // Already has a connection.
-                XLog.v("connect Already has a connection.");
+                LOGGER.w("connect Already has a connection.");
                 return;
             }
             connection = new UiAutomationConnection();
@@ -60,17 +64,17 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     void disconnect() {
         synchronized (syncLock) {
-            XLog.w("UiAutomationManager disconnect");
+            LOGGER.w("UiAutomationManager disconnect");
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
                 // no connection.
-                XLog.v("disconnect no connection");
+                LOGGER.w("disconnect no connection");
                 return;
             }
             if (connection == null) {
-                XLog.v("disconnect connection == null.");
+                LOGGER.w("disconnect connection == null.");
                 return;
             }
-            XLog.v("disconnect now.");
+            LOGGER.w("disconnect now.");
             connection.disconnect();
             connectionId.set(AccessibilityInteractionClient.NO_ID);
             connection = null;
@@ -86,10 +90,15 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     public AccessibilityNodeInfo getRootInActiveWindow() {
         synchronized (syncLock) {
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                XLog.e("getRootInActiveWindow, not connected...");
+                LOGGER.e("getRootInActiveWindow, not connected...");
                 return null;
             }
-            return AccessibilityInteractionClient.getInstance().getRootInActiveWindow(connectionId.get());
+            if (OsUtils.isTOrAbove()) {
+                return (AccessibilityNodeInfo) Reflections.callMethod(AccessibilityInteractionClient.getInstance(), "getRootInActiveWindow",
+                        connectionId.get(), FLAG_PREFETCH_DESCENDANTS_HYBRID);
+            } else {
+                return AccessibilityInteractionClient.getInstance().getRootInActiveWindow(connectionId.get());
+            }
         }
     }
 
@@ -110,7 +119,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         // Acquire the lock and prepare for receiving events.
         synchronized (syncLock) {
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                XLog.e("executeAndWaitForEvent, not connected...");
+                LOGGER.e("executeAndWaitForEvent, not connected...");
                 return null;
             }
             mEventQueue.clear();
@@ -185,7 +194,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     @Override
     public AccessibilityServiceInfo getServiceInfo() {
         if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-            XLog.e("getServiceInfo, not connected...");
+            LOGGER.e("getServiceInfo, not connected...");
             return null;
         }
         final IAccessibilityServiceConnection connection;
@@ -197,7 +206,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             try {
                 return connection.getServiceInfo();
             } catch (RemoteException re) {
-                XLog.e("Error while getting AccessibilityServiceInfo", re);
+                LOGGER.e(re, "Error while getting AccessibilityServiceInfo");
             }
         }
         return null;
@@ -211,13 +220,13 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     public boolean injectInputEvent(InputEvent event, boolean sync) {
         synchronized (syncLock) {
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                XLog.e("injectInputEvent, not connected...");
+                LOGGER.e("injectInputEvent, not connected...");
                 return false;
             }
             try {
                 return UiAutomationConnectionCompat.injectInputEvent(connection, event, sync);
             } catch (Throwable throwable) {
-                XLog.e("Error while injecting input event!", throwable);
+                LOGGER.e(throwable, "Error while injecting input event!");
                 return false;
             }
         }
@@ -242,7 +251,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     public void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis) throws TimeoutException {
         synchronized (syncLock) {
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-                XLog.e("onAccessibilityEvent, not connected...");
+                LOGGER.e("onAccessibilityEvent, not connected...");
                 return;
             }
 
@@ -280,20 +289,22 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     @Override
     public void init(IAccessibilityServiceConnection connection, int id, IBinder iBinder) {
         synchronized (syncLock) {
-            XLog.w("IAccessibilityServiceConnection init. %s %s %s", connection, id, iBinder);
+            LOGGER.w("IAccessibilityServiceConnection init " + connection + id + iBinder);
             if (connection != null) {
                 try {
                     connectionId.set(id);
-                    Reflections.callStaticMethod(AccessibilityInteractionClient.class,
-                            "addConnection",
-                            id, connection);
-                } catch (Throwable e) {
-                    XLog.e("UiAutomationManager#init addConnection", e);
-                    try {
-                        AccessibilityInteractionClient.addConnection(id, connection);
-                    } catch (Throwable e2) {
-                        XLog.e("UiAutomationManager#init addConnection2", e2);
+                    if (OsUtils.isTOrAbove()) {
+                        Reflections.callStaticMethod(AccessibilityInteractionClient.class,
+                                "addConnection",
+                                id, connection, false);
+                    } else {
+                        Reflections.callStaticMethod(AccessibilityInteractionClient.class,
+                                "addConnection",
+                                id, connection);
                     }
+
+                } catch (Throwable e) {
+                    LOGGER.e(e, "UiAutomationManager#init addConnection");
                 }
             }
         }
@@ -302,7 +313,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event, boolean b) {
         if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
-            XLog.e("onAccessibilityEvent, not connected...");
+            LOGGER.e("onAccessibilityEvent, not connected...");
             return;
         }
         synchronized (syncLock) {

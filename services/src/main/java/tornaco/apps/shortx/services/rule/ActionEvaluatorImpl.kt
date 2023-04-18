@@ -250,6 +250,9 @@ class ActionEvaluatorImpl(
         } else if (action is_ FromDA::class.java) {
             val d = action unpack_ FromDA::class.java
             shortXContext.rule.executeDirectionActionById(d.id)
+        } else if (action is_ FindAndClickViewByText::class.java) {
+            val d = action unpack_ FindAndClickViewByText::class.java
+            shortXContext.wm.findAndClickViewByText(text = d.text, isRegex = d.isRegex)
         }
     }
 

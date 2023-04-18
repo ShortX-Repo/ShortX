@@ -67,6 +67,12 @@ fun UiActions(addAction: (Action) -> Unit) {
             labelAndDescriptionForActionSelector(i18N, Action.ShowAlertDialog::class),
             imageVectorForAction(Action.ShowAlertDialog::class)
         ),
+
+        Item(
+            Action.FindAndClickViewByText::class,
+            labelAndDescriptionForActionSelector(i18N, Action.FindAndClickViewByText::class),
+            imageVectorForAction(Action.FindAndClickViewByText::class)
+        ),
     )
 
     val subSelectorStates = uiActionSubSelectors(addAction)
@@ -102,6 +108,9 @@ fun UiActions(addAction: (Action) -> Unit) {
                 Action.PostNotification::class -> {
                     subSelectorStates.postNotificationDialogState.show()
                 }
+                Action.FindAndClickViewByText::class -> {
+                    subSelectorStates.findAndClickViewByTextSelectorState.show()
+                }
             }
         })
 }
@@ -113,6 +122,7 @@ data class UiActionSubSelectorStates(
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
     val postNotificationDialogState: PostNotificationDialogState,
+    val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState
 )
 
 @Composable
@@ -158,6 +168,11 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     PostNotificationSelectorDialog(postNotificationDialogState)
 
+    val findAndClickViewByTextSelectorState = rememberFindAndClickViewByTextSelectorState {
+        addAction(it)
+    }
+    FindAndClickViewByTextSelectorDialog(state = findAndClickViewByTextSelectorState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
@@ -165,5 +180,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
         postNotificationDialogState = postNotificationDialogState,
+        findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
     )
 }

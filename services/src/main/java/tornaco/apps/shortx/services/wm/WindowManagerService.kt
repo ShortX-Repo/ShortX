@@ -20,6 +20,7 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
 
     override fun systemReady() {
         super.systemReady()
+        ensureAutomationConnected()
     }
 
     fun ensureAutomationConnected() {
@@ -34,7 +35,8 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
 
     fun findAndClickViewByText(
         text: String,
-        timeout: Long,
+        isRegex: Boolean = false,
+        timeout: Long = 1000
     ): Boolean {
         if (!isSystemReady) return false
         if (!automationManager.isConnected) {
@@ -43,7 +45,11 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         }
 
         val uiDevice = UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
-        val uiObject = uiDevice.findObject(UiSelector().textContains(text))
+        val uiObject = if (isRegex) {
+            uiDevice.findObject(UiSelector().textMatches(text))
+        } else {
+            uiDevice.findObject(UiSelector().textContains(text))
+        }
         logger.d("findAndClickViewByTextInternal: $uiObject")
         if (!uiObject.waitForExists(timeout)) {
             logger.d("findAndClickViewByTextInternal: waitForExists timeout")

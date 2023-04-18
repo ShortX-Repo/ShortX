@@ -89,6 +89,7 @@ fun labelAndDescriptionForActionSelector(
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
+        Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
 
         else -> {
             "N/A" to null
@@ -272,6 +273,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 }
             }
         }
+        is Action.FindAndClickViewByText -> {
+            listOf(
+                i18N["ui.action.find.click.view.by.text"],
+                action.text
+            )
+        }
     }
 }
 
@@ -414,6 +421,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
         Action.FromDA::class -> {
             Remix.Editor.link
+        }
+        Action.FindAndClickViewByText::class -> {
+            Remix.Business.window_2_line
         }
 
         else -> {
