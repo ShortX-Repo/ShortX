@@ -14,11 +14,11 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 @Composable
 fun ExtActions(addAction: (Action) -> Unit) {
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-        addAction(Action.ShellCommand(command = cmd))
+        addAction(cmd)
     }
     ShellCommandSelector(state = shellCommandSelectorState)
 
-    val inputTextSelectorState = rememberInputTextSelectorState(onSelected = {
+    val inputTextSelectorState = rememberTextSelectorState(onSelected = {
         addAction(Action.InputText(text = it))
     })
     InputTextSelector(state = inputTextSelectorState)
@@ -34,7 +34,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
     val mvelSelectorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"]
     ) { expression ->
-        addAction(Action.MVEL(expression = expression))
+        addAction(Action.MVEL(expression = expression.src))
     }
     CodeEditorDialog(state = mvelSelectorState)
 

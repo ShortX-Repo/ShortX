@@ -9,42 +9,60 @@ import "shortx/Common.proto";
 import "shortx/Conditions.proto";
 
 message NoAction {
+
+  string note = 99;
   string id = 100;
 }
 message TakeScreenshot {
+
+  string note = 99;
   string id = 100;
 }
 message ExpandNotification {
+
+  string note = 99;
   string id = 100;
 }
 
 message StartActivity {
   string componentNameAsString = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message ShellCommand {
   string command = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message InputText {
   string text = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message ShowToast {
   string message = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message Delay {
   int64 time = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message ExecuteMVEL {
   string expression = 1;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -53,6 +71,8 @@ message RemoteExecuteMVEL {
   string description = 2;
   string icon = 3;
   string expression = 4;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -61,10 +81,14 @@ message OverlayButtonSetting {
   string icon = 2;
   int32 index = 3;
   string label = 4;
+
+  string note = 99;
   string id = 100;
 }
 
 message HideOverlayButton {
+
+  string note = 99;
   string id = 100;
 
   repeated string overlayTags = 1;
@@ -75,17 +99,23 @@ message ShowOverlayButton {
   bool autoCollapse = 2;
   string tag = 3;
 
+
+  string note = 99;
   string id = 100;
 }
 
 message LaunchApp {
   AppPkg appPkg = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message StopApp {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -93,6 +123,8 @@ message SetAppEnabled {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
   bool enable = 3;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -100,32 +132,44 @@ message SetAppSuspend {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
   bool suspend = 3;
+
+  string note = 99;
   string id = 100;
 }
 
 message StartAppProcess {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetWifiEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetBTEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetHotSpotEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetGPSEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -133,35 +177,49 @@ message SetDataEnabled {
   bool enable = 1;
   bool hasSpecificSlotId = 2;
   int32 slotId = 3;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetNFCEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetDNDEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetDarkModeEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetFlashLightEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message SetLocationEnabled {
   bool enable = 1;
+
+  string note = 99;
   string id = 100;
 }
 
 message BreakActionExecute {
+
+  string note = 99;
   string id = 100;
 }
 
@@ -185,12 +243,16 @@ message ShowAlertDialog {
   string title = 7;
   string message = 8;
   bool cancelable = 9;
+
+  string note = 99;
   string id = 100;
 }
 
 message ShowDanmu {
   string text = 1;
   string icon = 2;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -202,6 +264,8 @@ message WhileLoop {
 
   int32 delay = 5;
   int32 repeatTimes = 6;
+
+  string note = 99;
   string id = 100;
 }
 
@@ -209,6 +273,8 @@ message WriteGlobalVar {
   string varId = 1;
   string valueAsString = 2;
 
+
+  string note = 99;
   string id = 100;
 }
 
@@ -217,6 +283,8 @@ message AddToGlobalVar {
   string varId = 1;
   string valueAsString = 2;
 
+
+  string note = 99;
   string id = 100;
 }
 
@@ -225,6 +293,8 @@ message MapNav {
   string poi = 2;
   MapApp app = 3;
 
+
+  string note = 99;
   string id = 100;
 }
 
@@ -252,12 +322,16 @@ message PostNotification {
 
   AppPkg pkgToLaunchOnClick = 9;
 
+
+  string note = 99;
   string id = 100;
 }
 
 message FromDA {
   string daId = 1;
 
+
+  string note = 99;
   string id = 100;
 }
 
@@ -265,5 +339,7 @@ message FindAndClickViewByText {
   string text = 1;
   bool isRegex = 2;
 
+
+  string note = 99;
   string id = 100;
 }

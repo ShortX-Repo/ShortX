@@ -140,7 +140,7 @@ private fun ConditionSelectors(
 
     val mvelConditionSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
-            vm.addCondition(Condition.MVEL(expression))
+            vm.addCondition(Condition.MVEL(expression.src))
         }
     CodeEditorDialog(state = mvelConditionSelectorState)
 

@@ -29,10 +29,12 @@ import tornaco.apps.shortx.ui.base.code.codeditor.syntax.ThemeName
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.TypefaceHelper
 
+data class Code(val src: String, val note: String)
+
 class CodeEditorState(
     val title: String,
     val message: String?,
-    val onSelected: (String) -> Unit
+    val onSelected: (Code) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
@@ -40,11 +42,15 @@ class CodeEditorState(
     private var _output by mutableStateOf("")
     val output get() = _output
 
+    private var _note by mutableStateOf("")
+    val note get() = _note
+
     var currentText: String = ""
 
     fun show(initialText: String = "") {
         this.currentText = initialText
         this._output = ""
+        this._note = ""
         _isShow = true
     }
 
@@ -55,13 +61,17 @@ class CodeEditorState(
     fun setOutput(output: String) {
         _output = output
     }
+
+    fun setNote(note: String) {
+        _note = note
+    }
 }
 
 @Composable
 fun rememberCodeEditorState(
     title: String,
     message: String? = null,
-    onSelected: (String) -> Unit
+    onSelected: (Code) -> Unit
 ): CodeEditorState {
     return remember {
         CodeEditorState(title, message, onSelected)
@@ -81,6 +91,11 @@ fun CodeEditorDialog(state: CodeEditorState) {
 private fun CodeEditor(
     state: CodeEditorState
 ) {
+    val noteDialogState = rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
+        state.setNote(it)
+    }
+    InputTextSelector(state = noteDialogState)
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -88,7 +103,7 @@ private fun CodeEditor(
             Scaffold(modifier = Modifier, topBar = {
                 TopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = state.title) },
+                    title = { Text(text = state.note.ifBlank { state.title }) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -107,7 +122,13 @@ private fun CodeEditor(
                         }
 
                         IconButton(onClick = {
-                            state.onSelected(state.currentText)
+                            noteDialogState.show()
+                        }) {
+                            RemixIcon(remixName = Remix.Document.sticky_note_line)
+                        }
+
+                        IconButton(onClick = {
+                            state.onSelected(Code(src = state.currentText, note = state.note))
                             state.dismiss()
                         }) {
                             Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")

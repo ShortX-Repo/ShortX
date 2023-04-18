@@ -38,7 +38,7 @@ fun ActionContent(
     val mvelEditorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
         onSelected = {
-            addAction(Action.MVEL(expression = it))
+            addAction(Action.MVEL(expression = it.src))
         }
     )
     CodeEditorDialog(state = mvelEditorState)

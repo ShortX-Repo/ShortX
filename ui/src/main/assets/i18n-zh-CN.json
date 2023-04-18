@@ -48,6 +48,7 @@
   "ui.fact.weekday.friday.long": "周五",
   "ui.fact.weekday.saturday.long": "周六",
   "ui.update.time": "更新时间：{date}",
+  "ui.common.note": "备注",
   "ui.common.delete": "删除",
   "ui.common.edit": "编辑",
   "ui.common.create.shortcut": "桌面快捷方式",

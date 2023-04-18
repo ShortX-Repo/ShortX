@@ -127,7 +127,7 @@ private fun OpSelector(
                 title = LocalI18N.current["ui.title.mvel"],
                 message = LocalI18N.current["ui.condition.op.mvel"],
                 onSelected = {
-                    setConditionOp(Op.MVEL(it))
+                    setConditionOp(Op.MVEL(it.src))
                 })
             CodeEditorDialog(state = mvelSelectorState)
             DropdownSelector(

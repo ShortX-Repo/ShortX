@@ -48,6 +48,7 @@
   "ui.fact.weekday.friday.long": "Fri",
   "ui.fact.weekday.saturday.long": "Sat",
   "ui.update.time": "Last update: {date}",
+  "ui.common.note": "Note",
   "ui.common.delete": "Delete",
   "ui.common.edit": "Edit",
   "ui.common.create.shortcut": "Create shortcut",

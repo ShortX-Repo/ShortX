@@ -14,7 +14,10 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
-class InputTextSelectorState(val onSelected: (String) -> Unit) {
+class TextSelectorState(
+    val title: String,
+    val onSelected: (String) -> Unit
+) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -28,21 +31,24 @@ class InputTextSelectorState(val onSelected: (String) -> Unit) {
 }
 
 @Composable
-fun rememberInputTextSelectorState(onSelected: (String) -> Unit): InputTextSelectorState {
+fun rememberTextSelectorState(
+    title: String = LocalI18N.current["ui.action.input.text"],
+    onSelected: (String) -> Unit
+): TextSelectorState {
     return remember {
-        InputTextSelectorState(onSelected)
+        TextSelectorState(title, onSelected)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputTextSelector(state: InputTextSelectorState) {
+fun InputTextSelector(state: TextSelectorState) {
     var textString by remember(state) {
         mutableStateOf("")
     }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.action.input.text"])
+            DialogTitle(text = state.title)
         }, buttons = {
             TextButton(onClick = {
                 if (textString.isNotBlank()) {
@@ -62,9 +68,6 @@ fun InputTextSelector(state: InputTextSelectorState) {
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    label = {
-                        Text(text = LocalI18N.current["ui.action.input.text"])
-                    },
                     value = textString,
                     onValueChange = {
                         textString = it

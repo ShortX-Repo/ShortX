@@ -9,11 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
-class ShellCommandSelectorState(val onSelected: (String) -> Unit) {
+class ShellCommandSelectorState(val onSelected: (Action.ShellCommand) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -27,7 +28,7 @@ class ShellCommandSelectorState(val onSelected: (String) -> Unit) {
 }
 
 @Composable
-fun rememberShellCommandSelectorState(onSelected: (String) -> Unit): ShellCommandSelectorState {
+fun rememberShellCommandSelectorState(onSelected: (Action.ShellCommand) -> Unit): ShellCommandSelectorState {
     return remember {
         ShellCommandSelectorState(onSelected)
     }
@@ -45,7 +46,7 @@ fun ShellCommandSelector(state: ShellCommandSelectorState) {
         }, buttons = {
             TextButton(onClick = {
                 if (commandString.isNotBlank()) {
-                    state.onSelected(commandString)
+                    state.onSelected(Action.ShellCommand(command = commandString))
                     state.dismiss()
                 }
             }) {
