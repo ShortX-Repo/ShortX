@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.unit.dp
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -96,9 +97,11 @@ private fun ActionSortDialogContent(state: ActionSortState) {
                 LazyColumn(
                     state = sortState.listState,
                     modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(bottom = 64.dp)
                         .reorderable(sortState)
                         .detectReorderAfterLongPress(sortState)
-                        .padding(paddingValues)
                 ) {
                     items(data.value, { it }) { item ->
                         ReorderableItem(sortState, key = item) { isDragging ->
