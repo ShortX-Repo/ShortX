@@ -201,8 +201,8 @@ private fun DirectActionItem(
                 ListItemOverflowMenu(da, onDelete, onEdit, onShare)
             } else {
                 IconButton(modifier = Modifier, onClick = {
-                }) {
                     onClick()
+                }) {
                 }
 
             }
