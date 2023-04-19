@@ -249,7 +249,7 @@ class ActionEvaluatorImpl(
             }
         } else if (action is_ FromDA::class.java) {
             val d = action unpack_ FromDA::class.java
-            shortXContext.rule.executeDirectionActionById(d.id)
+            shortXContext.rule.executeDirectionActionById(d.daId)
         } else if (action is_ FindAndClickViewByText::class.java) {
             val d = action unpack_ FindAndClickViewByText::class.java
             shortXContext.wm.findAndClickViewByText(

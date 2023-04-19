@@ -51,6 +51,7 @@
   "ui.common.note": "备注",
   "ui.common.delete": "删除",
   "ui.common.edit": "编辑",
+  "ui.common.copy": "复制",
   "ui.common.create.shortcut": "桌面快捷方式",
   "ui.common.share": "分享",
   "ui.common.settings": "设置",

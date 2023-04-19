@@ -51,6 +51,7 @@
   "ui.common.note": "Note",
   "ui.common.delete": "Delete",
   "ui.common.edit": "Edit",
+  "ui.common.copy": "Copy",
   "ui.common.create.shortcut": "Create shortcut",
   "ui.common.share": "Share",
   "ui.common.settings": "Settings",

@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
@@ -31,6 +32,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
@@ -337,9 +339,18 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     fun importRule(rule: Rule) {
+        val ruleWithSameNameExists =
+            state.value.rules.data?.firstOrNull { it.title == rule.title } != null
+        val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
+
         viewModelScope.launch {
             val refined =
-                Rule.newBuilder(rule).setId(UUID.randomUUID().toString()).setIsEnabled(false)
+                Rule.newBuilder(rule)
+                    .setTitle(if (ruleWithSameNameExists) "${rule.title} $copyInd" else rule.title)
+                    .setId(UUID.randomUUID().toString())
+                    .setCreateTime(System.currentTimeMillis())
+                    .setLastUpdateTime(System.currentTimeMillis())
+                    .setIsEnabled(false)
                     .build()
             shortXManager.addRule(refined)
 
@@ -348,9 +359,17 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     fun importDA(da: DirectAction) {
+        val daWithSameNameExists =
+            state.value.das.data?.firstOrNull { it.title == da.title } != null
+        val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
+
         viewModelScope.launch {
             val refined =
-                DirectAction.newBuilder(da).setId(UUID.randomUUID().toString())
+                DirectAction.newBuilder(da)
+                    .setTitle(if (daWithSameNameExists) "${da.title} $copyInd" else da.title)
+                    .setId(UUID.randomUUID().toString())
+                    .setCreateTime(System.currentTimeMillis())
+                    .setLastUpdateTime(System.currentTimeMillis())
                     .build()
             shortXManager.addDirectAction(refined)
 
