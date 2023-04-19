@@ -82,6 +82,9 @@ fun RuleScreen() {
 
         RuleContent(
             state = state,
+            onDup = {
+                vm.dupRule(it.id)
+            },
             onDelete = { rule ->
                 vm.deleteRule(rule.id)
             },
@@ -107,6 +110,7 @@ fun RuleScreen() {
 @Composable
 private fun RuleContent(
     state: MainState,
+    onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
@@ -154,6 +158,7 @@ private fun RuleContent(
                                     scaleAnimStarted = true
                                 },
                                 setRuleEnabled = setRuleEnabled,
+                                onDup = onDup,
                                 onDelete = onDelete,
                                 onEdit = onEdit,
                                 onShare = onShare,
@@ -166,6 +171,7 @@ private fun RuleContent(
                                     scaleAnimStarted = true
                                 },
                                 setRuleEnabled = setRuleEnabled,
+                                onDup = onDup,
                                 onDelete = onDelete,
                                 onEdit = onEdit,
                                 onShare = onShare,
@@ -183,6 +189,7 @@ private fun RuleItem(
     rule: RuleUM,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
+    onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
@@ -200,7 +207,13 @@ private fun RuleItem(
         text1 = rule.description,
         text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
         overflow = {
-            ListItemOverflowMenu(rule, onDelete, onEdit, onShare)
+            ListItemOverflowMenu(
+                rule = rule,
+                onDup = onDup,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                onShare = onShare
+            )
         },
         checked = rule.isEnabled,
         onClick = onClick,
@@ -214,6 +227,7 @@ private fun RuleItem2(
     rule: RuleUM,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
+    onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
@@ -239,7 +253,13 @@ private fun RuleItem2(
             }
 
             Column(horizontalAlignment = Alignment.End) {
-                ListItemOverflowMenu(rule, onDelete, onEdit, onShare)
+                ListItemOverflowMenu(
+                    rule = rule,
+                    onDup = onDup,
+                    onDelete = onDelete,
+                    onEdit = onEdit,
+                    onShare = onShare
+                )
             }
         }
 
@@ -316,6 +336,7 @@ private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line
 @Composable
 private fun ListItemOverflowMenu(
     rule: RuleUM,
+    onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
@@ -342,6 +363,11 @@ private fun ListItemOverflowMenu(
             widthFraction = 0.3f,
             state = menuState,
             items = listOf(
+                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+                    data = "dup",
+                    icon = {
+                        RemixIcon(Remix.Document.file_copy_2_fill)
+                    }),
                 DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                     data = "edit",
                     icon = {
@@ -361,6 +387,9 @@ private fun ListItemOverflowMenu(
                     })
             ), onSelect = {
                 when (it.data) {
+                    "dup" -> {
+                        onDup(rule)
+                    }
                     "delete" -> {
                         deleteDialogState.show()
                     }

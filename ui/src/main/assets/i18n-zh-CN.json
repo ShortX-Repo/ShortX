@@ -53,6 +53,7 @@
   "ui.common.edit": "编辑",
   "ui.common.copy": "复制",
   "ui.common.create.shortcut": "桌面快捷方式",
+  "ui.common.dup": "创建副本",
   "ui.common.share": "分享",
   "ui.common.settings": "设置",
   "ui.common.long.press.sort": "长按拖动排序",

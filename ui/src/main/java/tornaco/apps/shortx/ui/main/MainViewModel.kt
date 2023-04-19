@@ -294,10 +294,22 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+    fun dupRule(ruleId: String) {
+        viewModelScope.launch {
+            shortXManager.getRuleById(ruleId)?.let { importRule(it) }
+        }
+    }
+
     fun deleteDA(daId: String) {
         viewModelScope.launch {
             shortXManager.deleteDirectAction(daId)
             loadDA(false)
+        }
+    }
+
+    fun dupDA(daId: String) {
+        viewModelScope.launch {
+            shortXManager.getDirectActionById(daId)?.let { importDA(it) }
         }
     }
 

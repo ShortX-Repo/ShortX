@@ -75,6 +75,9 @@ fun DirectActionListScreen() {
             onDelete = { da ->
                 vm.deleteDA(da.id)
             },
+            onDup = {
+                vm.dupDA(it.id)
+            },
             onEdit = {
                 appNavController.navigate("${AppRoute.AddDA.name}?daId=${it.id}")
             },
@@ -99,6 +102,7 @@ fun DirectActionListContent(
     state: MainState,
     showOverflowMenu: Boolean = false,
     onDelete: (DirectActionUM) -> Unit = {},
+    onDup: (DirectActionUM) -> Unit = {},
     onEdit: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
     onDirectActionClick: (DirectActionUM) -> Unit = {},
@@ -160,6 +164,7 @@ fun DirectActionListContent(
                                 colorAnimStarted = true
                                 scaleAnimStarted = true
                             },
+                            onDup = onDup,
                             onDelete = onDelete,
                             onEdit = onEdit,
                             onShare = onShare,
@@ -185,6 +190,7 @@ private fun DirectActionItem(
     da: DirectActionUM,
     showOverflowMenu: Boolean,
     onClick: () -> Unit,
+    onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
@@ -198,7 +204,13 @@ private fun DirectActionItem(
         runningInsCount = da.runningInsCount,
         overflow = {
             if (showOverflowMenu) {
-                ListItemOverflowMenu(da, onDelete, onEdit, onShare)
+                ListItemOverflowMenu(
+                    da = da,
+                    onDup = onDup,
+                    onDelete = onDelete,
+                    onEdit = onEdit,
+                    onShare = onShare
+                )
             } else {
                 IconButton(modifier = Modifier, onClick = {
                     onClick()
@@ -320,6 +332,7 @@ private fun DAListItem(
 @Composable
 private fun ListItemOverflowMenu(
     da: DirectActionUM,
+    onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
@@ -348,6 +361,11 @@ private fun ListItemOverflowMenu(
                 icon = {
                     RemixIcon(Remix.System.external_link_line)
                 }),
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+                data = "dup",
+                icon = {
+                    RemixIcon(Remix.Document.file_copy_2_fill)
+                }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
                 data = "edit",
                 icon = {
@@ -366,8 +384,10 @@ private fun ListItemOverflowMenu(
         ), onSelect = {
             when (it.data) {
                 "shortcut" -> {
-                    da.icon
                     ActionShortcutActivity.addShortcut(context, da)
+                }
+                "dup" -> {
+                    onDup(da)
                 }
                 "delete" -> {
                     deleteDialogState.show()

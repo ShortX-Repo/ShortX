@@ -53,6 +53,7 @@
   "ui.common.edit": "Edit",
   "ui.common.copy": "Copy",
   "ui.common.create.shortcut": "Create shortcut",
+  "ui.common.dup": "Duplicate",
   "ui.common.share": "Share",
   "ui.common.settings": "Settings",
   "ui.common.long.press.sort": "Press to sort",
