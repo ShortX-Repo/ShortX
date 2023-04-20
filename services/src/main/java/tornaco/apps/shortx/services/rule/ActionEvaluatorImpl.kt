@@ -259,6 +259,23 @@ class ActionEvaluatorImpl(
             )
         } else if (action is_ WaitForIdle::class.java) {
             shortXContext.wm.waitForIdle()
+        } else if (action is_ IfThenElse::class.java) {
+            val d = action unpack_ IfThenElse::class.java
+            val matchCond =
+                conditionEvaluator.evaluate("IfThenElse", d.ifCondOp, d.ifCondOpPayload, d.ifList)
+            if (matchCond) {
+                if (d.ifActionsList.isNullOrEmpty().not()) {
+                    d.ifActionsList.forEach {
+                        evaluate("IfThenElse-IfAction", it, contextData)
+                    }
+                }
+            } else {
+                if (d.elseActionsList.isNullOrEmpty().not()) {
+                    d.elseActionsList.forEach {
+                        evaluate("IfThenElse-ElseAction", it, contextData)
+                    }
+                }
+            }
         }
     }
 

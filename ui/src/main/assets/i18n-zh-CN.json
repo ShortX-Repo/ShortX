@@ -128,6 +128,7 @@
   "ui.action.category.app": "应用",
   "ui.action.launch.app": "打开应用",
   "ui.action.start.activity": "启动活动",
+  "ui.action.if.then.else": "如果... 就... 否则",
   "ui.action.wait.for.idle": "等待空闲",
   "ui.action.wait.for.idle.description": "等待当前应用程序空闲，通常意味着没有视图更新",
   "ui.action.find.click.view.by.text": "点击文本视图",

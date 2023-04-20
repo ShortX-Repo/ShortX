@@ -371,6 +371,17 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
     ) : Action
+
+    @Parcelize
+    data class IfThenElse(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val ifConditions: List<Condition> = listOf(Condition.TRUE),
+        val ifConditionOp: Op = Op.All,
+        val ifActions: List<Action> = emptyList(),
+        val elseActions: List<Action> = emptyList(),
+    ) : Action
 }
 
 fun Action.toProtoAction(): ProtoMessage {
@@ -575,6 +586,25 @@ fun Action.toProtoAction(): ProtoMessage {
             WaitForIdle.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .build()
+        }
+        is Action.IfThenElse -> {
+            IfThenElse.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .addAllIf(ifConditions.map { it.toProtoCondition().pack_() })
+                .setIfCondOp(ifConditionOp.toConditionOperator())
+                .apply {
+                    if (ifConditionOp is Op.MVEL) {
+                        ifCondOpPayload =
+                            ConditionOperatorPayload
+                                .newBuilder()
+                                .setExpression(ifConditionOp.expression)
+                                .build()
+                    }
+                }
+                .addAllIfActions(ifActions.map { it.toProtoAction().pack_() })
+                .addAllElseActions(elseActions.map { it.toProtoAction().pack_() })
                 .build()
         }
     }
@@ -908,6 +938,22 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WaitForIdle(
                 id = data.id,
                 note = data.note
+            )
+        }
+
+        this is_ IfThenElse::class.java -> {
+            val data = this unpack_ IfThenElse::class.java
+            Action.IfThenElse(
+                id = data.id,
+                note = data.note,
+                ifConditions = data.ifList.mapNotNull {
+                    it.toCondition(
+                        shortXManager
+                    )
+                },
+                ifConditionOp = data.ifCondOp.toOp(data.ifCondOpPayload),
+                ifActions = data.ifActionsList.mapNotNull { it.toAction(shortXManager) },
+                elseActions = data.elseActionsList.mapNotNull { it.toAction(shortXManager) },
             )
         }
 

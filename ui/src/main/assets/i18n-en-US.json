@@ -128,6 +128,7 @@
   "ui.action.category.app": "Apps",
   "ui.action.launch.app": "Launch app",
   "ui.action.start.activity": "Start activity",
+  "ui.action.if.then.else": "if... then... else",
   "ui.action.wait.for.idle": "Wait for idle",
   "ui.action.wait.for.idle.description": "Waits for the current application to idle, usually means no view updates",
   "ui.action.find.click.view.by.text": "Click view by text",

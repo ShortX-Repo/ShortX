@@ -91,6 +91,7 @@ fun labelAndDescriptionForActionSelector(
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
+        Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
 
         else -> {
             "N/A" to null
@@ -284,6 +285,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.wait.for.idle"],
             i18N["ui.action.wait.for.idle.description"]
         )
+
+        is Action.IfThenElse -> listOf(
+            i18N["ui.action.if.then.else"]
+        )
     }
 }
 
@@ -432,6 +437,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
         Action.WaitForIdle::class -> {
             Remix.System.hourglass_line
+        }
+        Action.IfThenElse::class -> {
+            Remix.Editor.text_wrap
         }
 
         else -> {

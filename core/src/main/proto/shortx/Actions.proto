@@ -350,3 +350,16 @@ message WaitForIdle {
   string note = 99;
   string id = 100;
 }
+
+message IfThenElse {
+  repeated google.protobuf.Any _if = 1;
+  ConditionOperator _ifCondOp = 2;
+  ConditionOperatorPayload _ifCondOpPayload = 3;
+
+  repeated google.protobuf.Any _ifActions = 4;
+  repeated google.protobuf.Any _elseActions = 5;
+
+
+  string note = 99;
+  string id = 100;
+}
