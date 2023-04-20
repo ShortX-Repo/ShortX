@@ -1,12 +1,15 @@
 package tornaco.apps.shortx.ui.pkgset
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
+import tornaco.apps.shortx.ui.base.afterNavDelay
 import java.text.Collator
 import java.util.*
 
@@ -16,7 +19,9 @@ data class PkgSetDetailState(
     val apps: List<App> = emptyList(),
     val selectableApps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
-    val isChanged: Boolean = false
+    val isPrebuilt: Boolean = false,
+    val isChanged: Boolean = false,
+    val isLoading: Boolean = true
 )
 
 class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
@@ -26,28 +31,36 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>() {
 
     fun loadState(id: String) {
         viewModelScope.launch {
-            shortXManager.getPkgSetById(id)?.let { pkgSet ->
-                val apps = pkgSet.appPkgsList.mapNotNull { pkg ->
-                    shortXManager.pkgToApp(pkg)
-                }
+            withContext(Dispatchers.IO) {
+                updateState { copy(isLoading = true) }
 
-                val installedApps = shortXManager.getInstalledApps()
-                    .sortedWith { o1, o2 ->
-                        Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
-                    }.sortedBy { it.category.ordinal }
+                afterNavDelay()
 
-                val selectableApps = installedApps.toMutableList().apply {
-                    removeAll(apps)
-                }
+                shortXManager.getPkgSetById(id)?.let { pkgSet ->
+                    val apps = pkgSet.appPkgsList.mapNotNull { pkg ->
+                        shortXManager.pkgToApp(pkg)
+                    }
 
-                updateState {
-                    copy(
-                        id = pkgSet.id,
-                        label = pkgSet.label,
-                        apps = apps,
-                        selectableApps = selectableApps,
-                        installedApps = installedApps
-                    )
+                    val installedApps = shortXManager.getInstalledApps()
+                        .sortedWith { o1, o2 ->
+                            Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
+                        }.sortedBy { it.category.ordinal }
+
+                    val selectableApps = installedApps.toMutableList().apply {
+                        removeAll(apps)
+                    }
+
+                    updateState {
+                        copy(
+                            id = pkgSet.id,
+                            label = pkgSet.label,
+                            apps = apps,
+                            selectableApps = selectableApps,
+                            installedApps = installedApps,
+                            isPrebuilt = pkgSet.isPrebuilt,
+                            isLoading = false
+                        )
+                    }
                 }
             }
         }

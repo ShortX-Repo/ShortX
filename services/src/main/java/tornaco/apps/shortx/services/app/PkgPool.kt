@@ -71,7 +71,7 @@ class PkgPool(
 
         _allApps.clear()
         apps.forEach {
-            _allApps.put(it.pkg.pkgName, it)
+            _allApps[it.pkg.pkgName] = it
         }
     }
 

@@ -80,34 +80,42 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
                 }) {
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = it
-                ) {
-                    items(state.pkgSets) {
-                        androidx.compose.material.Card(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                            shape = ShortXCardRoundedCornerShape,
-                            elevation = 0.dp
-                        ) {
-                            PkgSetListItem(modifier = Modifier,
-                                title = it.label,
-                                text1 = LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
-                                overflow = {
-                                    ListItemOverflowMenu(
-                                        pkgSet = it,
-                                        onDelete = {},
-                                        onEdit = {}
-                                    )
-                                }, onClick = {
-                                    goToDetail(it.id)
-                                })
+                if (state.isLoading) {
+                    Loading(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it))
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = StaggeredGridCells.Fixed(2),
+                        contentPadding = it
+                    ) {
+                        items(state.pkgSets) {
+                            androidx.compose.material.Card(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                                shape = ShortXCardRoundedCornerShape,
+                                elevation = 0.dp
+                            ) {
+                                PkgSetListItem(modifier = Modifier,
+                                    title = it.label,
+                                    text1 = LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                    overflow = {
+                                        ListItemOverflowMenu(
+                                            pkgSet = it,
+                                            onDelete = {},
+                                            onEdit = {}
+                                        )
+                                    }, onClick = {
+                                        goToDetail(it.id)
+                                    })
+                            }
                         }
                     }
                 }
+
+
             }
         }
     }

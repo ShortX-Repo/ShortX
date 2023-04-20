@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
 fun NavController.popBackWithResult(data: Map<String, Any>) {
@@ -18,4 +19,8 @@ fun <T> NavController.getStateFlow(key: String, initialValue: T): StateFlow<T>? 
 
 fun <T> NavController.removeData(key: String): T? {
     return this.currentBackStackEntry?.savedStateHandle?.remove(key)
+}
+
+suspend fun afterNavDelay() {
+    delay(500)
 }

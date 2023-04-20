@@ -28,7 +28,6 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PkgSetDetailScreen(id: String, back: () -> Unit) {
     val vm = hiltViewModel<PkgSetDetailViewModel>()
@@ -55,7 +54,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"]) },
+                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"] + " " + state.label) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -64,52 +63,78 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                             }
                         },
                         actions = {
-                            IconButton(enabled = state.isChanged, onClick = {
-                                vm.save()
-                                back()
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
+                            if (!state.isPrebuilt) {
+                                IconButton(enabled = state.isChanged, onClick = {
+                                    vm.save()
+                                    back()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.check_line)
+                                }
                             }
                         },
                         scrollBehavior = scrollBehavior
                     )
                 },
                 floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        appSelectorDialogState.show()
-                    }) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
+                    if (!state.isPrebuilt) {
+                        FloatingActionButton(onClick = {
+                            appSelectorDialogState.show()
+                        }) {
+                            Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
+                        }
                     }
                 }) { paddingValues ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    contentPadding = paddingValues
-                ) {
-                    stickyHeader {
-                        Column {
-                            TipBody(text = LocalI18N.current["ui.pkg.set.add.input.label"])
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 16.dp, top = 16.dp),
-                                placeholder = {
-                                    Text(LocalI18N.current["ui.pkg.set.add.input.label"])
-                                },
-                                value = state.label,
-                                onValueChange = { value ->
-                                    vm.updateLabel(value)
-                                })
-                        }
-                    }
 
-                    items(state.apps) {
-                        AppItem(it) { app ->
-                            vm.removeApps(listOf(app))
-                        }
-                    }
+                if (state.isLoading) {
+                    Loading(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                    )
+                } else {
+                    PkgSetContent(paddingValues, state, vm)
                 }
+
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun PkgSetContent(
+    paddingValues: PaddingValues,
+    state: PkgSetDetailState,
+    vm: PkgSetDetailViewModel
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        contentPadding = paddingValues
+    ) {
+        if (!state.isPrebuilt) {
+            stickyHeader {
+                Column {
+                    TipBody(text = LocalI18N.current["ui.pkg.set.add.input.label"])
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp, top = 16.dp),
+                        placeholder = {
+                            Text(LocalI18N.current["ui.pkg.set.add.input.label"])
+                        },
+                        value = state.label,
+                        onValueChange = { value ->
+                            vm.updateLabel(value)
+                        })
+                }
+            }
+        }
+
+        items(state.apps) {
+            AppItem(app = it, canRemove = !state.isPrebuilt) { app ->
+                vm.removeApps(listOf(app))
             }
         }
     }
@@ -119,6 +144,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
 @Composable
 private fun AppItem(
     app: App,
+    canRemove: Boolean,
     removeApp: (App) -> Unit
 ) {
     Box(modifier = Modifier
@@ -159,8 +185,10 @@ private fun AppItem(
                     }
                 }
 
-                IconButton(onClick = { removeApp(app) }) {
-                    RemixIcon(remixName = Remix.System.close_line)
+                if (canRemove) {
+                    IconButton(onClick = { removeApp(app) }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
                 }
             }
         }

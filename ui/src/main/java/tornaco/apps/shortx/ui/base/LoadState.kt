@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +20,20 @@ sealed interface LoadState<out T> {
 
     val <T> LoadState<T>.data: T?
         get() = (this as? Success)?.data
+}
+
+@Composable
+fun Loading(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            strokeWidth = 6.dp
+        )
+    }
 }
 
 @Composable

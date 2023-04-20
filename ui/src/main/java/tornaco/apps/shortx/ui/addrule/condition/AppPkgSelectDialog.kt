@@ -172,32 +172,38 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
     LaunchedEffect(vm) {
         vm.loadState()
     }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(state.pkgSets) {
-            ListItem(
-                icon = {
-                    RemixIcon(remixName = Remix.Document.folder_2_line)
-                },
-                titleLines = listOf(
-                    it.label,
-                    LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")]
-                ),
-                action1 = {
-                    Checkbox(
-                        checked = selectorState.selectedPkgSets.contains(it),
-                        onCheckedChange = { checked ->
-                            if (checked) {
-                                selectorState.addPkgSet(it)
-                            } else {
-                                selectorState.removePkgSet(it)
-                            }
-                        })
-                })
+
+    if (state.isLoading) {
+        Loading(modifier = Modifier.fillMaxSize())
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(state.pkgSets) {
+                ListItem(
+                    icon = {
+                        RemixIcon(remixName = Remix.Document.folder_2_line)
+                    },
+                    titleLines = listOf(
+                        it.label,
+                        LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")]
+                    ),
+                    action1 = {
+                        Checkbox(
+                            checked = selectorState.selectedPkgSets.contains(it),
+                            onCheckedChange = { checked ->
+                                if (checked) {
+                                    selectorState.addPkgSet(it)
+                                } else {
+                                    selectorState.removePkgSet(it)
+                                }
+                            })
+                    })
+            }
         }
     }
+
 }
 
 @Composable

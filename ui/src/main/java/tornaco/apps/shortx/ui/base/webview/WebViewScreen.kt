@@ -234,7 +234,7 @@ private fun WebViewContainer(
 
 @Preview
 @Composable
-fun LoadingContainerPreview() {
+private fun LoadingContainerPreview() {
     val scope = rememberCoroutineScope()
     val progress = remember { mutableStateOf(0) }
 

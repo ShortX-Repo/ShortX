@@ -6,10 +6,12 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
+import tornaco.apps.shortx.ui.base.afterNavDelay
 import java.util.*
 
 data class PkgSetListState(
-    val pkgSets: List<PkgSet> = emptyList()
+    val pkgSets: List<PkgSet> = emptyList(),
+    val isLoading: Boolean = true
 )
 
 class PkgSetListViewModel : StateViewModel<PkgSetListState>() {
@@ -19,10 +21,13 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState>() {
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
+            updateState { copy(isLoading = true) }
+            afterNavDelay()
+
             val pkgSets = shortXManager.getAllPkgSets()
             viewModelScope.launch {
                 updateState {
-                    copy(pkgSets = pkgSets)
+                    copy(pkgSets = pkgSets, isLoading = false)
                 }
             }
         }
