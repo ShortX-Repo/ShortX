@@ -79,7 +79,7 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
                             IconButton(onClick = {
                                 selectorState.dismiss()
                             }) {
-                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         }
                     )

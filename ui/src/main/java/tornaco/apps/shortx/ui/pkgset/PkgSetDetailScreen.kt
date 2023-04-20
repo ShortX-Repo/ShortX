@@ -59,7 +59,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                             IconButton(onClick = {
                                 back()
                             }) {
-                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {

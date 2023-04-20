@@ -77,7 +77,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                             IconButton(onClick = {
                                 dialogState.dismiss()
                             }) {
-                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {

@@ -72,7 +72,7 @@ private fun ActionSelector(
                             IconButton(onClick = {
                                 state.dismiss()
                             }) {
-                                RemixIcon(remixName = Remix.Arrows.arrow_left_line)
+                                RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                     )
