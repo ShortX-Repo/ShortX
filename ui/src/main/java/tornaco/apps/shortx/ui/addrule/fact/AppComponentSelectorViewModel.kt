@@ -49,7 +49,7 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
                 updateState { copy(isLoading = true) }
                 val res = shortXManager.getServices(pkg)
                 updateState {
-                    copy(activities = res, isLoading = false)
+                    copy(services = res, isLoading = false)
                 }
             }
         }
@@ -61,7 +61,7 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
                 updateState { copy(isLoading = true) }
                 val res = shortXManager.getProviders(pkg)
                 updateState {
-                    copy(activities = res, isLoading = false)
+                    copy(providers = res, isLoading = false)
                 }
             }
         }
@@ -73,7 +73,7 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
                 updateState { copy(isLoading = true) }
                 val res = shortXManager.getReceivers(pkg)
                 updateState {
-                    copy(activities = res, isLoading = false)
+                    copy(receivers = res, isLoading = false)
                 }
             }
         }

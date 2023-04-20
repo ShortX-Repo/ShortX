@@ -209,7 +209,7 @@ fun <T> DeleteConfirmDialog(
 }
 
 
-class RebootConfirmDialogState {
+open class CommonDialogState {
     var isShowing by mutableStateOf(false)
 
     fun show() {
@@ -222,15 +222,15 @@ class RebootConfirmDialogState {
 }
 
 @Composable
-fun rememberRebootConfirmDialogState(): RebootConfirmDialogState {
+fun rememberRebootConfirmDialogState(): CommonDialogState {
     return remember {
-        RebootConfirmDialogState()
+        CommonDialogState()
     }
 }
 
 @Composable
 fun RebootConfirmDialog(
-    state: RebootConfirmDialogState,
+    state: CommonDialogState,
 ) {
     if (state.isShowing) {
         val i18N = LocalI18N.current
@@ -257,5 +257,56 @@ fun RebootConfirmDialog(
             text = {
                 Text(text = i18N["ui.common.reboot.message"])
             })
+    }
+}
+
+
+data class MenuDialogItem(val title: String, val iconName: String? = null, val onClick: () -> Unit)
+
+class MenuDialogState(
+    val title: String,
+    val menuItems: List<MenuDialogItem>
+) :
+    CommonDialogState()
+
+@Composable
+fun rememberMenuDialogState(
+    title: String,
+    menuItems: List<MenuDialogItem>
+): MenuDialogState {
+    return remember {
+        MenuDialogState(title, menuItems)
+    }
+}
+
+@Composable
+fun MenuDialog(
+    state: MenuDialogState,
+) {
+    if (state.isShowing) {
+        ShortXDialog(
+            onDismissRequest = {
+                state.dismiss()
+            },
+
+            title = {
+                Text(text = state.title)
+            }) {
+
+            state.menuItems.forEach { dialogItem ->
+                ListItem(
+                    title = dialogItem.title,
+                    icon = {
+                        dialogItem.iconName?.let {
+                            RemixIcon(remixName = it)
+                        }
+                    },
+                    onClick = {
+                        dialogItem.onClick()
+                        state.dismiss()
+                    })
+            }
+
+        }
     }
 }

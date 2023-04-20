@@ -46,6 +46,7 @@ class AppComponentSelectorState(
 
     fun show(pkg: AppPkg) {
         this.pkg = pkg
+        _selectedAppComponents = emptyList()
         _isShow = true
     }
 
@@ -98,7 +99,7 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.title.select.action"]) },
+                        title = { Text(text = LocalI18N.current["ui.title.select.component"]) },
                         actions = {
                             IconButton(onClick = {
                                 state.onAppComponentSelected(state.selectedAppComponents)
@@ -144,8 +145,12 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                         ComponentType.Service.ordinal -> {
                             ServiceListContent(state)
                         }
-                        ComponentType.Receiver.ordinal -> {}
-                        ComponentType.Provider.ordinal -> {}
+                        ComponentType.Receiver.ordinal -> {
+                            ReceiverListContent(state)
+                        }
+                        ComponentType.Provider.ordinal -> {
+                            ProviderListContent(state)
+                        }
                     }
                 }
 
@@ -174,6 +179,30 @@ private fun ServiceListContent(selectorState: AppComponentSelectorState) {
     }
     val state by vm.state.collectAsState()
     val components = state.services
+
+    ComponentList(components, selectorState)
+}
+
+@Composable
+private fun ReceiverListContent(selectorState: AppComponentSelectorState) {
+    val vm = hiltViewModel<AppComponentSelectorViewModel>()
+    LaunchedEffect(vm) {
+        vm.loadReceivers(selectorState.pkg)
+    }
+    val state by vm.state.collectAsState()
+    val components = state.receivers
+
+    ComponentList(components, selectorState)
+}
+
+@Composable
+private fun ProviderListContent(selectorState: AppComponentSelectorState) {
+    val vm = hiltViewModel<AppComponentSelectorViewModel>()
+    LaunchedEffect(vm) {
+        vm.loadProviders(selectorState.pkg)
+    }
+    val state by vm.state.collectAsState()
+    val components = state.providers
 
     ComponentList(components, selectorState)
 }

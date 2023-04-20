@@ -156,7 +156,7 @@ private fun GlobalVarListItem(
                 )
             }
             MediumSpacer()
-            Text(value ?: "", fontSize = 12.sp)
+            Text(value ?: "", fontSize = 12.sp, maxLines = 3)
             StandardSpacer()
         }
     }
