@@ -86,6 +86,18 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                             insertAbove = { action, anchor ->
                                 vm.insertActionAbove(action, anchor)
                             },
+                            insertBelow = { action, anchor ->
+                                vm.insertActionBelow(action, anchor)
+                            },
+                            copy = { action ->
+                                vm.copy(action)
+                            },
+                            pasteAbove = { anchor ->
+                                vm.pasteActionAbove(anchor)
+                            },
+                            pasteBelow = { anchor ->
+                                vm.pasteActionBelow(anchor)
+                            },
                             removeAction = { action ->
                                 vm.removeAction(action)
                             },

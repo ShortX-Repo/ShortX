@@ -205,10 +205,10 @@ private fun Actions(
                                     actionSelectorState.show(ActionSelectorDialogArgs.InsertBelow(it.data.first))
                                 }
                                 "pa" -> {
-                                    handler.pasteAbove(action, it.data.first)
+                                    handler.pasteAbove(it.data.first)
                                 }
                                 "pb" -> {
-                                    handler.pasteBelow(action, it.data.first)
+                                    handler.pasteBelow(it.data.first)
                                 }
                                 "cp" -> {
                                     handler.copy(action)
@@ -243,8 +243,8 @@ class ActionHandler(
     val applySort: (List<Action>) -> Unit = {},
     val insertAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
     val insertBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
-    val pasteAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
-    val pasteBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val pasteAbove: (anchor: Action) -> Unit = { },
+    val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
 )
 

@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -31,6 +32,7 @@ data class AddDirectActionState(
     val createTime: Long = System.currentTimeMillis(),
     val daChanged: Boolean = false,
     val installedApps: List<App> = emptyList(),
+    val copiedAction: Action? = null
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -99,6 +101,63 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                     add(action)
                 }
             }, daChanged = true)
+        }
+    }
+
+    fun insertActionBelow(action: Action, anchor: Action) {
+        updateState {
+            copy(actions = actions.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchor.id }
+                if (existingIndex >= 0) {
+                    add(existingIndex + 1, action)
+                } else {
+                    add(action)
+                }
+            }, daChanged = true)
+        }
+    }
+
+    fun copy(action: Action) {
+        updateState {
+            copy(copiedAction = action)
+        }
+    }
+
+    fun pasteActionAbove(anchor: Action) {
+        state.value.copiedAction?.let { copied ->
+            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
+                .toAction(shortXManager)
+            action?.let {
+                updateState {
+                    copy(actions = actions.toMutableList().apply {
+                        val existingIndex = indexOfFirst { it.id == anchor.id }
+                        if (existingIndex >= 0) {
+                            add(existingIndex, it)
+                        } else {
+                            add(it)
+                        }
+                    }, daChanged = true)
+                }
+            }
+        }
+    }
+
+    fun pasteActionBelow(anchor: Action) {
+        state.value.copiedAction?.let { copied ->
+            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
+                .toAction(shortXManager)
+            action?.let {
+                updateState {
+                    copy(actions = actions.toMutableList().apply {
+                        val existingIndex = indexOfFirst { it.id == anchor.id }
+                        if (existingIndex >= 0) {
+                            add(existingIndex + 1, it)
+                        } else {
+                            add(it)
+                        }
+                    }, daChanged = true)
+                }
+            }
         }
     }
 

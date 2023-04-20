@@ -12,7 +12,9 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
 
-val animSpec = tween<IntOffset>(durationMillis = 300)
+const val NAV_ANIM_DURATION = 300
+
+val animSpec = tween<IntOffset>(durationMillis = NAV_ANIM_DURATION)
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.animateComposable(

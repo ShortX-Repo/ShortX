@@ -22,9 +22,9 @@ fun <T> NavController.removeData(key: String): T? {
 }
 
 suspend fun afterNavDelay() {
-    delay(500)
+    delay(NAV_ANIM_DURATION + 20L)
 }
 
 suspend fun afterNavLongDelay() {
-    delay(666)
+    delay(NAV_ANIM_DURATION + 120L)
 }
