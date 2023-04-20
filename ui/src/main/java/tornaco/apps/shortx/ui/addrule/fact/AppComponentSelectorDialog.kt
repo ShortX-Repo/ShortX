@@ -156,7 +156,7 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
 
 @Composable
 private fun ActivityListContent(selectorState: AppComponentSelectorState) {
-    val vm = hiltViewModel<AppComponentSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.loadActivities(selectorState.pkg)
     }
@@ -168,7 +168,7 @@ private fun ActivityListContent(selectorState: AppComponentSelectorState) {
 
 @Composable
 private fun ServiceListContent(selectorState: AppComponentSelectorState) {
-    val vm = hiltViewModel<AppComponentSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.loadServices(selectorState.pkg)
     }

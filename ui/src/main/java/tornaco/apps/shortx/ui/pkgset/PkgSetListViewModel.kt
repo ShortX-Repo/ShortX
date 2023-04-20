@@ -11,7 +11,7 @@ import java.util.*
 
 data class PkgSetListState(
     val pkgSets: List<PkgSet> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = false
 )
 
 class PkgSetListViewModel : StateViewModel<PkgSetListState>() {
@@ -25,10 +25,8 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState>() {
             afterNavDelay()
 
             val pkgSets = shortXManager.getAllPkgSets()
-            viewModelScope.launch {
-                updateState {
-                    copy(pkgSets = pkgSets, isLoading = false)
-                }
+            updateState {
+                copy(pkgSets = pkgSets, isLoading = false)
             }
         }
     }

@@ -87,7 +87,7 @@ private fun SingleAppPkgSelector(state: SingleAppPkgSelectorState) {
 
 @Composable
 private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
-    val vm = hiltViewModel<AppSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<AppSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.loadInstalledApps()
     }
