@@ -24,3 +24,7 @@ fun <T> NavController.removeData(key: String): T? {
 suspend fun afterNavDelay() {
     delay(500)
 }
+
+suspend fun afterNavLongDelay() {
+    delay(666)
+}

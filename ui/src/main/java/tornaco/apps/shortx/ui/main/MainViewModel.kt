@@ -31,8 +31,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18N
-import tornaco.apps.shortx.ui.base.LoadState
-import tornaco.apps.shortx.ui.base.LoadState.Loading.data
+import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
@@ -67,8 +66,9 @@ data class MainState(
     val isPrivacyStatementAccepted: Boolean = false,
     val isShowRuleDescription: Boolean = true,
     val ruleColumnCount: Int = DEFAULT_RULE_COLUMN_COUNT,
-    val rules: LoadState<List<RuleUM>> = LoadState.Loading,
-    val das: LoadState<List<DirectActionUM>> = LoadState.Loading,
+    val rules: List<RuleUM> = emptyList(),
+    val das: List<DirectActionUM> = emptyList(),
+    val isLoading: Boolean = true
 )
 
 
@@ -126,17 +126,17 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
-            delayLoadDA(200)
+            delayLoadDA()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
-            delayLoadDA(200)
+            delayLoadDA()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
-            delayLoadDA(200)
+            delayLoadDA()
         }
     }
 
@@ -170,10 +170,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         )
     }
 
-    fun loadRules(showLoading: Boolean = true) {
+    fun loadRules(delay: Boolean = false) {
         logger.d("loadRules")
         viewModelScope.launch {
-            if (showLoading) updateState { copy(rules = LoadState.Loading) }
+            updateState { copy(isLoading = true) }
+            if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
@@ -214,7 +215,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                         )
                     }
                 updateState {
-                    copy(rules = LoadState.Success(rules))
+                    copy(rules = rules, isLoading = false)
                 }
             }
         }
@@ -251,10 +252,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         )]
     }
 
-    fun loadDA(showLoading: Boolean = true) {
+    fun loadDA(delay: Boolean = false) {
         logger.d("loadDA")
         viewModelScope.launch {
-            if (showLoading) updateState { copy(das = LoadState.Loading) }
+            updateState { copy(isLoading = true) }
+            if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
@@ -265,32 +267,32 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                         directAction.toDirectActionUM(context, shortXManager, i18N, activeJobs)
                     }
                 updateState {
-                    copy(das = LoadState.Success(das))
+                    copy(das = das, isLoading = false)
                 }
             }
 
         }
     }
 
-    private fun delayLoadDA(delay: Long) {
+    private fun delayLoadDA(delay: Long = 200L) {
         loadDAJob?.cancel()
         loadDAJob = viewModelScope.launch {
             delay(delay)
-            loadDA(false)
+            loadDA()
         }
     }
 
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
             shortXManager.setRuleEnabled(ruleId, enable)
-            loadRules(false)
+            loadRules()
         }
     }
 
     fun deleteRule(ruleId: String) {
         viewModelScope.launch {
             shortXManager.deleteRule(ruleId)
-            loadRules(false)
+            loadRules()
         }
     }
 
@@ -303,7 +305,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun deleteDA(daId: String) {
         viewModelScope.launch {
             shortXManager.deleteDirectAction(daId)
-            loadDA(false)
+            loadDA()
         }
     }
 
@@ -352,7 +354,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun importRule(rule: Rule) {
         val ruleWithSameNameExists =
-            state.value.rules.data?.firstOrNull { it.title == rule.title } != null
+            state.value.rules.firstOrNull { it.title == rule.title } != null
         val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
 
         viewModelScope.launch {
@@ -372,7 +374,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun importDA(da: DirectAction) {
         val daWithSameNameExists =
-            state.value.das.data?.firstOrNull { it.title == da.title } != null
+            state.value.das.firstOrNull { it.title == da.title } != null
         val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
 
         viewModelScope.launch {

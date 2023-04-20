@@ -15,10 +15,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
@@ -40,7 +36,7 @@ fun RuleScreen() {
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
-        vm.loadRules()
+        vm.loadRules(delay = true)
     }
 
     val appNavController = LocalNavHostController.current
@@ -117,71 +113,80 @@ private fun RuleContent(
     onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
-    when {
-        state.rules.isSuccess() && state.rules.data.isNullOrEmpty() -> {
-            EmptyList(modifier = Modifier.fillMaxSize())
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(6.dp), contentAlignment = Alignment.Center
+    ) {
+        if (state.isLoading) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
-        state.rules.isSuccess() -> {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = StaggeredGridCells.Fixed(state.ruleColumnCount),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-            ) {
-                items(
-                    items = state.rules.data.orEmpty(),
-                    key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+    }
 
-                    var scaleAnimStarted by remember {
-                        mutableStateOf(false)
+    if (!state.isLoading && state.rules.isEmpty()) {
+        EmptyList(modifier = Modifier.fillMaxSize())
+    } else {
+        LazyVerticalStaggeredGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = StaggeredGridCells.Fixed(state.ruleColumnCount),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+        ) {
+            items(
+                items = state.rules,
+                key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+
+                var scaleAnimStarted by remember {
+                    mutableStateOf(false)
+                }
+                val scalePercent by animateFloatAsState(
+                    targetValue = if (scaleAnimStarted) 0.99f else 1f,
+                    animationSpec = spring(),
+                    finishedListener = {
+                        scaleAnimStarted = false
                     }
-                    val scalePercent by animateFloatAsState(
-                        targetValue = if (scaleAnimStarted) 0.99f else 1f,
-                        animationSpec = spring(),
-                        finishedListener = {
-                            scaleAnimStarted = false
-                        }
-                    )
+                )
 
-                    Card(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .scale(scalePercent),
-                        backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                        shape = ShortXCardRoundedCornerShape,
-                        elevation = 0.dp
-                    ) {
-                        if (state.ruleColumnCount == 1) {
-                            RuleItem(
-                                rule = rule,
-                                onClick = {
-                                    onRuleClick(rule)
-                                    scaleAnimStarted = true
-                                },
-                                setRuleEnabled = setRuleEnabled,
-                                onDup = onDup,
-                                onDelete = onDelete,
-                                onEdit = onEdit,
-                                onShare = onShare,
-                            )
-                        } else {
-                            RuleItem2(
-                                rule = rule,
-                                onClick = {
-                                    onRuleClick(rule)
-                                    scaleAnimStarted = true
-                                },
-                                setRuleEnabled = setRuleEnabled,
-                                onDup = onDup,
-                                onDelete = onDelete,
-                                onEdit = onEdit,
-                                onShare = onShare,
-                            )
-                        }
+                Card(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .scale(scalePercent),
+                    backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                    shape = ShortXCardRoundedCornerShape,
+                    elevation = 0.dp
+                ) {
+                    if (state.ruleColumnCount == 1) {
+                        RuleItem(
+                            rule = rule,
+                            onClick = {
+                                onRuleClick(rule)
+                                scaleAnimStarted = true
+                            },
+                            setRuleEnabled = setRuleEnabled,
+                            onDup = onDup,
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onShare = onShare,
+                        )
+                    } else {
+                        RuleItem2(
+                            rule = rule,
+                            onClick = {
+                                onRuleClick(rule)
+                                scaleAnimStarted = true
+                            },
+                            setRuleEnabled = setRuleEnabled,
+                            onDup = onDup,
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onShare = onShare,
+                        )
                     }
                 }
+
             }
         }
     }
+
 }
 
 @Composable

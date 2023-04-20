@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.base.LoadState.Loading.data
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -41,7 +40,7 @@ fun DirectActionListScreen() {
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
-        vm.loadDA()
+        vm.loadDA(delay = true)
     }
 
     val appNavController = LocalNavHostController.current
@@ -108,15 +107,25 @@ fun DirectActionListContent(
     onDirectActionClick: (DirectActionUM) -> Unit = {},
     stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
-    if (state.das.isSuccess() && state.das.data.isNullOrEmpty()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(6.dp), contentAlignment = Alignment.Center
+    ) {
+        if (state.isLoading) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
+    }
+
+    if (!state.isLoading && state.das.isEmpty()) {
         EmptyList(modifier = modifier.fillMaxSize())
-    } else if (state.das.isSuccess()) {
+    } else {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
             columns = StaggeredGridCells.Fixed(2),
             contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
         ) {
-            items(items = state.das.data.orEmpty(), key = { it.id }) { da ->
+            items(items = state.das, key = { it.id }) { da ->
                 var colorAnimStarted by remember {
                     mutableStateOf(false)
                 }
