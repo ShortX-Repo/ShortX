@@ -28,33 +28,28 @@ fun ActionContent(
     header: @Composable() (ColumnScope.() -> Unit) = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
-    addAction: (Action) -> Unit,
-    removeAction: (Action) -> Unit,
     actions: List<Action>,
-    sortActions: (List<Action>) -> Unit = {},
+    handler: ActionHandler
 ) {
-    val uiActionSubSelectorStates = uiActionSubSelectors(addAction)
+    val uiActionSubSelectorStates = uiActionSubSelectors { handler.addAction(it) }
 
     val mvelEditorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
         onSelected = {
-            addAction(Action.MVEL(expression = it.src))
+            handler.addAction(Action.MVEL(expression = it.src))
         }
     )
     CodeEditorDialog(state = mvelEditorState)
 
     val mapNavDialogState = rememberMapNavDialogState {
-        addAction(it)
+        handler.addAction(it)
     }
     MapNavDialog(state = mapNavDialogState)
 
     Actions(
         header = header,
         actions = actions,
-        addAction = addAction,
-        removeAction = { action ->
-            removeAction(action)
-        },
+        handler = handler,
         onActionClick = { action ->
             when (action) {
                 is Action.ShowOverlay -> {
@@ -80,22 +75,18 @@ fun ActionContent(
                 }
                 else -> {}
             }
-        },
-        sortActions = sortActions
-    )
+        })
 }
 
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
-    addAction: (Action) -> Unit,
-    removeAction: (Action) -> Unit,
+    handler: ActionHandler,
     onActionClick: (Action) -> Unit = {},
-    sortActions: (List<Action>) -> Unit = {},
 ) {
     val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
-        sortActions(it)
+        handler.applySort(it)
     })
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -121,46 +112,116 @@ private fun Actions(
         ContextDataInfoDialog(state = contextDataInfoDialogState)
         val i18N = LocalI18N.current
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            actions.forEach {
-                ListItem(
-                    modifier = Modifier,
-                    titleLines = labelLinesForAction(action = it),
-                    icon = {
-                        ColoredIcon(size = 36.dp) {
-                            RemixIcon(remixName = imageVectorForAction(action = it::class))
-                        }
-                    },
-                    action1 = {
-                        if (it.contextData.isNotEmpty()) {
-                            IconButton(onClick = {
-                                contextDataInfoDialogState.show(
-                                    labelAndDescriptionForActionSelector(i18N, it::class).first,
-                                    it.contextData
-                                )
-                            }) {
-                                ContextDataIcon()
-                            }
-                            VerticalDivider(modifier = Modifier.height(24.dp))
-                        }
+        val actionSelectorState =
+            rememberActionSelectorDialogState<ActionSelectorDialogArgs>(onSelected = { action, args ->
+                when (args) {
+                    ActionSelectorDialogArgs.New -> {
+                        handler.addAction(action)
+                    }
+                    is ActionSelectorDialogArgs.InsertAbove -> {
+                        handler.insertAbove(action, args.anchor)
 
-                        IconButton(onClick = {
-                            removeAction(it)
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    },
-                    onClick = { onActionClick(it) })
+                    }
+                    is ActionSelectorDialogArgs.InsertBelow -> {
+                        handler.insertBelow(action, args.anchor)
+                    }
+                    else -> {
+                        handler.addAction(action)
+                    }
+                }
+            })
+        ActionSelectorDialog(state = actionSelectorState)
+
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            actions.forEachIndexed { index, action ->
+                Box(modifier = Modifier) {
+                    val longClickDropdownState = rememberDropdownSelectorState()
+
+                    ListItem(
+                        modifier = Modifier,
+                        titleLines = labelLinesForAction(action = action),
+                        icon = {
+                            ColoredIcon(size = 36.dp) {
+                                RemixIcon(remixName = imageVectorForAction(action = action::class))
+                            }
+                        },
+                        action1 = {
+                            if (action.contextData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    contextDataInfoDialogState.show(
+                                        labelAndDescriptionForActionSelector(
+                                            i18N,
+                                            action::class
+                                        ).first,
+                                        action.contextData
+                                    )
+                                }) {
+                                    ContextDataIcon()
+                                }
+                                VerticalDivider(modifier = Modifier.height(24.dp))
+                            }
+
+                            IconButton(onClick = {
+                                handler.removeAction(action)
+                            }) {
+                                RemixIcon(remixName = Remix.System.close_line)
+                            }
+                        },
+                        onClick = { onActionClick(action) },
+                        onLongClick = { longClickDropdownState.open() }
+                    )
+
+
+                    DropdownSelector(
+                        state = longClickDropdownState,
+                        items = listOf(
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
+                                data = action to "ia",
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
+                                data = action to "ib",
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                                data = action to "pa",
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                                data = action to "pb",
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                                data = action to "cp",
+                            )
+                        ), onSelect = {
+                            when (it.data.second) {
+                                "ia" -> {
+                                    actionSelectorState.show(ActionSelectorDialogArgs.InsertAbove(it.data.first))
+                                }
+                                "ib" -> {
+                                    actionSelectorState.show(ActionSelectorDialogArgs.InsertBelow(it.data.first))
+                                }
+                                "pa" -> {
+                                    handler.pasteAbove(action, it.data.first)
+                                }
+                                "pb" -> {
+                                    handler.pasteBelow(action, it.data.first)
+                                }
+                                "cp" -> {
+                                    handler.copy(action)
+                                }
+                            }
+                        })
+                }
             }
 
-            val actionSelectorState = rememberActionSelectorDialogState(onSelected = {
-                addAction(it)
-            })
-            ActionSelectorDialog(state = actionSelectorState)
 
             Box {
                 FilledTonalButton(onClick = {
-                    actionSelectorState.show()
+                    actionSelectorState.show(ActionSelectorDialogArgs.New)
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add, contentDescription = "Select"
@@ -173,4 +234,22 @@ private fun Actions(
             }
         }
     }
+}
+
+
+class ActionHandler(
+    val addAction: (Action) -> Unit = {},
+    val removeAction: (Action) -> Unit = {},
+    val applySort: (List<Action>) -> Unit = {},
+    val insertAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val insertBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val pasteAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val pasteBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val copy: (action: Action) -> Unit = {},
+)
+
+sealed interface ActionSelectorDialogArgs {
+    object New : ActionSelectorDialogArgs
+    data class InsertAbove(val anchor: Action) : ActionSelectorDialogArgs
+    data class InsertBelow(val anchor: Action) : ActionSelectorDialogArgs
 }

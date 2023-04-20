@@ -1,6 +1,10 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.IconButton
@@ -27,15 +31,14 @@ fun ListItem(
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
     action1: @Composable RowScope.() -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .clickable {
-                onClick()
-            },
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

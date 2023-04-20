@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -155,13 +156,16 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                     ActionContent(
                         header = {
                             SmallTitle(text = LocalI18N.current["ui.actions.title"])
-                        }, addAction = { action ->
-                            vm.addAction(index, action)
                         },
-                        removeAction = { action ->
-                            vm.removeAction(index, action)
-                        },
-                        actions = state.items[index].actions
+                        actions = state.items[index].actions,
+                        handler = ActionHandler(
+                            addAction = { action ->
+                                vm.addAction(index, action)
+                            },
+                            removeAction = { action ->
+                                vm.removeAction(index, action)
+                            }
+                        )
                     )
                 }
             }

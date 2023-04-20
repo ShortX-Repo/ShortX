@@ -15,6 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -256,12 +257,15 @@ private fun ButtonSettings(
     ActionContent(
         header = {
             SmallTitle(text = LocalI18N.current["ui.actions.title"])
-        }, addAction = { action ->
-            addAction(action)
         },
-        removeAction = { action ->
-            removeAction(action)
-        },
-        actions = actions
+        actions = actions,
+        handler = ActionHandler(
+            addAction = { action ->
+                addAction(action)
+            },
+            removeAction = { action ->
+                removeAction(action)
+            },
+        )
     )
 }

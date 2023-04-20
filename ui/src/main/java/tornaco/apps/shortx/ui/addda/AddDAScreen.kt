@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -75,18 +76,23 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                     Spacer(modifier = Modifier.size(24.dp))
 
                     ActionContent(
-                        addAction = { action ->
-                            vm.addAction(
-                                action
-                            )
-                        },
-                        removeAction = { action ->
-                            vm.removeAction(action)
-                        },
-                        actions = state.actions
-                    ) { sorted ->
-                        vm.sortActions(sorted)
-                    }
+                        actions = state.actions,
+                        handler = ActionHandler(
+                            addAction = { action ->
+                                vm.addAction(
+                                    action
+                                )
+                            },
+                            insertAbove = { action, anchor ->
+                                vm.insertActionAbove(action, anchor)
+                            },
+                            removeAction = { action ->
+                                vm.removeAction(action)
+                            },
+                            applySort = { sorted ->
+                                vm.sortActions(sorted)
+                            })
+                    )
                     Spacer(modifier = Modifier.size(24.dp))
                 }
             }

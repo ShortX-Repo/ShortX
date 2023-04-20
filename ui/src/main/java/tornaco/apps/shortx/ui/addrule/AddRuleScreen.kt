@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.*
@@ -96,16 +97,22 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     }
 
                     ActionContent(
-                        addAction = { action ->
-                            vm.addAction(action)
-                        },
-                        removeAction = { action ->
-                            vm.removeAction(action)
-                        },
-                        actions = state.actions
-                    ) { sorted ->
-                        vm.sortActions(sorted)
-                    }
+                        actions = state.actions,
+                        handler = ActionHandler(
+                            addAction = { action ->
+                                vm.addAction(action)
+                            },
+                            insertAbove = { action, anchor ->
+                                vm.insertActionAbove(action, anchor)
+                            },
+                            removeAction = { action ->
+                                vm.removeAction(action)
+                            },
+                            applySort = { sorted ->
+                                vm.sortActions(sorted)
+                            }
+                        )
+                    )
                     Spacer(modifier = Modifier.size(24.dp))
                 }
             }

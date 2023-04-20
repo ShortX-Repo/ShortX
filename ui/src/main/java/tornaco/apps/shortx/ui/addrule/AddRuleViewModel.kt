@@ -144,6 +144,19 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
+    fun insertActionAbove(action: Action, anchor: Action) {
+        updateState {
+            copy(actions = actions.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchor.id }
+                if (existingIndex >= 0) {
+                    add(existingIndex, action)
+                } else {
+                    add(action)
+                }
+            }, ruleChanged = true)
+        }
+    }
+
     fun removeAction(action: Action) {
         updateState {
             copy(actions = actions.toMutableList().apply {

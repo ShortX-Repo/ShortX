@@ -27,11 +27,13 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Remote("ui.action.remote", Remix.Business.cloud_line)
 }
 
-class ActionSelectorDialogState(val onSelected: (Action) -> Unit) {
+class ActionSelectorDialogState<ARGS>(val onSelected: (Action, ARGS?) -> Unit) {
     var isShowing by mutableStateOf(false)
+    var args: ARGS? = null
 
-    fun show() {
+    fun show(args: ARGS? = null) {
         isShowing = true
+        this.args = args
     }
 
     fun dismiss() {
@@ -40,14 +42,23 @@ class ActionSelectorDialogState(val onSelected: (Action) -> Unit) {
 }
 
 @Composable
-fun rememberActionSelectorDialogState(onSelected: (Action) -> Unit): ActionSelectorDialogState {
+fun <ARGS> rememberActionSelectorDialogState(onSelected: (Action, ARGS?) -> Unit): ActionSelectorDialogState<ARGS> {
     return remember {
         ActionSelectorDialogState(onSelected)
     }
 }
 
 @Composable
-fun ActionSelectorDialog(state: ActionSelectorDialogState) {
+fun <ARGS> rememberActionSelectorDialogState(onSelected: (Action) -> Unit): ActionSelectorDialogState<ARGS> {
+    return remember {
+        ActionSelectorDialogState { action, _ ->
+            onSelected(action)
+        }
+    }
+}
+
+@Composable
+fun <ARGS> ActionSelectorDialog(state: ActionSelectorDialogState<ARGS>) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             ActionSelector(state)
@@ -56,8 +67,8 @@ fun ActionSelectorDialog(state: ActionSelectorDialogState) {
 }
 
 @Composable
-private fun ActionSelector(
-    state: ActionSelectorDialogState
+private fun <ARGS> ActionSelector(
+    state: ActionSelectorDialogState<ARGS>
 ) {
     ShortXTheme {
         Surface(
@@ -110,7 +121,7 @@ private fun ActionSelector(
                             .fillMaxSize()
                     ) {
                         val addAction: (Action) -> Unit = {
-                            state.onSelected(it)
+                            state.onSelected(it, state.args)
                             state.dismiss()
                         }
 
