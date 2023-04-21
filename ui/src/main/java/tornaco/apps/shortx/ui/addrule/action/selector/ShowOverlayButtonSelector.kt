@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
-import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -116,7 +116,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        state.buttons.forEachIndexed { index, item ->
+        state.buttons.forEachIndexed { index, button ->
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateIcon(index, it)
             }
@@ -136,7 +136,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
                     Column(verticalArrangement = Arrangement.Center) {
                         SmallTitle(LocalI18N.current["ui.action.show.overlay.text"])
-                        OutlinedTextField(value = item.label, onValueChange = {
+                        OutlinedTextField(value = button.label, onValueChange = {
                             vm.updateLabel(index, it)
                         })
                     }
@@ -147,23 +147,19 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                         TextButton(onClick = {
                             iconSelector.show()
                         }) {
-                            RemixIcon(item.icon)
+                            RemixIcon(button.icon)
                         }
                     }
+
+                    val actionStateHandle = remember(button) { button.actionHandle }
+                    val actionState by actionStateHandle.state.collectAsState()
 
                     ActionContent(
                         header = {
                             SmallTitle(text = LocalI18N.current["ui.actions.title"])
                         },
-                        actions = state.buttons[index].actions,
-                        handler = ActionHandler(
-                            addAction = { action ->
-                                vm.addAction(index, action)
-                            },
-                            removeAction = { action ->
-                                vm.removeAction(index, action)
-                            }
-                        )
+                        actions = actionState.actions,
+                        handler = actionStateHandle.asActionHandler()
                     )
                 }
             }

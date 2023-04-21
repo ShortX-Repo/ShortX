@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -27,20 +28,24 @@ data class OverlayButtonSelectorState(
 data class Button(
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,
     val label: String = "",
-    val actions: List<Action> = emptyList()
+    val actionHandle: ActionContentStateHandler = ActionContentStateHandler()
 )
 
 fun Button.toOverlayButtonSetting(): OverlayButtonSetting {
     return OverlayButtonSetting.newBuilder().setIcon(icon).setLabel(label)
-        .addAllActions(actions.map { it.toProtoAction().pack_() }).build()
+        .addAllActions(actionHandle.state.value.actions.map { it.toProtoAction().pack_() }).build()
 }
 
 fun OverlayButtonSetting.toButton(): Button {
     return Button(
         icon = icon,
         label = label,
-        actions = actionsList.mapNotNull {
-            it.toAction(shortXManager = shortXManager)
+        actionHandle = ActionContentStateHandler().apply {
+            updateState {
+                copy(actions = actionsList.mapNotNull {
+                    it.toAction(shortXManager = shortXManager)
+                })
+            }
         })
 }
 
@@ -57,39 +62,6 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 buttons = settings.settings.map { it.toButton() },
                 autoCollapse = settings.autoCollapse,
                 tag = settings.tag
-            )
-        }
-    }
-
-    fun addAction(index: Int, action: Action) {
-        logger.d("addAction: $index $action current state size: ${state.value.buttons.size}")
-        updateState {
-            copy(
-                buttons = buttons.toMutableList().apply {
-                    val current = get(index)
-                    set(
-                        index,
-                        current.copy(actions = current.actions.toMutableList().apply {
-                            add(action)
-                        })
-                    )
-                }
-            )
-        }
-    }
-
-    fun removeAction(index: Int, action: Action) {
-        updateState {
-            copy(
-                buttons = buttons.toMutableList().apply {
-                    val current = get(index)
-                    set(
-                        index,
-                        current.copy(actions = current.actions.toMutableList().apply {
-                            remove(action)
-                        })
-                    )
-                }
             )
         }
     }
@@ -134,11 +106,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun addButton() {
         updateState {
-            copy(
-                buttons = buttons.toMutableList().apply {
-                    add(Button())
-                }
-            )
+            copy(buttons = buttons.toMutableList().apply { add(Button()) })
         }
         logger.d("addButton after, items size: ${state.value.buttons.size}")
     }
