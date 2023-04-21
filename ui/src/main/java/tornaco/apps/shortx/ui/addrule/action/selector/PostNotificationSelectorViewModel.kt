@@ -16,10 +16,8 @@ data class PostNotificationSelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<PostNotificationSelectorState>(context) {
-
-    override fun initState(): PostNotificationSelectorState {
-        return PostNotificationSelectorState(
+    ContextViewModel<PostNotificationSelectorState>(
+        context, PostNotificationSelectorState(
             data = Action.PostNotification(
                 tag = "tag-${System.currentTimeMillis()}",
                 title = "",
@@ -31,7 +29,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 sound = false
             )
         )
-    }
+    ) {
 
     fun initFrom(settings: Action.PostNotification) {
         logger.d("initFrom: $settings")

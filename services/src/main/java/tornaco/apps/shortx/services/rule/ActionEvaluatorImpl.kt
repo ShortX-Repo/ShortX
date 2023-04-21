@@ -263,6 +263,7 @@ class ActionEvaluatorImpl(
             val d = action unpack_ IfThenElse::class.java
             val matchCond =
                 conditionEvaluator.evaluate("IfThenElse", d.ifCondOp, d.ifCondOpPayload, d.ifList)
+            logger.d("IfThenElse, matchCond: $matchCond")
             if (matchCond) {
                 if (d.ifActionsList.isNullOrEmpty().not()) {
                     d.ifActionsList.forEach {

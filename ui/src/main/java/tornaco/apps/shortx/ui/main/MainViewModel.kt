@@ -119,7 +119,7 @@ private fun DirectAction.translateDA(shortXManager: ShortXManager, i18N: I18N) =
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<MainState>(context) {
+    ContextViewModel<MainState>(context, MainState()) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
 
@@ -141,6 +141,14 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     init {
+        updateState {
+            copy(
+                isActivated = shortXManager.isInstalled,
+                isFrameworkUpdated = shortXManager.isFrameworkUpdated,
+            )
+        }
+
+
         shortXManager.registerJobStatusListener(jobStatusListener)
 
         viewModelScope.launch {
@@ -161,13 +169,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     override fun onCleared() {
         super.onCleared()
         shortXManager.unregisterJobStatusListener(jobStatusListener)
-    }
-
-    override fun initState(): MainState {
-        return MainState(
-            isActivated = shortXManager.isInstalled,
-            isFrameworkUpdated = shortXManager.isFrameworkUpdated,
-        )
     }
 
     fun loadRules(delay: Boolean = false) {

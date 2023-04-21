@@ -56,7 +56,11 @@ fun UISettings.toDanmuUISettings(): DanmuUISettings =
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
-    StateViewModel<UISettingsState>() {
+    StateViewModel<UISettingsState>(
+        UISettingsState(
+            shortXManager.getDanmuUISettings().toUISettings()
+        )
+    ) {
 
     private var previewJob: Job? = null
     private val logger = tornaco.apps.shortx.core.util.Logger("DanmuUISettingsViewModel")
@@ -72,9 +76,5 @@ class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: 
             delay(300)
             shortXManager.showDanmu("Hello ShortX, Awesome", "app://${BuildProp.APP_PACKAGE_NAME}")
         }
-    }
-
-    override fun initState(): UISettingsState {
-        return UISettingsState(shortXManager.getDanmuUISettings().toUISettings())
     }
 }

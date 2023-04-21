@@ -14,10 +14,7 @@ data class PkgSetListState(
     val isLoading: Boolean = false
 )
 
-class PkgSetListViewModel : StateViewModel<PkgSetListState>() {
-    override fun initState(): PkgSetListState {
-        return PkgSetListState()
-    }
+class PkgSetListViewModel : StateViewModel<PkgSetListState>(PkgSetListState()) {
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -14,8 +14,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
+import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -38,26 +37,22 @@ data class AddRuleState(
     val fact: Fact? = null,
     val conditions: List<Condition> = listOf(Condition.TRUE),
     val conditionOp: Op = Op.All,
-    val actions: List<Action> = emptyList(),
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showConditionSection: Boolean = false,
-    val copiedAction: Action? = null
 )
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AddRuleState>(context) {
+    ContextViewModel<AddRuleState>(context, AddRuleState()) {
 
     private val _ruleSaved = MutableSharedFlow<String>()
     val ruleSaved = _ruleSaved.asSharedFlow()
 
-    override fun initState(): AddRuleState {
-        return AddRuleState()
-    }
+    val actionContentStateHandler = ActionContentStateHandler()
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -114,108 +109,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
-    fun addAction(action: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == action.id }
-                if (existingIndex >= 0) {
-                    set(existingIndex, action)
-                } else {
-                    add(action)
-                }
-            }, ruleChanged = true)
-        }
-    }
-
-    fun insertActionAbove(action: Action, anchor: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
-                if (existingIndex >= 0) {
-                    add(existingIndex, action)
-                } else {
-                    add(action)
-                }
-            }, ruleChanged = true)
-        }
-    }
-
-    fun insertActionBelow(action: Action, anchor: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
-                if (existingIndex >= 0) {
-                    add(existingIndex + 1, action)
-                } else {
-                    add(action)
-                }
-            }, ruleChanged = true)
-        }
-    }
-
-    fun copy(action: Action) {
-        updateState {
-            copy(copiedAction = action)
-        }
-    }
-
-    fun pasteActionAbove(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex, it)
-                        } else {
-                            add(it)
-                        }
-                    }, ruleChanged = true)
-                }
-            }
-        }
-    }
-
-    fun pasteActionBelow(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex + 1, it)
-                        } else {
-                            add(it)
-                        }
-                    }, ruleChanged = true)
-                }
-            }
-        }
-    }
-
-    fun removeAction(action: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                remove(action)
-            }, ruleChanged = true)
-        }
-    }
-
-    fun sortActions(actions: List<Action>) {
-        updateState {
-            copy(actions = actions, ruleChanged = true)
-        }
-    }
-
     fun save() {
         viewModelScope.launch {
             val fact = state.value.fact ?: return@launch
             val conditions = state.value.conditions
-            val actions = state.value.actions
+            val actions = actionContentStateHandler.state.value.actions
 
             val protoFact = fact.toProtoFact().pack_()
             val protoConditions = conditions.map {
@@ -269,6 +167,13 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             viewModelScope.launch {
                 shortXManager.getRuleById(id)?.let { rule ->
                     logger.d("initFromRule: $rule")
+
+                    actionContentStateHandler.init(actions = rule.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
+                        )
+                    })
+
                     updateState {
                         copy(
                             id = rule.id,
@@ -281,7 +186,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                                 )
                             },
                             conditionOp = rule.condOp.toOp(rule.condOpPayload),
-                            actions = rule.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditRule = true,
                             createTime = rule.createTime,
                             isEnabled = rule.isEnabled

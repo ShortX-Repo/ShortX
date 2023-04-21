@@ -32,12 +32,16 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @Composable
 fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
     val vm = hiltViewModel<AddRuleViewModel>()
-    val state by vm.state.collectAsState()
+    val addRuleState by vm.state.collectAsState()
+
     val context = LocalContext.current
     val savedMessage = LocalI18N.current["ui.toast.rule.saved"]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
+
+    val actionHandler = vm.actionContentStateHandler
+    val actionContentState by vm.actionContentStateHandler.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
@@ -56,7 +60,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = if (state.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
+                        title = { Text(text = if (addRuleState.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -65,10 +69,12 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                             }
                         },
                         actions = {
-                            IconButton(enabled = state.ruleChanged, onClick = {
-                                vm.save()
-                                back()
-                            }) {
+                            IconButton(
+                                enabled = addRuleState.ruleChanged || actionContentState.isChanged,
+                                onClick = {
+                                    vm.save()
+                                    back()
+                                }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
                         },
@@ -83,15 +89,15 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                         .animateContentSize()
                 ) {
 
-                    TitleAndDescription(state, vm)
+                    TitleAndDescription(addRuleState, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    FactSelectors(vm, state)
+                    FactSelectors(vm, addRuleState)
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    AnimatedVisibility(visible = state.showConditionSection) {
-                        val conditions = state.conditions
-                        val conditionOp = state.conditionOp
+                    AnimatedVisibility(visible = addRuleState.showConditionSection) {
+                        val conditions = addRuleState.conditions
+                        val conditionOp = addRuleState.conditionOp
                         ConditionSelectors(
                             conditions = conditions,
                             conditionOp = conditionOp,
@@ -105,31 +111,31 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     }
 
                     ActionContent(
-                        actions = state.actions,
+                        actions = actionContentState.actions,
                         handler = ActionHandler(
                             addAction = { action ->
-                                vm.addAction(action)
+                                actionHandler.addAction(action)
                             },
                             insertAbove = { action, anchor ->
-                                vm.insertActionAbove(action, anchor)
+                                actionHandler.insertActionAbove(action, anchor)
                             },
                             insertBelow = { action, anchor ->
-                                vm.insertActionBelow(action, anchor)
+                                actionHandler.insertActionBelow(action, anchor)
                             },
                             copy = { action ->
-                                vm.copy(action)
+                                actionHandler.copy(action)
                             },
                             pasteAbove = { anchor ->
-                                vm.pasteActionAbove(anchor)
+                                actionHandler.pasteActionAbove(anchor)
                             },
                             pasteBelow = { anchor ->
-                                vm.pasteActionBelow(anchor)
+                                actionHandler.pasteActionBelow(anchor)
                             },
                             removeAction = { action ->
-                                vm.removeAction(action)
+                                actionHandler.removeAction(action)
                             },
                             applySort = { sorted ->
-                                vm.sortActions(sorted)
+                                actionHandler.sortActions(sorted)
                             }
                         )
                     )

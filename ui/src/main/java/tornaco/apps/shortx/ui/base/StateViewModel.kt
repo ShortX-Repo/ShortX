@@ -1,24 +1,8 @@
 package tornaco.apps.shortx.ui.base
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-
-abstract class StateViewModel<T> :
-    LifeCycleAwareViewModel() {
-    private val _state by lazy { MutableStateFlow(initState()) }
-    val state get() = _state.asStateFlow()
-
-    abstract fun initState(): T
-
-    fun updateState(block: T.() -> T) {
-        _state.value = block.invoke(_state.value)
-    }
-
-    fun updateState(t: T) {
-        _state.value = t
-    }
-
-    fun resetState() {
-        updateState(initState())
-    }
+abstract class StateViewModel<T>(
+    initState: T,
+    private val stateImpl: WithStateImpl<T> = WithStateImpl(initState)
+) :
+    LifeCycleAwareViewModel(), WithState<T> by stateImpl {
 }

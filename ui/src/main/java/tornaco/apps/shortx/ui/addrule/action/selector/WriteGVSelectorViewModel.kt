@@ -15,11 +15,10 @@ fun Action.WriteGV.isValid() = varId.isNotEmpty() && varName.isNotEmpty()
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<Action.WriteGV>(context) {
-
-    override fun initState(): Action.WriteGV {
-        return Action.WriteGV(valueAsString = "", varId = "", varName = "")
-    }
+    ContextViewModel<Action.WriteGV>(
+        context,
+        Action.WriteGV(valueAsString = "", varId = "", varName = "")
+    ) {
 
     fun selectGlobalVar(globalVar: GlobalVar) {
         updateState {

@@ -13,14 +13,12 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<Action.ShowAlertDialog>(context) {
-
-    override fun initState(): Action.ShowAlertDialog {
-        return Action.ShowAlertDialog(
+    ContextViewModel<Action.ShowAlertDialog>(
+        context, Action.ShowAlertDialog(
             title = "",
             message = ""
         )
-    }
+    ) {
 
     fun initFrom(settings: Action.ShowAlertDialog) {
         updateState(settings)

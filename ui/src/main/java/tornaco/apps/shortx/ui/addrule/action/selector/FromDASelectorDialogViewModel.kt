@@ -15,14 +15,11 @@ data class FromDASelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class FromDADialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<FromDASelectorState>(context) {
-
-    override fun initState(): FromDASelectorState {
-        logger.d("initState")
-        return FromDASelectorState(
+    ContextViewModel<FromDASelectorState>(
+        context, FromDASelectorState(
             data = Action.FromDA(daId = "", title = null, description = null),
         )
-    }
+    ) {
 
     fun initFrom(settings: Action.FromDA) {
         logger.d("initFrom: $settings")

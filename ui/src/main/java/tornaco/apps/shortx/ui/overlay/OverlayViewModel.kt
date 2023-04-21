@@ -14,7 +14,7 @@ data class OverlayState(
     val formattedValues: List<String> = emptyList()
 )
 
-class OverlayViewModel : StateViewModel<OverlayState>() {
+class OverlayViewModel : StateViewModel<OverlayState>(OverlayState()) {
     private val logger = Logger("OverlayViewModel")
 
     private val globalVarObs = object : IGlobalVarObserver.Stub() {
@@ -62,6 +62,4 @@ class OverlayViewModel : StateViewModel<OverlayState>() {
         super.onCleared()
         shortXManager.unregisterGlobalVarObs(globalVarObs)
     }
-
-    override fun initState() = OverlayState()
 }

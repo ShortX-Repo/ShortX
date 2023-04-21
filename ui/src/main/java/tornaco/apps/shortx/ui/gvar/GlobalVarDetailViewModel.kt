@@ -30,12 +30,8 @@ data class GlobalVarDetailState(
     val isLoading: Boolean = false
 )
 
-class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>() {
+class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarDetailState()) {
     private val logger = Logger("GlobalVarDetailViewModel")
-
-    override fun initState(): GlobalVarDetailState {
-        return GlobalVarDetailState()
-    }
 
     fun loadState(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
