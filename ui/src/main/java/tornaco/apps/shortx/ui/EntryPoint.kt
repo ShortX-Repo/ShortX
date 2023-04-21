@@ -1,9 +1,6 @@
 package tornaco.apps.shortx.ui
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.ShortcutInfo
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.Settings
@@ -15,7 +12,6 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.core.util.shortcutManager
 import tornaco.apps.shortx.ui.base.I18NCache
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
@@ -39,22 +35,9 @@ object EntryPoint {
                 }
             }
         }
-
-        context.shortcutManager.dynamicShortcuts = mutableListOf(
-            ShortcutInfo.Builder(context, "demo")
-                .setShortLabel("Demos")
-                .setIcon(
-                    Icon.createWithResource(
-                        context,
-                        R.drawable.ui_ic_baseline_developer_mode_24
-                    )
-                )
-                .setIntent(Intent("tornaco.apps.shortx.action.demo"))
-                .build()
-        )
     }
 
-    fun initDeviceId(context: Context) {
+    private fun initDeviceId(context: Context) {
         if (!TextUtils.isEmpty(getDeviceId(context))) {
             return
         }

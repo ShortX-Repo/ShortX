@@ -4,6 +4,7 @@ import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
 import tornaco.project.android.shortx.Hilt
 import tornaco.project.android.shortx.log
+import tornaco.project.android.shortx.Compose.bomVersion
 
 plugins {
     id("com.android.application")
@@ -118,6 +119,14 @@ dependencies {
     implementation(Hilt.library)
     implementation(Hilt.hiltNavigationCompose)
     kapt(Hilt.googleAndroidCompiler)
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    // Import the Compose BOM
+    implementation(platform("androidx.compose:compose-bom:${Compose.bomVersion}"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material")
 
     implementation(project(":ui"))
 

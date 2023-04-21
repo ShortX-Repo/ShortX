@@ -14,16 +14,6 @@
         </activity>
 
         <activity
-            android:name=".demo.DemoActivity"
-            android:exported="false"
-            android:label="Demo">
-            <intent-filter>
-                <action android:name="tornaco.apps.shortx.action.demo" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".shortcut.ActionShortcutActivity"
             android:excludeFromRecents="true"
             android:exported="false"

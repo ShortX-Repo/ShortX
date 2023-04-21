@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.Icon
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
@@ -13,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.res.Remix
@@ -26,18 +26,26 @@ fun mockNotification(context: Context, title: String?, content: String?, `when`:
     val n = NotificationCompat.Builder(context, "ShortX-Mock")
         .setContentTitle(title)
         .setContentText(content)
-        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        .setSmallIcon(github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_account_pin_box_fill)
         .setWhen(`when`)
         .setStyle(NotificationCompat.BigTextStyle().bigText(content))
+        .setContentIntent( PendingIntent.getActivity(
+            context,
+            System.currentTimeMillis().toString().hashCode(),
+            context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        ),)
         .setFullScreenIntent(
-            PendingIntent.getBroadcast(
+            PendingIntent.getActivity(
                 context,
                 System.currentTimeMillis().toString().hashCode(),
-                Intent("shortx.action.mock.notification"),
+                context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             ),
             true
-        ).build()
+        )
+        .setAutoCancel(true)
+        .build()
     NotificationManagerCompat.from(context)
         .notify(21, n)
 }
