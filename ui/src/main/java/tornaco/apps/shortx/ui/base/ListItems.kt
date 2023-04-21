@@ -31,17 +31,21 @@ fun ListItem(
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
     action1: @Composable RowScope.() -> Unit = {},
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            ),
+            .apply {
+                if (onClick != null) {
+                    combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick
+                    )
+                }
+            },
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

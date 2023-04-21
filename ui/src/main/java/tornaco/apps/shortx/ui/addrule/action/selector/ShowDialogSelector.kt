@@ -86,6 +86,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                             IconButton(onClick = {
                                 dialogState.onSelected(
                                     Action.ShowAlertDialog(
+                                        id = showDialogSelectorState.id,
                                         title = showDialogSelectorState.title,
                                         message = showDialogSelectorState.message,
                                         cancelable = showDialogSelectorState.cancelable,

@@ -7,14 +7,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
 
 
 data class ShowDialogSelectorState(
-    val title: String,
-    val message: String,
+    val id: String = defaultNewActionId(),
+    val title: String = "",
+    val message: String = "",
     val cancelable: Boolean = true,
     val positiveText: String? = null,
     val negativeText: String? = null,
@@ -25,7 +27,7 @@ data class ShowDialogSelectorState(
 @HiltViewModel
 class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<ShowDialogSelectorState>(
-        context, ShowDialogSelectorState(title = "", message = "")
+        context, ShowDialogSelectorState()
     ) {
 
     val positiveActionContent = ActionContentStateHandler()
@@ -43,6 +45,7 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
     fun initFrom(settings: Action.ShowAlertDialog) {
         updateState {
             copy(
+                id = settings.id,
                 title = settings.title,
                 message = settings.message,
                 cancelable = settings.cancelable,

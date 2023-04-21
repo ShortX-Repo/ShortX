@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,12 +36,21 @@ fun ActionContent(
     actions: List<Action>,
     handler: ActionHandler
 ) {
+    Actions(
+        header = header,
+        actions = actions,
+        handler = handler
+    )
+}
+
+@Composable
+private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Unit {
     val uiActionSubSelectorStates = uiActionSubSelectors { handler.addAction(it) }
 
     val mvelEditorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
         onSelected = {
-            handler.addAction(Action.MVEL(expression = it.src, note = it.note))
+            handler.addAction(Action.MVEL(id = action.id, expression = it.src, note = it.note))
         }
     )
     CodeEditorDialog(state = mvelEditorState)
@@ -53,41 +65,36 @@ fun ActionContent(
     }
     IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
 
-    Actions(
-        header = header,
-        actions = actions,
-        handler = handler,
-        onActionClick = { action ->
-            when (action) {
-                is Action.ShowOverlay -> {
-                    uiActionSubSelectorStates.overlayButtonState.show(action)
-                }
-                is Action.ShowAlertDialog -> {
-                    uiActionSubSelectorStates.showDialogSettingsState.show(action)
-                }
-                is Action.ShowDanmu -> {
-                    uiActionSubSelectorStates.showDanmuSettingsState.show(action)
-                }
-                is Action.MVEL -> {
-                    mvelEditorState.show(action.expression)
-                }
-                is Action.MapNav -> {
-                    mapNavDialogState.show(action)
-                }
-                is Action.IfThenElse -> {
-                    ifThenElseDialogState.show(action)
-                }
-                else -> {}
+    return {
+        when (action) {
+            is Action.ShowOverlay -> {
+                uiActionSubSelectorStates.overlayButtonState.show(action)
             }
-        })
+            is Action.ShowAlertDialog -> {
+                uiActionSubSelectorStates.showDialogSettingsState.show(action)
+            }
+            is Action.ShowDanmu -> {
+                uiActionSubSelectorStates.showDanmuSettingsState.show(action)
+            }
+            is Action.MVEL -> {
+                mvelEditorState.show(action.expression)
+            }
+            is Action.MapNav -> {
+                mapNavDialogState.show(action)
+            }
+            is Action.IfThenElse -> {
+                ifThenElseDialogState.show(action)
+            }
+            else -> {}
+        }
+    }
 }
 
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
-    handler: ActionHandler,
-    onActionClick: (Action) -> Unit = {},
+    handler: ActionHandler
 ) {
     val actionSortDialogState = rememberActionSortState(
         actions = actions,
@@ -141,6 +148,7 @@ private fun Actions(
 
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEachIndexed { _, action ->
+                val onActionClick = actionClickHandler(action = action, handler = handler)
 
                 val noteDialogState =
                     rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
@@ -155,9 +163,10 @@ private fun Actions(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
-                            .clickable {
-                                onActionClick(action)
-                            }
+                            .combinedClickable(
+                                onClick = { onActionClick() },
+                                onLongClick = { longClickDropdownState.open() }
+                            )
                     ) {
                         ListItem(
                             modifier = Modifier,
@@ -188,9 +197,7 @@ private fun Actions(
                                 }) {
                                     RemixIcon(remixName = Remix.System.close_line)
                                 }
-                            },
-                            onClick = { onActionClick(action) },
-                            onLongClick = { longClickDropdownState.open() }
+                            }
                         )
 
                         if (action.note.isNotBlank()) {

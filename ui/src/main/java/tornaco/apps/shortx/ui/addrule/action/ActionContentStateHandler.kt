@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action
 
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -52,8 +53,10 @@ class ActionContentStateHandler(
     private val withState: WithStateImpl<ActionContentState> = WithStateImpl(ActionContentState())
 ) : WithState<ActionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
+    private val logger = Logger("ActionContentStateHandler")
 
     fun addAction(action: Action) {
+        logger.d("addAction: ${action.id}")
         updateState {
             copy(actions = actions.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == action.id }
