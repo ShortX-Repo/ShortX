@@ -141,6 +141,13 @@ private fun Actions(
 
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEachIndexed { _, action ->
+
+                val noteDialogState =
+                    rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
+                        handler.setNote(action, it)
+                    }
+                InputTextSelector(state = noteDialogState)
+
                 Box(modifier = Modifier) {
                     val longClickDropdownState = rememberDropdownSelectorState()
 
@@ -219,6 +226,10 @@ private fun Actions(
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.copy"]),
                                 data = action to "cp",
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                                data = action to "note",
                             )
                         ), onSelect = {
                             when (it.data.second) {
@@ -236,6 +247,9 @@ private fun Actions(
                                 }
                                 "cp" -> {
                                     handler.copy(action)
+                                }
+                                "note" -> {
+                                    noteDialogState.show(action.note)
                                 }
                             }
                         })
@@ -266,11 +280,12 @@ class ActionHandler(
     val addAction: (Action) -> Unit = {},
     val removeAction: (Action) -> Unit = {},
     val applySort: (List<Action>) -> Unit = {},
-    val insertAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
-    val insertBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> {} },
+    val insertAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> run {} },
+    val insertBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> run {} },
     val pasteAbove: (anchor: Action) -> Unit = { },
     val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
+    val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
 )
 
 sealed interface ActionSelectorDialogArgs {

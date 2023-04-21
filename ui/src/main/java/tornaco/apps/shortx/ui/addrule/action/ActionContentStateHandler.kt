@@ -41,6 +41,9 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         },
         applySort = { sorted ->
             this.sortActions(sorted)
+        },
+        setNote = { action, note ->
+            this.setNote(action, note)
         }
     )
 }
@@ -145,6 +148,11 @@ class ActionContentStateHandler(
         updateState {
             copy(actions = actions, isChanged = true)
         }
+    }
+
+    fun setNote(action: Action, note: String) {
+        action.toProtoAction(overrideNote = note)
+            .pack_().toAction(shortXManager)?.let { addAction(it) }
     }
 
     fun init(actions: List<Action>) {

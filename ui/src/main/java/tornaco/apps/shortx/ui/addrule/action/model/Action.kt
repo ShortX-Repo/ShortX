@@ -384,44 +384,51 @@ sealed interface Action : Parcelable {
     ) : Action
 }
 
-fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
+fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = null): ProtoMessage {
     return when (this) {
         is Action.TakeScreenshot -> {
-            TakeScreenshot.newBuilder().setId(overrideId ?: id).setNote(note).build()
+            TakeScreenshot.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.ShellCommand -> {
-            ShellCommand.newBuilder().setId(overrideId ?: id).setCommand(command).setNote(note)
+            ShellCommand.newBuilder().setId(overrideId ?: id).setCommand(command)
+                .setNote(overrideNote ?: note)
                 .build()
         }
         is Action.InputText -> {
-            InputText.newBuilder().setId(overrideId ?: id).setText(text).setNote(note).build()
+            InputText.newBuilder().setId(overrideId ?: id).setText(text)
+                .setNote(overrideNote ?: note).build()
         }
         is Action.Delay -> {
-            Delay.newBuilder().setId(overrideId ?: id).setTime(time).setNote(note).build()
+            Delay.newBuilder().setId(overrideId ?: id).setTime(time).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.ShowToast -> {
-            ShowToast.newBuilder().setId(overrideId ?: id).setMessage(message).setNote(note).build()
+            ShowToast.newBuilder().setId(overrideId ?: id).setMessage(message)
+                .setNote(overrideNote ?: note).build()
         }
         is Action.ShowDanmu -> {
             ShowDanmu.newBuilder().setId(overrideId ?: id).setText(text).apply {
                 this@toProtoAction.icon?.let {
                     icon = it
                 }
-            }.setNote(note).build()
+            }.setNote(overrideNote ?: note).build()
         }
         is Action.MVEL -> {
-            ExecuteMVEL.newBuilder().setId(overrideId ?: id).setExpression(expression).setNote(note)
+            ExecuteMVEL.newBuilder().setId(overrideId ?: id).setExpression(expression)
+                .setNote(overrideNote ?: note)
                 .build()
         }
         is Action.RemoteMVEL -> {
             action.toProto()
         }
         is Action.HideAllOverlay -> {
-            HideOverlayButton.newBuilder().setId(overrideId ?: id).setNote(note).build()
+            HideOverlayButton.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.HideOverlay -> {
             HideOverlayButton.newBuilder().setId(overrideId ?: id).addAllOverlayTags(tags)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.ShowOverlay -> {
             ShowOverlayButton.newBuilder()
@@ -429,99 +436,101 @@ fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
                 .setAutoCollapse(autoCollapse)
                 .setTag(tag)
                 .addAllButtonSettings(settings)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.LaunchApp -> {
-            LaunchApp.newBuilder().setId(overrideId ?: id).setAppPkg(appPkg).setNote(note).build()
+            LaunchApp.newBuilder().setId(overrideId ?: id).setAppPkg(appPkg)
+                .setNote(overrideNote ?: note).build()
         }
         is Action.DisableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.DisableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.DisableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.DisableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.DisableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.DisableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
 
         is Action.EnableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.EnableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.EnableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.EnableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
-            .setNote(note).build()
+            .setNote(overrideNote ?: note).build()
         is Action.EnableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
         is Action.EnableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-            .setNote(note)
+            .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.EnableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.StopApp -> {
             StopApp.newBuilder().setId(overrideId ?: id)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.SuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(true)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.UnSuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.Brk -> {
-            BreakActionExecute.newBuilder().setId(overrideId ?: id).setNote(note).build()
+            BreakActionExecute.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.ShowAlertDialog -> {
             ShowAlertDialog.newBuilder().setId(overrideId ?: id)
@@ -536,15 +545,16 @@ fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
                 .addAllOnPositive(positiveActions.map { it.toProtoAction().pack_() })
                 .addAllOnNegative(negativeActions.map { it.toProtoAction().pack_() })
                 .addAllOnNeutral(neutralActions.map { it.toProtoAction().pack_() })
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.StartActivity -> {
             StartActivity.newBuilder().setId(overrideId ?: id)
                 .setComponentNameAsString(componentNameAsString)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.ExpandNotification -> {
-            ExpandNotification.newBuilder().setId(overrideId ?: id).setNote(note).build()
+            ExpandNotification.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.WhileLoop -> {
             WhileLoop.newBuilder().setId(overrideId ?: id)
@@ -562,14 +572,14 @@ fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
                                 .build()
                     }
                 }
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.WriteGV -> {
             WriteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setVarId(varId)
                 .setValueAsString(valueAsString)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.MapNav -> {
             MapNav.newBuilder()
@@ -582,7 +592,7 @@ fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
                         .build()
                 )
                 .setPoi(poi)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.PostNotification -> {
             PostNotification.newBuilder()
@@ -595,26 +605,27 @@ fun Action.toProtoAction(overrideId: String? = null): ProtoMessage {
                 .setIsImportant(isImportant)
                 .setSound(sound)
                 .setVibrate(vibrate)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.FromDA -> {
-            FromDA.newBuilder().setId(overrideId ?: id).setDaId(daId).setNote(note).build()
+            FromDA.newBuilder().setId(overrideId ?: id).setDaId(daId).setNote(overrideNote ?: note)
+                .build()
         }
         is Action.FindAndClickViewByText -> {
             FindAndClickViewByText.newBuilder().setId(overrideId ?: id).setText(text)
                 .setIsRegex(isRegex)
-                .setNote(note).build()
+                .setNote(overrideNote ?: note).build()
         }
         is Action.WaitForIdle -> {
             WaitForIdle.newBuilder()
                 .setId(overrideId ?: id)
-                .setNote(note)
+                .setNote(overrideNote ?: note)
                 .build()
         }
         is Action.IfThenElse -> {
             IfThenElse.newBuilder()
                 .setId(overrideId ?: id)
-                .setNote(note)
+                .setNote(overrideNote ?: note)
                 .addAllIf(ifConditions.map { it.toProtoCondition().pack_() })
                 .setIfCondOp(ifConditionOp.toConditionOperator())
                 .apply {
