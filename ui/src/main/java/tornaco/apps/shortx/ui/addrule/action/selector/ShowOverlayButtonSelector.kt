@@ -123,7 +123,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             MDIconSelectorDialog(state = iconSelector)
 
             OutlinedCard(
-                modifier = Modifier,
+                modifier = Modifier.padding(top = 16.dp),
                 colors = CardDefaults.cardColors()
             ) {
                 Column(
