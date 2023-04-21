@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -286,9 +287,25 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.wait.for.idle.description"]
         )
 
-        is Action.IfThenElse -> listOf(
+        is Action.IfThenElse -> mutableListOf(
             i18N["ui.action.if.then.else"]
-        )
+        ).apply {
+            val condition = action.ifConditions.joinToString {
+                labelForConditionSelector(i18N, it::class).joinToString()
+            }
+
+            val ifAction = action.ifActions.joinToString {
+                labelAndDescriptionForActionSelector(i18N, it::class).first
+            }
+
+            val elseAction = action.elseActions.joinToString {
+                labelAndDescriptionForActionSelector(i18N, it::class).first
+            }
+
+            add(i18N["ui.action.if"] + " \uD83C\uDFAF " + condition + " ")
+            add(i18N["ui.action.then"] + " ➡️ " + ifAction + " ")
+            add(i18N["ui.action.else"] + " ➡️ " + elseAction + " ")
+        }
     }
 }
 

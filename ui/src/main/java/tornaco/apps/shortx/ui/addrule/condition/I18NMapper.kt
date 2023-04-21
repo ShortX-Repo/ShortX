@@ -36,9 +36,13 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
 
 @Composable
 fun labelForCondition(condition: Condition): List<String> {
+    return labelForCondition(LocalI18N.current, condition)
+}
+
+fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
     return when (condition) {
         is Condition.CurrentForegroundApp -> {
-            mutableListOf(LocalI18N.current["ui.dialog.title.current.app"])
+            mutableListOf(i18N["ui.dialog.title.current.app"])
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
         is Condition.MVEL -> {
@@ -46,8 +50,8 @@ fun labelForCondition(condition: Condition): List<String> {
         }
         Condition.TRUE -> {
             listOf(
-                LocalI18N.current["ui.conditions.true"],
-                LocalI18N.current["ui.conditions.true.desc"]
+                i18N["ui.conditions.true"],
+                i18N["ui.conditions.true.desc"]
             )
         }
     }
