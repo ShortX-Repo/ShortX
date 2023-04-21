@@ -13,7 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
-import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -80,33 +80,7 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
 
                     ActionContent(
                         actions = actionContentState.actions,
-                        handler = ActionHandler(
-                            addAction = { action ->
-                                actionContentStateHandler.addAction(
-                                    action
-                                )
-                            },
-                            insertAbove = { action, anchor ->
-                                actionContentStateHandler.insertActionAbove(action, anchor)
-                            },
-                            insertBelow = { action, anchor ->
-                                actionContentStateHandler.insertActionBelow(action, anchor)
-                            },
-                            copy = { action ->
-                                actionContentStateHandler.copy(action)
-                            },
-                            pasteAbove = { anchor ->
-                                actionContentStateHandler.pasteActionAbove(anchor)
-                            },
-                            pasteBelow = { anchor ->
-                                actionContentStateHandler.pasteActionBelow(anchor)
-                            },
-                            removeAction = { action ->
-                                actionContentStateHandler.removeAction(action)
-                            },
-                            applySort = { sorted ->
-                                actionContentStateHandler.sortActions(sorted)
-                            })
+                        handler = actionContentStateHandler.asActionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
-import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -109,32 +109,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 
                     ActionContent(
                         actions = actionContentState.actions,
-                        handler = ActionHandler(
-                            addAction = { action ->
-                                actionHandler.addAction(action)
-                            },
-                            insertAbove = { action, anchor ->
-                                actionHandler.insertActionAbove(action, anchor)
-                            },
-                            insertBelow = { action, anchor ->
-                                actionHandler.insertActionBelow(action, anchor)
-                            },
-                            copy = { action ->
-                                actionHandler.copy(action)
-                            },
-                            pasteAbove = { anchor ->
-                                actionHandler.pasteActionAbove(anchor)
-                            },
-                            pasteBelow = { anchor ->
-                                actionHandler.pasteActionBelow(anchor)
-                            },
-                            removeAction = { action ->
-                                actionHandler.removeAction(action)
-                            },
-                            applySort = { sorted ->
-                                actionHandler.sortActions(sorted)
-                            }
-                        )
+                        handler = actionHandler.asActionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

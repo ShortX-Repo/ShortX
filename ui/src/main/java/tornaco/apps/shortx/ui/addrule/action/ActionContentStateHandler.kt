@@ -14,6 +14,37 @@ data class ActionContentState(
     val isChanged: Boolean = false,
 )
 
+fun ActionContentStateHandler.asActionHandler(): ActionHandler {
+    return ActionHandler(
+        addAction = { action ->
+            this.addAction(
+                action
+            )
+        },
+        insertAbove = { action, anchor ->
+            this.insertActionAbove(action, anchor)
+        },
+        insertBelow = { action, anchor ->
+            this.insertActionBelow(action, anchor)
+        },
+        copy = { action ->
+            this.copy(action)
+        },
+        pasteAbove = { anchor ->
+            this.pasteActionAbove(anchor)
+        },
+        pasteBelow = { anchor ->
+            this.pasteActionBelow(anchor)
+        },
+        removeAction = { action ->
+            this.removeAction(action)
+        },
+        applySort = { sorted ->
+            this.sortActions(sorted)
+        }
+    )
+}
+
 class ActionContentStateHandler(
     private val withState: WithStateImpl<ActionContentState> = WithStateImpl(ActionContentState())
 ) : WithState<ActionContentState> by withState {

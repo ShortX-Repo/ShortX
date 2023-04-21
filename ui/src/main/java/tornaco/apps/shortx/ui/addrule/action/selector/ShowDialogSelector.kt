@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -63,7 +64,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
             vm.initFrom(it)
         }
     }
-    val state: Action.ShowAlertDialog by vm.state.collectAsState()
+    val showDialogSelectorState by vm.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -83,7 +84,19 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(state)
+                                dialogState.onSelected(
+                                    Action.ShowAlertDialog(
+                                        title = showDialogSelectorState.title,
+                                        message = showDialogSelectorState.message,
+                                        cancelable = showDialogSelectorState.cancelable,
+                                        positiveText = showDialogSelectorState.positiveText,
+                                        negativeText = showDialogSelectorState.negativeText,
+                                        neutralText = showDialogSelectorState.neutralText,
+                                        positiveActions = vm.positiveActionContent.state.value.actions,
+                                        negativeActions = vm.negativeActionContent.state.value.actions,
+                                        neutralActions = vm.neutralActionContent.state.value.actions,
+                                    )
+                                )
                                 dialogState.dismiss()
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -143,7 +156,6 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
         StandardSpacer()
 
 
-
         PositiveButton(state, vm)
         StandardSpacer()
 
@@ -167,63 +179,60 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
 
 @Composable
 private fun PositiveButton(
-    state: Action.ShowAlertDialog,
+    state: ShowDialogSelectorState,
     vm: ShowDialogSelectorViewModel
 ) {
+    val positiveAction by remember(vm) {
+        vm.positiveActionContent
+    }.state.collectAsState()
     ButtonSettings(
         headerTitle = LocalI18N.current["ui.actions.dialog.positive.button"],
         text = state.positiveText ?: "",
         onTextChange = {
             vm.updateButtonText(it, DialogAction.Positive)
         },
-        actions = state.positiveActions,
-        removeAction = {
-            vm.removePositiveAction(it)
-        },
-        addAction = {
-            vm.addPositiveAction(it)
-        })
+        actions = positiveAction.actions,
+        actionHandler = vm.positiveActionContent.asActionHandler()
+    )
 }
 
 @Composable
 private fun NegativeButton(
-    state: Action.ShowAlertDialog,
+    state: ShowDialogSelectorState,
     vm: ShowDialogSelectorViewModel
 ) {
+    val negativeAction by remember(vm) {
+        vm.negativeActionContent
+    }.state.collectAsState()
     ButtonSettings(
         headerTitle = LocalI18N.current["ui.actions.dialog.negative.button"],
         text = state.negativeText ?: "",
         onTextChange = {
             vm.updateButtonText(it, DialogAction.Negative)
         },
-        actions = state.negativeActions,
-        removeAction = {
-            vm.removeNegativeAction(it)
-        },
-        addAction = {
-            vm.addNegativeAction(it)
-        })
+        actions = negativeAction.actions,
+        actionHandler = vm.negativeActionContent.asActionHandler()
+    )
 }
 
 
 @Composable
 private fun NeutralButton(
-    state: Action.ShowAlertDialog,
+    state: ShowDialogSelectorState,
     vm: ShowDialogSelectorViewModel
 ) {
+    val neutralAction by remember(vm) {
+        vm.neutralActionContent
+    }.state.collectAsState()
     ButtonSettings(
         headerTitle = LocalI18N.current["ui.actions.dialog.neutral.button"],
         text = state.neutralText ?: "",
         onTextChange = {
             vm.updateButtonText(it, DialogAction.Neutral)
         },
-        actions = state.neutralActions,
-        removeAction = {
-            vm.removeNeutralAction(it)
-        },
-        addAction = {
-            vm.addNeutralAction(it)
-        })
+        actions = neutralAction.actions,
+        actionHandler = vm.neutralActionContent.asActionHandler()
+    )
 }
 
 @Composable
@@ -232,8 +241,7 @@ private fun ButtonSettings(
     text: String,
     onTextChange: (String) -> Unit,
     actions: List<Action>,
-    addAction: (Action) -> Unit,
-    removeAction: (Action) -> Unit,
+    actionHandler: ActionHandler
 ) {
     MediumTitle(headerTitle)
     OutlinedTextField(
@@ -259,13 +267,6 @@ private fun ButtonSettings(
             SmallTitle(text = LocalI18N.current["ui.actions.title"])
         },
         actions = actions,
-        handler = ActionHandler(
-            addAction = { action ->
-                addAction(action)
-            },
-            removeAction = { action ->
-                removeAction(action)
-            },
-        )
+        handler = actionHandler
     )
 }

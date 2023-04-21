@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
-import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -163,32 +163,7 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                             MediumTitle(LocalI18N.current["ui.action.then"])
                         },
                         actions = ifActionState.actions,
-                        handler = ActionHandler(
-                            addAction = { action ->
-                                dialogState.ifActionHandler.addAction(action)
-                            },
-                            insertAbove = { action, anchor ->
-                                dialogState.ifActionHandler.insertActionAbove(action, anchor)
-                            },
-                            insertBelow = { action, anchor ->
-                                dialogState.ifActionHandler.insertActionBelow(action, anchor)
-                            },
-                            copy = { action ->
-                                dialogState.ifActionHandler.copy(action)
-                            },
-                            pasteAbove = { anchor ->
-                                dialogState.ifActionHandler.pasteActionAbove(anchor)
-                            },
-                            pasteBelow = { anchor ->
-                                dialogState.ifActionHandler.pasteActionBelow(anchor)
-                            },
-                            removeAction = { action ->
-                                dialogState.ifActionHandler.removeAction(action)
-                            },
-                            applySort = { sorted ->
-                                dialogState.ifActionHandler.sortActions(sorted)
-                            }
-                        )
+                        handler = dialogState.ifActionHandler.asActionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
 
@@ -198,32 +173,7 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                             MediumTitle(LocalI18N.current["ui.action.else"])
                         },
                         actions = elseActionState.actions,
-                        handler = ActionHandler(
-                            addAction = { action ->
-                                dialogState.elseActionHandler.addAction(action)
-                            },
-                            insertAbove = { action, anchor ->
-                                dialogState.elseActionHandler.insertActionAbove(action, anchor)
-                            },
-                            insertBelow = { action, anchor ->
-                                dialogState.elseActionHandler.insertActionBelow(action, anchor)
-                            },
-                            copy = { action ->
-                                dialogState.elseActionHandler.copy(action)
-                            },
-                            pasteAbove = { anchor ->
-                                dialogState.elseActionHandler.pasteActionAbove(anchor)
-                            },
-                            pasteBelow = { anchor ->
-                                dialogState.elseActionHandler.pasteActionBelow(anchor)
-                            },
-                            removeAction = { action ->
-                                dialogState.elseActionHandler.removeAction(action)
-                            },
-                            applySort = { sorted ->
-                                dialogState.elseActionHandler.sortActions(sorted)
-                            }
-                        )
+                        handler = dialogState.elseActionHandler.asActionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }
