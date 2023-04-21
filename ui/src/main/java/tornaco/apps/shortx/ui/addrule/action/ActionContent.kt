@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
@@ -36,7 +38,7 @@ fun ActionContent(
     val mvelEditorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
         onSelected = {
-            handler.addAction(Action.MVEL(expression = it.src))
+            handler.addAction(Action.MVEL(expression = it.src, note = it.note))
         }
     )
     CodeEditorDialog(state = mvelEditorState)
@@ -142,43 +144,61 @@ private fun Actions(
 
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            actions.forEachIndexed { index, action ->
+            actions.forEachIndexed { _, action ->
                 Box(modifier = Modifier) {
                     val longClickDropdownState = rememberDropdownSelectorState()
 
-                    ListItem(
-                        modifier = Modifier,
-                        titleLines = labelLinesForAction(action = action),
-                        icon = {
-                            ColoredIcon(size = 36.dp) {
-                                RemixIcon(remixName = imageVectorForAction(action = action::class))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(ShortXCardRoundedCornerShape)
+                            .clickable {
+                                onActionClick(action)
                             }
-                        },
-                        action1 = {
-                            if (action.contextData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    contextDataInfoDialogState.show(
-                                        labelAndDescriptionForActionSelector(
-                                            i18N,
-                                            action::class
-                                        ).first,
-                                        action.contextData
-                                    )
-                                }) {
-                                    ContextDataIcon()
+                    ) {
+                        ListItem(
+                            modifier = Modifier,
+                            titleLines = labelLinesForAction(action = action),
+                            icon = {
+                                ColoredIcon(size = 36.dp) {
+                                    RemixIcon(remixName = imageVectorForAction(action = action::class))
                                 }
-                                VerticalDivider(modifier = Modifier.height(24.dp))
-                            }
+                            },
+                            action1 = {
+                                if (action.contextData.isNotEmpty()) {
+                                    IconButton(onClick = {
+                                        contextDataInfoDialogState.show(
+                                            labelAndDescriptionForActionSelector(
+                                                i18N,
+                                                action::class
+                                            ).first,
+                                            action.contextData
+                                        )
+                                    }) {
+                                        ContextDataIcon()
+                                    }
+                                    VerticalDivider(modifier = Modifier.height(24.dp))
+                                }
 
-                            IconButton(onClick = {
-                                handler.removeAction(action)
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        onClick = { onActionClick(action) },
-                        onLongClick = { longClickDropdownState.open() }
-                    )
+                                IconButton(onClick = {
+                                    handler.removeAction(action)
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            },
+                            onClick = { onActionClick(action) },
+                            onLongClick = { longClickDropdownState.open() }
+                        )
+
+                        if (action.note.isNotBlank()) {
+                            NoteRow(
+                                modifier = Modifier
+                                    .padding(start = 68.dp, end = 16.dp)
+                                    .padding(bottom = 16.dp),
+                                text = action.note
+                            )
+                        }
+                    }
 
 
                     DropdownSelector(
@@ -227,6 +247,7 @@ private fun Actions(
             }
 
 
+            StandardSpacer()
             Box {
                 FilledTonalButton(onClick = {
                     actionSelectorState.show(ActionSelectorDialogArgs.New)

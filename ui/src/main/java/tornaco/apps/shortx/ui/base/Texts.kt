@@ -1,18 +1,23 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 
 @Composable
 fun LargeTitle(text: String) {
@@ -86,6 +91,42 @@ fun TipRow(text: String) {
             style = MaterialTheme.typography.bodySmall.copy(
                 fontSize = 10.sp
             )
+        )
+    }
+}
+
+@Composable
+fun NoteRow(modifier: Modifier = Modifier, text: String) {
+    var textHeight by remember {
+        mutableStateOf(16.dp)
+    }
+    val density = LocalDensity.current
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(
+            modifier = Modifier
+                .height(textHeight)
+                .width(4.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                .animateContentSize()
+        )
+        TinySpacer()
+        Text(
+            modifier = Modifier.onSizeChanged {
+                textHeight = with(density) {
+                    (it.height * 0.88f).toDp()
+                }
+            },
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = NoteTextColor,
+            fontStyle = FontStyle.Italic
         )
     }
 }
