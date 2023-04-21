@@ -92,6 +92,9 @@ fun IfThenElseSelectorDialogDialog(state: IfThenElseSelectorDialogDialogState) {
 
 @Composable
 private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDialogDialogState) {
+    val ifActionState by dialogState.ifActionHandler.state.collectAsState()
+    val elseActionState by dialogState.elseActionHandler.state.collectAsState()
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -110,7 +113,12 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(dialogState.ifThenElse.value)
+                                dialogState.onSelected(
+                                    dialogState.ifThenElse.value.copy(
+                                        ifActions = ifActionState.actions,
+                                        elseActions = elseActionState.actions
+                                    )
+                                )
                                 dialogState.dismiss()
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -144,7 +152,6 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                     Spacer(modifier = Modifier.size(24.dp))
 
 
-                    val ifActionState by dialogState.ifActionHandler.state.collectAsState()
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
                             MediumTitle(LocalI18N.current["ui.action.then"])
@@ -180,7 +187,6 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                     Spacer(modifier = Modifier.size(24.dp))
 
 
-                    val elseActionState by dialogState.elseActionHandler.state.collectAsState()
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
                             MediumTitle(LocalI18N.current["ui.action.else"])
