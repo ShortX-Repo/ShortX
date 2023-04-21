@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.AddRuleState
+import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
@@ -24,22 +24,85 @@ import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import kotlin.reflect.KClass
 
+
+@Composable
+fun ConditionSelectors(
+    header: @Composable () -> Unit = {
+        MediumTitle(LocalI18N.current["ui.conditions.title"])
+    },
+    conditions: List<Condition>,
+    conditionOp: Op,
+    handler: ConditionHandler
+) {
+    // Condition selectors
+    val currentPkgSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { appList ->
+                handler.addCondition(
+                    Condition.CurrentForegroundApp(
+                        apps = appList,
+                        pkgSets = emptyList()
+                    )
+                )
+            },
+            onPkgSetSelected = { pkgSets ->
+                handler.addCondition(
+                    Condition.CurrentForegroundApp(
+                        apps = emptyList(),
+                        pkgSets = pkgSets
+                    )
+                )
+            })
+    AppPkgSelectorDialog(currentPkgSelectorState)
+
+    val mvelConditionSelectorState =
+        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
+            handler.addCondition(Condition.MVEL(expression.src))
+        }
+    CodeEditorDialog(state = mvelConditionSelectorState)
+
+    Conditions(
+        header = header,
+        conditions = conditions,
+        conditionOp = conditionOp,
+        selectCondition = { con ->
+            when (con) {
+                Condition.CurrentForegroundApp::class -> {
+                    currentPkgSelectorState.show()
+                }
+                Condition.MVEL::class -> {
+                    mvelConditionSelectorState.show()
+                }
+                Condition.TRUE::class -> {
+                    handler.addCondition(Condition.TRUE)
+                }
+            }
+        },
+        removeCondition = { con ->
+            handler.removeCondition(con)
+        },
+        setConditionOp = {
+            handler.setConditionOp(it)
+        })
+}
+
 @Composable
 fun Conditions(
-    state: AddRuleState,
+    header: @Composable () -> Unit,
+    conditions: List<Condition>,
+    conditionOp: Op,
     selectCondition: (KClass<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
     setConditionOp: (Op) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle(LocalI18N.current["ui.conditions.title"])
-
+        header()
         Box {
             val conditionSelectorState = rememberDropdownSelectorState()
             val opSelectorState = rememberDropdownSelectorState()
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                state.conditions.forEach {
+                conditions.forEach {
                     ListItem(titleLines = labelForCondition(condition = it), icon = {
                         ColoredIcon(size = 36.dp) {
                             IconForCondition(it)
@@ -86,8 +149,8 @@ fun Conditions(
                 StandardSpacer()
 
                 // OP button
-                AnimatedVisibility(visible = state.conditions.size > 1) {
-                    OpSelector(state, opSelectorState, setConditionOp)
+                AnimatedVisibility(visible = conditions.size > 1) {
+                    OpSelector(conditionOp, opSelectorState, setConditionOp)
                 }
             }
         }
@@ -96,7 +159,7 @@ fun Conditions(
 
 @Composable
 private fun OpSelector(
-    state: AddRuleState,
+    conditionOp: Op,
     opSelectorState: DropdownSelectorState,
     setConditionOp: (Op) -> Unit
 ) {
@@ -105,11 +168,11 @@ private fun OpSelector(
         ListItem(
             modifier = Modifier,
             titleLines = mutableListOf(
-                opTitle(op = state.conditionOp),
+                opTitle(op = conditionOp),
             ).apply {
-                addAll(opDescription(op = state.conditionOp))
+                addAll(opDescription(op = conditionOp))
             }, icon = {
-                IconForOp(state.conditionOp)
+                IconForOp(conditionOp)
             })
 
         Box {

@@ -54,19 +54,21 @@ fun FactSelectors(
 
     // Condition selectors
     val appBgPkgSelectorState =
-        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
-            vm.setFact(Fact.AppBecomeBackground(apps = pkg))
-        }, onPkgSetSelected = {
-            vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
-        })
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                vm.setFact(Fact.AppBecomeBackground(apps = pkg))
+            }, onPkgSetSelected = {
+                vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
+            })
     AppPkgSelectorDialog(appBgPkgSelectorState)
 
     val appFgPkgSelectorState =
-        rememberAppPkgSelectorState(apps = state.installedApps, onAppListSelected = { pkg ->
-            vm.setFact(Fact.AppBecomeForeground(apps = pkg))
-        }, onPkgSetSelected = {
-            vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
-        })
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                vm.setFact(Fact.AppBecomeForeground(apps = pkg))
+            }, onPkgSetSelected = {
+                vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
+            })
     AppPkgSelectorDialog(appFgPkgSelectorState)
 
     val appComponentSelectorState = rememberAppComponentSelectorState(

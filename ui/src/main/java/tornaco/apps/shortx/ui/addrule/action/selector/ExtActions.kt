@@ -48,47 +48,28 @@ fun ExtActions(addAction: (Action) -> Unit) {
     }
     FromDASelectorDialog(state = fromDASelectorState)
 
+    val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
+        addAction(it)
+    }
+    IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
+
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Action.FromDA::class,
+        Action.ShellCommand::class,
+        Action.InputText::class,
+        Action.Delay::class,
+        Action.MVEL::class,
+        Action.Brk::class,
+        Action.WriteGV::class,
+        Action.IfThenElse::class,
+    ).map {
         Item(
-            Action.FromDA::class,
-            labelAndDescriptionForActionSelector(i18N, Action.FromDA::class),
-            imageVectorForAction(Action.FromDA::class)
-        ),
-        Item(
-            Action.ShellCommand::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShellCommand::class),
-            imageVectorForAction(Action.ShellCommand::class)
-        ),
-
-        Item(
-            Action.InputText::class,
-            labelAndDescriptionForActionSelector(i18N, Action.InputText::class),
-            imageVectorForAction(Action.InputText::class)
-        ),
-        Item(
-            Action.Delay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.Delay::class),
-            imageVectorForAction(Action.Delay::class)
-        ),
-
-        Item(
-            Action.MVEL::class,
-            labelAndDescriptionForActionSelector(i18N, Action.MVEL::class),
-            imageVectorForAction(Action.MVEL::class)
-        ),
-
-        Item(
-            Action.Brk::class,
-            labelAndDescriptionForActionSelector(i18N, Action.Brk::class),
-            imageVectorForAction(Action.Brk::class)
-        ),
-        Item(
-            Action.WriteGV::class,
-            labelAndDescriptionForActionSelector(i18N, Action.WriteGV::class),
-            imageVectorForAction(Action.WriteGV::class)
-        ),
-    )
+            type = it,
+            labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
+            icon = imageVectorForAction(it)
+        )
+    }
 
     ActionList(
         actionItems = actionItems,
@@ -114,6 +95,9 @@ fun ExtActions(addAction: (Action) -> Unit) {
                 }
                 Action.FromDA::class -> {
                     fromDASelectorState.show()
+                }
+                Action.IfThenElse::class -> {
+                    ifThenElseDialogState.show()
                 }
             }
         })

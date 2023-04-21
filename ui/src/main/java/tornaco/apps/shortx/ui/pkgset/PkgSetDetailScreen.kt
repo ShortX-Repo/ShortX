@@ -42,7 +42,6 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val appSelectorDialogState = rememberAppPkgSelectorState(
-                apps = state.selectableApps,
                 onAppListSelected = {
                     vm.addApps(it)
                 }

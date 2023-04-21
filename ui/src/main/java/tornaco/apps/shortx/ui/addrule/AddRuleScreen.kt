@@ -22,11 +22,10 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
-import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +41,6 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
-        vm.loadInstalledApps()
         vm.ruleSaved.collectLatest {
             showToast()
         }
@@ -92,7 +90,17 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     Spacer(modifier = Modifier.size(24.dp))
 
                     AnimatedVisibility(visible = state.showConditionSection) {
-                        ConditionSelectors(state, vm)
+                        val conditions = state.conditions
+                        val conditionOp = state.conditionOp
+                        ConditionSelectors(
+                            conditions = conditions,
+                            conditionOp = conditionOp,
+                            handler = ConditionHandler(
+                                addCondition = vm::addCondition,
+                                removeCondition = vm::removeCondition,
+                                setConditionOp = vm::setConditionOp
+                            )
+                        )
                         Spacer(modifier = Modifier.size(24.dp))
                     }
 
@@ -133,56 +141,6 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 }
 
 @Composable
-private fun ConditionSelectors(
-    state: AddRuleState, vm: AddRuleViewModel
-) {
-    // Condition selectors
-    val currentPkgSelectorState =
-        rememberAppPkgSelectorState(
-            apps = state.installedApps,
-            onAppListSelected = { appList ->
-                vm.addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            }, onPkgSetSelected = { pkgSets ->
-                vm.addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(currentPkgSelectorState)
-
-    val mvelConditionSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
-            vm.addCondition(Condition.MVEL(expression.src))
-        }
-    CodeEditorDialog(state = mvelConditionSelectorState)
-
-    Conditions(state = state, selectCondition = { con ->
-        when (con) {
-            Condition.CurrentForegroundApp::class -> {
-                currentPkgSelectorState.show()
-            }
-            Condition.MVEL::class -> {
-                mvelConditionSelectorState.show()
-            }
-            Condition.TRUE::class -> {
-                vm.addCondition(Condition.TRUE)
-            }
-        }
-    }, removeCondition = { con ->
-        vm.removeCondition(con)
-    }, setConditionOp = {
-        vm.setConditionOp(it)
-    })
-}
-
-@Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TitleAndDescription(
     state: AddRuleState,
@@ -200,3 +158,9 @@ private fun TitleAndDescription(
         vm.setDescription(description)
     })
 }
+
+class ConditionHandler(
+    val addCondition: (Condition) -> Unit,
+    val removeCondition: (Condition) -> Unit,
+    val setConditionOp: (Op) -> Unit,
+)

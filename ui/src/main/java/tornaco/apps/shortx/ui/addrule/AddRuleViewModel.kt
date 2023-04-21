@@ -5,12 +5,9 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -31,7 +28,6 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -46,7 +42,6 @@ data class AddRuleState(
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
-    val installedApps: List<App> = emptyList(),
     val isEnabled: Boolean = false,
     val showConditionSection: Boolean = false,
     val copiedAction: Action? = null
@@ -62,20 +57,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     override fun initState(): AddRuleState {
         return AddRuleState()
-    }
-
-    fun loadInstalledApps() {
-        viewModelScope.launch {
-            val apps = withContext(Dispatchers.IO) {
-                shortXManager.getInstalledApps()
-                    .sortedWith { o1, o2 ->
-                        Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
-                    }.sortedBy { it.category.ordinal }
-            }
-            updateState {
-                copy(installedApps = apps)
-            }
-        }
     }
 
     fun setTitle(title: String) {

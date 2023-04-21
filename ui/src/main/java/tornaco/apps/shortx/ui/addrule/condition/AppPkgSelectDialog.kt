@@ -22,8 +22,7 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class AppPkgSelectorState(
-    val installedApps: List<App>,
+class AppPkgSelectorDialogState(
     val onAppListSelected: (List<App>) -> Unit,
     val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
 ) {
@@ -75,17 +74,16 @@ class AppPkgSelectorState(
 
 @Composable
 fun rememberAppPkgSelectorState(
-    apps: List<App>,
     onAppListSelected: (List<App>) -> Unit = {},
     onPkgSetSelected: ((List<PkgSet>) -> Unit)? = null
-): AppPkgSelectorState {
-    return remember(apps) {
-        AppPkgSelectorState(apps, onAppListSelected, onPkgSetSelected)
+): AppPkgSelectorDialogState {
+    return remember {
+        AppPkgSelectorDialogState(onAppListSelected, onPkgSetSelected)
     }
 }
 
 @Composable
-fun AppPkgSelectorDialog(state: AppPkgSelectorState) {
+fun AppPkgSelectorDialog(state: AppPkgSelectorDialogState) {
     if (state.isShow) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             AppPkgSelector(state)
@@ -94,7 +92,7 @@ fun AppPkgSelectorDialog(state: AppPkgSelectorState) {
 }
 
 @Composable
-private fun AppPkgSelector(state: AppPkgSelectorState) {
+private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -165,7 +163,7 @@ private fun AppPkgSelector(state: AppPkgSelectorState) {
 }
 
 @Composable
-private fun PkgSetContent(selectorState: AppPkgSelectorState) {
+private fun PkgSetContent(selectorState: AppPkgSelectorDialogState) {
     val vm = hiltViewModel<PkgSetListViewModel>()
     val state by vm.state.collectAsState()
 
@@ -207,7 +205,13 @@ private fun PkgSetContent(selectorState: AppPkgSelectorState) {
 }
 
 @Composable
-private fun AppListContent(state: AppPkgSelectorState) {
+private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
+    val vm = hiltViewModel<AppSelectorViewModel>()
+    LaunchedEffect(vm) {
+        vm.loadInstalledApps()
+    }
+    val state by vm.state.collectAsState()
+
     val searchBarState = rememberSearchBarState(state.installedApps.size)
     LazyColumn(
         modifier = Modifier
@@ -219,12 +223,12 @@ private fun AppListContent(state: AppPkgSelectorState) {
         items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
             AppItem(
                 app = it,
-                isSelected = state.selectedApps.contains(it),
+                isSelected = dialogState.selectedApps.contains(it),
                 onCheckedChange = { app, isChecked ->
                     if (isChecked) {
-                        state.addApp(app)
+                        dialogState.addApp(app)
                     } else {
-                        state.removeApp(app)
+                        dialogState.removeApp(app)
                     }
                 })
         }
