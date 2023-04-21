@@ -34,6 +34,12 @@ class IfThenElseSelectorDialogDialogState(
 
     fun show(currentSettings: Action.IfThenElse? = null) {
         this.ifThenElse.value = currentSettings ?: Action.IfThenElse()
+        ifActionHandler.updateState {
+            copy(actions = currentSettings?.ifActions ?: emptyList())
+        }
+        elseActionHandler.updateState {
+            copy(actions = currentSettings?.elseActions ?: emptyList())
+        }
         isShowing = true
     }
 

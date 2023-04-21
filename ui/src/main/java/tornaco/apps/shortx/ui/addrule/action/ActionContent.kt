@@ -46,6 +46,11 @@ fun ActionContent(
     }
     MapNavDialog(state = mapNavDialogState)
 
+    val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
+        handler.addAction(it)
+    }
+    IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
+
     Actions(
         header = header,
         actions = actions,
@@ -72,6 +77,9 @@ fun ActionContent(
                 }
                 is Action.MapNav -> {
                     mapNavDialogState.show(action)
+                }
+                is Action.IfThenElse -> {
+                    ifThenElseDialogState.show(action)
                 }
                 else -> {}
             }
