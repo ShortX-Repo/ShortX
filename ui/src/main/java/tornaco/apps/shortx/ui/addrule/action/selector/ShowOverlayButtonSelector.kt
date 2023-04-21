@@ -14,18 +14,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
+import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 class ShowOverlayButtonDialogState(
-    val onSelected: (ShowOverlayButtonSettings) -> Unit
+    val onSelected: (Action.ShowOverlay) -> Unit
 ) {
     var isShowing by mutableStateOf(false)
 
-    var currentSettings: ShowOverlayButtonSettings? = null
+    var currentSettings: Action.ShowOverlay? = null
 
-    fun show(currentSettings: ShowOverlayButtonSettings? = null) {
+    fun show(currentSettings: Action.ShowOverlay? = null) {
         this.currentSettings = currentSettings
         isShowing = true
     }
@@ -37,7 +38,7 @@ class ShowOverlayButtonDialogState(
 
 @Composable
 fun rememberShowOverlayButtonDialogState(
-    onSelected: (ShowOverlayButtonSettings) -> Unit
+    onSelected: (Action.ShowOverlay) -> Unit
 ): ShowOverlayButtonDialogState {
     return remember {
         ShowOverlayButtonDialogState(onSelected)
@@ -61,10 +62,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
             vm.initFrom(it)
         }
     }
-    LaunchedEffect(vm) {
-        vm.loadInstalledApps()
-    }
-    val state by vm.state.collectAsState()
+    val selectorState by vm.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -84,14 +82,14 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(
-                                    ShowOverlayButtonSettings(
-                                        id = state.id,
-                                        autoCollapse = state.autoCollapse,
-                                        items = state.items,
-                                        tag = state.tag
-                                    )
+                                val action = Action.ShowOverlay(
+                                    id = selectorState.id,
+                                    autoCollapse = selectorState.autoCollapse,
+                                    tag = selectorState.tag,
+                                    settings = selectorState.buttons.map { it.toOverlayButtonSetting() }
                                 )
+
+                                dialogState.onSelected(action)
                                 dialogState.dismiss()
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -118,7 +116,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        state.items.forEachIndexed { index, item ->
+        state.buttons.forEachIndexed { index, item ->
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateIcon(index, it)
             }
@@ -157,7 +155,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                         header = {
                             SmallTitle(text = LocalI18N.current["ui.actions.title"])
                         },
-                        actions = state.items[index].actions,
+                        actions = state.buttons[index].actions,
                         handler = ActionHandler(
                             addAction = { action ->
                                 vm.addAction(index, action)

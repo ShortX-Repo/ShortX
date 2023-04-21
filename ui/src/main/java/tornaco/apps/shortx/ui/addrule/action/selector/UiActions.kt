@@ -145,13 +145,7 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     TextInputDialog(state = toastSelectionState)
 
     val overlayButtonState = rememberShowOverlayButtonDialogState(
-        onSelected = { buttonSettings ->
-            val action = Action.ShowOverlay(
-                id = buttonSettings.id,
-                autoCollapse = buttonSettings.autoCollapse,
-                settings = buttonSettings.items.map { it.toOverlayButtonSetting() },
-                tag = buttonSettings.tag
-            )
+        onSelected = { action ->
             addAction(action)
         }
     )

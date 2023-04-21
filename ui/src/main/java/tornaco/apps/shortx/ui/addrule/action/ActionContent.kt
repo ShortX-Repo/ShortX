@@ -60,13 +60,7 @@ fun ActionContent(
         onActionClick = { action ->
             when (action) {
                 is Action.ShowOverlay -> {
-                    val currentSettings = ShowOverlayButtonSettings(
-                        id = action.id,
-                        autoCollapse = action.autoCollapse,
-                        items = action.settings.map { it.toOverlayButtonItem() },
-                        tag = action.tag
-                    )
-                    uiActionSubSelectorStates.overlayButtonState.show(currentSettings)
+                    uiActionSubSelectorStates.overlayButtonState.show(action)
                 }
                 is Action.ShowAlertDialog -> {
                     uiActionSubSelectorStates.showDialogSettingsState.show(action)
