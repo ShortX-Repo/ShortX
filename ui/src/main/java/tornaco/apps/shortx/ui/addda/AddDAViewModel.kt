@@ -5,21 +5,17 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -27,11 +23,9 @@ data class AddDirectActionState(
     val id: String = "DA" + UUID.randomUUID().toString(),
     val title: String = "",
     val description: String = "",
-    val actions: List<Action> = emptyList(),
     val isEditDirectAction: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val daChanged: Boolean = false,
-    val installedApps: List<App> = emptyList(),
     val copiedAction: Action? = null
 )
 
@@ -43,19 +37,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     private val _daSaved = MutableSharedFlow<String>()
     val daSaved = _daSaved.asSharedFlow()
 
-    fun loadInstalledApps() {
-        viewModelScope.launch {
-            val apps = withContext(Dispatchers.IO) {
-                shortXManager.getInstalledApps()
-                    .sortedWith { o1, o2 ->
-                        Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
-                    }.sortedBy { it.category.ordinal }
-            }
-            updateState {
-                copy(installedApps = apps)
-            }
-        }
-    }
+    val actionContentStateHandler = ActionContentStateHandler()
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -73,108 +55,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         }
     }
 
-
-    fun addAction(action: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == action.id }
-                if (existingIndex >= 0) {
-                    set(existingIndex, action)
-                } else {
-                    add(action)
-                }
-            }, daChanged = true)
-        }
-    }
-
-    fun insertActionAbove(action: Action, anchor: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
-                if (existingIndex >= 0) {
-                    add(existingIndex, action)
-                } else {
-                    add(action)
-                }
-            }, daChanged = true)
-        }
-    }
-
-    fun insertActionBelow(action: Action, anchor: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
-                if (existingIndex >= 0) {
-                    add(existingIndex + 1, action)
-                } else {
-                    add(action)
-                }
-            }, daChanged = true)
-        }
-    }
-
-    fun copy(action: Action) {
-        updateState {
-            copy(copiedAction = action)
-        }
-    }
-
-    fun pasteActionAbove(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex, it)
-                        } else {
-                            add(it)
-                        }
-                    }, daChanged = true)
-                }
-            }
-        }
-    }
-
-    fun pasteActionBelow(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex + 1, it)
-                        } else {
-                            add(it)
-                        }
-                    }, daChanged = true)
-                }
-            }
-        }
-    }
-
-    fun removeAction(action: Action) {
-        updateState {
-            copy(actions = actions.toMutableList().apply {
-                remove(action)
-            }, daChanged = true)
-        }
-    }
-
-    fun sortActions(actions: List<Action>) {
-        logger.d("sortActions: $actions")
-        updateState {
-            copy(actions = actions, daChanged = true)
-        }
-    }
-
     fun save() {
         viewModelScope.launch {
-            val actions = state.value.actions
+            val actions = actionContentStateHandler.state.value.actions
 
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
@@ -208,12 +91,18 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             viewModelScope.launch {
                 shortXManager.getDirectActionById(id)?.let { da ->
                     logger.d("initFromDirectAction: $da")
+
+                    actionContentStateHandler.init(da.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
+                        )
+                    })
+
                     updateState {
                         copy(
                             id = da.id,
                             title = da.title,
                             description = da.description,
-                            actions = da.actionsList.mapNotNull { it.toAction(shortXManager) },
                             isEditDirectAction = true,
                             createTime = da.createTime
                         )

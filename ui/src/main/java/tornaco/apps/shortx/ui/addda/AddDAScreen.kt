@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -25,15 +22,19 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 @Composable
 fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
     val vm = hiltViewModel<AddDirectActionViewModel>()
-    val state by vm.state.collectAsState()
+    val addDirectActionState by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.initFromDirectActionId(daId)
-        vm.loadInstalledApps()
         vm.daSaved.collectLatest {
 
         }
     }
+
+    val actionContentStateHandler = remember(vm) {
+        vm.actionContentStateHandler
+    }
+    val actionContentState by actionContentStateHandler.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -45,7 +46,7 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = if (state.isEditDirectAction) LocalI18N.current["ui.title.edit.da"] else LocalI18N.current["ui.title.add.da"]) },
+                        title = { Text(text = if (addDirectActionState.isEditDirectAction) LocalI18N.current["ui.title.edit.da"] else LocalI18N.current["ui.title.add.da"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -54,10 +55,12 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                             }
                         },
                         actions = {
-                            IconButton(enabled = state.daChanged, onClick = {
-                                vm.save()
-                                back()
-                            }) {
+                            IconButton(
+                                enabled = addDirectActionState.daChanged || actionContentState.isChanged,
+                                onClick = {
+                                    vm.save()
+                                    back()
+                                }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
                         },
@@ -72,37 +75,37 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                         .animateContentSize()
                 ) {
 
-                    TitleAndDescription(state, vm)
+                    TitleAndDescription(addDirectActionState, vm)
                     Spacer(modifier = Modifier.size(24.dp))
 
                     ActionContent(
-                        actions = state.actions,
+                        actions = actionContentState.actions,
                         handler = ActionHandler(
                             addAction = { action ->
-                                vm.addAction(
+                                actionContentStateHandler.addAction(
                                     action
                                 )
                             },
                             insertAbove = { action, anchor ->
-                                vm.insertActionAbove(action, anchor)
+                                actionContentStateHandler.insertActionAbove(action, anchor)
                             },
                             insertBelow = { action, anchor ->
-                                vm.insertActionBelow(action, anchor)
+                                actionContentStateHandler.insertActionBelow(action, anchor)
                             },
                             copy = { action ->
-                                vm.copy(action)
+                                actionContentStateHandler.copy(action)
                             },
                             pasteAbove = { anchor ->
-                                vm.pasteActionAbove(anchor)
+                                actionContentStateHandler.pasteActionAbove(anchor)
                             },
                             pasteBelow = { anchor ->
-                                vm.pasteActionBelow(anchor)
+                                actionContentStateHandler.pasteActionBelow(anchor)
                             },
                             removeAction = { action ->
-                                vm.removeAction(action)
+                                actionContentStateHandler.removeAction(action)
                             },
                             applySort = { sorted ->
-                                vm.sortActions(sorted)
+                                actionContentStateHandler.sortActions(sorted)
                             })
                     )
                     Spacer(modifier = Modifier.size(24.dp))
