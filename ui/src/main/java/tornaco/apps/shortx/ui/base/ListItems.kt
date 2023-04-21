@@ -32,13 +32,16 @@ fun ListItem(
     icon: @Composable () -> Unit = {},
     action1: @Composable RowScope.() -> Unit = {},
     onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

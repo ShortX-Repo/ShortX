@@ -166,6 +166,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun sortActions(actions: List<Action>) {
+        logger.d("sortActions: $actions")
         updateState {
             copy(actions = actions, daChanged = true)
         }

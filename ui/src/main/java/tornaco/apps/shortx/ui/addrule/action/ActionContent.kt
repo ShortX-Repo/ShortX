@@ -95,9 +95,11 @@ private fun Actions(
     handler: ActionHandler,
     onActionClick: (Action) -> Unit = {},
 ) {
-    val actionSortDialogState = rememberActionSortState(actions = actions, apply = {
-        handler.applySort(it)
-    })
+    val actionSortDialogState = rememberActionSortState(
+        actions = actions,
+        apply = {
+            handler.applySort(it)
+        })
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
