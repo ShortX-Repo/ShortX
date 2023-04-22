@@ -194,6 +194,8 @@
   "ui.action.advanced": "Advanced",
   "ui.action.life": "Life",
   "ui.action.remote": "Online",
+  "ui.settings.danmu": "Danmu",
+  "ui.settings.danmu.summary": "Adjust danmu color, font size, speed, etc.",
   "ui.settings.about": "About",
   "ui.settings.data": "Data",
   "ui.settings.general": "General",

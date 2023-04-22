@@ -189,7 +189,8 @@ private fun generalSettings(
     ),
 
     Preference.TextPreference(icon = Remix.Communication.message_line,
-        title = "Danmu settings",
+        title = LocalI18N.current["ui.settings.danmu"],
+        summary = LocalI18N.current["ui.settings.danmu.summary"],
         onClick = {
             goToDanmuUISettings()
         }

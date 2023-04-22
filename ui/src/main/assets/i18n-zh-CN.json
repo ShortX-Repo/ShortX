@@ -194,6 +194,8 @@
   "ui.action.advanced": "高级",
   "ui.action.life": "生活",
   "ui.action.remote": "在线",
+  "ui.settings.danmu": "弹幕设置",
+  "ui.settings.danmu.summary": "调整弹幕颜色，字体大小，速度等",
   "ui.settings.about": "关于",
   "ui.settings.data": "数据",
   "ui.settings.general": "通用",
