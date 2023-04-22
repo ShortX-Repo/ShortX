@@ -54,11 +54,12 @@ fun DirectActionListScreen() {
             IconButton(onClick = {
                 vm.toggleShowDetailedDAItem()
             }) {
-                RemixIcon(remixName = Remix.Document.article_line)
+                if (state.isShowDetailedDAItem) {
+                    RemixIcon(remixName = Remix.Document.bill_line)
+                } else {
+                    RemixIcon(remixName = Remix.Document.article_line)
+                }
             }
-        },
-        goToSettings = {
-            appNavController.navigate(AppRoute.Settings.name)
         },
         onClipboardClick = {
             vm.parseShareContentDA(ClipboardUtils.readClipboard(context))

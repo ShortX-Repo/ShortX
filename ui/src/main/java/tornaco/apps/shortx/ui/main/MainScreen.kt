@@ -1,21 +1,25 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShareDialog
-import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
@@ -44,31 +48,59 @@ fun HomeScreen() {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val shareDialogState = rememberShareDialogState("share.shortx")
-            ShareDialog(state = shareDialogState)
 
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f, fill = false)
-                ) {
-                    BottomNavigationGraph(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        navController = navController
-                    )
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    ModalDrawerSheet {
+                        Spacer(Modifier.height(12.dp))
+
+                        val appNavController = LocalNavHostController.current
+                        SettingsScreen(
+                            back = { scope.launch { drawerState.close() } },
+                            goToPkgSetList = {
+                                appNavController.navigate(AppRoute.PkgSetList.name)
+                            },
+                            goToGV = {
+                                appNavController.navigate(AppRoute.GlobalVarList.name)
+                            },
+                            goToDanmuUISettings = {
+                                appNavController.navigate(AppRoute.DanmuUISettings.name)
+                            },
+                            viewOpenSourceLicense = {
+                                appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
+                            })
+                    }
+                },
+                content = {
+                    CompositionLocalProvider(LocalDrawerState provides drawerState) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f, fill = false)
+                            ) {
+                                BottomNavigationGraph(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    navController = navController
+                                )
+                            }
+
+                            BottomNavigationContent(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                navController = navController
+                            )
+                        }
+                    }
                 }
-
-                BottomNavigationContent(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    navController = navController
-                )
-            }
+            )
         }
     }
 }

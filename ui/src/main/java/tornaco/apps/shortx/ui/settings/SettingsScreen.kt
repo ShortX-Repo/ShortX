@@ -12,7 +12,6 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -45,15 +44,14 @@ fun SettingsScreen(
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier,
                 topBar = {
-                    MediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    TopAppBar(
+                        modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.common.settings"]) },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -63,7 +61,6 @@ fun SettingsScreen(
                             }
                         },
                         actions = {},
-                        scrollBehavior = scrollBehavior
                     )
                 }) { paddingValues ->
                 Column(

@@ -57,9 +57,6 @@ fun RuleScreen() {
                 }
             }
         },
-        goToSettings = {
-            appNavController.navigate(AppRoute.Settings.name)
-        },
         onClipboardClick = {
             vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
                 ?.let {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.*
@@ -30,7 +32,6 @@ fun MainScaffold(
     state: MainState,
     appBarTitleKey: String,
     appBarActions: @Composable () -> Unit = {},
-    goToSettings: () -> Unit,
     onClipboardClick: () -> Unit,
     onAddClick: () -> Unit,
     acceptPrivacyStatement: () -> Unit,
@@ -57,24 +58,31 @@ fun MainScaffold(
                                 text = LocalI18N.current[appBarTitleKey]
                             )
                         },
+                        navigationIcon = {
+                            SettingsAppBarActions()
+                        },
                         actions = {
                             appBarActions()
-                            SettingsAppBarActions(goToSettings)
                         },
                         scrollBehavior = scrollBehavior,
                     )
                 } else {
-                    TopAppBar(title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = stringResource(id = R.string.ui_app_name))
-                            SmallSpacer()
-                            ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
-                                isShowActiveDialog = true
+                    TopAppBar(
+                        title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = stringResource(id = R.string.ui_app_name))
+                                SmallSpacer()
+                                ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                    isShowActiveDialog = true
+                                }
                             }
-                        }
-                    }, actions = {
-                        SettingsAppBarActions(goToSettings)
-                    })
+                        },
+                        navigationIcon = {
+                            SettingsAppBarActions()
+                        },
+                        actions = {
+                            appBarActions()
+                        })
                 }
             },
             bottomBar = {
@@ -170,11 +178,13 @@ fun MainScaffold(
 }
 
 @Composable
-private fun SettingsAppBarActions(goToSettings: () -> Unit) {
+private fun SettingsAppBarActions() {
+    val localDrawerState = LocalDrawerState.current
+    val scope = rememberCoroutineScope()
     IconButton(onClick = {
-        goToSettings()
+        scope.launch { localDrawerState.open() }
     }) {
-        RemixIcon(Remix.System.settings_line)
+        Icon(imageVector = Icons.Outlined.Menu)
     }
 }
 
