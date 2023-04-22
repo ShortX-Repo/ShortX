@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -49,6 +50,13 @@ fun DirectActionListScreen() {
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.da",
+        appBarActions = {
+            IconButton(onClick = {
+                vm.toggleShowDetailedDAItem()
+            }) {
+                RemixIcon(remixName = Remix.Document.article_line)
+            }
+        },
         goToSettings = {
             appNavController.navigate(AppRoute.Settings.name)
         },
@@ -154,7 +162,8 @@ fun DirectActionListContent(
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .scale(scalePercent),
+                        .scale(scalePercent)
+                        .animateContentSize(),
                     backgroundColor = ColorDefaults.backgroundSurfaceColor(),
                     shape = ShortXCardRoundedCornerShape,
                     elevation = 0.dp
@@ -168,6 +177,7 @@ fun DirectActionListContent(
                             },
                             da = da,
                             showOverflowMenu = showOverflowMenu,
+                            showDetailedContent = state.isShowDetailedDAItem,
                             onClick = {
                                 onDirectActionClick(da)
                                 colorAnimStarted = true
@@ -198,6 +208,7 @@ private fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
     showOverflowMenu: Boolean,
+    showDetailedContent: Boolean,
     onClick: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
@@ -208,7 +219,7 @@ private fun DirectActionItem(
     DAListItem(
         modifier = modifier,
         title = da.title,
-        text1 = da.description,
+        text1 = if (showDetailedContent) da.description else null,
         icon = da.icon,
         runningInsCount = da.runningInsCount,
         overflow = {

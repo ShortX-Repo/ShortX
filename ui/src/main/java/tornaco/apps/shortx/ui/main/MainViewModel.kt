@@ -68,6 +68,7 @@ data class MainState(
     val ruleColumnCount: Int = DEFAULT_RULE_COLUMN_COUNT,
     val rules: List<RuleUM> = emptyList(),
     val das: List<DirectActionUM> = emptyList(),
+    val isShowDetailedDAItem: Boolean = true,
     val isLoading: Boolean = true
 )
 
@@ -164,6 +165,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 updateState { copy(ruleColumnCount = it) }
             }
         }
+
+        viewModelScope.launch {
+            pref.uiShowDetailedDAItemContent.collectLatest {
+                logger.d("uiShowDetailedDAItemContent changed: $it")
+                updateState { copy(isShowDetailedDAItem = it) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -225,7 +233,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun toggleRuleColumnCount() {
         val count = if (state.value.ruleColumnCount == 1) 2 else 1
         viewModelScope.launch {
-            Pref(context).setColumnCount(count)
+            pref.setColumnCount(count)
+        }
+    }
+
+    fun toggleShowDetailedDAItem() {
+        viewModelScope.launch {
+            pref.setShowDetailedDAItemContent(!state.value.isShowDetailedDAItem)
         }
     }
 

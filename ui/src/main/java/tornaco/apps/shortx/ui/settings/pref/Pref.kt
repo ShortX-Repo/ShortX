@@ -15,7 +15,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pr
 private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_service")
 private val PRIVACY_STATEMENT_ACCEPTED_KEY = booleanPreferencesKey("privacy_statement_accepted")
 
-private val UI_RULE_SHOW_DESCRIPTION = booleanPreferencesKey("ui_rule_show_description")
+private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
+    booleanPreferencesKey("ui_show_detailed_da_item_content")
 private val UI_RULE_COLUMN_COUNT = intPreferencesKey("ui_rule_column_count")
 
 const val DEFAULT_RULE_COLUMN_COUNT = 2
@@ -33,6 +34,10 @@ class Pref(val context: Context) {
         preferences[UI_RULE_COLUMN_COUNT] ?: DEFAULT_RULE_COLUMN_COUNT
     }
 
+    val uiShowDetailedDAItemContent: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_SHOW_DETAILED_DA_ITEM_CONTENT] ?: true
+    }
+
     suspend fun setInstallFakeService(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[INSTALL_FAKE_SERVICE_KEY] = value
@@ -45,16 +50,15 @@ class Pref(val context: Context) {
         }
     }
 
-    suspend fun setShowRuleDescription(value: Boolean) {
-        context.dataStore.edit { settings ->
-            settings[UI_RULE_SHOW_DESCRIPTION] = value
-        }
-    }
-
     suspend fun setColumnCount(value: Int) {
         context.dataStore.edit { settings ->
             settings[UI_RULE_COLUMN_COUNT] = value
         }
     }
 
+    suspend fun setShowDetailedDAItemContent(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UI_SHOW_DETAILED_DA_ITEM_CONTENT] = value
+        }
+    }
 }
