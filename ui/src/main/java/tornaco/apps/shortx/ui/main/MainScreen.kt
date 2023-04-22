@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -72,6 +73,10 @@ fun HomeScreen() {
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
                             })
+
+                        BackHandler(enabled = drawerState.isOpen) {
+                            scope.launch { drawerState.close() }
+                        }
                     }
                 },
                 content = {
