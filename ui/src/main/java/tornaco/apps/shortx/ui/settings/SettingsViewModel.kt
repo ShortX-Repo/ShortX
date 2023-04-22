@@ -23,7 +23,8 @@ data class SettingsState(
     val coreVersion: Version = Version("N/A", 0),
     val coreFP: String = "N/A",
     val isDebugLogEnabled: Boolean = false,
-    val installFakeService: Boolean = false
+    val installFakeService: Boolean = false,
+    val isIgnoreFrameworkUpdate: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -63,6 +64,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             pref.installFakeServiceFlow.collectLatest {
                 logger.d("installFakeServiceFlow changed: $it")
                 updateState { copy(installFakeService = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            pref.ignoreFrameworkUpdate.collectLatest {
+                logger.d("ignoreFrameworkUpdate changed: $it")
+                updateState { copy(isIgnoreFrameworkUpdate = it) }
             }
         }
     }
@@ -126,6 +134,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     fun setInstallFakeService(value: Boolean) {
         viewModelScope.launch {
             pref.setInstallFakeService(value)
+        }
+    }
+
+    fun setIgnoreFrameworkUpdate(value: Boolean) {
+        viewModelScope.launch {
+            pref.seyIgnoreFrameworkUpdate(value)
         }
     }
 }

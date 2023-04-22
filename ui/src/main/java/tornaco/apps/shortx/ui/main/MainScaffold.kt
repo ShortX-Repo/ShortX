@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -122,7 +123,7 @@ fun MainScaffold(
                         } else it
                     },
             ) {
-                if (state.isFrameworkUpdated) {
+                AnimatedVisibility(visible = state.isFrameworkUpdated && !state.isIgnoreFrameworkUpdate) {
                     Card(
                         modifier = Modifier
                             .padding(16.dp),

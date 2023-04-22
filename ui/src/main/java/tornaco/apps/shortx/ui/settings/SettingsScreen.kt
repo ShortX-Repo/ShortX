@@ -265,6 +265,16 @@ private fun devSettings(
                 vm.setInstallFakeService(enable)
             }
         ))
+
+        add(Preference.SwitchPreference(
+            icon = Remix.Device.install_line,
+            title = "Ignore framework update",
+            summary = "Do not show framework updated tips on main screen",
+            value = state.isIgnoreFrameworkUpdate,
+            onCheckChanged = { enable ->
+                vm.setIgnoreFrameworkUpdate(enable)
+            }
+        ))
     }
 }
 

@@ -14,6 +14,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pr
 
 private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_service")
 private val PRIVACY_STATEMENT_ACCEPTED_KEY = booleanPreferencesKey("privacy_statement_accepted")
+private val IGNORE_FRAMEWORK_UPDATE = booleanPreferencesKey("ignore_framework_update")
 
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
@@ -28,6 +29,10 @@ class Pref(val context: Context) {
 
     val privacyStatementAcceptedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PRIVACY_STATEMENT_ACCEPTED_KEY] ?: false
+    }
+
+    val ignoreFrameworkUpdate: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[IGNORE_FRAMEWORK_UPDATE] ?: false
     }
 
     val uiRuleColumnCount: Flow<Int> = context.dataStore.data.map { preferences ->
@@ -59,6 +64,12 @@ class Pref(val context: Context) {
     suspend fun setShowDetailedDAItemContent(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[UI_SHOW_DETAILED_DA_ITEM_CONTENT] = value
+        }
+    }
+
+    suspend fun seyIgnoreFrameworkUpdate(value: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[IGNORE_FRAMEWORK_UPDATE] = value
         }
     }
 }

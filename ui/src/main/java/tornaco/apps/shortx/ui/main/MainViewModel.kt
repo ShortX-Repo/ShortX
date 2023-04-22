@@ -63,6 +63,7 @@ data class DirectActionUM(
 data class MainState(
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
+    val isIgnoreFrameworkUpdate: Boolean = false,
     val isPrivacyStatementAccepted: Boolean = false,
     val isShowRuleDescription: Boolean = true,
     val ruleColumnCount: Int = DEFAULT_RULE_COLUMN_COUNT,
@@ -170,6 +171,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             pref.uiShowDetailedDAItemContent.collectLatest {
                 logger.d("uiShowDetailedDAItemContent changed: $it")
                 updateState { copy(isShowDetailedDAItem = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            pref.ignoreFrameworkUpdate.collectLatest {
+                logger.d("ignoreFrameworkUpdate changed: $it")
+                updateState { copy(isIgnoreFrameworkUpdate = it) }
             }
         }
     }
