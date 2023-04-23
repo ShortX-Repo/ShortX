@@ -119,7 +119,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    TipBody(i18N["ui.action.map.nav"])
+                    SmallTitle(i18N["ui.action.map.nav"])
 
                     ListItem(title = when (mapApp) {
                         MapApp.Gaode -> {
@@ -153,7 +153,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     StandardSpacer()
                     StandardSpacer()
 
-                    TipBody(i18N["ui.action.map.nav.latitude"])
+                    SmallTitle(i18N["ui.action.map.nav.latitude"])
                     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                         shape = TextFieldDefaults.outlinedShape,
                         colors = TextFieldDefaults.textFieldColors(
@@ -165,7 +165,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         })
                     StandardSpacer()
 
-                    TipBody(i18N["ui.action.map.nav.longitude"])
+                    SmallTitle(i18N["ui.action.map.nav.longitude"])
                     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                         shape = TextFieldDefaults.outlinedShape,
                         colors = TextFieldDefaults.textFieldColors(
@@ -180,7 +180,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
 
                     AnimatedVisibility(visible = mapApp == MapApp.Gaode) {
                         Column {
-                            TipBody(i18N["ui.action.map.poi"])
+                            SmallTitle(i18N["ui.action.map.poi"])
                             OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                                 shape = TextFieldDefaults.outlinedShape,
                                 colors = TextFieldDefaults.textFieldColors(

@@ -363,7 +363,8 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val text: String,
-        val isRegex: Boolean
+        val isRegex: Boolean,
+        val timeout: Long = 3000L
     ) : Action
 
     @Parcelize
@@ -964,7 +965,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 text = data.text,
-                isRegex = data.isRegex
+                isRegex = data.isRegex,
+                timeout = data.timeout
             )
         }
         this is_ WaitForIdle::class.java -> {

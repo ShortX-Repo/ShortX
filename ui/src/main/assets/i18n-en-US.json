@@ -142,6 +142,8 @@
   "ui.action.find.click.view.by.text": "Click view by text",
   "ui.action.find.click.view.by.text.is.regex": "Regex",
   "ui.action.find.click.view.by.text.text": "Text",
+  "ui.action.find.click.view.by.text.timeout": "Timeout",
+  "ui.action.find.click.view.by.text.timeout.description": "Set the max waiting time by millis for waiting text",
   "ui.action.from.da": "From direct action",
   "ui.action.from.da.not.found": "Direct action not exists, please set new",
   "ui.action.expand.notification": "Expand noti panel",

@@ -109,7 +109,7 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
             .verticalScroll(rememberScrollState())
     ) {
 
-        TipBody(text = LocalI18N.current["ui.action.select.global.var"])
+        SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
         FilledTonalButton(onClick = {
             globalVarToWriteSelectorState.show()
         }) {

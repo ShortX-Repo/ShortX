@@ -259,7 +259,7 @@ class ActionEvaluatorImpl(
             shortXContext.wm.findAndClickViewByText(
                 text = d.text,
                 isRegex = d.isRegex,
-                timeout = d.timeout
+                timeout = maxOf(d.timeout, 1000L)
             )
         } else if (action is_ WaitForIdle::class.java) {
             shortXContext.wm.waitForIdle()

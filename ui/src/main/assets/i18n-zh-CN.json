@@ -142,6 +142,8 @@
   "ui.action.find.click.view.by.text": "点击文本视图",
   "ui.action.find.click.view.by.text.is.regex": "正则",
   "ui.action.find.click.view.by.text.text": "文本",
+  "ui.action.find.click.view.by.text.timeout": "超时",
+  "ui.action.find.click.view.by.text.timeout.description": "设定检索文本的最长等待时间（毫秒）",
   "ui.action.from.da": "执行一键指令",
   "ui.action.from.da.not.found": "一键指令已经不存在，请重新设定",
   "ui.action.expand.notification": "展开通知栏",

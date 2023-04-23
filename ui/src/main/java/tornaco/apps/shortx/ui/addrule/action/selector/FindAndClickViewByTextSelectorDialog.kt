@@ -4,12 +4,15 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.*
@@ -28,6 +31,9 @@ class FindAndClickViewByTextSelectorState(
     private var _isRegex by mutableStateOf(false)
     val isRegex get() = _isRegex
 
+    private var _timeout by mutableStateOf(3000L)
+    val timeout get() = _timeout
+
     fun show(current: Action.FindAndClickViewByText? = null) {
         this._text = current?.text ?: ""
         this._isRegex = current?.isRegex ?: false
@@ -44,6 +50,10 @@ class FindAndClickViewByTextSelectorState(
 
     fun setIsRegex(isRegex: Boolean) {
         _isRegex = isRegex
+    }
+
+    fun setTimeout(timeout: Long) {
+        _timeout = timeout
     }
 }
 
@@ -90,7 +100,8 @@ private fun FindAndClickViewByTextSelector(
                                 state.onSelected(
                                     Action.FindAndClickViewByText(
                                         text = state.text,
-                                        isRegex = state.isRegex
+                                        isRegex = state.isRegex,
+                                        timeout = state.timeout
                                     )
                                 )
                                 state.dismiss()
@@ -117,6 +128,25 @@ private fun FindAndClickViewByTextSelector(
                         onValueChange = {
                             state.setText(it)
                         })
+                    StandardSpacer()
+
+                    SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.timeout"])
+                    TipBody(LocalI18N.current["ui.action.find.click.view.by.text.timeout.description"])
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = TextFieldDefaults.outlinedShape,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = androidx.compose.ui.graphics.Color.Transparent
+                        ),
+                        value = state.timeout.toString(),
+                        onValueChange = {
+                            if (it.isDigitsOnly()) {
+                                state.setTimeout(kotlin.runCatching { it.toLong() }
+                                    .getOrElse { 0 })
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
                     StandardSpacer()
 
                     SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.is.regex"])

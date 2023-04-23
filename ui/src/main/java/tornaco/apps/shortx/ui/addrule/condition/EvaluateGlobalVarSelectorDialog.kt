@@ -151,7 +151,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         dialogState.action.payload.value
                     }
 
-                    TipBody(text = LocalI18N.current["ui.action.select.global.var"])
+                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
                     FilledTonalButton(onClick = {
                         globalVarToWriteSelectorState.show()
                     }) {
@@ -164,7 +164,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
 
                     StandardSpacer()
 
-                    TipBody(text = LocalI18N.current["ui.action.select.global.var.op"])
+                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var.op"])
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
                         FilledTonalButton(onClick = {
@@ -187,7 +187,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         }
                     }
 
-                    TipBody(text = LocalI18N.current["ui.action.select.global.var.payload"])
+                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var.payload"])
                     OutlinedTextField(value = payloadValue, onValueChange = {
                         dialogState.inputValue(it)
                     })

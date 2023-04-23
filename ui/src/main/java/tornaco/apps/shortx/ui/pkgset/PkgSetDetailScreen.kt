@@ -115,7 +115,7 @@ private fun PkgSetContent(
         if (!state.isPrebuilt) {
             stickyHeader {
                 Column {
-                    TipBody(text = LocalI18N.current["ui.pkg.set.add.input.label"])
+                    SmallTitle(text = LocalI18N.current["ui.pkg.set.add.input.label"])
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
