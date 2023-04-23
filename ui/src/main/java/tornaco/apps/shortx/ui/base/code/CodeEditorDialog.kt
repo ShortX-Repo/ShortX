@@ -122,12 +122,6 @@ private fun CodeEditor(
                         }
 
                         IconButton(onClick = {
-                            noteDialogState.show()
-                        }) {
-                            RemixIcon(remixName = Remix.Document.sticky_note_line)
-                        }
-
-                        IconButton(onClick = {
                             state.onSelected(Code(src = state.currentText, note = state.note))
                             state.dismiss()
                         }) {

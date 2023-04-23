@@ -188,6 +188,12 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Condition start
+
+    @Override public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException
+    {
+      return false;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -762,6 +768,21 @@ public interface IShortX extends android.os.IInterface
           java.lang.String _result = this.executeMVEL(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
+          return true;
+        }
+        case TRANSACTION_evaluateCondition:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          boolean _result = this.evaluateCondition(_arg0);
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
           return true;
         }
         default:
@@ -1815,6 +1836,35 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Condition start
+
+      @Override public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((condition!=null)) {
+            _data.writeInt(1);
+            condition.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_evaluateCondition, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().evaluateCondition(condition);
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1862,6 +1912,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_unregisterGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
     static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
     static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
+    static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 45);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1946,4 +1997,7 @@ public interface IShortX extends android.os.IInterface
 
   public void reboot(java.lang.String reason) throws android.os.RemoteException;
   public java.lang.String executeMVEL(java.lang.String expression) throws android.os.RemoteException;
+  // Condition start
+
+  public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException;
 }

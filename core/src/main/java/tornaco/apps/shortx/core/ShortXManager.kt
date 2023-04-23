@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
 import tornaco.apps.shortx.core.util.Logger
@@ -244,6 +245,12 @@ class ShortXManager(private val service: IShortX) {
     fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
         return invokeService(null) {
             getAppIcon(pkgName, userId)
+        }
+    }
+
+    fun evaluateCondition(condition: ProtoAny): Boolean? {
+        return invokeService(null) {
+            evaluateCondition(ByteArrayWrapper(condition.toByteArray()))
         }
     }
 

@@ -2,10 +2,10 @@
 
 package tornaco.apps.shortx.ui.addrule.condition
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,9 +14,11 @@ import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toDisplayName
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
@@ -36,30 +38,41 @@ class EvaluateGlobalVarSelectorDialogState(
 
     val action get() = _action
 
+    private var _output by mutableStateOf("")
+    val output get() = _output
+
     fun selectGlobalVar(globalVar: GlobalVar) {
         _action = _action.copy(
             varId = globalVar.id
         )
+        setOutput("")
     }
 
     fun inputValue(value: String) {
         _action = _action.copy(
             payload = GlobalVarOpPayload.newBuilder().setValue(value).build(),
         )
+        setOutput("")
     }
 
     infix fun setOp(data: GlobalVarOp) {
         _action = _action.copy(
             op = data
         )
+        setOutput("")
     }
 
     fun canSave(): Boolean {
         return action.varId.isNotEmpty()
     }
 
-    fun evaluate() {
+    private fun setOutput(output: String) {
+        _output = output
+    }
 
+    fun evaluate() {
+        val res = shortXManager.evaluateCondition(action.toProtoCondition().pack_())
+        setOutput(res?.toString() ?: "FAIL TO EVALUATE")
     }
 }
 
@@ -100,6 +113,15 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                             }
                         },
                         actions = {
+                            IconButton(onClick = {
+                                dialogState.evaluate()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.PlayArrow,
+                                    contentDescription = "Evaluate"
+                                )
+                            }
+
                             IconButton(onClick = {
                                 if (dialogState.canSave()) {
                                     dialogState.dismiss()
@@ -170,6 +192,22 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         dialogState.inputValue(it)
                     })
 
+                    StandardSpacer()
+                    AnimatedVisibility(visible = dialogState.output.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 72.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = dialogState.output,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        StandardSpacer()
+                    }
                 }
             }
         }

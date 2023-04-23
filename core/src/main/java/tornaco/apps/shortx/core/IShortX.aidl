@@ -84,4 +84,8 @@ interface IShortX {
     void reboot(String reason);
 
     String executeMVEL(String expression);
+
+    // Condition start
+    boolean evaluateCondition(in ByteArrayWrapper condition);
+    // Condition end
 }

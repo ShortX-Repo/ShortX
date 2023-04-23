@@ -55,6 +55,14 @@ interface Engine {
         initialContextData: Map<String, Any> = emptyMap()
     )
 
+    fun evaluate(
+        logTag: String,
+        condOp: ConditionOperator,
+        condOpPayload: ConditionOperatorPayload,
+        conditions: List<ProtoAny>,
+        contextData: ContextData,
+    ): Boolean
+
     fun cancelJobs(filter: (JobRecord) -> Boolean)
 
     fun activeJobs(): List<JobRecord>
@@ -154,6 +162,16 @@ class DefaultRuleEngine(
             contextData.recycle()
             onJobCompleted(id)
         }
+    }
+
+    override fun evaluate(
+        logTag: String,
+        condOp: ConditionOperator,
+        condOpPayload: ConditionOperatorPayload,
+        conditions: List<ProtoAny>,
+        contextData: ContextData
+    ): Boolean {
+        return conditionEvaluator.evaluate(logTag, condOp, condOpPayload, conditions, contextData)
     }
 
     override fun cancelJobs(filter: (JobRecord) -> Boolean) {

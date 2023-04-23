@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -161,6 +162,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun executeMVEL(expression: String): String {
             return shortXContext.rule.executeMVEL(expression)
+        }
+
+        override fun evaluateCondition(condition: ByteArrayWrapper): Boolean {
+            return shortXContext.rule.evaluateCondition(ProtoAny.parseFrom(condition.byte))
         }
 
         override fun addPkgSet(set: ByteArrayWrapper) {

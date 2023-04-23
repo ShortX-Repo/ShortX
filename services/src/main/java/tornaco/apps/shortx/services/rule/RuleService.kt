@@ -3,6 +3,9 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.proto.condition.ConditionOperator
+import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -259,6 +262,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             logger.e(it, "executeMVEL fail")
             it.message ?: it.javaClass.name
         }
+    }
+
+    fun evaluateCondition(
+        condition: ProtoAny,
+    ): Boolean {
+        return engine.evaluate(
+            "RuleService evaluateCondition",
+            condOp = ConditionOperator.ALL,
+            condOpPayload = ConditionOperatorPayload.newBuilder().build(),
+            conditions = listOf(condition),
+            contextData = ContextData.obtain()
+        )
     }
 
     fun registerJobStatusListener(listener: IJobStatusListener) {
