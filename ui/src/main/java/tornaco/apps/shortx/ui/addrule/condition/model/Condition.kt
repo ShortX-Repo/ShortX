@@ -8,14 +8,15 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
-import tornaco.apps.shortx.core.proto.condition.MatchMVEL
-import tornaco.apps.shortx.core.proto.condition.True
+import tornaco.apps.shortx.core.proto.condition.*
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import java.util.*
+
+fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
 
 sealed interface Condition : Parcelable {
     @Parcelize
@@ -26,6 +27,16 @@ sealed interface Condition : Parcelable {
 
     @Parcelize
     object TRUE : Condition
+
+    @Parcelize
+    data class EvaluateGlobalVar(
+        val varId: String,
+        val op: GlobalVarOp,
+        val payload: GlobalVarOpPayload,
+
+        val note: String = "",
+        val id: String = defaultNewConditionId()
+    ) : Condition
 }
 
 fun Condition.toProtoCondition(): ProtoMessage {
@@ -50,6 +61,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
         }
         Condition.TRUE -> {
             True.newBuilder().build()
+        }
+        is Condition.EvaluateGlobalVar -> {
+            EvaluateGlobalVar.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setVarId(varId)
+                .setOp(op)
+                .setPayload(payload)
+                .build()
         }
     }
 }
@@ -79,6 +99,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         }
         this is_ True::class.java -> {
             Condition.TRUE
+        }
+        this is_ EvaluateGlobalVar::class.java -> {
+            val data = this unpack_ EvaluateGlobalVar::class.java
+            Condition.EvaluateGlobalVar(
+                id = data.id,
+                note = data.note,
+                varId = data.varId,
+                op = data.op,
+                payload = data.payload
+            )
         }
         else -> null
     }

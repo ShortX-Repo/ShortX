@@ -74,7 +74,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { LocalI18N.current["ui.action.show.dialog"] },
+                        title = { Text(LocalI18N.current["ui.action.show.dialog"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

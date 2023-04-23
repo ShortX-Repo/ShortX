@@ -28,6 +28,11 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
                 i18N["ui.conditions.true"]
             )
         }
+        Condition.EvaluateGlobalVar::class -> {
+            listOf(
+                i18N["ui.conditions.eva.global.var"]
+            )
+        }
         else -> {
             emptyList()
         }
@@ -54,11 +59,14 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 i18N["ui.conditions.true.desc"]
             )
         }
+        is Condition.EvaluateGlobalVar -> listOf(
+            i18N["ui.conditions.eva.global.var"]
+        )
     }
 }
 
 @Composable
-fun IconForConditionSelector(condition: KClass<out Condition>) {
+fun IconForCondition(condition: KClass<out Condition>) {
     when (condition) {
         Condition.CurrentForegroundApp::class -> {
             RemixIcon(
@@ -75,26 +83,9 @@ fun IconForConditionSelector(condition: KClass<out Condition>) {
                 remixName = Remix.System.check_line
             )
         }
-    }
-}
-
-
-@Composable
-fun IconForCondition(condition: Condition) {
-    when (condition) {
-        is Condition.CurrentForegroundApp -> {
+        Condition.EvaluateGlobalVar::class -> {
             RemixIcon(
-                remixName = Remix.Logos.android_line
-            )
-        }
-        is Condition.MVEL -> {
-            RemixIcon(
-                remixName = Remix.Development.code_line
-            )
-        }
-        Condition.TRUE -> {
-            RemixIcon(
-                remixName = Remix.System.check_line
+                remixName = Remix.Document.file_list_line
             )
         }
     }

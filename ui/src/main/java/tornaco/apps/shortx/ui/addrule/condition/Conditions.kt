@@ -61,6 +61,11 @@ fun ConditionSelectors(
         }
     CodeEditorDialog(state = mvelConditionSelectorState)
 
+    val evaluateGlobalVarSelectorDialogState = rememberEvaluateGlobalVarSelectorState {
+        handler.addCondition(it)
+    }
+    EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
+
     Conditions(
         header = header,
         conditions = conditions,
@@ -75,6 +80,9 @@ fun ConditionSelectors(
                 }
                 Condition.TRUE::class -> {
                     handler.addCondition(Condition.TRUE)
+                }
+                Condition.EvaluateGlobalVar::class -> {
+                    evaluateGlobalVarSelectorDialogState.show()
                 }
             }
         },
@@ -105,7 +113,7 @@ fun Conditions(
                 conditions.forEach {
                     ListItem(titleLines = labelForCondition(condition = it), icon = {
                         ColoredIcon(size = 36.dp) {
-                            IconForCondition(it)
+                            IconForCondition(it::class)
                         }
                     }, action1 = {
                         IconButton(onClick = {
@@ -132,12 +140,13 @@ fun Conditions(
                         items = listOf(
                             Condition.CurrentForegroundApp::class,
                             Condition.MVEL::class,
-                            Condition.TRUE::class
+                            Condition.TRUE::class,
+                            Condition.EvaluateGlobalVar::class,
                         ).map {
                             DropdownItem(
                                 labelLines = labelForConditionSelector(it),
                                 data = it,
-                                icon = { IconForConditionSelector(condition = it) }
+                                icon = { IconForCondition(condition = it) }
                             )
                         }
                     ) {

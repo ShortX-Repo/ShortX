@@ -246,7 +246,11 @@ class ConditionEvaluatorImpl(
                 var expressionTranslation = expression
                 repeat(conditions.size) { index ->
                     val codeName = "c${index + 1}"
-                    varMap[codeName] = ConditionCallable(this, conditions[index])
+                    varMap[codeName] = ConditionCallable(
+                        eva = this,
+                        condition = conditions[index],
+                        contextData = contextData
+                    )
                     expressionTranslation =
                         expressionTranslation.replace(codeName, "$codeName.call()")
                     logger.d("replace codeName: $codeName, after replace: $expressionTranslation")

@@ -210,14 +210,15 @@ fun <T> DeleteConfirmDialog(
 
 
 open class CommonDialogState {
-    var isShowing by mutableStateOf(false)
+    private var _isShow by mutableStateOf(false)
+    val isShowing get() = _isShow
 
     fun show() {
-        isShowing = true
+        _isShow = true
     }
 
     fun dismiss() {
-        isShowing = false
+        _isShow = false
     }
 }
 

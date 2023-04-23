@@ -191,7 +191,11 @@ class ActionEvaluatorImpl(
                 while (
                     index < repeat &&
                     (d.conditionsList.isNullOrEmpty() || conditionEvaluator.evaluate(
-                        "WhileLoop", d.condOp, d.condOpPayload, d.conditionsList
+                        logTag = "WhileLoop",
+                        condOp = d.condOp,
+                        condOpPayload = d.condOpPayload,
+                        conditions = d.conditionsList,
+                        contextData = contextData
                     ))
                 ) {
                     logger.d("WhileLoop inside: $index")
@@ -262,7 +266,13 @@ class ActionEvaluatorImpl(
         } else if (action is_ IfThenElse::class.java) {
             val d = action unpack_ IfThenElse::class.java
             val matchCond =
-                conditionEvaluator.evaluate("IfThenElse", d.ifCondOp, d.ifCondOpPayload, d.ifList)
+                conditionEvaluator.evaluate(
+                    logTag = "IfThenElse",
+                    condOp = d.ifCondOp,
+                    condOpPayload = d.ifCondOpPayload,
+                    conditions = d.ifList,
+                    contextData = contextData
+                )
             logger.d("IfThenElse, matchCond: $matchCond")
             if (matchCond) {
                 if (d.ifActionsList.isNullOrEmpty().not()) {

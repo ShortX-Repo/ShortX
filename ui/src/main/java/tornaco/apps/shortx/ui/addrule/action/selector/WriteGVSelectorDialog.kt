@@ -64,7 +64,7 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { LocalI18N.current["ui.action.show.overlay"] },
+                        title = { Text(text = LocalI18N.current["ui.action.write.global.var"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -108,15 +108,19 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
+
+        TipBody(text = LocalI18N.current["ui.action.select.global.var"])
         FilledTonalButton(onClick = {
             globalVarToWriteSelectorState.show()
         }) {
             if (state.isValid()) {
                 Text(text = state.varName)
             } else {
-                Text(text = "Select")
+                RemixIcon(remixName = Remix.System.add_line)
             }
         }
+
+        StandardSpacer()
 
         OutlinedTextField(value = state.valueAsString, onValueChange = {
             vm.inputValue(it)

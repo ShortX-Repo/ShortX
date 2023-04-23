@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.core.rule
 
+import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.*
 
 enum class GlobalVarType {
@@ -126,4 +127,19 @@ fun String.toVarValue(type: GlobalVarType?): ProtoAny? {
 
 fun String.splitAsGlobalVarOpPayloadStringList(): List<String> {
     return split(System.lineSeparator()).map { it.trim() }
+}
+
+fun GlobalVarOp.toDisplayName(): String {
+    return when (this) {
+        GlobalVarOp.GreaterThan -> "$name (>)"
+        GlobalVarOp.LessThan -> "$name (<)"
+        GlobalVarOp.EqualTo -> "$name (==)"
+        GlobalVarOp.Contains -> "$name (contains)"
+        GlobalVarOp.DoesNotContain -> "$name (!contains)"
+        GlobalVarOp.NotSet -> name
+        GlobalVarOp.HasBeenSet -> name
+        GlobalVarOp.IsEmpty -> name
+        GlobalVarOp.IsNotEmpty -> name
+        GlobalVarOp.UNRECOGNIZED -> "N/A"
+    }
 }

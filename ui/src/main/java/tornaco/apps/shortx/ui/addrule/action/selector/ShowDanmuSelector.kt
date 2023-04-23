@@ -71,7 +71,7 @@ private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { LocalI18N.current["ui.action.show.dialog"] },
+                        title = { Text(text = LocalI18N.current["ui.action.show.danmu"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

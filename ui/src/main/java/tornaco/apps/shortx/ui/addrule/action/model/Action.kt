@@ -25,7 +25,7 @@ import tornaco.apps.shortx.ui.remote.toModel
 import tornaco.apps.shortx.ui.remote.toProto
 import java.util.*
 
-fun defaultNewActionId() = UUID.randomUUID().toString()
+fun defaultNewActionId() = "A-" + UUID.randomUUID().toString()
 
 sealed interface Action : Parcelable {
     val id: String
