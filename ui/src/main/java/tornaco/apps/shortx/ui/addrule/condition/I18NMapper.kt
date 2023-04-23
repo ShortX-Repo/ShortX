@@ -7,7 +7,6 @@ import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
 import kotlin.reflect.KClass
 
 @Composable
@@ -65,28 +64,22 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
     }
 }
 
-@Composable
-fun IconForCondition(condition: KClass<out Condition>) {
-    when (condition) {
+fun iconForCondition(condition: KClass<out Condition>): String {
+    return when (condition) {
         Condition.CurrentForegroundApp::class -> {
-            RemixIcon(
-                remixName = Remix.Logos.android_line
-            )
+            Remix.Logos.android_line
         }
         Condition.MVEL::class -> {
-            RemixIcon(
-                remixName = Remix.Development.code_line
-            )
+            Remix.Development.code_line
         }
         Condition.TRUE::class -> {
-            RemixIcon(
-                remixName = Remix.System.check_line
-            )
+            Remix.System.check_line
         }
         Condition.EvaluateGlobalVar::class -> {
-            RemixIcon(
-                remixName = Remix.Document.file_list_line
-            )
+            Remix.Document.file_list_line
+        }
+        else -> {
+            Remix.Document.file_unknow_line
         }
     }
 }
@@ -131,30 +124,21 @@ fun opDescription(op: Op): List<String> {
     }
 }
 
-@Composable
-fun IconForOp(op: Op) {
-    when (op) {
+fun iconForOp(op: Op): String {
+    return when (op) {
         Op.All -> {
-            RemixIcon(
-                remixName = Remix.System.check_double_line
-            )
+            Remix.System.check_double_line
         }
         Op.Any -> {
-            RemixIcon(
-                remixName = Remix.Editor.asterisk
-            )
+            Remix.Editor.asterisk
         }
 
         Op.None -> {
-            RemixIcon(
-                remixName = Remix.System.checkbox_blank_circle_line
-            )
+            Remix.System.checkbox_blank_circle_line
         }
 
         is Op.MVEL -> {
-            RemixIcon(
-                remixName = Remix.Development.code_line
-            )
+            Remix.Development.code_line
         }
     }
 }

@@ -41,7 +41,7 @@ data class AddRuleState(
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
-    val showConditionSection: Boolean = false,
+    val showConditionSection: Boolean = true,
 )
 
 @SuppressLint("StaticFieldLeak")

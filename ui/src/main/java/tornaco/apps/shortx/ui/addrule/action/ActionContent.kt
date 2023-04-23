@@ -6,10 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -173,7 +170,10 @@ private fun Actions(
                             titleLines = labelLinesForAction(action = action),
                             icon = {
                                 ColoredIcon(size = 36.dp) {
-                                    RemixIcon(remixName = imageVectorForAction(action = action::class))
+                                    RemixIcon(
+                                        modifier = Modifier.size(16.dp),
+                                        remixName = imageVectorForAction(action = action::class)
+                                    )
                                 }
                             },
                             action1 = {
@@ -263,15 +263,12 @@ private fun Actions(
                 }
             }
 
-
-            StandardSpacer()
+            TinySpacer()
             Box {
                 FilledTonalButton(onClick = {
                     actionSelectorState.show(ActionSelectorDialogArgs.New)
                 }) {
-                    Icon(
-                        imageVector = Icons.Filled.Add, contentDescription = "Select"
-                    )
+                    RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.add_line)
                     TinySpacer()
                     Text(LocalI18N.current["ui.actions.add"])
                 }

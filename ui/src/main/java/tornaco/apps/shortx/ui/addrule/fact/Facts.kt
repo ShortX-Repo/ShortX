@@ -255,7 +255,10 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                         titleLines = labelForFact(fact = it),
                         icon = {
                             ColoredIcon(size = 36.dp) {
-                                RemixIcon(remixName = imageVectorForFact(it::class))
+                                RemixIcon(
+                                    modifier = Modifier.size(16.dp),
+                                    remixName = imageVectorForFact(it::class)
+                                )
                             }
                         },
                         action1 = {
@@ -279,12 +282,11 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                     )
                 }
 
+                TinySpacer()
                 FilledTonalButton(onClick = {
                     showFactSelectorMenu = true
                 }) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings, contentDescription = "Select"
-                    )
+                    RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.add_line)
                     TinySpacer()
                     Text(text = LocalI18N.current["ui.fact.select"])
                 }

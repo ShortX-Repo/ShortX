@@ -1,15 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -113,7 +106,10 @@ fun Conditions(
                 conditions.forEach {
                     ListItem(titleLines = labelForCondition(condition = it), icon = {
                         ColoredIcon(size = 36.dp) {
-                            IconForCondition(it::class)
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = iconForCondition(it::class)
+                            )
                         }
                     }, action1 = {
                         IconButton(onClick = {
@@ -125,12 +121,14 @@ fun Conditions(
                 }
 
                 // Add button
+                TinySpacer()
                 Box {
                     FilledTonalButton(onClick = {
                         conditionSelectorState.open()
                     }) {
-                        Icon(
-                            imageVector = Icons.Filled.Add, contentDescription = "Select"
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.add_line
                         )
                         TinySpacer()
                         Text(LocalI18N.current["ui.conditions.add"])
@@ -146,7 +144,12 @@ fun Conditions(
                             DropdownItem(
                                 labelLines = labelForConditionSelector(it),
                                 data = it,
-                                icon = { IconForCondition(condition = it) }
+                                icon = {
+                                    RemixIcon(
+                                        modifier = Modifier.size(16.dp),
+                                        remixName = iconForCondition(condition = it)
+                                    )
+                                }
                             )
                         }
                     ) {
@@ -180,16 +183,20 @@ private fun OpSelector(
                 opTitle(op = conditionOp),
             ).apply {
                 addAll(opDescription(op = conditionOp))
-            }, icon = {
-                IconForOp(conditionOp)
+            },
+            icon = {
+                ColoredIcon(size = 28.dp) {
+                    RemixIcon(modifier = Modifier.size(12.dp), remixName = iconForOp(conditionOp))
+                }
             })
 
         Box {
             FilledTonalButton(onClick = {
                 opSelectorState.open()
             }) {
-                Icon(
-                    imageVector = Icons.Filled.Edit, contentDescription = "Edit"
+                RemixIcon(
+                    modifier = Modifier.size(16.dp),
+                    remixName = Remix.Design.edit_circle_line
                 )
                 TinySpacer()
                 Text(text = LocalI18N.current["ui.condition.op.edit"])
