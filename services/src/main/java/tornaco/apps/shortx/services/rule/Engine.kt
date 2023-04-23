@@ -20,7 +20,8 @@ interface ConditionEvaluator {
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
-        conditions: List<ProtoAny>
+        conditions: List<ProtoAny>,
+        contextData: ContextData,
     ): Boolean
 }
 
@@ -74,10 +75,11 @@ class DefaultRuleEngine(
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         return rules.filterInvalid().firstOrNull {
             factMatcher.match(fact, it.fact) && conditionEvaluator.evaluate(
-                it.title,
-                it.condOp,
-                it.condOpPayload,
-                it.conditionsList
+                logTag = it.title,
+                condOp = it.condOp,
+                condOpPayload = it.condOpPayload,
+                conditions = it.conditionsList,
+                contextData = ContextData.obtain()
             )
         } != null
     }
@@ -90,10 +92,11 @@ class DefaultRuleEngine(
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
                     val conditionRes = conditionEvaluator.evaluate(
-                        rule.title,
-                        rule.condOp,
-                        rule.condOpPayload,
-                        rule.conditionsList
+                        logTag = rule.title,
+                        condOp = rule.condOp,
+                        condOpPayload = rule.condOpPayload,
+                        conditions = rule.conditionsList,
+                        contextData = contextData
                     )
                     if (conditionRes) {
                         kotlin.run loop@{

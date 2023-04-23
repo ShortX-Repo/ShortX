@@ -23,14 +23,48 @@ message False {}
 message CurrentPkgList {
   repeated AppPkg pkgs = 1;
   repeated string pkgSets = 2;
+
+  string note = 99;
+  string id = 100;
 }
 
 message CurrentActivity {
   string pkgName = 1;
   string className = 2;
   int32 userId = 3;
+
+  string note = 99;
+  string id = 100;
 }
 
 message MatchMVEL {
   string expression = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message EvaluateGlobalVar {
+  GlobalVarOp op = 1;
+  string varId = 2;
+  GlobalVarOpPayload payload = 3;
+
+  string note = 99;
+  string id = 100;
+}
+
+enum GlobalVarOp {
+  GreaterThan = 0;
+  LessThan = 1;
+  EqualTo = 2;
+  Contains = 3;
+  DoesNotContain = 4;
+  NotSet = 5;
+  HasBeenSet = 6;
+  IsEmpty = 7;
+  IsNotEmpty = 8;
+}
+
+message GlobalVarOpPayload {
+  string value = 1;
 }

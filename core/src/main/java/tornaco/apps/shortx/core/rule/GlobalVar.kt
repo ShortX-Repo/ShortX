@@ -59,7 +59,11 @@ fun ProtoAny.toType(): GlobalVarType? {
 
 fun GlobalVar.valueString(): String = valueList().joinToString()
 
-fun GlobalVar.valueList(): List<String> = when (this.`var`.toType()) {
+fun GlobalVar.valueList(
+    noValueReturn: () -> List<String> = {
+        listOf("NO VALUE")
+    }
+): List<String> = when (this.`var`.toType()) {
     GlobalVarType.Int -> {
         val v = this.`var`.unpack(Int64Var::class.java)
         listOf(v.value.toString())
@@ -85,7 +89,7 @@ fun GlobalVar.valueList(): List<String> = when (this.`var`.toType()) {
         v.valuesList
     }
     null -> {
-        listOf("NO VALUE")
+        noValueReturn()
     }
 }
 
@@ -118,4 +122,8 @@ fun String.toVarValue(type: GlobalVarType?): ProtoAny? {
             null
         }
     }
+}
+
+fun String.splitAsGlobalVarOpPayloadStringList(): List<String> {
+    return split(System.lineSeparator()).map { it.trim() }
 }
