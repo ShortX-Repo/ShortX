@@ -17,7 +17,7 @@ import tornaco.apps.shortx.ui.base.i18NIns
 data class ActionContentState(
     val actions: List<Action> = emptyList(),
     val copiedAction: Action? = null,
-    val actionWarningMessages: List<String> = emptyList(),
+    val actionWarningMessages: Map<String, List<String>> = emptyMap(),
     val isChanged: Boolean = false,
 )
 
@@ -177,15 +177,19 @@ class ActionContentStateHandler(
     }
 
     private fun checkUpdateWarnings() {
-        updateState {
-            copy(
-                actionWarningMessages = state.value.actions.generateWarningMessages(
-                    shortXManager,
-                    i18N
-                ),
+        val map: Map<String, List<String>> = state.value.actions.groupBy {
+            it.id
+        }.mapValues {
+            it.value.generateWarningMessages(
+                shortXManager,
+                i18N
             )
         }
-
+        updateState {
+            copy(
+                actionWarningMessages = map
+            )
+        }
     }
 }
 

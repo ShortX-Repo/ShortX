@@ -34,12 +34,8 @@ class IfThenElseSelectorDialogDialogState(
 
     fun show(currentSettings: Action.IfThenElse? = null) {
         this.ifThenElse.value = currentSettings ?: Action.IfThenElse()
-        ifActionHandler.updateState {
-            copy(actions = currentSettings?.ifActions ?: emptyList())
-        }
-        elseActionHandler.updateState {
-            copy(actions = currentSettings?.elseActions ?: emptyList())
-        }
+        ifActionHandler.init(currentSettings?.ifActions ?: emptyList())
+        elseActionHandler.init(currentSettings?.elseActions ?: emptyList())
         isShowing = true
     }
 
@@ -148,6 +144,7 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                             MediumTitle(LocalI18N.current["ui.action.if"])
                         },
                         conditions = conditions,
+                        warnings = emptyMap(),
                         conditionOp = conditionOp,
                         handler = ConditionHandler(
                             addCondition = dialogState::addCondition,

@@ -378,7 +378,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
 
-        val ifConditions: List<Condition> = listOf(Condition.TRUE),
+        val ifConditions: List<Condition> = listOf(Condition.TRUE()),
         val ifConditionOp: Op = Op.All,
         val ifActions: List<Action> = emptyList(),
         val elseActions: List<Action> = emptyList(),

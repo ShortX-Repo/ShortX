@@ -97,6 +97,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                         val conditionOp = addRuleState.conditionOp
                         ConditionSelectors(
                             conditions = conditions,
+                            warnings = addRuleState.conditionWarningMessages,
                             conditionOp = conditionOp,
                             handler = ConditionHandler(
                                 addCondition = vm::addCondition,

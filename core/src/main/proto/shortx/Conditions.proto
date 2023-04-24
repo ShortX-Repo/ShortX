@@ -17,8 +17,15 @@ message ConditionOperatorPayload {
   string expression = 1;
 }
 
-message True {}
-message False {}
+message True {
+  string note = 99;
+  string id = 100;
+}
+
+message False {
+  string note = 99;
+  string id = 100;
+}
 
 message CurrentPkgList {
   repeated AppPkg pkgs = 1;

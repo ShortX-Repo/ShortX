@@ -19,14 +19,28 @@ import java.util.*
 fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
 
 sealed interface Condition : Parcelable {
-    @Parcelize
-    data class CurrentForegroundApp(val apps: List<App>, val pkgSets: List<PkgSet>) : Condition
+    val id: String
+    val note: String
 
     @Parcelize
-    data class MVEL(val expression: String) : Condition
+    data class CurrentForegroundApp(
+        val apps: List<App>, val pkgSets: List<PkgSet>,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition
 
     @Parcelize
-    object TRUE : Condition
+    data class MVEL(
+        val expression: String,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition
+
+    @Parcelize
+    data class TRUE(
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition
 
     @Parcelize
     data class EvaluateGlobalVar(
@@ -34,8 +48,8 @@ sealed interface Condition : Parcelable {
         val op: GlobalVarOp,
         val payload: GlobalVarOpPayload,
 
-        val note: String = "",
-        val id: String = defaultNewConditionId()
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
     ) : Condition
 }
 
@@ -43,6 +57,8 @@ fun Condition.toProtoCondition(): ProtoMessage {
     return when (this) {
         is Condition.CurrentForegroundApp -> {
             CurrentPkgList.newBuilder()
+                .setId(id)
+                .setNote(note)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -57,10 +73,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .build()
         }
         is Condition.MVEL -> {
-            MatchMVEL.newBuilder().setExpression(expression).build()
+            MatchMVEL.newBuilder()
+                .setId(id)
+                .setNote(note).setExpression(expression).build()
         }
-        Condition.TRUE -> {
-            True.newBuilder().build()
+        is Condition.TRUE -> {
+            True.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .build()
         }
         is Condition.EvaluateGlobalVar -> {
             EvaluateGlobalVar.newBuilder()
@@ -82,6 +103,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 Pkg(pkg.pkgName, userId = pkg.userId)
             }
             Condition.CurrentForegroundApp(
+                id = data.id,
+                note = data.note,
                 apps = pkgs.map { pkg ->
                     val appLabel = shortXManager.getAppLabel(pkg)
                     App(
@@ -95,10 +118,15 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         }
         this is_ MatchMVEL::class.java -> {
             val data = this unpack_ MatchMVEL::class.java
-            Condition.MVEL(data.expression)
+            Condition.MVEL(
+                id = data.id,
+                note = data.note,
+                expression = data.expression
+            )
         }
         this is_ True::class.java -> {
-            Condition.TRUE
+            val data = this unpack_ True::class.java
+            Condition.TRUE(id = data.id, note = data.note)
         }
         this is_ EvaluateGlobalVar::class.java -> {
             val data = this unpack_ EvaluateGlobalVar::class.java

@@ -31,7 +31,7 @@ fun ActionContent(
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
     actions: List<Action>,
-    warnings: List<String>,
+    warnings: Map<String, List<String>>,
     handler: ActionHandler
 ) {
     Actions(
@@ -93,7 +93,7 @@ private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Un
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
-    warnings: List<String>,
+    warnings: Map<String, List<String>>,
     handler: ActionHandler
 ) {
     val actionSortDialogState = rememberActionSortState(
@@ -212,6 +212,17 @@ private fun Actions(
                                 text = action.note
                             )
                         }
+
+                        // Warning.
+                        val actionWarning: List<String>? = warnings[action.id]
+                        AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
+                            actionWarning?.let {
+                                WarningCard(
+                                    LocalI18N.current["ui.action.warning.message"],
+                                    it
+                                )
+                            }
+                        }
                     }
 
 
@@ -265,11 +276,6 @@ private fun Actions(
                             }
                         })
                 }
-            }
-
-            // Warning.
-            AnimatedVisibility(visible = warnings.isNotEmpty()) {
-                WarningCard(LocalI18N.current["ui.action.warning.message"], warnings)
             }
 
             // Add

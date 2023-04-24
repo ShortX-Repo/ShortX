@@ -52,7 +52,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.MVEL -> {
             listOf("MVEL expression", condition.expression)
         }
-        Condition.TRUE -> {
+        is Condition.TRUE -> {
             listOf(
                 i18N["ui.conditions.true"],
                 i18N["ui.conditions.true.desc"]

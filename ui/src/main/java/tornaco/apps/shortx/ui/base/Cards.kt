@@ -1,13 +1,15 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +33,9 @@ fun ShortXCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 fun WarningCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
     androidx.compose.material3.Card(
         modifier = Modifier
-            .padding(16.dp)
-            .clickable {
-                onClick()
-            },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
@@ -44,11 +44,16 @@ fun WarningCard(title: String, warnings: List<String>, onClick: () -> Unit = {})
             Row {
                 RemixIcon(
                     modifier = Modifier.offset(y = 2.dp),
-                    remixName = Remix.System.alarm_warning_line
+                    remixName = Remix.System.error_warning_fill
                 )
                 MediumSpacer()
                 Column {
-                    Text(title)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 14.sp
+                        )
+                    )
                     MediumSpacer()
                     Text(
                         text = warnings.joinToString(System.lineSeparator()),

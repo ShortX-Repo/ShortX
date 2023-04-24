@@ -38,14 +38,14 @@ data class AddRuleState(
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,
-    val conditions: List<Condition> = listOf(Condition.TRUE),
+    val conditions: List<Condition> = listOf(Condition.TRUE()),
     val conditionOp: Op = Op.All,
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showConditionSection: Boolean = true,
-    val conditionWarningMessages: List<String> = emptyList(),
+    val conditionWarningMessages: Map<String, List<String>> = emptyMap(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -205,12 +205,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     }
 
     private fun checkUpdateWarnings() = viewModelScope.launch(Dispatchers.IO) {
-        // global var
-        val conditionMessages = state.value.conditions.generateWarningMessages(shortXManager, i18N)
+        val conditionMessages = state.value.conditions.groupBy { it.id }.mapValues {
+            it.value.generateWarningMessages(shortXManager, i18N)
+        }
         updateState {
-            copy(
-                conditionWarningMessages = conditionMessages,
-            )
+            copy(conditionWarningMessages = conditionMessages)
         }
     }
 }

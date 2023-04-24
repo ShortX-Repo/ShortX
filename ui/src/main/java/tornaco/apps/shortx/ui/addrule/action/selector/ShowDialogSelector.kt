@@ -245,7 +245,7 @@ private fun ButtonSettings(
     text: String,
     onTextChange: (String) -> Unit,
     actions: List<Action>,
-    warnings: List<String>,
+    warnings: Map<String, List<String>>,
     actionHandler: ActionHandler
 ) {
     MediumTitle(headerTitle)

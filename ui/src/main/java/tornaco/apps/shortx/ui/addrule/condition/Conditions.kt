@@ -1,12 +1,17 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
@@ -24,6 +29,7 @@ fun ConditionSelectors(
         MediumTitle(LocalI18N.current["ui.conditions.title"])
     },
     conditions: List<Condition>,
+    warnings: Map<String, List<String>>,
     conditionOp: Op,
     handler: ConditionHandler
 ) {
@@ -62,6 +68,7 @@ fun ConditionSelectors(
     Conditions(
         header = header,
         conditions = conditions,
+        warnings = warnings,
         conditionOp = conditionOp,
         selectCondition = { con ->
             when (con) {
@@ -72,7 +79,7 @@ fun ConditionSelectors(
                     mvelConditionSelectorState.show()
                 }
                 Condition.TRUE::class -> {
-                    handler.addCondition(Condition.TRUE)
+                    handler.addCondition(Condition.TRUE())
                 }
                 Condition.EvaluateGlobalVar::class -> {
                     evaluateGlobalVarSelectorDialogState.show()
@@ -91,6 +98,7 @@ fun ConditionSelectors(
 fun Conditions(
     header: @Composable () -> Unit,
     conditions: List<Condition>,
+    warnings: Map<String, List<String>>,
     conditionOp: Op,
     selectCondition: (KClass<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
@@ -104,20 +112,45 @@ fun Conditions(
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 conditions.forEach {
-                    ListItem(titleLines = labelForCondition(condition = it), icon = {
-                        ColoredIcon(size = 36.dp) {
-                            RemixIcon(
-                                modifier = Modifier.size(16.dp),
-                                remixName = iconForCondition(it::class)
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(ShortXCardRoundedCornerShape)
+                            .combinedClickable(
+                                onClick = { },
+                                onLongClick = { }
                             )
+                    ) {
+                        ListItem(
+                            titleLines = labelForCondition(condition = it),
+                            icon = {
+                                ColoredIcon(size = 36.dp) {
+                                    RemixIcon(
+                                        modifier = Modifier.size(16.dp),
+                                        remixName = iconForCondition(it::class)
+                                    )
+                                }
+                            },
+                            action1 = {
+                                IconButton(onClick = {
+                                    removeCondition(it)
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            })
+
+                        // Warning.
+                        val actionWarning: List<String>? = warnings[it.id]
+                        AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
+                            actionWarning?.let {
+                                WarningCard(
+                                    LocalI18N.current["ui.condition.warning.message"],
+                                    it
+                                )
+                            }
                         }
-                    }, action1 = {
-                        IconButton(onClick = {
-                            removeCondition(it)
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    }, onClick = {})
+                    }
                 }
 
                 // Add button
