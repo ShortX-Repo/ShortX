@@ -79,6 +79,8 @@ interface IShortX {
     void registerGlobalVarObs(in IGlobalVarObserver obs);
     void unregisterGlobalVarObs(in IGlobalVarObserver obs);
 
+    String getCachedGlobalVarName(String id);
+
     // Global var end
 
     void reboot(String reason);

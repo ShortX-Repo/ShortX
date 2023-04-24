@@ -64,7 +64,7 @@ class SettingsStore(private val name: String, private val scope: CoroutineScope)
     }
 
 
-    fun getString(key: String, defaultValue: String): String {
+    fun getString(key: String, defaultValue: String? = null): String? {
         return stringCache[key] ?: defaultValue
     }
 

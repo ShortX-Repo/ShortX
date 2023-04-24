@@ -5,9 +5,11 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -27,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.I18N
 import java.util.*
 import javax.inject.Inject
 
@@ -42,6 +45,7 @@ data class AddRuleState(
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showConditionSection: Boolean = true,
+    val conditionWarningMessages: List<String> = emptyList(),
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -88,6 +92,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 add(condition)
             }, ruleChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun removeCondition(condition: Condition) {
@@ -96,6 +101,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 remove(condition)
             }, ruleChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun setConditionOp(op: Op) {
@@ -191,8 +197,36 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             isEnabled = rule.isEnabled
                         )
                     }
+
+                    checkUpdateWarnings()
                 }
             }
         }
     }
+
+    private fun checkUpdateWarnings() = viewModelScope.launch(Dispatchers.IO) {
+        // global var
+        val conditionMessages = state.value.conditions.generateWarningMessages(shortXManager, i18N)
+        updateState {
+            copy(
+                conditionWarningMessages = conditionMessages,
+            )
+        }
+    }
+}
+
+fun List<Condition>.getGlobalVarRefs(): List<String> {
+    return filterIsInstance(Condition.EvaluateGlobalVar::class.java).map { it.varId }
+}
+
+fun List<Condition>.generateWarningMessages(
+    shortXManager: ShortXManager,
+    i18N: I18N
+): List<String> {
+    val conditionMessages = getGlobalVarRefs().filter { shortXManager.getGlobalVarById(it) == null }
+        .map { shortXManager.getCachedGlobalVarName(it) ?: "N/A" }
+        .mapIndexed { index, it ->
+            "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
+        }
+    return conditionMessages
 }

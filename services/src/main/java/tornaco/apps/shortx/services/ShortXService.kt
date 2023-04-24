@@ -310,6 +310,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             }
         }
 
+        override fun getCachedGlobalVarName(id: String): String? {
+            return shortXContext.rule.getCachedGlobalVarName(id)
+        }
+
         override fun getAllGlobalVars(): List<ByteArrayWrapper> {
             return shortXContext.rule.getAllGlobalVars().map {
                 ByteArrayWrapper(it.toByteArray())

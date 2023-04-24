@@ -18,6 +18,7 @@ import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
+import tornaco.apps.shortx.services.data.SettingsStore
 import tornaco.apps.shortx.services.rule.actor.MVELExecutor
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 
@@ -45,6 +46,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                         .onFailure { logger.e(it, "Call onDelete") }
                 }
             })
+    }
+
+    val globalVarNameCacheStore: SettingsStore by lazy {
+        SettingsStore("globalVarNameCache", systemServiceScope)
     }
 
     private val allTriggers by lazy {
@@ -97,6 +102,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
         globalVarStore.readBlocking()
+        globalVarNameCacheStore.readBlocking()
         installListeners()
     }
 
@@ -286,6 +292,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun addGlobalVar(gv: GlobalVar) {
         globalVarStore.addGlobalVar(gv)
+        globalVarNameCacheStore.putString(gv.id, gv.name)
     }
 
     fun deleteGlobalVar(id: String) {
@@ -295,6 +302,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun getGlobalVarById(id: String): GlobalVar? {
         return globalVarStore.getGlobalVarById(id)
     }
+
+    fun getCachedGlobalVarName(id: String) = globalVarNameCacheStore.getString(id, null)
 
     fun getAllGlobalVars(): List<GlobalVar> {
         return globalVarStore.getAllGlobalVars()

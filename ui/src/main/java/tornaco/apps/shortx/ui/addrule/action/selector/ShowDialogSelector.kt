@@ -193,6 +193,7 @@ private fun PositiveButton(
             vm.updateButtonText(it, DialogAction.Positive)
         },
         actions = positiveAction.actions,
+        warnings = positiveAction.actionWarningMessages,
         actionHandler = vm.positiveActionContent.asActionHandler()
     )
 }
@@ -212,6 +213,7 @@ private fun NegativeButton(
             vm.updateButtonText(it, DialogAction.Negative)
         },
         actions = negativeAction.actions,
+        warnings = negativeAction.actionWarningMessages,
         actionHandler = vm.negativeActionContent.asActionHandler()
     )
 }
@@ -232,6 +234,7 @@ private fun NeutralButton(
             vm.updateButtonText(it, DialogAction.Neutral)
         },
         actions = neutralAction.actions,
+        warnings = neutralAction.actionWarningMessages,
         actionHandler = vm.neutralActionContent.asActionHandler()
     )
 }
@@ -242,6 +245,7 @@ private fun ButtonSettings(
     text: String,
     onTextChange: (String) -> Unit,
     actions: List<Action>,
+    warnings: List<String>,
     actionHandler: ActionHandler
 ) {
     MediumTitle(headerTitle)
@@ -268,6 +272,7 @@ private fun ButtonSettings(
             SmallTitle(text = LocalI18N.current["ui.actions.title"])
         },
         actions = actions,
-        handler = actionHandler
+        handler = actionHandler,
+        warnings = warnings
     )
 }

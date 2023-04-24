@@ -1,17 +1,23 @@
 package tornaco.apps.shortx.ui.addrule.action
 
+import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.addrule.getGlobalVarRefs
+import tornaco.apps.shortx.ui.addrule.logger
+import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
+import tornaco.apps.shortx.ui.base.i18NIns
 
 data class ActionContentState(
     val actions: List<Action> = emptyList(),
     val copiedAction: Action? = null,
+    val actionWarningMessages: List<String> = emptyList(),
     val isChanged: Boolean = false,
 )
 
@@ -54,6 +60,7 @@ class ActionContentStateHandler(
 ) : WithState<ActionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ActionContentStateHandler")
+    private val i18N = i18NIns
 
     fun addAction(action: Action) {
         logger.d("addAction: ${action.id}")
@@ -67,6 +74,7 @@ class ActionContentStateHandler(
                 }
             }, isChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun insertActionAbove(action: Action, anchor: Action) {
@@ -80,6 +88,7 @@ class ActionContentStateHandler(
                 }
             }, isChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun insertActionBelow(action: Action, anchor: Action) {
@@ -93,6 +102,7 @@ class ActionContentStateHandler(
                 }
             }, isChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun copy(action: Action) {
@@ -116,6 +126,7 @@ class ActionContentStateHandler(
                         }
                     }, isChanged = true)
                 }
+                checkUpdateWarnings()
             }
         }
     }
@@ -135,6 +146,7 @@ class ActionContentStateHandler(
                         }
                     }, isChanged = true)
                 }
+                checkUpdateWarnings()
             }
         }
     }
@@ -145,6 +157,7 @@ class ActionContentStateHandler(
                 remove(action)
             }, isChanged = true)
         }
+        checkUpdateWarnings()
     }
 
     fun sortActions(actions: List<Action>) {
@@ -160,5 +173,63 @@ class ActionContentStateHandler(
 
     fun init(actions: List<Action>) {
         updateState { copy(actions = actions) }
+        checkUpdateWarnings()
     }
+
+    private fun checkUpdateWarnings() {
+        updateState {
+            copy(
+                actionWarningMessages = state.value.actions.generateWarningMessages(
+                    shortXManager,
+                    i18N
+                ),
+            )
+        }
+
+    }
+}
+
+fun List<Action>.generateWarningMessages(shortXManager: ShortXManager, i18N: I18N): List<String> {
+    return getGlobalVarRefs(shortXManager)
+        .apply { logger.d("getGlobalVarRefs: $this") }
+        .filter { shortXManager.getGlobalVarById(it) == null }
+        .map { shortXManager.getCachedGlobalVarName(it) ?: "N/A" }
+        .mapIndexed { index, it ->
+            "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
+        }
+}
+
+fun List<Action>.getGlobalVarRefs(shortXManager: ShortXManager): List<String> {
+    val writeGV =
+        filterIsInstance(Action.WriteGV::class.java).map { it.varId }
+
+    val ifElseCondition = filterIsInstance(Action.IfThenElse::class.java).map {
+        it.ifConditions.getGlobalVarRefs()
+    }.flatten()
+
+    val ifElseAction = filterIsInstance(Action.IfThenElse::class.java).map {
+        it.ifActions.getGlobalVarRefs(shortXManager) + it.elseActions.getGlobalVarRefs(shortXManager)
+    }.flatten()
+
+    val showDialogAction = filterIsInstance(Action.ShowAlertDialog::class.java).map {
+        it.positiveActions.getGlobalVarRefs(shortXManager) + it.negativeActions.getGlobalVarRefs(
+            shortXManager
+        ) + it.negativeActions.getGlobalVarRefs(shortXManager)
+    }.flatten()
+
+    val showOverlayAction = filterIsInstance<Action.ShowOverlay>().map { overlay ->
+        overlay.settings.map { buttonSetting ->
+            buttonSetting.actionsList.mapNotNull {
+                it.toAction(shortXManager)
+            }
+        }.map { it.getGlobalVarRefs(shortXManager) }.flatten()
+    }.flatten()
+
+    val fromDA = filterIsInstance<Action.FromDA>().mapNotNull { fromDA ->
+        shortXManager.getDirectActionById(fromDA.daId)?.let { directAction ->
+            directAction.actionsList.mapNotNull { it.toAction(shortXManager) }
+        }?.getGlobalVarRefs(shortXManager)
+    }.flatten()
+
+    return writeGV + ifElseCondition + ifElseAction + showDialogAction + showOverlayAction + fromDA
 }

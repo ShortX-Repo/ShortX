@@ -80,7 +80,8 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
 
                     ActionContent(
                         actions = actionContentState.actions,
-                        handler = actionContentStateHandler.asActionHandler()
+                        handler = actionContentStateHandler.asActionHandler(),
+                        warnings = actionContentState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

@@ -1,10 +1,20 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.res.Remix
 
 @Composable
 fun ShortXCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
@@ -15,4 +25,39 @@ fun ShortXCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
         elevation = 0.dp,
         content = content
     )
+}
+
+@Composable
+fun WarningCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
+    androidx.compose.material3.Card(
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable {
+                onClick()
+            },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Row {
+                RemixIcon(
+                    modifier = Modifier.offset(y = 2.dp),
+                    remixName = Remix.System.alarm_warning_line
+                )
+                MediumSpacer()
+                Column {
+                    Text(title)
+                    MediumSpacer()
+                    Text(
+                        text = warnings.joinToString(System.lineSeparator()),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+            }
+        }
+    }
 }

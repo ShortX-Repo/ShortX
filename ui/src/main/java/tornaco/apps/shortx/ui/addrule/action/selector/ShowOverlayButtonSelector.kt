@@ -159,6 +159,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                             SmallTitle(text = LocalI18N.current["ui.actions.title"])
                         },
                         actions = actionState.actions,
+                        warnings = actionState.actionWarningMessages,
                         handler = actionStateHandle.asActionHandler()
                     )
                 }

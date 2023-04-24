@@ -109,7 +109,8 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 
                     ActionContent(
                         actions = actionContentState.actions,
-                        handler = actionHandler.asActionHandler()
+                        handler = actionHandler.asActionHandler(),
+                        warnings = actionContentState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

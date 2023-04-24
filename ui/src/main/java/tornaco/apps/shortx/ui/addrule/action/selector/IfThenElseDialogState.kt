@@ -163,7 +163,8 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                             MediumTitle(LocalI18N.current["ui.action.then"])
                         },
                         actions = ifActionState.actions,
-                        handler = dialogState.ifActionHandler.asActionHandler()
+                        handler = dialogState.ifActionHandler.asActionHandler(),
+                        warnings = ifActionState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
 
@@ -173,7 +174,8 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                             MediumTitle(LocalI18N.current["ui.action.else"])
                         },
                         actions = elseActionState.actions,
-                        handler = dialogState.elseActionHandler.asActionHandler()
+                        handler = dialogState.elseActionHandler.asActionHandler(),
+                        warnings = elseActionState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                 }

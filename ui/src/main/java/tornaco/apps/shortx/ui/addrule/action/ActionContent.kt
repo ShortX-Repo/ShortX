@@ -31,10 +31,12 @@ fun ActionContent(
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
     actions: List<Action>,
+    warnings: List<String>,
     handler: ActionHandler
 ) {
     Actions(
         header = header,
+        warnings = warnings,
         actions = actions,
         handler = handler
     )
@@ -91,6 +93,7 @@ private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Un
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
+    warnings: List<String>,
     handler: ActionHandler
 ) {
     val actionSortDialogState = rememberActionSortState(
@@ -109,6 +112,7 @@ private fun Actions(
                 header()
             }
 
+            // Sort
             AnimatedVisibility(visible = actions.size > 1) {
                 IconButton(onClick = {
                     actionSortDialogState.show()
@@ -263,6 +267,12 @@ private fun Actions(
                 }
             }
 
+            // Warning.
+            AnimatedVisibility(visible = warnings.isNotEmpty()) {
+                WarningCard(LocalI18N.current["ui.action.warning.message"], warnings)
+            }
+
+            // Add
             TinySpacer()
             Box {
                 FilledTonalButton(onClick = {

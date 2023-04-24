@@ -179,6 +179,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException
     {
     }
+    @Override public java.lang.String getCachedGlobalVarName(java.lang.String id) throws android.os.RemoteException
+    {
+      return null;
+    }
     // Global var end
 
     @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
@@ -749,6 +753,16 @@ public interface IShortX extends android.os.IInterface
           _arg0 = tornaco.apps.shortx.core.rule.IGlobalVarObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterGlobalVarObs(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getCachedGlobalVarName:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String _result = this.getCachedGlobalVarName(_arg0);
+          reply.writeNoException();
+          reply.writeString(_result);
           return true;
         }
         case TRANSACTION_reboot:
@@ -1794,6 +1808,27 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public java.lang.String getCachedGlobalVarName(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.lang.String _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getCachedGlobalVarName, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getCachedGlobalVarName(id);
+          }
+          _reply.readException();
+          _result = _reply.readString();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       // Global var end
 
       @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
@@ -1910,9 +1945,10 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getAllGlobalVars = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
     static final int TRANSACTION_registerGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
     static final int TRANSACTION_unregisterGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
-    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
-    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
-    static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 45);
+    static final int TRANSACTION_getCachedGlobalVarName = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
+    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
+    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 45);
+    static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 46);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -1993,6 +2029,7 @@ public interface IShortX extends android.os.IInterface
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGlobalVars() throws android.os.RemoteException;
   public void registerGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
   public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
+  public java.lang.String getCachedGlobalVarName(java.lang.String id) throws android.os.RemoteException;
   // Global var end
 
   public void reboot(java.lang.String reason) throws android.os.RemoteException;

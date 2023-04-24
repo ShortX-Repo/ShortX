@@ -359,6 +359,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getCachedGlobalVarName(id: String): String? {
+        return invokeService(null) {
+            getCachedGlobalVarName(id)
+        }
+    }
+
     fun getAllGlobalVars(): List<GlobalVar> {
         return invokeService(emptyList()) {
             allGlobalVars.mapNotNull {
