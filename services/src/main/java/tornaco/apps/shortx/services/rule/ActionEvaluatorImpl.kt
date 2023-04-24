@@ -211,9 +211,9 @@ class ActionEvaluatorImpl(
         } else if (action is_ WriteGlobalVar::class.java) {
             val d = action unpack_ WriteGlobalVar::class.java
             shortXContext.rule.getGlobalVarById(d.varId)?.let { globalVar ->
-                val currentVar = globalVar.`var`
-                val type = currentVar.toType()
-                val newValue = d.valueAsString.inflateContextMap(contextData).toVarValue(type)
+                val type = globalVar.type.toType()
+                val newValue = d.valueAsString.inflateContextMap(contextData).toVarValueNotList(type)
+                logger.d("WriteGlobalVar, newValue: $newValue")
                 newValue?.let {
                     shortXContext.rule.addGlobalVar(
                         GlobalVar.newBuilder(globalVar).setVar(it).build()

@@ -100,23 +100,23 @@ fun GlobalVar.isList(): Boolean = listOf(
     GlobalVarType.BoolList
 ).contains(this.type.toType())
 
-fun String.toVarValue(type: GlobalVarType?): ProtoAny? {
+fun String.toVarValueNotList(type: GlobalVarType?): ProtoAny? {
     return when (type) {
-        GlobalVarType.Int, GlobalVarType.IntList -> {
+        GlobalVarType.Int -> {
             kotlin.runCatching { this.toLong() }.getOrNull()?.let {
                 Int64Var.newBuilder().setValue(it)
                     .build().pack_()
             }
         }
 
-        GlobalVarType.Bool, GlobalVarType.BoolList -> {
+        GlobalVarType.Bool -> {
             kotlin.runCatching { this.toBoolean() }.getOrNull()?.let {
                 BoolVar.newBuilder()
                     .setValue(it).build()
                     .pack_()
             }
         }
-        GlobalVarType.String, GlobalVarType.StringList -> {
+        GlobalVarType.String -> {
             StringVar.newBuilder().setValue(this).build().pack_()
         }
         else -> {

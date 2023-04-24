@@ -136,7 +136,8 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
             val current = state.value.globalVar
             current?.let {
                 shortXManager.addGlobalVar(
-                    GlobalVar.newBuilder(it).setVar(value.first().toVarValue(current.type.toType()))
+                    GlobalVar.newBuilder(it).setVar(value.first().
+                    toVarValueNotList(current.type.toType()))
                         .build()
                 )
                 loadStateInternal(it.id)
