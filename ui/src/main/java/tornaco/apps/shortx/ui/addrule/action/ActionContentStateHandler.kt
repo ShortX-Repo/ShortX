@@ -7,7 +7,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.addrule.getGlobalVarRefs
+import tornaco.apps.shortx.ui.addrule.condition.getGlobalVarRefs
 import tornaco.apps.shortx.ui.addrule.logger
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.WithState

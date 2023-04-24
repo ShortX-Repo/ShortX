@@ -38,7 +38,10 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
     }
 
     val actionHandler = remember(vm) { vm.actionContentStateHandler }
-    val actionContentState by vm.actionContentStateHandler.state.collectAsState()
+    val actionContentState by actionHandler.state.collectAsState()
+
+    val conditionHandler = remember(vm) { vm.conditionContentStateHandler }
+    val conditionContentState by conditionHandler.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
@@ -67,7 +70,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                         },
                         actions = {
                             IconButton(
-                                enabled = addRuleState.ruleChanged || actionContentState.isChanged,
+                                enabled = addRuleState.ruleChanged || actionContentState.isChanged || conditionContentState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back()
@@ -93,17 +96,13 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                     Spacer(modifier = Modifier.size(24.dp))
 
                     AnimatedVisibility(visible = addRuleState.showConditionSection) {
-                        val conditions = addRuleState.conditions
-                        val conditionOp = addRuleState.conditionOp
+                        val conditions = conditionContentState.conditions
+                        val conditionOp = conditionContentState.conditionOp
                         ConditionSelectors(
                             conditions = conditions,
-                            warnings = addRuleState.conditionWarningMessages,
+                            warnings = conditionContentState.conditionWarningMessages,
                             conditionOp = conditionOp,
-                            handler = ConditionHandler(
-                                addCondition = vm::addCondition,
-                                removeCondition = vm::removeCondition,
-                                setConditionOp = vm::setConditionOp
-                            )
+                            handler = conditionHandler.asConditionHandler()
                         )
                         Spacer(modifier = Modifier.size(24.dp))
                     }

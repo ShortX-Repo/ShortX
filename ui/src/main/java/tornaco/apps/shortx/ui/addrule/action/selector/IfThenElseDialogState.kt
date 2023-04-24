@@ -11,12 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
-import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -27,46 +28,25 @@ class IfThenElseSelectorDialogDialogState(
 ) {
     var isShowing by mutableStateOf(false)
 
-    val ifThenElse = mutableStateOf(Action.IfThenElse())
+    var id: String = defaultNewActionId()
+    var note: String = ""
 
     val ifActionHandler = ActionContentStateHandler()
     val elseActionHandler = ActionContentStateHandler()
 
+    val conditionHandler = ConditionContentStateHandler()
+
     fun show(currentSettings: Action.IfThenElse? = null) {
-        this.ifThenElse.value = currentSettings ?: Action.IfThenElse()
+        id = currentSettings?.id ?: defaultNewActionId()
+        note = currentSettings?.note ?: ""
+
+        conditionHandler.init(
+            currentSettings?.ifConditions ?: emptyList(),
+            currentSettings?.ifConditionOp ?: Op.All
+        )
         ifActionHandler.init(currentSettings?.ifActions ?: emptyList())
         elseActionHandler.init(currentSettings?.elseActions ?: emptyList())
         isShowing = true
-    }
-
-    private fun updateState(block: Action.IfThenElse.() -> Action.IfThenElse) {
-        ifThenElse.value = block.invoke(ifThenElse.value)
-    }
-
-    fun addCondition(condition: Condition) {
-        updateState {
-            copy(ifConditions = ifConditions.toMutableList().apply {
-                add(condition)
-            })
-        }
-    }
-
-    fun removeCondition(condition: Condition) {
-        updateState {
-            copy(ifConditions = ifConditions.toMutableList().apply {
-                remove(condition)
-            })
-        }
-    }
-
-    fun setConditionOp(op: Op) {
-        if (op != ifThenElse.value.ifConditionOp) {
-            updateState {
-                copy(
-                    ifConditionOp = op
-                )
-            }
-        }
     }
 
     fun dismiss() {
@@ -96,6 +76,7 @@ fun IfThenElseSelectorDialogDialog(state: IfThenElseSelectorDialogDialogState) {
 private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDialogDialogState) {
     val ifActionState by dialogState.ifActionHandler.state.collectAsState()
     val elseActionState by dialogState.elseActionHandler.state.collectAsState()
+    val conditionState by dialogState.conditionHandler.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -116,7 +97,12 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         actions = {
                             IconButton(onClick = {
                                 dialogState.onSelected(
-                                    dialogState.ifThenElse.value.copy(
+                                    Action.IfThenElse(
+                                        id = dialogState.id,
+                                        note = dialogState.note,
+
+                                        ifConditionOp = conditionState.conditionOp,
+                                        ifConditions = conditionState.conditions,
                                         ifActions = ifActionState.actions,
                                         elseActions = elseActionState.actions
                                     )
@@ -137,23 +123,19 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    val conditions = dialogState.ifThenElse.value.ifConditions
-                    val conditionOp = dialogState.ifThenElse.value.ifConditionOp
+                    val conditions = conditionState.conditions
+                    val conditionOp = conditionState.conditionOp
+                    val warning = conditionState.conditionWarningMessages
                     ConditionSelectors(
                         header = {
                             MediumTitle(LocalI18N.current["ui.action.if"])
                         },
                         conditions = conditions,
-                        warnings = emptyMap(),
+                        warnings = warning,
                         conditionOp = conditionOp,
-                        handler = ConditionHandler(
-                            addCondition = dialogState::addCondition,
-                            removeCondition = dialogState::removeCondition,
-                            setConditionOp = dialogState::setConditionOp
-                        )
+                        handler = dialogState.conditionHandler.asConditionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
-
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
@@ -164,7 +146,6 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         warnings = ifActionState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
-
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
