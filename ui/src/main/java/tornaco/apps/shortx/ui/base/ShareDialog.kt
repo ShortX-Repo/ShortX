@@ -12,9 +12,11 @@ import java.io.File
 class ShareDialogState(val shareName: String) {
     var isShowing by mutableStateOf(false)
     var content: String = ""
+    var objectTitle: String = ""
 
-    fun show(content: String) {
+    fun show(objectTitle: String, content: String) {
         this.content = content
+        this.objectTitle = objectTitle
         isShowing = true
     }
 
@@ -48,7 +50,7 @@ fun ShareDialog(state: ShareDialogState) {
             }
 
             ListItem(title = i18N["ui.common.share.file"]) {
-                shareAsFile(context, i18N["ui.common.share"], state.content)
+                shareAsFile(context, state.objectTitle, state.content)
                 state.dismiss()
             }
         }
@@ -56,11 +58,14 @@ fun ShareDialog(state: ShareDialogState) {
 }
 
 fun shareAsFile(context: Context, title: String, text: String) {
-    val file = File(context.filesDir, "share.file")
+    val file = File(
+        context.filesDir,
+        "ShortX-${title.replace("""[^a-zA-Z0-9\u4e00-\u9fa5._-]""".toRegex(), "_")}.txt"
+    )
     file.writeText(text)
     val uri = FileProvider.getUriForFile(context, "tornaco.apps.shortx", file)
     val shareIntent = Intent(Intent.ACTION_SEND)
     shareIntent.type = "text/plain"
     shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-    context.startActivity(Intent.createChooser(shareIntent, title))
+    context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
 }

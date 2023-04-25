@@ -84,9 +84,9 @@ fun RuleScreen() {
             onEdit = { rule ->
                 appNavController.navigate("${AppRoute.AddRule.name}?ruleId=${rule.id}")
             },
-            onShare = { um ->
-                vm.ruleToShareString(um)?.let {
-                    shareDialogState.show(it)
+            onShare = { rule ->
+                vm.ruleToShareString(rule)?.let {
+                    shareDialogState.show(rule.title, it)
                 }
             },
             onRuleClick = { rule ->

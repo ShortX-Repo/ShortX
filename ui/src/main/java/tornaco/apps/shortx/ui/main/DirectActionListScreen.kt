@@ -91,7 +91,7 @@ fun DirectActionListScreen() {
             },
             onShare = { um ->
                 vm.daToShareString(um)?.let {
-                    shareDialogState.show(it)
+                    shareDialogState.show(um.title, it)
                 }
             },
             onDirectActionClick = { da ->
