@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,10 +99,10 @@ fun AddRuleScreen(
                 ) {
 
                     TitleAndDescription(addRuleState, vm)
-                    Spacer(modifier = Modifier.size(24.dp))
+                    SectionSpacer()
 
                     FactSelectors(vm, addRuleState)
-                    Spacer(modifier = Modifier.size(24.dp))
+                    SectionSpacer()
 
                     AnimatedVisibility(visible = addRuleState.showConditionSection) {
                         val conditions = conditionContentState.conditions
@@ -112,7 +113,7 @@ fun AddRuleScreen(
                             conditionOp = conditionOp,
                             handler = conditionHandler.asConditionHandler()
                         )
-                        Spacer(modifier = Modifier.size(24.dp))
+                        SectionSpacer()
                     }
 
                     ActionContent(
@@ -120,7 +121,7 @@ fun AddRuleScreen(
                         handler = actionHandler.asActionHandler(),
                         warnings = actionContentState.actionWarningMessages
                     )
-                    Spacer(modifier = Modifier.size(24.dp))
+                    SectionSpacer()
                 }
             }
         }
