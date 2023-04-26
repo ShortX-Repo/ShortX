@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.base
 
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
@@ -53,6 +55,17 @@ fun ShareDialog(state: ShareDialogState) {
                 shareAsFile(context, state.objectTitle, state.content)
                 state.dismiss()
             }
+
+            ListItem(title = i18N["ui.common.share.save.file"]) {
+                saveAsFile(state.objectTitle, state.content).let {
+                    Toast.makeText(
+                        context,
+                        i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                state.dismiss()
+            }
         }
     }
 }
@@ -60,7 +73,7 @@ fun ShareDialog(state: ShareDialogState) {
 fun shareAsFile(context: Context, title: String, text: String) {
     val file = File(
         context.filesDir,
-        "ShortX-${title.replace("""[^a-zA-Z0-9\u4e00-\u9fa5._-]""".toRegex(), "_")}.txt"
+        generateShareFileName(title)
     )
     file.writeText(text)
     val uri = FileProvider.getUriForFile(context, "tornaco.apps.shortx", file)
@@ -69,3 +82,16 @@ fun shareAsFile(context: Context, title: String, text: String) {
     shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
     context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
 }
+
+fun saveAsFile(title: String, text: String): Pair<String, String> {
+    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val file = File(
+        dir,
+        generateShareFileName(title)
+    )
+    file.writeText(text)
+    return dir.name to file.name
+}
+
+private fun generateShareFileName(title: String) =
+    "ShortX-${title.replace("""[^a-zA-Z0-9\u4e00-\u9fa5._-]""".toRegex(), "_")}.txt"

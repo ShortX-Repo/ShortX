@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.share.addShareContentHeader
 import java.util.*
 import javax.inject.Inject
 
@@ -352,9 +353,10 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun daToShareString(da: DirectActionUM): String? =
         shortXManager.getDirectActionById(da.id)?.toJson()
+            ?.addShareContentHeader(mapOf("type" to "da"))
 
     fun ruleToShareString(rule: RuleUM): String? =
-        shortXManager.getRuleById(rule.id)?.toJson()
+        shortXManager.getRuleById(rule.id)?.toJson()?.addShareContentHeader(mapOf("type" to "rule"))
 
     fun parseShareContentRule(content: String): Rule? {
         return kotlin.runCatching {

@@ -19,6 +19,22 @@
             android:exported="false"
             android:theme="@style/UiTheme.Shortcut" />
 
+        <activity
+            android:name="tornaco.apps.shortx.ui.share.ViewerActivity"
+            android:excludeFromRecents="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+
+        </activity>
+
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
             android:exported="true"
