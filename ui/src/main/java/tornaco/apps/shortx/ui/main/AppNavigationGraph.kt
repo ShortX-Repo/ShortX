@@ -8,6 +8,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
@@ -55,7 +56,14 @@ fun AppNavigationGraph(
             })
         ) { backStackEntry ->
             val ruleId = backStackEntry.arguments?.getString("ruleId")
-            AddRuleScreen(ruleId) {
+            AddRuleScreen(
+                ruleId = ruleId,
+                screenTitle = if (ruleId != null) {
+                    LocalI18N.current["ui.title.edit.rule"]
+                } else {
+                    LocalI18N.current["ui.title.add.rule"]
+                }
+            ) {
                 appNavController.popBackStack()
             }
         }
@@ -69,7 +77,12 @@ fun AppNavigationGraph(
             })
         ) { backStackEntry ->
             val daId = backStackEntry.arguments?.getString("daId")
-            AddDirectActionScreen(daId) {
+            val screenTitle = if (daId == null) {
+                LocalI18N.current["ui.title.add.da"]
+            } else {
+                LocalI18N.current["ui.title.edit.da"]
+            }
+            AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
                 appNavController.popBackStack()
             }
         }

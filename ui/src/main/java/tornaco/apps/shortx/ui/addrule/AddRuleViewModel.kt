@@ -30,8 +30,10 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
 
+fun defaultNewRuleId() = "rule-" + UUID.randomUUID().toString()
+
 data class AddRuleState(
-    val id: String = "rule-" + UUID.randomUUID().toString(),
+    val id: String = defaultNewRuleId(),
     val title: String = "",
     val description: String = "",
     val fact: Fact? = null,
@@ -141,33 +143,42 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             viewModelScope.launch {
                 shortXManager.getRuleById(id)?.let { rule ->
                     logger.d("initFromRule: $rule")
+                    initFromRule(rule)
+                }
+            }
+        }
+    }
 
-                    actionContentStateHandler.init(
-                        actions = rule.actionsList.mapNotNull {
-                            it.toAction(
-                                shortXManager
-                            )
-                        })
-                    conditionContentStateHandler.init(
-                        conditions = rule.conditionsList.mapNotNull {
-                            it.toCondition(
-                                shortXManager
-                            )
-                        },
-                        conditionOp = rule.condOp.toOp(rule.condOpPayload)
-                    )
+    fun initFromRule(rule: Rule?) {
+        viewModelScope.launch {
+            rule?.let { r ->
+                logger.d("initFromRule: $r")
 
-                    updateState {
-                        copy(
-                            id = rule.id,
-                            title = rule.title,
-                            description = rule.description,
-                            fact = rule.fact.toFact(shortXManager),
-                            isEditRule = true,
-                            createTime = rule.createTime,
-                            isEnabled = rule.isEnabled
+                actionContentStateHandler.init(
+                    actions = r.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
                         )
-                    }
+                    })
+                conditionContentStateHandler.init(
+                    conditions = r.conditionsList.mapNotNull {
+                        it.toCondition(
+                            shortXManager
+                        )
+                    },
+                    conditionOp = r.condOp.toOp(r.condOpPayload)
+                )
+
+                updateState {
+                    copy(
+                        id = r.id,
+                        title = r.title,
+                        description = r.description,
+                        fact = r.fact.toFact(shortXManager),
+                        isEditRule = true,
+                        createTime = r.createTime,
+                        isEnabled = r.isEnabled
+                    )
                 }
             }
         }

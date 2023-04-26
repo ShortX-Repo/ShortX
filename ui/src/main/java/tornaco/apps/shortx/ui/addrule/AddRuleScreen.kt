@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
@@ -27,7 +28,13 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
+fun AddRuleScreen(
+    ruleId: String? = null,
+    rule: Rule? = null,
+    screenTitle: String,
+    canSaveWithoutChanges: Boolean = false,
+    back: () -> Unit
+) {
     val vm = hiltViewModel<AddRuleViewModel>()
     val addRuleState by vm.state.collectAsState()
 
@@ -45,6 +52,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
+        vm.initFromRule(rule)
         vm.ruleSaved.collectLatest {
             showToast()
         }
@@ -60,7 +68,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = if (addRuleState.isEditRule) LocalI18N.current["ui.title.edit.rule"] else LocalI18N.current["ui.title.add.rule"]) },
+                        title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -70,7 +78,7 @@ fun AddRuleScreen(ruleId: String? = null, back: () -> Unit) {
                         },
                         actions = {
                             IconButton(
-                                enabled = addRuleState.ruleChanged || actionContentState.isChanged || conditionContentState.isChanged,
+                                enabled = canSaveWithoutChanges || addRuleState.ruleChanged || actionContentState.isChanged || conditionContentState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back()

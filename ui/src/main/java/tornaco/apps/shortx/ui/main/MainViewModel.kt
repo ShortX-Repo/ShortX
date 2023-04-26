@@ -19,12 +19,14 @@ import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import tornaco.apps.shortx.ui.addrule.fact.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -360,20 +362,24 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun parseShareContentRule(content: String): Rule? {
         return kotlin.runCatching {
-            Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
-                requireNotNull(this.id) { "Id is null. invalid rule?" }
-                requireNotNull(this.title) { "Title is null. invalid rule?" }
-            }
+            Rule.newBuilder(
+                Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
+                    requireNotNull(this.id) { "Id is null. invalid rule?" }
+                    requireNotNull(this.title) { "Title is null. invalid rule?" }
+                }).setId(defaultNewRuleId()).setCreateTime(System.currentTimeMillis())
+                .setLastUpdateTime(System.currentTimeMillis()).build()
         }.getOrNull()
     }
 
     fun parseShareContentDA(content: String): DirectAction? {
         return kotlin.runCatching {
-            DirectAction.parseFrom(DirectAction.newBuilder().toProto(content).toByteArray())
-                ?.apply {
-                    requireNotNull(this.id) { "Id is null. invalid da?" }
-                    requireNotNull(this.title) { "Title is null. invalid da?" }
-                }
+            DirectAction.newBuilder(DirectAction.parseFrom(
+                DirectAction.newBuilder().toProto(content).toByteArray()
+            )?.apply {
+                requireNotNull(this.id) { "Id is null. invalid da?" }
+                requireNotNull(this.title) { "Title is null. invalid da?" }
+            }).setId(defaultNewDAId()).setCreateTime(System.currentTimeMillis())
+                .setLastUpdateTime(System.currentTimeMillis()).build()
         }.getOrNull()
     }
 
@@ -386,7 +392,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             val refined =
                 Rule.newBuilder(rule)
                     .setTitle(if (ruleWithSameNameExists) "${rule.title} $copyInd" else rule.title)
-                    .setId(UUID.randomUUID().toString())
+                    .setId(defaultNewRuleId())
                     .setCreateTime(System.currentTimeMillis())
                     .setLastUpdateTime(System.currentTimeMillis())
                     .setIsEnabled(false)
@@ -406,7 +412,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             val refined =
                 DirectAction.newBuilder(da)
                     .setTitle(if (daWithSameNameExists) "${da.title} $copyInd" else da.title)
-                    .setId(UUID.randomUUID().toString())
+                    .setId(defaultNewDAId())
                     .setCreateTime(System.currentTimeMillis())
                     .setLastUpdateTime(System.currentTimeMillis())
                     .build()

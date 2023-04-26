@@ -19,8 +19,10 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
 
+fun defaultNewDAId() = "DA" + UUID.randomUUID().toString()
+
 data class AddDirectActionState(
-    val id: String = "DA" + UUID.randomUUID().toString(),
+    val id: String = defaultNewDAId(),
     val title: String = "",
     val description: String = "",
     val isEditDirectAction: Boolean = false,
@@ -88,26 +90,28 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
 
     fun initFromDirectActionId(daId: String?) {
         daId?.let { id ->
-            viewModelScope.launch {
-                shortXManager.getDirectActionById(id)?.let { da ->
-                    logger.d("initFromDirectAction: $da")
+            initFromDirectAction(shortXManager.getDirectActionById(id))
+        }
+    }
 
-                    actionContentStateHandler.init(da.actionsList.mapNotNull {
-                        it.toAction(
-                            shortXManager
-                        )
-                    })
+    fun initFromDirectAction(action: DirectAction?) {
+        action?.let { da ->
+            logger.d("initFromDirectAction: $da")
 
-                    updateState {
-                        copy(
-                            id = da.id,
-                            title = da.title,
-                            description = da.description,
-                            isEditDirectAction = true,
-                            createTime = da.createTime
-                        )
-                    }
-                }
+            actionContentStateHandler.init(da.actionsList.mapNotNull {
+                it.toAction(
+                    shortXManager
+                )
+            })
+
+            updateState {
+                copy(
+                    id = da.id,
+                    title = da.title,
+                    description = da.description,
+                    isEditDirectAction = true,
+                    createTime = da.createTime
+                )
             }
         }
     }

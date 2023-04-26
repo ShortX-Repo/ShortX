@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addda
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,9 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
@@ -20,14 +23,27 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
+fun AddDirectActionScreen(
+    daId: String? = null,
+    da: DirectAction? = null,
+    screenTitle: String,
+    canSaveWithoutChanges: Boolean = false,
+    back: () -> Unit
+) {
     val vm = hiltViewModel<AddDirectActionViewModel>()
     val addDirectActionState by vm.state.collectAsState()
 
+    val context = LocalContext.current
+    val savedMessage = LocalI18N.current["ui.toast.da.saved"]
+    val showToast = {
+        Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
+    }
+
     LaunchedEffect(vm) {
         vm.initFromDirectActionId(daId)
+        vm.initFromDirectAction(da)
         vm.daSaved.collectLatest {
-
+            showToast()
         }
     }
 
@@ -46,7 +62,7 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                 topBar = {
                     MediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = if (addDirectActionState.isEditDirectAction) LocalI18N.current["ui.title.edit.da"] else LocalI18N.current["ui.title.add.da"]) },
+                        title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -56,7 +72,7 @@ fun AddDirectActionScreen(daId: String? = null, back: () -> Unit) {
                         },
                         actions = {
                             IconButton(
-                                enabled = addDirectActionState.daChanged || actionContentState.isChanged,
+                                enabled = canSaveWithoutChanges || addDirectActionState.daChanged || actionContentState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back()

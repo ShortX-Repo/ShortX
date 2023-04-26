@@ -18,3 +18,6 @@ fun String.getContentHeader(): Map<String, String> {
         gson.fromJson(headerString.trim(), type) as Map<String, String>
     }.getOrDefault(emptyMap())
 }
+
+fun String.getContentData() =
+    substringBefore(delimiter = headerSplitter, missingDelimiterValue = "").trim()
