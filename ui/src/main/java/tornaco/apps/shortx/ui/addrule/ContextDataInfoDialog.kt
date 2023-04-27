@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -8,9 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 class ContextDataInfoDialogState {
@@ -41,25 +44,34 @@ fun rememberContextDataInfoDialogState(
 @Composable
 fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
     if (state.isShowing) {
+        val i18N = LocalI18N.current
         ShortXDialog(
             title = {
-                DialogTitle(text = LocalI18N.current["ui.context.data.title"])
+                DialogTitle(text = i18N["ui.context.data.title"])
             },
             onDismissRequest = { state.dismiss() }) {
 
             DialogMessage(
-                text = LocalI18N.current["ui.context.data.message", mapOf(
+                text = i18N["ui.context.data.message", mapOf(
                     "obj" to state.objName,
                     "accessor" to "{NAME}"
                 )]
             )
 
+            val context = LocalContext.current
             state.contextData.forEach {
                 ContextDataItem(
                     title = it.key,
                     text1 = it.description,
-                    text2 = LocalI18N.current["ui.context.data.example", mapOf("eg" to it.accessExample)],
-                    onClick = {})
+                    text2 = i18N["ui.context.data.example", mapOf("eg" to it.accessExample)],
+                    onClick = {
+                        ClipboardUtils.copyToClipboard(context, "context", it.key)
+                        Toast.makeText(
+                            context,
+                            i18N["ui.common.copied.to.clipboard"],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    })
             }
         }
     }

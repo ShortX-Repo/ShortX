@@ -66,6 +66,7 @@
   "ui.common.edit": "编辑",
   "ui.common.copy": "复制",
   "ui.common.add": "添加",
+  "ui.common.copied.to.clipboard": "已复制到剪贴板",
   "ui.common.save.success.to": "已保存到: {path}",
   "ui.common.manually.input": "手动输入",
   "ui.common.create.shortcut": "桌面快捷方式",
