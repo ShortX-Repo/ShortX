@@ -21,7 +21,7 @@ open class BaseGlobalVarStore(
     }
 
     open fun addGlobalVar(globalVar: GlobalVar) {
-        globalVarCaches[globalVar.id] = globalVar
+        globalVarCaches[globalVar.name] = globalVar
         postWrite()
     }
 
@@ -31,8 +31,8 @@ open class BaseGlobalVarStore(
         return deleted
     }
 
-    fun getGlobalVarById(id: String): GlobalVar? {
-        return globalVarCaches[id]
+    fun getGlobalVarByName(name: String): GlobalVar? {
+        return globalVarCaches[name]
     }
 
     fun getAllGlobalVars(): List<GlobalVar> {
@@ -50,7 +50,7 @@ open class BaseGlobalVarStore(
             }
             list.run {
                 globalVarCaches.clear()
-                globalVarCaches.putAll(this.allVarsList.associateBy { it.id })
+                globalVarCaches.putAll(this.allVarsList.associateBy { it.name })
             }
         }.onFailure {
             logger.e(it, "read error")

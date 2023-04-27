@@ -4,11 +4,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
-import tornaco.apps.shortx.core.rule.GlobalVarType
-import tornaco.apps.shortx.core.rule.toProtoType
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
-import java.util.*
 
 data class GlobalVarListState(
     val globalVars: List<GlobalVar> = emptyList()
@@ -27,18 +24,14 @@ class GlobalVarListViewModel : StateViewModel<GlobalVarListState>(GlobalVarListS
         }
     }
 
-    fun createGlobalVar(name: String, globalVarType: GlobalVarType) {
-        shortXManager.addGlobalVar(
-            GlobalVar.newBuilder().setName(name).setId(UUID.randomUUID().toString())
-                .setType(globalVarType.toProtoType())
-                .build()
-        )
+    fun createGlobalVar(globalVar: GlobalVar) {
+        shortXManager.addGlobalVar(globalVar)
         loadState()
     }
 
-    fun delete(id: String) {
+    fun delete(name: String) {
         viewModelScope.launch {
-            shortXManager.deleteGlobalVar(id)
+            shortXManager.deleteGlobalVar(name)
             loadState()
         }
     }

@@ -47,14 +47,14 @@ class ConditionEvaluatorImpl(
             }
             condition is_ EvaluateGlobalVar::class.java -> {
                 val data = condition unpack_ EvaluateGlobalVar::class.java
-                val globalVar = shortXContext.rule.getGlobalVarById(data.varId)
+                val globalVar = shortXContext.rule.getGlobalVarByName(data.varName)
                 if (globalVar == null) {
-                    logger.w("EvaluateGlobalVar, var with id: ${data.varId} not found.")
+                    logger.w("EvaluateGlobalVar, var with varName: ${data.varName} not found.")
                     return false
                 }
                 val type: GlobalVarType? = globalVar.type.toType()
                 if (type == null) {
-                    logger.w("EvaluateGlobalVar, var with id: ${data.varId} unknown type.")
+                    logger.w("EvaluateGlobalVar, var with varName: ${data.varName} unknown type.")
                     return false
                 }
 

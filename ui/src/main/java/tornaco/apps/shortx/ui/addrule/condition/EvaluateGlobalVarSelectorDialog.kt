@@ -30,7 +30,7 @@ class EvaluateGlobalVarSelectorDialogState(
 
     private var _action by mutableStateOf(
         Condition.EvaluateGlobalVar(
-            varId = "",
+            varName = "",
             op = GlobalVarOp.EqualTo,
             payload = GlobalVarOpPayload.newBuilder().setValue("").build(),
         )
@@ -43,7 +43,7 @@ class EvaluateGlobalVarSelectorDialogState(
 
     fun selectGlobalVar(globalVar: GlobalVar) {
         _action = _action.copy(
-            varId = globalVar.id
+            varName = globalVar.name
         )
         setOutput("")
     }
@@ -63,7 +63,7 @@ class EvaluateGlobalVarSelectorDialogState(
     }
 
     fun canSave(): Boolean {
-        return action.varId.isNotEmpty()
+        return action.varName.isNotEmpty()
     }
 
     private fun setOutput(output: String) {
@@ -144,8 +144,8 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                     }
                     GlobalVarSelectorDialog(globalVarToWriteSelectorState)
 
-                    val selectedVarName = remember(dialogState.action.varId) {
-                        shortXManager.getGlobalVarById(dialogState.action.varId)?.name
+                    val selectedVarName = remember(dialogState.action.varName) {
+                        shortXManager.getGlobalVarByName(dialogState.action.varName)?.name
                     }
                     val payloadValue = remember(dialogState.action.payload) {
                         dialogState.action.payload.value

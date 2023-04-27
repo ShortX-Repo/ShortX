@@ -2,8 +2,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.core.proto.gv.GlobalVar
-import tornaco.apps.shortx.core.rule.toProtoType
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -14,7 +12,7 @@ import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
-import java.util.*
+import tornaco.apps.shortx.ui.gvar.toGlobalVar
 
 @Composable
 fun ExtActions(addAction: (Action) -> Unit) {
@@ -62,10 +60,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
         rememberNewGlobalVarState {
             addAction(
                 Action.CreateGV(
-                    globalVar = GlobalVar.newBuilder().setName(it.first)
-                        .setId(UUID.randomUUID().toString())
-                        .setType(it.second.toProtoType())
-                        .build()
+                    globalVar = it.toGlobalVar()
                 )
             )
         }

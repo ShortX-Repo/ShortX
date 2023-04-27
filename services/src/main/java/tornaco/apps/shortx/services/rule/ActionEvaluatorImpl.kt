@@ -210,7 +210,7 @@ class ActionEvaluatorImpl(
             logger.d("WhileLoop complete")
         } else if (action is_ WriteGlobalVar::class.java) {
             val d = action unpack_ WriteGlobalVar::class.java
-            shortXContext.rule.getGlobalVarById(d.varId)?.let { globalVar ->
+            shortXContext.rule.getGlobalVarByName(d.varName)?.let { globalVar ->
                 val type = globalVar.type.toType()
                 val newValue =
                     d.valueAsString.inflateContextMap(contextData).toVarValueNotList(type)
@@ -229,8 +229,8 @@ class ActionEvaluatorImpl(
             }
         } else if (action is_ DeleteGlobalVar::class.java) {
             val d = action unpack_ DeleteGlobalVar::class.java
-            logger.d("DeleteGlobalVar: ${d.varId}")
-            d.varId?.let {
+            logger.d("DeleteGlobalVar: ${d.varName}")
+            d.varName?.let {
                 shortXContext.rule.deleteGlobalVar(it)
             }
         } else if (action is_ MapNav::class.java) {

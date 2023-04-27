@@ -72,14 +72,12 @@ interface IShortX {
 
     // Global var start
     void addGlobalVar(in ByteArrayWrapper gv);
-    void deleteGlobalVar(String id);
-    ByteArrayWrapper getGlobalVarById(String id);
+    void deleteGlobalVar(String name);
+    ByteArrayWrapper getGlobalVarByName(String name);
     List<ByteArrayWrapper> getAllGlobalVars();
 
     void registerGlobalVarObs(in IGlobalVarObserver obs);
     void unregisterGlobalVarObs(in IGlobalVarObserver obs);
-
-    String getCachedGlobalVarName(String id);
 
     // Global var end
 

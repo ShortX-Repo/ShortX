@@ -53,7 +53,7 @@ message MatchMVEL {
 
 message EvaluateGlobalVar {
   GlobalVarOp op = 1;
-  string varId = 2;
+  string varName = 2;
   GlobalVarOpPayload payload = 3;
 
   string note = 99;

@@ -129,7 +129,7 @@ fun AppNavigationGraph(
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
             id?.let {
-                GlobalVarDetailScreen(id = id) {
+                GlobalVarDetailScreen(name = id) {
                     appNavController.popBackStack()
                 }
             }

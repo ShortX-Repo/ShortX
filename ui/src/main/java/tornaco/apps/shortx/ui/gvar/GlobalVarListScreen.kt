@@ -52,7 +52,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
         ) {
             val addGlobalVarDialogState =
                 rememberNewGlobalVarState {
-                    vm.createGlobalVar(it.first, it.second)
+                    vm.createGlobalVar(it.toGlobalVar())
                 }
             NewGlobalVarDialog(addGlobalVarDialogState)
 
@@ -101,13 +101,13 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                     ListItemOverflowMenu(
                                         pkgSet = it,
                                         onDelete = {
-                                            vm.delete(it.id)
+                                            vm.delete(it.name)
                                         },
                                         onEdit = {}
                                     )
                                 },
                                 onClick = {
-                                    goToDetail(it.id)
+                                    goToDetail(it.name)
                                 })
                         }
                     }

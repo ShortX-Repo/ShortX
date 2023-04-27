@@ -336,7 +336,6 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val valueAsString: String,
-        val varId: String,
         val varName: String
     ) : Action
 
@@ -344,7 +343,6 @@ sealed interface Action : Parcelable {
     data class CreateGV(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
-
         val globalVar: GlobalVar
     ) : Action
 
@@ -352,9 +350,7 @@ sealed interface Action : Parcelable {
     data class DeleteGV(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
-
-        val varId: String,
-        val name: String
+        val varName: String,
     ) : Action
 
     @Parcelize
@@ -596,7 +592,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.WriteGV -> {
             WriteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
-                .setVarId(varId)
+                .setVarName(varName)
                 .setValueAsString(valueAsString)
                 .setNote(overrideNote ?: note).build()
         }
@@ -611,7 +607,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             DeleteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
-                .setVarId(varId)
+                .setVarName(varName)
                 .build()
         }
         is Action.MapNav -> {
@@ -948,9 +944,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WriteGV(
                 id = data.id,
                 note = data.note,
-                varId = data.varId,
+                varName = data.varName,
                 valueAsString = data.valueAsString,
-                varName = shortXManager.getGlobalVarById(data.varId)?.name ?: "N/A"
             )
         }
         this is_ CreateGlobalVar::class.java -> {
@@ -966,8 +961,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.DeleteGV(
                 id = data.id,
                 note = data.note,
-                varId = data.varId,
-                name = shortXManager.getCachedGlobalVarName(data.varId) ?: "N/A"
+                varName = data.varName,
             )
         }
         this is_ MapNav::class.java -> {

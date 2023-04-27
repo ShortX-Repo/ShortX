@@ -43,7 +43,7 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
         updateState { copy(isLoading = true) }
         afterNavDelay()
 
-        val v = shortXManager.getGlobalVarById(id)
+        val v = shortXManager.getGlobalVarByName(id)
         val valueItems = v?.valueList() ?: emptyList()
         val isList = v?.isList() ?: false
 
@@ -71,12 +71,12 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
         viewModelScope.launch {
             val current = state.value.globalVar
             current?.let {
+                shortXManager.deleteGlobalVar(it.name)
                 shortXManager.addGlobalVar(GlobalVar.newBuilder(it).setName(name).build())
-                loadState(it.id)
+                loadState(name)
             }
         }
     }
-
 
     fun addOrUpdateValue(value: List<String>) {
         viewModelScope.launch {
@@ -130,17 +130,18 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
                 shortXManager.addGlobalVar(
                     GlobalVar.newBuilder(it).setVar(newVarProtoAny).build()
                 )
-                loadStateInternal(it.id)
+                loadStateInternal(it.name)
             }
         } else {
             val current = state.value.globalVar
             current?.let {
                 shortXManager.addGlobalVar(
-                    GlobalVar.newBuilder(it).setVar(value.first().
-                    toVarValueNotList(current.type.toType()))
+                    GlobalVar.newBuilder(it).setVar(
+                        value.first().toVarValueNotList(current.type.toType())
+                    )
                         .build()
                 )
-                loadStateInternal(it.id)
+                loadStateInternal(it.name)
             }
         }
     }

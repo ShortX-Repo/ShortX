@@ -253,7 +253,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.DeleteGV -> {
             listOfNotNull(
                 i18N["ui.action.delete.global.var"],
-                action.name,
+                action.varName,
             )
         }
         is Action.MapNav -> listOf(

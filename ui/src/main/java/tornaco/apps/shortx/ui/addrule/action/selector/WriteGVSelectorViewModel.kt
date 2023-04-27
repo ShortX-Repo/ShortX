@@ -10,19 +10,19 @@ import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
 
-fun Action.WriteGV.isValid() = varId.isNotEmpty() && varName.isNotEmpty()
+fun Action.WriteGV.isValid() = varName.isNotEmpty()
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<Action.WriteGV>(
         context,
-        Action.WriteGV(valueAsString = "", varId = "", varName = "")
+        Action.WriteGV(valueAsString = "", varName = "")
     ) {
 
     fun selectGlobalVar(globalVar: GlobalVar) {
         updateState {
-            copy(varId = globalVar.id, varName = globalVar.name)
+            copy(varName = globalVar.name)
         }
     }
 

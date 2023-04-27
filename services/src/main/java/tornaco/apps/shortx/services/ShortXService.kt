@@ -304,14 +304,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.deleteGlobalVar(id)
         }
 
-        override fun getGlobalVarById(id: String): ByteArrayWrapper? {
-            return shortXContext.rule.getGlobalVarById(id)?.let {
+        override fun getGlobalVarByName(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getGlobalVarByName(id)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
-        }
-
-        override fun getCachedGlobalVarName(id: String): String? {
-            return shortXContext.rule.getCachedGlobalVarName(id)
         }
 
         override fun getAllGlobalVars(): List<ByteArrayWrapper> {

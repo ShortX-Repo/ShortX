@@ -198,8 +198,7 @@ class ActionContentStateHandler(
 fun List<Action>.generateWarningMessages(shortXManager: ShortXManager, i18N: I18N): List<String> {
     return getGlobalVarRefs(shortXManager)
         .apply { logger.d("getGlobalVarRefs: $this") }
-        .filter { shortXManager.getGlobalVarById(it) == null }
-        .map { shortXManager.getCachedGlobalVarName(it) ?: "N/A" }
+        .filter { shortXManager.getGlobalVarByName(it) == null }
         .mapIndexed { index, it ->
             "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
         }
@@ -207,7 +206,7 @@ fun List<Action>.generateWarningMessages(shortXManager: ShortXManager, i18N: I18
 
 fun List<Action>.getGlobalVarRefs(shortXManager: ShortXManager): List<String> {
     val writeGV =
-        filterIsInstance(Action.WriteGV::class.java).map { it.varId }
+        filterIsInstance(Action.WriteGV::class.java).map { it.varName }
 
     val ifElseCondition = filterIsInstance(Action.IfThenElse::class.java).map {
         it.ifConditions.getGlobalVarRefs()

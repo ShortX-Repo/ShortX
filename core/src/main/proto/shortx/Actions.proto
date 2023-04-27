@@ -271,7 +271,7 @@ message WhileLoop {
 }
 
 message WriteGlobalVar {
-  string varId = 1;
+  string varName = 1;
   string valueAsString = 2;
 
 
@@ -287,7 +287,7 @@ message CreateGlobalVar {
 }
 
 message DeleteGlobalVar {
-  string varId = 1;
+  string varName = 1;
 
   string note = 99;
   string id = 100;
@@ -295,7 +295,7 @@ message DeleteGlobalVar {
 
 // For list
 message AddToGlobalVar {
-  string varId = 1;
+  string varName = 1;
   string valueAsString = 2;
 
 

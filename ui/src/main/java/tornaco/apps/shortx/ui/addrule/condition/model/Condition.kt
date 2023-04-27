@@ -44,7 +44,7 @@ sealed interface Condition : Parcelable {
 
     @Parcelize
     data class EvaluateGlobalVar(
-        val varId: String,
+        val varName: String,
         val op: GlobalVarOp,
         val payload: GlobalVarOpPayload,
 
@@ -87,7 +87,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
             EvaluateGlobalVar.newBuilder()
                 .setId(id)
                 .setNote(note)
-                .setVarId(varId)
+                .setVarName(varName)
                 .setOp(op)
                 .setPayload(payload)
                 .build()
@@ -133,7 +133,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             Condition.EvaluateGlobalVar(
                 id = data.id,
                 note = data.note,
-                varId = data.varId,
+                varName = data.varName,
                 op = data.op,
                 payload = data.payload
             )

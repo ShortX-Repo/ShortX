@@ -33,26 +33,35 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GlobalVarDetailScreen(id: String, back: () -> Unit) {
+fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
     val vm = hiltViewModel<GlobalVarDetailViewModel>()
     val state by vm.state.collectAsState()
 
     LaunchedEffect(vm) {
-        vm.loadState(id)
+        vm.loadState(name)
     }
 
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val textInputState = rememberTextInputState(
+            val valueInputState = rememberTextInputState(
                 title = LocalI18N.current["ui.global.var.input.value"],
                 message = null,
                 onSelected = {
                     vm.addOrUpdateValue(listOf(it))
                 }
             )
-            TextInputDialog(state = textInputState)
+            TextInputDialog(state = valueInputState)
+
+            val nameInputState = rememberTextInputState(
+                title = LocalI18N.current["ui.global.var.name"],
+                message = null,
+                onSelected = {
+                    vm.updateName(it)
+                }
+            )
+            TextInputDialog(state = nameInputState)
 
             val appComponentSelectorState = rememberAppComponentSelectorState(
                 types = ComponentType.values().toList(),
@@ -74,7 +83,7 @@ fun GlobalVarDetailScreen(id: String, back: () -> Unit) {
                     MenuDialogItem(
                         title = LocalI18N.current["ui.common.manually.input"],
                         onClick = {
-                            textInputState.show()
+                            valueInputState.show()
                         }),
                     MenuDialogItem(
                         title = LocalI18N.current["ui.title.select.component"],
@@ -133,14 +142,9 @@ fun GlobalVarDetailScreen(id: String, back: () -> Unit) {
                         }
 
                         stickyHeader {
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                value = globalVar.name,
-                                onValueChange = { value ->
-                                    vm.updateName(value)
-                                })
+                            ListItem(title = globalVar.name, onClick = {
+                                nameInputState.show()
+                            })
                         }
 
                         stickyHeader {
@@ -153,10 +157,12 @@ fun GlobalVarDetailScreen(id: String, back: () -> Unit) {
                                 val hint = it.hint
                                 if (hint is TextHint.AppComponent) {
                                     AppIcon(modifier = Modifier.size(24.dp), pkg = hint.appPkg)
+                                } else {
+                                    RemixIcon(remixName = Remix.Development.code_line)
                                 }
                             }) {
                                 if (!state.isList) {
-                                    textInputState.show()
+                                    valueInputState.show()
                                 }
                             }
                         }

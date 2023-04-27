@@ -345,23 +345,17 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun deleteGlobalVar(id: String) {
+    fun deleteGlobalVar(name: String) {
         invokeService(Unit) {
-            deleteGlobalVar(id)
+            deleteGlobalVar(name)
         }
     }
 
-    fun getGlobalVarById(id: String): GlobalVar? {
+    fun getGlobalVarByName(name: String): GlobalVar? {
         return invokeService(null) {
-            getGlobalVarById(id)?.let {
+            getGlobalVarByName(name)?.let {
                 GlobalVar.parseFrom(it.byte)
             }
-        }
-    }
-
-    fun getCachedGlobalVarName(id: String): String? {
-        return invokeService(null) {
-            getCachedGlobalVarName(id)
         }
     }
 

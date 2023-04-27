@@ -19,8 +19,6 @@ message GlobalVar {
   google.protobuf.Any type = 3;
 
   int64 updateTimeMillis = 4;
-
-  string id = 100;
 }
 
 enum VarOp {
