@@ -4,12 +4,14 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
@@ -35,20 +37,52 @@ fun MediumTitle(text: String) {
         text = text,
         style = MaterialTheme.typography.titleMedium.copy(
             fontWeight = FontWeight.W500,
-            fontSize = 16.5.sp
+            fontSize = 17.sp
         )
     )
 }
 
 @Composable
-fun SmallTitle(text: String) {
+fun MediumTitleWithTip(text: String, tipText: String) {
+    val tipDialogState = rememberTipDialogState(title = text,tip = tipText)
+
+    Row(
+        modifier = Modifier
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.W500,
+                fontSize = 17.sp
+            )
+        )
+
+        IconButton(onClick = {
+            tipDialogState.show()
+        }) {
+            RemixIcon(
+                remixName = Remix.System.question_line,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+
+    TipDialog(tipDialogState)
+}
+
+@Composable
+fun SmallTitle(text: String, color: Color = Color.Unspecified) {
     Text(
         modifier = Modifier.padding(vertical = 12.dp),
         text = text,
         style = MaterialTheme.typography.titleSmall.copy(
             fontWeight = FontWeight.W500,
             fontSize = 14.sp
-        )
+        ),
+        color = color
     )
 }
 

@@ -311,3 +311,42 @@ fun MenuDialog(
         }
     }
 }
+
+
+class TipDialogState(
+    val title: String,
+    val tip: String,
+) : CommonDialogState()
+
+@Composable
+fun rememberTipDialogState(
+    title: String,
+    tip: String,
+): TipDialogState {
+    return remember {
+        TipDialogState(title, tip)
+    }
+}
+
+@Composable
+fun TipDialog(state: TipDialogState) {
+    if (state.isShowing) {
+        ShortXAlertDialog(
+            onDismissRequest = {
+                state.dismiss()
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.dismiss()
+                }) {
+                    Text(text = stringResource(id = android.R.string.ok))
+                }
+            },
+            title = {
+                Text(text = state.title)
+            },
+            text = {
+                Text(text = state.tip)
+            })
+    }
+}

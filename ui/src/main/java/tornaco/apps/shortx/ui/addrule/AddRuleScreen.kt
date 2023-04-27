@@ -158,7 +158,10 @@ fun AddRuleScreen(
                         Column {
                             ActionContent(
                                 header = {
-                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.enabled.title"])
+                                    MediumTitleWithTip(
+                                        LocalI18N.current["ui.actions.hook.on.enabled.title"],
+                                        LocalI18N.current["ui.actions.hook.on.enabled.description"]
+                                    )
                                 },
                                 actions = actionOnEnabledState.actions,
                                 handler = actionOnEnabledHandler.asActionHandler(),
@@ -168,7 +171,10 @@ fun AddRuleScreen(
 
                             ActionContent(
                                 header = {
-                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.disabled.title"])
+                                    MediumTitleWithTip(
+                                        LocalI18N.current["ui.actions.hook.on.disabled.title"],
+                                        LocalI18N.current["ui.actions.hook.on.disabled.description"]
+                                    )
                                 },
                                 actions = actionOnDisabledState.actions,
                                 handler = actionOnDisabledHandler.asActionHandler(),
@@ -178,7 +184,10 @@ fun AddRuleScreen(
 
                             ActionContent(
                                 header = {
-                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.deleted.title"])
+                                    MediumTitleWithTip(
+                                        LocalI18N.current["ui.actions.hook.on.deleted.title"],
+                                        LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                                    )
                                 },
                                 actions = actionOnDeletedState.actions,
                                 handler = actionOnDeletedHandler.asActionHandler(),
