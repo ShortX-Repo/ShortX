@@ -86,7 +86,7 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
                 }) { paddingValues ->
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize(),
-                    columns = StaggeredGridCells.Fixed(2),
+                    columns = StaggeredGridCells.Fixed(3),
                     contentPadding = paddingValues
                 ) {
                     items(state.globalVars) {
@@ -115,14 +115,19 @@ private fun GlobalVarListItem(
     type: String,
     onClick: () -> Unit,
 ) {
-    ShortXCard(modifier = modifier.fillMaxWidth(), onClick = onClick) {
+    ShortXCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp), onClick = onClick
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            MD3Badge(text = type)
+            TinySpacer()
             Text(
                 text = name, style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 14.sp,
                 )
             )
-            MD3Badge(text = type)
         }
     }
 }
