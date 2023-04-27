@@ -101,8 +101,8 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = {
                             Text(
-                                text = (LocalI18N.current["ui.global.var.title"] + "\t" + state.globalVar?.type?.toType()
-                                    ?.label().fallbackOnEmpty(""))
+                                text = (state.globalVar?.type?.toType()?.label()
+                                    .fallbackOnEmpty("N/A"))
                             )
                         },
                         navigationIcon = {

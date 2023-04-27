@@ -14,12 +14,12 @@ enum class GlobalVarType {
 
 fun GlobalVarType.label(): String {
     return when (this) {
-        GlobalVarType.Int -> "int"
-        GlobalVarType.IntList -> "int list"
-        GlobalVarType.Bool -> "bool"
-        GlobalVarType.BoolList -> "bool list"
-        GlobalVarType.String -> "string"
-        GlobalVarType.StringList -> "string list"
+        GlobalVarType.Int -> "Int"
+        GlobalVarType.IntList -> "Int list"
+        GlobalVarType.Bool -> "Boolean"
+        GlobalVarType.BoolList -> "Boolean list"
+        GlobalVarType.String -> "String"
+        GlobalVarType.StringList -> "String list"
     }
 }
 

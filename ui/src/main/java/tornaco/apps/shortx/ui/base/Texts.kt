@@ -107,7 +107,7 @@ fun DialogMessage(text: String) {
 @Composable
 fun TipBody(text: String) {
     Text(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 4.dp),
         text = text,
         style = MaterialTheme.typography.bodySmall.copy(
             fontSize = 10.sp

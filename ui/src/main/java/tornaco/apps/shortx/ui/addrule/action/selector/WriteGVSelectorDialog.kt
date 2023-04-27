@@ -95,7 +95,7 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
 @Composable
 private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) {
     val globalVarToWriteSelectorState = rememberGlobalVarSelectorState {
-        vm.selectGlobalVar(it)
+        vm.selectGlobalVar(it.name)
     }
     GlobalVarSelectorDialog(globalVarToWriteSelectorState)
 
@@ -110,21 +110,29 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
     ) {
 
         SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
-        FilledTonalButton(onClick = {
-            globalVarToWriteSelectorState.show()
-        }) {
-            if (state.isValid()) {
-                Text(text = state.varName)
-            } else {
-                RemixIcon(remixName = Remix.System.add_line)
-            }
-        }
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.varName,
+            onValueChange = {
+                vm.selectGlobalVar(it)
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    globalVarToWriteSelectorState.show()
+                }) {
+                    RemixIcon(modifier = Modifier, remixName = Remix.System.search_2_line)
+                }
+            })
 
         StandardSpacer()
 
-        OutlinedTextField(value = state.valueAsString, onValueChange = {
-            vm.inputValue(it)
-        })
+        SmallTitle(text = LocalI18N.current["ui.global.var.value"])
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.valueAsString,
+            onValueChange = {
+                vm.inputValue(it)
+            })
 
     }
 }

@@ -3,13 +3,16 @@ package tornaco.apps.shortx.ui.gvar
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toProtoType
@@ -50,7 +53,7 @@ fun Pair<String, GlobalVarType>.toGlobalVar(): GlobalVar =
 @Composable
 fun NewGlobalVarDialog(state: NewGlobalVarState) {
     var name by remember(state) {
-        mutableStateOf("Var-" + System.currentTimeMillis())
+        mutableStateOf("")
     }
     var type by remember(state) {
         mutableStateOf(GlobalVarType.String)
@@ -61,7 +64,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
         }, buttons = {
             TextButton(onClick = {
                 if (name.isNotBlank()) {
-                    state.onSelected(name to type)
+                    state.onSelected(name.trim() to type)
                     state.dismiss()
                 }
             }) {
@@ -69,21 +72,24 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
+
+                SmallTitle(text = LocalI18N.current["ui.global.var.name"])
+                TipBody(text = LocalI18N.current["ui.global.var.name.description"])
                 TextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     shape = TextFieldDefaults.outlinedShape,
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    label = {
-                        Text(text = LocalI18N.current["ui.global.var.name"])
-                    },
                     value = name,
                     onValueChange = {
                         name = it
                     })
 
-                StandardSpacer()
+                LargeSpacer()
 
+                SmallTitle(text = LocalI18N.current["ui.global.var.type"])
                 Box(modifier = Modifier) {
                     val typeDropdownState = rememberDropdownSelectorState()
 
@@ -98,10 +104,16 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     ) {
                         type = it.data
                     }
+
                     FilledTonalButton(onClick = {
                         typeDropdownState.open()
                     }) {
-                        Text(text = type.label())
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = type.label())
+                            LargeSpacer()
+                            LargeSpacer()
+                            RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                        }
                     }
                 }
             }

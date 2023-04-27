@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
@@ -20,9 +19,9 @@ class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext context: 
         Action.WriteGV(valueAsString = "", varName = "")
     ) {
 
-    fun selectGlobalVar(globalVar: GlobalVar) {
+    fun selectGlobalVar(name: String) {
         updateState {
-            copy(varName = globalVar.name)
+            copy(varName = name)
         }
     }
 
