@@ -4,6 +4,7 @@ import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -87,6 +88,8 @@ fun labelAndDescriptionForActionSelector(
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
+        Action.CreateGV::class -> i18N["ui.action.create.global.var"] to null
+        Action.DeleteGV::class -> i18N["ui.action.delete.global.var"] to null
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
@@ -238,6 +241,19 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.write.global.var"],
                 action.varName,
                 action.valueAsString
+            )
+        }
+        is Action.CreateGV -> {
+            listOfNotNull(
+                i18N["ui.action.create.global.var"],
+                action.globalVar.name,
+                action.globalVar.type.toType()?.name
+            )
+        }
+        is Action.DeleteGV -> {
+            listOfNotNull(
+                i18N["ui.action.delete.global.var"],
+                action.name,
             )
         }
         is Action.MapNav -> listOf(
@@ -441,6 +457,12 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.loop_left_line
         }
         Action.WriteGV::class -> {
+            Remix.Document.file_edit_line
+        }
+        Action.CreateGV::class -> {
+            Remix.Document.file_edit_line
+        }
+        Action.DeleteGV::class -> {
             Remix.Document.file_edit_line
         }
         Action.MapNav::class -> {

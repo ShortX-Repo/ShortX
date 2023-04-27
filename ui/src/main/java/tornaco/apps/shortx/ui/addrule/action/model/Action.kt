@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.action.*
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.select
@@ -340,6 +341,23 @@ sealed interface Action : Parcelable {
     ) : Action
 
     @Parcelize
+    data class CreateGV(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val globalVar: GlobalVar
+    ) : Action
+
+    @Parcelize
+    data class DeleteGV(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val varId: String,
+        val name: String
+    ) : Action
+
+    @Parcelize
     data class MapNav(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
@@ -581,6 +599,20 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVarId(varId)
                 .setValueAsString(valueAsString)
                 .setNote(overrideNote ?: note).build()
+        }
+        is Action.CreateGV -> {
+            CreateGlobalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setGlobalVar(globalVar)
+                .build()
+        }
+        is Action.DeleteGV -> {
+            DeleteGlobalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setVarId(varId)
+                .build()
         }
         is Action.MapNav -> {
             MapNav.newBuilder()
@@ -919,6 +951,23 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 varId = data.varId,
                 valueAsString = data.valueAsString,
                 varName = shortXManager.getGlobalVarById(data.varId)?.name ?: "N/A"
+            )
+        }
+        this is_ CreateGlobalVar::class.java -> {
+            val data = this unpack_ CreateGlobalVar::class.java
+            Action.CreateGV(
+                id = data.id,
+                note = data.note,
+                globalVar = data.globalVar
+            )
+        }
+        this is_ DeleteGlobalVar::class.java -> {
+            val data = this unpack_ DeleteGlobalVar::class.java
+            Action.DeleteGV(
+                id = data.id,
+                note = data.note,
+                varId = data.varId,
+                name = shortXManager.getCachedGlobalVarName(data.varId) ?: "N/A"
             )
         }
         this is_ MapNav::class.java -> {

@@ -175,6 +175,8 @@
   "ui.action.post.notification.vibrate": "振动",
   "ui.action.while.loop": "动作循环",
   "ui.action.write.global.var": "写入全局变量",
+  "ui.action.create.global.var": "新建全局变量",
+  "ui.action.delete.global.var": "新建全局变量",
   "ui.action.select.global.var": "请选择全局变量",
   "ui.action.select.global.var.op": "选择操作",
   "ui.action.select.global.var.payload": "输入值",

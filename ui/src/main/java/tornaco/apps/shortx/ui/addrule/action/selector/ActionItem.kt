@@ -119,7 +119,7 @@ fun ActionItem(
                 Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
                     Text(
                         text = title, style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     )
                     text1?.let {

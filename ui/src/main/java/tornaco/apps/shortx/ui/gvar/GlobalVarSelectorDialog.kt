@@ -3,16 +3,16 @@
 package tornaco.apps.shortx.ui.gvar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -90,22 +90,14 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
                     contentPadding = paddingValues
                 ) {
                     items(state.globalVars) {
-                        androidx.compose.material.Card(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                            shape = ShortXCardRoundedCornerShape,
-                            elevation = 0.dp
-                        ) {
-                            GlobalVarListItem(modifier = Modifier,
-                                name = it.name,
-                                value = it.valueString(),
-                                type = it.type.toType()?.label() ?: "?",
-                                onClick = {
-                                    selectorState.onGlobalVarSelected(it)
-                                    selectorState.dismiss()
-                                })
-                        }
+                        GlobalVarListItem(modifier = Modifier,
+                            name = it.name,
+                            value = it.valueString(),
+                            type = it.type.toType()?.label() ?: "?",
+                            onClick = {
+                                selectorState.onGlobalVarSelected(it)
+                                selectorState.dismiss()
+                            })
                     }
                 }
 
@@ -123,30 +115,14 @@ private fun GlobalVarListItem(
     type: String,
     onClick: () -> Unit,
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .clickable {
-            onClick()
-        }) {
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = name, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp,
-                    )
+    ShortXCard(modifier = modifier.fillMaxWidth(), onClick = onClick) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = name, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 14.sp,
                 )
-                MD3Badge(text = type)
-            }
-
-            MediumSpacer()
-            Text(value ?: "", fontSize = 12.sp)
-            StandardSpacer()
+            )
+            MD3Badge(text = type)
         }
     }
 }

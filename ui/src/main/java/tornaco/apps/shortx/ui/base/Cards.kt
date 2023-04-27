@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 
 package tornaco.apps.shortx.ui.base
 
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +20,17 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 
 @Composable
-fun ShortXCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun ShortXCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    content: @Composable () -> Unit
+) {
     Card(
         modifier = modifier.animateContentSize(),
         backgroundColor = ColorDefaults.backgroundSurfaceColor(),
         shape = ShortXCardRoundedCornerShape,
         elevation = 0.dp,
+        onClick = onClick,
         content = content
     )
 }

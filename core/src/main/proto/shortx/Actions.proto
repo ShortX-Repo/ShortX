@@ -7,6 +7,7 @@ option java_multiple_files = true;
 import "google/protobuf/any.proto";
 import "shortx/Common.proto";
 import "shortx/Conditions.proto";
+import "shortx/GlobalVars.proto";
 
 message NoAction {
 
@@ -273,6 +274,20 @@ message WriteGlobalVar {
   string varId = 1;
   string valueAsString = 2;
 
+
+  string note = 99;
+  string id = 100;
+}
+
+message CreateGlobalVar {
+  GlobalVar globalVar = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message DeleteGlobalVar {
+  string varId = 1;
 
   string note = 99;
   string id = 100;
