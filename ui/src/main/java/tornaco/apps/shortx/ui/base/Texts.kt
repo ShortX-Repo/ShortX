@@ -35,7 +35,7 @@ fun MediumTitle(text: String) {
         text = text,
         style = MaterialTheme.typography.titleMedium.copy(
             fontWeight = FontWeight.W500,
-            fontSize = 18.sp
+            fontSize = 16.5.sp
         )
     )
 }

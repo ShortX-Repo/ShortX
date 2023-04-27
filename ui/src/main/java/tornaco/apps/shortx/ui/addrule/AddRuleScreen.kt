@@ -13,7 +13,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
@@ -22,9 +24,7 @@ import tornaco.apps.shortx.ui.addrule.condition.*
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.fact.*
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +47,15 @@ fun AddRuleScreen(
 
     val actionHandler = remember(vm) { vm.actionContentStateHandler }
     val actionContentState by actionHandler.state.collectAsState()
+
+    val actionOnEnabledHandler = remember(vm) { vm.actionOnEnabledStateHandler }
+    val actionOnEnabledState by actionOnEnabledHandler.state.collectAsState()
+
+    val actionOnDisabledHandler = remember(vm) { vm.actionOnDisabledStateHandler }
+    val actionOnDisabledState by actionOnDisabledHandler.state.collectAsState()
+
+    val actionOnDeletedHandler = remember(vm) { vm.actionOnDeletedStateHandler }
+    val actionOnDeletedState by actionOnDeletedHandler.state.collectAsState()
 
     val conditionHandler = remember(vm) { vm.conditionContentStateHandler }
     val conditionContentState by conditionHandler.state.collectAsState()
@@ -79,7 +88,13 @@ fun AddRuleScreen(
                         },
                         actions = {
                             IconButton(
-                                enabled = canSaveWithoutChanges || addRuleState.ruleChanged || actionContentState.isChanged || conditionContentState.isChanged,
+                                enabled = canSaveWithoutChanges
+                                        || addRuleState.ruleChanged
+                                        || actionContentState.isChanged
+                                        || conditionContentState.isChanged
+                                        || actionOnEnabledState.isChanged
+                                        || actionOnDisabledState.isChanged
+                                        || actionOnDeletedState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back()
@@ -90,9 +105,10 @@ fun AddRuleScreen(
                         scrollBehavior = scrollBehavior
                     )
                 }) {
+                val scrollState = rememberScrollState()
                 Column(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(scrollState)
                         .padding(it)
                         .padding(horizontal = 16.dp)
                         .animateContentSize()
@@ -122,6 +138,55 @@ fun AddRuleScreen(
                         warnings = actionContentState.actionWarningMessages
                     )
                     SectionSpacer()
+
+                    val scope = rememberCoroutineScope()
+                    TextButton(onClick = {
+                        vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
+
+                        if (!addRuleState.showAdvancedOptions) {
+                            scope.launch {
+                                delay(100)
+                                scrollState.animateScrollTo(Int.MAX_VALUE)
+                            }
+                        }
+                    }) {
+                        Text(text = LocalI18N.current["ui.advanced.options"])
+                    }
+                    StandardSpacer()
+
+                    AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
+                        Column {
+                            ActionContent(
+                                header = {
+                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.enabled.title"])
+                                },
+                                actions = actionOnEnabledState.actions,
+                                handler = actionOnEnabledHandler.asActionHandler(),
+                                warnings = actionOnEnabledState.actionWarningMessages
+                            )
+                            SectionSpacer()
+
+                            ActionContent(
+                                header = {
+                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.disabled.title"])
+                                },
+                                actions = actionOnDisabledState.actions,
+                                handler = actionOnDisabledHandler.asActionHandler(),
+                                warnings = actionOnDisabledState.actionWarningMessages
+                            )
+                            SectionSpacer()
+
+                            ActionContent(
+                                header = {
+                                    MediumTitle(LocalI18N.current["ui.actions.hook.on.deleted.title"])
+                                },
+                                actions = actionOnDeletedState.actions,
+                                handler = actionOnDeletedHandler.asActionHandler(),
+                                warnings = actionOnDeletedState.actionWarningMessages
+                            )
+                            SectionSpacer()
+                        }
+                    }
                 }
             }
         }

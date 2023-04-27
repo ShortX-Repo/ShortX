@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -42,6 +43,7 @@ data class AddRuleState(
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
     val showConditionSection: Boolean = true,
+    val showAdvancedOptions: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -53,6 +55,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     val ruleSaved = _ruleSaved.asSharedFlow()
 
     val actionContentStateHandler = ActionContentStateHandler()
+
+    // Hooks
+    val actionOnEnabledStateHandler = ActionContentStateHandler()
+    val actionOnDisabledStateHandler = ActionContentStateHandler()
+    val actionOnDeletedStateHandler = ActionContentStateHandler()
+
     val conditionContentStateHandler = ConditionContentStateHandler()
 
     fun setTitle(title: String) {
@@ -83,6 +91,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         shortXManager.showEdgeHint(edge)
     }
 
+    fun setShowAdvancedOptions(show: Boolean) {
+        updateState { copy(showAdvancedOptions = show) }
+    }
+
     fun save() {
         viewModelScope.launch {
             val fact = state.value.fact ?: return@launch
@@ -90,14 +102,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val conditions = conditionContentStateHandler.state.value.conditions
             val condOp = conditionContentStateHandler.state.value.conditionOp
 
-            val actions = actionContentStateHandler.state.value.actions
+            val actions = actionContentStateHandler.actions
+
+            // Hooks
+            val actionsOnEnabled = actionOnEnabledStateHandler.actions
+            val actionsOnDisabled = actionOnDisabledStateHandler.actions
+            val actionsOnDeleted = actionOnDeletedStateHandler.actions
 
             val protoFact = fact.toProtoFact().pack_()
             val protoConditions = conditions.map {
                 it.toProtoCondition().pack_()
-            }
-            val protoActions = actions.map {
-                it.toProtoAction().pack_()
             }
             val rule = Rule.newBuilder()
                 .setId(state.value.id)
@@ -123,7 +137,22 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                                 .build()
                     }
                 }
-                .addAllActions(protoActions)
+                .addAllActions(actions.map {
+                    it.toProtoAction().pack_()
+                })
+                .setHook(
+                    RuleHook.newBuilder()
+                        .addAllActionsOnEnabled(actionsOnEnabled.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .addAllActionsOnDisabled(actionsOnDisabled.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .addAllActionsOnDeleted(actionsOnDeleted.map {
+                            it.toProtoAction().pack_()
+                        })
+                        .build()
+                )
                 .setIsEnabled(state.value.isEnabled)
                 .build()
 
@@ -160,6 +189,31 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             shortXManager
                         )
                     })
+
+                r.hook?.let { hook ->
+                    actionOnEnabledStateHandler.init(
+                        actions = hook.actionsOnEnabledList.mapNotNull {
+                            it.toAction(
+                                shortXManager
+                            )
+                        })
+
+                    actionOnDisabledStateHandler.init(
+                        actions = hook.actionsOnDisabledList.mapNotNull {
+                            it.toAction(
+                                shortXManager
+                            )
+                        })
+
+                    actionOnDeletedStateHandler.init(
+                        actions = hook.actionsOnDeletedList.mapNotNull {
+                            it.toAction(
+                                shortXManager
+                            )
+                        })
+                }
+
+
                 conditionContentStateHandler.init(
                     conditions = r.conditionsList.mapNotNull {
                         it.toCondition(
@@ -169,6 +223,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     conditionOp = r.condOp.toOp(r.condOpPayload)
                 )
 
+                val hasAnyHookActions: Boolean =
+                    actionOnEnabledStateHandler.actions.isNotEmpty()
+                            || actionOnDisabledStateHandler.actions.isNotEmpty()
+                            || actionOnDeletedStateHandler.actions.isNotEmpty()
+                logger.d("hasAnyHookActions: $hasAnyHookActions")
+
                 updateState {
                     copy(
                         id = r.id,
@@ -177,12 +237,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         fact = r.fact.toFact(shortXManager),
                         isEditRule = true,
                         createTime = r.createTime,
-                        isEnabled = r.isEnabled
+                        isEnabled = r.isEnabled,
+                        showAdvancedOptions = hasAnyHookActions
                     )
                 }
             }
         }
     }
-
-
 }

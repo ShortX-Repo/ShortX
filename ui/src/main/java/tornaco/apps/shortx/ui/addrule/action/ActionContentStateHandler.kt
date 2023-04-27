@@ -62,6 +62,8 @@ class ActionContentStateHandler(
     private val logger = Logger("ActionContentStateHandler")
     private val i18N = i18NIns
 
+    val actions get() = state.value.actions
+
     fun addAction(action: Action) {
         logger.d("addAction: ${action.id}")
         updateState {
