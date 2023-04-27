@@ -31,12 +31,12 @@ sealed class BottomNavItem(
     var title: String, var icon: String, var screenRoute: HomeBottomRoute
 ) {
     object Rules :
-        BottomNavItem("ui.feat.label.rule", Remix.Weather.sparkling_line, HomeBottomRoute.Rules)
+        BottomNavItem("ui.feat.label.rule", Remix.Weather.meteor_line, HomeBottomRoute.Rules)
 
     object DirectActions :
         BottomNavItem(
             "ui.feat.label.da",
-            Remix.Map.space_ship_line,
+            Remix.Development.command_line,
             HomeBottomRoute.DirectActions
         )
 }
