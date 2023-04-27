@@ -27,6 +27,14 @@ message Rule {
 
   ConditionOperator condOp = 12;
   ConditionOperatorPayload condOpPayload = 13;
+
+  RuleHook hook = 14;
+}
+
+message RuleHook {
+  repeated google.protobuf.Any actionsOnEnabled = 1;
+  repeated google.protobuf.Any actionsOnDisabled = 2;
+  repeated google.protobuf.Any actionsOnDeleted = 3;
 }
 
 message RuleList {

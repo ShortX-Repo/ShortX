@@ -36,9 +36,11 @@ open class BaseRuleSettingsStore(
         postWrite()
     }
 
-    fun deleteRule(ruleId: String) {
-        rulesCache.removeIf { it.id == ruleId }
+    fun deleteRule(ruleId: String): List<Rule> {
+        val toBeDeleted = rulesCache.filter { it.id == ruleId }
+        rulesCache.removeAll(toBeDeleted)
         postWrite()
+        return toBeDeleted
     }
 
     fun getRuleById(id: String): Rule? {

@@ -192,10 +192,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     fun deleteRule(ruleId: String) {
-        ruleSettingsStore.deleteRule(ruleId)
+        val rules = ruleSettingsStore.deleteRule(ruleId)
         handler.postSafety {
             ruleChanged()
-            allTriggers.forEach { it.onDeleteRule() }
+            rules.forEach { r ->
+                allTriggers.forEach { it.onDeleteRule(r) }
+            }
         }
     }
 

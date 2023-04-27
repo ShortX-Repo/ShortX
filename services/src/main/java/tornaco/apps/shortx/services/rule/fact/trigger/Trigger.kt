@@ -12,7 +12,7 @@ interface Trigger {
     fun unRegister()
 
     fun onAddRule(rule: Rule) {}
-    fun onDeleteRule() {}
+    fun onDeleteRule(rule: Rule) {}
     fun onRuleEnabled(ruleId: String) {}
     fun onRuleDisabled(ruleId: String) {}
 }
