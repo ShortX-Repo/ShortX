@@ -23,9 +23,11 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         ensureAutomationConnected()
     }
 
-    fun ensureAutomationConnected() {
+    fun ensureAutomationConnected() = kotlin.runCatching {
         logger.w("ensureAutomationConnected")
         automationManager.connect()
+    }.onFailure {
+        logger.e(it)
     }
 
     fun ensureAutomationDisconnected() {
