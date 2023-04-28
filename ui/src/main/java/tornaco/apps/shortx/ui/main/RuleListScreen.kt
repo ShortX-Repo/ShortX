@@ -358,7 +358,7 @@ private fun ListItemOverflowMenu(
             onClick = {
                 menuState.open()
             }) {
-            Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
+            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_line)
         }
 
         DropdownSelector(
