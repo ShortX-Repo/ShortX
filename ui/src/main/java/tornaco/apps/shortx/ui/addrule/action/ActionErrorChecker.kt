@@ -1,0 +1,81 @@
+package tornaco.apps.shortx.ui.addrule.action
+
+import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.condition.getGlobalVarRefs
+import tornaco.apps.shortx.ui.base.I18N
+
+class ActionErrorChecker {
+    private val logger = Logger("ActionErrorChecker")
+
+    fun generateWarningMessages(
+        actions: List<Action>,
+        allActionsOnRule: List<Action>,
+        shortXManager: ShortXManager,
+        i18N: I18N
+    ): List<String> {
+        val willBeCreatedGlobalVar = getWillBeCreatedGlobalVars(allActionsOnRule).apply {
+            logger.d("getWillBeCreatedGlobalVars: $this")
+        }
+        return getGlobalVarRefs(actions, shortXManager)
+            .apply { logger.d("getGlobalVarRefs: $this") }
+            .filterNot { willBeCreatedGlobalVar.contains(it) }
+            .filter { shortXManager.getGlobalVarByName(it) == null }
+            .mapIndexed { index, it ->
+                "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
+            }
+    }
+
+
+    private fun getWillBeCreatedGlobalVars(actions: List<Action>): List<String> {
+        return actions.filterIsInstance(Action.CreateGV::class.java).map { it.globalVar.name }
+    }
+
+    private fun getGlobalVarRefs(
+        actions: List<Action>,
+        shortXManager: ShortXManager
+    ): List<String> {
+        val writeGV =
+            actions.filterIsInstance(Action.WriteGV::class.java).map { it.varName }
+
+        val ifElseCondition = actions.filterIsInstance(Action.IfThenElse::class.java).map {
+            it.ifConditions.getGlobalVarRefs()
+        }.flatten()
+
+        val ifElseAction = actions.filterIsInstance(Action.IfThenElse::class.java).map {
+            getGlobalVarRefs(it.ifActions, shortXManager) + getGlobalVarRefs(
+                it.elseActions,
+                shortXManager
+            )
+        }.flatten()
+
+        val showDialogAction = actions.filterIsInstance(Action.ShowAlertDialog::class.java).map {
+            getGlobalVarRefs(
+                it.positiveActions,
+                shortXManager
+            ) + getGlobalVarRefs(
+                it.negativeActions,
+                shortXManager
+            ) + getGlobalVarRefs(it.neutralActions, shortXManager)
+        }.flatten()
+
+        val showOverlayAction = actions.filterIsInstance<Action.ShowOverlay>().map { overlay ->
+            overlay.settings.map { buttonSetting ->
+                buttonSetting.actionsList.mapNotNull {
+                    it.toAction(shortXManager)
+                }
+            }.map { getGlobalVarRefs(it, shortXManager) }.flatten()
+        }.flatten()
+
+        val fromDA = actions.filterIsInstance<Action.FromDA>().mapNotNull { fromDA ->
+            shortXManager.getDirectActionById(fromDA.daId)?.let { directAction ->
+                directAction.actionsList.mapNotNull { it.toAction(shortXManager) }
+            }?.let { getGlobalVarRefs(it, shortXManager) }
+        }.flatten()
+
+        return writeGV + ifElseCondition + ifElseAction + showDialogAction + showOverlayAction + fromDA
+    }
+
+}
