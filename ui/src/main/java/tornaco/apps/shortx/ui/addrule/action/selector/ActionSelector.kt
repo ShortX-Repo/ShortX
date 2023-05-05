@@ -3,19 +3,19 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
-import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
@@ -26,6 +26,8 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Advanced("ui.action.advanced", Remix.System.function_line),
     Remote("ui.action.remote", Remix.Business.cloud_line)
 }
+
+val initialPageIndex = ActionCategory.Ui.ordinal
 
 class ActionSelectorDialogState<ARGS>(val onSelected: (Action, ARGS?) -> Unit) {
     var isShowing by mutableStateOf(false)
@@ -89,43 +91,48 @@ private fun <ARGS> ActionSelector(
                     )
                 }) { paddingValues ->
 
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    var selectedItem by remember { mutableStateOf(ActionCategory.Ui.ordinal) }
+                    val pagerState = rememberPagerState(initialPage = initialPageIndex)
+                    val scope = rememberCoroutineScope()
+
                     val items = ActionCategory.values().map { it.i18NKey }
                     val icons = ActionCategory.values().map { it.icon }
 
-                    NavigationRail(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .shadow(4.dp)
+                    ShortXScrollableTabRow(
+                        modifier = Modifier,
+                        edgePadding = 16.dp,
+                        selectedTabIndex = pagerState.currentPage
                     ) {
                         items.forEachIndexed { index, item ->
-                            NavigationRailItem(
+                            Tab(
                                 icon = { RemixIcon(remixName = icons[index]) },
-                                label = { Text(LocalI18N.current[item]) },
-                                selected = selectedItem == index,
-                                onClick = { selectedItem = index }
+                                text = { Text(LocalI18N.current[item]) },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                }
                             )
                         }
                     }
 
                     StandardSpacer()
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
+                    HorizontalPager(
+                        state = pagerState,
+                        pageCount = ActionCategory.values().size,
+                    ) { index ->
                         val addAction: (Action) -> Unit = {
                             state.onSelected(it, state.args)
                             state.dismiss()
                         }
 
-                        when (selectedItem) {
+                        when (index) {
                             ActionCategory.Ui.ordinal -> {
                                 UiActions(addAction = addAction)
                             }

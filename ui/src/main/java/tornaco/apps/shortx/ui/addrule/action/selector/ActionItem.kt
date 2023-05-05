@@ -3,7 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -65,8 +65,8 @@ fun ActionList(
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+        columns = StaggeredGridCells.Fixed(3),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp, start = 8.dp, end = 8.dp)
     ) {
 
         items(actionItems) {
@@ -90,16 +90,21 @@ fun ActionItem(
     text1: String? = null,
     onClick: () -> Unit,
 ) {
+    val tipDialogState = rememberTipDialogState(title = title, tip = text1 ?: title)
+    TipDialog(state = tipDialogState)
+
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
         backgroundColor = ColorDefaults.backgroundSurfaceColor(),
         shape = ShortXCardRoundedCornerShape,
         elevation = 0.dp
     ) {
-        Column(modifier = modifier
+        Row(modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .clickable {
+            .combinedClickable(onLongClick = {
+                tipDialogState.show()
+            }) {
                 onClick()
             }) {
             Row(
@@ -122,14 +127,6 @@ fun ActionItem(
                             fontSize = 14.sp
                         )
                     )
-                    text1?.let {
-                        TinySpacer()
-                        Text(
-                            text = text1,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                            maxLines = 8
-                        )
-                    }
                 }
             }
         }

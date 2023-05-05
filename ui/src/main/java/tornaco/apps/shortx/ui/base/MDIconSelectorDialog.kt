@@ -82,7 +82,7 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                         .padding(paddingValues)
                 ) {
                     val iconCategories: List<String> = Remix.all.keys.toList()
-                    ScrollableTabRow(selectedTabIndex = selectedTabIndex) {
+                    ShortXScrollableTabRow(selectedTabIndex = selectedTabIndex) {
                         iconCategories.forEachIndexed { index, categoryName ->
                             Tab(selected = selectedTabIndex == index,
                                 onClick = { selectedTabIndex = index },
