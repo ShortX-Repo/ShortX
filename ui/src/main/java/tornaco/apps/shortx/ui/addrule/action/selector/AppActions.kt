@@ -9,10 +9,11 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import kotlin.reflect.KClass
+
 
 @Composable
-fun AppActions(addAction: (Action) -> Unit) {
-
+fun appActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
     val launchAppSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -98,6 +99,43 @@ fun AppActions(addAction: (Action) -> Unit) {
             })
     AppPkgSelectorDialog(state = unsuspendAppProcessSelectorState)
 
+    return { it ->
+        when (it) {
+            Action.LaunchApp::class -> {
+                launchAppSelectorState.show()
+                true
+            }
+            Action.StopApp::class -> {
+                stopAppSelectorState.show()
+                true
+            }
+            Action.StartAppProcess::class -> {
+                startAppProcessSelectorState.show()
+                true
+            }
+            Action.EnableApp::class -> {
+                enableAppProcessSelectorState.show()
+                true
+            }
+            Action.DisableApp::class -> {
+                disableAppProcessSelectorState.show()
+                true
+            }
+            Action.SuspendApp::class -> {
+                suspendAppProcessSelectorState.show()
+                true
+            }
+            Action.UnSuspendApp::class -> {
+                unsuspendAppProcessSelectorState.show()
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+@Composable
+fun AppActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
         Action.LaunchApp::class,
@@ -111,31 +149,12 @@ fun AppActions(addAction: (Action) -> Unit) {
         Item(it, labelAndDescriptionForActionSelector(i18N, it), imageVectorForAction(it))
     }
 
+    val selectHandler = appActionSelectHandler(addAction = addAction)
+
     ActionList(
         actionItems = actionItems,
         itemSelected = { it, _ ->
-            when (it) {
-                Action.LaunchApp::class -> {
-                    launchAppSelectorState.show()
-                }
-                Action.StopApp::class -> {
-                    stopAppSelectorState.show()
-                }
-                Action.StartAppProcess::class -> {
-                    startAppProcessSelectorState.show()
-                }
-                Action.EnableApp::class -> {
-                    enableAppProcessSelectorState.show()
-                }
-                Action.DisableApp::class -> {
-                    disableAppProcessSelectorState.show()
-                }
-                Action.SuspendApp::class -> {
-                    suspendAppProcessSelectorState.show()
-                }
-                Action.UnSuspendApp::class -> {
-                    unsuspendAppProcessSelectorState.show()
-                }
-            }
-        })
+            selectHandler(it)
+        }
+    )
 }

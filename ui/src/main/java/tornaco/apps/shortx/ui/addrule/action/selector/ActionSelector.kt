@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -19,6 +20,7 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
+    Recent("Recent", Remix.System.history_line),
     Ui("UI", Remix.Design.layout_2_line),
     Apps("ui.action.category.app", Remix.System.apps_2_line),
     Settings("ui.action.system.settings", Remix.System.settings_2_line),
@@ -27,7 +29,7 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Remote("ui.action.remote", Remix.Business.cloud_line)
 }
 
-val initialPageIndex = ActionCategory.Ui.ordinal
+val initialPageIndex = ActionCategory.Recent.ordinal
 
 class ActionSelectorDialogState<ARGS>(val onSelected: (Action, ARGS?) -> Unit) {
     var isShowing by mutableStateOf(false)
@@ -123,16 +125,22 @@ private fun <ARGS> ActionSelector(
 
                     StandardSpacer()
 
+                    val selectorVM = hiltViewModel<ActionSelectorViewModel>()
+
                     HorizontalPager(
                         state = pagerState,
                         pageCount = ActionCategory.values().size,
                     ) { index ->
                         val addAction: (Action) -> Unit = {
                             state.onSelected(it, state.args)
+                            selectorVM.onActionAdd(it)
                             state.dismiss()
                         }
 
                         when (index) {
+                            ActionCategory.Recent.ordinal -> {
+                                RecentActions(addAction = addAction)
+                            }
                             ActionCategory.Ui.ordinal -> {
                                 UiActions(addAction = addAction)
                             }

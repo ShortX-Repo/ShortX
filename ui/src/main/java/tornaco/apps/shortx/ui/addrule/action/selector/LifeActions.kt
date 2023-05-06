@@ -6,15 +6,32 @@ import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
+import kotlin.reflect.KClass
+
 
 @Composable
-fun LifeActions(addAction: (Action) -> Unit) {
-    val i18N = LocalI18N.current
-
+fun lifeActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
     val mapNavDialogState = rememberMapNavDialogState(onSelected = {
         addAction(it)
     })
     MapNavDialog(state = mapNavDialogState)
+
+    return { it ->
+        when (it) {
+            Action.MapNav::class -> {
+                mapNavDialogState.show()
+                true
+            }
+            else -> {
+                false
+            }
+        }
+    }
+}
+
+@Composable
+fun LifeActions(addAction: (Action) -> Unit) {
+    val i18N = LocalI18N.current
 
 
     val actionItems = listOf(
@@ -25,13 +42,11 @@ fun LifeActions(addAction: (Action) -> Unit) {
         ),
     )
 
+    val selectHandler = lifeActionSelectHandler(addAction = addAction)
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->
-            when (it) {
-                Action.MapNav::class -> {
-                    mapNavDialogState.show()
-                }
-            }
-        })
+            selectHandler(it)
+        }
+    )
 }

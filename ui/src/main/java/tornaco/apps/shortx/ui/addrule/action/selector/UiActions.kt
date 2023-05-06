@@ -9,118 +9,102 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import kotlin.reflect.KClass
+
+@Composable
+fun uiActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
+    val subSelectorStates = uiActionSubSelectors(addAction)
+
+    return { it ->
+        when (it) {
+            Action.ShowToast::class -> {
+                subSelectorStates.toastSelectionState.show()
+                true
+            }
+            Action.TakeScreenshot::class -> {
+                addAction(Action.TakeScreenshot())
+                true
+            }
+            Action.HideAllOverlay::class -> {
+                addAction(Action.HideAllOverlay())
+                true
+            }
+            Action.HideOverlay::class -> {
+                subSelectorStates.hideOverlayDialogState.show()
+                true
+            }
+            Action.ShowOverlay::class -> {
+                subSelectorStates.overlayButtonState.show()
+                true
+            }
+            Action.ShowAlertDialog::class -> {
+                subSelectorStates.showDialogSettingsState.show()
+                true
+            }
+            Action.ShowDanmu::class -> {
+                subSelectorStates.showDanmuSettingsState.show()
+                true
+            }
+            Action.ExpandNotification::class -> {
+                addAction(Action.ExpandNotification())
+                true
+            }
+            Action.PostNotification::class -> {
+                subSelectorStates.postNotificationDialogState.show()
+                true
+            }
+            Action.FindAndClickViewByText::class -> {
+                subSelectorStates.findAndClickViewByTextSelectorState.show()
+                true
+            }
+            Action.WaitForIdle::class -> {
+                addAction(Action.WaitForIdle())
+                true
+            }
+            else -> false
+        }
+    }
+}
 
 @Composable
 fun UiActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
+
     val uiActionItems = listOf(
+        Action.TakeScreenshot::class,
+
+        Action.ShowToast::class,
+
+        Action.ShowDanmu::class,
+
+        Action.ExpandNotification::class,
+
+        Action.PostNotification::class,
+
+        Action.ShowOverlay::class,
+
+        Action.HideOverlay::class,
+
+        Action.HideAllOverlay::class,
+
+        Action.ShowAlertDialog::class,
+
+        Action.FindAndClickViewByText::class,
+
+        Action.WaitForIdle::class,
+    ).map {
         Item(
-            Action.TakeScreenshot::class,
-            labelAndDescriptionForActionSelector(i18N, Action.TakeScreenshot::class),
-            imageVectorForAction(Action.TakeScreenshot::class)
-        ),
+            it,
+            labelAndDescriptionForActionSelector(i18N, it),
+            imageVectorForAction(it)
+        )
+    }
 
-        Item(
-            Action.ShowToast::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShowToast::class),
-            imageVectorForAction(Action.ShowToast::class)
-        ),
-
-        Item(
-            Action.ShowDanmu::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShowDanmu::class),
-            imageVectorForAction(Action.ShowDanmu::class)
-        ),
-
-        Item(
-            Action.ExpandNotification::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ExpandNotification::class),
-            imageVectorForAction(Action.ExpandNotification::class)
-        ),
-
-        Item(
-            Action.PostNotification::class,
-            labelAndDescriptionForActionSelector(i18N, Action.PostNotification::class),
-            imageVectorForAction(Action.PostNotification::class)
-        ),
-
-        Item(
-            Action.ShowOverlay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShowOverlay::class),
-            imageVectorForAction(Action.ShowOverlay::class)
-        ),
-
-        Item(
-            Action.HideOverlay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.HideOverlay::class),
-            imageVectorForAction(Action.HideOverlay::class)
-        ),
-
-        Item(
-            Action.HideAllOverlay::class,
-            labelAndDescriptionForActionSelector(i18N, Action.HideAllOverlay::class),
-            imageVectorForAction(Action.HideAllOverlay::class)
-        ),
-
-        Item(
-            Action.ShowAlertDialog::class,
-            labelAndDescriptionForActionSelector(i18N, Action.ShowAlertDialog::class),
-            imageVectorForAction(Action.ShowAlertDialog::class)
-        ),
-
-        Item(
-            Action.FindAndClickViewByText::class,
-            labelAndDescriptionForActionSelector(i18N, Action.FindAndClickViewByText::class),
-            imageVectorForAction(Action.FindAndClickViewByText::class)
-        ),
-
-        Item(
-            Action.WaitForIdle::class,
-            labelAndDescriptionForActionSelector(i18N, Action.WaitForIdle::class),
-            imageVectorForAction(Action.WaitForIdle::class)
-        ),
-    )
-
-    val subSelectorStates = uiActionSubSelectors(addAction)
-
+    val handler = uiActionSelectHandler(addAction = addAction)
     ActionList(
         actionItems = uiActionItems,
         itemSelected = { it ->
-            when (it) {
-                Action.ShowToast::class -> {
-                    subSelectorStates.toastSelectionState.show()
-                }
-                Action.TakeScreenshot::class -> {
-                    addAction(Action.TakeScreenshot())
-                }
-                Action.HideAllOverlay::class -> {
-                    addAction(Action.HideAllOverlay())
-                }
-                Action.HideOverlay::class -> {
-                    subSelectorStates.hideOverlayDialogState.show()
-                }
-                Action.ShowOverlay::class -> {
-                    subSelectorStates.overlayButtonState.show()
-                }
-                Action.ShowAlertDialog::class -> {
-                    subSelectorStates.showDialogSettingsState.show()
-                }
-                Action.ShowDanmu::class -> {
-                    subSelectorStates.showDanmuSettingsState.show()
-                }
-                Action.ExpandNotification::class -> {
-                    addAction(Action.ExpandNotification())
-                }
-                Action.PostNotification::class -> {
-                    subSelectorStates.postNotificationDialogState.show()
-                }
-                Action.FindAndClickViewByText::class -> {
-                    subSelectorStates.findAndClickViewByTextSelectorState.show()
-                }
-                Action.WaitForIdle::class -> {
-                    addAction(Action.WaitForIdle())
-                }
-            }
+            handler(it)
         })
 }
 

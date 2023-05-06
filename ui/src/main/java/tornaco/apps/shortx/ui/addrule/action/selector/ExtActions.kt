@@ -13,9 +13,10 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
+import kotlin.reflect.KClass
 
 @Composable
-fun ExtActions(addAction: (Action) -> Unit) {
+fun extActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
         addAction(cmd)
     }
@@ -66,6 +67,54 @@ fun ExtActions(addAction: (Action) -> Unit) {
         }
     NewGlobalVarDialog(addGlobalVarDialogState)
 
+    return {
+        when (it) {
+            Action.ShellCommand::class -> {
+                shellCommandSelectorState.show()
+                true
+            }
+            Action.InputText::class -> {
+                inputTextSelectorState.show()
+                true
+            }
+            Action.Delay::class -> {
+                delaySelectionState.show()
+                true
+            }
+            Action.MVEL::class -> {
+                mvelSelectorState.show()
+                true
+            }
+            Action.Brk::class -> {
+                addAction(Action.Brk())
+                true
+            }
+            Action.WriteGV::class -> {
+                writeGVSelectorState.show()
+                true
+            }
+            Action.CreateGV::class -> {
+                addGlobalVarDialogState.show()
+                true
+            }
+            Action.FromDA::class -> {
+                fromDASelectorState.show()
+                true
+            }
+            Action.IfThenElse::class -> {
+                ifThenElseDialogState.show()
+                true
+            }
+            else -> {
+                false
+            }
+        }
+
+    }
+}
+
+@Composable
+fun ExtActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.FromDA::class,
@@ -85,37 +134,12 @@ fun ExtActions(addAction: (Action) -> Unit) {
         )
     }
 
+    val itemSelected = extActionSelectHandler(addAction = addAction)
+
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->
-            when (it) {
-                Action.ShellCommand::class -> {
-                    shellCommandSelectorState.show()
-                }
-                Action.InputText::class -> {
-                    inputTextSelectorState.show()
-                }
-                Action.Delay::class -> {
-                    delaySelectionState.show()
-                }
-                Action.MVEL::class -> {
-                    mvelSelectorState.show()
-                }
-                Action.Brk::class -> {
-                    addAction(Action.Brk())
-                }
-                Action.WriteGV::class -> {
-                    writeGVSelectorState.show()
-                }
-                Action.CreateGV::class -> {
-                    addGlobalVarDialogState.show()
-                }
-                Action.FromDA::class -> {
-                    fromDASelectorState.show()
-                }
-                Action.IfThenElse::class -> {
-                    ifThenElseDialogState.show()
-                }
-            }
-        })
+            itemSelected(it)
+        }
+    )
 }
