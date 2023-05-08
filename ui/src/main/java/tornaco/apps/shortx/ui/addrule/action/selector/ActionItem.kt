@@ -1,20 +1,17 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -63,15 +60,12 @@ fun ActionList(
     actionItems: List<Item>,
     itemSelected: (KClass<out Action>, data: Any?) -> Unit
 ) {
-    LazyVerticalStaggeredGrid(
-        modifier = modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(3),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp, start = 8.dp, end = 8.dp)
+    FlowRow(
+        modifier = modifier,
     ) {
-
-        items(actionItems) {
+        actionItems.forEach {
             ActionItem(
-                modifier = childModifier,
+                modifier = childModifier.width(88.dp),
                 icon = it.icon,
                 title = it.labelAndDescription.first,
                 text1 = it.labelAndDescription.second
@@ -99,20 +93,20 @@ fun ActionItem(
         shape = ShortXCardRoundedCornerShape,
         elevation = 0.dp
     ) {
-        Row(modifier = modifier
-            .fillMaxWidth()
+        Box(modifier = modifier
             .clip(ShortXCardRoundedCornerShape)
             .combinedClickable(onLongClick = {
                 tipDialogState.show()
             }) {
                 onClick()
-            }) {
-            Row(
+            },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 ColoredIcon(size = 32.dp, padding = 0.dp) {
                     RemixIcon(
@@ -120,12 +114,12 @@ fun ActionItem(
                         remixName = icon,
                     )
                 }
-
-                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
+                TinySpacer()
+                Column(modifier = Modifier) {
                     Text(
-                        text = title, style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 14.sp
-                        )
+                        text = title,
+                        fontSize = 12.5.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
