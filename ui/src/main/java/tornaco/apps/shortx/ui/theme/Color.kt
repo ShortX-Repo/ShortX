@@ -66,3 +66,4 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 
 val NoteTextColor = Color(0xFF777777)
+val VipColorGold = Color(0XFFFFCC33)

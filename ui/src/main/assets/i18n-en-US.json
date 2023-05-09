@@ -259,6 +259,8 @@
   "ui.context.data.title": "Context variables",
   "ui.context.data.message": "Context variables refer to some variables contained in an Fact when it is triggered. You can access these variables in Conditions or Actions with {accessor} \n\n{obj} contains below context variables",
   "ui.context.data.example": "Access this variable by: {eg}",
+  "ui.subscription.subscribed": "Premium",
+  "ui.subscription.not.subscribed": "Free trail",
   "ui.subscription.intro.title": "Premium feature",
   "ui.subscription.intro.message": "You are experiencing the free version, upgrade to the premium version to unlock all features",
   "ui.subscription.intro.yes": "Upgrade",

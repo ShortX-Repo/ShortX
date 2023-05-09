@@ -3,9 +3,7 @@ package tornaco.apps.shortx.ui.settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.outlined.*
@@ -13,16 +11,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.main.AppRoute
+import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -158,7 +157,33 @@ fun SettingsScreen(
                         addAll(devSettings(state, vm))
                         addAll(aboutSettings(state, viewOpenSourceLicense))
                     })
+
+                    StandardSpacer()
+                    SubscriptionStatus()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubscriptionStatus() {
+    Box(modifier = Modifier) {
+        val navHost = LocalNavHostController.current
+        val mainViewModel = hiltViewModel<MainViewModel>()
+        val mainState by mainViewModel.state.collectAsState()
+        if (mainState.isSubscribed) {
+            TextButton(
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                onClick = {
+                    navHost.navigate(AppRoute.SubscriptionIntro.name)
+                }) {
+                LottieLoadingView(
+                    file = "21192-premium-gold.json",
+                    modifier = Modifier.size(30.dp),
+                )
+                SmallSpacer()
+                Text(text = LocalI18N.current["ui.subscription.subscribed"], fontSize = 12.5.sp)
             }
         }
     }

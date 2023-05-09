@@ -16,10 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.LocalDrawerState
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
-import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
