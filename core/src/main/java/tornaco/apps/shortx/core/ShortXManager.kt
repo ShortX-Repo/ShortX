@@ -121,6 +121,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getRuleCount(): Int {
+        return invokeService(0) {
+            ruleCount
+        }
+    }
+
     fun getInstalledApps(): List<App> {
         return invokeService(emptyList()) {
             installedApps.map {
@@ -174,6 +180,12 @@ class ShortXManager(private val service: IShortX) {
             allDirectAction.map {
                 DirectAction.parseFrom(it.byte)
             }
+        }
+    }
+
+    fun getDirectActionCount(): Int {
+        return invokeService(0) {
+            directActionCount
         }
     }
 

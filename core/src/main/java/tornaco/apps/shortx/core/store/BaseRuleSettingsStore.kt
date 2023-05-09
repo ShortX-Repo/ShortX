@@ -62,6 +62,8 @@ open class BaseRuleSettingsStore(
         return rulesCache.toList()
     }
 
+    fun getRuleCount() = rulesCache.size
+
     private suspend fun readInternal() = withContext(Dispatchers.IO) {
         if (!storeFile.exists()) {
             logger.d("skip read no-exists file: $storeFile")

@@ -18,6 +18,7 @@ interface IShortX {
     void setRuleEnabled(String ruleId, boolean enable);
 
     List<ByteArrayWrapper> getAllRules();
+    int getRuleCount();
     // Rules end
 
     List<ByteArrayWrapper> getInstalledApps();
@@ -31,6 +32,7 @@ interface IShortX {
     void deleteDirectAction(String id);
     ByteArrayWrapper getDirectActionById(String id);
     List<ByteArrayWrapper> getAllDirectAction();
+    int getDirectActionCount();
     void executeDirectionActionById(String id);
     // Direct Actions end
 

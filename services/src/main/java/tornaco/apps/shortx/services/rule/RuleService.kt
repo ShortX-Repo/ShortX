@@ -222,6 +222,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         return ruleSettingsStore.getAllRules()
     }
 
+    fun getRuleCount() = ruleSettingsStore.getRuleCount()
+
     fun addRuleChangeListener(listener: () -> Unit) {
         ruleChangeListeners.add(listener)
     }
@@ -250,6 +252,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     fun getAllDirectAction(): List<DirectAction> {
         return dasSettingsStore.getAllDirectActions()
     }
+
+    fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
 
     fun executeDirectionActionById(id: String) {
         getDirectActionById(id)?.let {

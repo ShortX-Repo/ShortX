@@ -116,6 +116,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             }
         }
 
+        override fun getRuleCount(): Int {
+            return shortXContext.rule.getRuleCount()
+        }
+
         override fun getInstalledApps(): List<ByteArrayWrapper> {
             return shortXContext.appState.getInstalledApps().map {
                 ByteArrayWrapper(it.toByteArray())
@@ -154,6 +158,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             return shortXContext.rule.getAllDirectAction().map {
                 ByteArrayWrapper(it.toByteArray())
             }
+        }
+
+        override fun getDirectActionCount(): Int {
+            return shortXContext.rule.getDirectActionCount()
         }
 
         override fun executeDirectionActionById(id: String) {

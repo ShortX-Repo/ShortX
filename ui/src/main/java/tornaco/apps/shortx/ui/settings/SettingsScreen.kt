@@ -17,11 +17,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.row.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -203,33 +205,40 @@ private fun dataSettings(
     vm: SettingsViewModel,
     pickRestoreFile: () -> Unit,
     resetData: () -> Unit,
-) = listOf(
-    Preference.Category(LocalI18N.current["ui.settings.data"]),
-    Preference.TextPreference(
-        icon = Remix.Device.save_3_line,
-        title = LocalI18N.current["ui.settings.data.backup.title"],
-        summary = LocalI18N.current["ui.settings.data.backup.summary"],
-        onClick = {
-            vm.backup()
-        }
-    ),
-    Preference.TextPreference(
-        icon = Remix.System.download_2_line,
-        title = LocalI18N.current["ui.settings.data.restore.title"],
-        summary = LocalI18N.current["ui.settings.data.restore.summary"],
-        onClick = {
-            pickRestoreFile()
-        }
-    ),
-    Preference.TextPreference(
-        icon = Remix.System.history_line,
-        title = LocalI18N.current["ui.settings.data.reset.title"],
-        summary = LocalI18N.current["ui.settings.data.reset.summary"],
-        onClick = {
-            resetData()
-        }
+): List<Preference> {
+    val featureAccess = featureAccessCheckUi()
+    return listOf(
+        Preference.Category(LocalI18N.current["ui.settings.data"]),
+        Preference.TextPreference(
+            icon = Remix.Device.save_3_line,
+            title = LocalI18N.current["ui.settings.data.backup.title"],
+            summary = LocalI18N.current["ui.settings.data.backup.summary"],
+            onClick = {
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
+                    vm.backup()
+                }
+            }
+        ),
+        Preference.TextPreference(
+            icon = Remix.System.download_2_line,
+            title = LocalI18N.current["ui.settings.data.restore.title"],
+            summary = LocalI18N.current["ui.settings.data.restore.summary"],
+            onClick = {
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
+                    pickRestoreFile()
+                }
+            }
+        ),
+        Preference.TextPreference(
+            icon = Remix.System.history_line,
+            title = LocalI18N.current["ui.settings.data.reset.title"],
+            summary = LocalI18N.current["ui.settings.data.reset.summary"],
+            onClick = {
+                resetData()
+            }
+        )
     )
-)
+}
 
 @Composable
 private fun devSettings(
