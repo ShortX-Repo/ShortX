@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import java.util.*
 import javax.inject.Inject
 
@@ -64,6 +65,7 @@ data class DirectActionUM(
 ) : Parcelable
 
 data class MainState(
+    val isSubscribed: Boolean = false,
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
@@ -150,9 +152,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             copy(
                 isActivated = shortXManager.isInstalled,
                 isFrameworkUpdated = shortXManager.isFrameworkUpdated,
+                isSubscribed = isLVLChecked(context)
             )
         }
-
 
         shortXManager.registerJobStatusListener(jobStatusListener)
 

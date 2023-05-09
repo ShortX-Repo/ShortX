@@ -123,7 +123,40 @@ fun MainScaffold(
                         } else it
                     },
             ) {
-                AnimatedVisibility(visible = state.isFrameworkUpdated && !state.isIgnoreFrameworkUpdate) {
+                val navHost = LocalNavHostController.current
+
+                AnimatedVisibility(visible = state.isSubscribed.not()) {
+                    Card(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .clickable {
+                                    navHost.navigate(AppRoute.SubscriptionIntro.name)
+                                }
+                                .padding(16.dp)
+                        ) {
+                            Row {
+                                RemixIcon(
+                                    modifier = Modifier.offset(y = 2.dp),
+                                    remixName = Remix.Finance.gift_2_line
+                                )
+                                MediumSpacer()
+                                Text(
+                                    LocalI18N.current["ui.subscription.intro.message"],
+                                )
+                            }
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = state.isSubscribed
+                            && state.isFrameworkUpdated
+                            && !state.isIgnoreFrameworkUpdate
+                ) {
                     Card(
                         modifier = Modifier
                             .padding(16.dp),
