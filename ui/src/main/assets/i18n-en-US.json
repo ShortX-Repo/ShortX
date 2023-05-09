@@ -262,5 +262,9 @@
   "ui.subscription.intro.title": "Premium feature",
   "ui.subscription.intro.message": "You are experiencing the free version, upgrade to the premium version to unlock all features",
   "ui.subscription.intro.yes": "Upgrade",
-  "ui.subscription.intro.no": "Not now"
+  "ui.subscription.intro.no": "Not now",
+  "ui.subscription.code.verify.title": "Please wait",
+  "ui.subscription.code.verify.message": "Verifying your activation code...",
+  "ui.subscription.code.verify.fail.network": "Verification failed, please check the network or try again later",
+  "ui.subscription.code.verify.fail": "Verification failed"
 }

@@ -262,5 +262,9 @@
   "ui.subscription.intro.title": "高级版",
   "ui.subscription.intro.message": "你正在体验免费版，升级到高级版可以解锁全部功能",
   "ui.subscription.intro.yes": "升级",
-  "ui.subscription.intro.no": "不了"
+  "ui.subscription.intro.no": "不了",
+  "ui.subscription.code.verify.title": "请等待",
+  "ui.subscription.code.verify.message": "正在校验你的激活码是否有效，请耐心等待",
+  "ui.subscription.code.verify.fail.network": "校验失败，请检查网络或稍等一下再试试",
+  "ui.subscription.code.verify.fail": "校验失败"
 }

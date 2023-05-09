@@ -350,3 +350,43 @@ fun TipDialog(state: TipDialogState) {
             })
     }
 }
+
+
+class ProgressDialogState(
+    val title: String,
+    val message: String,
+) : CommonDialogState()
+
+@Composable
+fun rememberProgressDialogState(
+    title: String,
+    message: String,
+): ProgressDialogState {
+    return remember {
+        ProgressDialogState(title, message)
+    }
+}
+
+@Composable
+fun ProgressDialog(state: ProgressDialogState) {
+    if (state.isShowing) {
+        ShortXDialog(
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+            ),
+            onDismissRequest = {
+                state.dismiss()
+            },
+            title = {
+                Text(text = state.title)
+            }) {
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                CircularProgressIndicator()
+                MediumSpacer()
+                DialogMessage(text = state.message)
+            }
+        }
+    }
+}

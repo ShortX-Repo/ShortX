@@ -42,6 +42,7 @@ fun DirectActionListScreen() {
 
     LaunchedEffect(vm) {
         vm.loadDA(delay = true)
+        vm.refreshStates()
     }
 
     val appNavController = LocalNavHostController.current

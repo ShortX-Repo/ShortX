@@ -187,6 +187,14 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+    fun refreshStates() {
+        updateState {
+            copy(
+                isSubscribed = isLVLChecked(context)
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         shortXManager.unregisterJobStatusListener(jobStatusListener)

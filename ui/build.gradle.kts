@@ -119,6 +119,7 @@ dependencies {
     implementation(project(":external:reorderable"))
     implementation(project(":external:compose-color-picker"))
     implementation(project(":external:icons"))
+    implementation(project(":external:sec_net"))
 
     implementation(Lottie.composeLottie)
     implementation(Lottie.lottie)

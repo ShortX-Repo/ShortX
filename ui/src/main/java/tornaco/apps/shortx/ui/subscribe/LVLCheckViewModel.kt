@@ -39,7 +39,11 @@ class LVLCheckViewModel : ViewModel() {
         val checkerCallback = object : LicenseCheckerCallback {
             override fun allow(reason: Int) {
                 XLog.v("LicenseCheckerCallback.allow: $reason")
-                setLVLChecked(context, true)
+                setLVLChecked(
+                    context = context,
+                    checked = true,
+                    token = "GooglePlay_${System.currentTimeMillis()}"
+                )
                 _uiState.value = _uiState.value.copy(checkState = CheckState.SUCCESS)
             }
 
@@ -57,7 +61,11 @@ class LVLCheckViewModel : ViewModel() {
                         _uiState.value = _uiState.value.copy(checkState = CheckState.FAIL)
                     }
                 }
-                setLVLChecked(context, false)
+                setLVLChecked(
+                    context = context,
+                    checked = false,
+                    token = "GooglePlay_${System.currentTimeMillis()}"
+                )
             }
 
             override fun applicationError(errorCode: Int) {

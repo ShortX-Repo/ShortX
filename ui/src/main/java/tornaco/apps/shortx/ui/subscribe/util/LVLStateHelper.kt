@@ -15,25 +15,43 @@ fun isLVLChecked(context: Context): Boolean {
         .withEncryptionPassword(deviceId)
         .build()
     return try {
-        // Verify only once.
-        java.lang.Boolean.parseBoolean(
-            pref.getString(
-                BuildProp.APP_PACKAGE_NAME + "@LVL",
-                "FFFFFFFFFFFFFFFFFF"
-            )
+        val data = pref.getString(
+            BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
+            Nothing::class.java.name
         )
+        val bool = data.split("-")[0]
+        java.lang.Boolean.parseBoolean(bool)
     } catch (e: Throwable) {
         false
     }
 }
 
-fun setLVLChecked(context: Context, checked: Boolean) {
+fun getLVLToken(context: Context): String {
+    val deviceId: String = EntryPoint.getDeviceId(context)
+    val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
+        .withEncryptionPassword(deviceId)
+        .build()
+    return try {
+        val data = pref.getString(
+            BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
+            Nothing::class.java.name
+        )
+        val token = data.split("-")[1]
+        token
+    } catch (e: Throwable) {
+        ""
+    }
+}
+
+fun setLVLChecked(context: Context, checked: Boolean, token: String = "") {
     val deviceId: String = EntryPoint.getDeviceId(context)
     val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
         .withEncryptionPassword(deviceId)
         .build()
     try {
-        pref.edit().putBoolean(BuildProp.APP_PACKAGE_NAME + "@LVL", checked).apply()
+        pref.edit()
+            .putString(BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon", "$checked-$token")
+            .apply()
     } catch (e: Throwable) {
         logger.e(e)
     }

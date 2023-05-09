@@ -38,6 +38,7 @@ fun RuleScreen() {
 
     LaunchedEffect(vm) {
         vm.loadRules(delay = true)
+        vm.refreshStates()
     }
 
     val appNavController = LocalNavHostController.current
