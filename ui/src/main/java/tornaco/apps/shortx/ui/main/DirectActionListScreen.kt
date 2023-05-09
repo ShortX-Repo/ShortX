@@ -26,9 +26,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
+import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 const val EXECUTE_ANIM_DURATION = 600
@@ -45,6 +47,8 @@ fun DirectActionListScreen() {
     val appNavController = LocalNavHostController.current
     val context = LocalContext.current
 
+    val featureAccess = featureAccessCheckUi()
+
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.da",
@@ -60,13 +64,17 @@ fun DirectActionListScreen() {
             }
         },
         onClipboardClick = {
-            vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
-                ?.let {
-                    vm.importDA(it)
-                }
+            featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
+                vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
+                    ?.let {
+                        vm.importDA(it)
+                    }
+            }
         },
         onAddClick = {
-            appNavController.navigate(AppRoute.AddDA.name)
+            featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddDirectAction) {
+                appNavController.navigate(AppRoute.AddDA.name)
+            }
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
@@ -366,6 +374,8 @@ private fun ListItemOverflowMenu(
         onDelete = onDelete
     )
 
+    val featureAccess = featureAccessCheckUi()
+
     Box {
         val menuState = rememberDropdownSelectorState()
         IconButton(modifier = Modifier, onClick = {
@@ -403,7 +413,9 @@ private fun ListItemOverflowMenu(
         ), onSelect = {
             when (it.data) {
                 "shortcut" -> {
-                    ActionShortcutActivity.addShortcut(context, da)
+                    featureAccess.accessOrShowDialog(AppFeature.AppFeature_CreateShortcut) {
+                        ActionShortcutActivity.addShortcut(context, da)
+                    }
                 }
                 "dup" -> {
                     onDup(da)

@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -25,8 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
@@ -41,6 +42,9 @@ fun RuleScreen() {
 
     val appNavController = LocalNavHostController.current
     val context = LocalContext.current
+
+    val featureAccess = featureAccessCheckUi()
+
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.rule",
@@ -58,13 +62,17 @@ fun RuleScreen() {
             }
         },
         onClipboardClick = {
-            vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
-                ?.let {
-                    vm.importRule(it)
-                }
+            featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
+                vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
+                    ?.let {
+                        vm.importRule(it)
+                    }
+            }
         },
         onAddClick = {
-            appNavController.navigate(AppRoute.AddRule.name)
+            featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddRule) {
+                appNavController.navigate(AppRoute.AddRule.name)
+            }
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()

@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import tornaco.apps.shortx.core.proto.feature.AppFeature
+import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
@@ -38,6 +40,8 @@ fun rememberShareDialogState(
 
 @Composable
 fun ShareDialog(state: ShareDialogState) {
+    val featureAccess = featureAccessCheckUi()
+
     if (state.isShowing) {
         val context = LocalContext.current
         val i18N = LocalI18N.current
@@ -47,22 +51,28 @@ fun ShareDialog(state: ShareDialogState) {
             },
             onDismissRequest = { state.dismiss() }) {
             ListItem(title = i18N["ui.common.share.clipboard"]) {
-                ClipboardUtils.copyToClipboard(context, state.shareName, state.content)
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_ShareClipboard) {
+                    ClipboardUtils.copyToClipboard(context, state.shareName, state.content)
+                }
                 state.dismiss()
             }
 
             ListItem(title = i18N["ui.common.share.file"]) {
-                shareAsFile(context, state.objectTitle, state.content)
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_ShareIntent) {
+                    shareAsFile(context, state.objectTitle, state.content)
+                }
                 state.dismiss()
             }
 
             ListItem(title = i18N["ui.common.share.save.file"]) {
-                saveAsFile(state.objectTitle, state.content).let {
-                    Toast.makeText(
-                        context,
-                        i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
-                        Toast.LENGTH_LONG
-                    ).show()
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_ShareFile) {
+                    saveAsFile(state.objectTitle, state.content).let {
+                        Toast.makeText(
+                            context,
+                            i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
                 state.dismiss()
             }
