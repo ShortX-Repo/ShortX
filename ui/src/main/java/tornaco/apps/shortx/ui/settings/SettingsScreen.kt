@@ -23,7 +23,7 @@ import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
-import tornaco.apps.shortx.ui.row.featureAccessCheckUi
+import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

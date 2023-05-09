@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row.util;
+package tornaco.apps.shortx.ui.subscribe.util;
 
 import android.util.Base64;
 import android.util.Log;

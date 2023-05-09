@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row
+package tornaco.apps.shortx.ui.subscribe
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -17,11 +17,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.ui.R
-import tornaco.apps.shortx.ui.row.util.isSkipping
+import tornaco.apps.shortx.ui.subscribe.util.isSkipping
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Composable
-fun LVLCheckScreen(toNav: () -> Unit) {
+fun LVLCheckScreen(showSkipButton: Boolean = true, toNav: () -> Unit) {
     val viewModel: LVLCheckViewModel = viewModel()
     val uiState = viewModel.uiState.collectAsState()
 
@@ -50,7 +50,7 @@ fun LVLCheckScreen(toNav: () -> Unit) {
                     delayToNav(scope = scope, toNav = toNav)
                     viewModel.onSkip(context)
                 },
-                canSkip = canSkip,
+                canSkip = showSkipButton && canSkip,
                 toNav = toNav
             )
         }

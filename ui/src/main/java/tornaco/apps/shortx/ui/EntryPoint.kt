@@ -11,7 +11,6 @@ import lang3.RandomStringUtils
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.base.I18NCache
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.util.*
@@ -50,9 +49,9 @@ object EntryPoint {
             .apply()
     }
 
-    fun getDeviceId(context: Context?): String {
+    fun getDeviceId(context: Context): String {
         return PreferenceManager.getDefaultSharedPreferences(context)
-            .getString("did", "N/A").fallbackOnEmpty("N/A")
+            .getString("did", "") ?: ""
     }
 
     private fun getAndroidId(context: Context): String {

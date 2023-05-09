@@ -11,4 +11,6 @@ enum class AppRoute {
     GlobalDetails,
     DanmuUISettings,
     ViewOpenSourceLicense,
+    SubscriptionIntro,
+    LVLCheck,
 }

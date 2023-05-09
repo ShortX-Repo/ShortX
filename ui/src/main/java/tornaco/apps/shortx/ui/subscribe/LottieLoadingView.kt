@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row
+package tornaco.apps.shortx.ui.subscribe
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.runtime.Composable

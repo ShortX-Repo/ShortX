@@ -19,6 +19,8 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreen
+import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
+import tornaco.apps.shortx.ui.subscribe.SubscribeScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -149,6 +151,19 @@ fun AppNavigationGraph(
                 )
             ) {
                 appNavController.popBackStack()
+            }
+        }
+
+        animateComposable(AppRoute.SubscriptionIntro.name) {
+            SubscribeScreen {
+                appNavController.popBackStack()
+            }
+        }
+
+        animateComposable(AppRoute.LVLCheck.name) {
+            val navHost = LocalNavHostController.current
+            LVLCheckScreen(showSkipButton = false) {
+                navHost.popBackStack()
             }
         }
 

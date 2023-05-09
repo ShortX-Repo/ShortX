@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row
+package tornaco.apps.shortx.ui.subscribe
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row
+package tornaco.apps.shortx.ui.subscribe
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.EntryPoint
-import tornaco.apps.shortx.ui.row.util.hasAChanceToSkipLicenseCheck
-import tornaco.apps.shortx.ui.row.util.setLVLChecked
-import tornaco.apps.shortx.ui.row.util.skipLicenseCheckOnce
+import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
+import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
+import tornaco.apps.shortx.ui.subscribe.util.skipLicenseCheckOnce
 
 private val SALT = byteArrayOf(
     -46, 65, 30, -128, -13, -57, 74, -64, 51, 88, -95, -45, 77, -127, -36, -113, -11, 32, -64, 89

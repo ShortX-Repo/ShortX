@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.row
+package tornaco.apps.shortx.ui.subscribe
 
 import android.content.Context
 import androidx.compose.material3.Text
@@ -10,8 +10,10 @@ import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
-import tornaco.apps.shortx.ui.row.util.isLVLChecked
+import tornaco.apps.shortx.ui.main.AppRoute
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 
 const val FREE_USER_MAX_PKG_SET_COUNT = 3
 const val FREE_USER_MAX_RULE_COUNT = 3
@@ -37,6 +39,7 @@ fun rememberFeatureAccessDialogState(
 @Composable
 fun FeatureAccessDialog(state: FeatureAccessChecker) {
     if (state.isShowing) {
+        val navController = LocalNavHostController.current
         ShortXAlertDialog(
             onDismissRequest = {
                 state.dismiss()
@@ -44,6 +47,7 @@ fun FeatureAccessDialog(state: FeatureAccessChecker) {
             confirmButton = {
                 TextButton(onClick = {
                     state.dismiss()
+                    navController.navigate(AppRoute.SubscriptionIntro.name)
                 }) {
                     Text(text = LocalI18N.current["ui.subscription.intro.yes"])
                 }
