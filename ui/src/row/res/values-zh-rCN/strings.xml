@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ui_app_name">ShortX +</string>
-
-    <string name="lvl_checking_retry">重试</string>
-    <string name="lvl_checking">正在通过谷歌Play检查应用许可</string>
-    <string name="lvl_check_ok">很好！</string>
-    <string name="lvl_check_not_ok">错误！</string>
-    <string name="lvl_check_skip_for_now">暂时跳过</string>
-    <string name="lvl_unlicensed_dialog_body">你未获得许可</string>
-    <string name="lvl_unlicensed_dialog_retry_body">无法访问Google Play</string>
-    <string name="lvl_unlicensed_dialog_error_tips">1. 请检查你的设备网络情况，确保可以正常访问谷歌Play商店 \n2. 请检查你的谷歌服务框架，确保其处于启用状态 \n3. 请检查你的谷歌账号是否正确登录
-    </string>
 </resources>

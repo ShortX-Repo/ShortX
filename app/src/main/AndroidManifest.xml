@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="tornaco.apps.shortx">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
     <application
         android:name=".ShortXApp"
         android:allowBackup="true"

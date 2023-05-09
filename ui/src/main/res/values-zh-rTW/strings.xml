@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_app_name">ShoortX</string>
+
+    <string name="lvl_checking_retry">重试</string>
+    <string name="lvl_checking">正在通過谷歌Play檢查應用許可</string>
+    <string name="lvl_check_ok">很好！</string>
+    <string name="lvl_check_not_ok">错误！</string>
+    <string name="lvl_check_skip_for_now">暫時跳過</string>
+    <string name="lvl_unlicensed_dialog_body">未獲得許可</string>
+    <string name="lvl_unlicensed_dialog_retry_body">無法訪問Google Play</string>
+    <string name="lvl_unlicensed_dialog_error_tips">1. 請檢查你的設備網絡情況，確保可以正常訪問谷歌Play商店 \n2. 請檢查你的谷歌服務框架，確保其處於啟用狀態 \n3. 請檢查你的谷歌賬號是否正確登錄
+    </string>
+</resources>

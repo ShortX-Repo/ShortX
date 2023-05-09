@@ -120,9 +120,8 @@ dependencies {
     implementation(project(":external:compose-color-picker"))
     implementation(project(":external:icons"))
 
-    val rowImplementation by configurations
-    rowImplementation(Lottie.composeLottie)
-    rowImplementation(Lottie.lottie)
+    implementation(Lottie.composeLottie)
+    implementation(Lottie.lottie)
 
     testImplementation("junit:junit:4.13.2")
 
