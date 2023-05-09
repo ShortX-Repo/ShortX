@@ -258,5 +258,9 @@
   "ui.global.var.desc": "Manage and view global variables",
   "ui.context.data.title": "Context variables",
   "ui.context.data.message": "Context variables refer to some variables contained in an Fact when it is triggered. You can access these variables in Conditions or Actions with {accessor} \n\n{obj} contains below context variables",
-  "ui.context.data.example": "Access this variable by: {eg}"
+  "ui.context.data.example": "Access this variable by: {eg}",
+  "ui.subscription.intro.title": "Premium feature",
+  "ui.subscription.intro.message": "The free trial has limited features, please upgrade to the premium version to unlock full features",
+  "ui.subscription.intro.yes": "Upgrade",
+  "ui.subscription.intro.no": "Not now"
 }

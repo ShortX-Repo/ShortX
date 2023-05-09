@@ -1,16 +1,15 @@
 package tornaco.apps.shortx.ui.row
 
-import android.R
 import android.content.Context
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.row.util.isLVLChecked
 
@@ -46,14 +45,21 @@ fun FeatureAccessDialog(state: FeatureAccessChecker) {
                 TextButton(onClick = {
                     state.dismiss()
                 }) {
-                    Text(text = stringResource(id = R.string.ok))
+                    Text(text = LocalI18N.current["ui.subscription.intro.yes"])
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    state.dismiss()
+                }) {
+                    Text(text = LocalI18N.current["ui.subscription.intro.no"])
                 }
             },
             title = {
-                Text(text = "")
+                Text(LocalI18N.current["ui.subscription.intro.title"])
             },
             text = {
-                Text(text = "Feature message")
+                Text(text = LocalI18N.current["ui.subscription.intro.message"])
             })
     }
 }
