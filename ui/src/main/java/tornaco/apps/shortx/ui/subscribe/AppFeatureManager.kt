@@ -80,16 +80,22 @@ class AppFeatureManager(private val context: Context) {
     fun canAccess(feature: AppFeature): Boolean {
         return when (feature) {
             AppFeature.AppFeature_AddPkgSet -> {
-                return shortXManager.getAllPkgSets(false).size <= FREE_USER_MAX_PKG_SET_COUNT
+                return shortXManager.getAllPkgSets(false).size <= FREE_USER_MAX_PKG_SET_COUNT || isLVLChecked(
+                    context
+                )
             }
             AppFeature.AppFeature_DanmuSettings -> {
                 isLVLChecked(context)
             }
             AppFeature.AppFeature_AddRule -> {
-                return shortXManager.getRuleCount() <= FREE_USER_MAX_RULE_COUNT
+                return shortXManager.getRuleCount() <= FREE_USER_MAX_RULE_COUNT || isLVLChecked(
+                    context
+                )
             }
             AppFeature.AppFeature_AddDirectAction -> {
-                return shortXManager.getDirectActionCount() <= FREE_USER_MAX_DA_COUNT
+                return shortXManager.getDirectActionCount() <= FREE_USER_MAX_DA_COUNT || isLVLChecked(
+                    context
+                )
             }
             AppFeature.AppFeature_ShareClipboard -> isLVLChecked(context)
             AppFeature.AppFeature_ShareFile -> isLVLChecked(context)
