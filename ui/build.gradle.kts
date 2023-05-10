@@ -80,7 +80,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     implementation("com.google.accompanist:accompanist-placeholder-material:0.28.0")
 
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0-beta01")
@@ -110,6 +110,13 @@ dependencies {
     // https://github.com/AmrDeveloper/CodeView
     implementation("io.github.amrdeveloper:codeview:1.3.8")
 
+    val markwon_version = "4.6.2"
+    implementation("io.noties.markwon:core:$markwon_version")
+    implementation("io.noties.markwon:ext-strikethrough:$markwon_version")
+    implementation("io.noties.markwon:ext-tables:$markwon_version")
+    implementation("io.noties.markwon:html:$markwon_version")
+    implementation("io.noties.markwon:linkify:$markwon_version")
+
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
     implementation(project(":services"))
@@ -128,8 +135,8 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.3")
 }

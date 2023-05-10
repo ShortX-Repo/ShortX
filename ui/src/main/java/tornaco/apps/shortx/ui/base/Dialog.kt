@@ -379,7 +379,7 @@ fun ProgressDialog(state: ProgressDialogState) {
                 state.dismiss()
             },
             title = {
-                Text(text = state.title)
+                DialogTitle(text = state.title)
             }) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {

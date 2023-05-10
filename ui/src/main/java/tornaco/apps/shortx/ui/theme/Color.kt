@@ -66,4 +66,7 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 
 val NoteTextColor = Color(0xFF777777)
-val VipColorGold = Color(0XFFFFCC33)
+val VipColorGold = Color(0XFFFF8F00)
+val WeChatGreen = Color(0XFF4CAF50)
+val AliBlue = Color(0XFF2962ff)
+val PayPalBlue = Color(0XFF0277BD)

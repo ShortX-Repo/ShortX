@@ -20,24 +20,32 @@
 package tornaco.apps.shortx.ui.subscribe
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
-import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.*
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @Composable
 fun SubscribeScreen(back: () -> Unit) {
@@ -46,12 +54,13 @@ fun SubscribeScreen(back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            val i18N = LocalI18N.current
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         title = {
                             Text(
-                                text = LocalI18N.current["ui.subscription.intro.title"]
+                                text = i18N["ui.subscription.intro.title"]
                             )
                         },
                         navigationIcon = {
@@ -64,78 +73,171 @@ fun SubscribeScreen(back: () -> Unit) {
                         scrollBehavior = scrollBehavior,
                     )
                 }) { contentPadding ->
-                Column(
+
+                Box(
                     modifier = Modifier
-                        .padding(contentPadding)
+                        .fillMaxSize()
                         .padding(horizontal = 16.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(contentPadding)
                 ) {
-                    val progressDialog = rememberProgressDialogState(
-                        title = LocalI18N.current["ui.subscription.code.verify.title"],
-                        message = LocalI18N.current["ui.subscription.code.verify.message"]
-                    )
-                    ProgressDialog(state = progressDialog)
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        val progressDialog = rememberProgressDialogState(
+                            title = i18N["ui.subscription.code.verify.title"],
+                            message = i18N["ui.subscription.code.verify.message"]
+                        )
+                        ProgressDialog(state = progressDialog)
 
-                    val context = LocalContext.current
-                    val failMsg = LocalI18N.current["ui.subscription.code.verify.fail"]
-                    val failNetworkMsg =
-                        LocalI18N.current["ui.subscription.code.verify.fail.network"]
+                        val context = LocalContext.current
+                        val failMsg = i18N["ui.subscription.code.verify.fail"]
+                        val failNetworkMsg =
+                            i18N["ui.subscription.code.verify.fail.network"]
 
-                    val vm = hiltViewModel<SubscribeViewModel>()
-                    LaunchedEffect(vm) {
-                        vm.codeVerifyEvent.collectLatest {
-                            when (it) {
-                                CodeVerifyEvent.Verifying -> {
-                                    progressDialog.show()
-                                }
-                                CodeVerifyEvent.Success -> {
-                                    progressDialog.dismiss()
-                                }
-                                CodeVerifyEvent.Fail -> {
-                                    progressDialog.dismiss()
-                                    Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
-                                }
-                                CodeVerifyEvent.NetworkError -> {
-                                    progressDialog.dismiss()
-                                    Toast.makeText(context, failNetworkMsg, Toast.LENGTH_LONG)
-                                        .show()
-                                }
-                                CodeVerifyEvent.Error -> {
-                                    progressDialog.dismiss()
-                                    Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
+                        val vm = hiltViewModel<SubscribeViewModel>()
+                        LaunchedEffect(vm) {
+                            vm.codeVerifyEvent.collectLatest {
+                                when (it) {
+                                    CodeVerifyEvent.Verifying -> {
+                                        progressDialog.show()
+                                    }
+                                    CodeVerifyEvent.Success -> {
+                                        progressDialog.dismiss()
+                                    }
+                                    CodeVerifyEvent.Fail -> {
+                                        progressDialog.dismiss()
+                                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
+                                    }
+                                    CodeVerifyEvent.NetworkError -> {
+                                        progressDialog.dismiss()
+                                        Toast.makeText(context, failNetworkMsg, Toast.LENGTH_LONG)
+                                            .show()
+                                    }
+                                    CodeVerifyEvent.Error -> {
+                                        progressDialog.dismiss()
+                                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    val navHost = LocalNavHostController.current
+                        val navHost = LocalNavHostController.current
 
 
-                    val inputDialogState = rememberTextInputState(
-                        title = LocalI18N.current["Input code"],
-                        message = null,
-                        onSelected = {
-                            vm.verify(it.trim().replace(System.lineSeparator(), ""))
+                        val inputDialogState = rememberTextInputState(
+                            title = i18N["Input code"],
+                            message = null,
+                            onSelected = {
+                                vm.verify(it.trim().replace(System.lineSeparator(), ""))
+                            }
+                        )
+                        TextInputDialog(state = inputDialogState)
+
+
+                        LargeSpacer()
+
+                        val textColor = LocalContentColor.current.takeOrElse {
+                            MaterialTheme.colorScheme.onPrimaryContainer
                         }
-                    )
-                    TextInputDialog(state = inputDialogState)
+                        MarkdownText(
+                            markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
+                                "priceCNY" to "18",
+                                "priceUSD" to "2.6",
+                                "mail" to "shortx@163.com",
+                                "qq" to "12345",
+                                "app_name" to "ShortX",
+                            )],
+                            color = textColor,
+                            onLinkClicked = {
+                                ClipboardUtils.copyToClipboard(context, "link", it)
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        )
 
-                    FilledTonalButton(onClick = {
-                        inputDialogState.show()
-                    }) {
-                        Text(text = "Activation Code verify")
+
+                        LargeSpacer()
+                        LargeSpacer()
+
+
+                        Fabs(inputDialogState, navHost)
                     }
-
-
-                    FilledTonalButton(onClick = {
-                        navHost.navigate(AppRoute.LVLCheck.name)
-                    }) {
-                        Text(text = "Google Play verify")
-                    }
-
-
                 }
+
             }
         }
+    }
+}
+
+@Composable
+private fun Fabs(
+    inputDialogState: TextInputState,
+    navHost: NavHostController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 64.dp),
+        horizontalAlignment = Alignment.End
+    ) {
+
+        ExtendedFloatingActionButton(
+            containerColor = WeChatGreen,
+            onClick = { /*TODO*/ },
+            text = {
+                Text(text = "Wechat", color = Color.White)
+            },
+            icon = {
+                RemixIcon(tint = Color.White, remixName = Remix.Logos.wechat_pay_fill)
+            })
+        StandardSpacer()
+
+        ExtendedFloatingActionButton(
+            containerColor = AliBlue,
+            onClick = { /*TODO*/ },
+            text = {
+                Text(text = "Ali Pay", color = Color.White)
+            },
+            icon = {
+                RemixIcon(tint = Color.White, remixName = Remix.Logos.alipay_fill)
+            })
+        StandardSpacer()
+
+        ExtendedFloatingActionButton(
+            containerColor = PayPalBlue,
+            onClick = { /*TODO*/ },
+            text = {
+                Text(text = "PayPal", color = Color.White)
+            },
+            icon = {
+                RemixIcon(tint = Color.White, remixName = Remix.Logos.paypal_fill)
+            })
+        StandardSpacer()
+        StandardSpacer()
+
+        ExtendedFloatingActionButton(
+            containerColor = VipColorGold,
+            onClick = { inputDialogState.show() },
+            text = {
+                Text(text = "Verify Code", color = Color.White)
+            },
+            icon = {
+                RemixIcon(tint = Color.White, remixName = Remix.System.login_circle_fill)
+            })
+        StandardSpacer()
+
+        ExtendedFloatingActionButton(
+            containerColor = VipColorGold,
+            onClick = { navHost.navigate(AppRoute.LVLCheck.name) },
+            text = {
+                Text(text = "Verify Google", color = Color.White)
+            },
+            icon = {
+                RemixIcon(tint = Color.White, remixName = Remix.Logos.google_play_fill)
+            })
     }
 }

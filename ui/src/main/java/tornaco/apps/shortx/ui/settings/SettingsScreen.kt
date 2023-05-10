@@ -171,6 +171,9 @@ private fun SubscriptionStatus() {
     Box(modifier = Modifier) {
         val navHost = LocalNavHostController.current
         val mainViewModel = hiltViewModel<MainViewModel>()
+        LaunchedEffect(mainViewModel) {
+            mainViewModel.refreshStates()
+        }
         val mainState by mainViewModel.state.collectAsState()
         if (mainState.isSubscribed) {
             TextButton(
