@@ -9,6 +9,10 @@ private val logger = Logger()
 private var skipTimes = 0
 var isSkipping = false
 
+const val LVL_SRC_GP = "GP"
+
+fun String.isGPToken() = LVL_SRC_GP == this
+
 fun isLVLChecked(context: Context): Boolean {
     val deviceId: String = EntryPoint.getDeviceId(context)
     val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)

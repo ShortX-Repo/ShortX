@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.EntryPoint
+import tornaco.apps.shortx.ui.subscribe.util.LVL_SRC_GP
 import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
 import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
 import tornaco.apps.shortx.ui.subscribe.util.skipLicenseCheckOnce
@@ -42,7 +43,7 @@ class LVLCheckViewModel : ViewModel() {
                 setLVLChecked(
                     context = context,
                     checked = true,
-                    token = "GooglePlay_${System.currentTimeMillis()}"
+                    token = LVL_SRC_GP
                 )
                 _uiState.value = _uiState.value.copy(checkState = CheckState.SUCCESS)
             }
@@ -63,8 +64,7 @@ class LVLCheckViewModel : ViewModel() {
                 }
                 setLVLChecked(
                     context = context,
-                    checked = false,
-                    token = "GooglePlay_${System.currentTimeMillis()}"
+                    checked = false
                 )
             }
 

@@ -13,13 +13,15 @@ import tornaco.android.sec.net.S
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.subscribe.code.Repo
 import tornaco.apps.shortx.ui.subscribe.code.VerifyResult
+import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
+import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
 import javax.inject.Inject
 
-enum class SubscriptionSource {
-    GooglePlay,
-    ActivationCode
+sealed interface SubscriptionSource {
+    object GooglePlay : SubscriptionSource
+    data class ActivationCode(val code: String) : SubscriptionSource
 }
 
 data class SubscriptionState(
@@ -46,8 +48,22 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     val codeVerifyEvent = _codeVerifyEvent.asSharedFlow()
 
     init {
+        loadState()
+    }
+
+    fun loadState() {
+        val isSubscribed = isLVLChecked(context)
+        var source: SubscriptionSource? = null
+        if (isSubscribed) {
+            val token = getLVLToken(context)
+            source = if (token.isGPToken()) {
+                SubscriptionSource.GooglePlay
+            } else {
+                SubscriptionSource.ActivationCode(token)
+            }
+        }
         updateState {
-            copy(isSubscribed = isLVLChecked(context))
+            copy(isSubscribed = isSubscribed, source = source)
         }
     }
 

@@ -15,7 +15,7 @@
  *
  */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.subscribe
 
@@ -27,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,13 +54,12 @@ fun SubscribeScreen(back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            val i18N = LocalI18N.current
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     MediumTopAppBar(
                         title = {
                             Text(
-                                text = i18N["ui.subscription.intro.title"]
+                                text = LocalI18N.current["ui.subscription.intro.title"]
                             )
                         },
                         navigationIcon = {
@@ -78,103 +79,147 @@ fun SubscribeScreen(back: () -> Unit) {
                         .padding(horizontal = 16.dp)
                         .padding(contentPadding)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        val progressDialog = rememberProgressDialogState(
-                            title = i18N["ui.subscription.code.verify.title"],
-                            message = i18N["ui.subscription.code.verify.message"]
-                        )
-                        ProgressDialog(state = progressDialog)
-
-                        val context = LocalContext.current
-                        val failMsg = i18N["ui.subscription.code.verify.fail"]
-                        val failNetworkMsg =
-                            i18N["ui.subscription.code.verify.fail.network"]
-
-                        val vm = hiltViewModel<SubscribeViewModel>()
-                        LaunchedEffect(vm) {
-                            vm.codeVerifyEvent.collectLatest {
-                                when (it) {
-                                    CodeVerifyEvent.Verifying -> {
-                                        progressDialog.show()
-                                    }
-                                    CodeVerifyEvent.Success -> {
-                                        progressDialog.dismiss()
-                                    }
-                                    CodeVerifyEvent.Fail -> {
-                                        progressDialog.dismiss()
-                                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
-                                    }
-                                    CodeVerifyEvent.NetworkError -> {
-                                        progressDialog.dismiss()
-                                        Toast.makeText(context, failNetworkMsg, Toast.LENGTH_LONG)
-                                            .show()
-                                    }
-                                    CodeVerifyEvent.Error -> {
-                                        progressDialog.dismiss()
-                                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
-                                    }
-                                }
-                            }
-                        }
-
-                        val navHost = LocalNavHostController.current
-
-
-                        val inputDialogState = rememberTextInputState(
-                            title = i18N["Input code"],
-                            message = null,
-                            onSelected = {
-                                vm.verify(it.trim().replace(System.lineSeparator(), ""))
-                            }
-                        )
-                        TextInputDialog(state = inputDialogState)
-
-
-                        LargeSpacer()
-
-                        val textColor = LocalContentColor.current.takeOrElse {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        }
-                        MarkdownText(
-                            markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
-                                "priceCNY" to "18",
-                                "priceUSD" to "2.6",
-                                "mail" to "shortx@163.com",
-                                "qq" to "12345",
-                                "app_name" to "ShortX",
-                            )],
-                            color = textColor,
-                            onLinkClicked = {
-                                kotlin.runCatching {
-                                    context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                        data = it.toUri()
-                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    })
-                                }
-
-                                ClipboardUtils.copyToClipboard(context, "link", it)
-                                Toast.makeText(
-                                    context,
-                                    i18N["ui.common.copied.to.clipboard"],
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        )
-
-
-                        LargeSpacer()
-                        LargeSpacer()
-
-
-                        Fabs(inputDialogState, navHost)
+                    val vm = hiltViewModel<SubscribeViewModel>()
+                    val state by vm.state.collectAsState()
+                    if (state.isSubscribed) {
+                        SubscribedUi()
+                    } else {
+                        UnsubscribedUi()
                     }
                 }
 
             }
         }
+    }
+}
+
+@Composable
+private fun SubscribedUi() {
+    val vm = hiltViewModel<SubscribeViewModel>()
+    val state by vm.state.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .padding(top = 32.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        when (state.source) {
+            is SubscriptionSource.ActivationCode -> {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RemixIcon(remixName = Remix.System.shield_check_fill, tint = VerifiedGreen)
+                    SmallSpacer()
+                    MediumTitle(text = "Verified by Activation Code")
+                }
+            }
+            SubscriptionSource.GooglePlay -> {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RemixIcon(remixName = Remix.Logos.google_play_fill, tint = VerifiedGreen)
+                    SmallSpacer()
+                    MediumTitle(text = "Verified by Google Play")
+                }
+            }
+            null -> {}
+        }
+    }
+}
+
+
+@Composable
+private fun UnsubscribedUi() {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        val i18N = LocalI18N.current
+
+        val progressDialog = rememberProgressDialogState(
+            title = i18N["ui.subscription.code.verify.title"],
+            message = i18N["ui.subscription.code.verify.message"]
+        )
+        ProgressDialog(state = progressDialog)
+
+        val context = LocalContext.current
+        val failMsg = i18N["ui.subscription.code.verify.fail"]
+        val failNetworkMsg =
+            i18N["ui.subscription.code.verify.fail.network"]
+
+        val vm = hiltViewModel<SubscribeViewModel>()
+        LaunchedEffect(vm) {
+            vm.codeVerifyEvent.collectLatest {
+                when (it) {
+                    CodeVerifyEvent.Verifying -> {
+                        progressDialog.show()
+                    }
+                    CodeVerifyEvent.Success -> {
+                        progressDialog.dismiss()
+                    }
+                    CodeVerifyEvent.Fail -> {
+                        progressDialog.dismiss()
+                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
+                    }
+                    CodeVerifyEvent.NetworkError -> {
+                        progressDialog.dismiss()
+                        Toast.makeText(context, failNetworkMsg, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                    CodeVerifyEvent.Error -> {
+                        progressDialog.dismiss()
+                        Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+        val navHost = LocalNavHostController.current
+
+
+        val inputDialogState = rememberTextInputState(
+            title = i18N["Input code"],
+            message = null,
+            onSelected = {
+                vm.verify(it.trim().replace(System.lineSeparator(), ""))
+            }
+        )
+        TextInputDialog(state = inputDialogState)
+
+
+        LargeSpacer()
+
+        val textColor = LocalContentColor.current.takeOrElse {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        }
+        MarkdownText(
+            markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
+                "priceCNY" to "18",
+                "priceUSD" to "2.6",
+                "mail" to "shortx@163.com",
+                "qq" to "12345",
+                "app_name" to "ShortX",
+            )],
+            color = textColor,
+            onLinkClicked = {
+                kotlin.runCatching {
+                    context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data = it.toUri()
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    })
+                }
+
+                ClipboardUtils.copyToClipboard(context, "link", it)
+                Toast.makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        )
+
+
+        LargeSpacer()
+        LargeSpacer()
+
+
+        Fabs(inputDialogState, navHost)
     }
 }
 
