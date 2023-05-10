@@ -19,8 +19,8 @@
 
 package tornaco.apps.shortx.ui.subscribe
 
+import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,13 +30,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.collectLatest
@@ -150,6 +148,13 @@ fun SubscribeScreen(back: () -> Unit) {
                             )],
                             color = textColor,
                             onLinkClicked = {
+                                kotlin.runCatching {
+                                    context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                        data = it.toUri()
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    })
+                                }
+
                                 ClipboardUtils.copyToClipboard(context, "link", it)
                                 Toast.makeText(
                                     context,
@@ -178,6 +183,21 @@ private fun Fabs(
     inputDialogState: TextInputState,
     navHost: NavHostController
 ) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
+
+    val wechatPayQRDialogState = rememberCommonDialogState()
+    ImageDialog(wechatPayQRDialogState, R.drawable.ui_pay_qr_wechat)
+
+    val aliPayQRDialogState = rememberCommonDialogState()
+    ImageDialog(aliPayQRDialogState, R.drawable.ui_pay_qr_alipay)
+
+    val paypalDialogState = rememberTipDialogState(
+        title = "Paypal",
+        tip = "https://www.paypal.me/tornaco"
+    )
+    TipDialog(state = paypalDialogState)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,7 +207,7 @@ private fun Fabs(
 
         ExtendedFloatingActionButton(
             containerColor = WeChatGreen,
-            onClick = { /*TODO*/ },
+            onClick = { wechatPayQRDialogState.show() },
             text = {
                 Text(text = "Wechat", color = Color.White)
             },
@@ -198,7 +218,7 @@ private fun Fabs(
 
         ExtendedFloatingActionButton(
             containerColor = AliBlue,
-            onClick = { /*TODO*/ },
+            onClick = { aliPayQRDialogState.show() },
             text = {
                 Text(text = "Ali Pay", color = Color.White)
             },
@@ -209,7 +229,19 @@ private fun Fabs(
 
         ExtendedFloatingActionButton(
             containerColor = PayPalBlue,
-            onClick = { /*TODO*/ },
+            onClick = {
+                paypalDialogState.show()
+                ClipboardUtils.copyToClipboard(
+                    context,
+                    "paypal",
+                    "https://www.paypal.me/tornaco"
+                )
+                Toast.makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                ).show()
+            },
             text = {
                 Text(text = "PayPal", color = Color.White)
             },

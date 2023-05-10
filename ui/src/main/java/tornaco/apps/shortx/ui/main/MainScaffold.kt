@@ -109,7 +109,7 @@ fun MainScaffold(
             val shareDialogState = rememberShareDialogState("share.shortx")
             ShareDialog(state = shareDialogState)
 
-            val rebootDialogState = rememberRebootConfirmDialogState()
+            val rebootDialogState = rememberCommonDialogState()
             RebootConfirmDialog(state = rebootDialogState)
 
             Column(
