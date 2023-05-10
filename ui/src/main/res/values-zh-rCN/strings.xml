@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ui_app_name">ShoortX</string>
-
     <string name="lvl_checking_retry">重试</string>
     <string name="lvl_checking">正在通过谷歌Play检查应用许可</string>
     <string name="lvl_check_ok">很好！</string>

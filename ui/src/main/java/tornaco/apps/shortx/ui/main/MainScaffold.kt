@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -71,7 +70,7 @@ fun MainScaffold(
                     TopAppBar(
                         title = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = stringResource(id = R.string.ui_app_name))
+                                Text(text = LocalAppName.current)
                                 SmallSpacer()
                                 ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
                                     isShowActiveDialog = true
@@ -176,7 +175,7 @@ fun MainScaffold(
                                 )
                                 MediumSpacer()
                                 Text(
-                                    LocalI18N.current["ui.framework.updated"],
+                                    LocalI18N.current["ui.framework.updated", mapOf("app_name" to LocalAppName.current)],
                                 )
                             }
                         }
@@ -230,7 +229,7 @@ private fun ActiveDialog(
     ShortXAlertDialog(title = {
         Text(text = LocalI18N.current["ui.settings.core.info.na"])
     }, text = {
-        Text(text = LocalI18N.current["ui.active.dialog.message"])
+        Text(text = LocalI18N.current["ui.active.dialog.message", mapOf("app_name" to LocalAppName.current)])
     }, onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = {
             onDismissRequest()

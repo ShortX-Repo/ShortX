@@ -1,6 +1,6 @@
 {
   "ui.privacy.statement.title": "隐私协议",
-  "ui.framework.updated": "ShortX的核心已经更新，请及时重启设备；当然你也可以继续体验，但是如果你遇到一些故障，建议你立刻重启",
+  "ui.framework.updated": "{app_name} 的核心已经更新，请及时重启设备；当然你也可以继续体验，但是如果你遇到一些故障，建议你立刻重启",
   "ui.dialog.title.current.app": "应用在前台",
   "ui.dialog.title.select.app": "选择应用",
   "ui.search.title.search.n.items": "搜素 {count} 个项目",
@@ -247,7 +247,7 @@
   "ui.pkg.set.add.title": "创建应用集",
   "ui.pkg.set.add.input.label": "输入应用集的名称",
   "ui.pkg.set.items.count": "{count}个应用",
-  "ui.active.dialog.message": "请在Xposed管理器中启用ShoortX",
+  "ui.active.dialog.message": "请在Xposed管理器中启用{app_name}",
   "ui.delete.dialog.confirm": "你确定要删除{wht}吗？",
   "ui.global.var.title": "全局变量",
   "ui.global.var.name": "变量名称",

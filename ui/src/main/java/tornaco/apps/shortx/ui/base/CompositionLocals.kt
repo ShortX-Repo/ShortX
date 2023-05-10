@@ -20,6 +20,10 @@ val LocalDrawerState = staticCompositionLocalOf<DrawerState> {
     noLocalProvidedFor("DrawerState")
 }
 
+val LocalAppName = staticCompositionLocalOf<String> {
+    noLocalProvidedFor("LocalAppName")
+}
+
 private fun noLocalProvidedFor(name: String): Nothing {
     error("CompositionLocal $name not present")
 }

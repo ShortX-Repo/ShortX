@@ -1,6 +1,6 @@
 {
   "ui.privacy.statement.title": "Privacy agreement",
-  "ui.framework.updated": "The core of ShortX has been updated, please reboot your device in time; of course you can continue to experience, but if you encounter some issues, it is recommended that you reboot immediately启",
+  "ui.framework.updated": "The core of {app_name} has been updated, please reboot your device in time; of course you can continue to experience, but if you encounter some issues, it is recommended that you reboot immediately启",
   "ui.dialog.title.select.app": "Select app",
   "ui.dialog.title.current.app": "App in Foreground",
   "ui.search.title.search.n.items": "Search {count} items",
@@ -247,7 +247,7 @@
   "ui.pkg.set.add.title": "Add Application Set",
   "ui.pkg.set.add.input.label": "Input label of the Application Set",
   "ui.pkg.set.items.count": "{count} items",
-  "ui.active.dialog.message": "Please enable ShoortX in Xposed Manager",
+  "ui.active.dialog.message": "Please enable {app_name} in Xposed Manager",
   "ui.delete.dialog.confirm": "Do you really want to delete {wht}?",
   "ui.global.var.title": "Global var",
   "ui.global.var.name": "Var name",
