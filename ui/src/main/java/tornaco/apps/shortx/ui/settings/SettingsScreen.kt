@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -235,6 +236,15 @@ private fun dataSettings(
     resetData: () -> Unit,
 ): List<Preference> {
     val featureAccess = featureAccessCheckUi()
+    val backUpFileNameDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.settings.data.backup.title"],
+        message = LocalI18N.current["ui.settings.data.backup.input.file.name"],
+        onSelected = {
+            vm.backup(it)
+        })
+    TextInputDialog(state = backUpFileNameDialogState)
+
+
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.data"]),
         Preference.TextPreference(
@@ -243,7 +253,7 @@ private fun dataSettings(
             summary = LocalI18N.current["ui.settings.data.backup.summary"],
             onClick = {
                 featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
-                    vm.backup()
+                    backUpFileNameDialogState.show(autoGenBackupFileName())
                 }
             }
         ),

@@ -19,7 +19,10 @@ class TextInputState(
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
-    fun show() {
+    var currentValue by mutableStateOf("")
+
+    fun show(initialValue: String = "") {
+        this.currentValue = initialValue
         _isShow = true
     }
 
@@ -42,16 +45,13 @@ fun rememberTextInputState(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInputDialog(state: TextInputState) {
-    var expressionString by remember(state) {
-        mutableStateOf("")
-    }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = state.title)
         }, buttons = {
             TextButton(onClick = {
-                if (expressionString.isNotBlank()) {
-                    state.onSelected(expressionString)
+                if (state.currentValue.isNotBlank()) {
+                    state.onSelected(state.currentValue)
                     state.dismiss()
                 }
             }) {
@@ -73,9 +73,9 @@ fun TextInputDialog(state: TextInputState) {
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    value = expressionString,
+                    value = state.currentValue,
                     onValueChange = {
-                        expressionString = it
+                        state.currentValue = it
                     })
             }
         })

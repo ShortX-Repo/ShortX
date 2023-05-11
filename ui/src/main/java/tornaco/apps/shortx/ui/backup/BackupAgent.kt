@@ -21,10 +21,13 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
+fun autoGenBackupFileName() =
+    "ShortX-Backup-${DateUtils.formatForFileName(System.currentTimeMillis())}"
+
 class BackupAgent(private val context: Context) {
     private val logger = Logger("BackupAgent")
 
-    suspend fun backup(): File {
+    suspend fun backup(fileName: String? = null): File {
         return withContext(Dispatchers.IO) {
             val backupTempDir = File(context.cacheDir, "backup-${System.currentTimeMillis()}")
 
@@ -48,8 +51,7 @@ class BackupAgent(private val context: Context) {
             val backupZipRootDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
-            val name =
-                "ShortX-Backup-${DateUtils.formatForFileName(System.currentTimeMillis())}.zip"
+            val name = (fileName ?: autoGenBackupFileName()) + ".zip"
 
             ZipUtils.zip(backupTempDir.absolutePath, backupZipRootDir.absolutePath, name)
 

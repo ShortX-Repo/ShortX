@@ -232,6 +232,7 @@
   "ui.settings.enable.debug.log": "Enable Log",
   "ui.settings.enable.debug.log.description": "Open debug log output",
   "ui.settings.data.backup.title": "Backup data",
+  "ui.settings.data.backup.input.file.name": "Input backup file name",
   "ui.settings.data.backup.summary": "Save your data to external Download folder",
   "ui.settings.data.restore.title": "Restore from",
   "ui.settings.data.restore.summary": "Select a backup file to restore data to this device",

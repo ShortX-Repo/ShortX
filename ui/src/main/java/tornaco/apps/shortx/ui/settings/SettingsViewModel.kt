@@ -85,10 +85,10 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    fun backup() {
+    fun backup(fileName: String) {
         viewModelScope.launch {
             kotlin.runCatching {
-                BackupAgent(context).backup().apply {
+                BackupAgent(context).backup(fileName).apply {
                     _backupPerformed.emit(BackupResult.Success(Environment.DIRECTORY_DOWNLOADS + File.separator + name))
                 }
             }.onFailure {
