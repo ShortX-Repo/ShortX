@@ -6,6 +6,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.content.res.ResourcesCompat
@@ -49,7 +51,9 @@ class ActionShortcutActivity : Activity() {
                     context.resources,
                     context.remixResId(action.icon),
                     null
-                )
+                )?.apply {
+                    setTint(android.graphics.Color.WHITE)
+                }
                 val templateDrawable =
                     ResourcesCompat.getDrawable(
                         context.resources,
@@ -57,6 +61,7 @@ class ActionShortcutActivity : Activity() {
                         null
                     )
                 val ld = templateDrawable as LayerDrawable
+                ld.setTint(Color(action.iconColor).toArgb())
                 ld.setDrawableByLayerId(R.id.settings_ic_foreground, actionIconDrawable)
 
                 val resource: Bitmap? = BitmapUtils.getBitmap(context, templateDrawable)

@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
