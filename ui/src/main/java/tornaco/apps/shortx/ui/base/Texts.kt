@@ -78,7 +78,7 @@ fun SmallTitle(text: String, color: Color = Color.Unspecified) {
     Text(
         modifier = Modifier.padding(vertical = 12.dp),
         text = text,
-        style = MaterialTheme.typography.titleSmall.copy(
+        style = MaterialTheme.typography.bodySmall.copy(
             fontWeight = FontWeight.W500,
             fontSize = 14.sp
         ),

@@ -95,8 +95,8 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         )
         is Fact.EdgeGesture -> listOf(
             i18N["ui.fact.edge.gesture"],
-            "${fact.edge}",
-            "${fact.gesture}"
+            i18N[fact.edge.displayNameKey()],
+            i18N[fact.gesture.displayNameKey()]
         )
         is Fact.KeyEvent -> listOf(
             i18N["ui.fact.key.event"],
