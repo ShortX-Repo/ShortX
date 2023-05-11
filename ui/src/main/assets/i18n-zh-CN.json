@@ -9,7 +9,7 @@
   "ui.conditions.title": "条件",
   "ui.conditions.add": "添加条件",
   "ui.conditions.true": "无条件",
-  "ui.conditions.true.desc": "触发条件满足时，动作会无条件执行",
+  "ui.conditions.true.desc": "触发器触发后，动作会无条件执行",
   "ui.conditions.eva.global.var": "比较全局变量",
   "ui.actions.title": "动作",
   "ui.actions.hook.on.enabled.title": "被启用时",
