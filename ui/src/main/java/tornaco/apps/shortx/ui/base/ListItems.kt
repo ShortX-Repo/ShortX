@@ -145,13 +145,14 @@ fun ListItem(
     icon: (@Composable () -> Unit)? = null,
     checked: Boolean,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     onCheckedChange: ((Boolean) -> Unit),
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .clickable {
+            .combinedClickable(onLongClick = onLongClick) {
                 onClick()
             },
         verticalAlignment = CenterVertically,

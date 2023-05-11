@@ -103,7 +103,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                         onDelete = {
                                             vm.delete(it.name)
                                         },
-                                        onEdit = {}
+                                        onEdit = { goToDetail(it.name)}
                                     )
                                 },
                                 onClick = {
@@ -171,7 +171,7 @@ private fun ListItemOverflowMenu(
         IconButton(modifier = Modifier, onClick = {
             menuState.open()
         }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_line)
+            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_fill)
         }
 
         DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(

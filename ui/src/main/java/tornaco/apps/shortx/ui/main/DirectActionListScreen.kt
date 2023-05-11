@@ -7,7 +7,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -186,7 +186,7 @@ fun DirectActionListContent(
                                 }
                             },
                             da = da,
-                            showOverflowMenu = showOverflowMenu,
+                            isLongClickEnabled = showOverflowMenu,
                             showDetailedContent = state.isShowDetailedDAItem,
                             onClick = {
                                 onDirectActionClick(da)
@@ -217,7 +217,7 @@ fun DirectActionListContent(
 private fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
-    showOverflowMenu: Boolean,
+    isLongClickEnabled: Boolean,
     showDetailedContent: Boolean,
     onClick: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
@@ -226,35 +226,30 @@ private fun DirectActionItem(
     onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
-    DAListItem(
-        modifier = modifier,
-        title = da.title,
-        text1 = if (showDetailedContent) da.description else null,
-        icon = da.icon,
-        iconColor = Color(da.iconColor),
-        runningInsCount = da.runningInsCount,
-        overflow = {
-            if (showOverflowMenu) {
-                ListItemOverflowMenu(
-                    da = da,
-                    onDup = onDup,
-                    onDelete = onDelete,
-                    onEdit = onEdit,
-                    onShare = onShare
-                )
-            } else {
-                IconButton(modifier = Modifier, onClick = {
-                    onClick()
-                }) {
-                }
-
+    Box {
+        val popMenuState = listItemOverflowMenu(
+            da = da,
+            onDup = onDup,
+            onDelete = onDelete,
+            onEdit = onEdit,
+            onShare = onShare
+        )
+        DAListItem(
+            modifier = modifier,
+            title = da.title,
+            text1 = if (showDetailedContent) da.description else null,
+            text2 = if (showDetailedContent) da.updateTime else null,
+            icon = da.icon,
+            iconColor = Color(da.iconColor),
+            runningInsCount = da.runningInsCount,
+            overflow = {},
+            onClick = onClick,
+            onLongClick = { if (isLongClickEnabled) popMenuState.open() },
+            stopAllJobs = {
+                stopAllJobs(da)
             }
-        },
-        onClick = onClick,
-        stopAllJobs = {
-            stopAllJobs(da)
-        }
-    )
+        )
+    }
 }
 
 
@@ -269,18 +264,20 @@ private fun DAListItem(
     iconColor: Color,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
 ) {
     Column(modifier = modifier
         .fillMaxWidth()
         .clip(ShortXCardRoundedCornerShape)
-        .clickable {
+        .combinedClickable(onLongClick = onLongClick) {
             onClick()
         }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp),
+                .padding(start = 16.dp)
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -302,6 +299,7 @@ private fun DAListItem(
         }
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            TinySpacer()
             title?.let {
                 Text(
                     text = title, style = MaterialTheme.typography.titleMedium.copy(
@@ -319,13 +317,14 @@ private fun DAListItem(
             }
             TinySpacer()
             TinySpacer()
-            TinySpacer()
             text2?.let {
                 Text(
                     text = text2,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                     maxLines = 8
                 )
+                TinySpacer()
+                TinySpacer()
             }
         }
 
@@ -367,13 +366,13 @@ private fun DAListItem(
 }
 
 @Composable
-private fun ListItemOverflowMenu(
+private fun listItemOverflowMenu(
     da: DirectActionUM,
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
-) {
+): DropdownSelectorState {
     val context = LocalContext.current
 
     val deleteDialogState = rememberDeleteConfirmDialogState()
@@ -386,61 +385,56 @@ private fun ListItemOverflowMenu(
 
     val featureAccess = featureAccessCheckUi()
 
-    Box {
-        val menuState = rememberDropdownSelectorState()
-        IconButton(modifier = Modifier, onClick = {
-            menuState.open()
-        }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_line)
-        }
+    val menuState = rememberDropdownSelectorState()
 
-        DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
-                data = "shortcut",
-                icon = {
-                    RemixIcon(Remix.System.external_link_line)
-                }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
-                data = "dup",
-                icon = {
-                    RemixIcon(Remix.Document.file_copy_2_fill)
-                }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-                data = "edit",
-                icon = {
-                    RemixIcon(Remix.Design.edit_line)
-                }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
-                data = "share",
-                icon = {
-                    RemixIcon(Remix.System.share_line)
-                }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-                data = "delete",
-                icon = {
-                    RemixIcon(Remix.System.delete_bin_4_line)
-                })
-        ), onSelect = {
-            when (it.data) {
-                "shortcut" -> {
-                    featureAccess.accessOrShowDialog(AppFeature.AppFeature_CreateShortcut) {
-                        ActionShortcutActivity.addShortcut(context, da)
-                    }
+    DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
+            data = "shortcut",
+            icon = {
+                RemixIcon(Remix.System.external_link_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+            data = "dup",
+            icon = {
+                RemixIcon(Remix.Document.file_copy_2_fill)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+            data = "edit",
+            icon = {
+                RemixIcon(Remix.Design.edit_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
+            data = "share",
+            icon = {
+                RemixIcon(Remix.System.share_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+            data = "delete",
+            icon = {
+                RemixIcon(Remix.System.delete_bin_4_line)
+            })
+    ), onSelect = {
+        when (it.data) {
+            "shortcut" -> {
+                featureAccess.accessOrShowDialog(AppFeature.AppFeature_CreateShortcut) {
+                    ActionShortcutActivity.addShortcut(context, da)
                 }
-                "dup" -> {
-                    onDup(da)
-                }
-                "delete" -> {
-                    deleteDialogState.show()
-                }
-                "edit" -> {
-                    onEdit(da)
-                }
-                "share" -> {
-                    onShare(da)
-                }
-                else -> {}
             }
-        })
-    }
+            "dup" -> {
+                onDup(da)
+            }
+            "delete" -> {
+                deleteDialogState.show()
+            }
+            "edit" -> {
+                onEdit(da)
+            }
+            "share" -> {
+                onShare(da)
+            }
+            else -> {}
+        }
+    })
+
+    return menuState
 }

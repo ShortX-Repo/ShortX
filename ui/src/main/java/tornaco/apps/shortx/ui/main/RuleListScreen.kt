@@ -5,13 +5,12 @@ package tornaco.apps.shortx.ui.main
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.Card
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -207,31 +206,34 @@ private fun RuleItem(
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
 ) {
-    ListItem(
-        icon = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RuleIcon(rule = rule, arrow = Remix.Arrows.arrow_down_line)
-            }
-        },
-        title = rule.title,
-        text1 = rule.description,
-        text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
-        overflow = {
-            ListItemOverflowMenu(
-                rule = rule,
-                onDup = onDup,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                onShare = onShare
-            )
-        },
-        checked = rule.isEnabled,
-        onClick = onClick,
-        onCheckedChange = { setRuleEnabled(rule.id, it) }
-    )
+    Box {
+        val popMenuState = listItemOverflowMenu(
+            rule = rule,
+            onDup = onDup,
+            onDelete = onDelete,
+            onEdit = onEdit,
+            onShare = onShare
+        )
+        ListItem(
+            icon = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    RuleIcon(rule = rule, arrow = Remix.Arrows.arrow_down_line)
+                }
+            },
+            title = rule.title,
+            text1 = rule.description,
+            text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
+            overflow = {
+            },
+            checked = rule.isEnabled,
+            onClick = onClick,
+            onLongClick = { popMenuState.open() },
+            onCheckedChange = { setRuleEnabled(rule.id, it) }
+        )
+    }
 }
 
 
@@ -245,125 +247,127 @@ private fun RuleItem2(
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .clickable {
-            onClick()
-        }) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.weight(1f, fill = false),
-                verticalAlignment = Alignment.CenterVertically
+    Box {
+        val popMenuState = listItemOverflowMenu(
+            rule = rule,
+            onDup = onDup,
+            onDelete = onDelete,
+            onEdit = onEdit,
+            onShare = onShare
+        )
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onLongClick = {
+                popMenuState.open()
+            }) {
+                onClick()
+            }) {
+
+            RuleIcon(rule)
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 6.dp)
             ) {
-                RuleIcon(rule)
-            }
-
-            Column(horizontalAlignment = Alignment.End) {
-                ListItemOverflowMenu(
-                    rule = rule,
-                    onDup = onDup,
-                    onDelete = onDelete,
-                    onEdit = onEdit,
-                    onShare = onShare
-                )
-            }
-        }
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 16.sp
-                )
-            )
-            TinySpacer()
-            Text(
-                text = rule.description,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                maxLines = 8
-            )
-            TinySpacer()
-            TinySpacer()
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    modifier = Modifier.weight(1f, fill = false),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RemixIcon(
-                        modifier = Modifier.size(12.dp),
-                        remixName = Remix.System.refresh_line
+                Text(
+                    text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp
                     )
-                    TinySpacer()
-                    Text(
-                        text = rule.updateTime,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 10.sp),
+                )
+                TinySpacer()
+                Text(
+                    text = rule.description,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                    maxLines = 8
+                )
+                TinySpacer()
+                TinySpacer()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f, fill = false),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RemixIcon(
+                            modifier = Modifier.size(12.dp),
+                            remixName = Remix.System.refresh_line
+                        )
+                        TinySpacer()
+                        Text(
+                            text = rule.updateTime,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 10.sp),
+                        )
+                    }
+                    Switch(
+                        modifier = Modifier,
+                        checked = rule.isEnabled,
+                        onCheckedChange = {
+                            setRuleEnabled(rule.id, it)
+                        }
                     )
                 }
-                Switch(
-                    modifier = Modifier,
-                    checked = rule.isEnabled,
-                    onCheckedChange = {
-                        setRuleEnabled(rule.id, it)
-                    }
-                )
             }
-        }
 
+        }
     }
+
 }
 
 @Composable
 private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
-    ColoredIcon(
-        size = 32.dp,
-        padding = 0.dp,
-        color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp)
+            .padding(top = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        RemixIcon(
-            modifier = Modifier.size(16.dp),
-            remixName = rule.factIcon,
-            tint = Color(rule.factIconColor)
-        )
-    }
+        ColoredIcon(
+            size = 32.dp,
+            padding = 0.dp,
+            color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(16.dp),
+                remixName = rule.factIcon,
+                tint = Color(rule.factIconColor)
+            )
+        }
 
-    RemixIcon(
-        modifier = Modifier.size(18.dp),
-        remixName = arrow,
-        tint = MaterialTheme.colorScheme.surfaceVariant
-    )
-
-    ColoredIcon(
-        size = 32.dp,
-        padding = 0.dp,
-        color = Color(rule.actionIconColor).copy(alpha = ActionColorBgAlpha)
-    ) {
         RemixIcon(
-            modifier = Modifier.size(16.dp),
-            remixName = rule.actionIcon,
-            tint = Color(rule.actionIconColor)
+            modifier = Modifier.size(18.dp),
+            remixName = arrow,
+            tint = MaterialTheme.colorScheme.surfaceVariant
         )
+
+        ColoredIcon(
+            size = 32.dp,
+            padding = 0.dp,
+            color = Color(rule.actionIconColor).copy(alpha = ActionColorBgAlpha)
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(16.dp),
+                remixName = rule.actionIcon,
+                tint = Color(rule.actionIconColor)
+            )
+        }
     }
 }
 
 @Composable
-private fun ListItemOverflowMenu(
+private fun listItemOverflowMenu(
     rule: RuleUM,
     onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
-) {
+): DropdownSelectorState {
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
         state = deleteDialogState,
@@ -372,58 +376,50 @@ private fun ListItemOverflowMenu(
         onDelete = onDelete
     )
 
-    Box {
-        val menuState = rememberDropdownSelectorState()
-        IconButton(
-            modifier = Modifier,
-            onClick = {
-                menuState.open()
-            }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_line)
-        }
+    val menuState = rememberDropdownSelectorState()
 
-        DropdownSelector(
-            widthFraction = 0.3f,
-            state = menuState,
-            items = listOf(
-                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
-                    data = "dup",
-                    icon = {
-                        RemixIcon(Remix.Document.file_copy_2_fill)
-                    }),
-                DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-                    data = "edit",
-                    icon = {
-                        RemixIcon(Remix.Design.edit_line)
-                    }),
-                DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.share"]),
-                    data = "share",
-                    icon = {
-                        RemixIcon(Remix.System.share_line)
-                    }),
-                DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-                    data = "delete",
-                    icon = {
-                        RemixIcon(Remix.System.delete_bin_4_line)
-                    })
-            ), onSelect = {
-                when (it.data) {
-                    "dup" -> {
-                        onDup(rule)
-                    }
-                    "delete" -> {
-                        deleteDialogState.show()
-                    }
-                    "edit" -> {
-                        onEdit(rule)
-                    }
-                    "share" -> {
-                        onShare(rule)
-                    }
-                    else -> {}
+    DropdownSelector(
+        widthFraction = 0.3f,
+        state = menuState,
+        items = listOf(
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+                data = "dup",
+                icon = {
+                    RemixIcon(Remix.Document.file_copy_2_fill)
+                }),
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                data = "edit",
+                icon = {
+                    RemixIcon(Remix.Design.edit_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                data = "share",
+                icon = {
+                    RemixIcon(Remix.System.share_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                data = "delete",
+                icon = {
+                    RemixIcon(Remix.System.delete_bin_4_line)
+                })
+        ), onSelect = {
+            when (it.data) {
+                "dup" -> {
+                    onDup(rule)
                 }
-            })
-    }
+                "delete" -> {
+                    deleteDialogState.show()
+                }
+                "edit" -> {
+                    onEdit(rule)
+                }
+                "share" -> {
+                    onShare(rule)
+                }
+                else -> {}
+            }
+        })
+    return menuState
 }

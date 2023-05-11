@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
@@ -81,9 +80,11 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                     }
                 }) {
                 if (state.isLoading) {
-                    Loading(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it))
+                    Loading(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it)
+                    )
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
@@ -195,7 +196,7 @@ private fun ListItemOverflowMenu(
         IconButton(modifier = Modifier, onClick = {
             menuState.open()
         }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_line)
+            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_fill)
         }
 
         DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
