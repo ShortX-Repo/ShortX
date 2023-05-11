@@ -51,17 +51,6 @@ fun RuleScreen() {
         state = state,
         appBarTitleKey = "ui.feat.label.rule",
         appBarActions = {
-            androidx.compose.material3.IconButton(onClick = {
-                vm.toggleRuleColumnCount()
-            }) {
-                if (state.ruleColumnCount == 1) {
-                    RemixIcon(remixName = Remix.Design.layout_column_line)
-                } else {
-                    RemixIcon(
-                        remixName = Remix.Design.layout_row_line
-                    )
-                }
-            }
         },
         onClipboardClick = {
             featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
@@ -135,7 +124,7 @@ private fun RuleContent(
     } else {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Fixed(state.ruleColumnCount),
+            columns = StaggeredGridCells.Fixed(2),
             contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
         ) {
             items(
@@ -161,33 +150,18 @@ private fun RuleContent(
                     shape = ShortXCardRoundedCornerShape,
                     elevation = 0.dp
                 ) {
-                    if (state.ruleColumnCount == 1) {
-                        RuleItem(
-                            rule = rule,
-                            onClick = {
-                                onRuleClick(rule)
-                                scaleAnimStarted = true
-                            },
-                            setRuleEnabled = setRuleEnabled,
-                            onDup = onDup,
-                            onDelete = onDelete,
-                            onEdit = onEdit,
-                            onShare = onShare,
-                        )
-                    } else {
-                        RuleItem2(
-                            rule = rule,
-                            onClick = {
-                                onRuleClick(rule)
-                                scaleAnimStarted = true
-                            },
-                            setRuleEnabled = setRuleEnabled,
-                            onDup = onDup,
-                            onDelete = onDelete,
-                            onEdit = onEdit,
-                            onShare = onShare,
-                        )
-                    }
+                    RuleItem2(
+                        rule = rule,
+                        onClick = {
+                            onRuleClick(rule)
+                            scaleAnimStarted = true
+                        },
+                        setRuleEnabled = setRuleEnabled,
+                        onDup = onDup,
+                        onDelete = onDelete,
+                        onEdit = onEdit,
+                        onShare = onShare,
+                    )
                 }
 
             }

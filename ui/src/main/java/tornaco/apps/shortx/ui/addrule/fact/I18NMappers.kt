@@ -347,4 +347,4 @@ fun colorForFact(fact: KClass<out Fact>): Color {
     }
 }
 
-val FactColorPalettes = ActionColorPalettes.apply { reverse() }
+val FactColorPalettes = ActionColorPalettes

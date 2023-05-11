@@ -37,7 +37,6 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
-import tornaco.apps.shortx.ui.settings.pref.DEFAULT_RULE_COLUMN_COUNT
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
@@ -77,7 +76,6 @@ data class MainState(
     val isIgnoreFrameworkUpdate: Boolean = false,
     val isPrivacyStatementAccepted: Boolean = false,
     val isShowRuleDescription: Boolean = true,
-    val ruleColumnCount: Int = DEFAULT_RULE_COLUMN_COUNT,
     val rules: List<RuleUM> = emptyList(),
     val das: List<DirectActionUM> = emptyList(),
     val isShowDetailedDAItem: Boolean = true,
@@ -175,13 +173,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
 
         viewModelScope.launch {
-            pref.uiRuleColumnCount.collectLatest {
-                logger.d("uiRuleColumnCount changed: $it")
-                updateState { copy(ruleColumnCount = it) }
-            }
-        }
-
-        viewModelScope.launch {
             pref.uiShowDetailedDAItemContent.collectLatest {
                 logger.d("uiShowDetailedDAItemContent changed: $it")
                 updateState { copy(isShowDetailedDAItem = it) }
@@ -263,13 +254,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     copy(rules = rules, isLoading = false)
                 }
             }
-        }
-    }
-
-    fun toggleRuleColumnCount() {
-        val count = if (state.value.ruleColumnCount == 1) 2 else 1
-        viewModelScope.launch {
-            pref.setColumnCount(count)
         }
     }
 
