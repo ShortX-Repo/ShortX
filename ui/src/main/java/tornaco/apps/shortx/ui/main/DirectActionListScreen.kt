@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
@@ -229,6 +231,7 @@ private fun DirectActionItem(
         title = da.title,
         text1 = if (showDetailedContent) da.description else null,
         icon = da.icon,
+        iconColor = Color(da.iconColor),
         runningInsCount = da.runningInsCount,
         overflow = {
             if (showOverflowMenu) {
@@ -263,6 +266,7 @@ private fun DAListItem(
     text2: String? = null,
     runningInsCount: Int = 0,
     icon: String,
+    iconColor: Color,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
     stopAllJobs: () -> Unit
@@ -280,10 +284,15 @@ private fun DAListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ColoredIcon(size = 32.dp, padding = 0.dp) {
+            ColoredIcon(
+                size = 32.dp,
+                padding = 0.dp,
+                color = iconColor.copy(alpha = ActionColorBgAlpha)
+            ) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
-                    remixName = icon
+                    remixName = icon,
+                    tint = iconColor
                 )
             }
 

@@ -173,10 +173,14 @@ private fun Actions(
                             modifier = Modifier,
                             titleLines = labelLinesForAction(action = action),
                             icon = {
-                                ColoredIcon(size = 36.dp) {
+                                ColoredIcon(
+                                    size = 36.dp,
+                                    color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
+                                ) {
                                     RemixIcon(
                                         modifier = Modifier.size(16.dp),
-                                        remixName = imageVectorForAction(action = action::class)
+                                        remixName = imageVectorForAction(action = action::class),
+                                        tint = colorForAction(action::class)
                                     )
                                 }
                             },

@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -142,3 +144,27 @@ fun iconForOp(op: Op): String {
         }
     }
 }
+
+fun colorForCondition(condition: KClass<out Condition>): Color {
+    val index =
+        runCatching { Condition::class.sealedSubclasses.indexOf(condition) % ConditionColorPalettes.size }.getOrElse { 0 }
+    return when (condition) {
+        Condition.CurrentForegroundApp::class -> {
+            ConditionColorPalettes[index]
+        }
+        Condition.MVEL::class -> {
+            ConditionColorPalettes[index]
+        }
+        Condition.TRUE::class -> {
+            ConditionColorPalettes[index]
+        }
+        Condition.EvaluateGlobalVar::class -> {
+            ConditionColorPalettes[index]
+        }
+        else -> {
+            ConditionColorPalettes[index]
+        }
+    }
+}
+
+val ConditionColorPalettes = ActionColorPalettes

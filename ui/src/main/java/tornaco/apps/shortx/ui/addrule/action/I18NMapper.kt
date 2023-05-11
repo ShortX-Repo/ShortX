@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action
 
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
@@ -96,6 +97,7 @@ fun labelAndDescriptionForActionSelector(
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
+        Action.NoAction::class -> "Noop" to null
 
         else -> {
             "N/A" to null
@@ -322,6 +324,9 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             add(i18N["ui.action.then"] + " ➡️ " + ifAction + " ")
             add(i18N["ui.action.else"] + " ➡️ " + elseAction + " ")
         }
+        is Action.NoAction -> {
+            listOf("Noop")
+        }
     }
 }
 
@@ -480,9 +485,212 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.IfThenElse::class -> {
             Remix.Editor.text_wrap
         }
+        Action.NoAction::class -> {
+            Remix.Media.album_fill
+        }
 
         else -> {
             Remix.Document.file_unknow_line
         }
     }
 }
+
+fun colorForAction(action: KClass<out Action>): Color {
+    val index =
+        runCatching { Action::class.sealedSubclasses.indexOf(action) % ActionColorPalettes.size }.getOrElse { 0 }
+    return when (action) {
+        Action.ShowToast::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.ShowDanmu::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.ShellCommand::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.InputText::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.Delay::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.TakeScreenshot::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.MVEL::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.HideAllOverlay::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.HideOverlay::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.ShowOverlay::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.LaunchApp::class -> {
+            ActionColorPalettes[index]
+        }
+
+        Action.DisableBT::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableDND::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableGPS::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableDarkMode::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableData::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableFlashLight::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableHotSpot::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableNFC::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableWifi::class -> {
+            ActionColorPalettes[index]
+        }
+
+        Action.EnableBT::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableDND::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableGPS::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableDarkMode::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableData::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableFlashLight::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableHotSpot::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableNFC::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableWifi::class -> {
+            ActionColorPalettes[index]
+        }
+
+        Action.StopApp::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.StartAppProcess::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.EnableApp::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DisableApp::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.SuspendApp::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.UnSuspendApp::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.Brk::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.ShowAlertDialog::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.StartActivity::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.ExpandNotification::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.PostNotification::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.RemoteMVEL::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.WhileLoop::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.WriteGV::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.CreateGV::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.DeleteGV::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.MapNav::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.FromDA::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.FindAndClickViewByText::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.WaitForIdle::class -> {
+            ActionColorPalettes[index]
+        }
+        Action.IfThenElse::class -> {
+            ActionColorPalettes[index]
+        }
+
+        Action.NoAction::class -> {
+            ActionColorPalettes[index]
+        }
+
+        else -> {
+            Color.Unspecified
+        }
+    }
+}
+
+val ActionColorPalettes = arrayOf(
+    Color(0xff4caf50),
+    Color(0xffe57373),
+    Color(0xff4db6ac),
+    Color(0xffba68c8),
+    Color(0xff64b5f6),
+    Color(0xff9575cd),
+    Color(0xffffb74d),
+    Color(0xff90a4ae),
+    Color(0xfff06292),
+    Color(0xff81c784),
+    Color(0xffa1887f),
+    Color(0xffba68c8),
+    Color(0xff4dd0e1),
+    Color(0xffff8a65),
+    Color(0xff90a4ae),
+    Color(0xff7986cb),
+    Color(0xff64b5f6),
+    Color(0xff81c784),
+    Color(0xff4db6ac),
+    Color(0xff9575cd),
+    Color(0xfff06292),
+    Color(0xff81c784),
+    Color(0xffffb74d),
+    Color(0xff90a4ae),
+    Color(0xff004d40),
+    Color(0xfff06292),
+    Color(0xffa1887f),
+)
+
+val ActionColorBgAlpha = 0.18f

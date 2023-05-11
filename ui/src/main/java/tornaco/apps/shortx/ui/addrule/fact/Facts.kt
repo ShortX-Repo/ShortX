@@ -4,7 +4,6 @@ package tornaco.apps.shortx.ui.addrule.fact
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -13,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.*
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
@@ -254,10 +254,15 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                         modifier = Modifier,
                         titleLines = labelForFact(fact = it),
                         icon = {
-                            ColoredIcon(size = 36.dp) {
+                            ColoredIcon(
+                                size = 36.dp, color = colorForFact(it::class).copy(
+                                    ActionColorBgAlpha
+                                )
+                            ) {
                                 RemixIcon(
                                     modifier = Modifier.size(16.dp),
-                                    remixName = imageVectorForFact(it::class)
+                                    remixName = imageVectorForFact(it::class),
+                                    tint = colorForFact(it::class)
                                 )
                             }
                         },

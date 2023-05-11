@@ -20,12 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -323,10 +325,15 @@ private fun RuleItem2(
 
 @Composable
 private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
-    ColoredIcon(size = 32.dp, padding = 0.dp) {
+    ColoredIcon(
+        size = 32.dp,
+        padding = 0.dp,
+        color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+    ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
             remixName = rule.factIcon,
+            tint = Color(rule.factIconColor)
         )
     }
 
@@ -336,10 +343,15 @@ private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line
         tint = MaterialTheme.colorScheme.surfaceVariant
     )
 
-    ColoredIcon(size = 32.dp, padding = 0.dp) {
+    ColoredIcon(
+        size = 32.dp,
+        padding = 0.dp,
+        color = Color(rule.actionIconColor).copy(alpha = ActionColorBgAlpha)
+    ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
             remixName = rule.actionIcon,
+            tint = Color(rule.actionIconColor)
         )
     }
 }

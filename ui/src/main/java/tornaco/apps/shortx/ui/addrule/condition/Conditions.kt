@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
@@ -125,10 +126,14 @@ fun Conditions(
                         ListItem(
                             titleLines = labelForCondition(condition = it),
                             icon = {
-                                ColoredIcon(size = 36.dp) {
+                                ColoredIcon(
+                                    size = 36.dp,
+                                    color = colorForCondition(it::class).copy(alpha = ActionColorBgAlpha)
+                                ) {
                                     RemixIcon(
                                         modifier = Modifier.size(16.dp),
-                                        remixName = iconForCondition(it::class)
+                                        remixName = iconForCondition(it::class),
+                                        tint = colorForCondition(it::class)
                                     )
                                 }
                             },

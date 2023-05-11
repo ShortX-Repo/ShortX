@@ -11,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
@@ -145,7 +144,7 @@ private fun <ARGS> ActionSelector(
                                     TabItems.All.ordinal -> {
                                         Column(
                                             modifier = Modifier
-                                                .padding(16.dp)
+                                                .fillMaxWidth()
                                                 .verticalScroll(rememberScrollState())
                                         ) {
                                             ActionCategoryTitle(ActionCategory.Ui)

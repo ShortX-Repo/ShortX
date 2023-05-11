@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact
 
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -11,6 +12,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
@@ -311,3 +313,38 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         }
     }
 }
+
+
+fun colorForFact(fact: KClass<out Fact>): Color {
+    val index =
+        runCatching { Fact::class.sealedSubclasses.indexOf(fact) % FactColorPalettes.size }.getOrElse { 0 }
+    return when (fact) {
+        Fact.ActivityStarted::class -> FactColorPalettes[index]
+        Fact.AnyActivityStarted::class -> FactColorPalettes[index]
+        Fact.EdgeGesture::class -> FactColorPalettes[index]
+        Fact.KeyEvent::class -> FactColorPalettes[index]
+        Fact.ScreenOff::class -> FactColorPalettes[index]
+        Fact.ScreenOn::class -> FactColorPalettes[index]
+        Fact.UserPresent::class -> FactColorPalettes[index]
+        Fact.Alarm::class -> FactColorPalettes[index]
+        Fact.AppBecomeBackground::class -> FactColorPalettes[index]
+        Fact.AppBecomeForeground::class -> FactColorPalettes[index]
+        Fact.WifiStatusChanged::class -> FactColorPalettes[index]
+        Fact.BTStatusChanged::class -> FactColorPalettes[index]
+        Fact.LocationStatusChanged::class -> FactColorPalettes[index]
+        Fact.NFCStatusChanged::class -> FactColorPalettes[index]
+        Fact.MobileDataStatusChanged::class -> FactColorPalettes[index]
+        Fact.HotSpotStatusChanged::class -> FactColorPalettes[index]
+        Fact.DarkModeStatusChanged::class -> FactColorPalettes[index]
+        Fact.FlashLightStatusChanged::class -> FactColorPalettes[index]
+        Fact.NotificationPosted::class -> FactColorPalettes[index]
+        Fact.NotificationUpdated::class -> FactColorPalettes[index]
+        Fact.NotificationRemoved::class -> FactColorPalettes[index]
+
+        else -> {
+            Color.Unspecified
+        }
+    }
+}
+
+val FactColorPalettes = ActionColorPalettes.apply { reverse() }

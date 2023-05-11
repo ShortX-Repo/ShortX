@@ -42,8 +42,7 @@ sealed interface Action : Parcelable {
     data class ShellCommand(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val command: String
-    ) :
-        Action
+    ) : Action
 
     @Parcelize
     data class InputText(
@@ -397,6 +396,12 @@ sealed interface Action : Parcelable {
         val ifActions: List<Action> = emptyList(),
         val elseActions: List<Action> = emptyList(),
     ) : Action
+
+    @Parcelize
+    data class NoAction(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+    ) : Action
 }
 
 fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = null): ProtoMessage {
@@ -670,14 +675,24 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllElseActions(elseActions.map { it.toProtoAction().pack_() })
                 .build()
         }
+        is Action.NoAction -> {
+            NoAction.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
     }
 }
 
 fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
     return when {
+        this is_ NoAction::class.java -> {
+            val data = this unpack_ NoAction::class.java
+            Action.NoAction(id = data.id, note = data.note)
+        }
         this is_ TakeScreenshot::class.java -> {
             val data = this unpack_ TakeScreenshot::class.java
-            Action.TakeScreenshot(data.id)
+            Action.TakeScreenshot(id = data.id, note = data.note)
         }
         this is_ ShellCommand::class.java -> {
             val data = this unpack_ ShellCommand::class.java

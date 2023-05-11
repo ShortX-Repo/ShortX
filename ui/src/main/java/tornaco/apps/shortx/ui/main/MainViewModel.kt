@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Parcelable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,6 +21,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
+import tornaco.apps.shortx.ui.addrule.action.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -27,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
+import tornaco.apps.shortx.ui.addrule.fact.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -50,7 +53,9 @@ data class RuleUM(
     val createTime: String,
     val isEnabled: Boolean,
     val factIcon: String,
+    val factIconColor: ULong,
     val actionIcon: String,
+    val actionIconColor: ULong,
 )
 
 @Parcelize
@@ -61,6 +66,7 @@ data class DirectActionUM(
     val updateTime: String,
     val createTime: String,
     val icon: String,
+    val iconColor: ULong,
     val runningInsCount: Int
 ) : Parcelable
 
@@ -110,6 +116,9 @@ private fun DirectAction.toDirectActionUM(
                 it::class
             )
         } ?: Remix.Weather.sparkling_line,
+        iconColor = firstAction?.let {
+            colorForAction(it::class).value
+        } ?: Color.Unspecified.value,
         runningInsCount = activeJobs.count {
             it == this.id
         }
@@ -237,11 +246,17 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                                     it::class
                                 )
                             } ?: Remix.Weather.sparkling_line,
+                            factIconColor = firstFact?.let {
+                                colorForFact(it::class).value
+                            } ?: Color.Unspecified.value,
                             actionIcon = firstAction?.let {
                                 imageVectorForAction(
                                     it::class
                                 )
                             } ?: Remix.Weather.sparkling_line,
+                            actionIconColor = firstAction?.let {
+                                colorForAction(it::class).value
+                            } ?: Color.Unspecified.value,
                         )
                     }
                 updateState {

@@ -11,9 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import kotlin.reflect.KClass
@@ -22,17 +25,27 @@ data class Item(
     val type: KClass<out Action>,
     val labelAndDescription: Pair<String, String?>,
     val icon: String,
+    val iconColor: Color = colorForAction(type),
     val data: Any? = null
 )
 
 fun item(
-    type: KClass<out Action>, label: String, icon: String
-) = Item(type = type, labelAndDescription = label to null, icon = icon)
+    type: KClass<out Action>, label: String, icon: String, iconColor: Color = colorForAction(type)
+) = Item(type = type, labelAndDescription = label to null, icon = icon, iconColor = iconColor)
 
 
 fun item(
-    type: KClass<out Action>, label: String, description: String, icon: String
-) = Item(type = type, labelAndDescription = label to description, icon = icon)
+    type: KClass<out Action>,
+    label: String,
+    description: String,
+    icon: String,
+    iconColor: Color = colorForAction(type)
+) = Item(
+    type = type,
+    labelAndDescription = label to description,
+    icon = icon,
+    iconColor = iconColor
+)
 
 @Composable
 fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>) -> Unit) {
@@ -61,12 +74,13 @@ fun ActionList(
     itemSelected: (KClass<out Action>, data: Any?) -> Unit
 ) {
     FlowRow(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
     ) {
         actionItems.forEach {
             ActionItem(
                 modifier = childModifier.width(88.dp),
                 icon = it.icon,
+                iconColor = it.iconColor,
                 title = it.labelAndDescription.first,
                 text1 = it.labelAndDescription.second
             ) {
@@ -80,6 +94,7 @@ fun ActionList(
 fun ActionItem(
     modifier: Modifier = Modifier,
     icon: String,
+    iconColor: Color,
     title: String,
     text1: String? = null,
     onClick: () -> Unit,
@@ -108,10 +123,15 @@ fun ActionItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                ColoredIcon(size = 32.dp, padding = 0.dp) {
+                ColoredIcon(
+                    size = 32.dp,
+                    padding = 0.dp,
+                    color = iconColor.copy(alpha = ActionColorBgAlpha)
+                ) {
                     RemixIcon(
                         modifier = Modifier.size(16.dp),
                         remixName = icon,
+                        tint = iconColor
                     )
                 }
                 TinySpacer()
