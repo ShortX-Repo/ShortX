@@ -290,9 +290,9 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.AnyActivityStarted::class -> Remix.Logos.android_line
         Fact.EdgeGesture::class -> Remix.Editor.sketching
         Fact.KeyEvent::class -> Remix.Device.keyboard_line
-        Fact.ScreenOff::class -> Remix.Device.phone_lock_line
-        Fact.ScreenOn::class -> Remix.Device.phone_line
-        Fact.UserPresent::class -> Remix.Device.smartphone_line
+        Fact.ScreenOff::class -> Remix.Device.smartphone_fill
+        Fact.ScreenOn::class -> Remix.Device.smartphone_line
+        Fact.UserPresent::class -> Remix.Device.phone_lock_line
         Fact.Alarm::class -> Remix.System.alarm_line
         Fact.AppBecomeBackground::class -> Remix.System.refresh_line
         Fact.AppBecomeForeground::class -> Remix.System.star_line

@@ -135,12 +135,13 @@ fun <T : Any> DropdownContent(
                     }
                 } else {
                     ChildItem(
-                        item.id,
-                        item.title,
-                        item.description,
-                        item.icon,
-                        colors.contentColor,
-                        onItemSelected
+                        id = item.id,
+                        title = item.title,
+                        description = item.description,
+                        icon = item.icon,
+                        iconColor = item.iconColor,
+                        contentColor = colors.contentColor,
+                        onClick = onItemSelected
                     )
                 }
             }
@@ -158,7 +159,7 @@ fun Space() {
 @Composable
 fun MenuItemIcon(icon: String, tint: Color) {
     RemixIcon(
-        modifier = Modifier.size(24.dp), remixName = icon, tint = tint
+        modifier = Modifier.size(18.dp), remixName = icon, tint = tint
     )
 }
 
@@ -219,7 +220,7 @@ fun CascadeHeaderItem(
 ) {
     MenuItem(onClick = { onClick() }) {
         MenuItemIcon(
-            icon = Remix.Arrows.arrow_left_line,
+            icon = Remix.Arrows.arrow_left_s_line,
             tint = contentColor.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.width(4.dp))
@@ -266,7 +267,7 @@ fun <T> ParentItem(
             }
         }
         Space()
-        MenuItemIcon(icon = Remix.Arrows.arrow_right_line, tint = contentColor)
+        MenuItemIcon(icon = Remix.Arrows.arrow_right_s_line, tint = contentColor)
     }
 }
 
@@ -277,12 +278,13 @@ fun <T> ChildItem(
     title: String,
     description: String?,
     icon: String?,
+    iconColor: Color = Color.Unspecified,
     contentColor: Color,
     onClick: (T) -> Unit,
 ) {
     MenuItem(onClick = { onClick(id) }) {
         if (icon != null) {
-            MenuItemIcon(icon = icon, tint = contentColor)
+            MenuItemIcon(icon = icon, tint = iconColor)
             Space()
         }
         Column(

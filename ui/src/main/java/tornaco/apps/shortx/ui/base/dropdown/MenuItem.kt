@@ -1,5 +1,8 @@
 package tornaco.apps.shortx.ui.base.dropdown
 
+import androidx.compose.ui.graphics.Color
+
+
 /*[MenuItem]  generic menu item with title and icon. */
 class MenuItem<T : Any> {
     lateinit var id: T
@@ -8,6 +11,7 @@ class MenuItem<T : Any> {
     var description: String? = null
 
     var icon: String? = null
+    var iconColor: Color = Color.Unspecified
 
     var parent: MenuItem<T>? = null
 

@@ -321,16 +321,24 @@ private fun FactSelectorMenu(
         }
         item(
             Fact.ActivityStarted::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.ActivityStarted::class)
+            "Activity" to null
         ) {
             icon(imageVectorForFact(Fact.ActivityStarted::class))
+
+            item(
+                Fact.ActivityStarted::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.ActivityStarted::class)
+            ) {
+                icon(imageVectorForFact(Fact.ActivityStarted::class))
+            }
+            item(
+                Fact.AnyActivityStarted::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.AnyActivityStarted::class)
+            ) {
+                icon(imageVectorForFact(Fact.AnyActivityStarted::class))
+            }
         }
-        item(
-            Fact.AnyActivityStarted::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.AnyActivityStarted::class)
-        ) {
-            icon(imageVectorForFact(Fact.AnyActivityStarted::class))
-        }
+
         item(
             Fact.EdgeGesture::class,
             labelAndDescriptionForFactSelector(i18N, Fact.EdgeGesture::class)
