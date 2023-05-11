@@ -75,10 +75,11 @@ fun ActionList(
 ) {
     FlowRow(
         modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start
     ) {
         actionItems.forEach {
             ActionItem(
-                modifier = childModifier.width(88.dp),
+                modifier = childModifier,
                 icon = it.icon,
                 iconColor = it.iconColor,
                 title = it.labelAndDescription.first,
@@ -109,6 +110,7 @@ fun ActionItem(
         elevation = 0.dp
     ) {
         Box(modifier = modifier
+            .padding(horizontal = 6.dp)
             .clip(ShortXCardRoundedCornerShape)
             .combinedClickable(onLongClick = {
                 tipDialogState.show()

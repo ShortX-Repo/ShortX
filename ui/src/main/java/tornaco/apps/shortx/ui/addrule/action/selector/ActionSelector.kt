@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
@@ -134,17 +135,27 @@ private fun <ARGS> ActionSelector(
 
                                 when (index) {
                                     TabItems.Recent.ordinal -> {
-                                        Box(modifier = Modifier.fillMaxSize()) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(16.dp)
+                                        ) {
                                             RecentActions(addAction = addAction)
                                         }
                                     }
                                     TabItems.Remote.ordinal -> {
-                                        RemoteActions(addAction = addAction)
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(16.dp)
+                                        ) {
+                                            RemoteActions(addAction = addAction)
+                                        }
                                     }
                                     TabItems.All.ordinal -> {
                                         Column(
                                             modifier = Modifier
-                                                .fillMaxWidth()
+                                                .padding(16.dp)
                                                 .verticalScroll(rememberScrollState())
                                         ) {
                                             ActionCategoryTitle(ActionCategory.Ui)
