@@ -8,13 +8,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
+import tornaco.apps.shortx.core.BuildProp
 
 interface CodeApi {
     @POST("bindActivationCode")
     suspend fun verify(@Body body: RequestBody): CommonRes
 
     companion object {
-        private const val BASE_URL = "http://thanox.emui.tech/api/"
+        private const val BASE_URL = BuildProp.API_BASE_URL
 
         fun create(context: Context): CodeApi {
             val retrofit: Retrofit = Retrofit.Builder()
