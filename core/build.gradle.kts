@@ -1,7 +1,7 @@
+import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.Configs.sxPackageName
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
-import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.addAidlTask
 import java.util.*
 
@@ -29,6 +29,8 @@ buildConfig {
     buildConfigField("String", "PLAY_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmqDRzFFEKnhoclz6m0+9pkN8M/tokdZ6adHQhN9QXEwSy+w0OM4UZQwUOmmn9JvQd9/ibiGZbPK0Phmazvt3dVqgLYgOm0Z+qQFc2TnJ2SsxnjxilEt9HQvGLACH1OpNVxB3GgsXRyLPc4SqfUGtb9Wlh+qz4L01yLFhsq/AnSHQlQj37I+xYHUv0pZOSlkx7ORXJsTufXcEsL4Yc9dLHh7wEBWJqwuhQVT/BOIr1yipK1a3adzEnX6Iv1+yDmQy/EIfIt6jOJowOHMHW8MvtQ71c1WvuYfE4biS3xr2pybRxfipBEJBcdMdU+yMrsBzhp++QpGOxrfQitasmRB4twIDAQAB\"")
 
     buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
+
+    buildConfigField("String", "SIGNATURES", "\"A92E8A9A743FE6648E2E4743FDAC89E9EB4A568F\"")
 }
 
 dependencies {

@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.services.v.v
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl()) {
@@ -111,9 +112,11 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun getAllRules(): List<ByteArrayWrapper> {
-            return shortXContext.rule.getAllRules().map {
-                ByteArrayWrapper(it.toByteArray())
-            }
+            return v(context) {
+                shortXContext.rule.getAllRules().map {
+                    ByteArrayWrapper(it.toByteArray())
+                }
+            } ?: emptyList()
         }
 
         override fun getRuleCount(): Int {
