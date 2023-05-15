@@ -7,12 +7,16 @@ import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import tornaco.apps.shortx.core.BuildProp
 
 interface CodeApi {
     @POST("bindActivationCode")
     suspend fun verify(@Body body: RequestBody): CommonRes
+
+    @GET("getSubscriptionConfig")
+    suspend fun getSubscriptionConfig(): SubscriptionConfig
 
     companion object {
         private const val BASE_URL = BuildProp.API_BASE_URL

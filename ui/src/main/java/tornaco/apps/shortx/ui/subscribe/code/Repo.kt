@@ -5,6 +5,7 @@ import androidx.core.text.isDigitsOnly
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
 import java.io.IOException
 
@@ -17,8 +18,11 @@ sealed class VerifyResult {
     object NetworkError : VerifyResult()
 }
 
-class Repo(private val context: Context) {
+private var cachedSubscriptionConfig: SubscriptionConfig? = null
 
+
+class Repo(private val context: Context) {
+    private val logger = Logger("Repo")
     suspend fun verify(
         code: String,
     ): VerifyResult = withContext(Dispatchers.IO) {
@@ -44,4 +48,16 @@ class Repo(private val context: Context) {
             }
         }
     }
+
+    suspend fun getSubscriptionConfig(): tornaco.apps.shortx.ui.base.Result<SubscriptionConfig> =
+        kotlin.runCatching {
+            tornaco.apps.shortx.ui.base.Result.Success(
+                cachedSubscriptionConfig ?: CodeApi.create(context).getSubscriptionConfig().apply {
+                    cachedSubscriptionConfig = this
+                }
+            )
+        }.getOrElse {
+            logger.e(it, "getSubscriptionConfig")
+            tornaco.apps.shortx.ui.base.Result.Error(it)
+        }
 }

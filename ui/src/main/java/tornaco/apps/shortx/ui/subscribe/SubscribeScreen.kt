@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
+import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.theme.*
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -84,7 +85,23 @@ fun SubscribeScreen(back: () -> Unit) {
                     if (state.isSubscribed) {
                         SubscribedUi()
                     } else {
-                        UnsubscribedUi()
+                        when (val subState = state.subscriptionConfigState) {
+                            is UiState.Loaded -> {
+                                UnsubscribedUi(subState.data)
+                            }
+                            is UiState.Error -> {
+                                LoadError(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            UiState.Loading -> {
+                                Loading(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -125,7 +142,7 @@ private fun SubscribedUi() {
 
 
 @Composable
-private fun UnsubscribedUi() {
+private fun UnsubscribedUi(config: SubscriptionConfig) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -188,13 +205,14 @@ private fun UnsubscribedUi() {
         val textColor = LocalContentColor.current.takeOrElse {
             MaterialTheme.colorScheme.onPrimaryContainer
         }
+        val appName = LocalAppName.current
         MarkdownText(
             markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
-                "priceCNY" to "18",
-                "priceUSD" to "2.6",
-                "mail" to "shortx@163.com",
-                "qq" to "12345",
-                "app_name" to "ShortX",
+                "priceCNY" to "${config.priceCNY.toInt()}",
+                "priceUSD" to "${config.priceUSD}",
+                "mail" to config.email,
+                "qq" to config.qq,
+                "app_name" to appName,
             )],
             color = textColor,
             onLinkClicked = {

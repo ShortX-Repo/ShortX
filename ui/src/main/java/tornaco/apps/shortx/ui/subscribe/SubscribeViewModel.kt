@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.ui.base.StateViewModel
+import tornaco.apps.shortx.ui.base.UiState
+import tornaco.apps.shortx.ui.base.data
+import tornaco.apps.shortx.ui.base.error
 import tornaco.apps.shortx.ui.subscribe.code.Repo
+import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.subscribe.code.VerifyResult
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
@@ -27,6 +31,7 @@ sealed interface SubscriptionSource {
 data class SubscriptionState(
     val isSubscribed: Boolean = false,
     val source: SubscriptionSource? = null,
+    val subscriptionConfigState: UiState<SubscriptionConfig> = UiState.Loading
 )
 
 enum class CodeVerifyEvent {
@@ -65,6 +70,19 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
         updateState {
             copy(isSubscribed = isSubscribed, source = source)
         }
+
+        // Load config
+        if (state.value.subscriptionConfigState !is UiState.Loaded<SubscriptionConfig>) viewModelScope.launch {
+            updateState { copy(subscriptionConfigState = UiState.Loading) }
+            delay(2000)
+            repo.getSubscriptionConfig().let {
+                if (it.isSuccessful()) {
+                    updateState { copy(subscriptionConfigState = UiState.Loaded(it.data!!)) }
+                } else if (it.isError()) {
+                    updateState { copy(subscriptionConfigState = UiState.Error(it.error)) }
+                }
+            }
+        }
     }
 
     fun verify(code: String) {
@@ -85,6 +103,7 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
                     S.c(code, res.data.k)
                     setLVLChecked(context, true, code)
                     _codeVerifyEvent.emit(CodeVerifyEvent.Success)
+                    loadState()
                 }
             }
         }

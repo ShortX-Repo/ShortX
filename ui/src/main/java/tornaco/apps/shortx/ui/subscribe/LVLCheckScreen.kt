@@ -59,7 +59,7 @@ fun LVLCheckScreen(showSkipButton: Boolean = true, toNav: () -> Unit) {
 
 @Composable
 private fun MainContent(
-    uiState: UiState,
+    uiState: LVLUiState,
     onRetry: () -> Unit,
     canSkip: Boolean,
     onSkip: () -> Unit,

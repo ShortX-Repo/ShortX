@@ -28,11 +28,11 @@ enum class CheckState {
     SUCCESS
 }
 
-data class UiState(val checkState: CheckState)
+data class LVLUiState(val checkState: CheckState)
 
 class LVLCheckViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState(CheckState.CHECKING))
-    val uiState: StateFlow<UiState> = _uiState
+    private val _uiState = MutableStateFlow(LVLUiState(CheckState.CHECKING))
+    val uiState: StateFlow<LVLUiState> = _uiState
 
     fun check(context: Context) {
         _uiState.value = _uiState.value.copy(checkState = CheckState.CHECKING)
