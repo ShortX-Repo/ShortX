@@ -31,7 +31,6 @@ object EntryPoint {
         }
 
         initDeviceId(context)
-        checkCB(context)
 
         I18NCache.init(context)
 
@@ -44,6 +43,8 @@ object EntryPoint {
                 }
             }
         }
+
+        checkCB(context)
     }
 
     private fun checkCB(context: Context) {
