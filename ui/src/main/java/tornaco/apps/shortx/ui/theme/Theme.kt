@@ -2,10 +2,16 @@ package tornaco.apps.shortx.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
+import tornaco.apps.shortx.ui.base.LocalShortXColorSchema
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -83,16 +89,38 @@ fun ShortXTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) {
+                dynamicDarkColorScheme(context)
+            } else {
+                dynamicLightColorScheme(context).copy(
+                    surface = Color(0xFFf5f5f5),
+                    background = Color(0xFFf5f5f5),
+                )
+            }
         }
+
         darkTheme -> DarkColors
         else -> LightColors
     }
-    val view = LocalView.current
+    val shortXColorScheme = when {
+        darkTheme -> ShortXColorScheme(
+            cardBackground = Color(0xFF101010),
+            uncheckedThumb = Color(0xFFEAEAEA),
+            uncheckedTrack = Color(0xFF9e9e9e),
+        )
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+        else -> ShortXColorScheme(
+            cardBackground = Color.White,
+            uncheckedThumb = Color(0xFFbdbdbd),
+            uncheckedTrack = Color(0xFFEAEAEA),
+        )
+    }
+
+    CompositionLocalProvider(LocalShortXColorSchema provides shortXColorScheme) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

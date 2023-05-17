@@ -21,7 +21,7 @@ class DemoActivity : BaseActivity() {
                 val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
                 Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     topBar = {
-                        MediumTopAppBar(
+                        ShortXMediumTopAppBar(
                             title = {
                                 Text(
                                     text = "Demos"

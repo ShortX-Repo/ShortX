@@ -57,7 +57,7 @@ fun SubscribeScreen(back: () -> Unit) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         title = {
                             Text(
                                 text = LocalI18N.current["ui.subscription.intro.title"]

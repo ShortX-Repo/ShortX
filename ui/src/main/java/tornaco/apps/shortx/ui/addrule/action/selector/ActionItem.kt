@@ -4,8 +4,14 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +24,13 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import kotlin.reflect.KClass
 
 data class Item(
@@ -103,11 +115,8 @@ fun ActionItem(
     val tipDialogState = rememberTipDialogState(title = title, tip = text1 ?: title)
     TipDialog(state = tipDialogState)
 
-    Card(
+    ShortXCard(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-        backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-        shape = ShortXCardRoundedCornerShape,
-        elevation = 0.dp
     ) {
         Box(modifier = modifier
             .padding(horizontal = 6.dp)

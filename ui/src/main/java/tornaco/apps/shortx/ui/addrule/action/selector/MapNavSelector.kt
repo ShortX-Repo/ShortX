@@ -80,7 +80,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
             Scaffold(
                 modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(i18N["ui.action.map.nav"]) },
                         navigationIcon = {

@@ -97,7 +97,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = {
                             Text(

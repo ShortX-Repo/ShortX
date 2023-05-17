@@ -76,7 +76,7 @@ fun AddRuleScreen(
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { Text(text = screenTitle) },
                         navigationIcon = {

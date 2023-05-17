@@ -84,7 +84,7 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
                         navigationIcon = {

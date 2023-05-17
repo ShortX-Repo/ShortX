@@ -71,7 +71,7 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.global.var.title"]) },
                         actions = {},

@@ -115,7 +115,11 @@ private fun BottomNavigationContent(
     val items = listOf(
         BottomNavItem.DirectActions, BottomNavItem.Rules
     )
-    NavigationBar(modifier = modifier) {
+    NavigationBar(
+        modifier = modifier,
+        tonalElevation = 0.dp,
+        containerColor = LocalShortXColorSchema.current.cardBackground
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->

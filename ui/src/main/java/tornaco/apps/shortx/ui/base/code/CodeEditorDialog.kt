@@ -101,7 +101,7 @@ private fun CodeEditor(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Scaffold(modifier = Modifier, topBar = {
-                TopAppBar(
+                ShortXTopAppBar(
                     modifier = Modifier,
                     title = { Text(text = state.note.ifBlank { state.title }) },
                     navigationIcon = {

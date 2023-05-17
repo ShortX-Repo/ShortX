@@ -59,7 +59,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { Text(text = LocalI18N.current["ui.global.var.title"]) },
                         navigationIcon = {

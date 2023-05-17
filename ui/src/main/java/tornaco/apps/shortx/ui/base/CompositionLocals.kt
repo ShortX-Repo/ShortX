@@ -6,6 +6,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
+import tornaco.apps.shortx.ui.theme.ShortXColorScheme
 
 
 val LocalI18N = staticCompositionLocalOf<I18N> {
@@ -22,6 +23,10 @@ val LocalDrawerState = staticCompositionLocalOf<DrawerState> {
 
 val LocalAppName = staticCompositionLocalOf<String> {
     noLocalProvidedFor("LocalAppName")
+}
+
+val LocalShortXColorSchema = staticCompositionLocalOf<ShortXColorScheme> {
+    noLocalProvidedFor("LocalShortXColorSchema")
 }
 
 private fun noLocalProvidedFor(name: String): Nothing {

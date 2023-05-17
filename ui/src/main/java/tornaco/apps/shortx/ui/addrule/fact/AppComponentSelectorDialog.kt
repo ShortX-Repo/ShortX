@@ -97,7 +97,7 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.title.select.component"]) },
                         actions = {

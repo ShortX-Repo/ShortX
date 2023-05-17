@@ -51,6 +51,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.webview.components.ErrorView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -143,7 +144,7 @@ fun WebViewSkeleton(
             Scaffold(
                 modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         title = { Text(title) },
                         navigationIcon = {
                             IconButton(onClick = { goBack() }) {

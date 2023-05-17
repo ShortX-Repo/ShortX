@@ -162,7 +162,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
             }
         }
 
-        Switch(
+        ShortXSwitch(
             modifier = Modifier.padding(end = 16.dp),
             checked = checkState,
             onCheckedChange = {

@@ -57,7 +57,7 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.action.show.overlay"]) },
                         navigationIcon = {

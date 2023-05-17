@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,8 +37,9 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
-import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -57,7 +56,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         title = {
                             Text(
                                 text = "Danmu"
@@ -153,9 +152,8 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
 
 @Composable
 private fun ItemCard(itemLabel: String, content: @Composable () -> Unit) {
-    Card(
+    ShortXCard(
         modifier = Modifier,
-        colors = CardDefaults.cardColors(containerColor = ColorDefaults.backgroundSurfaceColor())
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

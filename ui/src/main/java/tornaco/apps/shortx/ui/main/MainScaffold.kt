@@ -52,7 +52,7 @@ fun MainScaffold(
         Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 if (state.isActivated) {
-                    MediumTopAppBar(
+                    ShortXMediumTopAppBar(
                         title = {
                             Text(
                                 text = LocalI18N.current[appBarTitleKey]
@@ -67,7 +67,7 @@ fun MainScaffold(
                         scrollBehavior = scrollBehavior,
                     )
                 } else {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         title = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = LocalAppName.current)

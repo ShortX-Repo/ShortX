@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.theme
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFFB91D1B)
@@ -71,3 +72,11 @@ val WeChatGreen = Color(0XFF4CAF50)
 val AliBlue = Color(0XFF2962ff)
 val PayPalBlue = Color(0XFF0277BD)
 val VerifiedGreen = Color(0XFF43a047)
+
+
+@Stable
+class ShortXColorScheme(
+    val cardBackground: Color,
+    val uncheckedTrack: Color,
+    val uncheckedThumb: Color,
+)

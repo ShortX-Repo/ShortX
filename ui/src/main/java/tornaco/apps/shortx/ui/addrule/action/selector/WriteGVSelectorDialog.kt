@@ -62,7 +62,7 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.action.write.global.var"]) },
                         navigationIcon = {

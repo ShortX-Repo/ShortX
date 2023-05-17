@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.Card
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -155,28 +154,25 @@ fun DirectActionListContent(
                     animationSpec = tween(EXECUTE_ANIM_DURATION),
                     finishedListener = {
                         colorAnimStarted = false
-                    }
+                    }, label = "widthPercent"
                 )
                 val scalePercent by animateFloatAsState(
                     targetValue = if (scaleAnimStarted) 0.96f else 1f,
                     animationSpec = spring(),
                     finishedListener = {
                         scaleAnimStarted = false
-                    }
+                    }, label = "scalePercent"
                 )
                 var itemSize by remember {
                     mutableStateOf(Pair(0.dp, 0.dp))
                 }
                 val density = LocalDensity.current
 
-                Card(
+                ShortXCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .scale(scalePercent)
                         .animateContentSize(),
-                    backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                    shape = ShortXCardRoundedCornerShape,
-                    elevation = 0.dp
                 ) {
                     Box {
                         DirectActionItem(
@@ -420,18 +416,23 @@ private fun listItemOverflowMenu(
                     ActionShortcutActivity.addShortcut(context, da)
                 }
             }
+
             "dup" -> {
                 onDup(da)
             }
+
             "delete" -> {
                 deleteDialogState.show()
             }
+
             "edit" -> {
                 onEdit(da)
             }
+
             "share" -> {
                 onShare(da)
             }
+
             else -> {}
         }
     })

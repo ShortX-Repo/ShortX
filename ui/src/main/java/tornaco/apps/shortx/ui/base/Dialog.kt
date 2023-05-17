@@ -58,8 +58,8 @@ fun ShortFullScreenXDialog(
                 bottomEnd = 0.dp,
                 bottomStart = 0.dp
             ),
-            color = AlertDialogDefaults.containerColor,
-            tonalElevation = AlertDialogDefaults.TonalElevation
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
         ) {
             BackHandler {
                 onDismissRequest()

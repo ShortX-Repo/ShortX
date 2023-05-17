@@ -44,7 +44,7 @@ fun SettingsScreen(
 
     ShortXTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize()
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
@@ -52,7 +52,7 @@ fun SettingsScreen(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.common.settings"]) },
                         navigationIcon = {
@@ -84,6 +84,7 @@ fun SettingsScreen(
                                         )
                                     }
                                 }
+
                                 is BackupResult.Failed -> {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
@@ -105,6 +106,7 @@ fun SettingsScreen(
                                         )
                                     }
                                 }
+
                                 is RestoreResult.Failed -> {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(

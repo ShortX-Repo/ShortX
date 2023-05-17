@@ -27,7 +27,7 @@ fun ShortXCard(
 ) {
     Card(
         modifier = modifier.animateContentSize(),
-        backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+        backgroundColor = LocalShortXColorSchema.current.cardBackground,
         shape = ShortXCardRoundedCornerShape,
         elevation = 0.dp,
         onClick = onClick,

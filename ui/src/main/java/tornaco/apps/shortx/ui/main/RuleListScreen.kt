@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.Card
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -139,16 +138,13 @@ private fun RuleContent(
                     animationSpec = spring(),
                     finishedListener = {
                         scaleAnimStarted = false
-                    }
+                    }, label = "scalePercent"
                 )
 
-                Card(
+                ShortXCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .scale(scalePercent),
-                    backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                    shape = ShortXCardRoundedCornerShape,
-                    elevation = 0.dp
                 ) {
                     RuleItem2(
                         rule = rule,
@@ -256,8 +252,7 @@ private fun RuleItem2(
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                     maxLines = 8
                 )
-                TinySpacer()
-                TinySpacer()
+                MediumSpacer()
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -278,14 +273,16 @@ private fun RuleItem2(
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 10.sp),
                         )
                     }
-                    Switch(
+                    ShortXSwitch(
                         modifier = Modifier,
                         checked = rule.isEnabled,
                         onCheckedChange = {
                             setRuleEnabled(rule.id, it)
-                        }
+                        },
                     )
                 }
+
+                MediumSpacer()
             }
 
         }
@@ -383,15 +380,19 @@ private fun listItemOverflowMenu(
                 "dup" -> {
                     onDup(rule)
                 }
+
                 "delete" -> {
                     deleteDialogState.show()
                 }
+
                 "edit" -> {
                     onEdit(rule)
                 }
+
                 "share" -> {
                     onShare(rule)
                 }
+
                 else -> {}
             }
         })

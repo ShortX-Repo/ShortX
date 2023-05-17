@@ -426,7 +426,7 @@ class ShortXManager(private val service: IShortX) {
 }
 
 object ShortXManagerNative {
-    private val logger = Logger("ShortXManagerNative")
+    private val logger = Logger("ManagerNative")
 
     // IAppWidgetService
     private val androidService
@@ -452,7 +452,7 @@ object ShortXManagerNative {
             logger.d("shortx binder: $shortx")
             IShortX.Stub.asInterface(shortx)
         }.getOrElse {
-            logger.e(it)
+            logger.e(it, "getServiceOrNull2")
             null
         }
     }

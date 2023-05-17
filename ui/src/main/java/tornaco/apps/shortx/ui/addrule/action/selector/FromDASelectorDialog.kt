@@ -74,7 +74,7 @@ private fun FromDASelector(dialogState: FromDADialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.action.from.da"]) },
                         navigationIcon = {

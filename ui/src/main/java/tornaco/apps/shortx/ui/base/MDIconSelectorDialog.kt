@@ -62,7 +62,7 @@ private fun MDIconSelector(state: MDIconSelectorState) {
             Scaffold(
                 modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text("Icons") },
                         navigationIcon = {

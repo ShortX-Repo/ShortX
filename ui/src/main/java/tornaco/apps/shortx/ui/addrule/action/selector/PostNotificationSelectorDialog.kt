@@ -69,7 +69,7 @@ private fun PostNotificationSelector(dialogState: PostNotificationDialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.action.post.notification"]) },
                         navigationIcon = {
@@ -175,7 +175,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.post.notification.important"])
-            Switch(checked = state.data.isImportant, onCheckedChange = {
+            ShortXSwitch(checked = state.data.isImportant, onCheckedChange = {
                 vm.setImportant(it)
             })
         }
@@ -183,7 +183,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.post.notification.sound"])
-            Switch(checked = state.data.sound, onCheckedChange = {
+            ShortXSwitch(checked = state.data.sound, onCheckedChange = {
                 vm.setSound(it)
             })
         }
@@ -191,7 +191,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.post.notification.vibrate"])
-            Switch(checked = state.data.vibrate, onCheckedChange = {
+            ShortXSwitch(checked = state.data.vibrate, onCheckedChange = {
                 vm.setVibrate(it)
             })
         }

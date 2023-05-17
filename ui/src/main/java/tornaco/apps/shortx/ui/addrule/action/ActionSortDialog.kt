@@ -67,7 +67,7 @@ private fun ActionSortDialogContent(state: ActionSortState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.common.long.press.sort"]) },
                         navigationIcon = {

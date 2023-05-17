@@ -23,6 +23,6 @@ fun SwitchRow(
     ) {
         SmallTitle(text = text)
         StandardSpacer()
-        Switch(checked = isChecked, onCheckedChange = onCheckChange)
+        ShortXSwitch(checked = isChecked, onCheckedChange = onCheckChange)
     }
 }

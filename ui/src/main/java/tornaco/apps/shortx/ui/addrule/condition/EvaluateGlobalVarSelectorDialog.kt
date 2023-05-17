@@ -102,7 +102,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
                         navigationIcon = {

@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.main.DirectActionListContent
 import tornaco.apps.shortx.ui.main.DirectActionUM
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -65,7 +66,7 @@ private fun DASelector(dialogState: DADialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.title.select.action"]) },
                         navigationIcon = {

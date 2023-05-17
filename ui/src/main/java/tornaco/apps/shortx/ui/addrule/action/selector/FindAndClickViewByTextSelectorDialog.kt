@@ -84,7 +84,7 @@ private fun FindAndClickViewByTextSelector(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Scaffold(modifier = Modifier, topBar = {
-                TopAppBar(
+                ShortXTopAppBar(
                     modifier = Modifier,
                     title = { Text(text = LocalI18N.current["ui.action.find.click.view.by.text"]) },
                     navigationIcon = {
@@ -150,7 +150,7 @@ private fun FindAndClickViewByTextSelector(
                     StandardSpacer()
 
                     SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.is.regex"])
-                    Switch(checked = state.isRegex, onCheckedChange = { state.setIsRegex(it) })
+                    ShortXSwitch(checked = state.isRegex, onCheckedChange = { state.setIsRegex(it) })
                 }
             }
         }

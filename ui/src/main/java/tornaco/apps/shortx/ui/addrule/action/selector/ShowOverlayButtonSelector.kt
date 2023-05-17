@@ -70,7 +70,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
                         navigationIcon = {
@@ -178,7 +178,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.show.auto.collapse"])
-            Switch(checked = state.autoCollapse, onCheckedChange = {
+            ShortXSwitch(checked = state.autoCollapse, onCheckedChange = {
                 vm.setAutoCollapse(it)
             })
         }

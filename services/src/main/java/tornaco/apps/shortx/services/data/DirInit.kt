@@ -9,8 +9,8 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal object DirInit {
-    private const val THANOS_BASE_SERVER_DIR_NAME = "Jarvix"
-    private val logger = Logger("DataSystemServerDir")
+    private const val BASE_SERVER_DIR_NAME = "ShortX"
+    private val logger = Logger("DirInit")
 
     private var baseServerDir: File? = null
     private val baseServerDirInitialized = AtomicBoolean(false)
@@ -26,29 +26,29 @@ internal object DirInit {
         if (legacyBaseServerDir.exists()) {
             with(randomBaseServerDir()) {
                 if (legacyBaseServerDir.renameTo(this)) {
-                    logger.i("ServiceConfigs DataSystemServerDir baseServerDirMayInit, rename to: $this")
+                    logger.i("baseServerDirMayInit, rename to: $this")
                 } else {
                     val deleted = legacyBaseServerDir.deleteRecursively()
-                    logger.w("ServiceConfigs DataSystemServerDir baseServerDirMayInit, rename to: $this failed. deleted it anyway, deleted? $deleted")
+                    logger.w("baseServerDirMayInit, rename to: $this failed. deleted it anyway, deleted? $deleted")
                 }
             }
         }
 
         // Search any existing
         systemDir().listFiles()?.forEach {
-            if (it.isDirectory && it.name.startsWith(THANOS_BASE_SERVER_DIR_NAME)) {
-                logger.i("ServiceConfigs DataSystemServerDir baseServerDirMayInit, found shortx dir: $it")
+            if (it.isDirectory && it.name.startsWith(BASE_SERVER_DIR_NAME)) {
+                logger.i("baseServerDirMayInit, found shortx dir: $it")
                 baseServerDir = it
             }
         }
 
         if (baseServerDir == null) {
             baseServerDir = randomBaseServerDir()
-            logger.i("ServiceConfigs DataSystemServerDir baseServerDirMayInit, new random dir: $baseServerDir")
+            logger.i("baseServerDirMayInit, new random dir: $baseServerDir")
         }
 
         baseServerDirInitialized.set(true)
-        logger.i("ServiceConfigs DataSystemServerDir baseServerDirMayInit, finally we will use: $baseServerDir")
+        logger.i("baseServerDirMayInit, finally we will use: $baseServerDir")
         return baseServerDir!!
     }
 
@@ -56,12 +56,12 @@ internal object DirInit {
     private fun randomBaseServerDir(): File {
         return File(
             systemDir(),
-            "${THANOS_BASE_SERVER_DIR_NAME}_${RandomStringUtils.randomAlphabetic(16)}"
+            "${BASE_SERVER_DIR_NAME}_${RandomStringUtils.randomAlphabetic(16)}"
         )
     }
 
     private fun legacyBaseServerDir(): File {
-        return File(systemDir(), THANOS_BASE_SERVER_DIR_NAME)
+        return File(systemDir(), BASE_SERVER_DIR_NAME)
     }
 
     private fun systemDir(): File {

@@ -72,7 +72,7 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
         ) {
             Scaffold(modifier = Modifier,
                 topBar = {
-                    TopAppBar(
+                    ShortXTopAppBar(
                         modifier = Modifier,
                         title = { Text(LocalI18N.current["ui.action.show.dialog"]) },
                         navigationIcon = {
