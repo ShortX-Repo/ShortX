@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ui_app_name">Jarvix</string>
+    <string name="ui_app_name">ShortX</string>
 
     <string name="lvl_checking_retry">Retry</string>
     <string name="lvl_checking">Checking Licence from Play store</string>

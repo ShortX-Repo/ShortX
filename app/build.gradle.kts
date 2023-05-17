@@ -109,7 +109,7 @@ android {
             val impl =
                 this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
             impl.outputFileName =
-                "Jarv-${Configs.sxVersionName}(${Configs.sxVersionCode}).apk"
+                "shortx-${Configs.sxVersionName}(${Configs.sxVersionCode}).apk"
             log("impl.outputFileName changed to:${impl.outputFileName}")
         }
     }

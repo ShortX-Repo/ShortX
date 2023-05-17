@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 
-rootProject.name = "JARVIX"
+rootProject.name = "ShortX"
 
 pluginManagement {
     repositories {
