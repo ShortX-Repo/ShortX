@@ -9,7 +9,7 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal object DirInit {
-    private const val THANOS_BASE_SERVER_DIR_NAME = "shortx"
+    private const val THANOS_BASE_SERVER_DIR_NAME = "Jarvix"
     private val logger = Logger("DataSystemServerDir")
 
     private var baseServerDir: File? = null
