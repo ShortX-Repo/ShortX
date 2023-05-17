@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.core;
 
 import tornaco.apps.shortx.core.IJobStatusListener;
+import tornaco.apps.shortx.core.ICallback;
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 
 interface IShortX {
@@ -90,4 +91,7 @@ interface IShortX {
     // Condition start
     boolean evaluateCondition(in ByteArrayWrapper condition);
     // Condition end
+
+    // Verify binding.
+     void vb(in String code, in String deviceId, in ICallback cb);
 }

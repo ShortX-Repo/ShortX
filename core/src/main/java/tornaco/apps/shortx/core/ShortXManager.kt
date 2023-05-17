@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -388,6 +389,16 @@ class ShortXManager(private val service: IShortX) {
     fun unregisterGlobalVarObs(obs: IGlobalVarObserver) {
         invokeService(Unit) {
             unregisterGlobalVarObs(obs)
+        }
+    }
+
+    fun vb(code: String, deviceId: String, callback: (CommonApiRes) -> Unit) {
+        invokeService(Unit) {
+            vb(code, deviceId, object : ICallback.Stub() {
+                override fun receive(data: ByteArrayWrapper) {
+                    callback(CommonApiRes.parseFrom(data.byte))
+                }
+            })
         }
     }
 

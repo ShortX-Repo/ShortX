@@ -1,14 +1,17 @@
 package tornaco.apps.shortx.ui.subscribe.code
 
-import com.google.errorprone.annotations.Keep
-
-@Keep
-data class CommonRes(
-    var result: Int,
-    val msg: String,
-    val k: String?,
-)
+import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.proto.common.CommonApiRes
 
 private const val SUCCESS = 0
 
-val CommonRes.isSuccess get() = result == SUCCESS
+val CommonApiRes.isSuccess get() = result == SUCCESS
+val CommonApiResWrapper.isSuccess get() = result == SUCCESS
+
+
+@DoNotStrip
+data class CommonApiResWrapper(
+    val result: Int,
+    val msg: String?,
+    val k: String?
+)

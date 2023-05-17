@@ -23,6 +23,9 @@ dependencies {
     implementation(Coroutines.core)
     implementation(Coroutines.stdlib)
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
     implementation("com.google.protobuf:protobuf-java:3.17.2")
 
     // https://mvnrepository.com/artifact/org.mvel/mvel2

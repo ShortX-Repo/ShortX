@@ -4,7 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.Signature
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import java.security.MessageDigest
@@ -80,3 +89,65 @@ inline fun <T> v(context: Context, run: () -> T): T? {
         null
     }
 }
+
+suspend inline fun vb(
+    code: String,
+    deviceId: String,
+    crossinline onSuccess: (CommonApiRes) -> Unit,
+    crossinline onError: (Throwable) -> Unit
+) {
+    if (BuildProp.APP_IS_DEBUG) {
+        logger.d("vb")
+    }
+
+    if (errorTimes >= 24) {
+        onSuccess(CommonApiRes.newBuilder().setResult(-1).setMsg("Too many failures.").build())
+        return
+    }
+
+    withContext(Dispatchers.IO) {
+        runCatching {
+            onSuccess(api.verify(code, deviceId).let { wrapper ->
+                logger.d("vb success: $wrapper")
+                CommonApiRes.newBuilder().setResult(wrapper.result).apply {
+                    wrapper.msg?.let { msg = it }
+                    wrapper.k?.let { k = it }
+                }.build()
+            })
+        }.onFailure {
+            onError(it)
+            errorTimes += 1
+            if (BuildProp.APP_IS_DEBUG) logger.e(it, "vb error")
+        }
+    }
+}
+
+var errorTimes = 0
+val api by lazy { Api.create() }
+
+interface Api {
+    @GET("verifyCodeBinding")
+    suspend fun verify(
+        @Query("uuid") uuid: String,
+        @Query("deviceId") deviceId: String
+    ): CommonApiResWrapper
+
+    companion object {
+        private const val BASE_URL = BuildProp.API_BASE_URL
+
+        fun create(): Api {
+            val retrofit: Retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(OkHttpClient.Builder().build()).build()
+            return retrofit.create(Api::class.java)
+        }
+    }
+}
+
+@DoNotStrip
+data class CommonApiResWrapper(
+    val result: Int,
+    val msg: String?,
+    val k: String?
+)

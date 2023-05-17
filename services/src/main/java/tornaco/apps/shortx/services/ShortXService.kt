@@ -179,6 +179,18 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             return shortXContext.rule.evaluateCondition(ProtoAny.parseFrom(condition.byte))
         }
 
+        override fun vb(code: String, deviceId: String, cb: ICallback) {
+            systemServiceScope.launchSafety {
+                tornaco.apps.shortx.services.v.vb(
+                    code = code,
+                    deviceId = deviceId,
+                    onSuccess = {
+                        kotlin.runCatching { cb.receive(ByteArrayWrapper(it.toByteArray())) }
+                    },
+                    onError = {})
+            }
+        }
+
         override fun addPkgSet(set: ByteArrayWrapper) {
             shortXContext.pkgSet.addPkgSet(PkgSet.parseFrom(set.byte))
         }

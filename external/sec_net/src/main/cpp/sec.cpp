@@ -26,7 +26,10 @@ Java_tornaco_android_sec_net_S_c(JNIEnv *env, jclass clazz, jstring plain,
     std::transform(exp.begin(), exp.end(), exp.begin(), ::tolower);
     std::transform(merge.begin(), merge.end(), merge.begin(), ::tolower);
 
-    LOGD("Every day is good day!");
+    // LOGD("Every day is good day!");
+
+    // LOGD("exp %s", exp.c_str());
+    // LOGD("merge %s", merge.c_str());
 
     if (strcmp(exp.c_str(), merge.c_str()) != 0) {
         throw std::invalid_argument("VF ERROR.");

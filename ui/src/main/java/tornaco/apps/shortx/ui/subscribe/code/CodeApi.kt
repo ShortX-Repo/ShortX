@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.BuildProp
 
 interface CodeApi {
     @POST("bindActivationCode")
-    suspend fun verify(@Body body: RequestBody): CommonRes
+    suspend fun verify(@Body body: RequestBody): CommonApiResWrapper
 
     @GET("getSubscriptionConfig")
     suspend fun getSubscriptionConfig(): SubscriptionConfig

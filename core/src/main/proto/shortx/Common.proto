@@ -40,3 +40,9 @@ enum OnOffAny {
   Off = 1;
   Any = 2;
 }
+
+message CommonApiRes {
+  int32 result = 1;
+  string msg = 2;
+  string k = 3;
+}
