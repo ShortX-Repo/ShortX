@@ -38,3 +38,8 @@
 -keepclassmembers class * {
     @tornaco.apps.shortx.core.annotations.DoNotStrip *;
 }
+
+# This class implements IAccessibilityServiceClient.Stub from hidden api
+-keepclassmembers class tornaco.apps.shortx.services.wm.UiAutomationManager {
+   public *;
+}

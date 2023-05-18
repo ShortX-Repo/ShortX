@@ -259,7 +259,8 @@ private fun dataSettings(
                 }
             }
         ),
-        Preference.TextPreference(
+
+        Preference.ExpandablePreference(
             icon = Remix.System.download_2_line,
             title = LocalI18N.current["ui.settings.data.restore.title"],
             summary = LocalI18N.current["ui.settings.data.restore.summary"],
@@ -267,16 +268,18 @@ private fun dataSettings(
                 featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
                     pickRestoreFile()
                 }
-            }
+            },
+            preferences = listOf(
+                Preference.TextPreference(
+                    icon = Remix.System.history_line,
+                    title = LocalI18N.current["ui.settings.data.reset.title"],
+                    summary = LocalI18N.current["ui.settings.data.reset.summary"],
+                    onClick = {
+                        resetData()
+                    }
+                )
+            ),
         ),
-        Preference.TextPreference(
-            icon = Remix.System.history_line,
-            title = LocalI18N.current["ui.settings.data.reset.title"],
-            summary = LocalI18N.current["ui.settings.data.reset.summary"],
-            onClick = {
-                resetData()
-            }
-        )
     )
 }
 
