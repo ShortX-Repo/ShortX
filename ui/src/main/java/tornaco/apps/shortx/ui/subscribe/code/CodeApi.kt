@@ -10,6 +10,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.CommonApiResWrapper
 
 interface CodeApi {
     @POST("bindActivationCode")

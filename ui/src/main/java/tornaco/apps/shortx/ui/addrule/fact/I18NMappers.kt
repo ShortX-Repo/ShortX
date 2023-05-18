@@ -317,7 +317,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
 
 fun colorForFact(fact: KClass<out Fact>): Color {
     val index =
-        runCatching { Fact::class.sealedSubclasses.indexOf(fact) % FactColorPalettes.size }.getOrElse { 0 }
+        runCatching { maxOf(0, Fact::class.sealedSubclasses.indexOf(fact)) % FactColorPalettes.size }.getOrElse { 0 }
     return when (fact) {
         Fact.ActivityStarted::class -> FactColorPalettes[index]
         Fact.AnyActivityStarted::class -> FactColorPalettes[index]

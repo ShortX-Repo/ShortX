@@ -4,9 +4,11 @@ import android.os.Build
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 
 private val gson by lazy { Gson() }
 
+@DoNotStrip
 data class DeviceCodeBinding(
     val uuid: String,
     val deviceId: String,

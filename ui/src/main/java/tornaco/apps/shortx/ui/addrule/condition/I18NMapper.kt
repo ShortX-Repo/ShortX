@@ -147,7 +147,7 @@ fun iconForOp(op: Op): String {
 
 fun colorForCondition(condition: KClass<out Condition>): Color {
     val index =
-        runCatching { Condition::class.sealedSubclasses.indexOf(condition) % ConditionColorPalettes.size }.getOrElse { 0 }
+        runCatching { maxOf(0, Condition::class.sealedSubclasses.indexOf(condition)) % ConditionColorPalettes.size }.getOrElse { 0 }
     return when (condition) {
         Condition.CurrentForegroundApp::class -> {
             ConditionColorPalettes[index]

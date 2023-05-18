@@ -34,12 +34,27 @@
 -keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
 
 # Do not strip any method/class that is annotated with @DoNotStrip
--keep @tornaco.apps.shortx.core.annotations.DoNotStrip class *
--keepclassmembers class * {
-    @tornaco.apps.shortx.core.annotations.DoNotStrip *;
+-keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
+-keep @tornaco.apps.shortx.core.annotations.DoNotStrip class * {*;}
+
+-keepclasseswithmembers class * {
+    @tornaco.apps.shortx.core.annotations.DoNotStrip <methods>;
 }
+
+-keepclasseswithmembers class * {
+    @tornaco.apps.shortx.core.annotations.DoNotStrip <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @tornaco.apps.shortx.core.annotations.DoNotStrip <init>(...);
+}
+
 
 # This class implements IAccessibilityServiceClient.Stub from hidden api
 -keepclassmembers class tornaco.apps.shortx.services.wm.UiAutomationManager {
    public *;
 }
+
+-keep class tornaco.apps.shortx.ui.addrule.action.model.** { *; }
+-keep class tornaco.apps.shortx.ui.addrule.condition.model.** { *; }
+-keep class tornaco.apps.shortx.ui.addrule.fact.model.** { *; }

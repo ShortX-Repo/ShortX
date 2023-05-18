@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.CommonApiResWrapper
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -144,10 +144,3 @@ interface Api {
         }
     }
 }
-
-@DoNotStrip
-data class CommonApiResWrapper(
-    val result: Int,
-    val msg: String?,
-    val k: String?
-)

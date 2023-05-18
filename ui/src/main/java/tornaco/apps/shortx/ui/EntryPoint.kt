@@ -11,11 +11,11 @@ import lang3.RandomStringUtils
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.isSuccess
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
 import tornaco.apps.shortx.ui.settings.pref.Pref
-import tornaco.apps.shortx.ui.subscribe.code.isSuccess
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked

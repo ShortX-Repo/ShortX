@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.subscribe.code
+package tornaco.apps.shortx.core
 
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.proto.common.CommonApiRes

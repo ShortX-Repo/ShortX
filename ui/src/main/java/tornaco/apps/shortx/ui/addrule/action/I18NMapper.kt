@@ -497,7 +497,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
 fun colorForAction(action: KClass<out Action>): Color {
     val index =
-        runCatching { Action::class.sealedSubclasses.indexOf(action) % ActionColorPalettes.size }.getOrElse { 0 }
+        runCatching { maxOf(0, Action::class.sealedSubclasses.indexOf(action)) % ActionColorPalettes.size }.getOrElse { 0 }
     return when (action) {
         Action.ShowToast::class -> {
             ActionColorPalettes[index]
