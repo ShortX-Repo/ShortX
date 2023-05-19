@@ -22,8 +22,6 @@ import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
-import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 
 @Composable
 fun ActionContent(
@@ -44,48 +42,26 @@ fun ActionContent(
 
 @Composable
 private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Unit {
-    val uiActionSubSelectorStates = uiActionSubSelectors { handler.addAction(it) }
+    val addAction: (Action) -> Unit = {
+        handler.addAction(it.clone(id = action.id, note = action.note))
+    }
 
-    val mvelEditorState = rememberCodeEditorState(
-        title = LocalI18N.current["ui.title.mvel"],
-        onSelected = {
-            handler.addAction(Action.MVEL(id = action.id, expression = it.src, note = it.note))
-        }
+    val selectHandlers = listOf(
+        uiActionSelectHandler(addAction = addAction),
+        appActionSelectHandler(addAction = addAction),
+        settingsActionSelectHandler(addAction = addAction),
+        lifeActionSelectHandler(addAction = addAction),
+        extActionSelectHandler(addAction = addAction),
     )
-    CodeEditorDialog(state = mvelEditorState)
 
-    val mapNavDialogState = rememberMapNavDialogState {
-        handler.addAction(it)
+    val itemSelected: (Action) -> Unit = { it ->
+        for (h in selectHandlers) {
+            if (h(ActionSelectSource.FromAction(it))) break
+        }
     }
-    MapNavDialog(state = mapNavDialogState)
-
-    val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
-        handler.addAction(it)
-    }
-    IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
 
     return {
-        when (action) {
-            is Action.ShowOverlay -> {
-                uiActionSubSelectorStates.overlayButtonState.show(action)
-            }
-            is Action.ShowAlertDialog -> {
-                uiActionSubSelectorStates.showDialogSettingsState.show(action)
-            }
-            is Action.ShowDanmu -> {
-                uiActionSubSelectorStates.showDanmuSettingsState.show(action)
-            }
-            is Action.MVEL -> {
-                mvelEditorState.show(action.expression)
-            }
-            is Action.MapNav -> {
-                mapNavDialogState.show(action)
-            }
-            is Action.IfThenElse -> {
-                ifThenElseDialogState.show(action)
-            }
-            else -> {}
-        }
+        itemSelected(action)
     }
 }
 
@@ -132,19 +108,23 @@ private fun Actions(
                     ActionSelectorDialogArgs.New -> {
                         handler.addAction(action)
                     }
+
                     is ActionSelectorDialogArgs.InsertAbove -> {
                         handler.insertAbove(action, args.anchor)
 
                     }
+
                     is ActionSelectorDialogArgs.InsertBelow -> {
                         handler.insertBelow(action, args.anchor)
                     }
+
                     else -> {
                         handler.addAction(action)
                     }
                 }
             })
         ActionSelectorDialog(state = actionSelectorState)
+
 
 
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -262,18 +242,23 @@ private fun Actions(
                                 "ia" -> {
                                     actionSelectorState.show(ActionSelectorDialogArgs.InsertAbove(it.data.first))
                                 }
+
                                 "ib" -> {
                                     actionSelectorState.show(ActionSelectorDialogArgs.InsertBelow(it.data.first))
                                 }
+
                                 "pa" -> {
                                     handler.pasteAbove(it.data.first)
                                 }
+
                                 "pb" -> {
                                     handler.pasteBelow(it.data.first)
                                 }
+
                                 "cp" -> {
                                     handler.copy(action)
                                 }
+
                                 "note" -> {
                                     noteDialogState.show(action.note)
                                 }

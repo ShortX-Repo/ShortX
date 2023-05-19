@@ -6,14 +6,13 @@ import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
-import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 
 @Composable
-fun settingsActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
-    return { actionKClass ->
-        when (actionKClass) {
+fun settingsActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    return { source ->
+        when (source.clazz) {
             Action.DisableBT::class,
             Action.DisableDND::class,
             Action.DisableDarkMode::class,
@@ -31,9 +30,10 @@ fun settingsActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action
             Action.EnableHotSpot::class,
             Action.EnableNFC::class,
             Action.EnableWifi::class -> {
-                addAction(actionKClass.createInstance())
+                addAction(source.clazz.createInstance())
                 true
             }
+
             else -> false
         }
     }
@@ -87,7 +87,7 @@ fun SettingsActions(addAction: (Action) -> Unit) {
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->
-            selectHandler(it)
+            selectHandler(ActionSelectSource.FromClass(it))
         }
     )
 }

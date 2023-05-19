@@ -9,58 +9,68 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import kotlin.reflect.KClass
 
 @Composable
-fun uiActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
+fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val subSelectorStates = uiActionSubSelectors(addAction)
 
-    return { it ->
-        when (it) {
+    return { source ->
+        when (source.clazz) {
             Action.ShowToast::class -> {
                 subSelectorStates.toastSelectionState.show()
                 true
             }
+
             Action.TakeScreenshot::class -> {
                 addAction(Action.TakeScreenshot())
                 true
             }
+
             Action.HideAllOverlay::class -> {
                 addAction(Action.HideAllOverlay())
                 true
             }
+
             Action.HideOverlay::class -> {
                 subSelectorStates.hideOverlayDialogState.show()
                 true
             }
+
             Action.ShowOverlay::class -> {
                 subSelectorStates.overlayButtonState.show()
                 true
             }
+
             Action.ShowAlertDialog::class -> {
                 subSelectorStates.showDialogSettingsState.show()
                 true
             }
+
             Action.ShowDanmu::class -> {
                 subSelectorStates.showDanmuSettingsState.show()
                 true
             }
+
             Action.ExpandNotification::class -> {
                 addAction(Action.ExpandNotification())
                 true
             }
+
             Action.PostNotification::class -> {
                 subSelectorStates.postNotificationDialogState.show()
                 true
             }
+
             Action.FindAndClickViewByText::class -> {
                 subSelectorStates.findAndClickViewByTextSelectorState.show()
                 true
             }
+
             Action.WaitForIdle::class -> {
                 addAction(Action.WaitForIdle())
                 true
             }
+
             else -> false
         }
     }
@@ -104,7 +114,7 @@ fun UiActions(addAction: (Action) -> Unit) {
     ActionList(
         actionItems = uiActionItems,
         itemSelected = { it ->
-            handler(it)
+            handler(ActionSelectSource.FromClass(it))
         })
 }
 

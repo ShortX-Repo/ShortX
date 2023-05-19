@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -11,18 +10,13 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 
-
 @Composable
-fun appActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
+fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val launchAppSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
                 val first = it[0]
-                val action = Action.LaunchApp(appPkg = first.let { app ->
-
-                    AppPkg.newBuilder().setUserId(app.pkg.userId).setPkgName(app.pkg.pkgName)
-                        .build()
-                }, appLabel = first.label)
+                val action = Action.LaunchApp(app = first)
                 addAction(action)
             })
     AppPkgSelectorDialog(state = launchAppSelectorState)
@@ -99,36 +93,63 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) ->
             })
     AppPkgSelectorDialog(state = unsuspendAppProcessSelectorState)
 
-    return { it ->
-        when (it) {
+    return { source: ActionSelectSource ->
+        when (source.clazz) {
             Action.LaunchApp::class -> {
-                launchAppSelectorState.show()
+                launchAppSelectorState.show(source.getActionAs<Action.LaunchApp>()?.app?.let {
+                    listOf(it)
+                })
                 true
             }
+
             Action.StopApp::class -> {
-                stopAppSelectorState.show()
+                stopAppSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             Action.StartAppProcess::class -> {
-                startAppProcessSelectorState.show()
+                startAppProcessSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             Action.EnableApp::class -> {
-                enableAppProcessSelectorState.show()
+                enableAppProcessSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             Action.DisableApp::class -> {
-                disableAppProcessSelectorState.show()
+                disableAppProcessSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             Action.SuspendApp::class -> {
-                suspendAppProcessSelectorState.show()
+                suspendAppProcessSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             Action.UnSuspendApp::class -> {
-                unsuspendAppProcessSelectorState.show()
+                unsuspendAppProcessSelectorState.show(
+                    source.getActionAs<Action.StopApp>()?.apps,
+                    source.getActionAs<Action.StopApp>()?.pkgSets
+                )
                 true
             }
+
             else -> false
         }
     }
@@ -154,7 +175,7 @@ fun AppActions(addAction: (Action) -> Unit) {
     ActionList(
         actionItems = actionItems,
         itemSelected = { it, _ ->
-            selectHandler(it)
+            selectHandler(ActionSelectSource.FromClass(it))
         }
     )
 }

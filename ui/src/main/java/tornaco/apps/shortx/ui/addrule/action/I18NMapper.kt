@@ -150,7 +150,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
         is Action.LaunchApp -> listOf(
             i18N["ui.action.launch.app"],
-            "${action.appLabel}$PREFIX_APP_ICON${action.appPkg.pkgName}"
+            "${action.app.label}$PREFIX_APP_ICON${action.app.pkg.pkgName}"
         )
 
         is Action.DisableBT -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])])

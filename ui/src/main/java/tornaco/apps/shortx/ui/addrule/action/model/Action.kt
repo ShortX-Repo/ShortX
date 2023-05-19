@@ -2,15 +2,61 @@ package tornaco.apps.shortx.ui.addrule.action.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
-import tornaco.apps.shortx.core.proto.action.*
+import tornaco.apps.shortx.core.proto.action.BreakActionExecute
+import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
+import tornaco.apps.shortx.core.proto.action.Delay
+import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
+import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
+import tornaco.apps.shortx.core.proto.action.ExpandNotification
+import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
+import tornaco.apps.shortx.core.proto.action.FromDA
+import tornaco.apps.shortx.core.proto.action.HideOverlayButton
+import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InputText
+import tornaco.apps.shortx.core.proto.action.LaunchApp
+import tornaco.apps.shortx.core.proto.action.Location
+import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.MapNav
+import tornaco.apps.shortx.core.proto.action.NoAction
+import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL
+import tornaco.apps.shortx.core.proto.action.SetAppEnabled
+import tornaco.apps.shortx.core.proto.action.SetAppSuspend
+import tornaco.apps.shortx.core.proto.action.SetBTEnabled
+import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
+import tornaco.apps.shortx.core.proto.action.SetDarkModeEnabled
+import tornaco.apps.shortx.core.proto.action.SetDataEnabled
+import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
+import tornaco.apps.shortx.core.proto.action.SetGPSEnabled
+import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
+import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
+import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
+import tornaco.apps.shortx.core.proto.action.ShellCommand
+import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
+import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowToast
+import tornaco.apps.shortx.core.proto.action.StartActivity
+import tornaco.apps.shortx.core.proto.action.StartAppProcess
+import tornaco.apps.shortx.core.proto.action.StopApp
+import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.action.WaitForIdle
+import tornaco.apps.shortx.core.proto.action.WhileLoop
+import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
-import tornaco.apps.shortx.core.rule.*
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.actionContextData
@@ -24,7 +70,7 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import tornaco.apps.shortx.ui.remote.toModel
 import tornaco.apps.shortx.ui.remote.toProto
-import java.util.*
+import java.util.UUID
 
 fun defaultNewActionId() = "A-" + UUID.randomUUID().toString()
 
@@ -32,36 +78,57 @@ sealed interface Action : Parcelable {
     val id: String
     val note: String
 
+    fun clone(id: String, note: String): Action
+
     @Parcelize
     data class TakeScreenshot(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ShellCommand(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val command: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class InputText(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val text: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class Delay(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val time: Long
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ShowToast(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val message: String
-    ) :
-        Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ShowDanmu(
@@ -69,20 +136,32 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val text: String,
         val icon: String?
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class MVEL(
         override val id: String = defaultNewActionId(),
         override val note: String = "", val expression: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class RemoteMVEL(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val action: RemoteExecuteMVELAction
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ShowOverlay(
@@ -91,28 +170,43 @@ sealed interface Action : Parcelable {
         val autoCollapse: Boolean,
         val settings: List<OverlayButtonSetting>,
         val tag: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class HideAllOverlay(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class HideOverlay(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val tags: List<String>
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class LaunchApp(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
-        val appPkg: AppPkg,
-        val appLabel: String
-    ) : Action
+        val app: App,
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class StopApp(
@@ -120,7 +214,11 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
 
     @Parcelize
@@ -128,13 +226,21 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val componentNameAsString: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ExpandNotification(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class PostNotification(
@@ -148,7 +254,11 @@ sealed interface Action : Parcelable {
         val isImportant: Boolean,
         val vibrate: Boolean,
         val sound: Boolean,
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class StartAppProcess(
@@ -156,7 +266,11 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableApp(
@@ -164,7 +278,11 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableApp(
@@ -172,7 +290,11 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class SuspendApp(
@@ -180,7 +302,11 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class UnSuspendApp(
@@ -188,121 +314,201 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableBT(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableWifi(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableHotSpot(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableData(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableNFC(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableFlashLight(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableDND(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableGPS(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class EnableDarkMode(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableBT(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableWifi(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableHotSpot(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableData(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableNFC(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableFlashLight(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableDND(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableGPS(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DisableDarkMode(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class Brk(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class WhileLoop(
@@ -313,7 +519,11 @@ sealed interface Action : Parcelable {
         val delay: Long,
         val repeat: Int,
         val op: Op
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class ShowAlertDialog(
@@ -328,7 +538,11 @@ sealed interface Action : Parcelable {
         val positiveActions: List<Action> = emptyList(),
         val negativeActions: List<Action> = emptyList(),
         val neutralActions: List<Action> = emptyList(),
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class WriteGV(
@@ -336,21 +550,33 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val valueAsString: String,
         val varName: String
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class CreateGV(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val globalVar: GlobalVar
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class DeleteGV(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val varName: String,
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class MapNav(
@@ -360,7 +586,11 @@ sealed interface Action : Parcelable {
         val longitude: String,
         val poi: String,
         val mapApp: MapApp
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class FromDA(
@@ -369,7 +599,11 @@ sealed interface Action : Parcelable {
         val daId: String,
         val title: String?,
         val description: String?
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class FindAndClickViewByText(
@@ -378,13 +612,21 @@ sealed interface Action : Parcelable {
         val text: String,
         val isRegex: Boolean,
         val timeout: Long = 3000L
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class WaitForIdle(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class IfThenElse(
@@ -395,13 +637,21 @@ sealed interface Action : Parcelable {
         val ifConditionOp: Op = Op.All,
         val ifActions: List<Action> = emptyList(),
         val elseActions: List<Action> = emptyList(),
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
-    ) : Action
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 }
 
 fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = null): ProtoMessage {
@@ -410,23 +660,28 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             TakeScreenshot.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.ShellCommand -> {
             ShellCommand.newBuilder().setId(overrideId ?: id).setCommand(command)
                 .setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.InputText -> {
             InputText.newBuilder().setId(overrideId ?: id).setText(text)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.Delay -> {
             Delay.newBuilder().setId(overrideId ?: id).setTime(time).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.ShowToast -> {
             ShowToast.newBuilder().setId(overrideId ?: id).setMessage(message)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.ShowDanmu -> {
             ShowDanmu.newBuilder().setId(overrideId ?: id).setText(text).apply {
                 this@toProtoAction.icon?.let {
@@ -434,22 +689,27 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 }
             }.setNote(overrideNote ?: note).build()
         }
+
         is Action.MVEL -> {
             ExecuteMVEL.newBuilder().setId(overrideId ?: id).setExpression(expression)
                 .setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.RemoteMVEL -> {
             action.toProto()
         }
+
         is Action.HideAllOverlay -> {
             HideOverlayButton.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.HideOverlay -> {
             HideOverlayButton.newBuilder().setId(overrideId ?: id).addAllOverlayTags(tags)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.ShowOverlay -> {
             ShowOverlayButton.newBuilder()
                 .setId(overrideId ?: id)
@@ -458,34 +718,44 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllButtonSettings(settings)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.LaunchApp -> {
-            LaunchApp.newBuilder().setId(overrideId ?: id).setAppPkg(appPkg)
+            LaunchApp.newBuilder().setId(overrideId ?: id).setAppPkg(app.pkg)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.DisableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.DisableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.DisableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
+
         is Action.DisableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
+
         is Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
+
         is Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
+
         is Action.DisableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.DisableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
@@ -493,27 +763,35 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.EnableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.EnableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.EnableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
+
         is Action.EnableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
+
         is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
+
         is Action.EnableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
+
         is Action.EnableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
@@ -523,35 +801,42 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.EnableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.StopApp -> {
             StopApp.newBuilder().setId(overrideId ?: id)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.SuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(true)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.UnSuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.Brk -> {
             BreakActionExecute.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.ShowAlertDialog -> {
             ShowAlertDialog.newBuilder().setId(overrideId ?: id)
                 .setTitle(title)
@@ -567,15 +852,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllOnNeutral(neutralActions.map { it.toProtoAction().pack_() })
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.StartActivity -> {
             StartActivity.newBuilder().setId(overrideId ?: id)
                 .setComponentNameAsString(componentNameAsString)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.ExpandNotification -> {
             ExpandNotification.newBuilder().setId(overrideId ?: id).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.WhileLoop -> {
             WhileLoop.newBuilder().setId(overrideId ?: id)
                 .setDelay(delay.toInt())
@@ -594,6 +882,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 }
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.WriteGV -> {
             WriteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
@@ -601,6 +890,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setValueAsString(valueAsString)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.CreateGV -> {
             CreateGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
@@ -608,6 +898,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setGlobalVar(globalVar)
                 .build()
         }
+
         is Action.DeleteGV -> {
             DeleteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
@@ -615,6 +906,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVarName(varName)
                 .build()
         }
+
         is Action.MapNav -> {
             MapNav.newBuilder()
                 .setId(overrideId ?: id)
@@ -628,6 +920,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setPoi(poi)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.PostNotification -> {
             PostNotification.newBuilder()
                 .setId(overrideId ?: id)
@@ -641,21 +934,25 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVibrate(vibrate)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.FromDA -> {
             FromDA.newBuilder().setId(overrideId ?: id).setDaId(daId).setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.FindAndClickViewByText -> {
             FindAndClickViewByText.newBuilder().setId(overrideId ?: id).setText(text)
                 .setIsRegex(isRegex)
                 .setNote(overrideNote ?: note).build()
         }
+
         is Action.WaitForIdle -> {
             WaitForIdle.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .build()
         }
+
         is Action.IfThenElse -> {
             IfThenElse.newBuilder()
                 .setId(overrideId ?: id)
@@ -675,6 +972,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllElseActions(elseActions.map { it.toProtoAction().pack_() })
                 .build()
         }
+
         is Action.NoAction -> {
             NoAction.newBuilder()
                 .setId(overrideId ?: id)
@@ -690,10 +988,12 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ NoAction::class.java
             Action.NoAction(id = data.id, note = data.note)
         }
+
         this is_ TakeScreenshot::class.java -> {
             val data = this unpack_ TakeScreenshot::class.java
             Action.TakeScreenshot(id = data.id, note = data.note)
         }
+
         this is_ ShellCommand::class.java -> {
             val data = this unpack_ ShellCommand::class.java
             Action.ShellCommand(
@@ -701,6 +1001,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, command = data.command
             )
         }
+
         this is_ InputText::class.java -> {
             val data = this unpack_ InputText::class.java
             Action.InputText(
@@ -708,6 +1009,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, text = data.text
             )
         }
+
         this is_ ShowToast::class.java -> {
             val data = this unpack_ ShowToast::class.java
             Action.ShowToast(
@@ -715,6 +1017,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, message = data.message
             )
         }
+
         this is_ ShowDanmu::class.java -> {
             val data = this unpack_ ShowDanmu::class.java
             Action.ShowDanmu(
@@ -722,6 +1025,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, text = data.text, icon = data.icon
             )
         }
+
         this is_ Delay::class.java -> {
             val data = this unpack_ Delay::class.java
             Action.Delay(
@@ -729,6 +1033,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, time = data.time
             )
         }
+
         this is_ ExecuteMVEL::class.java -> {
             val data = this unpack_ ExecuteMVEL::class.java
             Action.MVEL(
@@ -736,6 +1041,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, expression = data.expression
             )
         }
+
         this is_ RemoteExecuteMVEL::class.java -> {
             val data = this unpack_ RemoteExecuteMVEL::class.java
             Action.RemoteMVEL(
@@ -743,6 +1049,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, action = data.toModel()
             )
         }
+
         this is_ ShowOverlayButton::class.java -> {
             val data = this unpack_ ShowOverlayButton::class.java
             Action.ShowOverlay(
@@ -753,6 +1060,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 tag = data.tag
             )
         }
+
         this is_ HideOverlayButton::class.java -> {
             val data = this unpack_ HideOverlayButton::class.java
             if (data.overlayTagsList.isEmpty()) {
@@ -769,10 +1077,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         this is_ LaunchApp::class.java -> {
             val data = this unpack_ LaunchApp::class.java
             val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
-            val appLabel = shortXManager.getAppLabel(pkg)
             Action.LaunchApp(
                 id = data.id,
-                note = data.note, appPkg = data.appPkg, appLabel = appLabel
+                note = data.note,
+                app = App(pkg = pkg, label = shortXManager.getAppLabel(pkg), AppCategory.User)
             )
         }
 
@@ -784,6 +1092,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableWifi(id = data.id)
             }
         }
+
         this is_ SetBTEnabled::class.java -> {
             val data = this unpack_ SetBTEnabled::class.java
             if (data.enable) {
@@ -792,6 +1101,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableBT(id = data.id)
             }
         }
+
         this is_ SetNFCEnabled::class.java -> {
             val data = this unpack_ SetNFCEnabled::class.java
             if (data.enable) {
@@ -800,6 +1110,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableNFC(id = data.id)
             }
         }
+
         this is_ SetDNDEnabled::class.java -> {
             val data = this unpack_ SetDNDEnabled::class.java
             if (data.enable) {
@@ -808,6 +1119,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableDND(id = data.id)
             }
         }
+
         this is_ SetGPSEnabled::class.java -> {
             val data = this unpack_ SetGPSEnabled::class.java
             if (data.enable) {
@@ -816,6 +1128,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableGPS(id = data.id)
             }
         }
+
         this is_ SetDataEnabled::class.java -> {
             val data = this unpack_ SetDataEnabled::class.java
             if (data.enable) {
@@ -824,6 +1137,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableData(id = data.id)
             }
         }
+
         this is_ SetDarkModeEnabled::class.java -> {
             val data = this unpack_ SetDarkModeEnabled::class.java
             if (data.enable) {
@@ -832,6 +1146,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableDarkMode(id = data.id)
             }
         }
+
         this is_ SetFlashLightEnabled::class.java -> {
             val data = this unpack_ SetFlashLightEnabled::class.java
             if (data.enable) {
@@ -840,6 +1155,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableFlashLight(id = data.id)
             }
         }
+
         this is_ SetHotSpotEnabled::class.java -> {
             val data = this unpack_ SetHotSpotEnabled::class.java
             if (data.enable) {
@@ -938,10 +1254,12 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note, componentNameAsString = data.componentNameAsString
             )
         }
+
         this is_ ExpandNotification::class.java -> {
             val data = this unpack_ ExpandNotification::class.java
             Action.ExpandNotification(id = data.id)
         }
+
         this is_ WhileLoop::class.java -> {
             val data = this unpack_ WhileLoop::class.java
             Action.WhileLoop(
@@ -954,6 +1272,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 op = data.condOp.toOp(data.condOpPayload)
             )
         }
+
         this is_ WriteGlobalVar::class.java -> {
             val data = this unpack_ WriteGlobalVar::class.java
             Action.WriteGV(
@@ -963,6 +1282,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 valueAsString = data.valueAsString,
             )
         }
+
         this is_ CreateGlobalVar::class.java -> {
             val data = this unpack_ CreateGlobalVar::class.java
             Action.CreateGV(
@@ -971,6 +1291,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 globalVar = data.globalVar
             )
         }
+
         this is_ DeleteGlobalVar::class.java -> {
             val data = this unpack_ DeleteGlobalVar::class.java
             Action.DeleteGV(
@@ -979,6 +1300,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 varName = data.varName,
             )
         }
+
         this is_ MapNav::class.java -> {
             val data = this unpack_ MapNav::class.java
             Action.MapNav(
@@ -990,6 +1312,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 mapApp = data.app
             )
         }
+
         this is_ PostNotification::class.java -> {
             val data = this unpack_ PostNotification::class.java
             Action.PostNotification(
@@ -1027,6 +1350,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 timeout = data.timeout
             )
         }
+
         this is_ WaitForIdle::class.java -> {
             val data = this unpack_ WaitForIdle::class.java
             Action.WaitForIdle(

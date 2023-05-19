@@ -16,7 +16,7 @@ import tornaco.apps.shortx.ui.gvar.toGlobalVar
 import kotlin.reflect.KClass
 
 @Composable
-fun extActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
+fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
         addAction(cmd)
     }
@@ -67,8 +67,8 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) ->
         }
     NewGlobalVarDialog(addGlobalVarDialogState)
 
-    return {
-        when (it) {
+    return { source ->
+        when (source.clazz) {
             Action.ShellCommand::class -> {
                 shellCommandSelectorState.show()
                 true
@@ -139,7 +139,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->
-            itemSelected(it)
+            itemSelected(ActionSelectSource.FromClass(it))
         }
     )
 }

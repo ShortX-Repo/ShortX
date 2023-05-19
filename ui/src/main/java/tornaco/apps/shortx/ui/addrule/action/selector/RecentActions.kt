@@ -35,7 +35,7 @@ fun RecentActions(addAction: (Action) -> Unit) {
 
     val itemSelected: (KClass<out Action>) -> Unit = { it ->
         for (h in selectHandlers) {
-            if (h(it)) break
+            if (h(ActionSelectSource.FromClass(it))) break
         }
     }
     ActionList(

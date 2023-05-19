@@ -10,14 +10,14 @@ import kotlin.reflect.KClass
 
 
 @Composable
-fun lifeActionSelectHandler(addAction: (Action) -> Unit): (KClass<out Action>) -> Boolean {
+fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val mapNavDialogState = rememberMapNavDialogState(onSelected = {
         addAction(it)
     })
     MapNavDialog(state = mapNavDialogState)
 
-    return { it ->
-        when (it) {
+    return { source ->
+        when (source.clazz) {
             Action.MapNav::class -> {
                 mapNavDialogState.show()
                 true
@@ -46,7 +46,7 @@ fun LifeActions(addAction: (Action) -> Unit) {
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->
-            selectHandler(it)
+            selectHandler(ActionSelectSource.FromClass(it))
         }
     )
 }

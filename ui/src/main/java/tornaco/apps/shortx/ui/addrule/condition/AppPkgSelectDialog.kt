@@ -35,7 +35,13 @@ class AppPkgSelectorDialogState(
     private var _selectedPkgSets by mutableStateOf(emptyList<PkgSet>())
     val selectedPkgSets get() = _selectedPkgSets
 
-    fun show() {
+    fun show(
+        currentAppList: List<App>? = null,
+        currentPkgSet: List<PkgSet>? = null
+    ) {
+        _selectedApps = currentAppList ?: emptyList()
+        _selectedPkgSets = currentPkgSet ?: emptyList()
+
         _isShow = true
     }
 
