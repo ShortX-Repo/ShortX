@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,18 +81,18 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                     }) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
-                }) {
+                }) { paddingValues ->
                 if (state.isLoading) {
                     Loading(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(it)
+                            .padding(paddingValues)
                     )
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
                         columns = StaggeredGridCells.Fixed(2),
-                        contentPadding = it
+                        contentPadding = paddingValues
                     ) {
                         items(state.pkgSets) {
                             androidx.compose.material.Card(
@@ -107,11 +106,14 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                     title = it.label,
                                     text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
                                     overflow = {
-                                        ListItemOverflowMenu(
-                                            pkgSet = it,
-                                            onDelete = {},
-                                            onEdit = {}
-                                        )
+                                        if (!it.isPrebuilt) {
+                                            ListItemOverflowMenu(
+                                                pkgSet = it,
+                                                onDelete = {
+                                                    vm.delete(it.label)
+                                                },
+                                            )
+                                        }
                                     }, onClick = {
                                         goToDetail(it.label)
                                     })
@@ -193,7 +195,7 @@ private fun PkgSetListItem(
 
 @Composable
 private fun ListItemOverflowMenu(
-    pkgSet: PkgSet, onDelete: (PkgSet) -> Unit, onEdit: (PkgSet) -> Unit
+    pkgSet: PkgSet, onDelete: (PkgSet) -> Unit
 ) {
     Box {
         val menuState = rememberDropdownSelectorState()
@@ -209,19 +211,10 @@ private fun ListItemOverflowMenu(
                 icon = {
                     Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
                 }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-                data = "edit",
-                icon = {
-                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
-                })
         ), onSelect = {
             when (it.data) {
                 "delete" -> {
                     onDelete(pkgSet)
-                }
-
-                "edit" -> {
-                    onEdit(pkgSet)
                 }
 
                 else -> {}

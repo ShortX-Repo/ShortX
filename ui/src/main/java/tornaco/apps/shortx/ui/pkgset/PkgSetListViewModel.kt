@@ -41,4 +41,8 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState>(PkgSetListState()) {
         loadState()
     }
 
+    fun delete(label: String) {
+        shortXManager.deletePkgSet(label)
+        loadState()
+    }
 }

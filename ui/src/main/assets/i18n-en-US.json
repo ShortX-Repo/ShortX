@@ -159,6 +159,7 @@
   "ui.condition.warning.message": "Note that your conditions has the following issues, please check and modify",
   "ui.action.warning.message": "Note that your actions has the following issues, please check and modify",
   "ui.condition.warning.message.global.var.missing": "Global var {name} not exists, please go to Settings, Global var to create or import",
+  "ui.condition.warning.message.pkgset.missing": "Application Set {label} not exists，please go to Settings to create or import",
   "ui.action.hide.overlay": "Hide overlay",
   "ui.action.hide.all.overlay": "Hide all overlays",
   "ui.title.select.action": "Select action",

@@ -19,13 +19,27 @@ class ActionErrorChecker {
         val willBeCreatedGlobalVar = getWillBeCreatedGlobalVars(allActionsOnRule).apply {
             logger.d("getWillBeCreatedGlobalVars: $this")
         }
-        return getGlobalVarRefs(actions, shortXManager)
+
+        val gvWarnings = getGlobalVarRefs(actions, shortXManager)
+            .distinct()
             .apply { logger.d("getGlobalVarRefs: $this") }
             .filterNot { willBeCreatedGlobalVar.contains(it) }
             .filter { shortXManager.getGlobalVarByName(it) == null }
             .mapIndexed { index, it ->
                 "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
             }
+
+        val pkgSetWarning = getPkgSetRefs(actions, shortXManager)
+            .distinct()
+            .apply { logger.d("getPkgSetRefs: $this") }
+            .filter { shortXManager.getPkgSetByLabel(it) == null }
+            .mapIndexed { index, it ->
+                "${gvWarnings.size + index + 1}. " + i18N["ui.condition.warning.message.pkgset.missing", mapOf(
+                    "label" to it
+                )]
+            }
+
+        return gvWarnings + pkgSetWarning
     }
 
 
@@ -76,6 +90,40 @@ class ActionErrorChecker {
         }.flatten()
 
         return writeGV + ifElseCondition + ifElseAction + showDialogAction + showOverlayAction + fromDA
+    }
+
+    private fun getPkgSetRefs(
+        actions: List<Action>,
+        shortXManager: ShortXManager
+    ): List<String> {
+        val StopApp: List<String> =
+            actions.filterIsInstance(Action.StopApp::class.java)
+                .map { stopApp -> stopApp.pkgSets.map { it.label } }
+                .flatten()
+        val StartAppProcess: List<String> =
+            actions.filterIsInstance(Action.StartAppProcess::class.java)
+                .map { ac -> ac.pkgSets.map { it.label } }
+                .flatten()
+        val EnableApp: List<String> =
+            actions.filterIsInstance(Action.EnableApp::class.java)
+                .map { ac -> ac.pkgSets.map { it.label } }
+                .flatten()
+        val DisableApp: List<String> =
+            actions.filterIsInstance(Action.DisableApp::class.java)
+                .map { ac -> ac.pkgSets.map { it.label } }
+                .flatten()
+        val SuspendApp: List<String> =
+            actions.filterIsInstance(Action.SuspendApp::class.java)
+                .map { ac -> ac.pkgSets.map { it.label } }
+                .flatten()
+        val UnSuspendApp: List<String> =
+            actions.filterIsInstance(Action.UnSuspendApp::class.java)
+                .map { ac -> ac.pkgSets.map { it.label } }
+                .flatten()
+
+
+
+        return StopApp + StartAppProcess + EnableApp + DisableApp + SuspendApp + UnSuspendApp
     }
 
 }
