@@ -1,6 +1,12 @@
 package tornaco.apps.shortx.core.store
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVarList
 import tornaco.apps.shortx.core.util.Logger
@@ -16,8 +22,17 @@ open class BaseGlobalVarStore(
 
     private var job: Job? = null
 
+    suspend fun read() = readInternal()
+
     fun readBlocking() = runBlocking {
         readInternal()
+    }
+
+    fun addAllGlobalVars(globalVars: List<GlobalVar>, write: Boolean = true) {
+        globalVars.forEach { globalVar ->
+            globalVarCaches[globalVar.name] = globalVar
+        }
+        if (write) postWrite()
     }
 
     open fun addGlobalVar(globalVar: GlobalVar) {
@@ -65,7 +80,7 @@ open class BaseGlobalVarStore(
         }
     }
 
-    private suspend fun write() = withContext(Dispatchers.IO) {
+    suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
         val list = GlobalVarList.newBuilder().apply {
             addAllAllVars(globalVarCaches.values.toList())

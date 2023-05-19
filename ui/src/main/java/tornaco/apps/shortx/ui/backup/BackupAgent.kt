@@ -7,11 +7,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
+import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
+import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
+import tornaco.apps.shortx.core.store.BaseGlobalVarStore
+import tornaco.apps.shortx.core.store.BasePkgSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -42,6 +46,18 @@ class BackupAgent(private val context: Context) {
             val daStore = BaseDirectActionSettingsStore(this, File(backupTempDir, DA_FILE_NAME))
             daStore.addDirectActions(das = allDAs, write = false)
             daStore.write()
+
+            // PkgSets
+            val allPkgSets = shortXManager.getAllPkgSets(true)
+            val pkgSetStore = BasePkgSetsStore(this, File(backupTempDir, PKGSET_FILE_NAME))
+            pkgSetStore.addAllPkgSets(pkgSets = allPkgSets, write = false)
+            pkgSetStore.write()
+
+            // GV
+            val allGV = shortXManager.getAllGlobalVars()
+            val gvStore = BaseGlobalVarStore(this, File(backupTempDir, GV_FILE_NAME))
+            gvStore.addAllGlobalVars(globalVars = allGV, write = false)
+            gvStore.write()
 
             // Meta
             val metaFile = File(backupTempDir, META_FILE_NAME)
@@ -125,6 +141,24 @@ class BackupAgent(private val context: Context) {
             daStore.getAllDirectActions().forEach {
                 logger.d("restore, add da: ${it.title}")
                 shortXManager.addDirectAction(it)
+            }
+
+            // PkgSets
+            val pkgSetPb = File(tmpExtractedFile, PKGSET_FILE_NAME)
+            val pkgSetStore = BasePkgSetsStore(this, pkgSetPb)
+            pkgSetStore.read()
+            pkgSetStore.getAllPkgSets().forEach {
+                logger.d("restore, add pkgset: ${it.label}")
+                shortXManager.addPkgSet(it)
+            }
+
+            // GVs
+            val gvPb = File(tmpExtractedFile, GV_FILE_NAME)
+            val gvStore = BaseGlobalVarStore(this, gvPb)
+            gvStore.read()
+            gvStore.getAllGlobalVars().forEach {
+                logger.d("restore, add pkgset: ${it.name}")
+                shortXManager.addGlobalVar(it)
             }
 
             // Clean up.
