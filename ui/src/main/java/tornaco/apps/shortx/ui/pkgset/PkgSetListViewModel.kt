@@ -7,7 +7,6 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.afterNavDelay
-import java.util.*
 
 data class PkgSetListState(
     val pkgSets: List<PkgSet> = emptyList(),
@@ -30,7 +29,7 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState>(PkgSetListState()) {
 
     fun createPkgSet(label: String) {
         shortXManager.addPkgSet(
-            PkgSet.newBuilder().setLabel(label).setId(UUID.randomUUID().toString()).build()
+            PkgSet.newBuilder().setLabel(label).build()
         )
         loadState()
     }

@@ -199,8 +199,8 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.pkgSet.deletePkgSet(id)
         }
 
-        override fun getPkgSetById(id: String): ByteArrayWrapper? {
-            return shortXContext.pkgSet.getPkgSetById(id)?.let {
+        override fun getPkgSetByLabel(label: String): ByteArrayWrapper? {
+            return shortXContext.pkgSet.getPkgSetByLabel(label)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
@@ -213,7 +213,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     } else {
                         PkgSet.newBuilder()
                             .setLabel(it.label)
-                            .setId(it.id)
+                            .setDescription(it.description)
                             .build()
                     }
                 ByteArrayWrapper(trimmed.toByteArray())

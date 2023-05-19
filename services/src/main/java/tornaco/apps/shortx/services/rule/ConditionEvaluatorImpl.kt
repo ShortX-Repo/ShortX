@@ -22,7 +22,7 @@ class ConditionEvaluatorImpl(
                 val state = shortXContext.appState.currentFgComponentName.value
                 val requiredPkgList = if (currentPkg.pkgSetsList.isNotEmpty()) {
                     currentPkg.pkgSetsList.flatMap {
-                        shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                        shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
                     }
                 } else {
                     currentPkg.pkgsList

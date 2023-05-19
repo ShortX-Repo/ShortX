@@ -105,7 +105,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
             val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
                 ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
                 }
             } else {
                 ruleN.appsList
@@ -126,7 +126,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
             val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
                 ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
                 }
             } else {
                 ruleN.appsList
@@ -147,7 +147,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
             val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
                 ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
                 }
             } else {
                 ruleN.appsList
@@ -191,14 +191,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     private fun matchAppBecomeBgOrFg(actual: AppBecomeBgFgFact, rule: AppBecomeBgFgFact): Boolean {
         val pkgListActual = if (actual.pkgSetList.isEmpty().not()) {
             actual.pkgSetList.flatMap {
-                shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
             }
         } else {
             actual.appList
         }
         val pkgListRule = if (rule.pkgSetList.isEmpty().not()) {
             rule.pkgSetList.flatMap {
-                shortXContext.pkgSet.getPkgSetById(it)?.appPkgsList ?: emptyList()
+                shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
             }
         } else {
             rule.appList

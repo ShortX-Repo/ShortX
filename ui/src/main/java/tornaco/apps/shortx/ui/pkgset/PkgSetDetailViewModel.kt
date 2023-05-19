@@ -11,11 +11,11 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.afterNavDelay
 import java.text.Collator
-import java.util.*
+import java.util.Locale
 
 data class PkgSetDetailState(
-    val id: String = "",
     val label: String = "",
+    val description: String = "",
     val apps: List<App> = emptyList(),
     val selectableApps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
@@ -33,7 +33,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>(PkgSetDetailStat
 
                 afterNavDelay()
 
-                shortXManager.getPkgSetById(id)?.let { pkgSet ->
+                shortXManager.getPkgSetByLabel(id)?.let { pkgSet ->
                     val apps = pkgSet.appPkgsList.mapNotNull { pkg ->
                         shortXManager.pkgToApp(pkg)
                     }
@@ -49,8 +49,8 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>(PkgSetDetailStat
 
                     updateState {
                         copy(
-                            id = pkgSet.id,
                             label = pkgSet.label,
+                            description = pkgSet.description,
                             apps = apps,
                             selectableApps = selectableApps,
                             installedApps = installedApps,
@@ -113,7 +113,8 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>(PkgSetDetailStat
                         it.pkg
                     }
                     shortXManager.addPkgSet(
-                        PkgSet.newBuilder().setId(id).setLabel(label).addAllAppPkgs(pkgs).build()
+                        PkgSet.newBuilder().setDescription(description).setLabel(label)
+                            .addAllAppPkgs(pkgs).build()
                     )
                 }
             }

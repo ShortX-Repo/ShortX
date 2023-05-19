@@ -40,8 +40,8 @@ interface IShortX {
 
     // Pkg Set
     void addPkgSet(in ByteArrayWrapper set);
-    void deletePkgSet(String id);
-    ByteArrayWrapper getPkgSetById(String id);
+    void deletePkgSet(String label);
+    ByteArrayWrapper getPkgSetByLabel(String label);
     List<ByteArrayWrapper> getAllPkgSets(boolean withPkgList);
     // Pkg Set end
 

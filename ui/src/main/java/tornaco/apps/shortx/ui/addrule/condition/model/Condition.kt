@@ -68,7 +68,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
                     }
                 )
                 .addAllPkgSets(pkgSets.map {
-                    it.id
+                    it.label
                 })
                 .build()
         }
@@ -112,7 +112,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                     )
                 },
                 pkgSets = data.pkgSetsList.mapNotNull {
-                    shortXManager.getPkgSetById(it)
+                    shortXManager.getPkgSetByLabel(it)
                 }
             )
         }

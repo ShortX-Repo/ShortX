@@ -91,10 +91,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException
     {
     }
-    @Override public void deletePkgSet(java.lang.String id) throws android.os.RemoteException
+    @Override public void deletePkgSet(java.lang.String label) throws android.os.RemoteException
     {
     }
-    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetById(java.lang.String id) throws android.os.RemoteException
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetByLabel(java.lang.String label) throws android.os.RemoteException
     {
       return null;
     }
@@ -496,12 +496,12 @@ public interface IShortX extends android.os.IInterface
           reply.writeNoException();
           return true;
         }
-        case TRANSACTION_getPkgSetById:
+        case TRANSACTION_getPkgSetByLabel:
         {
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getPkgSetById(_arg0);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getPkgSetByLabel(_arg0);
           reply.writeNoException();
           if ((_result!=null)) {
             reply.writeInt(1);
@@ -1324,16 +1324,16 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void deletePkgSet(java.lang.String id) throws android.os.RemoteException
+      @Override public void deletePkgSet(java.lang.String label) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeString(id);
+          _data.writeString(label);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deletePkgSet, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().deletePkgSet(id);
+            getDefaultImpl().deletePkgSet(label);
             return;
           }
           _reply.readException();
@@ -1343,17 +1343,17 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetById(java.lang.String id) throws android.os.RemoteException
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetByLabel(java.lang.String label) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeString(id);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_getPkgSetById, _data, _reply, 0);
+          _data.writeString(label);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getPkgSetByLabel, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getPkgSetById(id);
+            return getDefaultImpl().getPkgSetByLabel(label);
           }
           _reply.readException();
           if ((0!=_reply.readInt())) {
@@ -1996,7 +1996,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_executeDirectionActionById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 19);
     static final int TRANSACTION_addPkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 20);
     static final int TRANSACTION_deletePkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 21);
-    static final int TRANSACTION_getPkgSetById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 22);
+    static final int TRANSACTION_getPkgSetByLabel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 22);
     static final int TRANSACTION_getAllPkgSets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 23);
     static final int TRANSACTION_showDanmu = (android.os.IBinder.FIRST_CALL_TRANSACTION + 24);
     static final int TRANSACTION_getDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 25);
@@ -2070,8 +2070,8 @@ public interface IShortX extends android.os.IInterface
   // Pkg Set
 
   public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException;
-  public void deletePkgSet(java.lang.String id) throws android.os.RemoteException;
-  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetById(java.lang.String id) throws android.os.RemoteException;
+  public void deletePkgSet(java.lang.String label) throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetByLabel(java.lang.String label) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets(boolean withPkgList) throws android.os.RemoteException;
   // Pkg Set end
   // UI start

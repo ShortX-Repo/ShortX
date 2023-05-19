@@ -104,12 +104,12 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.AppBecomeBackground -> {
             AppBecomeBg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.id }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).build()
         }
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.id }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).build()
         }
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
@@ -161,7 +161,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRecord(
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .addAllPkgSets(n.pkgSets.map { it.label })
                         .apply {
                             n.titleRegex?.let { title = it }
                             n.contentRegex?.let { contentText = it }
@@ -175,7 +175,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRecord(
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .addAllPkgSets(n.pkgSets.map { it.label })
                         .apply {
                             n.titleRegex?.let { title = it }
                             n.contentRegex?.let { contentText = it }
@@ -189,7 +189,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setNew(
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
-                        .addAllPkgSets(n.pkgSets.map { it.id })
+                        .addAllPkgSets(n.pkgSets.map { it.label })
                         .apply {
                             n.titleRegex?.let { title = it }
                             n.contentRegex?.let { contentText = it }

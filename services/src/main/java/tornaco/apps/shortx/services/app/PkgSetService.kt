@@ -27,13 +27,13 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
         pkgSetsStore.addPkgSet(set)
     }
 
-    fun deletePkgSet(id: String) {
-        pkgSetsStore.deletePkgSet(id)
+    fun deletePkgSet(label: String) {
+        pkgSetsStore.deletePkgSet(label)
     }
 
-    fun getPkgSetById(id: String): PkgSet? {
-        return prebuiltPkgSets.firstOrNull { it.id == id }?.getPkgSet?.invoke(shortXContext)
-            ?: pkgSetsStore.getPkgSetById(id)
+    fun getPkgSetByLabel(label: String): PkgSet? {
+        return prebuiltPkgSets.firstOrNull { it.label == label }?.getPkgSet?.invoke(shortXContext)
+            ?: pkgSetsStore.getPkgSet(label)
     }
 
     fun getAllPkgSets(): List<PkgSet> {
@@ -47,32 +47,32 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
 
 
 sealed class PrebuiltPkgSet(
-    val id: String,
+    val label: String,
     val getPkgSet: (ShortXContext) -> PkgSet
 ) {
     companion object {
-        const val ID_ALL = "prebuilt.all"
-        const val ID_SYSTEM = "prebuilt.system"
-        const val ID_USER = "prebuilt.user"
+        const val LABEL_ALL = "All"
+        const val LABEL_SYSTEM = "System"
+        const val LABEL_USER = "User"
     }
 
     object All : PrebuiltPkgSet(
-        ID_ALL,
+        LABEL_ALL,
         { shortXContext ->
-            PkgSet.newBuilder().setId(ID_ALL)
+            PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel("All")
+                .setLabel(LABEL_ALL)
                 .addAllAppPkgs(shortXContext.appState.getInstalledApps().map { it.pkg })
                 .build()
         }
     )
 
     object System : PrebuiltPkgSet(
-        ID_SYSTEM,
+        LABEL_SYSTEM,
         { shortXContext ->
-            PkgSet.newBuilder().setId(ID_SYSTEM)
+            PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel("System")
+                .setLabel(LABEL_SYSTEM)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
                         .filter { it.category == AppCategory.System }.map { it.pkg })
@@ -81,11 +81,11 @@ sealed class PrebuiltPkgSet(
     )
 
     object User : PrebuiltPkgSet(
-        ID_USER,
+        LABEL_USER,
         { shortXContext ->
-            PkgSet.newBuilder().setId(ID_USER)
+            PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel("User")
+                .setLabel(LABEL_USER)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
                         .filter { it.category == AppCategory.User }.map { it.pkg })

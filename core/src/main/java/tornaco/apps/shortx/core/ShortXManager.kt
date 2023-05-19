@@ -214,9 +214,9 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun getPkgSetById(id: String): PkgSet? {
+    fun getPkgSetByLabel(label: String): PkgSet? {
         return invokeService(null) {
-            getPkgSetById(id)?.let {
+            getPkgSetByLabel(label)?.let {
                 PkgSet.parseFrom(it.byte)
             }
         }

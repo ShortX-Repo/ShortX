@@ -109,7 +109,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                             onEdit = {}
                                         )
                                     }, onClick = {
-                                        goToDetail(it.id)
+                                        goToDetail(it.label)
                                     })
                             }
                         }
@@ -215,9 +215,11 @@ private fun ListItemOverflowMenu(
                 "delete" -> {
                     onDelete(pkgSet)
                 }
+
                 "edit" -> {
                     onEdit(pkgSet)
                 }
+
                 else -> {}
             }
         })

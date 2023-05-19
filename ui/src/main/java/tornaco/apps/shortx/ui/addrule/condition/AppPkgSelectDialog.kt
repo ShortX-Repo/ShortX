@@ -59,7 +59,7 @@ class AppPkgSelectorDialogState(
 
     fun addPkgSet(pkgSet: PkgSet) {
         _selectedPkgSets = selectedPkgSets.toMutableList().apply {
-            if (firstOrNull { it.id == pkgSet.id } == null) {
+            if (firstOrNull { it.label == pkgSet.label } == null) {
                 add(pkgSet)
             }
         }
@@ -67,7 +67,7 @@ class AppPkgSelectorDialogState(
 
     fun removePkgSet(pkgSet: PkgSet) {
         _selectedPkgSets = selectedPkgSets.toMutableList().apply {
-            removeIf { it.id == pkgSet.id }
+            removeIf { it.label == pkgSet.label }
         }
     }
 }

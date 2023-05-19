@@ -520,32 +520,32 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.DisableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.EnableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.StopApp -> {
             StopApp.newBuilder().setId(overrideId ?: id)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.SuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(true)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.UnSuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id).setSuspend(false)
-                .addAllPkgSets(pkgSets.map { it.id }).addAllAppPkg(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
         is Action.Brk -> {

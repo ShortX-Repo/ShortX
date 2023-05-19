@@ -30,25 +30,25 @@ open class BasePkgSetsStore(
 
     fun addAllPkgSets(pkgSets: List<PkgSet>, write: Boolean = true) {
         pkgSets.forEach { pkgSet ->
-            pkgSetsCache.removeIf { it.id == pkgSet.id }
+            pkgSetsCache.removeIf { it.label == pkgSet.label }
             pkgSetsCache.add(pkgSet)
         }
         if (write) postWrite()
     }
 
     fun addPkgSet(pkgSet: PkgSet) {
-        pkgSetsCache.removeIf { it.id == pkgSet.id }
+        pkgSetsCache.removeIf { it.label == pkgSet.label }
         pkgSetsCache.add(pkgSet)
         postWrite()
     }
 
-    fun deletePkgSet(pkgSetId: String) {
-        pkgSetsCache.removeIf { it.id == pkgSetId }
+    fun deletePkgSet(pkgSetLabel: String) {
+        pkgSetsCache.removeIf { it.label == pkgSetLabel }
         postWrite()
     }
 
-    fun getPkgSetById(id: String): PkgSet? {
-        return pkgSetsCache.firstOrNull { it.id == id }
+    fun getPkgSet(label: String): PkgSet? {
+        return pkgSetsCache.firstOrNull { it.label == label }
     }
 
     fun getAllPkgSets(): List<PkgSet> {

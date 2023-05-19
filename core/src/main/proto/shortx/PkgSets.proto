@@ -10,8 +10,7 @@ import "shortx/Common.proto";
 message PkgSet {
   repeated AppPkg appPkgs = 1;
   string label = 2;
-
-  string id = 3;
+  string description = 3;
 
   bool isPrebuilt = 4;
 }
