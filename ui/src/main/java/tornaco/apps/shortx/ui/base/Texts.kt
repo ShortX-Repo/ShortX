@@ -2,12 +2,23 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +55,7 @@ fun MediumTitle(text: String) {
 
 @Composable
 fun MediumTitleWithTip(text: String, tipText: String) {
-    val tipDialogState = rememberTipDialogState(title = text,tip = tipText)
+    val tipDialogState = rememberTipDialogState(title = text, tip = tipText)
 
     Row(
         modifier = Modifier
@@ -116,15 +127,37 @@ fun TipBody(text: String) {
 }
 
 @Composable
-fun TipRow(text: String) {
+fun TipRow(text: String, color: Color = Color.Unspecified) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        RemixIcon(modifier = Modifier.size(8.dp), remixName = Remix.Others.lightbulb_line)
+        RemixIcon(modifier = Modifier.size(14.dp), remixName = Remix.Others.lightbulb_line)
+        SmallSpacer()
         Text(
             modifier = Modifier,
             text = text,
             style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 10.sp
-            )
+                fontSize = 12.sp
+            ),
+            color = color
+        )
+    }
+}
+
+@Composable
+fun ErrorTipRow(text: String, color: Color = MaterialTheme.colorScheme.error) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RemixIcon(
+            modifier = Modifier.size(14.dp),
+            remixName = Remix.System.error_warning_line,
+            tint = color
+        )
+        SmallSpacer()
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = color
         )
     }
 }

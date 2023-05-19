@@ -46,10 +46,14 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
+            val i18N = LocalI18N.current
             val addPkgSetDialogState =
                 rememberTextInputState(
-                    title = LocalI18N.current["ui.pkg.set.add.title"],
-                    message = LocalI18N.current["ui.pkg.set.add.input.label"],
+                    title = i18N["ui.pkg.set.add.title"],
+                    message = i18N["ui.pkg.set.add.input.label"],
+                    inputValidator = {
+                        vm.validateLabel(it, i18N)
+                    },
                     onSelected = {
                         vm.createPkgSet(it)
                     })
@@ -60,7 +64,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"]) },
+                        title = { Text(text = i18N["ui.pkg.set.title"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -101,7 +105,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                             ) {
                                 PkgSetListItem(modifier = Modifier,
                                     title = it.label,
-                                    text1 = LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                    text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
                                     overflow = {
                                         ListItemOverflowMenu(
                                             pkgSet = it,

@@ -23,8 +23,13 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
         pkgSetsStore.readBlocking()
     }
 
-    fun addPkgSet(set: PkgSet) {
+    fun addPkgSet(set: PkgSet): Boolean {
+        if (getPkgSetByLabel(set.label) != null) {
+            logger.w("PkgSet with label: ${set.label} already exists.")
+            return false
+        }
         pkgSetsStore.addPkgSet(set)
+        return true
     }
 
     fun deletePkgSet(label: String) {
