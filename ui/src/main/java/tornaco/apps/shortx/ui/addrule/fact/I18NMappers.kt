@@ -14,11 +14,12 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
-import java.util.*
+import java.util.Calendar
 import kotlin.reflect.KClass
 
 
@@ -39,33 +40,43 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.BTStatusChanged::class -> {
             i18n["ui.fact.bt.state.changed"] to null
         }
+
         Fact.DNDStatusChanged::class -> {
             i18n["ui.fact.dnd.state.changed"] to null
         }
+
         Fact.DarkModeStatusChanged::class -> {
             i18n["ui.fact.dark.mode.state.changed"] to null
         }
+
         Fact.FlashLightStatusChanged::class -> {
             i18n["ui.fact.flash.light.state.changed"] to null
         }
+
         Fact.HotSpotStatusChanged::class -> {
             i18n["ui.fact.hotspot.state.changed"] to null
         }
+
         Fact.LocationStatusChanged::class -> {
             i18n["ui.fact.location.state.changed"] to null
         }
+
         Fact.MobileDataStatusChanged::class -> {
             i18n["ui.fact.mobile.data.state.changed"] to null
         }
+
         Fact.NFCStatusChanged::class -> {
             i18n["ui.fact.nfc.state.changed"] to null
         }
+
         Fact.NotificationPosted::class -> {
             i18n["ui.fact.n.posted"] to null
         }
+
         Fact.NotificationUpdated::class -> {
             i18n["ui.fact.n.updated"] to null
         }
+
         Fact.NotificationRemoved::class -> {
             i18n["ui.fact.n.removed"] to null
         }
@@ -89,19 +100,23 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 }$PREFIX_APP_ICON${it.pkg.pkgName}"
             })
         }
+
         is Fact.AnyActivityStarted -> listOf(
             i18N["ui.fact.activity.started"],
             i18N["ui.fact.activity.started.any"]
         )
+
         is Fact.EdgeGesture -> listOf(
             i18N["ui.fact.edge.gesture"],
             i18N[fact.edge.displayNameKey()],
             i18N[fact.gesture.displayNameKey()]
         )
+
         is Fact.KeyEvent -> listOf(
             i18N["ui.fact.key.event"],
             getLabelForKeyCode(i18N, keyCode = fact.keyCode)
         )
+
         Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
         Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
         Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
@@ -126,6 +141,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 }
             )
         }
+
         is Fact.AppBecomeBackground -> mutableListOf(
             i18N["ui.fact.app.become.bg"]
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
@@ -133,60 +149,70 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.AppBecomeForeground -> mutableListOf(
             i18N["ui.fact.app.become.fg"]
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+
         is Fact.WifiStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.wifi.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.BTStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.bt.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.DNDStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.dnd.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.DarkModeStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.dark.mode.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.FlashLightStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.flash.light.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.HotSpotStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.hotspot.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.LocationStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.location.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.MobileDataStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.mobile.data.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.NFCStatusChanged -> {
             mutableListOf(
                 i18N["ui.fact.nfc.state.changed"],
                 fact.state.label(i18N)
             )
         }
+
         is Fact.NotificationPosted -> {
             mutableListOf(
                 i18N["ui.fact.n.posted"],
@@ -194,6 +220,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 fact.n.contentRegex.fallbackOnEmpty("")
             ).filterNot { it.isBlank() }
         }
+
         is Fact.NotificationRemoved -> {
             mutableListOf(
                 i18N["ui.fact.n.removed"],
@@ -201,6 +228,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 fact.n.contentRegex.fallbackOnEmpty("")
             ).filterNot { it.isBlank() }
         }
+
         is Fact.NotificationUpdated -> {
             mutableListOf(
                 i18N["ui.fact.n.updated"],
@@ -272,12 +300,15 @@ fun OnOffAny.label(i18n: I18N): String {
         OnOffAny.On -> {
             i18n["ui.common.on"]
         }
+
         OnOffAny.Off -> {
             i18n["ui.common.off"]
         }
+
         OnOffAny.Any -> {
             i18n["ui.common.any"]
         }
+
         OnOffAny.UNRECOGNIZED -> {
             "UNRECOGNIZED"
         }
@@ -316,8 +347,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
 
 
 fun colorForFact(fact: KClass<out Fact>): Color {
-    val index =
-        runCatching { maxOf(0, Fact::class.sealedSubclasses.indexOf(fact)) % FactColorPalettes.size }.getOrElse { 0 }
+    val index = allFactClasses.indexOf(fact) % FactColorPalettes.size
     return when (fact) {
         Fact.ActivityStarted::class -> FactColorPalettes[index]
         Fact.AnyActivityStarted::class -> FactColorPalettes[index]

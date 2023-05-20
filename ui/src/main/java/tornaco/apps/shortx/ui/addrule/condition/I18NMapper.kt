@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
@@ -21,19 +22,23 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.CurrentForegroundApp::class -> {
             listOf(i18N["ui.dialog.title.current.app"])
         }
+
         Condition.MVEL::class -> {
             listOf(i18N["ui.title.mvel"])
         }
+
         Condition.TRUE::class -> {
             listOf(
                 i18N["ui.conditions.true"]
             )
         }
+
         Condition.EvaluateGlobalVar::class -> {
             listOf(
                 i18N["ui.conditions.eva.global.var"]
             )
         }
+
         else -> {
             emptyList()
         }
@@ -51,15 +56,18 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             mutableListOf(i18N["ui.dialog.title.current.app"])
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
+
         is Condition.MVEL -> {
             listOf("MVEL expression", condition.expression)
         }
+
         is Condition.TRUE -> {
             listOf(
                 i18N["ui.conditions.true"],
                 i18N["ui.conditions.true.desc"]
             )
         }
+
         is Condition.EvaluateGlobalVar -> listOf(
             i18N["ui.conditions.eva.global.var"]
         )
@@ -71,15 +79,19 @@ fun iconForCondition(condition: KClass<out Condition>): String {
         Condition.CurrentForegroundApp::class -> {
             Remix.Logos.android_line
         }
+
         Condition.MVEL::class -> {
             Remix.Development.code_line
         }
+
         Condition.TRUE::class -> {
             Remix.System.check_line
         }
+
         Condition.EvaluateGlobalVar::class -> {
             Remix.Document.file_list_line
         }
+
         else -> {
             Remix.Document.file_unknow_line
         }
@@ -92,6 +104,7 @@ fun opTitle(op: Op): String {
         Op.All -> {
             "ALL"
         }
+
         Op.Any -> {
             "ANY"
         }
@@ -99,6 +112,7 @@ fun opTitle(op: Op): String {
         Op.None -> {
             "NONE"
         }
+
         is Op.MVEL -> {
             "MVEL"
         }
@@ -112,6 +126,7 @@ fun opDescription(op: Op): List<String> {
         Op.All -> {
             listOf(LocalI18N.current["ui.condition.op.all.desc"])
         }
+
         Op.Any -> {
             listOf(LocalI18N.current["ui.condition.op.any.desc"])
         }
@@ -131,6 +146,7 @@ fun iconForOp(op: Op): String {
         Op.All -> {
             Remix.System.check_double_line
         }
+
         Op.Any -> {
             Remix.Editor.asterisk
         }
@@ -146,21 +162,24 @@ fun iconForOp(op: Op): String {
 }
 
 fun colorForCondition(condition: KClass<out Condition>): Color {
-    val index =
-        runCatching { maxOf(0, Condition::class.sealedSubclasses.indexOf(condition)) % ConditionColorPalettes.size }.getOrElse { 0 }
+    val index = allConditionClasses.indexOf(condition) % ConditionColorPalettes.size
     return when (condition) {
         Condition.CurrentForegroundApp::class -> {
             ConditionColorPalettes[index]
         }
+
         Condition.MVEL::class -> {
             ConditionColorPalettes[index]
         }
+
         Condition.TRUE::class -> {
             ConditionColorPalettes[index]
         }
+
         Condition.EvaluateGlobalVar::class -> {
             ConditionColorPalettes[index]
         }
+
         else -> {
             ConditionColorPalettes[index]
         }

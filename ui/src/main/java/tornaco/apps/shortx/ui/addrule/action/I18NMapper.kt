@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
@@ -23,36 +24,47 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowToast::class -> {
             i18N["ui.action.show.toast"] to null
         }
+
         Action.ShowDanmu::class -> {
             i18N["ui.action.show.danmu"] to null
         }
+
         Action.ShellCommand::class -> {
             i18N["ui.action.shell"] to null
         }
+
         Action.InputText::class -> {
             i18N["ui.action.input.text"] to null
         }
+
         Action.Delay::class -> {
             i18N["ui.action.delay"] to null
         }
+
         Action.TakeScreenshot::class -> {
             i18N["ui.action.take.screenshot"] to null
         }
+
         Action.MVEL::class -> {
             i18N["ui.title.mvel"] to null
         }
+
         Action.HideAllOverlay::class -> {
             i18N["ui.action.hide.all.overlay"] to null
         }
+
         Action.HideOverlay::class -> {
             i18N["ui.action.hide.overlay"] to null
         }
+
         Action.ShowOverlay::class -> {
             i18N["ui.action.show.overlay"] to null
         }
+
         Action.LaunchApp::class -> {
             i18N["ui.action.launch.app"] to null
         }
+
         Action.StartActivity::class -> {
             i18N["ui.action.start.activity"] to null
         }
@@ -116,38 +128,48 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)
         }
+
         is Action.ShowDanmu -> {
             listOf(i18N["ui.action.show.danmu"], action.text)
         }
+
         is Action.ShellCommand -> {
             listOf(i18N["ui.action.shell"], action.command)
         }
+
         is Action.InputText -> {
             listOf(i18N["ui.action.input.text"], action.text)
         }
+
         is Action.Delay -> {
             listOf(i18N["ui.action.delay"], action.time.toString())
         }
+
         is Action.TakeScreenshot -> {
             listOf(i18N["ui.action.take.screenshot"])
         }
+
         is Action.MVEL -> {
             listOf(i18N["ui.title.mvel"], action.expression)
         }
+
         is Action.HideAllOverlay -> {
             listOf(i18N["ui.action.hide.all.overlay"])
         }
+
         is Action.HideOverlay -> {
             listOf(
                 i18N["ui.action.hide.overlay"],
                 (action.tags.joinToString())
             )
         }
+
         is Action.ShowOverlay -> {
             mutableListOf(i18N["ui.action.show.overlay"]).apply {
                 add("${action.settings.size} buttons")
             }
         }
+
         is Action.LaunchApp -> listOf(
             i18N["ui.action.launch.app"],
             "${action.app.label}$PREFIX_APP_ICON${action.app.pkg.pkgName}"
@@ -178,29 +200,36 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.apps,
             action.pkgSets
         )
+
         is Action.StartAppProcess -> mutableListOf(i18N["ui.action.start.app.process"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
+
         is Action.EnableApp -> mutableListOf(i18N["ui.action.enable.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
+
         is Action.DisableApp -> mutableListOf(i18N["ui.action.disable.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
+
         is Action.SuspendApp -> mutableListOf(i18N["ui.action.suspend.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
+
         is Action.UnSuspendApp -> mutableListOf(i18N["ui.action.unsuspend.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )
+
         is Action.Brk -> {
             listOf(i18N["ui.action.brk"])
         }
+
         is Action.ShowAlertDialog -> {
             listOf(
                 i18N["ui.action.show.dialog"],
@@ -208,6 +237,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.message
             )
         }
+
         is Action.StartActivity -> {
             val name: ComponentName? = ComponentName.unflattenFromString(
                 action.componentNameAsString
@@ -224,20 +254,24 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             }
 
         }
+
         is Action.ExpandNotification -> {
             listOf(i18N["ui.action.expand.notification"])
         }
+
         is Action.RemoteMVEL -> {
             listOf(
                 action.action.title,
                 action.action.description
             )
         }
+
         is Action.WhileLoop -> {
             listOf(
                 i18N["ui.action.while.loop"]
             )
         }
+
         is Action.WriteGV -> {
             listOf(
                 i18N["ui.action.write.global.var"],
@@ -245,6 +279,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.valueAsString
             )
         }
+
         is Action.CreateGV -> {
             listOfNotNull(
                 i18N["ui.action.create.global.var"],
@@ -252,26 +287,31 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.globalVar.type.toType()?.name
             )
         }
+
         is Action.DeleteGV -> {
             listOfNotNull(
                 i18N["ui.action.delete.global.var"],
                 action.varName,
             )
         }
+
         is Action.MapNav -> listOf(
             i18N["ui.action.map.nav"],
             when (action.mapApp) {
                 MapApp.Gaode -> {
                     i18N["ui.action.map.gaode"]
                 }
+
                 MapApp.Baidu -> {
                     i18N["ui.action.map.baidu"]
                 }
+
                 else -> {
                     "N/A"
                 }
             }
         )
+
         is Action.PostNotification -> {
             listOf(
                 i18N["ui.action.post.notification"],
@@ -280,6 +320,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.message
             )
         }
+
         is Action.FromDA -> {
             mutableListOf(
                 i18N["ui.action.from.da"],
@@ -294,12 +335,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 }
             }
         }
+
         is Action.FindAndClickViewByText -> {
             listOf(
                 i18N["ui.action.find.click.view.by.text"],
                 action.text
             )
         }
+
         is Action.WaitForIdle -> listOf(
             i18N["ui.action.wait.for.idle"],
             i18N["ui.action.wait.for.idle.description"]
@@ -324,6 +367,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             add(i18N["ui.action.then"] + " ➡️ " + ifAction + " ")
             add(i18N["ui.action.else"] + " ➡️ " + elseAction + " ")
         }
+
         is Action.NoAction -> {
             listOf("Noop")
         }
@@ -335,33 +379,43 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.ShowToast::class -> {
             Remix.Communication.chat_2_line
         }
+
         Action.ShowDanmu::class -> {
             Remix.Communication.chat_1_line
         }
+
         Action.ShellCommand::class -> {
             Remix.Development.terminal_box_line
         }
+
         Action.InputText::class -> {
             Remix.Editor.text
         }
+
         Action.Delay::class -> {
             Remix.System.timer_line
         }
+
         Action.TakeScreenshot::class -> {
             Remix.Design.screenshot_line
         }
+
         Action.MVEL::class -> {
             Remix.Development.code_line
         }
+
         Action.HideAllOverlay::class -> {
             Remix.Business.window_line
         }
+
         Action.HideOverlay::class -> {
             Remix.Business.window_line
         }
+
         Action.ShowOverlay::class -> {
             Remix.Business.window_2_line
         }
+
         Action.LaunchApp::class -> {
             Remix.Arrows.arrow_right_up_line
         }
@@ -369,27 +423,35 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.DisableBT::class -> {
             Remix.Device.bluetooth_line
         }
+
         Action.DisableDND::class -> {
             Remix.Weather.moon_line
         }
+
         Action.DisableGPS::class -> {
             Remix.Device.gps_line
         }
+
         Action.DisableDarkMode::class -> {
             Remix.Weather.sun_line
         }
+
         Action.DisableData::class -> {
             Remix.Arrows.arrow_up_down_line
         }
+
         Action.DisableFlashLight::class -> {
             Remix.Others.lightbulb_line
         }
+
         Action.DisableHotSpot::class -> {
             Remix.Device.hotspot_line
         }
+
         Action.DisableNFC::class -> {
             Remix.Device.nfc_fill
         }
+
         Action.DisableWifi::class -> {
             Remix.Device.wifi_off_line
         }
@@ -397,27 +459,35 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.EnableBT::class -> {
             Remix.Device.bluetooth_connect_line
         }
+
         Action.EnableDND::class -> {
             Remix.Weather.moon_line
         }
+
         Action.EnableGPS::class -> {
             Remix.Device.gps_line
         }
+
         Action.EnableDarkMode::class -> {
             Remix.Weather.sun_line
         }
+
         Action.EnableData::class -> {
             Remix.Arrows.arrow_up_down_line
         }
+
         Action.EnableFlashLight::class -> {
             Remix.Others.lightbulb_line
         }
+
         Action.EnableHotSpot::class -> {
             Remix.Device.hotspot_line
         }
+
         Action.EnableNFC::class -> {
             Remix.Device.nfc_fill
         }
+
         Action.EnableWifi::class -> {
             Remix.Device.wifi_line
         }
@@ -425,66 +495,87 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         Action.StopApp::class -> {
             Remix.Media.stop_line
         }
+
         Action.StartAppProcess::class -> {
             Remix.Media.play_line
         }
+
         Action.EnableApp::class -> {
             Remix.System.toggle_line
         }
+
         Action.DisableApp::class -> {
             Remix.System.toggle_fill
         }
+
         Action.SuspendApp::class -> {
             Remix.UserAndFaces.admin_line
         }
+
         Action.UnSuspendApp::class -> {
             Remix.UserAndFaces.admin_line
         }
+
         Action.Brk::class -> {
             Remix.System.close_circle_line
         }
+
         Action.ShowAlertDialog::class -> {
             Remix.Communication.chat_4_line
         }
+
         Action.StartActivity::class -> {
             Remix.Logos.android_line
         }
+
         Action.ExpandNotification::class -> {
             Remix.System.notification_badge_line
         }
+
         Action.PostNotification::class -> {
             Remix.Media.notification_line
         }
+
         Action.RemoteMVEL::class -> {
             Remix.Business.cloud_line
         }
+
         Action.WhileLoop::class -> {
             Remix.System.loop_left_line
         }
+
         Action.WriteGV::class -> {
             Remix.Document.file_edit_line
         }
+
         Action.CreateGV::class -> {
             Remix.Document.file_edit_line
         }
+
         Action.DeleteGV::class -> {
             Remix.Document.file_edit_line
         }
+
         Action.MapNav::class -> {
             Remix.Map.navigation_line
         }
+
         Action.FromDA::class -> {
             Remix.Editor.link
         }
+
         Action.FindAndClickViewByText::class -> {
             Remix.Business.window_2_line
         }
+
         Action.WaitForIdle::class -> {
             Remix.System.hourglass_line
         }
+
         Action.IfThenElse::class -> {
             Remix.Editor.text_wrap
         }
+
         Action.NoAction::class -> {
             Remix.Media.album_fill
         }
@@ -496,39 +587,48 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 }
 
 fun colorForAction(action: KClass<out Action>): Color {
-    val index =
-        runCatching { maxOf(0, Action::class.sealedSubclasses.indexOf(action)) % ActionColorPalettes.size }.getOrElse { 0 }
+    val index = allActionClasses.indexOf(action) % ActionColorPalettes.size
     return when (action) {
         Action.ShowToast::class -> {
             ActionColorPalettes[index]
         }
+
         Action.ShowDanmu::class -> {
             ActionColorPalettes[index]
         }
+
         Action.ShellCommand::class -> {
             ActionColorPalettes[index]
         }
+
         Action.InputText::class -> {
             ActionColorPalettes[index]
         }
+
         Action.Delay::class -> {
             ActionColorPalettes[index]
         }
+
         Action.TakeScreenshot::class -> {
             ActionColorPalettes[index]
         }
+
         Action.MVEL::class -> {
             ActionColorPalettes[index]
         }
+
         Action.HideAllOverlay::class -> {
             ActionColorPalettes[index]
         }
+
         Action.HideOverlay::class -> {
             ActionColorPalettes[index]
         }
+
         Action.ShowOverlay::class -> {
             ActionColorPalettes[index]
         }
+
         Action.LaunchApp::class -> {
             ActionColorPalettes[index]
         }
@@ -536,27 +636,35 @@ fun colorForAction(action: KClass<out Action>): Color {
         Action.DisableBT::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableDND::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableGPS::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableDarkMode::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableData::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableFlashLight::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableHotSpot::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableNFC::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableWifi::class -> {
             ActionColorPalettes[index]
         }
@@ -564,27 +672,35 @@ fun colorForAction(action: KClass<out Action>): Color {
         Action.EnableBT::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableDND::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableGPS::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableDarkMode::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableData::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableFlashLight::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableHotSpot::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableNFC::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableWifi::class -> {
             ActionColorPalettes[index]
         }
@@ -592,63 +708,83 @@ fun colorForAction(action: KClass<out Action>): Color {
         Action.StopApp::class -> {
             ActionColorPalettes[index]
         }
+
         Action.StartAppProcess::class -> {
             ActionColorPalettes[index]
         }
+
         Action.EnableApp::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DisableApp::class -> {
             ActionColorPalettes[index]
         }
+
         Action.SuspendApp::class -> {
             ActionColorPalettes[index]
         }
+
         Action.UnSuspendApp::class -> {
             ActionColorPalettes[index]
         }
+
         Action.Brk::class -> {
             ActionColorPalettes[index]
         }
+
         Action.ShowAlertDialog::class -> {
             ActionColorPalettes[index]
         }
+
         Action.StartActivity::class -> {
             ActionColorPalettes[index]
         }
+
         Action.ExpandNotification::class -> {
             ActionColorPalettes[index]
         }
+
         Action.PostNotification::class -> {
             ActionColorPalettes[index]
         }
+
         Action.RemoteMVEL::class -> {
             ActionColorPalettes[index]
         }
+
         Action.WhileLoop::class -> {
             ActionColorPalettes[index]
         }
+
         Action.WriteGV::class -> {
             ActionColorPalettes[index]
         }
+
         Action.CreateGV::class -> {
             ActionColorPalettes[index]
         }
+
         Action.DeleteGV::class -> {
             ActionColorPalettes[index]
         }
+
         Action.MapNav::class -> {
             ActionColorPalettes[index]
         }
+
         Action.FromDA::class -> {
             ActionColorPalettes[index]
         }
+
         Action.FindAndClickViewByText::class -> {
             ActionColorPalettes[index]
         }
+
         Action.WaitForIdle::class -> {
             ActionColorPalettes[index]
         }
+
         Action.IfThenElse::class -> {
             ActionColorPalettes[index]
         }
@@ -691,4 +827,4 @@ val ActionColorPalettes = arrayOf(
     Color(0xffa1887f),
 )
 
-const val ActionColorBgAlpha = 0.08f
+const val ActionColorBgAlpha = 0.12f
