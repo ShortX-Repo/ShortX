@@ -331,7 +331,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                         add(action.description)
                     }
                 } else {
-                    add(i18N["ui.action.from.da.not.found"] + "${PREFIX_MD_ICON}${Remix.System.alert_line}")
+                    add(i18N["ui.action.from.da.not.found"] + "${PREFIX_MD_ICON}${Remix.System.alert_fill}")
                 }
             }
         }
@@ -377,15 +377,15 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 fun imageVectorForAction(action: KClass<out Action>): String {
     return when (action) {
         Action.ShowToast::class -> {
-            Remix.Communication.chat_2_line
+            Remix.Communication.chat_2_fill
         }
 
         Action.ShowDanmu::class -> {
-            Remix.Communication.chat_1_line
+            Remix.Communication.chat_1_fill
         }
 
         Action.ShellCommand::class -> {
-            Remix.Development.terminal_box_line
+            Remix.Development.terminal_box_fill
         }
 
         Action.InputText::class -> {
@@ -393,59 +393,59 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.Delay::class -> {
-            Remix.System.timer_line
+            Remix.System.timer_fill
         }
 
         Action.TakeScreenshot::class -> {
-            Remix.Design.screenshot_line
+            Remix.Design.screenshot_fill
         }
 
         Action.MVEL::class -> {
-            Remix.Development.code_line
+            Remix.Development.code_fill
         }
 
         Action.HideAllOverlay::class -> {
-            Remix.Business.window_line
+            Remix.Business.window_fill
         }
 
         Action.HideOverlay::class -> {
-            Remix.Business.window_line
+            Remix.Business.window_fill
         }
 
         Action.ShowOverlay::class -> {
-            Remix.Business.window_2_line
+            Remix.Business.window_2_fill
         }
 
         Action.LaunchApp::class -> {
-            Remix.Arrows.arrow_right_up_line
+            Remix.Arrows.arrow_right_up_fill
         }
 
         Action.DisableBT::class -> {
-            Remix.Device.bluetooth_line
+            Remix.Device.bluetooth_fill
         }
 
         Action.DisableDND::class -> {
-            Remix.Weather.moon_line
+            Remix.Weather.moon_fill
         }
 
         Action.DisableGPS::class -> {
-            Remix.Device.gps_line
+            Remix.Device.gps_fill
         }
 
         Action.DisableDarkMode::class -> {
-            Remix.Weather.sun_line
+            Remix.Weather.sun_fill
         }
 
         Action.DisableData::class -> {
-            Remix.Arrows.arrow_up_down_line
+            Remix.Arrows.arrow_up_down_fill
         }
 
         Action.DisableFlashLight::class -> {
-            Remix.Others.lightbulb_line
+            Remix.Others.lightbulb_fill
         }
 
         Action.DisableHotSpot::class -> {
-            Remix.Device.hotspot_line
+            Remix.Device.hotspot_fill
         }
 
         Action.DisableNFC::class -> {
@@ -453,35 +453,35 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.DisableWifi::class -> {
-            Remix.Device.wifi_off_line
+            Remix.Device.wifi_off_fill
         }
 
         Action.EnableBT::class -> {
-            Remix.Device.bluetooth_connect_line
+            Remix.Device.bluetooth_connect_fill
         }
 
         Action.EnableDND::class -> {
-            Remix.Weather.moon_line
+            Remix.Weather.moon_fill
         }
 
         Action.EnableGPS::class -> {
-            Remix.Device.gps_line
+            Remix.Device.gps_fill
         }
 
         Action.EnableDarkMode::class -> {
-            Remix.Weather.sun_line
+            Remix.Weather.sun_fill
         }
 
         Action.EnableData::class -> {
-            Remix.Arrows.arrow_up_down_line
+            Remix.Arrows.arrow_up_down_fill
         }
 
         Action.EnableFlashLight::class -> {
-            Remix.Others.lightbulb_line
+            Remix.Others.lightbulb_fill
         }
 
         Action.EnableHotSpot::class -> {
-            Remix.Device.hotspot_line
+            Remix.Device.hotspot_fill
         }
 
         Action.EnableNFC::class -> {
@@ -489,19 +489,19 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.EnableWifi::class -> {
-            Remix.Device.wifi_line
+            Remix.Device.wifi_fill
         }
 
         Action.StopApp::class -> {
-            Remix.Media.stop_line
+            Remix.Media.stop_fill
         }
 
         Action.StartAppProcess::class -> {
-            Remix.Media.play_line
+            Remix.Media.play_fill
         }
 
         Action.EnableApp::class -> {
-            Remix.System.toggle_line
+            Remix.System.toggle_fill
         }
 
         Action.DisableApp::class -> {
@@ -509,55 +509,55 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.SuspendApp::class -> {
-            Remix.UserAndFaces.admin_line
+            Remix.UserAndFaces.admin_fill
         }
 
         Action.UnSuspendApp::class -> {
-            Remix.UserAndFaces.admin_line
+            Remix.UserAndFaces.admin_fill
         }
 
         Action.Brk::class -> {
-            Remix.System.close_circle_line
+            Remix.System.close_circle_fill
         }
 
         Action.ShowAlertDialog::class -> {
-            Remix.Communication.chat_4_line
+            Remix.Communication.chat_4_fill
         }
 
         Action.StartActivity::class -> {
-            Remix.Logos.android_line
+            Remix.Logos.android_fill
         }
 
         Action.ExpandNotification::class -> {
-            Remix.System.notification_badge_line
+            Remix.System.notification_badge_fill
         }
 
         Action.PostNotification::class -> {
-            Remix.Media.notification_line
+            Remix.Media.notification_fill
         }
 
         Action.RemoteMVEL::class -> {
-            Remix.Business.cloud_line
+            Remix.Business.cloud_fill
         }
 
         Action.WhileLoop::class -> {
-            Remix.System.loop_left_line
+            Remix.System.loop_left_fill
         }
 
         Action.WriteGV::class -> {
-            Remix.Document.file_edit_line
+            Remix.Document.file_edit_fill
         }
 
         Action.CreateGV::class -> {
-            Remix.Document.file_edit_line
+            Remix.Document.file_edit_fill
         }
 
         Action.DeleteGV::class -> {
-            Remix.Document.file_edit_line
+            Remix.Document.file_edit_fill
         }
 
         Action.MapNav::class -> {
-            Remix.Map.navigation_line
+            Remix.Map.navigation_fill
         }
 
         Action.FromDA::class -> {
@@ -565,11 +565,11 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.FindAndClickViewByText::class -> {
-            Remix.Business.window_2_line
+            Remix.Business.window_2_fill
         }
 
         Action.WaitForIdle::class -> {
-            Remix.System.hourglass_line
+            Remix.System.hourglass_fill
         }
 
         Action.IfThenElse::class -> {
@@ -581,222 +581,15 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         else -> {
-            Remix.Document.file_unknow_line
+            Remix.Document.file_unknow_fill
         }
     }
 }
 
 fun colorForAction(action: KClass<out Action>): Color {
-    val index = allActionClasses.indexOf(action) % ActionColorPalettes.size
-    return when (action) {
-        Action.ShowToast::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.ShowDanmu::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.ShellCommand::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.InputText::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.Delay::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.TakeScreenshot::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.MVEL::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.HideAllOverlay::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.HideOverlay::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.ShowOverlay::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.LaunchApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableBT::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableDND::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableGPS::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableDarkMode::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableData::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableFlashLight::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableHotSpot::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableNFC::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableWifi::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableBT::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableDND::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableGPS::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableDarkMode::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableData::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableFlashLight::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableHotSpot::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableNFC::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableWifi::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.StopApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.StartAppProcess::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.EnableApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DisableApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.SuspendApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.UnSuspendApp::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.Brk::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.ShowAlertDialog::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.StartActivity::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.ExpandNotification::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.PostNotification::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.RemoteMVEL::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.WhileLoop::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.WriteGV::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.CreateGV::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.DeleteGV::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.MapNav::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.FromDA::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.FindAndClickViewByText::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.WaitForIdle::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.IfThenElse::class -> {
-            ActionColorPalettes[index]
-        }
-
-        Action.NoAction::class -> {
-            ActionColorPalettes[index]
-        }
-
-        else -> {
-            Color.Unspecified
-        }
-    }
+    val index =
+        runCatching { allActionClasses.indexOf(action) % ActionColorPalettes.size }.getOrElse { 0 }
+    return ActionColorPalettes[index]
 }
 
 val ActionColorPalettes = arrayOf(

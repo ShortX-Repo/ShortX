@@ -3,9 +3,23 @@ package tornaco.apps.shortx.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -13,7 +27,14 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.CategoryTitle
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
@@ -34,15 +55,19 @@ private fun PreferenceUi(preference: Preference) {
         is Preference.SwitchPreference -> {
             SwitchPreferenceUi(preference = preference)
         }
+
         is Preference.TextPreference -> {
             TextPreferenceUi(preference = preference)
         }
+
         is Preference.Divider -> {
             Divider()
         }
+
         is Preference.Category -> {
             CategoryUi(preference = preference)
         }
+
         is Preference.ExpandablePreference -> {
             ExpandablePreferenceUi(preference = preference)
         }
@@ -95,9 +120,7 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            preference.icon?.let {
-                RemixIcon(remixName = it)
-            }
+            PreferenceIcon(preference.icon)
             StandardSpacer()
             Column(modifier = Modifier) {
                 Text(
@@ -113,6 +136,15 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PreferenceIcon(icon: String?) {
+    icon?.let {
+        ColoredIcon(size = 28.dp) {
+            RemixIcon(modifier = Modifier.size(14.dp), remixName = it)
         }
     }
 }
@@ -141,9 +173,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            preference.icon?.let {
-                RemixIcon(remixName = it)
-            }
+            PreferenceIcon(preference.icon)
             StandardSpacer()
             Column(modifier = Modifier) {
                 Text(
@@ -209,7 +239,10 @@ private fun ExpandableContainer(
                         }
                 }) {
 
-                Crossfade(targetState = expandState == ExpandableState.Expand) { isExpand ->
+                Crossfade(
+                    targetState = expandState == ExpandableState.Expand,
+                    label = "Crossfade"
+                ) { isExpand ->
                     if (isExpand) {
                         RemixIcon(
                             remixName = Remix.Arrows.arrow_drop_up_line,

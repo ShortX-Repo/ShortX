@@ -200,7 +200,7 @@ fun DirectActionListContent(
                             modifier = Modifier
                                 .width((itemSize.first * widthPercent))
                                 .height(itemSize.second)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.06f))
+                                .background(Color(da.iconColor).copy(alpha = ActionColorBgAlpha))
                         )
                     }
                 }

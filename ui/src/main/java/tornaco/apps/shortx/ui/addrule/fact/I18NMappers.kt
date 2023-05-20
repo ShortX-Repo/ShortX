@@ -317,64 +317,39 @@ fun OnOffAny.label(i18n: I18N): String {
 
 fun imageVectorForFact(fact: KClass<out Fact>): String {
     return when (fact) {
-        Fact.ActivityStarted::class -> Remix.Logos.android_line
-        Fact.AnyActivityStarted::class -> Remix.Logos.android_line
+        Fact.ActivityStarted::class -> Remix.Logos.android_fill
+        Fact.AnyActivityStarted::class -> Remix.Logos.android_fill
         Fact.EdgeGesture::class -> Remix.Editor.sketching
-        Fact.KeyEvent::class -> Remix.Device.keyboard_line
+        Fact.KeyEvent::class -> Remix.Device.keyboard_fill
         Fact.ScreenOff::class -> Remix.Device.smartphone_fill
-        Fact.ScreenOn::class -> Remix.Device.smartphone_line
-        Fact.UserPresent::class -> Remix.Device.phone_lock_line
-        Fact.Alarm::class -> Remix.System.alarm_line
-        Fact.AppBecomeBackground::class -> Remix.System.refresh_line
-        Fact.AppBecomeForeground::class -> Remix.System.star_line
-        Fact.WifiStatusChanged::class -> Remix.Device.wifi_line
-        Fact.BTStatusChanged::class -> Remix.Device.bluetooth_line
-        Fact.LocationStatusChanged::class -> Remix.Device.gps_line
+        Fact.ScreenOn::class -> Remix.Device.smartphone_fill
+        Fact.UserPresent::class -> Remix.Device.phone_lock_fill
+        Fact.Alarm::class -> Remix.System.alarm_fill
+        Fact.AppBecomeBackground::class -> Remix.System.refresh_fill
+        Fact.AppBecomeForeground::class -> Remix.System.star_fill
+        Fact.WifiStatusChanged::class -> Remix.Device.wifi_fill
+        Fact.BTStatusChanged::class -> Remix.Device.bluetooth_fill
+        Fact.LocationStatusChanged::class -> Remix.Device.gps_fill
         Fact.NFCStatusChanged::class -> Remix.Device.nfc_fill
-        Fact.MobileDataStatusChanged::class -> Remix.Arrows.arrow_up_down_line
-        Fact.HotSpotStatusChanged::class -> Remix.Device.hotspot_line
-        Fact.DarkModeStatusChanged::class -> Remix.Weather.sun_line
-        Fact.FlashLightStatusChanged::class -> Remix.Others.lightbulb_line
-        Fact.NotificationPosted::class -> Remix.System.notification_badge_line
-        Fact.NotificationUpdated::class -> Remix.System.notification_badge_line
-        Fact.NotificationRemoved::class -> Remix.System.notification_badge_line
+        Fact.MobileDataStatusChanged::class -> Remix.Arrows.arrow_up_down_fill
+        Fact.HotSpotStatusChanged::class -> Remix.Device.hotspot_fill
+        Fact.DarkModeStatusChanged::class -> Remix.Weather.sun_fill
+        Fact.FlashLightStatusChanged::class -> Remix.Others.lightbulb_fill
+        Fact.NotificationPosted::class -> Remix.System.notification_badge_fill
+        Fact.NotificationUpdated::class -> Remix.System.notification_badge_fill
+        Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
 
         else -> {
-            Remix.Document.file_unknow_line
+            Remix.Document.file_unknow_fill
         }
     }
 }
 
 
 fun colorForFact(fact: KClass<out Fact>): Color {
-    val index = allFactClasses.indexOf(fact) % FactColorPalettes.size
-    return when (fact) {
-        Fact.ActivityStarted::class -> FactColorPalettes[index]
-        Fact.AnyActivityStarted::class -> FactColorPalettes[index]
-        Fact.EdgeGesture::class -> FactColorPalettes[index]
-        Fact.KeyEvent::class -> FactColorPalettes[index]
-        Fact.ScreenOff::class -> FactColorPalettes[index]
-        Fact.ScreenOn::class -> FactColorPalettes[index]
-        Fact.UserPresent::class -> FactColorPalettes[index]
-        Fact.Alarm::class -> FactColorPalettes[index]
-        Fact.AppBecomeBackground::class -> FactColorPalettes[index]
-        Fact.AppBecomeForeground::class -> FactColorPalettes[index]
-        Fact.WifiStatusChanged::class -> FactColorPalettes[index]
-        Fact.BTStatusChanged::class -> FactColorPalettes[index]
-        Fact.LocationStatusChanged::class -> FactColorPalettes[index]
-        Fact.NFCStatusChanged::class -> FactColorPalettes[index]
-        Fact.MobileDataStatusChanged::class -> FactColorPalettes[index]
-        Fact.HotSpotStatusChanged::class -> FactColorPalettes[index]
-        Fact.DarkModeStatusChanged::class -> FactColorPalettes[index]
-        Fact.FlashLightStatusChanged::class -> FactColorPalettes[index]
-        Fact.NotificationPosted::class -> FactColorPalettes[index]
-        Fact.NotificationUpdated::class -> FactColorPalettes[index]
-        Fact.NotificationRemoved::class -> FactColorPalettes[index]
-
-        else -> {
-            Color.Unspecified
-        }
-    }
+    val index =
+        runCatching { allFactClasses.indexOf(fact) % FactColorPalettes.size }.getOrElse { 0 }
+    return FactColorPalettes[index]
 }
 
 val FactColorPalettes = ActionColorPalettes

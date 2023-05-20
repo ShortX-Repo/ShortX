@@ -44,13 +44,12 @@ fun SettingsScreen(
 
     ShortXTheme {
         Surface(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
@@ -67,6 +66,7 @@ fun SettingsScreen(
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
+                        .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues)
                         .padding(horizontal = 16.dp)

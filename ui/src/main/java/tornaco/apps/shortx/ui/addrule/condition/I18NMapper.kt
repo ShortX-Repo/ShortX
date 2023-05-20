@@ -77,23 +77,23 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 fun iconForCondition(condition: KClass<out Condition>): String {
     return when (condition) {
         Condition.CurrentForegroundApp::class -> {
-            Remix.Logos.android_line
+            Remix.Logos.android_fill
         }
 
         Condition.MVEL::class -> {
-            Remix.Development.code_line
+            Remix.Development.code_fill
         }
 
         Condition.TRUE::class -> {
-            Remix.System.check_line
+            Remix.System.check_fill
         }
 
         Condition.EvaluateGlobalVar::class -> {
-            Remix.Document.file_list_line
+            Remix.Document.file_list_fill
         }
 
         else -> {
-            Remix.Document.file_unknow_line
+            Remix.Document.file_unknow_fill
         }
     }
 }
@@ -144,7 +144,7 @@ fun opDescription(op: Op): List<String> {
 fun iconForOp(op: Op): String {
     return when (op) {
         Op.All -> {
-            Remix.System.check_double_line
+            Remix.System.check_double_fill
         }
 
         Op.Any -> {
@@ -152,38 +152,19 @@ fun iconForOp(op: Op): String {
         }
 
         Op.None -> {
-            Remix.System.checkbox_blank_circle_line
+            Remix.System.checkbox_blank_circle_fill
         }
 
         is Op.MVEL -> {
-            Remix.Development.code_line
+            Remix.Development.code_fill
         }
     }
 }
 
 fun colorForCondition(condition: KClass<out Condition>): Color {
-    val index = allConditionClasses.indexOf(condition) % ConditionColorPalettes.size
-    return when (condition) {
-        Condition.CurrentForegroundApp::class -> {
-            ConditionColorPalettes[index]
-        }
-
-        Condition.MVEL::class -> {
-            ConditionColorPalettes[index]
-        }
-
-        Condition.TRUE::class -> {
-            ConditionColorPalettes[index]
-        }
-
-        Condition.EvaluateGlobalVar::class -> {
-            ConditionColorPalettes[index]
-        }
-
-        else -> {
-            ConditionColorPalettes[index]
-        }
-    }
+    val index =
+        runCatching { allConditionClasses.indexOf(condition) % ConditionColorPalettes.size }.getOrElse { 0 }
+    return ConditionColorPalettes[index]
 }
 
 val ConditionColorPalettes = ActionColorPalettes

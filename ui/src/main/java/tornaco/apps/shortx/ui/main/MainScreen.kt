@@ -52,7 +52,7 @@ fun HomeScreen() {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
-                    ModalDrawerSheet {
+                    ModalDrawerSheet(drawerTonalElevation = 0.dp) {
                         Spacer(Modifier.height(12.dp))
 
                         val appNavController = LocalNavHostController.current

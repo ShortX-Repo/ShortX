@@ -75,7 +75,7 @@ val VerifiedGreen = Color(0XFF43a047)
 
 
 @Stable
-class ShortXColorScheme(
+data class ShortXColorScheme(
     val cardBackground: Color,
     val uncheckedTrack: Color,
     val uncheckedThumb: Color,
