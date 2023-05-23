@@ -9,6 +9,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -23,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -137,74 +141,144 @@ fun DirectActionListContent(
     if (!state.isLoading && state.das.isEmpty()) {
         EmptyList(modifier = modifier.fillMaxSize())
     } else {
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-        ) {
-            items(items = state.das, key = { it.id }) { da ->
-                var colorAnimStarted by remember {
-                    mutableStateOf(false)
-                }
-                var scaleAnimStarted by remember {
-                    mutableStateOf(false)
-                }
-                val widthPercent by animateFloatAsState(
-                    targetValue = if (!colorAnimStarted) 0f else 1f,
-                    animationSpec = tween(EXECUTE_ANIM_DURATION),
-                    finishedListener = {
-                        colorAnimStarted = false
-                    }, label = "widthPercent"
-                )
-                val scalePercent by animateFloatAsState(
-                    targetValue = if (scaleAnimStarted) 0.96f else 1f,
-                    animationSpec = spring(),
-                    finishedListener = {
-                        scaleAnimStarted = false
-                    }, label = "scalePercent"
-                )
-                var itemSize by remember {
-                    mutableStateOf(Pair(0.dp, 0.dp))
-                }
-                val density = LocalDensity.current
+        if (state.isShowDetailedDAItem) {
+            DAListContent(
+                state,
+                showOverflowMenu,
+                onDirectActionClick,
+                onDup,
+                onDelete,
+                onEdit,
+                onShare,
+                stopAllJobs
+            )
+        } else {
+            DAListContentCompat(
+                state,
+                showOverflowMenu,
+                onDirectActionClick,
+                onDup,
+                onDelete,
+                onEdit,
+                onShare,
+                stopAllJobs
+            )
+        }
+    }
+}
 
-                ShortXCard(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .scale(scalePercent)
-                        .animateContentSize(),
-                ) {
-                    Box {
-                        DirectActionItem(
-                            modifier = Modifier.onSizeChanged {
-                                itemSize = with(density) {
-                                    it.width.toDp() to it.height.toDp()
-                                }
-                            },
-                            da = da,
-                            isLongClickEnabled = showOverflowMenu,
-                            showDetailedContent = state.isShowDetailedDAItem,
-                            onClick = {
-                                onDirectActionClick(da)
-                                colorAnimStarted = true
-                                scaleAnimStarted = true
-                            },
-                            onDup = onDup,
-                            onDelete = onDelete,
-                            onEdit = onEdit,
-                            onShare = onShare,
-                            stopAllJobs = stopAllJobs
-                        )
+@Composable
+private fun DAListContent(
+    state: MainState,
+    showOverflowMenu: Boolean,
+    onDirectActionClick: (DirectActionUM) -> Unit,
+    onDup: (DirectActionUM) -> Unit,
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+    ) {
+        items(items = state.das, key = { it.id }) { da ->
+            var colorAnimStarted by remember {
+                mutableStateOf(false)
+            }
+            var scaleAnimStarted by remember {
+                mutableStateOf(false)
+            }
+            val widthPercent by animateFloatAsState(
+                targetValue = if (!colorAnimStarted) 0f else 1f,
+                animationSpec = tween(EXECUTE_ANIM_DURATION),
+                finishedListener = {
+                    colorAnimStarted = false
+                }, label = "widthPercent"
+            )
+            val scalePercent by animateFloatAsState(
+                targetValue = if (scaleAnimStarted) 0.96f else 1f,
+                animationSpec = spring(),
+                finishedListener = {
+                    scaleAnimStarted = false
+                }, label = "scalePercent"
+            )
+            var itemSize by remember {
+                mutableStateOf(Pair(0.dp, 0.dp))
+            }
+            val density = LocalDensity.current
 
-                        if (colorAnimStarted) Spacer(
-                            modifier = Modifier
-                                .width((itemSize.first * widthPercent))
-                                .height(itemSize.second)
-                                .background(Color(da.iconColor).copy(alpha = ActionColorBgAlpha))
-                        )
-                    }
+            ShortXCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .scale(scalePercent)
+                    .animateContentSize(),
+            ) {
+                Box {
+                    DirectActionItem(
+                        modifier = Modifier.onSizeChanged {
+                            itemSize = with(density) {
+                                it.width.toDp() to it.height.toDp()
+                            }
+                        },
+                        da = da,
+                        isLongClickEnabled = showOverflowMenu,
+                        onClick = {
+                            onDirectActionClick(da)
+                            colorAnimStarted = true
+                            scaleAnimStarted = true
+                        },
+                        onDup = onDup,
+                        onDelete = onDelete,
+                        onEdit = onEdit,
+                        onShare = onShare,
+                        stopAllJobs = stopAllJobs
+                    )
+
+                    if (colorAnimStarted) Spacer(
+                        modifier = Modifier
+                            .width((itemSize.first * widthPercent))
+                            .height(itemSize.second)
+                            .background(Color(da.iconColor).copy(alpha = ActionColorBgAlpha))
+                    )
                 }
             }
+        }
+    }
+}
+
+
+@Composable
+private fun DAListContentCompat(
+    state: MainState,
+    showOverflowMenu: Boolean,
+    onDirectActionClick: (DirectActionUM) -> Unit,
+    onDup: (DirectActionUM) -> Unit,
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
+) {
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Fixed(4),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp, start = 16.dp, end = 16.dp)
+    ) {
+        items(items = state.das, key = { it.id }) { da ->
+            DirectActionItemCompat(
+                modifier = Modifier,
+                da = da,
+                isLongClickEnabled = showOverflowMenu,
+                onClick = {
+                    onDirectActionClick(da)
+                },
+                onDup = onDup,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                onShare = onShare,
+                stopAllJobs = stopAllJobs
+            )
         }
     }
 }
@@ -214,7 +288,6 @@ private fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
     isLongClickEnabled: Boolean,
-    showDetailedContent: Boolean,
     onClick: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
@@ -233,8 +306,8 @@ private fun DirectActionItem(
         DAListItem(
             modifier = modifier,
             title = da.title,
-            text1 = if (showDetailedContent) da.description else null,
-            text2 = if (showDetailedContent) da.updateTime else null,
+            text1 = da.description,
+            text2 = da.updateTime,
             icon = da.icon,
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
@@ -244,6 +317,82 @@ private fun DirectActionItem(
             stopAllJobs = {
                 stopAllJobs(da)
             }
+        )
+    }
+}
+
+@Composable
+private fun DirectActionItemCompat(
+    modifier: Modifier,
+    da: DirectActionUM,
+    isLongClickEnabled: Boolean,
+    onClick: () -> Unit,
+    onDup: (DirectActionUM) -> Unit,
+    onDelete: (DirectActionUM) -> Unit,
+    onEdit: (DirectActionUM) -> Unit,
+    onShare: (DirectActionUM) -> Unit,
+    stopAllJobs: (DirectActionUM) -> Unit
+) {
+    Box {
+        val popMenuState = listItemOverflowMenu(
+            da = da,
+            onDup = onDup,
+            onDelete = onDelete,
+            onEdit = onEdit,
+            onShare = onShare
+        )
+        DAListItemCompat(
+            modifier = modifier,
+            title = da.title,
+            icon = da.icon,
+            iconColor = Color(da.iconColor),
+            onClick = onClick,
+            onLongClick = { if (isLongClickEnabled) popMenuState.open() },
+        )
+    }
+}
+
+@Composable
+private fun DAListItemCompat(
+    modifier: Modifier,
+    title: String,
+    icon: String,
+    iconColor: Color,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onLongClick = onLongClick) {
+                onClick()
+            }
+            .padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ColoredIcon(
+            size = 48.dp,
+            padding = 0.dp,
+            color = iconColor
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(24.dp),
+                remixName = icon,
+                tint = Color.White
+            )
+        }
+
+        TinySpacer()
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontSize = 12.sp
+            ),
+            textAlign = TextAlign.Center,
+            maxLines = 2
         )
     }
 }
