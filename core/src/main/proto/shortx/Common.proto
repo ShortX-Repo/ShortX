@@ -26,9 +26,9 @@ message AppComponent {
 }
 
 message AppComponentInfo {
-    AppComponent component = 1;
-    string label = 2;
-    int32 enableSetting = 3;
+  AppComponent component = 1;
+  string label = 2;
+  int32 enableSetting = 3;
 }
 
 message Author {
@@ -45,4 +45,28 @@ message CommonApiRes {
   int32 result = 1;
   string msg = 2;
   string k = 3;
+}
+
+message AndroidIntent {
+  string action = 1;
+  int32 flags = 2;
+  string pkgName = 3;
+  string className = 4;
+  string data = 5;
+  repeated AndroidIntentExtra extras = 6;
+}
+
+message AndroidIntentExtra {
+  string key = 1;
+  string value = 2;
+  AndroidIntentExtraType type = 3;
+}
+
+enum AndroidIntentExtraType {
+  Int = 0;
+  Long = 1;
+  String = 2;
+  Bool = 3;
+  Float = 4;
+  Double = 5;
 }
