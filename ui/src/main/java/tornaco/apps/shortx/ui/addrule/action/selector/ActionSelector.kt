@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
@@ -161,18 +162,23 @@ private fun <ARGS> ActionSelector(
                                         ) {
                                             ActionCategoryTitle(ActionCategory.Ui)
                                             UiActions(addAction = addAction)
+                                            StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Apps)
                                             AppActions(addAction = addAction)
+                                            StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Settings)
                                             SettingsActions(addAction = addAction)
+                                            StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Advanced)
                                             ExtActions(addAction = addAction)
+                                            StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Life)
                                             LifeActions(addAction = addAction)
+                                            StandardSpacer()
                                         }
                                     }
                                     else -> {}

@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
@@ -22,13 +23,14 @@ import tornaco.apps.shortx.core.res.Remix
 @Composable
 fun ShortXCard(
     modifier: Modifier = Modifier,
+    shape: Shape = ShortXCardRoundedCornerShape,
     onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Card(
         modifier = modifier.animateContentSize(),
         backgroundColor = LocalShortXColorSchema.current.cardBackground,
-        shape = ShortXCardRoundedCornerShape,
+        shape = shape,
         elevation = 0.dp,
         onClick = onClick,
         content = content

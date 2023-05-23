@@ -91,7 +91,7 @@ fun SmallTitle(text: String, color: Color = Color.Unspecified) {
         text = text,
         style = MaterialTheme.typography.bodySmall.copy(
             fontWeight = FontWeight.W500,
-            fontSize = 14.sp
+            fontSize = 15.sp
         ),
         color = color
     )

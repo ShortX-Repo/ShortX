@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@file:OptIn(
+    ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
@@ -6,9 +9,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,7 +30,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeLarge
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
@@ -116,11 +119,11 @@ fun ActionItem(
     TipDialog(state = tipDialogState)
 
     ShortXCard(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        shape = ShortXCardRoundedCornerShapeLarge
     ) {
         Box(modifier = modifier
-            .padding(horizontal = 6.dp)
-            .clip(ShortXCardRoundedCornerShape)
+            .clip(ShortXCardRoundedCornerShapeLarge)
             .combinedClickable(onLongClick = {
                 tipDialogState.show()
             }) {
@@ -128,31 +131,28 @@ fun ActionItem(
             },
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Row(
+                modifier = Modifier.padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 ColoredIcon(
-                    size = 32.dp,
+                    size = 24.dp,
                     padding = 0.dp,
                     color = iconColor.copy(alpha = ActionColorBgAlpha)
                 ) {
                     RemixIcon(
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(10.dp),
                         remixName = icon,
                         tint = iconColor
                     )
                 }
                 TinySpacer()
-                Column(modifier = Modifier) {
-                    Text(
-                        text = title,
-                        fontSize = 12.5.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                Text(
+                    text = title,
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center
+                )
+                TinySpacer()
             }
         }
     }
