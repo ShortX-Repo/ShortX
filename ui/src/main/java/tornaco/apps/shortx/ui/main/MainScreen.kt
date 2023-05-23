@@ -46,7 +46,6 @@ fun HomeScreen() {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-
             val drawerState = rememberDrawerState(DrawerValue.Closed)
             val scope = rememberCoroutineScope()
             ModalNavigationDrawer(
@@ -116,9 +115,7 @@ private fun BottomNavigationContent(
         BottomNavItem.DirectActions, BottomNavItem.Rules
     )
     NavigationBar(
-        modifier = modifier,
-        tonalElevation = 0.dp,
-        containerColor = LocalShortXColorSchema.current.cardBackground
+        modifier = modifier
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route

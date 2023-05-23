@@ -30,7 +30,7 @@ object ColorDefaults {
     @Composable
     fun backgroundSurfaceColor() = MaterialTheme.colorScheme.applyTonalElevation(
         MaterialTheme.colorScheme.surface,
-        2.dp
+        1.dp
     )
 
     private fun ColorScheme.applyTonalElevation(backgroundColor: Color, elevation: Dp): Color {

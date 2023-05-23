@@ -29,7 +29,7 @@ fun ShortXCard(
 ) {
     Card(
         modifier = modifier.animateContentSize(),
-        backgroundColor = LocalShortXColorSchema.current.cardBackground,
+        backgroundColor = ColorDefaults.backgroundSurfaceColor(),
         shape = shape,
         elevation = 0.dp,
         onClick = onClick,
