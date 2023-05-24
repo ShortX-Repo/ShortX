@@ -67,6 +67,7 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 
 val NoteTextColor = Color(0xFF777777)
+val SettingsIconColor = Color(0xFF9e9e9e)
 val VipColorGold = Color(0XFFFF8F00)
 val WeChatGreen = Color(0XFF4CAF50)
 val AliBlue = Color(0XFF2962ff)

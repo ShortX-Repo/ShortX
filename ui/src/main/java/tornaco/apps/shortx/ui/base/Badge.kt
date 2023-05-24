@@ -52,7 +52,7 @@ fun MD3Badge(text: String, fontFamily: FontFamily? = fontFamilyProductSansBold()
         text = text,
         fontFamily = fontFamily,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        textSize = 10.sp
+        textSize = 12.sp
     )
 }
 
@@ -61,8 +61,8 @@ fun MD3Badge(
     text: String,
     fontFamily: FontFamily? = null,
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    textSize: TextUnit = 10.sp,
-    padding: Dp = 2.dp
+    textSize: TextUnit = 12.sp,
+    padding: Dp = 3.dp
 ) {
     androidx.compose.material3.Badge(
         containerColor = containerColor

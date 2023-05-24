@@ -28,13 +28,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CategoryTitle
-import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.theme.SettingsIconColor
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
@@ -143,9 +143,7 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
 @Composable
 private fun PreferenceIcon(icon: String?) {
     icon?.let {
-        ColoredIcon(size = 28.dp) {
-            RemixIcon(modifier = Modifier.size(14.dp), remixName = it)
-        }
+        RemixIcon(modifier = Modifier.size(24.dp), remixName = it, tint = SettingsIconColor)
     }
 }
 

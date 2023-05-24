@@ -75,6 +75,7 @@ fun SettingsScreen(
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
+                        .padding(top = 12.dp)
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
@@ -219,7 +220,7 @@ private fun generalSettings(
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
-    Preference.TextPreference(icon = Remix.System.apps_line,
+    Preference.TextPreference(icon = Remix.System.apps_fill,
         title = LocalI18N.current["ui.pkg.set.title"],
         summary = LocalI18N.current["ui.pkg.set.desc"],
         onClick = {
@@ -227,7 +228,7 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Remix.Document.file_list_line,
+    Preference.TextPreference(icon = Remix.Document.file_list_fill,
         title = LocalI18N.current["ui.global.var.title"],
         summary = LocalI18N.current["ui.global.var.desc"],
         onClick = {
@@ -235,7 +236,7 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Remix.Communication.message_line,
+    Preference.TextPreference(icon = Remix.Communication.message_fill,
         title = LocalI18N.current["ui.settings.danmu"],
         summary = LocalI18N.current["ui.settings.danmu.summary"],
         onClick = {
@@ -264,7 +265,7 @@ private fun dataSettings(
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.data"]),
         Preference.TextPreference(
-            icon = Remix.Device.save_3_line,
+            icon = Remix.Device.save_3_fill,
             title = LocalI18N.current["ui.settings.data.backup.title"],
             summary = LocalI18N.current["ui.settings.data.backup.summary"],
             onClick = {
@@ -275,7 +276,7 @@ private fun dataSettings(
         ),
 
         Preference.ExpandablePreference(
-            icon = Remix.System.download_2_line,
+            icon = Remix.System.download_2_fill,
             title = LocalI18N.current["ui.settings.data.restore.title"],
             summary = LocalI18N.current["ui.settings.data.restore.summary"],
             onClick = {
@@ -285,7 +286,7 @@ private fun dataSettings(
             },
             preferences = listOf(
                 Preference.TextPreference(
-                    icon = Remix.System.history_line,
+                    icon = Remix.System.history_fill,
                     title = LocalI18N.current["ui.settings.data.reset.title"],
                     summary = LocalI18N.current["ui.settings.data.reset.summary"],
                     onClick = {
@@ -304,7 +305,7 @@ private fun devSettings(
 ) = mutableListOf(
     Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
-    Preference.SwitchPreference(icon = Remix.Document.article_line,
+    Preference.SwitchPreference(icon = Remix.Document.article_fill,
         title = LocalI18N.current["ui.settings.enable.debug.log"],
         summary = LocalI18N.current["ui.settings.enable.debug.log.description"],
         value = state.isDebugLogEnabled,
@@ -314,7 +315,7 @@ private fun devSettings(
 ).apply {
     if (BuildProp.APP_IS_DEBUG) {
         add(Preference.TextPreference(
-            icon = Remix.System.download_line,
+            icon = Remix.System.download_fill,
             title = "Import prebuilt data",
             summary = "Include prebuilt direct actions and rules.",
             onClick = {
@@ -323,7 +324,7 @@ private fun devSettings(
         ))
 
         add(Preference.SwitchPreference(
-            icon = Remix.Device.install_line,
+            icon = Remix.Device.install_fill,
             title = "Install fake service",
             summary = "For debug purpose, restart app to take effect",
             value = state.installFakeService,
@@ -333,7 +334,7 @@ private fun devSettings(
         ))
 
         add(Preference.SwitchPreference(
-            icon = Remix.Device.install_line,
+            icon = Remix.Device.install_fill,
             title = "Ignore framework update",
             summary = "Do not show framework updated tips on main screen",
             value = state.isIgnoreFrameworkUpdate,
@@ -352,11 +353,11 @@ private fun aboutSettings(
     Preference.Category(LocalI18N.current["ui.settings.about"]),
 
     Preference.ExpandablePreference(
-        icon = Remix.System.information_line,
+        icon = Remix.System.information_fill,
         title = LocalI18N.current["ui.settings.app.info"],
         summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
         preferences = listOf(
-            Preference.TextPreference(icon = Remix.Device.instance_line,
+            Preference.TextPreference(icon = Remix.Device.instance_fill,
                 title = LocalI18N.current["ui.settings.core.info"],
                 summary = if (state.isActivated) {
                     "${state.coreVersion.name}\n${state.coreVersion.code}"
@@ -368,7 +369,7 @@ private fun aboutSettings(
         ),
     ),
 
-    Preference.TextPreference(icon = Remix.Logos.open_source_line,
+    Preference.TextPreference(icon = Remix.Logos.open_source_fill,
         title = LocalI18N.current["ui.settings.open.source.license"],
         onClick = {
             viewOpenSourceLicense()

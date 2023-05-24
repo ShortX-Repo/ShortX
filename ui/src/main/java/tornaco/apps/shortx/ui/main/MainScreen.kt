@@ -52,10 +52,10 @@ fun HomeScreen() {
                 drawerState = drawerState,
                 drawerContent = {
                     ModalDrawerSheet(
-                        modifier = Modifier.fillMaxWidth(fraction = 0.93f)
+                        modifier = Modifier.fillMaxWidth(fraction = 0.93f),
+                        drawerTonalElevation = 0.5.dp
                     ) {
-                        Spacer(Modifier.height(12.dp))
-
+                        StandardSpacer()
                         val appNavController = LocalNavHostController.current
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
