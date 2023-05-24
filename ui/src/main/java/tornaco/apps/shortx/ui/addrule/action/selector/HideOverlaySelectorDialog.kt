@@ -12,13 +12,16 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+private const val SPLITTER = ","
 
 class HideOverlayDialogState(
     val onSelected: (Action.HideOverlay) -> Unit
 ) {
+    var tags by mutableStateOf("")
     var isShowing by mutableStateOf(false)
 
-    fun show() {
+    fun show(currentAction: Action.HideOverlay? = null) {
+        this.tags = currentAction?.tags?.joinToString(SPLITTER) ?: ""
         isShowing = true
     }
 
@@ -47,10 +50,6 @@ fun HideOverlayDialog(state: HideOverlayDialogState) {
 
 @Composable
 private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
-    var tags by remember {
-        mutableStateOf("")
-    }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -69,13 +68,14 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
                         },
                         actions = {
                             IconButton(onClick = {
-                                if (tags.isNotBlank()) {
+                                if (dialogState.tags.isNotBlank()) {
                                     dialogState.onSelected(
                                         Action.HideOverlay(
                                             tags = kotlin.runCatching {
-                                                tags.split(",").toList().map { it.trim() }
+                                                dialogState.tags.split(SPLITTER).toList()
+                                                    .map { it.trim() }
                                             }.getOrElse {
-                                                listOf(tags)
+                                                listOf(dialogState.tags)
                                             }
                                         )
                                     )
@@ -96,8 +96,8 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
                         .padding(16.dp)
                 ) {
                     DialogMessage(text = "Tags to hide")
-                    OutlinedTextField(value = tags, onValueChange = {
-                        tags = it
+                    OutlinedTextField(value = dialogState.tags, onValueChange = {
+                        dialogState.tags = it
                     })
                 }
             }

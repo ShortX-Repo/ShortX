@@ -17,7 +17,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
-                subSelectorStates.toastSelectionState.show()
+                subSelectorStates.toastSelectionState.show(source.getActionAs<Action.ShowToast>()?.message)
                 true
             }
 
@@ -32,22 +32,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.HideOverlay::class -> {
-                subSelectorStates.hideOverlayDialogState.show()
+                subSelectorStates.hideOverlayDialogState.show(source.getActionAs())
                 true
             }
 
             Action.ShowOverlay::class -> {
-                subSelectorStates.overlayButtonState.show()
+                subSelectorStates.overlayButtonState.show(
+                    source.getActionAs()
+                )
                 true
             }
 
             Action.ShowAlertDialog::class -> {
-                subSelectorStates.showDialogSettingsState.show()
+                subSelectorStates.showDialogSettingsState.show(source.getActionAs())
                 true
             }
 
             Action.ShowDanmu::class -> {
-                subSelectorStates.showDanmuSettingsState.show()
+                subSelectorStates.showDanmuSettingsState.show(source.getActionAs())
                 true
             }
 
@@ -57,12 +59,12 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.PostNotification::class -> {
-                subSelectorStates.postNotificationDialogState.show()
+                subSelectorStates.postNotificationDialogState.show(source.getActionAs())
                 true
             }
 
             Action.FindAndClickViewByText::class -> {
-                subSelectorStates.findAndClickViewByTextSelectorState.show()
+                subSelectorStates.findAndClickViewByTextSelectorState.show(source.getActionAs())
                 true
             }
 

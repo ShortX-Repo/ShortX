@@ -24,8 +24,8 @@ class TextInputState(
     var errorMsg by mutableStateOf("")
     var isValid by mutableStateOf(false)
 
-    fun show(initialValue: String = "") {
-        this.currentValue = initialValue
+    fun show(initialValue: String? = null) {
+        this.currentValue = initialValue ?: ""
         this.errorMsg = ""
         this.isValid = false
 
