@@ -1,0 +1,29 @@
+package tornaco.apps.shortx.services.rule.actor
+
+import org.junit.Assert
+import org.junit.Test
+import tornaco.apps.shortx.core.proto.action.OuterActions
+
+class ActorTest {
+
+    @Test
+    fun `can handle class should not dup`() {
+        Assert.assertEquals(
+            PrebuiltActor.values().size,
+            PrebuiltActor.values().map { it.actor.actionsCanHandle() }.size
+        )
+    }
+
+    @Test
+    fun `should handle all proto actions`() {
+        val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }
+
+        allActionNames.forEach { actionProtoName ->
+            Assert.assertTrue(
+                "Should contains Actor for Action: $actionProtoName",
+                PrebuiltActor.values().map { it.actor.actionsCanHandle().simpleName }
+                    .contains(actionProtoName)
+            )
+        }
+    }
+}

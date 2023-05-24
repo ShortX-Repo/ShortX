@@ -8,6 +8,7 @@ import "google/protobuf/any.proto";
 import "shortx/Common.proto";
 import "shortx/Conditions.proto";
 import "shortx/GlobalVars.proto";
+import "shortx/Settings.proto";
 
 message NoAction {
 
@@ -80,16 +81,6 @@ message RemoteExecuteMVEL {
   string description = 2;
   string icon = 3;
   string expression = 4;
-
-  string note = 99;
-  string id = 100;
-}
-
-message OverlayButtonSetting {
-  repeated google.protobuf.Any actions = 1;
-  string icon = 2;
-  int32 index = 3;
-  string label = 4;
 
   string note = 99;
   string id = 100;
@@ -169,13 +160,6 @@ message SetBTEnabled {
 }
 
 message SetHotSpotEnabled {
-  bool enable = 1;
-
-  string note = 99;
-  string id = 100;
-}
-
-message SetGPSEnabled {
   bool enable = 1;
 
   string note = 99;
@@ -324,11 +308,6 @@ message MapNav {
 enum MapApp {
   Baidu = 0;
   Gaode = 1;
-}
-
-message Location {
-  string latitude = 1;
-  string longitude = 2;
 }
 
 message PostNotification {

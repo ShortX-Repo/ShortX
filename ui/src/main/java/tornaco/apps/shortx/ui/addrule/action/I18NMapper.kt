@@ -71,7 +71,7 @@ fun labelAndDescriptionForActionSelector(
 
         Action.DisableBT::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.DisableDND::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])] to null
-        Action.DisableGPS::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])] to null
+        Action.DisableLocation::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])] to null
         Action.DisableDarkMode::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dark.mode"])] to null
         Action.DisableData::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.data"])] to null
         Action.DisableFlashLight::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.flashlight"])] to null
@@ -81,7 +81,7 @@ fun labelAndDescriptionForActionSelector(
 
         Action.EnableBT::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.EnableDND::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])] to null
-        Action.EnableGPS::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])] to null
+        Action.EnableLocation::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])] to null
         Action.EnableDarkMode::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])] to null
         Action.EnableData::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])] to null
         Action.EnableFlashLight::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])] to null
@@ -177,7 +177,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.DisableBT -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])])
         is Action.DisableDND -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])])
-        is Action.DisableGPS -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])])
+        is Action.DisableLocation -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])])
         is Action.DisableDarkMode -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dark.mode"])])
         is Action.DisableData -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.data"])])
         is Action.DisableFlashLight -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.flashlight"])])
@@ -187,7 +187,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.EnableBT -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])])
         is Action.EnableDND -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])])
-        is Action.EnableGPS -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])])
+        is Action.EnableLocation -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.gps"])])
         is Action.EnableDarkMode -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dark.mode"])])
         is Action.EnableData -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.data"])])
         is Action.EnableFlashLight -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.flashlight"])])
@@ -428,7 +428,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Weather.moon_fill
         }
 
-        Action.DisableGPS::class -> {
+        Action.DisableLocation::class -> {
             Remix.Device.gps_fill
         }
 
@@ -464,7 +464,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Weather.moon_fill
         }
 
-        Action.EnableGPS::class -> {
+        Action.EnableLocation::class -> {
             Remix.Device.gps_fill
         }
 

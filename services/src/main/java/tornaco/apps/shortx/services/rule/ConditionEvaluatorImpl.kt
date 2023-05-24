@@ -7,7 +7,7 @@ import tornaco.apps.shortx.core.proto.condition.*
 import tornaco.apps.shortx.core.rule.*
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.MVELExecutor
+import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 
 class ConditionEvaluatorImpl(
     private val context: Context,

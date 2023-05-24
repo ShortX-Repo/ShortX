@@ -3,10 +3,10 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.action.MapApp
-import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -333,7 +333,7 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
-    data class EnableGPS(
+    data class EnableLocation(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
     ) : Action {
@@ -423,7 +423,7 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
-    data class DisableGPS(
+    data class DisableLocation(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
     ) : Action {

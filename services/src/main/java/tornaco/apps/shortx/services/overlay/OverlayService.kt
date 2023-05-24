@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import tornaco.apps.shortx.core.proto.action.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings

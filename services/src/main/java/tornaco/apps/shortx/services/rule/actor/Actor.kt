@@ -1,0 +1,209 @@
+package tornaco.apps.shortx.services.rule.actor
+
+import android.content.Context
+import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.ConditionEvaluator
+
+data class HandleParams(
+    val context: Context,
+    val shortXContext: ShortXContext,
+    val action: ProtoAny,
+    val contextData: ContextData,
+    val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> Unit,
+    val conditionEvaluator: ConditionEvaluator
+)
+
+interface Actor {
+    fun actionsCanHandle(): Class<out Message>
+    suspend fun handle(params: HandleParams)
+
+    val logger get() = Logger("Actor-${actionsCanHandle().simpleName}")
+}
+
+interface ActorProvider {
+    val actor: Actor
+}
+
+enum class PrebuiltActor : ActorProvider {
+    NoAction {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.NoAction
+
+    },
+    StartActivity {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartActivity
+
+    },
+    StartActivityIntent {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartActivityIntent
+
+    },
+    TakeScreenshot {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.TakeScreenshot
+    },
+    ExpandNotification {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ExpandNotification
+    },
+    ShellCommand {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
+    },
+    InputText {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.InputText
+    },
+    ShowToast {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowToast
+    },
+    Delay {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.Delay
+    },
+    ExecuteMVEL {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
+    },
+    RemoteExecuteMVEL {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemoteExecuteMVEL
+    },
+    ShowOverlayButton {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowOverlayButton
+    },
+    HideOverlayButton {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.HideOverlayButton
+    },
+    LaunchApp {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.LaunchApp
+    },
+    StopApp {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StopApp
+    },
+    StartAppProcess {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartAppProcess
+    },
+    SetAppEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppEnabled
+    },
+    SetAppSuspend {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppSuspend
+    },
+    SetWifiEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetWifiEnabled
+    },
+    SetHotSpotEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetHotSpotEnabled
+    },
+    SetBTEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetBTEnabled
+    },
+    SetLocationEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetLocationEnabled
+    },
+    SetNFCEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetNFCEnabled
+    },
+    SetFlashLightEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetFlashLightEnabled
+    },
+    SetDarkModeEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetDarkModeEnabled
+    },
+    SetDataEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetDataEnabled
+    },
+    SetDNDEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetDNDEnabled
+    },
+    BreakActionExecute {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.BreakActionExecute
+    },
+    ShowAlertDialog {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowAlertDialog
+    },
+    ShowDanmu {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowDanmu
+    },
+    WhileLoop {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WhileLoop
+    },
+    WriteGlobalVar {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar
+    },
+    CreateGlobalVar {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.CreateGlobalVar
+    },
+    DeleteGlobalVar {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.DeleteGlobalVar
+    },
+    AddToGlobalVar {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.AddToGlobalVar
+    },
+    MapNav {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.MapNav
+    },
+    PostNotification {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.PostNotification
+    },
+    FromDA {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.FromDA
+    },
+    FindAndClickViewByText {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.FindAndClickViewByText
+    },
+    WaitForIdle {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WaitForIdle
+    },
+    IfThenElse {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.IfThenElse
+    },
+
+
+    ;
+
+
+}
+
+fun prebuiltActorFor(action: ProtoAny): Actor? {
+    return PrebuiltActor.values().firstOrNull { action is_ it.actor.actionsCanHandle() }?.actor
+}

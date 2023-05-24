@@ -1,21 +1,29 @@
-package tornaco.apps.shortx.services.rule.actor
+package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import com.google.protobuf.Message
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.rule.action.su.ISu
-import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.actor.Actor
+import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.util.AppServiceProxy
 
-class ShellCommand(
-    private val context: Context,
-    private val shortXContext: ShortXContext,
-    private val shellCommand: String,
-) {
-    operator fun invoke() {
-        ShellServiceProxy.exe(context, shellCommand)
+
+object ShellCommand : Actor {
+    override fun actionsCanHandle(): Class<out Message> {
+        return tornaco.apps.shortx.core.proto.action.ShellCommand::class.java
+    }
+
+    override suspend fun handle(
+        params: HandleParams
+    ) = with(params) {
+        val sc = action unpack_ ShellCommand::class.java
+        ShellServiceProxy.exe(context, sc.command)
     }
 }
 

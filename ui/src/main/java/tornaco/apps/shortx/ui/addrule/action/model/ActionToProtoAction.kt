@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.proto.action.HideOverlayButton
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.LaunchApp
-import tornaco.apps.shortx.core.proto.action.Location
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
@@ -23,8 +22,8 @@ import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
 import tornaco.apps.shortx.core.proto.action.SetDarkModeEnabled
 import tornaco.apps.shortx.core.proto.action.SetDataEnabled
 import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
-import tornaco.apps.shortx.core.proto.action.SetGPSEnabled
 import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
+import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
@@ -39,6 +38,7 @@ import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
+import tornaco.apps.shortx.core.proto.common.Location
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
@@ -126,7 +126,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
-        is Action.DisableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(false)
+        is Action.DisableLocation -> SetLocationEnabled.newBuilder().setId(overrideId ?: id)
+            .setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
@@ -162,7 +163,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setNote(overrideNote ?: note)
             .build()
 
-        is Action.EnableGPS -> SetGPSEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
+        is Action.EnableLocation -> SetLocationEnabled.newBuilder().setId(overrideId ?: id)
+            .setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 

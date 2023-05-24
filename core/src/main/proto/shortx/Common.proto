@@ -70,3 +70,8 @@ enum AndroidIntentExtraType {
   Float = 4;
   Double = 5;
 }
+
+message Location {
+  string latitude = 1;
+  string longitude = 2;
+}

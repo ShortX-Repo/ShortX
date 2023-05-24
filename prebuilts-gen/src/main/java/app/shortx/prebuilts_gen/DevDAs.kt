@@ -1,12 +1,41 @@
 package app.shortx.prebuilts_gen
 
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.proto.action.*
+import tornaco.apps.shortx.core.proto.action.BreakActionExecute
+import tornaco.apps.shortx.core.proto.action.Delay
+import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
+import tornaco.apps.shortx.core.proto.action.ExpandNotification
+import tornaco.apps.shortx.core.proto.action.HideOverlayButton
+import tornaco.apps.shortx.core.proto.action.InputText
+import tornaco.apps.shortx.core.proto.action.LaunchApp
+import tornaco.apps.shortx.core.proto.action.NoAction
+import tornaco.apps.shortx.core.proto.action.SetAppEnabled
+import tornaco.apps.shortx.core.proto.action.SetAppSuspend
+import tornaco.apps.shortx.core.proto.action.SetBTEnabled
+import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
+import tornaco.apps.shortx.core.proto.action.SetDarkModeEnabled
+import tornaco.apps.shortx.core.proto.action.SetDataEnabled
+import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
+import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
+import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
+import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
+import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
+import tornaco.apps.shortx.core.proto.action.ShellCommand
+import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
+import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowToast
+import tornaco.apps.shortx.core.proto.action.StartActivity
+import tornaco.apps.shortx.core.proto.action.StartAppProcess
+import tornaco.apps.shortx.core.proto.action.StopApp
+import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -252,23 +281,6 @@ object DevDAs {
             .setLastUpdateTime(System.currentTimeMillis())
             .addActions(
                 SetHotSpotEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
-                    .build().pack_()
-            ).build(),
-
-        DirectAction.newBuilder().setTitle("SetGPSEnabled-true")
-            .setId(nextId())
-            .setCreateTime(System.currentTimeMillis())
-            .setLastUpdateTime(System.currentTimeMillis())
-            .addActions(
-                SetGPSEnabled.newBuilder().setEnable(true).setId(UUID.randomUUID().toString())
-                    .build().pack_()
-            ).build(),
-        DirectAction.newBuilder().setTitle("SetGPSEnabled-false")
-            .setId(nextId())
-            .setCreateTime(System.currentTimeMillis())
-            .setLastUpdateTime(System.currentTimeMillis())
-            .addActions(
-                SetGPSEnabled.newBuilder().setEnable(false).setId(UUID.randomUUID().toString())
                     .build().pack_()
             ).build(),
 

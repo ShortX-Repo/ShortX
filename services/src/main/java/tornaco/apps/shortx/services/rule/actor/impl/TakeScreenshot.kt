@@ -1,15 +1,22 @@
-package tornaco.apps.shortx.services.rule.actor
+package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.content.Context
-import android.os.Handler
 import android.view.KeyEvent
+import com.google.protobuf.Message
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.ctrl.Controller
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.ctrl.Options
+import tornaco.apps.shortx.services.rule.actor.Actor
+import tornaco.apps.shortx.services.rule.actor.HandleParams
 
-class TakeScreenshot(private val context: Context, private val handler: Handler) {
-    suspend operator fun invoke() {
+object TakeScreenshot : Actor {
+    override fun actionsCanHandle(): Class<out Message> {
+        return tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java
+    }
+
+    override suspend fun handle(
+        params: HandleParams
+    ): Unit = with(params) {
         val device = Device(Options())
         val ctrl = Controller(device)
 

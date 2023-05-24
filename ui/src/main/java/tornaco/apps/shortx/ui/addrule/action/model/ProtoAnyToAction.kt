@@ -159,12 +159,12 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             }
         }
 
-        this is_ tornaco.apps.shortx.core.proto.action.SetGPSEnabled::class.java -> {
-            val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetGPSEnabled::class.java
+        this is_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java
             if (data.enable) {
-                Action.EnableGPS(id = data.id)
+                Action.EnableLocation(id = data.id)
             } else {
-                Action.DisableGPS(id = data.id)
+                Action.DisableLocation(id = data.id)
             }
         }
 

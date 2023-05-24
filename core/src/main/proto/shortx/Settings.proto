@@ -14,3 +14,13 @@ message DanmuUISettings {
   int32 textSizeSp = 4;
   int64 duration = 5;
 }
+
+message OverlayButtonSetting {
+  repeated google.protobuf.Any actions = 1;
+  string icon = 2;
+  int32 index = 3;
+  string label = 4;
+
+  string note = 99;
+  string id = 100;
+}

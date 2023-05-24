@@ -30,6 +30,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.mvel/mvel2
     implementation("org.mvel:mvel2:2.4.14.Final")
+
+    testImplementation("junit:junit:4.13.2")
 }
 
 protobuf {
