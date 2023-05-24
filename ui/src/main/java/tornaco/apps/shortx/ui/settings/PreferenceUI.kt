@@ -65,6 +65,7 @@ private fun PreferenceUi(preference: Preference) {
         }
 
         is Preference.Category -> {
+            StandardSpacer()
             CategoryUi(preference = preference)
         }
 
@@ -78,7 +79,6 @@ private fun PreferenceUi(preference: Preference) {
 private fun CategoryUi(preference: Preference.Category) {
     CategoryTitle(title = preference.title)
 }
-
 
 @Composable
 private fun ExpandablePreferenceUi(preference: Preference.ExpandablePreference) {

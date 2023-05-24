@@ -138,6 +138,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                     ) {
 
                         stickyHeader {
+                            StandardSpacer()
                             CategoryTitle(title = LocalI18N.current["ui.global.var.name"])
                         }
 
@@ -148,6 +149,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                         }
 
                         stickyHeader {
+                            StandardSpacer()
                             CategoryTitle(title = LocalI18N.current["ui.global.var.value"])
                             StandardSpacer()
                         }

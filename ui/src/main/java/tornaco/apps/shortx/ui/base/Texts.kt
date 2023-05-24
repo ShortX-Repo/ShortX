@@ -24,13 +24,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.theme.NoteTextColor
+
+
+@Composable
+fun fontFamilyProductSansRegular() = FontFamily(
+    Font(assetManager = LocalContext.current.assets, path = "fonts/google/ProductSansRegular.ttf")
+)
+
+@Composable
+fun fontFamilyProductSansBold() = FontFamily(
+    Font(assetManager = LocalContext.current.assets, path = "fonts/google/ProductSansBold.ttf")
+)
 
 @Composable
 fun LargeTitle(text: String) {
@@ -202,7 +216,6 @@ fun NoteRow(modifier: Modifier = Modifier, text: String) {
 fun CategoryTitle(title: String) {
     Box(
         modifier = Modifier
-            .padding(top = 24.dp)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {

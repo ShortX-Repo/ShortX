@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -46,9 +47,10 @@ fun ClickableBadge(text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun MD3Badge(text: String) {
+fun MD3Badge(text: String, fontFamily: FontFamily? = fontFamilyProductSansBold()) {
     MD3Badge(
         text = text,
+        fontFamily = fontFamily,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         textSize = 10.sp
     )
@@ -57,6 +59,7 @@ fun MD3Badge(text: String) {
 @Composable
 fun MD3Badge(
     text: String,
+    fontFamily: FontFamily? = null,
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     textSize: TextUnit = 10.sp,
     padding: Dp = 2.dp
@@ -67,6 +70,7 @@ fun MD3Badge(
         Text(
             modifier = Modifier.padding(padding),
             text = text,
+            fontFamily = fontFamily,
             fontSize = textSize
         )
     }

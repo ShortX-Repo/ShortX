@@ -3,12 +3,14 @@ package tornaco.apps.shortx.ui.settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -16,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
@@ -49,30 +52,41 @@ fun SettingsScreen(
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             Scaffold(
+                modifier = Modifier,
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.common.settings"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                back()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
+                        title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                AppIcon(
+                                    modifier = Modifier.size(32.dp),
+                                    pkg = Pkg(BuildProp.APP_PACKAGE_NAME)
+                                )
+                                TinySpacer()
+                                Text(text = LocalAppName.current)
+                                TinySpacer()
+                                BuildProp.APP_VERSION_NAME_SUFFIX.ifEmpty { null }?.let {
+                                    MD3Badge(text = it)
+                                }
                             }
-                        },
-                        actions = {},
+                        }
                     )
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues)
-                        .padding(horizontal = 16.dp)
                         .padding(bottom = 32.dp)
                         .animateContentSize()
+
                 ) {
+                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        MediumTitle(text = LocalI18N.current["ui.common.settings"])
+                    }
+
                     val i18N = LocalI18N.current
                     LaunchedEffect(vm) {
                         vm.backupPerformed.collectLatest {

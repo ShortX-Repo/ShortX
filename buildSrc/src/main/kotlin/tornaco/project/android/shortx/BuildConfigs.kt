@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import java.io.File
-import java.util.*
+import java.util.Properties
 
 private val props = Properties()
 
@@ -12,6 +12,7 @@ object Configs {
     const val sxPackageName = "tornaco.apps.shortx"
     var sxVersionCode: Int? = 0
     var sxVersionName: String? = null
+    val sxVersionNameSuffix: String get() = System.getProperty("versionNameSuffix", "")
     var sxIsDebugBuild: Boolean = false
 
     const val compileSdkVersion = 33

@@ -2,13 +2,14 @@
 
 package tornaco.apps.shortx.core
 
+import android.os.UserHandle
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.common.AppPkg
 
 val unKnownPkg = Pkg("unknown", 0)
 
-fun Pkg(pkgName: String, userId: Int): AppPkg =
+fun Pkg(pkgName: String, userId: Int = UserHandle.myUserId()): AppPkg =
     AppPkg.newBuilder().setPkgName(pkgName).setUserId(userId).build()
 
 fun App(pkg: AppPkg, label: String, category: AppCategory): App =
