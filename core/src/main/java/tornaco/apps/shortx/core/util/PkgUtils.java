@@ -13,6 +13,7 @@ import android.content.pm.PackageParser;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Process;
 import android.os.UserHandle;
@@ -333,7 +334,9 @@ public class PkgUtils {
         return applicationInfo.publicSourceDir;
     }
 
-    /** Directory where installed applications are stored */
+    /**
+     * Directory where installed applications are stored
+     */
     private static final File APP_INSTALL_DIR = new File(Environment.getDataDirectory(), "app");
 
     public static File getApkPath(String pkgName) {
@@ -389,5 +392,13 @@ public class PkgUtils {
             Log.e("parseApk got error: %s", Log.getStackTraceString(e));
         }
         return null;
+    }
+
+    public static void launchPkgSettings(Context context, String pkgName) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", pkgName, null);
+        intent.setData(uri);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }

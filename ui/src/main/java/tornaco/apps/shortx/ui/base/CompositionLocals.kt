@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import tornaco.apps.shortx.ui.theme.ShortXColorScheme
@@ -27,6 +28,10 @@ val LocalAppName = staticCompositionLocalOf<String> {
 
 val LocalShortXColorSchema = staticCompositionLocalOf<ShortXColorScheme> {
     noLocalProvidedFor("LocalShortXColorSchema")
+}
+
+val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
+    noLocalProvidedFor("LocalSnackbarHostState")
 }
 
 private fun noLocalProvidedFor(name: String): Nothing {

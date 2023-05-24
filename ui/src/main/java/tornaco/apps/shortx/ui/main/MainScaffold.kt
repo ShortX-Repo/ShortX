@@ -49,7 +49,10 @@ fun MainScaffold(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
     ) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        val snackbarHostState = remember { SnackbarHostState() }
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 if (state.isActivated) {
                     ShortXMediumTopAppBar(
@@ -182,7 +185,9 @@ fun MainScaffold(
                     }
                 }
 
-                content()
+                CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                    content()
+                }
 
                 if (isShowActiveDialog) {
                     ActiveDialog(onDismissRequest = {

@@ -30,8 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
@@ -519,6 +522,9 @@ private fun listItemOverflowMenu(
     onShare: (DirectActionUM) -> Unit,
 ): DropdownSelectorState {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbar = LocalSnackbarHostState.current
+    val i18N = LocalI18N.current
 
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
@@ -563,6 +569,22 @@ private fun listItemOverflowMenu(
             "shortcut" -> {
                 featureAccess.accessOrShowDialog(AppFeature.AppFeature_CreateShortcut) {
                     ActionShortcutActivity.addShortcut(context, da)
+
+                    scope.launch {
+                        val res = snackbar.showSnackbar(
+                            i18N["ui.common.create.shortcut.snackbar.message"],
+                            i18N["ui.common.settings"],
+                            true,
+                        )
+                        if (res == SnackbarResult.ActionPerformed) {
+                            kotlin.runCatching {
+                                PkgUtils.launchPkgSettings(
+                                    context,
+                                    BuildProp.APP_PACKAGE_NAME
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
