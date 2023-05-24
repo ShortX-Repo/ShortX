@@ -171,6 +171,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.executeDirectionActionById(id)
         }
 
+        override fun executeAction(action: ByteArrayWrapper) {
+            shortXContext.rule.executeActions(
+                "NO-ID",
+                "IShortX executeAction",
+                listOf(ProtoAny.parseFrom(action.byte))
+            )
+        }
+
         override fun executeMVEL(expression: String): String {
             return shortXContext.rule.executeMVEL(expression)
         }

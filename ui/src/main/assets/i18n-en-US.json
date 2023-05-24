@@ -82,6 +82,7 @@
   "ui.fact.weekday.saturday.long": "Sat",
   "ui.update.time": "Last update: {date}",
   "ui.common.note": "Note",
+  "ui.common.execute": "Execute",
   "ui.common.insert.above": "Insert above",
   "ui.common.paste.above": "Paste above",
   "ui.common.insert.below": "Insert below",

@@ -35,6 +35,8 @@ interface IShortX {
     List<ByteArrayWrapper> getAllDirectAction();
     int getDirectActionCount();
     void executeDirectionActionById(String id);
+    
+    void executeAction(in ByteArrayWrapper action);
     // Direct Actions end
 
 
@@ -93,5 +95,5 @@ interface IShortX {
     // Condition end
 
     // Verify binding.
-     void vb(in String code, in String deviceId, in ICallback cb);
+    void vb(in String code, in String deviceId, in ICallback cb);
 }

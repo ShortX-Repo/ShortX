@@ -138,7 +138,7 @@ private fun Actions(
                 InputTextSelector(state = noteDialogState)
 
                 Box(modifier = Modifier) {
-                    val longClickDropdownState = rememberDropdownSelectorState()
+                    val clickDropdownState = rememberDropdownSelectorState()
 
                     Column(
                         modifier = Modifier
@@ -146,7 +146,7 @@ private fun Actions(
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
                                 onClick = { onActionClick() },
-                                onLongClick = { longClickDropdownState.open() }
+                                onLongClick = { clickDropdownState.open() }
                             )
                     ) {
                         ListItem(
@@ -211,7 +211,7 @@ private fun Actions(
 
 
                     DropdownSelector(
-                        state = longClickDropdownState,
+                        state = clickDropdownState,
                         items = listOf(
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
@@ -236,8 +236,13 @@ private fun Actions(
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.note"]),
                                 data = action to "note",
-                            )
-                        ), onSelect = {
+                            ),
+                            DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.execute"]),
+                                data = action to "execute"
+                            ),
+
+                            ), onSelect = {
                             when (it.data.second) {
                                 "ia" -> {
                                     actionSelectorState.show(ActionSelectorDialogArgs.InsertAbove(it.data.first))
@@ -261,6 +266,10 @@ private fun Actions(
 
                                 "note" -> {
                                     noteDialogState.show(action.note)
+                                }
+
+                                "execute" -> {
+                                    handler.execute(action)
                                 }
                             }
                         })
@@ -295,6 +304,7 @@ class ActionHandler(
     val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
     val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
+    val execute: (action: Action) -> Unit = { },
 )
 
 sealed interface ActionSelectorDialogArgs {

@@ -86,6 +86,7 @@
   "ui.common.insert.below": "在下方插入",
   "ui.common.paste.below": "在下方粘贴",
   "ui.common.note": "备注",
+  "ui.common.execute": "执行",
   "ui.common.delete": "删除",
   "ui.common.edit": "编辑",
   "ui.common.copy": "复制",

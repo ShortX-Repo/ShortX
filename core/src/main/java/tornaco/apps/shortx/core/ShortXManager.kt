@@ -196,6 +196,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun executeAction(action: ProtoAny) {
+        invokeService(Unit) {
+            executeAction(ByteArrayWrapper(action.toByteArray()))
+        }
+    }
+
     fun executeMVEL(expression: String): String {
         return invokeService("") {
             executeMVEL(expression)

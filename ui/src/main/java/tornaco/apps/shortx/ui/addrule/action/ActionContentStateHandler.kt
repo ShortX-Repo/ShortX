@@ -47,6 +47,9 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         },
         setNote = { action, note ->
             this.setNote(action, note)
+        },
+        execute = {
+            this.executeAction(it)
         }
     )
 }
@@ -191,5 +194,10 @@ class ActionContentStateHandler(
                 actionWarningMessages = map
             )
         }
+    }
+
+    fun executeAction(action: Action) {
+        logger.d("executeAction: $action")
+        tornaco.apps.shortx.core.shortXManager.executeAction(action.toProtoAction().pack_())
     }
 }
