@@ -1,0 +1,1 @@
+./gradlew app:assemblePrcRelease  -DversionNameSuffix=Preview

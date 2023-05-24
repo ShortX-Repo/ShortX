@@ -67,7 +67,7 @@ fun SettingsScreen(
                                 Text(text = LocalAppName.current)
                                 TinySpacer()
                                 BuildProp.APP_VERSION_NAME_SUFFIX.ifEmpty { null }?.let {
-                                    MD3Badge(text = it)
+                                    OutlineBadge(text = it)
                                 }
                             }
                         }
