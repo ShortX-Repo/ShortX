@@ -3,7 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
+import tornaco.apps.shortx.ui.addrule.action.ActionColorPalette
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -167,4 +167,4 @@ fun colorForCondition(condition: KClass<out Condition>): Color {
     return ConditionColorPalettes[index]
 }
 
-val ConditionColorPalettes = ActionColorPalettes
+val ConditionColorPalettes = ActionColorPalette

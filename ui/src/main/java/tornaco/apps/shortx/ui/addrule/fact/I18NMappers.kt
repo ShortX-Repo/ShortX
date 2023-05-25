@@ -12,7 +12,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.action.ActionColorPalettes
+import tornaco.apps.shortx.ui.addrule.action.ActionColorPalette
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -352,4 +352,4 @@ fun colorForFact(fact: KClass<out Fact>): Color {
     return FactColorPalettes[index]
 }
 
-val FactColorPalettes = ActionColorPalettes
+val FactColorPalettes = ActionColorPalette
