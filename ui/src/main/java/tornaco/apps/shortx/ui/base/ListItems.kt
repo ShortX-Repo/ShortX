@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,14 +37,12 @@ fun ListItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
-            .apply {
-                if (onClick != null) {
-                    combinedClickable(
-                        onClick = onClick,
-                        onLongClick = onLongClick
-                    )
-                }
-            },
+            .thenIf(
+                Modifier.combinedClickable(
+                    onClick = { onClick?.invoke() },
+                    onLongClick = onLongClick
+                ), onClick != null
+            ),
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

@@ -5,8 +5,11 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.UserInfo
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 
 
@@ -36,7 +39,11 @@ fun rememberUserSelectorDialogState(
 @Composable
 fun UserSelectorDialog(state: UserDialogState) {
     if (state.isShowing) {
-        ShortXDialog(onDismissRequest = { state.dismiss() }) {
+        ShortXDialog(
+            title = {
+                DialogTitle(LocalI18N.current["ui.common.user.id"])
+            },
+            onDismissRequest = { state.dismiss() }) {
             UserSelector(state)
         }
     }
@@ -47,10 +54,39 @@ private fun UserSelector(dialogState: UserDialogState) {
     val vm = hiltViewModel<UserSelectorViewModel>()
     LaunchedEffect(vm) { vm.loadUsers() }
     val state by vm.state.collectAsState()
+    UserSelector(state, dialogState)
+}
 
-    state.allUsers.forEach {
-        ListItem(titleLines = listOf(it.name, it.userId.toString()), onClick = {
-            dialogState.onSelected(it)
-        })
+@Composable
+private fun UserSelector(
+    state: UserState,
+    dialogState: UserDialogState,
+) {
+    Column(modifier = Modifier) {
+        state.allUsers.forEach {
+            ListItem(
+                titleLines = listOf(it.name, it.userId.toString()),
+                icon = {
+                    RemixIcon(Remix.UserAndFaces.user_fill)
+                },
+                onClick = {
+                    dialogState.onSelected(it)
+                    dialogState.dismiss()
+                })
+        }
     }
+}
+
+@Composable
+@Preview
+fun UserSelectorPreview() {
+    UserSelector(
+        UserState(
+            allUsers = listOf(
+                UserInfo.newBuilder().setUserId(0).setIsMain(true).setName("TORNACO").build(),
+                UserInfo.newBuilder().setUserId(10).setIsMain(false).setName("Nick").build(),
+            )
+        ),
+        UserDialogState({})
+    )
 }
