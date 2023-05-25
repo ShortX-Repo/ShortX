@@ -7,8 +7,10 @@ import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Parcel
 import android.os.ServiceManager
+import android.os.UserHandle
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -197,6 +199,20 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     },
                     onError = {})
             }
+        }
+
+        override fun getAllUsers(): List<ByteArrayWrapper> {
+            return runClearCallingIdentity {
+                shortXContext.user.getUsers().map {
+                    ByteArrayWrapper(
+                        UserInfo.newBuilder()
+                            .setUserId(it.id)
+                            .setName(it.name)
+                            .setIsMain(it.id == UserHandle.USER_SYSTEM)
+                            .build().toByteArray()
+                    )
+                }
+            } ?: emptyList()
         }
 
         override fun addPkgSet(set: ByteArrayWrapper) {

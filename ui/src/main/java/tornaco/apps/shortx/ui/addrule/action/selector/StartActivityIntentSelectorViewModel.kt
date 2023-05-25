@@ -5,11 +5,12 @@ import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import tornaco.apps.shortx.core.os.isMainUser
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.user.myUserId
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -24,6 +25,7 @@ data class StartActivityIntentSelectorState(
     val className: String? = null,
     val data: String? = null,
     val userId: Int = myUserId,
+    val userLabel: String = "N/A",
     val extras: List<AndroidIntentExtra> = emptyList(),
     val app: App? = null
 )
@@ -90,10 +92,15 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
                 userId = userId,
                 app = shortXManager.pkgToApp(
                     AppPkg.newBuilder()
-                        .setUserId(state.value.userId)
+                        .setUserId(userId)
                         .setPkgName(pkgName)
                         .build()
-                )
+                ),
+                userLabel = if (userId.isMainUser()) {
+                    i18N["ui.common.user.main"]
+                } else {
+                    shortXManager.getAllUsers().firstOrNull { it.userId == userId }?.name ?: "N/A"
+                }
             )
         }
     }

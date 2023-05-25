@@ -1,11 +1,8 @@
 package tornaco.apps.shortx.services.app
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
-import android.content.pm.UserInfo
 import android.os.UserHandle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +19,6 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
-import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.*
@@ -50,7 +46,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     override fun systemReady() {
         super.systemReady()
         systemServiceScope.launchSafety {
-            getUsers().forEach {
+            shortXContext.user.getUsers().forEach {
                 val pool = initPoolForUser(it.id)
                 pkgPools.add(pool)
             }
@@ -66,6 +62,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                             pkgPools.add(pool)
                         }
                     }
+
                     is UserEvent.Removed -> {
                         logger.w("User removed: ${event.userId}, remove pool for it.")
                         pkgPools.removeIf { it.userId == event.userId }
@@ -159,19 +156,6 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun onPackageChanged(listener: (AppPkg) -> Unit) {
         onPackageChangedListeners.add(listener)
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getUsers(): List<UserInfo> {
-        val hasManageUserPerm =
-            context.checkCallingOrSelfPermission(Manifest.permission.MANAGE_USERS) == PackageManager.PERMISSION_GRANTED
-        logger.w("getUsers, hasManageUserPerm? $hasManageUserPerm")
-        val um = context.userManager
-        return if (hasManageUserPerm) {
-            um.getUsers(true) ?: emptyList()
-        } else {
-            listOf(um.getUserInfo(UserHandle.USER_SYSTEM))
-        }
     }
 
     @SuppressLint("MissingPermission")

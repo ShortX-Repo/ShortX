@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
+import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -405,6 +406,12 @@ class ShortXManager(private val service: IShortX) {
                     callback(CommonApiRes.parseFrom(data.byte))
                 }
             })
+        }
+    }
+
+    fun getAllUsers(): List<UserInfo> {
+        return invokeService(emptyList()) {
+            allUsers.mapNotNull { UserInfo.parseFrom(it.byte) }
         }
     }
 

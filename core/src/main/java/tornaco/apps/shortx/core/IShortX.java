@@ -211,6 +211,12 @@ public interface IShortX extends android.os.IInterface
     @Override public void vb(java.lang.String code, java.lang.String deviceId, tornaco.apps.shortx.core.ICallback cb) throws android.os.RemoteException
     {
     }
+    // User
+
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -843,6 +849,14 @@ public interface IShortX extends android.os.IInterface
           _arg2 = tornaco.apps.shortx.core.ICallback.Stub.asInterface(data.readStrongBinder());
           this.vb(_arg0, _arg1, _arg2);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getAllUsers:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllUsers();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
           return true;
         }
         default:
@@ -2014,6 +2028,28 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // User
+
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllUsers, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllUsers();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -2066,6 +2102,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 47);
     static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 48);
     static final int TRANSACTION_vb = (android.os.IBinder.FIRST_CALL_TRANSACTION + 49);
+    static final int TRANSACTION_getAllUsers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 50);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -2160,4 +2197,7 @@ public interface IShortX extends android.os.IInterface
   // Verify binding.
 
   public void vb(java.lang.String code, java.lang.String deviceId, tornaco.apps.shortx.core.ICallback cb) throws android.os.RemoteException;
+  // User
+
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException;
 }

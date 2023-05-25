@@ -96,4 +96,7 @@ interface IShortX {
 
     // Verify binding.
     void vb(in String code, in String deviceId, in ICallback cb);
+
+    // User
+    List<ByteArrayWrapper> getAllUsers();
 }

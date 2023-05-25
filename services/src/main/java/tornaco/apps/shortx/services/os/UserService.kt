@@ -1,13 +1,17 @@
 package tornaco.apps.shortx.services.os
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
@@ -55,6 +59,19 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private fun onUserAdded(userId: Int) {
         systemServiceScope.launchSafety {
             _userEvent.emit(UserEvent.Added(userId))
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getUsers(): List<android.content.pm.UserInfo> {
+        val hasManageUserPerm =
+            context.checkCallingOrSelfPermission(Manifest.permission.MANAGE_USERS) == PackageManager.PERMISSION_GRANTED
+        logger.w("getUsers, hasManageUserPerm? $hasManageUserPerm")
+        val um = context.userManager
+        return if (hasManageUserPerm) {
+            um.getUsers(true) ?: emptyList()
+        } else {
+            listOf(um.getUserInfo(UserHandle.USER_SYSTEM))
         }
     }
 

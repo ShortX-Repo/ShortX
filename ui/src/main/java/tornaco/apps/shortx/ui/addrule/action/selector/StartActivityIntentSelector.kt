@@ -1,5 +1,4 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class
 )
 
@@ -49,7 +48,6 @@ import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.user.myUserId
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
@@ -59,7 +57,6 @@ import tornaco.apps.shortx.ui.addrule.fact.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.I18N
-import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -160,7 +157,6 @@ private fun ShowDialogSelector(dialogState: StartActivityIntentDialogState) {
 
 @Composable
 private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelectorViewModel) {
-    val context = LocalContext.current
     val state by vm.state.collectAsState()
     Column(
         modifier = Modifier
@@ -170,7 +166,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.action"])
+        SmallTitle(text = LocalI18N.current["ui.common.action"])
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = TextFieldDefaults.outlinedShape,
@@ -188,7 +184,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             vm.updateUserId(it.pkg.userId)
         }
         SingleAppSelectorDialog(state = singleAppSelectorState)
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.pkg.name"])
+        SmallTitle(text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"])
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -226,7 +222,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             }
         )
         AppComponentSelectorDialog(componentSelectorState)
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.class.name"])
+        SmallTitle(text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"])
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -260,20 +256,22 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.user.id"])
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
-            value = "${state.userId}",
-            onValueChange = {
-                vm.updateUserId(kotlin.runCatching { it.toInt() }.getOrElse { myUserId })
-            })
-        StandardSpacer()
+        SmallTitle(text = LocalI18N.current["ui.common.user.id"])
+        val userSelectorState = rememberUserSelectorDialogState(onSelected = {
+            vm.updateUserId(it.userId)
+        })
+        UserSelectorDialog(state = userSelectorState)
+        FilledTonalButton(onClick = {
+            userSelectorState.show()
+        }) {
+            Row(verticalAlignment = CenterVertically) {
+                Text(text = state.userLabel)
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
 
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.data"])
+        SmallTitle(text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"])
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = TextFieldDefaults.outlinedShape,
@@ -286,7 +284,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             })
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.action.start.activity.intent.extras"])
+        SmallTitle(text = LocalI18N.current["ui.common.extras"])
         state.extras.forEachIndexed { index, extra ->
             Row(verticalAlignment = CenterVertically, horizontalArrangement = SpaceBetween) {
                 // Key
@@ -296,7 +294,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    placeholder = { Text(text = LocalI18N.current["ui.action.start.activity.intent.extras.k"]) },
+                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.k"]) },
                     value = extra.key,
                     onValueChange = {
                         vm.updateExtraKey(index, it)
@@ -310,7 +308,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
-                    placeholder = { Text(text = LocalI18N.current["ui.action.start.activity.intent.extras.v"]) },
+                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.v"]) },
                     value = extra.value,
                     onValueChange = {
                         vm.updateExtraValue(index, it)
@@ -339,8 +337,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                     }) {
                         Row(verticalAlignment = CenterVertically) {
                             Text(text = extra.type.name)
-                            LargeSpacer()
-                            LargeSpacer()
+                            StandardSpacer()
                             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
                         }
                     }
