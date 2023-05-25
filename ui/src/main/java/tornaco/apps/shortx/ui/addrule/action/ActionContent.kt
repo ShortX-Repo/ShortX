@@ -205,34 +205,82 @@ private fun Actions(
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
                                 data = action to "ia",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Editor.insert_row_top,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
                                 data = action to "ib",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Editor.insert_row_bottom,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
                                 data = action to "pa",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Editor.insert_row_top,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
                                 data = action to "pb",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Editor.insert_row_bottom,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.copy"]),
                                 data = action to "cp",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Document.file_copy_fill,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.note"]),
                                 data = action to "note",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Document.sticky_note_fill,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.sort"]),
-                                data = action to "sort"
+                                data = action to "sort",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Editor.sort_asc,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
                             DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.execute"]),
-                                data = action to "execute"
+                                data = action to "execute",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.Media.play_line,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
                             ),
 
                             ), onSelect = {
