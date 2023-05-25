@@ -136,7 +136,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
                     Column(verticalArrangement = Arrangement.Center) {
                         SmallTitle(LocalI18N.current["ui.action.show.overlay.text"])
-                        OutlinedTextField(value = button.label, onValueChange = {
+                        ShortXTextField(value = button.label, onValueChange = {
                             vm.updateLabel(index, it)
                         })
                     }
@@ -170,7 +170,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(LocalI18N.current["ui.action.show.overlay.tag"])
             TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
-            OutlinedTextField(value = state.tag, onValueChange = {
+            ShortXTextField(value = state.tag, onValueChange = {
                 vm.updateTag(it)
             })
         }

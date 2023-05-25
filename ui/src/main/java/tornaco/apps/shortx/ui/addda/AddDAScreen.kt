@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,13 +114,13 @@ private fun TitleAndDescription(
     state: AddDirectActionState,
     vm: AddDirectActionViewModel,
 ) {
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
         Text(text = LocalI18N.current["ui.da.title"])
     }, value = state.title, onValueChange = { title ->
         vm.setTitle(title)
     })
     Spacer(modifier = Modifier.size(16.dp))
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
         Text(text = LocalI18N.current["ui.da.description"])
     }, value = state.description, onValueChange = { description ->
         vm.setDescription(description)

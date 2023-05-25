@@ -110,7 +110,7 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
     ) {
 
         SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.varName,
             onValueChange = {
@@ -127,7 +127,7 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
         StandardSpacer()
 
         SmallTitle(text = LocalI18N.current["ui.global.var.value"])
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.valueAsString,
             onValueChange = {

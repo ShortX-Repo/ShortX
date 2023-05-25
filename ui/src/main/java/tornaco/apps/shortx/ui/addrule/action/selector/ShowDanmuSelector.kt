@@ -108,11 +108,9 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+        ShortXTextField(modifier = Modifier.fillMaxWidth(),
+            
+            
             label = {
                 Text(text = LocalI18N.current["ui.action.danmu.text"])
             },
@@ -123,11 +121,9 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
         StandardSpacer()
         StandardSpacer()
 
-        OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+        ShortXTextField(modifier = Modifier.fillMaxWidth(),
+            
+            
             label = {
                 Text(text = LocalI18N.current["ui.action.danmu.icon"])
             },

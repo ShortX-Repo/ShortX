@@ -64,7 +64,7 @@ fun InputTextSelector(state: TextSelectorState) {
                     leadingIcon = {
                         RemixIcon(remixName = Remix.Editor.text)
                     },
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

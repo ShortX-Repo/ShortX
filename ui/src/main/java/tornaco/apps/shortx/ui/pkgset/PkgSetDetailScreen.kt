@@ -116,7 +116,7 @@ private fun PkgSetContent(
             stickyHeader {
                 Column {
                     SmallTitle(text = LocalI18N.current["ui.pkg.set.add.input.label"])
-                    OutlinedTextField(
+                    ShortXTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp, top = 16.dp),

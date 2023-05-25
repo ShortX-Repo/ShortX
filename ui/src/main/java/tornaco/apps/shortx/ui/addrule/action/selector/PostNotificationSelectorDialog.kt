@@ -113,7 +113,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(LocalI18N.current["ui.action.post.notification.tag"])
             TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
-            OutlinedTextField(value = state.data.tag, onValueChange = {
+            ShortXTextField(value = state.data.tag, onValueChange = {
                 vm.updateTag(it)
             })
         }
@@ -129,7 +129,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(LocalI18N.current["ui.action.post.notification.title"])
-            OutlinedTextField(value = state.data.title, onValueChange = {
+            ShortXTextField(value = state.data.title, onValueChange = {
                 vm.updateTitle(it)
             })
         }
@@ -137,7 +137,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(LocalI18N.current["ui.action.post.notification.message"])
-            OutlinedTextField(value = state.data.message, onValueChange = {
+            ShortXTextField(value = state.data.message, onValueChange = {
                 vm.updateMessage(it)
             })
         }

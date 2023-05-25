@@ -154,8 +154,8 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     StandardSpacer()
 
                     SmallTitle(i18N["ui.action.map.nav.latitude"])
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                        shape = TextFieldDefaults.outlinedShape,
+                    ShortXTextField(modifier = Modifier.fillMaxWidth(),
+                        
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = Color.Transparent
                         ),
@@ -166,8 +166,8 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     StandardSpacer()
 
                     SmallTitle(i18N["ui.action.map.nav.longitude"])
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                        shape = TextFieldDefaults.outlinedShape,
+                    ShortXTextField(modifier = Modifier.fillMaxWidth(),
+                        
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = Color.Transparent
                         ),
@@ -181,8 +181,8 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     AnimatedVisibility(visible = mapApp == MapApp.Gaode) {
                         Column {
                             SmallTitle(i18N["ui.action.map.poi"])
-                            OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                                shape = TextFieldDefaults.outlinedShape,
+                            ShortXTextField(modifier = Modifier.fillMaxWidth(),
+                                
                                 colors = TextFieldDefaults.textFieldColors(
                                     containerColor = Color.Transparent
                                 ),

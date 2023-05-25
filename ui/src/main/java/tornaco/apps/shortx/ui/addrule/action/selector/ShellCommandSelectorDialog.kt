@@ -58,7 +58,7 @@ fun ShellCommandSelector(state: ShellCommandSelectorState) {
                     leadingIcon = {
                         RemixIcon(Remix.Development.terminal_line)
                     },
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

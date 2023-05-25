@@ -6,7 +6,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,6 +57,7 @@ import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -167,12 +165,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             .verticalScroll(rememberScrollState())
     ) {
         SmallTitle(text = LocalI18N.current["ui.common.action"])
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+            
+
             value = state.action,
             onValueChange = {
                 vm.updateAction(it)
@@ -185,27 +181,19 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
         SingleAppSelectorDialog(state = singleAppSelectorState)
         SmallTitle(text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"])
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.weight(1f),
-                shape = TextFieldDefaults.outlinedShape,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent
-                ),
-                value = state.pkgName ?: "",
-                onValueChange = {
-                    vm.updatePkgName(it)
-                })
-
-            IconButton(onClick = {
-                singleAppSelectorState.show()
-            }) {
-                RemixIcon(remixName = Remix.System.search_2_line)
-            }
-        }
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.pkgName ?: "",
+            trailingIcon = {
+                IconButton(onClick = {
+                    singleAppSelectorState.show()
+                }) {
+                    RemixIcon(remixName = Remix.System.search_2_line)
+                }
+            },
+            onValueChange = {
+                vm.updatePkgName(it)
+            })
         StandardSpacer()
 
 
@@ -223,37 +211,31 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         )
         AppComponentSelectorDialog(componentSelectorState)
         SmallTitle(text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"])
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.weight(1f),
-                shape = TextFieldDefaults.outlinedShape,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent
-                ),
-                value = state.className ?: "",
-                onValueChange = {
-                    vm.updateClassName(it)
-                })
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            
 
-            AnimatedVisibility(visible = state.pkgName != null && state.app != null) {
-                IconButton(onClick = {
-                    val currentPkgName = state.pkgName
-                    currentPkgName?.let {
-                        componentSelectorState.show(
-                            AppPkg.newBuilder()
-                                .setPkgName(currentPkgName)
-                                .setUserId(state.userId)
-                                .build()
-                        )
+            value = state.className ?: "",
+            trailingIcon = {
+                AnimatedVisibility(visible = state.pkgName != null && state.app != null) {
+                    IconButton(onClick = {
+                        val currentPkgName = state.pkgName
+                        currentPkgName?.let {
+                            componentSelectorState.show(
+                                AppPkg.newBuilder()
+                                    .setPkgName(currentPkgName)
+                                    .setUserId(state.userId)
+                                    .build()
+                            )
+                        }
+                    }) {
+                        RemixIcon(remixName = Remix.System.search_2_line)
                     }
-                }) {
-                    RemixIcon(remixName = Remix.System.search_2_line)
                 }
-            }
-        }
+            },
+            onValueChange = {
+                vm.updateClassName(it)
+            })
         StandardSpacer()
 
         SmallTitle(text = LocalI18N.current["ui.common.user.id"])
@@ -272,12 +254,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
 
         SmallTitle(text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"])
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+            
+
             value = state.data ?: "",
             onValueChange = {
                 vm.updateData(it)
@@ -290,7 +270,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Key
                 TextField(
                     modifier = Modifier.weight(1f),
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
@@ -304,7 +284,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Value
                 TextField(
                     modifier = Modifier.weight(1f),
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

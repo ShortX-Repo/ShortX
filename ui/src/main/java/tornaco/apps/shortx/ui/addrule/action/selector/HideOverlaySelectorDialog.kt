@@ -96,7 +96,7 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
                         .padding(16.dp)
                 ) {
                     DialogMessage(text = "Tags to hide")
-                    OutlinedTextField(value = dialogState.tags, onValueChange = {
+                    ShortXTextField(value = dialogState.tags, onValueChange = {
                         dialogState.tags = it
                     })
                 }

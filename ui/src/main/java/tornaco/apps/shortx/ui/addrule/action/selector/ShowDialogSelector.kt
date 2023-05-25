@@ -124,12 +124,10 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+            
+            
             label = {
                 Text(text = LocalI18N.current["ui.action.dialog.title"])
             },
@@ -140,12 +138,10 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
         StandardSpacer()
         StandardSpacer()
 
-        OutlinedTextField(
+        ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            shape = TextFieldDefaults.outlinedShape,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
+            
+            
             label = {
                 Text(text = LocalI18N.current["ui.action.dialog.message"])
             },
@@ -249,9 +245,9 @@ private fun ButtonSettings(
     actionHandler: ActionHandler
 ) {
     MediumTitle(headerTitle)
-    OutlinedTextField(
+    ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
-        shape = TextFieldDefaults.outlinedShape,
+        
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.Transparent
         ),

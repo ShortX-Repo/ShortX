@@ -188,7 +188,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                     }
 
                     SmallTitle(text = LocalI18N.current["ui.action.select.global.var.payload"])
-                    OutlinedTextField(value = payloadValue, onValueChange = {
+                    ShortXTextField(value = payloadValue, onValueChange = {
                         dialogState.inputValue(it)
                     })
 

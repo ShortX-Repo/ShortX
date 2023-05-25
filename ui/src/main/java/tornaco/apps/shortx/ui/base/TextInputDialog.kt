@@ -76,7 +76,7 @@ fun TextInputDialog(state: TextInputState) {
                 }
 
                 TextField(
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

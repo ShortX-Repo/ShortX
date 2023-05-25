@@ -119,8 +119,8 @@ private fun FindAndClickViewByTextSelector(
                         .padding(16.dp),
                 ) {
                     SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.text"])
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                        shape = TextFieldDefaults.outlinedShape,
+                    ShortXTextField(modifier = Modifier.fillMaxWidth(),
+                        
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = androidx.compose.ui.graphics.Color.Transparent
                         ),
@@ -132,9 +132,9 @@ private fun FindAndClickViewByTextSelector(
 
                     SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.timeout"])
                     TipBody(LocalI18N.current["ui.action.find.click.view.by.text.timeout.description"])
-                    OutlinedTextField(
+                    ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = TextFieldDefaults.outlinedShape,
+                        
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = androidx.compose.ui.graphics.Color.Transparent
                         ),

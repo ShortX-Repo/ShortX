@@ -78,7 +78,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    shape = TextFieldDefaults.outlinedShape,
+                    
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

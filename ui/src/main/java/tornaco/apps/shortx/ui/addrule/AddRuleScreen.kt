@@ -208,13 +208,13 @@ private fun TitleAndDescription(
     state: AddRuleState,
     vm: AddRuleViewModel,
 ) {
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
         Text(text = LocalI18N.current["ui.rule.title"])
     }, value = state.title, onValueChange = { title ->
         vm.setTitle(title)
     })
     Spacer(modifier = Modifier.size(16.dp))
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(), label = {
+    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
         Text(text = LocalI18N.current["ui.rule.description"])
     }, value = state.description, onValueChange = { description ->
         vm.setDescription(description)
