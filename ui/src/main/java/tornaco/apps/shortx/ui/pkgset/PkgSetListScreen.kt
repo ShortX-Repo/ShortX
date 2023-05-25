@@ -1,12 +1,12 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
 package tornaco.apps.shortx.ui.pkgset
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -102,21 +102,26 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                 shape = ShortXCardRoundedCornerShape,
                                 elevation = 0.dp
                             ) {
-                                PkgSetListItem(modifier = Modifier,
-                                    title = it.label,
-                                    text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
-                                    overflow = {
-                                        if (!it.isPrebuilt) {
-                                            ListItemOverflowMenu(
-                                                pkgSet = it,
-                                                onDelete = {
-                                                    vm.delete(it.label)
-                                                },
-                                            )
-                                        }
-                                    }, onClick = {
-                                        goToDetail(it.label)
-                                    })
+                                Box {
+                                    val popMenuState = listItemOverflowMenu(
+                                        pkgSet = it,
+                                        onDelete = {
+                                            vm.delete(it.label)
+                                        },
+                                    )
+
+                                    PkgSetListItem(modifier = Modifier,
+                                        title = it.label,
+                                        text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                        onClick = {
+                                            goToDetail(it.label)
+                                        },
+                                        onLongClick = {
+                                            if (!it.isPrebuilt) {
+                                                popMenuState.open()
+                                            }
+                                        })
+                                }
                             }
                         }
                     }
@@ -132,23 +137,21 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 @Composable
 private fun PkgSetListItem(
     modifier: Modifier,
-    title: String? = null,
-    text1: String? = null,
-    text2: String? = null,
-    overflow: @Composable ColumnScope.() -> Unit = {},
+    title: String,
+    text1: String,
+    onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .clickable {
-            onClick()
-        }) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
+            .padding(12.dp)
+    ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(size = 32.dp, padding = 0.dp) {
@@ -157,68 +160,44 @@ private fun PkgSetListItem(
                     remixName = Remix.Document.folder_4_line
                 )
             }
-
-            Column(horizontalAlignment = Alignment.End) {
-                overflow()
-            }
+            MediumSpacer()
+            Text(
+                text = title, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp,
+                )
+            )
         }
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            title?.let {
-                Text(
-                    text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp,
-                    )
-                )
-            }
-            TinySpacer()
-            text1?.let {
-                Text(
-                    text = text1,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                    maxLines = 3
-                )
-            }
-            TinySpacer()
-            TinySpacer()
-            TinySpacer()
-            text2?.let {
-                Text(
-                    text = text2,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                    maxLines = 3
-                )
-            }
-        }
+        MediumSpacer()
+
+        Text(
+            text = text1,
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+            maxLines = 3
+        )
     }
 }
 
 @Composable
-private fun ListItemOverflowMenu(
+private fun listItemOverflowMenu(
     pkgSet: PkgSet, onDelete: (PkgSet) -> Unit
-) {
-    Box {
-        val menuState = rememberDropdownSelectorState()
-        IconButton(modifier = Modifier, onClick = {
-            menuState.open()
-        }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_fill)
-        }
+): DropdownSelectorState {
+    val menuState = rememberDropdownSelectorState()
 
-        DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-                data = "delete",
-                icon = {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
-                }),
-        ), onSelect = {
-            when (it.data) {
-                "delete" -> {
-                    onDelete(pkgSet)
-                }
-
-                else -> {}
+    DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+            data = "delete",
+            icon = {
+                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+            }),
+    ), onSelect = {
+        when (it.data) {
+            "delete" -> {
+                onDelete(pkgSet)
             }
-        })
-    }
+
+            else -> {}
+        }
+    })
+    return menuState
 }

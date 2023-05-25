@@ -105,12 +105,15 @@ private fun ActionSortDialogContent(state: ActionSortState) {
                 ) {
                     items(data.value, { it }) { item ->
                         ReorderableItem(sortState, key = item) { isDragging ->
-                            val scale = animateFloatAsState(if (isDragging) 1.06f else 1f)
+                            val scale = animateFloatAsState(
+                                if (isDragging) 1.06f else 1f,
+                                label = "SacleAnim"
+                            )
                             ListItem(
                                 modifier = Modifier.scale(scale.value),
                                 titleLines = labelLinesForAction(action = item),
                                 icon = {
-                                    RemixIcon(remixName = imageVectorForAction(action = item::class))
+                                    ActionIcon(item)
                                 }
                             )
                         }

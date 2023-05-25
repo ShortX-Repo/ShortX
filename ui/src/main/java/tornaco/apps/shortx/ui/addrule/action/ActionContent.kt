@@ -125,8 +125,6 @@ private fun Actions(
             })
         ActionSelectorDialog(state = actionSelectorState)
 
-
-
         Column(modifier = Modifier.fillMaxWidth()) {
             actions.forEachIndexed { _, action ->
                 val onActionClick = actionClickHandler(action = action, handler = handler)
@@ -153,16 +151,7 @@ private fun Actions(
                             modifier = Modifier,
                             titleLines = labelLinesForAction(action = action),
                             icon = {
-                                ColoredIcon(
-                                    size = 36.dp,
-                                    color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
-                                ) {
-                                    RemixIcon(
-                                        modifier = Modifier.size(16.dp),
-                                        remixName = imageVectorForAction(action = action::class),
-                                        tint = colorForAction(action::class)
-                                    )
-                                }
+                                ActionIcon(action)
                             },
                             action1 = {
                                 if (action.contextData.isNotEmpty()) {
@@ -238,6 +227,10 @@ private fun Actions(
                                 data = action to "note",
                             ),
                             DropdownItem(
+                                labelLines = listOf(LocalI18N.current["ui.common.sort"]),
+                                data = action to "sort"
+                            ),
+                            DropdownItem(
                                 labelLines = listOf(LocalI18N.current["ui.common.execute"]),
                                 data = action to "execute"
                             ),
@@ -268,6 +261,10 @@ private fun Actions(
                                     noteDialogState.show(action.note)
                                 }
 
+                                "sort" -> {
+                                    actionSortDialogState.show()
+                                }
+
                                 "execute" -> {
                                     handler.execute(action)
                                 }
@@ -290,6 +287,20 @@ private fun Actions(
                 ActionSortDialog(state = actionSortDialogState)
             }
         }
+    }
+}
+
+@Composable
+fun ActionIcon(action: Action) {
+    ColoredIcon(
+        size = 36.dp,
+        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
+    ) {
+        RemixIcon(
+            modifier = Modifier.size(16.dp),
+            remixName = imageVectorForAction(action = action::class),
+            tint = colorForAction(action::class)
+        )
     }
 }
 

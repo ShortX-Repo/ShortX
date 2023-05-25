@@ -1,19 +1,18 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
 package tornaco.apps.shortx.ui.gvar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
@@ -93,22 +92,27 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                             shape = ShortXCardRoundedCornerShape,
                             elevation = 0.dp
                         ) {
-                            GlobalVarListItem(modifier = Modifier,
-                                name = it.name,
-                                value = it.valueString(),
-                                type = it.type.toType()?.label() ?: "?",
-                                overflow = {
-                                    ListItemOverflowMenu(
-                                        pkgSet = it,
-                                        onDelete = {
-                                            vm.delete(it.name)
-                                        },
-                                        onEdit = { goToDetail(it.name)}
-                                    )
-                                },
-                                onClick = {
-                                    goToDetail(it.name)
-                                })
+                            Box {
+                                val menuState = listItemOverflowMenu(
+                                    pkgSet = it,
+                                    onDelete = {
+                                        vm.delete(it.name)
+                                    },
+                                    onEdit = { goToDetail(it.name) }
+                                )
+
+                                GlobalVarListItem(modifier = Modifier,
+                                    name = it.name,
+                                    value = it.valueString(),
+                                    type = it.type.toType()?.label() ?: "?",
+                                    onClick = {
+                                        goToDetail(it.name)
+                                    },
+                                    onLongClick = {
+                                        menuState.open()
+                                    })
+                            }
+
                         }
                     }
                 }
@@ -121,80 +125,68 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 @Composable
 private fun GlobalVarListItem(
     modifier: Modifier,
-    name: String? = null,
+    name: String,
     value: String? = null,
     type: String,
-    overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .clip(ShortXCardRoundedCornerShape)
-        .clickable {
-            onClick()
-        }) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .padding(12.dp)
+    ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            MD3Badge(text = type)
-
-            Column(horizontalAlignment = Alignment.End) {
-                overflow()
-            }
-        }
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            name?.let {
-                Text(
-                    text = name, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp,
-                    )
+            Text(
+                text = name, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp,
                 )
-            }
-            MediumSpacer()
-            Text(value ?: "", fontSize = 12.sp, maxLines = 3)
-            StandardSpacer()
+            )
+            OutlineBadge(text = type)
         }
+
+        Text(value ?: "", fontSize = 12.sp, maxLines = 3)
     }
 }
 
 @Composable
-private fun ListItemOverflowMenu(
+private fun listItemOverflowMenu(
     pkgSet: GlobalVar, onDelete: (GlobalVar) -> Unit, onEdit: (GlobalVar) -> Unit
-) {
-    Box {
-        val menuState = rememberDropdownSelectorState()
-        IconButton(modifier = Modifier, onClick = {
-            menuState.open()
-        }) {
-            RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.more_2_fill)
-        }
+): DropdownSelectorState {
+    val menuState = rememberDropdownSelectorState()
 
-        DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-                data = "delete",
-                icon = {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
-                }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-                data = "edit",
-                icon = {
-                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
-                })
-        ), onSelect = {
-            when (it.data) {
-                "delete" -> {
-                    onDelete(pkgSet)
-                }
-                "edit" -> {
-                    onEdit(pkgSet)
-                }
-                else -> {}
+
+    DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+            data = "delete",
+            icon = {
+                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+            data = "edit",
+            icon = {
+                Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+            })
+    ), onSelect = {
+        when (it.data) {
+            "delete" -> {
+                onDelete(pkgSet)
             }
-        })
-    }
+
+            "edit" -> {
+                onEdit(pkgSet)
+            }
+
+            else -> {}
+        }
+    })
+
+    return menuState
 }

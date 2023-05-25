@@ -17,12 +17,13 @@
 
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,7 +35,6 @@ import tornaco.apps.shortx.ui.util.GlideApp
 
 @Composable
 fun AppIcon(modifier: Modifier, pkg: AppPkg) {
-    val context = LocalContext.current
     GlideImage(
         modifier = modifier,
         imageModel = pkg,
@@ -42,11 +42,14 @@ fun AppIcon(modifier: Modifier, pkg: AppPkg) {
         contentScale = ContentScale.Crop,
 
         loading = {
-            Box(modifier = Modifier.matchParentSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clip(
+                        CircleShape
+                    )
+            ) {}
         },
         // shows an error text if fail to load an image.
         failure = {
