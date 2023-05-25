@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +40,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
+import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 const val EXECUTE_ANIM_DURATION = 600
@@ -314,7 +316,6 @@ private fun DirectActionItem(
             icon = da.icon,
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
-            overflow = {},
             onClick = onClick,
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
             stopAllJobs = {
@@ -404,13 +405,12 @@ private fun DAListItemCompat(
 @Composable
 private fun DAListItem(
     modifier: Modifier,
-    title: String? = null,
-    text1: String? = null,
-    text2: String? = null,
+    title: String,
+    text1: String,
+    text2: String,
     runningInsCount: Int = 0,
     icon: String,
     iconColor: Color,
-    overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
@@ -420,12 +420,12 @@ private fun DAListItem(
         .clip(ShortXCardRoundedCornerShape)
         .combinedClickable(onLongClick = onLongClick) {
             onClick()
-        }) {
+        }
+        .padding(horizontal = 12.dp)
+        .padding(top = 12.dp)) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp)
-                .padding(top = 12.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -441,46 +441,36 @@ private fun DAListItem(
                 )
             }
 
-            Column(horizontalAlignment = Alignment.End) {
-                overflow()
-            }
+            Text(
+                text = text2,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                maxLines = 8
+            )
+
         }
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            TinySpacer()
-            title?.let {
-                Text(
-                    text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp
-                    )
+        MediumSpacer()
+
+        Column(modifier = Modifier) {
+            Text(
+                text = title, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp
                 )
-            }
+            )
+            SmallSpacer()
+            Text(
+                text = text1,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                maxLines = 8
+            )
+            MediumSpacer()
             TinySpacer()
-            text1?.let {
-                Text(
-                    text = text1,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                    maxLines = 8
-                )
-            }
-            TinySpacer()
-            TinySpacer()
-            text2?.let {
-                Text(
-                    text = text2,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                    maxLines = 8
-                )
-                TinySpacer()
-                TinySpacer()
-            }
         }
 
         AnimatedVisibility(visible = runningInsCount > 0) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -609,4 +599,27 @@ private fun listItemOverflowMenu(
     })
 
     return menuState
+}
+
+@Composable
+@Preview
+private fun DAListItemPreview() {
+    CompositionLocalProvider(LocalI18N provides object : I18N {
+        override fun get(key: String, args: Map<String, String>): String {
+            return "2 Jobs"
+        }
+    }) {
+        DAListItem(
+            modifier = Modifier,
+            title = "Start QQ",
+            text1 = "This is description",
+            text2 = "2022-12-22",
+            runningInsCount = 2,
+            icon = Remix.Media.broadcast_line,
+            iconColor = VipColorGold,
+            onClick = {},
+            onLongClick = {},
+            stopAllJobs = {}
+        )
+    }
 }
