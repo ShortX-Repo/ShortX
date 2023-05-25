@@ -52,7 +52,6 @@ fun HomeScreen() {
                 drawerState = drawerState,
                 drawerContent = {
                     ModalDrawerSheet(
-                        modifier = Modifier.fillMaxWidth(fraction = 0.93f),
                         drawerTonalElevation = 0.5.dp
                     ) {
                         StandardSpacer()

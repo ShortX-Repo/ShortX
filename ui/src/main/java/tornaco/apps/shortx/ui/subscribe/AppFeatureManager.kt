@@ -84,19 +84,23 @@ class AppFeatureManager(private val context: Context) {
                     context
                 )
             }
+
             AppFeature.AppFeature_DanmuSettings -> {
                 isLVLChecked(context)
             }
+
             AppFeature.AppFeature_AddRule -> {
                 return shortXManager.getRuleCount() <= FREE_USER_MAX_RULE_COUNT || isLVLChecked(
                     context
                 )
             }
+
             AppFeature.AppFeature_AddDirectAction -> {
                 return shortXManager.getDirectActionCount() <= FREE_USER_MAX_DA_COUNT || isLVLChecked(
                     context
                 )
             }
+
             AppFeature.AppFeature_ShareClipboard -> isLVLChecked(context)
             AppFeature.AppFeature_ShareFile -> isLVLChecked(context)
             AppFeature.AppFeature_ShareIntent -> isLVLChecked(context)

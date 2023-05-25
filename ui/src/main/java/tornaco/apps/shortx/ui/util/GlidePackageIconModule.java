@@ -54,7 +54,12 @@ public class GlidePackageIconModule extends AppGlideModule {
         @Override
         public void loadData(Priority priority, DataCallback<? super Bitmap> callback) {
             Bitmap bd = AppIconLoaderUtil.loadAppIconBitmapWithIconPack(context, info.getPkgName(), info.getUserId());
-            callback.onDataReady(bd);
+            if (bd == null) {
+                callback.onLoadFailed(new IllegalStateException("loadAppIconBitmapWithIconPack return null"));
+            } else {
+                callback.onDataReady(bd);
+            }
+
         }
 
         @Override

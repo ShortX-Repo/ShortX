@@ -200,7 +200,7 @@ private fun SubscriptionStatus() {
                     navHost.navigate(AppRoute.SubscriptionIntro.name)
                 }) {
                 LottieLoadingView(
-                    file = "21192-premium-gold.json",
+                    file = "47603-twinkle-crown.json",
                     modifier = Modifier.size(30.dp),
                 )
                 SmallSpacer()

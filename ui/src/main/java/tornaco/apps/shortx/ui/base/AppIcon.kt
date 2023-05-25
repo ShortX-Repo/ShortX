@@ -17,23 +17,47 @@
 
 package tornaco.apps.shortx.ui.base
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.skydoves.landscapist.glide.GlideImage
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.util.GlideApp
 
 @Composable
 fun AppIcon(modifier: Modifier, pkg: AppPkg) {
+    val context = LocalContext.current
     GlideImage(
         modifier = modifier,
         imageModel = pkg,
         // Crop, Fit, Inside, FillHeight, FillWidth, None
         contentScale = ContentScale.Crop,
-        error = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_android_fill,
+
+        loading = {
+            Box(modifier = Modifier.matchParentSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        },
+        // shows an error text if fail to load an image.
+        failure = {
+            ColoredIcon {
+                androidx.compose.material3.Icon(
+                    painterResource(id = R.drawable.ui_ic_baseline_android_24),
+                    contentDescription = null
+                )
+            }
+        },
+
         requestBuilder = {
             GlideApp.with(LocalContext.current.applicationContext).asDrawable()
                 .transition(withCrossFade())
