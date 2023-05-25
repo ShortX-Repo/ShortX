@@ -29,6 +29,7 @@
 -keep class com.google.protobuf.** { *; }
 
 -keep class ** implements android.os.Parcelable { *; }
+-keep class ** implements android.os.IInterface { *; }
 
 
 -keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
