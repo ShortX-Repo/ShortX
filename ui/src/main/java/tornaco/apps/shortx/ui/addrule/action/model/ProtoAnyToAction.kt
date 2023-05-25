@@ -160,7 +160,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
         }
 
         this is_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java -> {
-            val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetLocationEnabled::class.java
             if (data.enable) {
                 Action.EnableLocation(id = data.id)
             } else {
@@ -296,7 +297,24 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.StartActivity::class.java
             Action.StartActivity(
                 id = data.id,
-                note = data.note, componentNameAsString = data.componentNameAsString
+                note = data.note,
+                componentNameAsString = data.componentNameAsString
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.StartActivityIntent::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartActivityIntent::class.java
+            Action.StartActivityIntent(
+                id = data.id,
+                note = data.note,
+                userId = data.userId,
+                action = data.intent.action,
+                pkgName = data.intent.pkgName,
+                className = data.intent.className,
+                data = data.intent.data,
+                flags = data.intent.flags,
+                extras = data.intent.extrasList
             )
         }
 

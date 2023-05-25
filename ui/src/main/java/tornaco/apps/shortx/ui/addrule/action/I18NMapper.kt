@@ -69,6 +69,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.start.activity"] to null
         }
 
+        Action.StartActivityIntent::class -> {
+            i18N["ui.action.start.activity.intent"] to null
+        }
+
         Action.DisableBT::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.DisableDND::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])] to null
         Action.DisableLocation::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])] to null
@@ -253,6 +257,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 )
             }
 
+        }
+
+        is Action.StartActivityIntent -> {
+            listOf(
+                i18N["ui.action.start.activity.intent"],
+                action.action ?: ""
+            )
         }
 
         is Action.ExpandNotification -> {
@@ -525,6 +536,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.StartActivity::class -> {
+            Remix.Logos.android_fill
+        }
+
+        Action.StartActivityIntent::class -> {
             Remix.Logos.android_fill
         }
 

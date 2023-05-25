@@ -33,6 +33,7 @@ enum class ComponentType {
 
 class AppComponentSelectorState(
     val types: List<ComponentType>,
+    private val maxItemCount: Int = Int.MAX_VALUE,
     val onAppComponentSelected: (List<AppComponentInfo>) -> Unit
 ) {
     private var _isShow by mutableStateOf(false)
@@ -59,6 +60,10 @@ class AppComponentSelectorState(
             if (contains(activity).not()) {
                 add(activity)
             }
+
+            if (size > maxItemCount) {
+                removeAt(0)
+            }
         }
     }
 
@@ -73,10 +78,11 @@ class AppComponentSelectorState(
 @Composable
 fun rememberAppComponentSelectorState(
     types: List<ComponentType>,
+    maxItemCount: Int = Int.MAX_VALUE,
     onAppComponentSelected: (List<AppComponentInfo>) -> Unit
 ): AppComponentSelectorState {
     return remember {
-        AppComponentSelectorState(types, onAppComponentSelected)
+        AppComponentSelectorState(types, maxItemCount, onAppComponentSelected)
     }
 }
 
@@ -142,12 +148,15 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                         ComponentType.Activity.ordinal -> {
                             ActivityListContent(state)
                         }
+
                         ComponentType.Service.ordinal -> {
                             ServiceListContent(state)
                         }
+
                         ComponentType.Receiver.ordinal -> {
                             ReceiverListContent(state)
                         }
+
                         ComponentType.Provider.ordinal -> {
                             ProviderListContent(state)
                         }

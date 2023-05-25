@@ -32,12 +32,14 @@ import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.StartActivity
+import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
+import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.Location
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -253,6 +255,23 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StartActivity.newBuilder().setId(overrideId ?: id)
                 .setComponentNameAsString(componentNameAsString)
                 .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.StartActivityIntent -> {
+            StartActivityIntent.newBuilder().setId(overrideId ?: id)
+                .setIntent(AndroidIntent.newBuilder()
+                    .apply {
+                        this@toProtoAction.action?.let { action = it }
+                        this@toProtoAction.pkgName?.let { pkgName = it }
+                        this@toProtoAction.className?.let { className = it }
+                        this@toProtoAction.data?.let { data = it }
+                    }
+                    .setFlags(flags)
+                    .addAllExtras(extras)
+                    .build())
+                .setUserId(userId)
+                .setNote(overrideNote ?: note)
+                .build()
         }
 
         is Action.ExpandNotification -> {

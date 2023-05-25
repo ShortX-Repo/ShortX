@@ -2,13 +2,18 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.AppComponentSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import kotlin.reflect.KClass
 
 @Composable
 fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -93,8 +98,44 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = unsuspendAppProcessSelectorState)
 
+    val startActivityIntentSelectorState = rememberStartActivityIntentDialogState(onSelected = {
+        addAction(it)
+    })
+    StartActivityIntentDialog(state = startActivityIntentSelectorState)
+
+    val startActivityComponentSelectorState = rememberAppComponentSelectorState(
+        types = listOf(ComponentType.Activity),
+        maxItemCount = 1,
+        onAppComponentSelected = { infoList ->
+            if (infoList.isNotEmpty()) {
+                addAction(
+                    Action.StartActivity(
+                        componentNameAsString = infoList[0].component.toComponentName()
+                            .flattenToString()
+                    )
+                )
+            }
+        }
+    )
+    AppComponentSelectorDialog(startActivityComponentSelectorState)
+
+    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+        startActivityComponentSelectorState.show(it.pkg)
+    }
+    SingleAppSelectorDialog(state = singleAppSelectorState)
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
+            Action.StartActivityIntent::class -> {
+                startActivityIntentSelectorState.show(source.getActionAs())
+                true
+            }
+
+            Action.StartActivity::class -> {
+                singleAppSelectorState.show()
+                true
+            }
+
             Action.LaunchApp::class -> {
                 launchAppSelectorState.show(source.getActionAs<Action.LaunchApp>()?.app?.let {
                     listOf(it)
@@ -159,6 +200,8 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 fun AppActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
+        Action.StartActivity::class,
+        Action.StartActivityIntent::class,
         Action.LaunchApp::class,
         Action.StopApp::class,
         Action.StartAppProcess::class,

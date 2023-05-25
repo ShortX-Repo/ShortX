@@ -56,8 +56,6 @@ public class PkgUtils {
         PackageManager pm = context.getPackageManager();
         try {
             return pm.getApplicationInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
         } catch (Throwable e) {
             return null;
         }

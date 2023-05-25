@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -168,6 +169,23 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val note: String = "",
         val componentNameAsString: String
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
+    data class StartActivityIntent(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+        val userId: Int,
+        val action: String?,
+        val flags: Int,
+        val pkgName: String?,
+        val className: String?,
+        val data: String?,
+        val extras: List<AndroidIntentExtra>
     ) : Action {
         override fun clone(id: String, note: String): Action {
             return this.copy(id = id, note = note)
