@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.addrule.fact
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,11 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
@@ -23,6 +26,8 @@ import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
+import tornaco.apps.shortx.ui.util.ComponentRule
 
 enum class ComponentType {
     Activity,
@@ -43,7 +48,6 @@ class AppComponentSelectorState(
 
     private var _selectedAppComponents by mutableStateOf(emptyList<AppComponentInfo>())
     val selectedAppComponents get() = _selectedAppComponents
-
 
     fun show(pkg: AppPkg) {
         this.pkg = pkg
@@ -177,7 +181,12 @@ private fun ActivityListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.activities
 
-    ComponentList(components, selectorState)
+    if (state.isLoading) {
+        Loading(modifier = Modifier.fillMaxSize())
+    } else {
+        ComponentList(components, selectorState)
+    }
+
 }
 
 @Composable
@@ -189,7 +198,11 @@ private fun ServiceListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.services
 
-    ComponentList(components, selectorState)
+    if (state.isLoading) {
+        Loading(modifier = Modifier.fillMaxSize())
+    } else {
+        ComponentList(components, selectorState)
+    }
 }
 
 @Composable
@@ -201,7 +214,11 @@ private fun ReceiverListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.receivers
 
-    ComponentList(components, selectorState)
+    if (state.isLoading) {
+        Loading(modifier = Modifier.fillMaxSize())
+    } else {
+        ComponentList(components, selectorState)
+    }
 }
 
 @Composable
@@ -213,20 +230,24 @@ private fun ProviderListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.providers
 
-    ComponentList(components, selectorState)
+    if (state.isLoading) {
+        Loading(modifier = Modifier.fillMaxSize())
+    } else {
+        ComponentList(components, selectorState)
+    }
 }
 
 @Composable
 private fun ComponentList(
-    components: List<AppComponentInfo>,
+    components: List<AppComponentInfoWithRule>,
     selectorState: AppComponentSelectorState
 ) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(components, key = {
-            it.component.toString()
+            it.info.component.toString()
         }) {
             val isSelected = remember(selectorState.selectedAppComponents) {
-                selectorState.selectedAppComponents.contains(it)
+                selectorState.selectedAppComponents.contains(it.info)
             }
             AppComponentItem(
                 app = it,
@@ -244,51 +265,96 @@ private fun ComponentList(
 
 @Composable
 private fun AppComponentItem(
-    app: AppComponentInfo, isSelected: Boolean, onCheckedChange: (AppComponentInfo, Boolean) -> Unit
+    app: AppComponentInfoWithRule,
+    isSelected: Boolean,
+    onCheckedChange: (AppComponentInfo, Boolean) -> Unit
 ) {
-    Box(modifier = Modifier
-        .clip(ShortXCardRoundedCornerShape)
-        .clickable {
-            onCheckedChange(app, !isSelected)
+    ShortXCard(modifier = Modifier
+        .padding(horizontal = 12.dp, vertical = 4.dp),
+        onClick = {
+            onCheckedChange(app.info, !isSelected)
         }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .heightIn(min = 64.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column {
                 Row(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .padding(end = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AppIcon(modifier = Modifier.size(38.dp), app.component.pkg)
-                    Spacer(modifier = Modifier.size(12.dp))
+                    Row(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .padding(end = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        AppIcon(modifier = Modifier.size(38.dp), app.info.component.pkg)
+                        Spacer(modifier = Modifier.size(12.dp))
 
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Text(
-                            text = app.label, fontSize = 14.sp
+                        Column(verticalArrangement = Arrangement.Center) {
+                            Text(
+                                text = app.info.label, fontSize = 14.sp
+                            )
+                            SmallSpacer()
+                            Text(
+                                text = app.info.component.toComponentName().flattenToShortString(),
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    Checkbox(checked = isSelected, onCheckedChange = {
+                        onCheckedChange(app.info, it)
+                    })
+                }
+
+
+                app.rule?.let {
+                    val context = LocalContext.current
+                    FilledTonalButton(
+                        contentPadding = PaddingValues(vertical = 6.dp, horizontal = 16.dp),
+                        enabled = it.descriptionUrl != null,
+                        onClick = {
+                            BrowserUtils.launch(context, it.descriptionUrl ?: "")
+                        }) {
+                        Icon(
+                            painter = painterResource(id = it.iconRes),
+                            contentDescription = null,
+                            tint = if (it.isSimpleColorIcon) LocalContentColor.current else Color.Unspecified
                         )
-                        SmallSpacer()
-                        Text(
-                            text = app.component.toComponentName().flattenToShortString(),
-                            fontSize = 12.sp
-                        )
+                        TinySpacer()
+                        Text(text = it.label)
                     }
                 }
-                Checkbox(checked = isSelected, onCheckedChange = {
-                    onCheckedChange(app, it)
-                })
             }
         }
     }
+}
+
+@Composable
+@Preview
+private fun AppComponentItemPreview() {
+    AppComponentItem(
+        app = AppComponentInfoWithRule(
+            info = AppComponentInfo.newBuilder().setLabel("Label").setComponent(
+                AppComponent.newBuilder().setPkg(
+                    AppPkg.newBuilder().setUserId(0).setPkgName("com.xx.xx").build()
+                ).setClassName("com.xx.xx.Class").build()
+            ).build(),
+            rule = ComponentRule(
+                label = "AD",
+                iconRes = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_24_hours_line,
+                descriptionUrl = null,
+                isSimpleColorIcon = false,
+                regexName = "Regex"
+            )
+        ),
+        isSelected = true,
+        onCheckedChange = { info, checked -> })
 }

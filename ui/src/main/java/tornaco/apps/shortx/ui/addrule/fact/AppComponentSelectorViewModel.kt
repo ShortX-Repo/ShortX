@@ -10,15 +10,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.util.ComponentRule
+import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import java.util.*
 import javax.inject.Inject
 
+data class AppComponentInfoWithRule(
+    val info: AppComponentInfo,
+    val rule: ComponentRule?
+)
+
 data class AppComponentStates(
-    val activities: List<AppComponentInfo> = emptyList(),
-    val services: List<AppComponentInfo> = emptyList(),
-    val providers: List<AppComponentInfo> = emptyList(),
-    val receivers: List<AppComponentInfo> = emptyList(),
+    val activities: List<AppComponentInfoWithRule> = emptyList(),
+    val services: List<AppComponentInfoWithRule> = emptyList(),
+    val providers: List<AppComponentInfoWithRule> = emptyList(),
+    val receivers: List<AppComponentInfoWithRule> = emptyList(),
     val isLoading: Boolean = false
 )
 
@@ -29,48 +37,72 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
 
     fun loadActivities(pkg: AppPkg) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                updateState { copy(isLoading = true) }
-                val res = shortXManager.getActivities(pkg)
-                updateState {
-                    copy(activities = res, isLoading = false)
+            updateState { copy(isLoading = true) }
+            val res = withContext(Dispatchers.IO) {
+                shortXManager.getActivities(pkg).distinctBy { it.component }.map {
+                    AppComponentInfoWithRule(
+                        it,
+                        kotlin.runCatching { LCRulesAdapter.getActivityRule(it.component.toComponentName()) }
+                            .getOrNull()
+                    )
                 }
+            }
+            updateState {
+                copy(activities = res, isLoading = false)
             }
         }
     }
 
     fun loadServices(pkg: AppPkg) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                updateState { copy(isLoading = true) }
-                val res = shortXManager.getServices(pkg)
-                updateState {
-                    copy(services = res, isLoading = false)
+            updateState { copy(isLoading = true) }
+            val res = withContext(Dispatchers.IO) {
+                shortXManager.getServices(pkg).distinctBy { it.component }.map {
+                    AppComponentInfoWithRule(
+                        it,
+                        kotlin.runCatching { LCRulesAdapter.getServiceRule(it.component.toComponentName()) }
+                            .getOrNull()
+                    )
                 }
+            }
+            updateState {
+                copy(services = res, isLoading = false)
             }
         }
     }
 
     fun loadProviders(pkg: AppPkg) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                updateState { copy(isLoading = true) }
-                val res = shortXManager.getProviders(pkg)
-                updateState {
-                    copy(providers = res, isLoading = false)
+            updateState { copy(isLoading = true) }
+            val res = withContext(Dispatchers.IO) {
+                shortXManager.getProviders(pkg).distinctBy { it.component }.map {
+                    AppComponentInfoWithRule(
+                        it,
+                        kotlin.runCatching { LCRulesAdapter.getProviderRule(it.component.toComponentName()) }
+                            .getOrNull()
+                    )
                 }
+            }
+            updateState {
+                copy(providers = res, isLoading = false)
             }
         }
     }
 
     fun loadReceivers(pkg: AppPkg) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                updateState { copy(isLoading = true) }
-                val res = shortXManager.getReceivers(pkg)
-                updateState {
-                    copy(receivers = res, isLoading = false)
+            updateState { copy(isLoading = true) }
+            val res = withContext(Dispatchers.IO) {
+                shortXManager.getReceivers(pkg).distinctBy { it.component }.map {
+                    AppComponentInfoWithRule(
+                        it,
+                        kotlin.runCatching { LCRulesAdapter.getReceiverRule(it.component.toComponentName()) }
+                            .getOrNull()
+                    )
                 }
+            }
+            updateState {
+                copy(receivers = res, isLoading = false)
             }
         }
     }

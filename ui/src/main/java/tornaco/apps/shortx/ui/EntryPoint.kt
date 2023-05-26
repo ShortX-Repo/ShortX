@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
+import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import java.util.UUID
 
 object EntryPoint {
@@ -45,6 +46,8 @@ object EntryPoint {
         }
 
         checkCB(context)
+
+        LCRulesAdapter.initRules(context)
     }
 
     private fun checkCB(context: Context) {

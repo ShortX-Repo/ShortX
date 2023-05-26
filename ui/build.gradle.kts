@@ -1,6 +1,10 @@
-import tornaco.project.android.shortx.*
+import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Compose.bomVersion
+import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
+import tornaco.project.android.shortx.Hilt
+import tornaco.project.android.shortx.Lottie
+import tornaco.project.android.shortx.Others
 
 plugins {
     id("com.android.library")
@@ -109,6 +113,13 @@ dependencies {
 
     // https://github.com/AmrDeveloper/CodeView
     implementation("io.github.amrdeveloper:codeview:1.3.8")
+
+    // https://github.com/LibChecker/LibChecker-Rules-Bundle
+    implementation("com.github.LibChecker:LibChecker-Rules-Bundle:32.1") {
+        exclude(group = "javax.annotation", module = "javax.annotation-api")
+    }
+    implementation("androidx.room:room-runtime:2.5.1")
+    implementation("androidx.room:room-ktx:2.5.1")
 
     val markwon_version = "4.6.2"
     implementation("io.noties.markwon:core:$markwon_version")
