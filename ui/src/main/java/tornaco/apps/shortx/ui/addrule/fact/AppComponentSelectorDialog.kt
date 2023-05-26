@@ -26,7 +26,6 @@ import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import tornaco.apps.shortx.ui.util.BrowserUtils
 import tornaco.apps.shortx.ui.util.ComponentRule
 
 enum class ComponentType {
@@ -316,12 +315,20 @@ private fun AppComponentItem(
 
 
                 app.rule?.let {
+                    val ruleInfoDialogState = rememberComponentRuleInfoDialogState(
+                        ruleLabel = it.label,
+                        ruleUrl = it.descriptionUrl ?: ""
+                    )
+                    ComponentRuleInfoDialog(state = ruleInfoDialogState)
+
                     val context = LocalContext.current
                     FilledTonalButton(
                         contentPadding = PaddingValues(vertical = 6.dp, horizontal = 16.dp),
                         enabled = it.descriptionUrl != null,
                         onClick = {
-                            BrowserUtils.launch(context, it.descriptionUrl ?: "")
+                            it.descriptionUrl?.let {
+                                ruleInfoDialogState.show()
+                            }
                         }) {
                         Icon(
                             painter = painterResource(id = it.iconRes),
