@@ -147,6 +147,7 @@
   "ui.da.description": "描述",
   "ui.feat.label.da": "一键指令",
   "ui.feat.label.rule": "自动指令",
+  "ui.feat.label.discover": "发现",
   "ui.keycode.label.volume.up": "音量 +",
   "ui.keycode.label.volume.down": "音量 -",
   "ui.keycode.label.power": "电源",

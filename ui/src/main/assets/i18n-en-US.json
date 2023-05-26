@@ -147,6 +147,7 @@
   "ui.da.description": "Description",
   "ui.feat.label.da": "Direct Action",
   "ui.feat.label.rule": "Rule",
+  "ui.feat.label.discover": "Discover",
   "ui.keycode.label.volume.up": "Volume +",
   "ui.keycode.label.volume.down": "Volume -",
   "ui.keycode.label.power": "Power",

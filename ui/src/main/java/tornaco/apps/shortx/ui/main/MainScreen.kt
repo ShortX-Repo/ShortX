@@ -21,7 +21,7 @@ import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
-    Rules, DirectActions
+    Rules, DirectActions, Discover
 }
 
 sealed class BottomNavItem(
@@ -35,6 +35,13 @@ sealed class BottomNavItem(
             "ui.feat.label.da",
             Remix.Development.command_line,
             HomeBottomRoute.DirectActions
+        )
+
+    object Discover :
+        BottomNavItem(
+            "ui.feat.label.discover",
+            Remix.Map.compass_discover_line,
+            HomeBottomRoute.Discover
         )
 }
 
@@ -113,7 +120,7 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.DirectActions, BottomNavItem.Rules
+        BottomNavItem.DirectActions, BottomNavItem.Rules, BottomNavItem.Discover
     )
     NavigationBar(
         modifier = modifier
@@ -161,6 +168,10 @@ private fun BottomNavigationGraph(
 
         composable(BottomNavItem.DirectActions.screenRoute.name) {
             DirectActionListScreen()
+        }
+
+        composable(BottomNavItem.Discover.screenRoute.name) {
+            DiscoverScreen()
         }
     }
 }
