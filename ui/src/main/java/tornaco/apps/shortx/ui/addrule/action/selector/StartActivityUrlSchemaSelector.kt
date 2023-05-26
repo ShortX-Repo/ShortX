@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.os.isMainUser
 import tornaco.apps.shortx.core.os.myUserId
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
 class StartActivityUrlSchemaDialogState(
     val onSelected: (Action.StartActivityUrlSchema) -> Unit
@@ -133,10 +135,22 @@ private fun ShowDialogSelector(dialogState: StartActivityUrlSchemaDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
+                    val context = LocalContext.current
+
                     SmallTitle(text = "URL Schema")
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.urlSchema,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                BrowserUtils.launch(
+                                    context,
+                                    "https://sharecuts.cn/apps"
+                                )
+                            }) {
+                                RemixIcon(remixName = Remix.System.external_link_fill)
+                            }
+                        },
                         onValueChange = {
                             dialogState.urlSchema = it
                         })
