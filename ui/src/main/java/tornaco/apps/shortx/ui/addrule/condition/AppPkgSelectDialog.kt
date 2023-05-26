@@ -224,7 +224,12 @@ private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
             .fillMaxSize()
     ) {
         item {
-            SearchBar(searchBarState)
+            SearchBar(
+                searchBarState = searchBarState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            )
         }
         items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
             AppItem(

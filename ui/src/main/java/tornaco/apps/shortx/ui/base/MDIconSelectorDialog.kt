@@ -97,7 +97,11 @@ private fun MDIconSelector(state: MDIconSelectorState) {
                     }
 
                     val searchBarState = rememberSearchBarState(iconCategories.size)
-                    SearchBar(searchBarState)
+                    SearchBar(
+                        searchBarState, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                    )
 
                     val icons =
                         remember(selectedTabIndex, searchBarState.keyword) {

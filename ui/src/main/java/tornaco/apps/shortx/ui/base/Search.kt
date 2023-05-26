@@ -5,16 +5,11 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
 
@@ -33,11 +28,9 @@ fun rememberSearchBarState(itemCount: Int): SearchBarState {
 }
 
 @Composable
-fun SearchBar(searchBarState: SearchBarState) {
+fun SearchBar(searchBarState: SearchBarState, modifier: Modifier = Modifier) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp),
+        modifier = modifier,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -65,15 +58,13 @@ fun SearchTextField(searchBarState: SearchBarState) {
                 )]
             )
         },
-        shape = RoundedCornerShape(6.dp),
+        shape = ShortXTextFieldCornerShape,
         maxLines = 1,
         trailingIcon = {
             if (searchBarState.keyword.isEmpty()) {
                 IconButton(onClick = {
                 }) {
-                    Icon(
-                        imageVector = Icons.Filled.Search, contentDescription = "Search"
-                    )
+                    RemixIcon(remixName = Remix.System.search_2_line)
                 }
             } else {
                 IconButton(onClick = {
