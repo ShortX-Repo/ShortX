@@ -189,6 +189,7 @@
   "ui.action.launch.app": "打开应用",
   "ui.action.start.activity": "启动活动",
   "ui.action.start.activity.intent": "启动活动（Intent）",
+  "ui.action.start.activity.url.schema": "启动活动（URL Schema）",
   "ui.action.if.then.else": "如果... 就... 否则",
   "ui.action.if": "如果",
   "ui.action.then": "就",

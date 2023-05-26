@@ -45,6 +45,11 @@ enum class PrebuiltActor : ActorProvider {
             get() = tornaco.apps.shortx.services.rule.actor.impl.StartActivityIntent
 
     },
+    StartActivityUrlSchema {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartActivityUrlSchema
+
+    },
     TakeScreenshot {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.TakeScreenshot

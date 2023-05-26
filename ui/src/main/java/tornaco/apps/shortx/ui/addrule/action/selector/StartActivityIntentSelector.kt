@@ -100,10 +100,13 @@ fun StartActivityIntentDialog(state: StartActivityIntentDialogState) {
 
 @Composable
 private fun ShowDialogSelector(dialogState: StartActivityIntentDialogState) {
-    val vm = hiltViewModel<StartActivityIntentSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<StartActivityIntentSelectorViewModel>()
     LaunchedEffect(vm) {
-        dialogState.current?.let {
-            vm.initFrom(it)
+        val current = dialogState.current
+        if (current != null) {
+            vm.initFrom(current)
+        } else {
+            vm.resetState()
         }
     }
     val vmState by vm.state.collectAsState()
@@ -167,8 +170,6 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         SmallTitle(text = LocalI18N.current["ui.common.action"])
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            
-
             value = state.action,
             onValueChange = {
                 vm.updateAction(it)
@@ -213,8 +214,6 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         SmallTitle(text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"])
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            
-
             value = state.className ?: "",
             trailingIcon = {
                 AnimatedVisibility(visible = state.pkgName != null && state.app != null) {
@@ -256,7 +255,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         SmallTitle(text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"])
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            
+
 
             value = state.data ?: "",
             onValueChange = {
@@ -270,7 +269,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Key
                 TextField(
                     modifier = Modifier.weight(1f),
-                    
+
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
@@ -284,7 +283,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 // Value
                 TextField(
                     modifier = Modifier.weight(1f),
-                    
+
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

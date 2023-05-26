@@ -318,6 +318,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema::class.java
+            Action.StartActivityUrlSchema(
+                id = data.id,
+                note = data.note,
+                userId = data.userId,
+                urlSchema = data.urlSchema
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.ExpandNotification::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.ExpandNotification::class.java

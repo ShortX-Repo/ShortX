@@ -17,6 +17,7 @@ val allActionClasses = listOf(
     Action.StopApp::class,
     Action.StartActivity::class,
     Action.StartActivityIntent::class,
+    Action.StartActivityUrlSchema::class,
     Action.ExpandNotification::class,
     Action.PostNotification::class,
     Action.StartAppProcess::class,

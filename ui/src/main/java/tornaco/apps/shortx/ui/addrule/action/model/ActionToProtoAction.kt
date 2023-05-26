@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
+import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
@@ -269,6 +270,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                     .setFlags(flags)
                     .addAllExtras(extras)
                     .build())
+                .setUserId(userId)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.StartActivityUrlSchema -> {
+            StartActivityUrlSchema.newBuilder().setId(overrideId ?: id)
+                .setUrlSchema(urlSchema)
                 .setUserId(userId)
                 .setNote(overrideNote ?: note)
                 .build()

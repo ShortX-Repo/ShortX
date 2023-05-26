@@ -39,19 +39,38 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
 
     override fun resetState() {
         super.resetState()
+        logger.d("resetState")
         updateState(StartActivityIntentSelectorState())
     }
 
     fun initFrom(settings: Action.StartActivityIntent) {
+        logger.d("initFrom: $settings")
         updateState {
-            copy(id = settings.id)
+            copy(
+                id = settings.id,
+                action = settings.action ?: "",
+                pkgName = settings.pkgName ?: "",
+                className = settings.className ?: "",
+                data = settings.data ?: "",
+                userId = settings.userId,
+                extras = settings.extras,
+
+                app = settings.pkgName?.let {
+                    shortXManager.pkgToApp(
+                        AppPkg.newBuilder()
+                            .setUserId(settings.userId)
+                            .setPkgName(it)
+                            .build(),
+                    )
+                },
+                userLabel = if (settings.userId.isMainUser()) {
+                    i18N["ui.common.user.main"]
+                } else {
+                    shortXManager.getAllUsers().firstOrNull { it.userId == settings.userId }?.name
+                        ?: "N/A"
+                }
+            )
         }
-        updateAction(settings.action ?: "")
-        updatePkgName(settings.pkgName ?: "")
-        updateClassName(settings.className ?: "")
-        updateData(settings.data ?: "")
-        updateUserId(settings.userId)
-        updateState { copy(extras = settings.extras) }
     }
 
     fun updateAction(action: String) {
@@ -61,6 +80,7 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
     }
 
     fun updatePkgName(pkgName: String) {
+        logger.d("updatePkgName: $pkgName")
         updateState {
             copy(
                 pkgName = pkgName,
@@ -90,12 +110,14 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
         updateState {
             copy(
                 userId = userId,
-                app = shortXManager.pkgToApp(
-                    AppPkg.newBuilder()
-                        .setUserId(userId)
-                        .setPkgName(pkgName)
-                        .build()
-                ),
+                app = pkgName?.let {
+                    shortXManager.pkgToApp(
+                        AppPkg.newBuilder()
+                            .setUserId(userId)
+                            .setPkgName(it)
+                            .build()
+                    )
+                },
                 userLabel = if (userId.isMainUser()) {
                     i18N["ui.common.user.main"]
                 } else {

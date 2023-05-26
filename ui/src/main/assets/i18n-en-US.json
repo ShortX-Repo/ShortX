@@ -189,6 +189,7 @@
   "ui.action.launch.app": "Launch app",
   "ui.action.start.activity": "Start activity",
   "ui.action.start.activity.intent": "Start activity (Intent)",
+  "ui.action.start.activity.url.schema": "Start activity (URL Schema)",
   "ui.action.if.then.else": "if... then... else",
   "ui.action.if": "If",
   "ui.action.then": "Then",

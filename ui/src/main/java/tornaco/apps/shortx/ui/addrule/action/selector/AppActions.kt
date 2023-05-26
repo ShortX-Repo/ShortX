@@ -124,10 +124,21 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     SingleAppSelectorDialog(state = singleAppSelectorState)
 
+
+    val startActivityUrlSchemaDialogState = rememberStartActivityUrlSchemaDialogState {
+        addAction(it)
+    }
+    StartActivityUrlSchemaDialog(state = startActivityUrlSchemaDialogState)
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
                 startActivityIntentSelectorState.show(source.getActionAs())
+                true
+            }
+
+            Action.StartActivityUrlSchema::class -> {
+                startActivityUrlSchemaDialogState.show(source.getActionAs())
                 true
             }
 
@@ -202,6 +213,7 @@ fun AppActions(addAction: (Action) -> Unit) {
     val actionItems = arrayOf(
         Action.StartActivity::class,
         Action.StartActivityIntent::class,
+        Action.StartActivityUrlSchema::class,
         Action.LaunchApp::class,
         Action.StopApp::class,
         Action.StartAppProcess::class,

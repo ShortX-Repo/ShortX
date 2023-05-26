@@ -41,6 +41,14 @@ message StartActivityIntent {
   string id = 100;
 }
 
+message StartActivityUrlSchema {
+  string urlSchema = 1;
+  int32 userId = 2;
+
+  string note = 99;
+  string id = 100;
+}
+
 message ShellCommand {
   string command = 1;
 

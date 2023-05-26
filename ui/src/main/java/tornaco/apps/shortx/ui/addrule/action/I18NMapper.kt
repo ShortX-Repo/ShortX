@@ -73,6 +73,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.start.activity.intent"] to null
         }
 
+        Action.StartActivityUrlSchema::class -> {
+            i18N["ui.action.start.activity.url.schema"] to null
+        }
+
         Action.DisableBT::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.DisableDND::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.dnd"])] to null
         Action.DisableLocation::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.gps"])] to null
@@ -260,9 +264,22 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.StartActivityIntent -> {
-            listOf(
+            val name: ComponentName? = if (action.pkgName != null && action.className != null) {
+                ComponentName(action.pkgName, action.className)
+            } else {
+                null
+            }
+            listOfNotNull(
                 i18N["ui.action.start.activity.intent"],
-                action.action ?: ""
+                action.action,
+                name?.let { "${it.flattenToShortString()}$PREFIX_APP_ICON${name.packageName}" }
+            )
+        }
+
+        is Action.StartActivityUrlSchema -> {
+            listOf(
+                i18N["ui.action.start.activity.url.schema"],
+                action.urlSchema
             )
         }
 
@@ -541,6 +558,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.StartActivityIntent::class -> {
             Remix.Logos.android_fill
+        }
+
+        Action.StartActivityUrlSchema::class -> {
+            Remix.Business.links_fill
         }
 
         Action.ExpandNotification::class -> {
