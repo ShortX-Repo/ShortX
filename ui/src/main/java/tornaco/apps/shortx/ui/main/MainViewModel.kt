@@ -53,6 +53,7 @@ data class RuleUM(
     val factIconColor: ULong,
     val actionIcon: String,
     val actionIconColor: ULong,
+    val rule: Rule
 )
 
 @Parcelize
@@ -64,7 +65,8 @@ data class DirectActionUM(
     val createTime: String,
     val icon: String,
     val iconColor: ULong,
-    val runningInsCount: Int
+    val runningInsCount: Int,
+    val directAction: DirectAction
 ) : Parcelable
 
 data class MainState(
@@ -114,7 +116,8 @@ fun <T> ContextViewModel<T>.daToDirectActionUM(
         } ?: Color.Unspecified.value,
         runningInsCount = activeJobs.count {
             it == directAction.id
-        }
+        },
+        directAction = directAction
     )
 }
 
@@ -165,6 +168,7 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
         actionIconColor = firstAction?.let {
             colorForAction(it::class).value
         } ?: Color.Unspecified.value,
+        rule = rule,
     )
 }
 

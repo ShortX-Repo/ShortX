@@ -32,6 +32,7 @@ fun ConditionSelectors(
     conditions: List<Condition>,
     warnings: Map<String, List<String>>,
     conditionOp: Op,
+    readOnly: Boolean = false,
     handler: ConditionHandler
 ) {
     // Condition selectors
@@ -67,6 +68,7 @@ fun ConditionSelectors(
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
 
     Conditions(
+        readOnly = readOnly,
         header = header,
         conditions = conditions,
         warnings = warnings,
@@ -76,12 +78,15 @@ fun ConditionSelectors(
                 Condition.CurrentForegroundApp::class -> {
                     currentPkgSelectorState.show()
                 }
+
                 Condition.MVEL::class -> {
                     mvelConditionSelectorState.show()
                 }
+
                 Condition.TRUE::class -> {
                     handler.addCondition(Condition.TRUE())
                 }
+
                 Condition.EvaluateGlobalVar::class -> {
                     evaluateGlobalVarSelectorDialogState.show()
                 }
@@ -97,6 +102,7 @@ fun ConditionSelectors(
 
 @Composable
 fun Conditions(
+    readOnly: Boolean,
     header: @Composable () -> Unit,
     conditions: List<Condition>,
     warnings: Map<String, List<String>>,
@@ -138,10 +144,12 @@ fun Conditions(
                                 }
                             },
                             action1 = {
-                                IconButton(onClick = {
-                                    removeCondition(it)
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
+                                if (!readOnly) {
+                                    IconButton(onClick = {
+                                        removeCondition(it)
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.close_line)
+                                    }
                                 }
                             })
 
@@ -161,15 +169,17 @@ fun Conditions(
                 // Add button
                 TinySpacer()
                 Box {
-                    FilledTonalButton(onClick = {
-                        conditionSelectorState.open()
-                    }) {
-                        RemixIcon(
-                            modifier = Modifier.size(16.dp),
-                            remixName = Remix.System.add_line
-                        )
-                        TinySpacer()
-                        Text(LocalI18N.current["ui.conditions.add"])
+                    if (!readOnly) {
+                        FilledTonalButton(onClick = {
+                            conditionSelectorState.open()
+                        }) {
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = Remix.System.add_line
+                            )
+                            TinySpacer()
+                            Text(LocalI18N.current["ui.conditions.add"])
+                        }
                     }
                     DropdownSelector(
                         state = conditionSelectorState,
@@ -200,7 +210,12 @@ fun Conditions(
 
                 // OP button
                 AnimatedVisibility(visible = conditions.size > 1) {
-                    OpSelector(conditionOp, opSelectorState, setConditionOp)
+                    OpSelector(
+                        conditionOp = conditionOp,
+                        readOnly = readOnly,
+                        opSelectorState = opSelectorState,
+                        setConditionOp = setConditionOp
+                    )
                 }
             }
         }
@@ -210,6 +225,7 @@ fun Conditions(
 @Composable
 private fun OpSelector(
     conditionOp: Op,
+    readOnly: Boolean,
     opSelectorState: DropdownSelectorState,
     setConditionOp: (Op) -> Unit
 ) {
@@ -229,15 +245,17 @@ private fun OpSelector(
             })
 
         Box {
-            FilledTonalButton(onClick = {
-                opSelectorState.open()
-            }) {
-                RemixIcon(
-                    modifier = Modifier.size(16.dp),
-                    remixName = Remix.Design.edit_circle_line
-                )
-                TinySpacer()
-                Text(text = LocalI18N.current["ui.condition.op.edit"])
+            if (!readOnly) {
+                FilledTonalButton(onClick = {
+                    opSelectorState.open()
+                }) {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = Remix.Design.edit_circle_line
+                    )
+                    TinySpacer()
+                    Text(text = LocalI18N.current["ui.condition.op.edit"])
+                }
             }
 
             val mvelSelectorState = rememberCodeEditorState(
@@ -279,15 +297,19 @@ private fun OpSelector(
                     "All" -> {
                         setConditionOp(Op.All)
                     }
+
                     "Any" -> {
                         setConditionOp(Op.Any)
                     }
+
                     "None" -> {
                         setConditionOp(Op.None)
                     }
+
                     "MVEL" -> {
                         mvelSelectorState.show()
                     }
+
                     else -> {
                         setConditionOp(Op.All)
                     }

@@ -28,7 +28,9 @@ import kotlin.reflect.KClass
 
 @Composable
 fun FactSelectors(
-    vm: AddRuleViewModel, state: AddRuleState
+    vm: AddRuleViewModel,
+    state: AddRuleState,
+    readOnly: Boolean = false,
 ) {
     // Fact selectors
     val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
@@ -140,65 +142,84 @@ fun FactSelectors(
     OnOffAnyStateSelectorDialog(hotspotSelectorState)
 
 
-    FactSelector(state) { fact ->
+    FactSelector(state = state, readOnly = readOnly) { fact ->
         when (fact) {
             Fact.KeyEvent::class -> {
                 keyEventSelectorState.show()
             }
+
             Fact.ActivityStarted::class -> {
                 singleAppSelectorState.show()
             }
+
             Fact.AnyActivityStarted::class -> {
                 vm.setFact(Fact.AnyActivityStarted)
             }
+
             Fact.EdgeGesture::class -> {
                 edgeGestureSelectorState.show()
             }
+
             Fact.ScreenOff::class -> {
                 vm.setFact(Fact.ScreenOff)
             }
+
             Fact.ScreenOn::class -> {
                 vm.setFact(Fact.ScreenOn)
             }
+
             Fact.UserPresent::class -> {
                 vm.setFact(Fact.UserPresent)
             }
+
             Fact.Alarm::class -> {
                 timeOfADaySelector.show()
             }
+
             Fact.AppBecomeBackground::class -> {
                 appBgPkgSelectorState.show()
             }
+
             Fact.AppBecomeForeground::class -> {
                 appFgPkgSelectorState.show()
             }
+
             Fact.WifiStatusChanged::class -> {
                 wifiSelectorState.show()
             }
+
             Fact.BTStatusChanged::class -> {
                 btSelectorState.show()
             }
+
             Fact.DNDStatusChanged::class -> {
                 dndSelectorState.show()
             }
+
             Fact.DarkModeStatusChanged::class -> {
                 darkModeSelectorState.show()
             }
+
             Fact.FlashLightStatusChanged::class -> {
                 flashLightSelectorState.show()
             }
+
             Fact.HotSpotStatusChanged::class -> {
                 hotspotSelectorState.show()
             }
+
             Fact.LocationStatusChanged::class -> {
                 locationSelectorState.show()
             }
+
             Fact.MobileDataStatusChanged::class -> {
                 mobileDataSelectorState.show()
             }
+
             Fact.NFCStatusChanged::class -> {
                 nfcSelectorState.show()
             }
+
             Fact.NotificationPosted::class -> {
                 vm.setFact(
                     Fact.NotificationPosted(
@@ -209,6 +230,7 @@ fun FactSelectors(
                     )
                 )
             }
+
             Fact.NotificationUpdated::class -> {
                 vm.setFact(
                     Fact.NotificationUpdated(
@@ -219,6 +241,7 @@ fun FactSelectors(
                     )
                 )
             }
+
             Fact.NotificationRemoved::class -> {
                 vm.setFact(
                     Fact.NotificationRemoved(
@@ -235,7 +258,11 @@ fun FactSelectors(
 
 
 @Composable
-private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> Unit) {
+private fun FactSelector(
+    state: AddRuleState,
+    readOnly: Boolean,
+    selectFact: (KClass<out Fact>) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
@@ -279,21 +306,28 @@ private fun FactSelector(state: AddRuleState, selectFact: (KClass<out Fact>) -> 
                                 VerticalDivider(modifier = Modifier.height(24.dp))
                             }
 
-                            IconButton(onClick = {
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
+                            if (!readOnly) {
+                                IconButton(onClick = {
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
                             }
                         }
                     )
                 }
 
                 TinySpacer()
-                FilledTonalButton(onClick = {
-                    showFactSelectorMenu = true
-                }) {
-                    RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.add_line)
-                    TinySpacer()
-                    Text(text = LocalI18N.current["ui.fact.select"])
+                if (!readOnly) {
+                    FilledTonalButton(onClick = {
+                        showFactSelectorMenu = true
+                    }) {
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.add_line
+                        )
+                        TinySpacer()
+                        Text(text = LocalI18N.current["ui.fact.select"])
+                    }
                 }
             }
 

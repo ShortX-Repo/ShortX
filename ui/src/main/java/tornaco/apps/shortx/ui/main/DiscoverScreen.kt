@@ -105,6 +105,10 @@ private fun DiscoverRule() {
             items(
                 items = discoverState.rules,
                 key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+
+                val ruleViewerState = rememberRuleViewerState(rule = rule.rule)
+                RuleViewerDialog(state = ruleViewerState)
+
                 ShortXCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -112,7 +116,7 @@ private fun DiscoverRule() {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .clip(ShortXCardRoundedCornerShape)
-                        .clickable { }) {
+                        .clickable { ruleViewerState.show() }) {
 
                         RuleIcon(rule)
 
@@ -155,6 +159,9 @@ private fun DiscoverDA() {
             contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
         ) {
             items(items = discoverState.das, key = { it.id }) {
+                val daViewerState = rememberDAViewerState(rule = it.directAction)
+                DAViewerDialog(state = daViewerState)
+
                 ShortXCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -162,7 +169,7 @@ private fun DiscoverDA() {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .clip(ShortXCardRoundedCornerShape)
-                        .clickable { }
+                        .clickable { daViewerState.show() }
                         .padding(horizontal = 12.dp)
                         .padding(top = 12.dp)) {
 

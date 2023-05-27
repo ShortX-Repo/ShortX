@@ -34,6 +34,8 @@ fun AddRuleScreen(
     rule: Rule? = null,
     screenTitle: String,
     canSaveWithoutChanges: Boolean = false,
+    readOnly: Boolean = false,
+    saveIconName: String = Remix.System.check_line,
     back: () -> Unit
 ) {
     val vm = hiltViewModel<AddRuleViewModel>()
@@ -99,7 +101,7 @@ fun AddRuleScreen(
                                     vm.save()
                                     back()
                                 }) {
-                                RemixIcon(remixName = Remix.System.check_line)
+                                RemixIcon(remixName = saveIconName)
                             }
                         },
                         scrollBehavior = scrollBehavior
@@ -114,10 +116,10 @@ fun AddRuleScreen(
                         .animateContentSize()
                 ) {
 
-                    TitleAndDescription(addRuleState, vm)
+                    TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
                     SectionSpacer()
 
-                    FactSelectors(vm, addRuleState)
+                    FactSelectors(vm = vm, state = addRuleState, readOnly = readOnly)
                     SectionSpacer()
 
                     AnimatedVisibility(visible = addRuleState.showConditionSection) {
@@ -127,6 +129,7 @@ fun AddRuleScreen(
                             conditions = conditions,
                             warnings = conditionContentState.conditionWarningMessages,
                             conditionOp = conditionOp,
+                            readOnly = readOnly,
                             handler = conditionHandler.asConditionHandler()
                         )
                         SectionSpacer()
@@ -135,6 +138,7 @@ fun AddRuleScreen(
                     ActionContent(
                         actions = actionContentState.actions,
                         handler = actionHandler.asActionHandler(),
+                        readOnly = readOnly,
                         warnings = actionContentState.actionWarningMessages
                     )
                     SectionSpacer()
@@ -165,6 +169,7 @@ fun AddRuleScreen(
                                 },
                                 actions = actionOnEnabledState.actions,
                                 handler = actionOnEnabledHandler.asActionHandler(),
+                                readOnly = readOnly,
                                 warnings = actionOnEnabledState.actionWarningMessages
                             )
                             SectionSpacer()
@@ -178,6 +183,7 @@ fun AddRuleScreen(
                                 },
                                 actions = actionOnDisabledState.actions,
                                 handler = actionOnDisabledHandler.asActionHandler(),
+                                readOnly = readOnly,
                                 warnings = actionOnDisabledState.actionWarningMessages
                             )
                             SectionSpacer()
@@ -191,6 +197,7 @@ fun AddRuleScreen(
                                 },
                                 actions = actionOnDeletedState.actions,
                                 handler = actionOnDeletedHandler.asActionHandler(),
+                                readOnly = readOnly,
                                 warnings = actionOnDeletedState.actionWarningMessages
                             )
                             SectionSpacer()
@@ -203,22 +210,31 @@ fun AddRuleScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun TitleAndDescription(
     state: AddRuleState,
     vm: AddRuleViewModel,
+    readOnly: Boolean
 ) {
-    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = LocalI18N.current["ui.rule.title"])
-    }, value = state.title, onValueChange = { title ->
-        vm.setTitle(title)
-    })
+    ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = LocalI18N.current["ui.rule.title"])
+        },
+        value = state.title,
+        readOnly = readOnly,
+        onValueChange = { title ->
+            vm.setTitle(title)
+        })
     Spacer(modifier = Modifier.size(16.dp))
-    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = LocalI18N.current["ui.rule.description"])
-    }, value = state.description, onValueChange = { description ->
-        vm.setDescription(description)
-    })
+    ShortXTextField(modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = LocalI18N.current["ui.rule.description"])
+        },
+        value = state.description,
+        readOnly = readOnly,
+        onValueChange = { description ->
+            vm.setDescription(description)
+        })
 }
 
 class ConditionHandler(

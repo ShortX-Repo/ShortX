@@ -30,12 +30,14 @@ fun ActionContent(
     },
     actions: List<Action>,
     warnings: Map<String, List<String>>,
+    readOnly: Boolean = false,
     handler: ActionHandler
 ) {
     Actions(
         header = header,
         warnings = warnings,
         actions = actions,
+        readOnly = readOnly,
         handler = handler
     )
 }
@@ -70,6 +72,7 @@ private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     actions: List<Action>,
     warnings: Map<String, List<String>>,
+    readOnly: Boolean,
     handler: ActionHandler
 ) {
     val actionSortDialogState = rememberActionSortState(
@@ -89,7 +92,7 @@ private fun Actions(
             }
 
             // Sort
-            AnimatedVisibility(visible = actions.size > 1) {
+            AnimatedVisibility(visible = !readOnly && actions.size > 1) {
                 IconButton(onClick = {
                     actionSortDialogState.show()
                 }) {
@@ -143,6 +146,7 @@ private fun Actions(
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
+                                enabled = !readOnly,
                                 onClick = { onActionClick() },
                                 onLongClick = { clickDropdownState.open() }
                             )
@@ -169,10 +173,12 @@ private fun Actions(
                                     VerticalDivider(modifier = Modifier.height(24.dp))
                                 }
 
-                                IconButton(onClick = {
-                                    handler.removeAction(action)
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
+                                if (!readOnly) {
+                                    IconButton(onClick = {
+                                        handler.removeAction(action)
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.close_line)
+                                    }
                                 }
                             }
                         )
@@ -324,12 +330,17 @@ private fun Actions(
             // Add
             TinySpacer()
             Box {
-                FilledTonalButton(onClick = {
-                    actionSelectorState.show(ActionSelectorDialogArgs.New)
-                }) {
-                    RemixIcon(modifier = Modifier.size(16.dp), remixName = Remix.System.add_line)
-                    TinySpacer()
-                    Text(LocalI18N.current["ui.actions.add"])
+                if (!readOnly) {
+                    FilledTonalButton(onClick = {
+                        actionSelectorState.show(ActionSelectorDialogArgs.New)
+                    }) {
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.add_line
+                        )
+                        TinySpacer()
+                        Text(LocalI18N.current["ui.actions.add"])
+                    }
                 }
 
                 ActionSortDialog(state = actionSortDialogState)
