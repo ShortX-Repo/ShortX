@@ -11,6 +11,9 @@ import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
+import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
@@ -109,6 +112,37 @@ class BackupAgent(private val context: Context) {
     suspend fun restore(input: InputStream) {
         logger.d("restore: $input")
         withContext(Dispatchers.IO) {
+            val content = readBackupPackageContent(input)
+            content.rules.forEach {
+                logger.d("restore, add rule: ${it.title}")
+                // Disable this rule.
+                shortXManager.addRule(Rule.newBuilder(it).setIsEnabled(false).build())
+            }
+            content.das.forEach {
+                logger.d("restore, add da: ${it.title}")
+                shortXManager.addDirectAction(it)
+            }
+            content.pkgSets.forEach {
+                logger.d("restore, add pkgset: ${it.label}")
+                shortXManager.addPkgSet(it)
+            }
+            content.gvs.forEach {
+                logger.d("restore, add pkgset: ${it.name}")
+                shortXManager.addGlobalVar(it)
+            }
+        }
+    }
+
+    suspend fun readBackupPackageContent(assetName: String): BackupPackageContent {
+        logger.d("readBackupPackageContent, assetName: $assetName")
+        return context.assets.open(assetName).use { input ->
+            readBackupPackageContent(input)
+        }
+    }
+
+    suspend fun readBackupPackageContent(input: InputStream): BackupPackageContent {
+        logger.d("readBackupPackageContent: $input")
+        return withContext(Dispatchers.IO) {
             val tmpZipFile = File(context.cacheDir, "shortx-backup-tmp.zip")
             val tmpExtractedFile = File(context.cacheDir, "shortx-backup-tmp")
 
@@ -128,42 +162,31 @@ class BackupAgent(private val context: Context) {
             val rulePb = File(tmpExtractedFile, RULE_FILE_NAME)
             val ruleStore = BaseRuleSettingsStore(this, rulePb)
             ruleStore.read()
-            ruleStore.getAllRules().forEach {
-                logger.d("restore, add rule: ${it.title}")
-                // Disable this rule.
-                shortXManager.addRule(Rule.newBuilder(it).setIsEnabled(false).build())
-            }
+            val rules = ruleStore.getAllRules()
 
             // DAs
             val daPb = File(tmpExtractedFile, DA_FILE_NAME)
             val daStore = BaseDirectActionSettingsStore(this, daPb)
             daStore.read()
-            daStore.getAllDirectActions().forEach {
-                logger.d("restore, add da: ${it.title}")
-                shortXManager.addDirectAction(it)
-            }
+            val das = daStore.getAllDirectActions()
 
             // PkgSets
             val pkgSetPb = File(tmpExtractedFile, PKGSET_FILE_NAME)
             val pkgSetStore = BasePkgSetsStore(this, pkgSetPb)
             pkgSetStore.read()
-            pkgSetStore.getAllPkgSets().forEach {
-                logger.d("restore, add pkgset: ${it.label}")
-                shortXManager.addPkgSet(it)
-            }
+            val pkgSets = pkgSetStore.getAllPkgSets()
 
             // GVs
             val gvPb = File(tmpExtractedFile, GV_FILE_NAME)
             val gvStore = BaseGlobalVarStore(this, gvPb)
             gvStore.read()
-            gvStore.getAllGlobalVars().forEach {
-                logger.d("restore, add pkgset: ${it.name}")
-                shortXManager.addGlobalVar(it)
-            }
+            val gvs = gvStore.getAllGlobalVars()
 
             // Clean up.
             tmpExtractedFile.deleteRecursively()
             tmpZipFile.deleteRecursively()
+
+            BackupPackageContent(das, rules, pkgSets, gvs)
         }
     }
 
@@ -182,3 +205,10 @@ class BackupAgent(private val context: Context) {
             }.getOrThrow()
         }
 }
+
+data class BackupPackageContent(
+    val das: List<DirectAction>,
+    val rules: List<Rule>,
+    val pkgSets: List<PkgSet>,
+    val gvs: List<GlobalVar>
+)

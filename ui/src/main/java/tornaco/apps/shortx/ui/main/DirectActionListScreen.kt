@@ -148,7 +148,7 @@ fun DirectActionListContent(
     } else {
         if (state.isShowDetailedDAItem) {
             DAListContent(
-                state,
+                state.das,
                 showOverflowMenu,
                 onDirectActionClick,
                 onDup,
@@ -174,21 +174,21 @@ fun DirectActionListContent(
 
 @Composable
 private fun DAListContent(
-    state: MainState,
+    das: List<DirectActionUM>,
     showOverflowMenu: Boolean,
     onDirectActionClick: (DirectActionUM) -> Unit,
-    onDup: (DirectActionUM) -> Unit,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
-    stopAllJobs: (DirectActionUM) -> Unit
+    onDup: (DirectActionUM) -> Unit = {},
+    onDelete: (DirectActionUM) -> Unit = {},
+    onEdit: (DirectActionUM) -> Unit = {},
+    onShare: (DirectActionUM) -> Unit = {},
+    stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
         columns = StaggeredGridCells.Fixed(2),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
-        items(items = state.das, key = { it.id }) { da ->
+        items(items = das, key = { it.id }) { da ->
             var colorAnimStarted by remember {
                 mutableStateOf(false)
             }
@@ -311,8 +311,8 @@ private fun DirectActionItem(
         DAListItem(
             modifier = modifier,
             title = da.title,
-            text1 = da.description,
-            text2 = da.updateTime,
+            description = da.description,
+            updateTime = da.updateTime,
             icon = da.icon,
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
@@ -406,8 +406,8 @@ private fun DAListItemCompat(
 private fun DAListItem(
     modifier: Modifier,
     title: String,
-    text1: String,
-    text2: String,
+    description: String,
+    updateTime: String,
     runningInsCount: Int = 0,
     icon: String,
     iconColor: Color,
@@ -442,7 +442,7 @@ private fun DAListItem(
             }
 
             Text(
-                text = text2,
+                text = updateTime,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                 maxLines = 8
             )
@@ -459,7 +459,7 @@ private fun DAListItem(
             )
             SmallSpacer()
             Text(
-                text = text1,
+                text = description,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 maxLines = 8
             )
@@ -612,8 +612,8 @@ private fun DAListItemPreview() {
         DAListItem(
             modifier = Modifier,
             title = "Start QQ",
-            text1 = "This is description",
-            text2 = "2022-12-22",
+            description = "This is description",
+            updateTime = "2022-12-22",
             runningInsCount = 2,
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,

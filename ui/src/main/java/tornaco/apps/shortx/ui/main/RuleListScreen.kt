@@ -121,49 +121,70 @@ private fun RuleContent(
     if (!state.isLoading && state.rules.isEmpty()) {
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-        ) {
-            items(
-                items = state.rules,
-                key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
-
-                var scaleAnimStarted by remember {
-                    mutableStateOf(false)
-                }
-                val scalePercent by animateFloatAsState(
-                    targetValue = if (scaleAnimStarted) 0.99f else 1f,
-                    animationSpec = spring(),
-                    finishedListener = {
-                        scaleAnimStarted = false
-                    }, label = "scalePercent"
-                )
-
-                ShortXCard(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .scale(scalePercent),
-                ) {
-                    RuleItem2(
-                        rule = rule,
-                        onClick = {
-                            onRuleClick(rule)
-                            scaleAnimStarted = true
-                        },
-                        setRuleEnabled = setRuleEnabled,
-                        onDup = onDup,
-                        onDelete = onDelete,
-                        onEdit = onEdit,
-                        onShare = onShare,
-                    )
-                }
-
-            }
-        }
+        RuleListContent(
+            rules = state.rules,
+            onRuleClick = onRuleClick,
+            setRuleEnabled = setRuleEnabled,
+            onDup = onDup,
+            onDelete = onDelete,
+            onEdit = onEdit,
+            onShare = onShare
+        )
     }
 
+}
+
+@Composable
+private fun RuleListContent(
+    rules: List<RuleUM>,
+    onRuleClick: (RuleUM) -> Unit,
+    setRuleEnabled: (String, Boolean) -> Unit = { id, enable -> },
+    onDup: (RuleUM) -> Unit = {},
+    onDelete: (RuleUM) -> Unit = {},
+    onEdit: (RuleUM) -> Unit = {},
+    onShare: (RuleUM) -> Unit = {}
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+    ) {
+        items(
+            items = rules,
+            key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+
+            var scaleAnimStarted by remember {
+                mutableStateOf(false)
+            }
+            val scalePercent by animateFloatAsState(
+                targetValue = if (scaleAnimStarted) 0.99f else 1f,
+                animationSpec = spring(),
+                finishedListener = {
+                    scaleAnimStarted = false
+                }, label = "scalePercent"
+            )
+
+            ShortXCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .scale(scalePercent),
+            ) {
+                RuleItem2(
+                    rule = rule,
+                    onClick = {
+                        onRuleClick(rule)
+                        scaleAnimStarted = true
+                    },
+                    setRuleEnabled = setRuleEnabled,
+                    onDup = onDup,
+                    onDelete = onDelete,
+                    onEdit = onEdit,
+                    onShare = onShare,
+                )
+            }
+
+        }
+    }
 }
 
 @Composable
@@ -281,17 +302,15 @@ private fun RuleItem2(
                         },
                     )
                 }
-
                 MediumSpacer()
             }
 
         }
     }
-
 }
 
 @Composable
-private fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
+fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

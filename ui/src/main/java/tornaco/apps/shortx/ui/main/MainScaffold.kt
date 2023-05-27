@@ -37,11 +37,49 @@ fun MainScaffold(
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    var isShowActiveDialog by remember {
+    var enableFabMask by remember {
         mutableStateOf(false)
     }
 
-    var enableFabMask by remember {
+    MainScaffold(
+        state = state,
+        appBarTitleKey = appBarTitleKey,
+        enableMask = enableFabMask,
+        appBarActions = appBarActions,
+        acceptPrivacyStatement = acceptPrivacyStatement,
+        floatingActionButton = {
+            Fab(
+                onClipboardClick = {
+                    onClipboardClick()
+                },
+                onFileClick = {
+
+                },
+                onCreateClick = {
+                    onAddClick()
+                },
+                onExpanded = {
+                    enableFabMask = true
+                },
+                onCollapsed = {
+                    enableFabMask = false
+                })
+        },
+        content = content
+    )
+}
+
+@Composable
+fun MainScaffold(
+    state: MainState,
+    appBarTitleKey: String,
+    enableMask: Boolean,
+    appBarActions: @Composable () -> Unit = {},
+    acceptPrivacyStatement: () -> Unit,
+    floatingActionButton: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    var isShowActiveDialog by remember {
         mutableStateOf(false)
     }
 
@@ -90,24 +128,8 @@ fun MainScaffold(
             },
             bottomBar = {
             },
-            floatingActionButton = {
-                Fab(
-                    onClipboardClick = {
-                        onClipboardClick()
-                    },
-                    onFileClick = {
-
-                    },
-                    onCreateClick = {
-                        onAddClick()
-                    },
-                    onExpanded = {
-                        enableFabMask = true
-                    },
-                    onCollapsed = {
-                        enableFabMask = false
-                    })
-            }) { paddingValues ->
+            floatingActionButton = floatingActionButton
+        ) { paddingValues ->
 
             val shareDialogState = rememberShareDialogState("share.shortx")
             ShareDialog(state = shareDialogState)
@@ -120,7 +142,7 @@ fun MainScaffold(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .let {
-                        if (enableFabMask) {
+                        if (enableMask) {
                             it.blur(4.dp)
                         } else it
                     },
@@ -202,7 +224,7 @@ fun MainScaffold(
                 }
             }
 
-            if (enableFabMask) {
+            if (enableMask) {
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))

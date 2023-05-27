@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IJobStatusListener
-import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
@@ -35,7 +34,6 @@ import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
@@ -82,14 +80,11 @@ data class MainState(
     val isLoading: Boolean = true
 )
 
-
-private fun DirectAction.toDirectActionUM(
-    context: Context,
-    shortXManager: ShortXManager,
-    i18N: I18N,
+fun <T> ContextViewModel<T>.daToDirectActionUM(
+    directAction: DirectAction,
     activeJobs: List<String>
 ): DirectActionUM {
-    val firstAction: Action? = this.actionsList?.let {
+    val firstAction: Action? = directAction.actionsList?.let {
         if (it.isEmpty()) {
             null
         } else {
@@ -98,16 +93,16 @@ private fun DirectAction.toDirectActionUM(
     }
 
     return DirectActionUM(
-        id = this.id,
-        title = this.title,
-        description = translateDA(shortXManager, i18N),
+        id = directAction.id,
+        title = directAction.title,
+        description = translateDA(directAction),
         updateTime = FuzzyDateTimeFormatter.getTimeAgo(
             context,
-            Date(this.lastUpdateTime)
+            Date(directAction.lastUpdateTime)
         ),
         createTime = FuzzyDateTimeFormatter.getTimeAgo(
             context,
-            Date(this.createTime)
+            Date(directAction.createTime)
         ),
         icon = firstAction?.let {
             imageVectorForAction(
@@ -118,17 +113,84 @@ private fun DirectAction.toDirectActionUM(
             colorForAction(it::class).value
         } ?: Color.Unspecified.value,
         runningInsCount = activeJobs.count {
-            it == this.id
+            it == directAction.id
         }
     )
 }
 
-private fun DirectAction.translateDA(shortXManager: ShortXManager, i18N: I18N) =
-    this.description.fallbackOnEmpty(this.actionsList.mapNotNull {
+private fun <T> ContextViewModel<T>.translateDA(da: DirectAction) =
+    da.description.fallbackOnEmpty(da.actionsList.mapNotNull {
         it.toAction(shortXManager)
     }.joinToString {
         labelAndDescriptionForActionSelector(i18N, it::class).first
     })
+
+fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
+    val firstFact: Fact? = rule.fact?.toFact(shortXManager)
+    val firstAction: Action? = rule.actionsList?.let {
+        if (it.isEmpty()) {
+            null
+        } else {
+            it[0].toAction(shortXManager)
+        }
+    }
+    return RuleUM(
+        id = rule.id,
+        title = rule.title,
+        description = rule.description.fallbackOnEmpty(
+            translateRule(rule)
+        ),
+        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+            context,
+            Date(rule.lastUpdateTime)
+        ),
+        createTime = FuzzyDateTimeFormatter.getTimeAgo(
+            context,
+            Date(rule.createTime)
+        ),
+        isEnabled = rule.isEnabled,
+        factIcon = firstFact?.let {
+            imageVectorForFact(
+                it::class
+            )
+        } ?: Remix.Weather.sparkling_line,
+        factIconColor = firstFact?.let {
+            colorForFact(it::class).value
+        } ?: Color.Unspecified.value,
+        actionIcon = firstAction?.let {
+            imageVectorForAction(
+                it::class
+            )
+        } ?: Remix.Weather.sparkling_line,
+        actionIconColor = firstAction?.let {
+            colorForAction(it::class).value
+        } ?: Color.Unspecified.value,
+    )
+}
+
+fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
+    val fact: String = rule.fact.toFact(shortXManager)?.let {
+        labelAndDescriptionForFactSelector(i18N, it::class).first
+    } ?: "N/A"
+
+    val condition = rule.conditionsList.mapNotNull {
+        it.toCondition(shortXManager)
+    }.joinToString {
+        labelForConditionSelector(i18N, it::class).joinToString()
+    }
+
+    val action = rule.actionsList.mapNotNull {
+        it.toAction(shortXManager)
+    }.joinToString {
+        labelAndDescriptionForActionSelector(i18N, it::class).first
+    }
+
+    return i18N["ui.rule.description.auto.template", mapOf(
+        "fact" to fact,
+        "condition" to condition,
+        "action" to action
+    )]
+}
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -209,46 +271,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 val rules = shortXManager.getAllRules()
                     .sortedByDescending { it.createTime }
                     .map { rule ->
-                        val firstFact: Fact? = rule.fact?.toFact(shortXManager)
-                        val firstAction: Action? = rule.actionsList?.let {
-                            if (it.isEmpty()) {
-                                null
-                            } else {
-                                it[0].toAction(shortXManager)
-                            }
-                        }
-                        RuleUM(
-                            id = rule.id,
-                            title = rule.title,
-                            description = rule.description.fallbackOnEmpty(
-                                translateRule(rule)
-                            ),
-                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(rule.lastUpdateTime)
-                            ),
-                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                                context,
-                                Date(rule.createTime)
-                            ),
-                            isEnabled = rule.isEnabled,
-                            factIcon = firstFact?.let {
-                                imageVectorForFact(
-                                    it::class
-                                )
-                            } ?: Remix.Weather.sparkling_line,
-                            factIconColor = firstFact?.let {
-                                colorForFact(it::class).value
-                            } ?: Color.Unspecified.value,
-                            actionIcon = firstAction?.let {
-                                imageVectorForAction(
-                                    it::class
-                                )
-                            } ?: Remix.Weather.sparkling_line,
-                            actionIconColor = firstAction?.let {
-                                colorForAction(it::class).value
-                            } ?: Color.Unspecified.value,
-                        )
+                        ruleToRuleUM(rule)
                     }
                 updateState {
                     copy(rules = rules, isLoading = false)
@@ -257,35 +280,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+
     fun toggleShowDetailedDAItem() {
         viewModelScope.launch {
             pref.setShowDetailedDAItemContent(!state.value.isShowDetailedDAItem)
         }
     }
 
-    private fun translateRule(rule: Rule): String {
-        val fact: String = rule.fact.toFact(shortXManager)?.let {
-            labelAndDescriptionForFactSelector(i18N, it::class).first
-        } ?: "N/A"
-
-        val condition = rule.conditionsList.mapNotNull {
-            it.toCondition(shortXManager)
-        }.joinToString {
-            labelForConditionSelector(i18N, it::class).joinToString()
-        }
-
-        val action = rule.actionsList.mapNotNull {
-            it.toAction(shortXManager)
-        }.joinToString {
-            labelAndDescriptionForActionSelector(i18N, it::class).first
-        }
-
-        return i18N["ui.rule.description.auto.template", mapOf(
-            "fact" to fact,
-            "condition" to condition,
-            "action" to action
-        )]
-    }
 
     fun loadDA(delay: Boolean = false) {
         logger.d("loadDA")
@@ -299,7 +300,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 val das = shortXManager.getAllDirectAction()
                     .sortedByDescending { it.createTime }
                     .map { directAction ->
-                        directAction.toDirectActionUM(context, shortXManager, i18N, activeJobs)
+                        daToDirectActionUM(directAction, activeJobs)
                     }
                 updateState {
                     copy(das = das, isLoading = false)

@@ -28,10 +28,11 @@ import kotlin.math.ln
 
 object ColorDefaults {
     @Composable
-    fun backgroundSurfaceColor() = MaterialTheme.colorScheme.applyTonalElevation(
-        MaterialTheme.colorScheme.surface,
-        1.dp
-    )
+    fun backgroundSurfaceColor(elevation: Dp = 1.dp) =
+        MaterialTheme.colorScheme.applyTonalElevation(
+            MaterialTheme.colorScheme.surface,
+            elevation
+        )
 
     private fun ColorScheme.applyTonalElevation(backgroundColor: Color, elevation: Dp): Color {
         return if (backgroundColor == surface) {
