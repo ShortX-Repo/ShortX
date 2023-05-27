@@ -18,6 +18,8 @@ data class DiscoverState(
     val isLoading: Boolean = true
 )
 
+const val assetName = "prebuilt/prebuilt-all.zip"
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DiscoverModel @Inject constructor(@ApplicationContext context: Context) :
@@ -32,7 +34,7 @@ class DiscoverModel @Inject constructor(@ApplicationContext context: Context) :
     private suspend fun loadPrebuiltRules() {
         updateState { copy(isLoading = true) }
         kotlin.runCatching {
-            val content = BackupAgent(context).readBackupPackageContent("prebuilts/dev-all.zip")
+            val content = BackupAgent(context).readBackupPackageContent(assetName)
             val ruleUMs = withContext(Dispatchers.IO) {
                 content.rules.map {
                     ruleToRuleUM(it)
@@ -48,7 +50,7 @@ class DiscoverModel @Inject constructor(@ApplicationContext context: Context) :
     private suspend fun loadPrebuiltDAs() {
         updateState { copy(isLoading = true) }
         kotlin.runCatching {
-            val content = BackupAgent(context).readBackupPackageContent("prebuilts/dev-all.zip")
+            val content = BackupAgent(context).readBackupPackageContent(assetName)
             val daUMs = withContext(Dispatchers.IO) {
                 content.das.map {
                     daToDirectActionUM(it, emptyList())

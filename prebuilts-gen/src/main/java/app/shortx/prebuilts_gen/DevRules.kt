@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger
 object DevRules {
     private val idGen = AtomicInteger(0)
 
-    private fun nextId() = "DevRule-${idGen.getAndIncrement()}"
+    private fun nextId() = "Dev-${idGen.getAndIncrement()}"
 
     val all = mutableListOf<Rule>().apply {
         listOf(OnOffAny.On, OnOffAny.Off, OnOffAny.Any).forEach { onOffAny ->

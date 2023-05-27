@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger
 object DevDAs {
     private val idGen = AtomicInteger(0)
 
-    private fun nextId() = "DevDA-${idGen.getAndIncrement()}"
+    private fun nextId() = "Dev-${idGen.getAndIncrement()}"
 
     val all = listOf(
         DirectAction.newBuilder().setTitle("NoAction")

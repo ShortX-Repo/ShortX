@@ -17,14 +17,15 @@ fun main() {
     }
 
     runBlocking {
-        exportDevDAs()
+        exportDev()
+        exportPrebuilt()
     }
 }
 
-suspend fun exportDevDAs() {
+suspend fun exportDev() {
     coroutineScope {
         val buildDir = File("build")
-        val prebuiltDir = File(buildDir, "prebuilts")
+        val prebuiltDir = File(buildDir, "dev")
         BaseDirectActionSettingsStore(this, File(prebuiltDir, DA_FILE_NAME).also {
             println(it.absolutePath)
         }).apply {
@@ -43,8 +44,37 @@ suspend fun exportDevDAs() {
         val metaFile = File(prebuiltDir, META_FILE_NAME)
         metaFile.writeText("AUTO GEN")
 
-        val destDir = File("../ui/src/main/assets/prebuilts")
+        val destDir = File("../ui/src/main/assets/dev")
         val zipFile = File(destDir, "dev-all.zip")
+        zipFile.deleteRecursively()
+        ZipUtils.zip(prebuiltDir.absolutePath, destDir.absolutePath, zipFile.name)
+    }
+}
+
+suspend fun exportPrebuilt() {
+    coroutineScope {
+        val buildDir = File("build")
+        val prebuiltDir = File(buildDir, "prebuilt")
+        BaseDirectActionSettingsStore(this, File(prebuiltDir, DA_FILE_NAME).also {
+            println(it.absolutePath)
+        }).apply {
+            addDirectActions(das = PrebuiltDAs.all, write = false)
+            write()
+        }
+
+        BaseRuleSettingsStore(
+            this,
+            File(prebuiltDir, RULE_FILE_NAME).also { println(it.absolutePath) })
+            .apply {
+                addRules(rules = PrebuiltRules.all, write = false)
+                write()
+            }
+
+        val metaFile = File(prebuiltDir, META_FILE_NAME)
+        metaFile.writeText("AUTO GEN")
+
+        val destDir = File("../ui/src/main/assets/prebuilt")
+        val zipFile = File(destDir, "prebuilt-all.zip")
         zipFile.deleteRecursively()
         ZipUtils.zip(prebuiltDir.absolutePath, destDir.absolutePath, zipFile.name)
     }
