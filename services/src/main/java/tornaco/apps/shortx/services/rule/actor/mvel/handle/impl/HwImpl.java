@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import kotlin.jvm.Synchronized;
+import tornaco.apps.shortx.core.util.Logger;
 import tornaco.apps.shortx.services.ShortXContext;
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.IHW;
 
@@ -38,6 +38,8 @@ class HwImpl implements IHW {
     private final Context context;
     private final ShortXContext s;
     private FlashlightController flashlightController;
+
+    private final Logger logger = new Logger("HwImpl");
 
     private final FlashlightController.DirectExecutor executor = new FlashlightController.DirectExecutor();
 
@@ -173,6 +175,7 @@ class HwImpl implements IHW {
             flashlightController.setFlashlight(true);
             return true;
         } catch (Throwable e) {
+            logger.e(e, "enabledFlashlight fail");
             return false;
         }
     }
@@ -184,6 +187,7 @@ class HwImpl implements IHW {
             flashlightController.setFlashlight(false);
             return true;
         } catch (Throwable e) {
+            logger.e(e, "disableFlashlight fail");
             return false;
         }
     }
@@ -194,6 +198,7 @@ class HwImpl implements IHW {
         try {
             return flashlightController.isEnabled();
         } catch (Throwable e) {
+            logger.e(e, "isFlashlightEnabled fail");
             return false;
         }
     }
@@ -235,7 +240,6 @@ class HwImpl implements IHW {
         return true;
     }
 
-    @Synchronized
     private void ensureFlashlightController() {
         if (flashlightController == null) {
             flashlightController = new FlashlightController(context);
@@ -278,6 +282,8 @@ class FlashlightController {
     private final String mCameraId;
     private boolean mTorchAvailable;
 
+    private final Logger logger = new Logger("HwImpl");
+
     public FlashlightController(Context mContext) {
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
 
@@ -297,13 +303,16 @@ class FlashlightController {
     }
 
     public void setFlashlight(boolean enabled) {
+        logger.d("setFlashlight: " + enabled + ", mFlashlightEnabled= " + mFlashlightEnabled);
         boolean pendingError = false;
         synchronized (this) {
             if (mFlashlightEnabled != enabled) {
                 mFlashlightEnabled = enabled;
                 try {
+                    logger.d("setTorchMode: " + mCameraId + ", " + enabled);
                     mCameraManager.setTorchMode(mCameraId, enabled);
                 } catch (CameraAccessException e) {
+                    logger.e(e, "setFlashlight");
                     mFlashlightEnabled = false;
                     pendingError = true;
                 }

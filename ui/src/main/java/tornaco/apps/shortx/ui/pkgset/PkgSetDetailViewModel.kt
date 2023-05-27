@@ -14,6 +14,7 @@ import java.text.Collator
 import java.util.Locale
 
 data class PkgSetDetailState(
+    val originalLabel: String = "",
     val label: String = "",
     val description: String = "",
     val apps: List<App> = emptyList(),
@@ -26,14 +27,16 @@ data class PkgSetDetailState(
 
 class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>(PkgSetDetailState()) {
 
-    fun loadState(id: String) {
+    fun loadState(label: String) {
+        updateState { copy(originalLabel = label) }
+
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 updateState { copy(isLoading = true) }
 
                 afterNavDelay()
 
-                shortXManager.getPkgSetByLabel(id)?.let { pkgSet ->
+                shortXManager.getPkgSetByLabel(label)?.let { pkgSet ->
                     val apps = pkgSet.appPkgsList.mapNotNull { pkg ->
                         shortXManager.pkgToApp(pkg)
                     }
@@ -112,9 +115,14 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>(PkgSetDetailStat
                     val pkgs: List<AppPkg> = apps.map {
                         it.pkg
                     }
+                    shortXManager.deletePkgSet(originalLabel)
                     shortXManager.addPkgSet(
-                        PkgSet.newBuilder().setDescription(description).setLabel(label)
-                            .addAllAppPkgs(pkgs).build()
+                        PkgSet
+                            .newBuilder()
+                            .setDescription(description)
+                            .setLabel(label)
+                            .addAllAppPkgs(pkgs)
+                            .build()
                     )
                 }
             }
