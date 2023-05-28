@@ -3,7 +3,7 @@
   "ui.framework.updated": "{app_name} 的核心已经更新，请及时重启设备；当然你也可以继续体验，但是如果你遇到一些故障，建议你立刻重启",
   "ui.dialog.title.current.app": "应用在前台",
   "ui.dialog.title.select.app": "选择应用",
-  "ui.search.title.search.n.items": "搜素 {count} 个项目",
+  "ui.search.title.search.n.items": "搜索 {count} 个项目",
   "ui.fact.title": "触发器",
   "ui.fact.select": "选择触发器",
   "ui.conditions.title": "条件",
