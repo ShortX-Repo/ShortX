@@ -26,6 +26,7 @@ data class SettingsState(
     val logDir: String = "N/A",
     val installFakeService: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
+    val hasFatalError: Boolean = false
 )
 
 sealed interface BackupResult {
@@ -58,7 +59,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 coreVersion = shortXManager.version(),
                 coreFP = shortXManager.fingerprint(),
                 isDebugLogEnabled = shortXManager.isLogDebugEnable(),
-                logDir = shortXManager.getLogDir()
+                logDir = shortXManager.getLogDir(),
+                hasFatalError = shortXManager.hasFatalError()
             )
         }
 

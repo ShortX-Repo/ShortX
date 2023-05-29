@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -84,6 +85,19 @@ fun SettingsScreen(
                         .animateContentSize()
 
                 ) {
+                    AnimatedVisibility(visible = state.hasFatalError) {
+                        WarningCard(
+                            title = LocalI18N.current["ui.settings.fatal.error.title"],
+                            warnings = listOf(
+                                LocalI18N.current["ui.settings.fatal.error.message", mapOf("dir" to state.logDir)]
+                            )
+                        ) {
+
+                        }
+
+                        StandardSpacer()
+                    }
+
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                         MediumTitle(text = LocalI18N.current["ui.common.settings"])
                     }

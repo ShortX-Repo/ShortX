@@ -62,6 +62,7 @@ fun HomeScreen() {
                         drawerTonalElevation = 0.5.dp
                     ) {
                         StandardSpacer()
+
                         val appNavController = LocalNavHostController.current
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
