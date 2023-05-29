@@ -1,1 +1,1 @@
-./gradlew app:assemblePrcRelease  -DversionNameSuffix=Preview
+./gradlew clean app:assemblePrcRelease  -DversionNameSuffix=Preview

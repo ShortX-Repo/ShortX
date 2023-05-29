@@ -39,7 +39,6 @@ fun PkgSetListScreenDialog(state: CommonDialogState) {
     }
 }
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
@@ -59,6 +58,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                 rememberTextInputState(
                     title = i18N["ui.pkg.set.add.title"],
                     message = i18N["ui.pkg.set.add.input.label"],
+                    showSymbolButton = false,
                     inputValidator = {
                         vm.validateLabel(it, i18N)
                     },

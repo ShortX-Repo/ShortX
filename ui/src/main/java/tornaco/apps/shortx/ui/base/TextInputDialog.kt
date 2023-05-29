@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 class TextInputState(
     val title: String,
     val message: String?,
+    val showSymbolButton: Boolean,
     val inputValidator: ((String) -> Pair<Boolean, String>),
     val onSelected: (String) -> Unit
 ) {
@@ -41,11 +42,12 @@ class TextInputState(
 fun rememberTextInputState(
     title: String,
     message: String?,
+    showSymbolButton: Boolean = true,
     inputValidator: ((String) -> Pair<Boolean, String>) = { it.isNotEmpty() to "" },
     onSelected: (String) -> Unit
 ): TextInputState {
     return remember {
-        TextInputState(title, message, inputValidator, onSelected)
+        TextInputState(title, message, showSymbolButton, inputValidator, onSelected)
     }
 }
 
@@ -75,13 +77,13 @@ fun TextInputDialog(state: TextInputState) {
                     StandardSpacer()
                 }
 
-                TextField(
-                    
+                ShortXTextField(
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
                     isError = state.isValid.not(),
                     value = state.currentValue,
+                    showSymbolButton = state.showSymbolButton,
                     onValueChange = {
                         val validate = state.inputValidator(it)
                         state.currentValue = it

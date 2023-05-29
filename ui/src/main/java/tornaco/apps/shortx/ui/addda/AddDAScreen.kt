@@ -121,11 +121,11 @@ private fun TitleAndDescription(
         Text(text = LocalI18N.current["ui.da.title"])
     }, value = state.title, readOnly = readOnly, onValueChange = { title ->
         vm.setTitle(title)
-    })
+    }, showSymbolButton = false)
     Spacer(modifier = Modifier.size(16.dp))
     ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
         Text(text = LocalI18N.current["ui.da.description"])
     }, value = state.description, readOnly = readOnly, onValueChange = { description ->
         vm.setDescription(description)
-    })
+    }, showSymbolButton = false)
 }

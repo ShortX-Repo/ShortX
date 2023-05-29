@@ -222,6 +222,7 @@ private fun TitleAndDescription(
         },
         value = state.title,
         readOnly = readOnly,
+        showSymbolButton = false,
         onValueChange = { title ->
             vm.setTitle(title)
         })
@@ -232,6 +233,7 @@ private fun TitleAndDescription(
         },
         value = state.description,
         readOnly = readOnly,
+        showSymbolButton = false,
         onValueChange = { description ->
             vm.setDescription(description)
         })

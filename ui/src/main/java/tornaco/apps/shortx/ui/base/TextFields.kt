@@ -3,11 +3,14 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -16,12 +19,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import tornaco.apps.shortx.core.res.Remix
 
 @Composable
 @Preview
@@ -65,28 +74,77 @@ fun ShortXTextField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = ShortXCardRoundedCornerShapeLarge,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    showSymbolButton: Boolean = true
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        enabled = enabled,
-        readOnly = readOnly,
-        textStyle = textStyle,
-        label = label,
-        placeholder = placeholder,
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        supportingText = supportingText,
-        isError = isError,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        singleLine = singleLine,
-        maxLines = maxLines,
-        interactionSource = interactionSource,
-        shape = shape,
-        colors = colors
-    )
+    Box {
+        var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
+
+        // Last String value that either text field was recomposed with or updated in the onValueChange
+        // callback. We keep track of it to prevent calling onValueChange(String) for same String when
+        // CoreTextField's onValueChange is called multiple times without recomposition in between.
+        var lastTextValue by remember(value) { mutableStateOf(value) }
+
+        val symbolDropdownState = rememberSymbolDropdownState {
+            val newTextFieldValueState = TextFieldValue(
+                textFieldValueState.text
+                    .toMutableList()
+                    .apply {
+                        addAll(textFieldValueState.selection.start, it.toList())
+                    }
+                    .joinToString(""),
+                TextRange(textFieldValueState.selection.start + 1)
+            )
+            textFieldValueState = newTextFieldValueState
+
+            val stringChangedSinceLastInvocation = lastTextValue != newTextFieldValueState.text
+            lastTextValue = newTextFieldValueState.text
+
+            if (stringChangedSinceLastInvocation) {
+                onValueChange(newTextFieldValueState.text)
+            }
+        }
+        SymbolDropdown(state = symbolDropdownState)
+
+        OutlinedTextField(
+            value = textFieldValueState,
+            onValueChange = { newTextFieldValueState ->
+                textFieldValueState = newTextFieldValueState
+
+                val stringChangedSinceLastInvocation = lastTextValue != newTextFieldValueState.text
+                lastTextValue = newTextFieldValueState.text
+
+                if (stringChangedSinceLastInvocation) {
+                    onValueChange(newTextFieldValueState.text)
+                }
+            },
+            modifier = modifier,
+            enabled = enabled,
+            readOnly = readOnly,
+            textStyle = textStyle,
+            label = label,
+            placeholder = placeholder,
+            leadingIcon = leadingIcon,
+            trailingIcon = {
+                Row {
+                    trailingIcon?.invoke()
+                    if (showSymbolButton) IconButton(onClick = {
+                        symbolDropdownState.open()
+                    }) {
+                        RemixIcon(remixName = Remix.Development.code_s_slash_fill)
+                    }
+                }
+            },
+            supportingText = supportingText,
+            isError = isError,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = singleLine,
+            maxLines = maxLines,
+            interactionSource = interactionSource,
+            shape = shape,
+            colors = colors
+        )
+    }
 }

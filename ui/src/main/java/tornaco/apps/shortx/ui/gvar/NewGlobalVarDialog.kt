@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
@@ -75,14 +74,11 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                 SmallTitle(text = LocalI18N.current["ui.global.var.name"])
                 TipBody(text = LocalI18N.current["ui.global.var.name.description"])
-                TextField(
+                ShortXTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent
-                    ),
                     value = name,
+                    showSymbolButton = false,
                     onValueChange = {
                         name = it
                     })
