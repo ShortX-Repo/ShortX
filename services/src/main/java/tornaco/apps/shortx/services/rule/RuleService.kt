@@ -14,12 +14,16 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
-import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
+import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
+import tornaco.apps.shortx.services.systemServiceScope
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -52,6 +56,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     private val ruleChangeListeners = mutableListOf<() -> Unit>()
+    private val daChangeListeners = mutableListOf<() -> Unit>()
+
     private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
 
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
@@ -236,13 +242,27 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         ruleChangeListeners.forEach { it() }
     }
 
+    fun addDAChangeListener(listener: () -> Unit) {
+        daChangeListeners.add(listener)
+    }
+
+    fun removeDAChangeListener(listener: () -> Unit) {
+        daChangeListeners.remove(listener)
+    }
+
+    private fun daChanged() {
+        daChangeListeners.forEach { it() }
+    }
+
     fun addDirectAction(da: DirectAction) {
         logger.d("addDirectAction: $da")
         dasSettingsStore.addDirectAction(da)
+        daChanged()
     }
 
     fun deleteDirectAction(id: String) {
         dasSettingsStore.deleteDirectAction(id)
+        daChanged()
     }
 
     fun getDirectActionById(id: String): DirectAction? {

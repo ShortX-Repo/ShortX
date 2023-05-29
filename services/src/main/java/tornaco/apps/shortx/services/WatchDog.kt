@@ -16,8 +16,8 @@ class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContex
         super.systemReady()
     }
 
-    fun onFatalError(error: Throwable) {
-        logger.e(error, "FATAL: got error in SYSTEM PROCESS")
+    fun onFatalError(error: Throwable, method: String = "") {
+        logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
         fatalErrors.add(error)
     }
 }

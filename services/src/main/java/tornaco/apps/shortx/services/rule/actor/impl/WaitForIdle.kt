@@ -13,6 +13,8 @@ object WaitForIdle : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        shortXContext.wm.waitForIdle()
+        shortXContext.wm.withUiAutomation("WaitForIdle") {
+            it.waitForIdle()
+        }
     }
 }

@@ -16,10 +16,12 @@ object FindAndClickViewByText : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val d = action unpack_ FindAndClickViewByText::class.java
-        shortXContext.wm.findAndClickViewByText(
-            text = d.text,
-            isRegex = d.isRegex,
-            timeout = maxOf(d.timeout, 1000L)
-        )
+        shortXContext.wm.withUiAutomation("WaitForIdle") {
+            it.findAndClickViewByText(
+                text = d.text,
+                isRegex = d.isRegex,
+                timeout = maxOf(d.timeout, 1000L)
+            )
+        }
     }
 }

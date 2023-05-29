@@ -86,7 +86,6 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         return null;
     }
 
-
     public AccessibilityNodeInfo getRootInActiveWindow() {
         synchronized (syncLock) {
             if (connectionId.get() == AccessibilityInteractionClient.NO_ID) {
