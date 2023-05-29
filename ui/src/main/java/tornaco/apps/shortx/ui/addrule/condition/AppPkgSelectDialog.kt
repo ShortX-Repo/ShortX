@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -123,7 +124,9 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
                                 if (selectedTabIndex == 0) {
                                     state.onAppListSelected(state.selectedApps)
                                 } else {
-                                    state.onPkgSetSelected?.invoke(state.selectedPkgSets)
+                                    state.onPkgSetSelected?.invoke(state.selectedPkgSets.filter {
+                                        shortXManager.getPkgSetByLabel(it.label) != null
+                                    })
                                 }
                                 state.dismiss()
 
