@@ -2,17 +2,30 @@ package tornaco.apps.shortx.ui.addrule
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.DialogMessage
+import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
@@ -65,7 +78,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                     text1 = it.description,
                     text2 = i18N["ui.context.data.example", mapOf("eg" to it.accessExample)],
                     onClick = {
-                        ClipboardUtils.copyToClipboard(context, "context", it.key)
+                        ClipboardUtils.copyToClipboard(context, "context", it.accessExample)
                         Toast.makeText(
                             context,
                             i18N["ui.common.copied.to.clipboard"],
