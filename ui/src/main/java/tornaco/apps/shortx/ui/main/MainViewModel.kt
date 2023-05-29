@@ -199,7 +199,7 @@ fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<MainState>(context, MainState()) {
+    ContextViewModel<MainState>(context, { MainState() }) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
 

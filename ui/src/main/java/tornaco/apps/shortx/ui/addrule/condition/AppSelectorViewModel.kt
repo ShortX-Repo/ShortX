@@ -22,7 +22,7 @@ data class AppStates(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AppSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AppStates>(context, AppStates()) {
+    ContextViewModel<AppStates>(context, { AppStates() }) {
 
     fun loadInstalledApps() {
         viewModelScope.launch {

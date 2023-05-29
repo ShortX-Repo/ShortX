@@ -26,9 +26,7 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
 }
 
 class ConditionContentStateHandler(
-    private val withState: WithStateImpl<ConditionContentState> = WithStateImpl(
-        ConditionContentState()
-    )
+    private val withState: WithStateImpl<ConditionContentState> = WithStateImpl { ConditionContentState() }
 ) : WithState<ConditionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ConditionContentStateHandler")
@@ -89,9 +87,10 @@ fun List<Condition>.generateWarningMessages(
     shortXManager: ShortXManager,
     i18N: I18N
 ): List<String> {
-    val conditionMessages = getGlobalVarRefs().filter { shortXManager.getGlobalVarByName(it) == null }
-        .mapIndexed { index, it ->
-            "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
-        }
+    val conditionMessages =
+        getGlobalVarRefs().filter { shortXManager.getGlobalVarByName(it) == null }
+            .mapIndexed { index, it ->
+                "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
+            }
     return conditionMessages
 }

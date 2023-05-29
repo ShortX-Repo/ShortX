@@ -17,18 +17,20 @@ data class PostNotificationSelectorState(
 @HiltViewModel
 class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<PostNotificationSelectorState>(
-        context, PostNotificationSelectorState(
-            data = Action.PostNotification(
-                tag = "tag-${System.currentTimeMillis()}",
-                title = "",
-                message = "",
-                largeIcon = "",
-                smallIcon = Remix.Communication.chat_2_line,
-                isImportant = false,
-                vibrate = false,
-                sound = false
+        context, {
+            PostNotificationSelectorState(
+                data = Action.PostNotification(
+                    tag = "tag-${System.currentTimeMillis()}",
+                    title = "",
+                    message = "",
+                    largeIcon = "",
+                    smallIcon = Remix.Communication.chat_2_line,
+                    isImportant = false,
+                    vibrate = false,
+                    sound = false
+                )
             )
-        )
+        }
     ) {
 
     fun initFrom(settings: Action.PostNotification) {

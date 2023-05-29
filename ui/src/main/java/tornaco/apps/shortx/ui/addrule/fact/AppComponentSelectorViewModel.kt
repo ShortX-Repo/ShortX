@@ -33,7 +33,7 @@ data class AppComponentStates(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<AppComponentStates>(context, AppComponentStates()) {
+    ContextViewModel<AppComponentStates>(context, { AppComponentStates() }) {
 
     fun loadActivities(pkg: AppPkg) {
         viewModelScope.launch {

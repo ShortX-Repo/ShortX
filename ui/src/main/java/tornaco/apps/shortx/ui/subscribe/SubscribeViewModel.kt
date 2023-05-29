@@ -45,7 +45,7 @@ enum class CodeVerifyEvent {
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
 class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Context) :
-    StateViewModel<SubscriptionState>(SubscriptionState()) {
+    StateViewModel<SubscriptionState>({ SubscriptionState() }) {
 
     private val repo by lazy { Repo(context) }
 
@@ -93,12 +93,15 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
                 is VerifyResult.Fail -> {
                     _codeVerifyEvent.emit(CodeVerifyEvent.Fail)
                 }
+
                 VerifyResult.NetworkError -> {
                     _codeVerifyEvent.emit(CodeVerifyEvent.NetworkError)
                 }
+
                 is VerifyResult.Error -> {
                     _codeVerifyEvent.emit(CodeVerifyEvent.Error)
                 }
+
                 is VerifyResult.Success -> {
                     S.c(code, res.data.k)
                     setLVLChecked(context, true, code)

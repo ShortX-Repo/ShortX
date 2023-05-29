@@ -27,7 +27,7 @@ data class ShowDialogSelectorState(
 @HiltViewModel
 class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<ShowDialogSelectorState>(
-        context, ShowDialogSelectorState()
+        context, { ShowDialogSelectorState() }
     ) {
 
     val positiveActionContent = ActionContentStateHandler()
@@ -84,16 +84,19 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
                     copy(positiveText = text)
                 }
             }
+
             DialogAction.Negative -> {
                 updateState {
                     copy(negativeText = text)
                 }
             }
+
             DialogAction.Neutral -> {
                 updateState {
                     copy(neutralText = text)
                 }
             }
+
             DialogAction.UNRECOGNIZED, DialogAction.None -> {}
         }
     }

@@ -57,9 +57,11 @@ fun UISettings.toDanmuUISettings(): DanmuUISettings =
 @HiltViewModel
 class DanmuUISettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
     StateViewModel<UISettingsState>(
-        UISettingsState(
-            shortXManager.getDanmuUISettings().toUISettings()
-        )
+        {
+            UISettingsState(
+                shortXManager.getDanmuUISettings().toUISettings()
+            )
+        }
     ) {
 
     private var previewJob: Job? = null

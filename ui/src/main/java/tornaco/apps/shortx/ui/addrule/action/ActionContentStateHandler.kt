@@ -55,7 +55,7 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
 }
 
 class ActionContentStateHandler(
-    private val withState: WithStateImpl<ActionContentState> = WithStateImpl(ActionContentState())
+    private val withState: WithStateImpl<ActionContentState> = WithStateImpl { ActionContentState() }
 ) : WithState<ActionContentState> by withState {
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ActionContentStateHandler")

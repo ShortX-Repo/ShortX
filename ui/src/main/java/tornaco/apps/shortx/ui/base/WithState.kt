@@ -7,19 +7,19 @@ import kotlinx.coroutines.flow.asStateFlow
 interface WithState<T> {
     val state: StateFlow<T>
 
-    val initState: T
+    val initState: () -> T
 
     fun updateState(block: T.() -> T)
 
     fun updateState(t: T)
 
     fun resetState() {
-        updateState(initState)
+        updateState(initState())
     }
 }
 
-class WithStateImpl<T>(override val initState: T) : WithState<T> {
-    private val _state by lazy { MutableStateFlow(initState) }
+class WithStateImpl<T>(override val initState: () -> T) : WithState<T> {
+    private val _state by lazy { MutableStateFlow(initState()) }
     override val state get() = _state.asStateFlow()
 
 
@@ -32,6 +32,6 @@ class WithStateImpl<T>(override val initState: T) : WithState<T> {
     }
 
     override fun resetState() {
-        updateState(initState)
+        updateState(initState())
     }
 }

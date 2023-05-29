@@ -34,7 +34,9 @@ data class StartActivityIntentSelectorState(
 @HiltViewModel
 class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<StartActivityIntentSelectorState>(
-        context, StartActivityIntentSelectorState()
+        context, {
+            StartActivityIntentSelectorState()
+        }
     ) {
 
     override fun resetState() {

@@ -9,7 +9,14 @@ import tornaco.apps.shortx.core.proto.gv.BoolListVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.Int64ListVar
 import tornaco.apps.shortx.core.proto.gv.StringListVar
-import tornaco.apps.shortx.core.rule.*
+import tornaco.apps.shortx.core.rule.GlobalVarType
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.isList
+import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.toType
+import tornaco.apps.shortx.core.rule.toVarValueNotList
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
@@ -30,7 +37,7 @@ data class GlobalVarDetailState(
     val isLoading: Boolean = false
 )
 
-class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarDetailState()) {
+class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVarDetailState() }) {
     private val logger = Logger("GlobalVarDetailViewModel")
 
     fun loadState(id: String) {
@@ -113,6 +120,7 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
                                 BoolListVar.newBuilder(data).addAllValues(boolV).build().pack_()
                             }
                     }
+
                     GlobalVarType.StringList -> {
                         val data = if (it.`var`.`is`(StringListVar::class.java)) {
                             it.`var` unpack_ StringListVar::class.java
@@ -122,6 +130,7 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>(GlobalVarD
                         logger.d("before add to StringList: $value --> current: $data")
                         StringListVar.newBuilder(data).addAllValues(value).build().pack_()
                     }
+
                     else -> {
                         null
                     }

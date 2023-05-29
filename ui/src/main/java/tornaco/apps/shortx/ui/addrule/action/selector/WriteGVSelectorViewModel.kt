@@ -16,7 +16,7 @@ fun Action.WriteGV.isValid() = varName.isNotEmpty()
 class WriteGVSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<Action.WriteGV>(
         context,
-        Action.WriteGV(valueAsString = "", varName = "")
+        { Action.WriteGV(valueAsString = "", varName = "") }
     ) {
 
     fun selectGlobalVar(name: String) {

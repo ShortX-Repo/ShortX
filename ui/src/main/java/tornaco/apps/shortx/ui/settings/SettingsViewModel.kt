@@ -42,7 +42,7 @@ sealed interface RestoreResult {
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<SettingsState>(context, SettingsState()) {
+    ContextViewModel<SettingsState>(context, { SettingsState() }) {
 
     private val _backupPerformed = MutableSharedFlow<BackupResult>()
     val backupPerformed = _backupPerformed.asSharedFlow()

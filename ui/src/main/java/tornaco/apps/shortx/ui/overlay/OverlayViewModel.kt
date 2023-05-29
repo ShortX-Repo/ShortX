@@ -13,7 +13,7 @@ data class OverlayState(
     val formattedValues: List<String> = emptyList()
 )
 
-class OverlayViewModel : StateViewModel<OverlayState>(OverlayState()) {
+class OverlayViewModel : StateViewModel<OverlayState>({ OverlayState() }) {
     private val logger = Logger("OverlayViewModel")
 
     private val globalVarObs = object : IGlobalVarObserver.Stub() {

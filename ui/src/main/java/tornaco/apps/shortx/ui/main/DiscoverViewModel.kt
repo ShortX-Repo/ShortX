@@ -23,7 +23,7 @@ const val assetName = "prebuilt/prebuilt-all.zip"
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class DiscoverModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<DiscoverState>(context, DiscoverState()) {
+    ContextViewModel<DiscoverState>(context, { DiscoverState() }) {
     init {
         viewModelScope.launch {
             loadPrebuiltDAs()

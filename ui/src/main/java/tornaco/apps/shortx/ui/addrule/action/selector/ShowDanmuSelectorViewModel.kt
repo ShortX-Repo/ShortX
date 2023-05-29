@@ -12,7 +12,9 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ShowDanmuSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<Action.ShowDanmu>(context, Action.ShowDanmu(text = "", icon = null)) {
+    ContextViewModel<Action.ShowDanmu>(context, {
+        Action.ShowDanmu(text = "", icon = null)
+    }) {
 
     fun initFrom(settings: Action.ShowDanmu) {
         updateState(settings)

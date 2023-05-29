@@ -32,7 +32,7 @@ data class RemoteRuleInfo(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ComponentRuleInfoDialogViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<ComponentRuleInfoState>(context, ComponentRuleInfoState()) {
+    ContextViewModel<ComponentRuleInfoState>(context, { ComponentRuleInfoState() }) {
     private val gson by lazy { Gson() }
 
     fun load(url: String) {

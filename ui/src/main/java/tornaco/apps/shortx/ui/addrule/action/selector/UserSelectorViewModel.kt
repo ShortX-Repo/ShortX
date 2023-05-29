@@ -19,7 +19,7 @@ data class UserState(
 @HiltViewModel
 class UserSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<UserState>(
-        context, UserState()
+        context, { UserState() }
     ) {
 
     override fun resetState() {

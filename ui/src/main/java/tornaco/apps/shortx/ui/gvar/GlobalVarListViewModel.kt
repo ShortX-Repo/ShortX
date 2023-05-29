@@ -11,7 +11,7 @@ data class GlobalVarListState(
     val globalVars: List<GlobalVar> = emptyList()
 )
 
-class GlobalVarListViewModel : StateViewModel<GlobalVarListState>(GlobalVarListState()) {
+class GlobalVarListViewModel : StateViewModel<GlobalVarListState>({ GlobalVarListState() }) {
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -32,7 +32,7 @@ data class SelectorState(
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
-    ContextViewModel<SelectorState>(context, SelectorState()) {
+    ContextViewModel<SelectorState>(context, { SelectorState() }) {
 
     @Inject
     lateinit var remoteRepo: RemoteRepo
