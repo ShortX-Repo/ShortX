@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -156,6 +157,8 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         warnings = elseActionState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
+
+                    SuggestedNavEntry()
                 }
             }
         }

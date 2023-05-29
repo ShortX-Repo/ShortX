@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -125,10 +126,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             }
             MDIconSelectorDialog(state = iconSelector)
 
-            OutlinedCard(
-                modifier = Modifier.padding(top = 16.dp),
-                colors = CardDefaults.cardColors()
-            ) {
+            ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -194,5 +192,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
         }) {
             Text(text = LocalI18N.current["ui.action.show.add.button"])
         }
+
+        SuggestedNavEntry()
     }
 }

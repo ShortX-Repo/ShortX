@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -173,6 +174,8 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
             vm.updateCancelable(it)
         }
         LargeSpacer()
+
+        SuggestedNavEntry()
     }
 }
 

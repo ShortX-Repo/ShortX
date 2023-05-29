@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -225,5 +226,6 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
             })
         }
 
+        SuggestedNavEntry()
     }
 }

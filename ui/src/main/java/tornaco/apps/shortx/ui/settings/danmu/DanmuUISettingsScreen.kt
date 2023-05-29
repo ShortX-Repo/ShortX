@@ -37,11 +37,24 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@Composable
+fun DanmuUISettingsScreenDialog(state: CommonDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            DanmuUISettingsScreen(back = { state.dismiss() })
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +72,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     ShortXMediumTopAppBar(
                         title = {
                             Text(
-                                text = "Danmu"
+                                text = LocalI18N.current["ui.settings.danmu"]
                             )
                         },
                         navigationIcon = {

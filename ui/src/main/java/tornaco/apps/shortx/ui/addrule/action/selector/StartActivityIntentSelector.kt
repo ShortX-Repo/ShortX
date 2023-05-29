@@ -62,6 +62,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class StartActivityIntentDialogState(
@@ -333,6 +334,8 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
 
         StandardSpacer()
+
+        SuggestedNavEntry()
     }
 }
 

@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,16 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@Composable
+fun PkgSetListScreenDialog(state: CommonDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            PkgSetListScreen(back = { state.dismiss() }, goToDetail = {})
+        }
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -33,6 +33,15 @@ import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+@Composable
+fun GlobalVarListScreenDialog(state: CommonDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            GlobalVarListScreen(back = { state.dismiss() }, goToDetail = {})
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {

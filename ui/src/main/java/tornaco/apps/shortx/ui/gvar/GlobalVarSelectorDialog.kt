@@ -10,8 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,7 +32,13 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.valueString
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class GlobalVarSelectorState(
@@ -121,7 +138,7 @@ private fun GlobalVarListItem(
             .padding(16.dp), onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            MD3Badge(text = type)
+            OutlineBadge(text = type)
             TinySpacer()
             Text(
                 text = name, style = MaterialTheme.typography.titleMedium.copy(
