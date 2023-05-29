@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.TextButton
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 val symbols1 = arrayOf(
     "{",
@@ -66,7 +68,9 @@ fun rememberSymbolDropdownState(input: (String) -> Unit): SymbolDropdownState {
 @Composable
 fun SymbolDropdown(state: SymbolDropdownState) {
     DropdownMenu(
-        modifier = Modifier.fillMaxWidth(DROPDOWN_WIDTH_FRACTION),
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .height(120.dp),
         expanded = state.isMenuOpen,
         onDismissRequest = {
             state.close()

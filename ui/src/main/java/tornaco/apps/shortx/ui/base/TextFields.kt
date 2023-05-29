@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +81,19 @@ fun ShortXTextField(
     Box {
         var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
 
+        // Holds the latest TextFieldValue that BasicTextField was recomposed with. We couldn't simply
+        // pass `TextFieldValue(text = value)` to the CoreTextField because we need to preserve the
+        // composition.
+        val textFieldValue = textFieldValueState.copy(text = value)
+
+        SideEffect {
+            if (textFieldValue.selection != textFieldValueState.selection ||
+                textFieldValue.composition != textFieldValueState.composition
+            ) {
+                textFieldValueState = textFieldValue
+            }
+        }
+
         // Last String value that either text field was recomposed with or updated in the onValueChange
         // callback. We keep track of it to prevent calling onValueChange(String) for same String when
         // CoreTextField's onValueChange is called multiple times without recomposition in between.
@@ -107,7 +121,7 @@ fun ShortXTextField(
         SymbolDropdown(state = symbolDropdownState)
 
         OutlinedTextField(
-            value = textFieldValueState,
+            value = textFieldValue,
             onValueChange = { newTextFieldValueState ->
                 textFieldValueState = newTextFieldValueState
 
@@ -131,7 +145,7 @@ fun ShortXTextField(
                     if (showSymbolButton) IconButton(onClick = {
                         symbolDropdownState.open()
                     }) {
-                        RemixIcon(remixName = Remix.Development.code_s_slash_fill)
+                        RemixIcon(remixName = Remix.Device.keyboard_fill)
                     }
                 }
             },
