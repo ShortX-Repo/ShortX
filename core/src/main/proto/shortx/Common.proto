@@ -81,3 +81,8 @@ message UserInfo {
   int32 userId = 2;
   bool isMain = 3;
 }
+
+message RecentTask {
+  AppPkg owner = 1;
+  int32 taskId = 2;
+}

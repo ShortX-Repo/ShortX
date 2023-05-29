@@ -41,4 +41,10 @@ object ContextDataMapping {
     enum class AppBecomeBg(val description: String) {
         pkgName("App package name of the BG Activity"),
     }
+
+    enum class TaskRemoved(val description: String) {
+        taskId("Id of the removed task"),
+        userId("The user id"),
+        pkgName("App package name of the task owner"),
+    }
 }

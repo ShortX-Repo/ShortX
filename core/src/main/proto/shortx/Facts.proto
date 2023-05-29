@@ -173,3 +173,7 @@ message NotificationUpdated {
   Notification old = 1;
   Notification new = 2;
 }
+
+message TaskRemoved {
+  AppPkg pkg = 1;
+}

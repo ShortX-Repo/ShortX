@@ -17,6 +17,7 @@ object Methods {
     const val registerUpdatedByApp = "registerUpdatedByApp"
     const val registerRemovedByApp = "registerRemovedByApp"
     const val registerDismissedByUser = "registerDismissedByUser"
+    const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
 }
 
 object ClassNames {

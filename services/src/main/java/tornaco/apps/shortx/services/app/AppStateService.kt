@@ -14,9 +14,11 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.services.*
@@ -315,5 +317,19 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun getAppComponentInfo(component: AppComponent): AppComponentInfo? {
         return null
+    }
+
+    fun onTaskRemoved(task: RecentTask) {
+        logger.d("onTaskRemoved: ${task.owner.pkgName} - ${task.owner.userId} - ${task.taskId}")
+
+        shortXContext.rule.publishFact(
+            "onTaskRemoved",
+            TaskRemoved.newBuilder().build(),
+            mapOf(
+                ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
+                ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
+                ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,
+            )
+        )
     }
 }

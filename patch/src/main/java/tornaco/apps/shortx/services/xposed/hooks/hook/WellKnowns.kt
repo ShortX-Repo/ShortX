@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
+import util.ReflectionsExt
 
 object Classes {
 
@@ -52,5 +53,18 @@ object Classes {
         XposedHelpers.findClass(
             NOTIFICATION_USAGE_STATS_SERVICE,
             this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.activityStackSupervisorClass(methodName: String): Class<*> =
+        ReflectionsExt.anyClassFromNames(
+            this,
+            methodName,
+            arrayOf(
+                "com.android.server.am.ActivityStackSupervisor",
+                "com.android.server.wm.ActivityStackSupervisor",
+                // Android S emulator named.
+                "com.android.server.wm.ActivityTaskSupervisor"
+            )
         )
 }
