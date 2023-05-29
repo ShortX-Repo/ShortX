@@ -64,8 +64,14 @@ sealed interface Fact {
     data class NotificationUpdated(
         val n: Notification
     ) : Fact
-}
 
+    data class TaskRemoved(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList(),
+    ) : Fact
+
+    object TaskRemovedAny : Fact
+}
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()
 
@@ -96,4 +102,7 @@ val allFactClasses = listOf(
     Fact.NotificationPosted::class,
     Fact.NotificationRemoved::class,
     Fact.NotificationUpdated::class,
+
+    Fact.TaskRemoved::class,
+    Fact.TaskRemovedAny::class,
 )

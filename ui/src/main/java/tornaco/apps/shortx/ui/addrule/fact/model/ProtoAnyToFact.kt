@@ -163,6 +163,22 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.TaskRemoved::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.TaskRemoved::class.java
+            val models =
+                (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+
+            if (models.first.isEmpty() && models.second.isEmpty()) {
+                Fact.TaskRemovedAny
+            } else {
+                Fact.TaskRemoved(
+                    apps = models.first,
+                    pkgSets = models.second
+                )
+            }
+        }
+
         else -> {
             null
         }

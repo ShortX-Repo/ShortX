@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -175,6 +176,17 @@ fun Fact.toProtoFact(): ProtoMessage {
                         .build()
                 )
                 .build()
+        }
+
+        is Fact.TaskRemoved -> {
+            TaskRemoved.newBuilder()
+                .addAllApps(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label })
+                .build()
+        }
+
+        Fact.TaskRemovedAny -> {
+            TaskRemoved.newBuilder().build()
         }
     }
 }

@@ -39,24 +39,35 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
         Fact.NotificationPosted::class -> {
             dats<ContextDataMapping.NotificationPosted>()
         }
+
         Fact.NotificationUpdated::class -> {
             dats<ContextDataMapping.NotificationUpdated>()
         }
+
         Fact.NotificationRemoved::class -> {
             dats<ContextDataMapping.NotificationRemoved>()
         }
+
         Fact.AppBecomeBackground::class -> {
             dats<ContextDataMapping.AppBecomeBg>()
         }
+
         Fact.AppBecomeForeground::class -> {
             dats<ContextDataMapping.AppBecomeFg>()
         }
+
         Fact.ActivityStarted::class -> {
             dats<ContextDataMapping.ActivityStarted>()
         }
+
         Fact.AnyActivityStarted::class -> {
             dats<ContextDataMapping.ActivityStarted>()
         }
+
+        Fact.TaskRemoved::class, Fact.TaskRemovedAny::class -> {
+            dats<ContextDataMapping.TaskRemoved>()
+        }
+
         else -> {
             emptyList()
         }
@@ -68,6 +79,7 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
         Action.MVEL::class, Action.RemoteMVEL::class -> {
             dats<ContextDataMapping.ExecuteMVEL>()
         }
+
         else -> {
             emptyList()
         }

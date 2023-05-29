@@ -73,18 +73,18 @@ fun FactSelectors(
             })
     AppPkgSelectorDialog(appFgPkgSelectorState)
 
-    val appComponentSelectorState = rememberAppComponentSelectorState(
+    val activityStartAppComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
         onAppComponentSelected = { infoList ->
             vm.setFact(Fact.ActivityStarted(infoList.map { it.component }))
         }
     )
-    AppComponentSelectorDialog(appComponentSelectorState)
+    AppComponentSelectorDialog(activityStartAppComponentSelectorState)
 
-    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
-        appComponentSelectorState.show(it.pkg)
+    val activityStartSingleAppSelectorState = rememberSingleAppPkgSelectorState {
+        activityStartAppComponentSelectorState.show(it.pkg)
     }
-    SingleAppSelectorDialog(state = singleAppSelectorState)
+    SingleAppSelectorDialog(state = activityStartSingleAppSelectorState)
 
 
     val wifiSelectorState =
@@ -142,6 +142,19 @@ fun FactSelectors(
     OnOffAnyStateSelectorDialog(hotspotSelectorState)
 
 
+    val taskRemovedAppSelectorState = rememberAppPkgSelectorState(
+        onPkgSetSelected = {
+            vm.setFact(
+                Fact.TaskRemoved(pkgSets = it)
+            )
+        },
+        onAppListSelected = {
+            vm.setFact(
+                Fact.TaskRemoved(apps = it)
+            )
+        })
+    AppPkgSelectorDialog(state = taskRemovedAppSelectorState)
+
     FactSelector(state = state, readOnly = readOnly) { fact ->
         when (fact) {
             Fact.KeyEvent::class -> {
@@ -149,11 +162,19 @@ fun FactSelectors(
             }
 
             Fact.ActivityStarted::class -> {
-                singleAppSelectorState.show()
+                activityStartSingleAppSelectorState.show()
             }
 
             Fact.AnyActivityStarted::class -> {
                 vm.setFact(Fact.AnyActivityStarted)
+            }
+
+            Fact.TaskRemoved::class -> {
+                taskRemovedAppSelectorState.show()
+            }
+
+            Fact.TaskRemovedAny::class -> {
+                vm.setFact(Fact.TaskRemovedAny)
             }
 
             Fact.EdgeGesture::class -> {
@@ -370,6 +391,26 @@ private fun FactSelectorMenu(
                 labelAndDescriptionForFactSelector(i18N, Fact.AnyActivityStarted::class)
             ) {
                 icon(imageVectorForFact(Fact.AnyActivityStarted::class))
+            }
+        }
+
+        item(
+            Fact.TaskRemoved::class,
+            i18N["ui.fact.task.removed"] to null
+        ) {
+            icon(imageVectorForFact(Fact.TaskRemoved::class))
+
+            item(
+                Fact.TaskRemoved::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.TaskRemoved::class)
+            ) {
+                icon(imageVectorForFact(Fact.TaskRemoved::class))
+            }
+            item(
+                Fact.TaskRemovedAny::class,
+                labelAndDescriptionForFactSelector(i18N, Fact.TaskRemovedAny::class)
+            ) {
+                icon(imageVectorForFact(Fact.TaskRemovedAny::class))
             }
         }
 

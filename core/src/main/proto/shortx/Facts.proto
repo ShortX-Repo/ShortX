@@ -175,5 +175,6 @@ message NotificationUpdated {
 }
 
 message TaskRemoved {
-  AppPkg pkg = 1;
+  repeated AppPkg apps = 3;
+  repeated string pkgSets = 4;
 }

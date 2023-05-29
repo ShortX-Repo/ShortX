@@ -324,7 +324,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
         shortXContext.rule.publishFact(
             "onTaskRemoved",
-            TaskRemoved.newBuilder().build(),
+            TaskRemoved.newBuilder()
+                .addAllApps(listOf(task.owner))
+                .build(),
             mapOf(
                 ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
                 ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",

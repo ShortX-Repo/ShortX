@@ -81,6 +81,14 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.n.removed"] to null
         }
 
+        Fact.TaskRemoved::class -> {
+            i18n["ui.fact.task.removed"] to i18n["ui.fact.task.removed.specific"]
+        }
+
+        Fact.TaskRemovedAny::class -> {
+            i18n["ui.fact.task.removed"] to i18n["ui.fact.task.removed.any"]
+        }
+
         else -> "N/A" to null
     }
 }
@@ -236,6 +244,19 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 fact.n.contentRegex.fallbackOnEmpty("")
             ).filterNot { it.isBlank() }
         }
+
+        is Fact.TaskRemoved -> {
+            mutableListOf(
+                i18N["ui.fact.task.removed"],
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.TaskRemovedAny -> {
+            mutableListOf(
+                i18N["ui.fact.task.removed"],
+                i18N["ui.fact.task.removed.any"]
+            )
+        }
     }
 }
 
@@ -338,6 +359,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.NotificationPosted::class -> Remix.System.notification_badge_fill
         Fact.NotificationUpdated::class -> Remix.System.notification_badge_fill
         Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
+        Fact.TaskRemoved::class -> Remix.System.checkbox_multiple_blank_fill
+        Fact.TaskRemovedAny::class -> Remix.System.checkbox_multiple_blank_fill
 
         else -> {
             Remix.Document.file_unknow_fill

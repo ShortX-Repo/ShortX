@@ -2,13 +2,31 @@ package tornaco.apps.shortx.services.rule
 
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
-import tornaco.apps.shortx.core.proto.fact.*
+import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
+import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
+import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
+import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
+import tornaco.apps.shortx.core.proto.fact.KeyEvent
+import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
+import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NotificationPosted
+import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
+import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.app.PrebuiltPkgSet
 
 class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     private val logger = Logger("FactMatcher")
@@ -28,13 +46,28 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(AppBecomeFg::class.java) { actual, rule ->
             val fgActual = actual as AppBecomeFg
             val fgRule = rule as AppBecomeFg
-            matchAppBecomeBgOrFg(AppBecomeFgFactWrapper(fgActual), AppBecomeFgFactWrapper(fgRule))
+            matchWithAppOrPkgSetListFact(
+                AppBecomeFgFactWrapper(fgActual),
+                AppBecomeFgFactWrapper(fgRule)
+            )
         }
 
         register(AppBecomeBg::class.java) { actual, rule ->
             val bgActual = actual as AppBecomeBg
             val bgRule = rule as AppBecomeBg
-            matchAppBecomeBgOrFg(AppBecomeBgFactWrapper(bgActual), AppBecomeBgFactWrapper(bgRule))
+            matchWithAppOrPkgSetListFact(
+                AppBecomeBgFactWrapper(bgActual),
+                AppBecomeBgFactWrapper(bgRule)
+            )
+        }
+
+        register(TaskRemoved::class.java) { actual, rule ->
+            val trActual = actual as TaskRemoved
+            val trRule = rule as TaskRemoved
+            matchWithAppOrPkgSetListFact(
+                TaskRemovedWrapper(trActual),
+                TaskRemovedWrapper(trRule)
+            )
         }
 
         register(ActivityStarted::class.java) { actual, rule ->
@@ -188,44 +221,59 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     }
 
 
-    private fun matchAppBecomeBgOrFg(actual: AppBecomeBgFgFact, rule: AppBecomeBgFgFact): Boolean {
-        val pkgListActual = if (actual.pkgSetList.isEmpty().not()) {
-            actual.pkgSetList.flatMap {
-                shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
-            }
-        } else {
-            actual.appList
-        }
-        val pkgListRule = if (rule.pkgSetList.isEmpty().not()) {
-            rule.pkgSetList.flatMap {
-                shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
-            }
-        } else {
-            rule.appList
+    private fun matchWithAppOrPkgSetListFact(
+        actual: WithAppOrPkgSetListFact,
+        rule: WithAppOrPkgSetListFact
+    ): Boolean {
+        val pkgListActual = actual.appList
+
+        val hasAllPkgSetInRule = rule.pkgSetList.firstOrNull {
+            it == PrebuiltPkgSet.LABEL_ALL
+        } != null
+        if (hasAllPkgSetInRule) {
+            logger.d("matchWithAppOrPkgSetListFact, hasAllPkgSetInRule, assume true")
+            return true
         }
 
-        logger.d("matchAppBecomeBgOrFg, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
+        val pkgListRule = rule.pkgSetList.flatMap { label ->
+            shortXContext.pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
+        } + rule.appList
+
+        if (pkgListRule.isEmpty()) {
+            logger.d("matchWithAppOrPkgSetListFact, pkgListRule is empty, assume true")
+            return true
+        }
+
+        logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
         return pkgListRule.containsAll(pkgListActual)
     }
 
-    internal interface AppBecomeBgFgFact {
+    internal interface WithAppOrPkgSetListFact {
         val pkgSetList: List<String>
         val appList: List<AppPkg>
     }
 
-    class AppBecomeBgFactWrapper(private val appBecomeBg: AppBecomeBg) : AppBecomeBgFgFact {
+    class AppBecomeBgFactWrapper(private val appBecomeBg: AppBecomeBg) : WithAppOrPkgSetListFact {
         override val pkgSetList: List<String>
-            get() = appBecomeBg.pkgSetsList
+            get() = appBecomeBg.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
-            get() = appBecomeBg.appsList
+            get() = appBecomeBg.appsList ?: emptyList()
 
     }
 
-    class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : AppBecomeBgFgFact {
+    class AppBecomeFgFactWrapper(private val appBecomeFg: AppBecomeFg) : WithAppOrPkgSetListFact {
         override val pkgSetList: List<String>
-            get() = appBecomeFg.pkgSetsList
+            get() = appBecomeFg.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
-            get() = appBecomeFg.appsList
+            get() = appBecomeFg.appsList ?: emptyList()
+
+    }
+
+    class TaskRemovedWrapper(private val taskRemoved: TaskRemoved) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = taskRemoved.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = taskRemoved.appsList ?: emptyList()
 
     }
 }
