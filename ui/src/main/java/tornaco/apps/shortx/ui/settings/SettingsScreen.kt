@@ -307,7 +307,7 @@ private fun devSettings(
 
     Preference.SwitchPreference(icon = Remix.Document.article_fill,
         title = LocalI18N.current["ui.settings.enable.debug.log"],
-        summary = LocalI18N.current["ui.settings.enable.debug.log.description"],
+        summary = LocalI18N.current["ui.settings.enable.debug.log.description", mapOf("dir" to state.logDir)],
         value = state.isDebugLogEnabled,
         onCheckChanged = { enable ->
             vm.setLogDebugEnable(enable)

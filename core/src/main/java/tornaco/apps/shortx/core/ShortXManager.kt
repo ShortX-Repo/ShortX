@@ -89,6 +89,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getLogDir(): String {
+        return invokeService("") {
+            logDir
+        }
+    }
+
+    fun hasFatalError(): Boolean {
+        return invokeService(false) {
+            hasFatalError()
+        }
+    }
+
     fun addRule(rule: Rule) {
         invokeService(Unit) {
             addRule(ByteArrayWrapper(rule.toByteArray()))

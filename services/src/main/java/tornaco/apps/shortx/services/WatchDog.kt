@@ -20,6 +20,8 @@ class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContex
         logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
         fatalErrors.add(error)
     }
+
+    fun hasFatalError() = fatalErrors.isNotEmpty()
 }
 
 fun Handler.postSafety(delay: Long = 0L, runnable: () -> Unit) {

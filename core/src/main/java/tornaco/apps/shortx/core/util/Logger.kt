@@ -13,9 +13,7 @@ class Logger(private val tag: String = "-") {
     }
 
     fun i(any: Any?) {
-        if (BuildProp.APP_IS_DEBUG) {
-            logAdapter(Log.INFO, fullTag, "[${Thread.currentThread().name}] $any")
-        }
+        logAdapter(Log.INFO, fullTag, "[${Thread.currentThread().name}] $any")
     }
 
     fun w(any: Any?) {

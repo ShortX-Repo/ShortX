@@ -20,7 +20,6 @@ import java.io.File
 object LogInit {
     private const val LOG_PREFIX = "ShortX"
 
-    @Suppress("ObjectPropertyName")
     private var _logDebug = BuildProp.APP_IS_DEBUG
     val logDebug get() = _logDebug
 
@@ -30,9 +29,9 @@ object LogInit {
     init {
         logAdapter = { level: Int, tag: String, msg: String ->
             when (level) {
-                Log.VERBOSE -> if (_logDebug) XLog.v("$tag $msg")
-                Log.DEBUG -> if (_logDebug) XLog.d("$tag $msg")
-                Log.INFO -> if (_logDebug) XLog.i("$tag $msg")
+                Log.VERBOSE -> if (logDebug) XLog.v("$tag $msg")
+                Log.DEBUG -> if (logDebug) XLog.d("$tag $msg")
+                Log.INFO -> if (logDebug) XLog.i("$tag $msg")
                 Log.WARN -> XLog.w("$tag $msg")
                 Log.ERROR -> XLog.e("$tag $msg")
             }

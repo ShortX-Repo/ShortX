@@ -10,6 +10,8 @@ interface IShortX {
 
     void setLogDebugEnable(boolean enable);
     boolean isLogDebugEnable();
+    String getLogDir();
+    boolean hasFatalError();
 
     // Rules start
     void addRule(in ByteArrayWrapper rule);

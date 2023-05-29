@@ -271,7 +271,7 @@
   "ui.settings.core.info.na": "未激活",
   "ui.settings.open.source.license": "开源许可",
   "ui.settings.enable.debug.log": "开启日志",
-  "ui.settings.enable.debug.log.description": "输出详细调试日志",
+  "ui.settings.enable.debug.log.description": "输出详细调试日志到 {dir}",
   "ui.settings.data.backup.title": "备份",
   "ui.settings.data.backup.input.file.name": "请输入备份文件名",
   "ui.settings.data.backup.summary": "将现有数据备份到Download文件夹下",

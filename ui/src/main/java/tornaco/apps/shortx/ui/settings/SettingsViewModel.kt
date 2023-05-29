@@ -23,6 +23,7 @@ data class SettingsState(
     val coreVersion: Version = Version("N/A", 0),
     val coreFP: String = "N/A",
     val isDebugLogEnabled: Boolean = false,
+    val logDir: String = "N/A",
     val installFakeService: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
 )
@@ -56,7 +57,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isActivated = shortXManager.isInstalled,
                 coreVersion = shortXManager.version(),
                 coreFP = shortXManager.fingerprint(),
-                isDebugLogEnabled = shortXManager.isLogDebugEnable()
+                isDebugLogEnabled = shortXManager.isLogDebugEnable(),
+                logDir = shortXManager.getLogDir()
             )
         }
 

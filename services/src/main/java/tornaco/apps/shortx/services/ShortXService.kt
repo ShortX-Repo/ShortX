@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.v.v
 
 @SuppressLint("StaticFieldLeak")
@@ -93,6 +94,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun isLogDebugEnable(): Boolean {
             return LogInit.logDebug
+        }
+
+        override fun getLogDir(): String {
+            return Dirs.baseServerLogDir().absolutePath
+        }
+
+        override fun hasFatalError(): Boolean {
+            return shortXContext.watchDog.hasFatalError()
         }
 
         override fun addRule(rule: ByteArrayWrapper) {
