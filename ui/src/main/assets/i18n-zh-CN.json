@@ -304,6 +304,8 @@
   "ui.global.var.input.value": "请输入变量的值",
   "ui.global.var.type": "变量类型",
   "ui.global.var.desc": "查看和管理全局变量",
+  "ui.global.var.access.help.title": "如何访问",
+  "ui.global.var.access.help.message": "你可以通过 {name} 在UI动作中或MVEL表达式中访问该全局变量的值",
   "ui.context.data.title": "上下文变量",
   "ui.context.data.message": "上下文变量是指某个事件触发时，该事件所包含的一些变量。你可以在后续的条件或者动作中通过 {accessor} 来访问这些变量。\n\n{obj} 包含以下变量",
   "ui.context.data.example": "通过 {eg} 来访问该变量",

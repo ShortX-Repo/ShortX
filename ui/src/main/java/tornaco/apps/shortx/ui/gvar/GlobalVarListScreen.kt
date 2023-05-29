@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -94,7 +92,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         ) {
                             Box {
                                 val menuState = listItemOverflowMenu(
-                                    pkgSet = it,
+                                    globalVar = it,
                                     onDelete = {
                                         vm.delete(it.name)
                                     },
@@ -158,30 +156,42 @@ private fun GlobalVarListItem(
 
 @Composable
 private fun listItemOverflowMenu(
-    pkgSet: GlobalVar, onDelete: (GlobalVar) -> Unit, onEdit: (GlobalVar) -> Unit
+    globalVar: GlobalVar, onDelete: (GlobalVar) -> Unit, onEdit: (GlobalVar) -> Unit
 ): DropdownSelectorState {
     val menuState = rememberDropdownSelectorState()
 
+    val globalVarAccessHelpDialogState =
+        rememberGlobalVarAccessHelpDialogState(globalVar = globalVar)
+    GlobalVarAccessHelpDialog(state = globalVarAccessHelpDialogState)
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
             icon = {
-                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+                RemixIcon(remixName = Remix.System.delete_bin_fill)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
             data = "edit",
             icon = {
-                Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit")
+                RemixIcon(remixName = Remix.Design.edit_fill)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.global.var.access.help.title"]),
+            data = "access",
+            icon = {
+                RemixIcon(remixName = Remix.Development.braces_fill)
             })
     ), onSelect = {
         when (it.data) {
             "delete" -> {
-                onDelete(pkgSet)
+                onDelete(globalVar)
             }
 
             "edit" -> {
-                onEdit(pkgSet)
+                onEdit(globalVar)
+            }
+
+            "access" -> {
+                globalVarAccessHelpDialogState.show()
             }
 
             else -> {}

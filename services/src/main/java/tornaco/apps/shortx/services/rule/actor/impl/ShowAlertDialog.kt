@@ -9,10 +9,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -28,6 +31,7 @@ object ShowAlertDialog : Actor {
         val d = action unpack_ ShowAlertDialog::class.java
         evaluateShowDialogAction(
             context = context,
+            shortXContext = shortXContext,
             d = d,
             contextData = contextData,
             recursiveExecute = recursiveExecute
@@ -36,17 +40,30 @@ object ShowAlertDialog : Actor {
 
     private suspend fun evaluateShowDialogAction(
         context: Context,
+        shortXContext: ShortXContext,
         d: ShowAlertDialog,
         contextData: ContextData,
         recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> Unit
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowAlertDialog, showing")
+        val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
         val result = ShowDialog(context).invoke(
-            positiveButtonText = d.positive,
-            negativeButtonText = d.negative,
-            neutralButtonText = d.neutral
+            positiveButtonText = d.positive.inflateContextMap(contextData)
+                .replaceGlobalVarValues(allGlobalVars),
+            negativeButtonText = d.negative.inflateContextMap(contextData)
+                .replaceGlobalVarValues(allGlobalVars),
+            neutralButtonText = d.neutral.inflateContextMap(contextData)
+                .replaceGlobalVarValues(allGlobalVars)
         ) {
-            AlertDialog.Builder(it).setTitle(d.title).setMessage(d.message)
+            AlertDialog.Builder(it)
+                .setTitle(
+                    d.title.inflateContextMap(contextData)
+                        .replaceGlobalVarValues(allGlobalVars)
+                )
+                .setMessage(
+                    d.message.inflateContextMap(contextData)
+                        .replaceGlobalVarValues(allGlobalVars)
+                )
                 .setCancelable(d.cancelable)
         }
 

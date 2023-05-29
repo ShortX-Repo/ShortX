@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -22,7 +23,9 @@ object ShowDanmu : Actor {
             val d = action unpack_ ShowDanmu::class.java
             shortXContext.ui.showDanmu(
                 d.icon.inflateContextMap(contextData),
-                d.text.inflateContextMap(contextData)
+                d.text.inflateContextMap(contextData).replaceGlobalVarValues {
+                    shortXContext.rule.getAllGlobalVars()
+                }
             )
         }
     }

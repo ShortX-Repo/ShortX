@@ -9,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
@@ -54,10 +53,13 @@ fun ShowDanmuSettingsDialog(state: ShowDanmuSettingsDialogState) {
 
 @Composable
 private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
-    val vm = hiltViewModel<ShowDanmuSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<ShowDanmuSelectorViewModel>()
     LaunchedEffect(vm) {
-        dialogState.currentSettings?.let {
-            vm.initFrom(it)
+        val settings = dialogState.currentSettings
+        if (settings == null) {
+            vm.resetState()
+        } else {
+            vm.initFrom(settings)
         }
     }
     val state: Action.ShowDanmu by vm.state.collectAsState()
@@ -109,8 +111,8 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
             .verticalScroll(rememberScrollState())
     ) {
         ShortXTextField(modifier = Modifier.fillMaxWidth(),
-            
-            
+
+
             label = {
                 Text(text = LocalI18N.current["ui.action.danmu.text"])
             },
@@ -122,8 +124,8 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
         StandardSpacer()
 
         ShortXTextField(modifier = Modifier.fillMaxWidth(),
-            
-            
+
+
             label = {
                 Text(text = LocalI18N.current["ui.action.danmu.icon"])
             },

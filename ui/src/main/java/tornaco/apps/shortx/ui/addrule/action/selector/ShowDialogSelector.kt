@@ -58,10 +58,13 @@ fun ShowDialogSettingsDialog(state: ShowDialogSettingsDialogState) {
 
 @Composable
 private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
-    val vm = hiltViewModel<ShowDialogSelectorViewModel>().apply { resetState() }
+    val vm = hiltViewModel<ShowDialogSelectorViewModel>()
     LaunchedEffect(vm) {
-        dialogState.currentSettings?.let {
-            vm.initFrom(it)
+        val settings = dialogState.currentSettings
+        if (settings == null) {
+            vm.resetState()
+        } else {
+            vm.initFrom(settings)
         }
     }
     val showDialogSelectorState by vm.state.collectAsState()
@@ -126,8 +129,8 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
     ) {
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            
-            
+
+
             label = {
                 Text(text = LocalI18N.current["ui.action.dialog.title"])
             },
@@ -140,8 +143,8 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewMode
 
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            
-            
+
+
             label = {
                 Text(text = LocalI18N.current["ui.action.dialog.message"])
             },
@@ -247,7 +250,7 @@ private fun ButtonSettings(
     MediumTitle(headerTitle)
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
-        
+
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.Transparent
         ),

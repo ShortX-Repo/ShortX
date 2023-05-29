@@ -188,7 +188,7 @@ private fun listItemOverflowMenu(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
             icon = {
-                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+                RemixIcon(remixName = Remix.System.delete_bin_fill)
             }),
     ), onSelect = {
         when (it.data) {

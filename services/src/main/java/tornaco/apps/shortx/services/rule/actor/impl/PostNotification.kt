@@ -19,7 +19,12 @@ object PostNotification : Actor {
     ) = with(params) {
         withContext(Dispatchers.Main) {
             val d = action unpack_ PostNotification::class.java
-            shortXContext.notification.notificationPoster.invoke(d)
+            shortXContext.notification.notificationPoster.invoke(
+                notification = d,
+                contextData = contextData
+            ) {
+                shortXContext.rule.getAllGlobalVars()
+            }
         }
     }
 }

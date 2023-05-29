@@ -1,9 +1,8 @@
 package tornaco.apps.shortx.ui.overlay
 
-import android.icu.text.MessageFormat
 import androidx.lifecycle.viewModelScope
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
-import tornaco.apps.shortx.core.rule.valueList
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
@@ -40,14 +39,8 @@ class OverlayViewModel : StateViewModel<OverlayState>(OverlayState()) {
 
     fun formatValues() {
         viewModelScope.launchSafety {
-            val allVars = shortXManager.getAllGlobalVars()
-                .associateBy { it.name }
-                .mapValues {
-                    val valueItems = it.value.valueList()
-                    valueItems[0]
-                }
             val values = state.value.values.map { str ->
-                kotlin.runCatching { MessageFormat.format(str, allVars) }.getOrElse { str }
+                str.replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
             }
             logger.d("values: $values")
             updateState {

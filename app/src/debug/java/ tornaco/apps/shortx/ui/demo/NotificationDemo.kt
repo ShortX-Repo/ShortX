@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.res.Remix
@@ -29,12 +30,14 @@ fun mockNotification(context: Context, title: String?, content: String?, `when`:
         .setSmallIcon(github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_account_pin_box_fill)
         .setWhen(`when`)
         .setStyle(NotificationCompat.BigTextStyle().bigText(content))
-        .setContentIntent( PendingIntent.getActivity(
-            context,
-            System.currentTimeMillis().toString().hashCode(),
-            context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        ),)
+        .setContentIntent(
+            PendingIntent.getActivity(
+                context,
+                System.currentTimeMillis().toString().hashCode(),
+                context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            ),
+        )
         .setFullScreenIntent(
             PendingIntent.getActivity(
                 context,
@@ -91,14 +94,15 @@ fun NotificationDemo() {
                 BitmapUtils.getBitmap(context, context.remixResId(it))!!
             }
         ).invoke(
-            PostNotification.newBuilder()
+            notification = PostNotification.newBuilder()
                 .setTag("demo")
                 .setSmallIcon(Remix.Communication.chat_smile_line)
                 .setLargeIcon(Remix.Logos.bard_line)
                 .setTitle("This is title")
                 .setMessage("This is message")
-                .build()
-        )
+                .build(),
+            contextData = ContextData.obtain()
+        ) { emptyList() }
     }) {
         Text(text = "Poster")
     }

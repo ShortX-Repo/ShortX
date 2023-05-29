@@ -17,7 +17,11 @@ object ExecuteMVEL : Actor {
         params: HandleParams
     ) {
         val d = params.action unpack_ ExecuteMVEL::class.java
-        MVELExecutor(params.context, params.shortXContext, d.expression).invoke().apply {
+        MVELExecutor(
+            params.context,
+            params.shortXContext,
+            d.expression
+        ).invoke(params.contextData.map).apply {
             params.contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
         }
     }

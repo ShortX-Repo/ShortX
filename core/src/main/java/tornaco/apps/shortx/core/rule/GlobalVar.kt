@@ -1,7 +1,14 @@
 package tornaco.apps.shortx.core.rule
 
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
-import tornaco.apps.shortx.core.proto.gv.*
+import tornaco.apps.shortx.core.proto.gv.BoolListVar
+import tornaco.apps.shortx.core.proto.gv.BoolVar
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.Int64ListVar
+import tornaco.apps.shortx.core.proto.gv.Int64Var
+import tornaco.apps.shortx.core.proto.gv.StringListVar
+import tornaco.apps.shortx.core.proto.gv.StringVar
+import tornaco.apps.shortx.core.util.replaceLazy
 
 enum class GlobalVarType {
     Int,
@@ -37,21 +44,27 @@ fun ProtoAny.toType(): GlobalVarType? {
         this is_ (Int64Var::class.java) -> {
             GlobalVarType.Int
         }
+
         this is_ (Int64ListVar::class.java) -> {
             GlobalVarType.IntList
         }
+
         this is_ (BoolVar::class.java) -> {
             GlobalVarType.Bool
         }
+
         this is_ (BoolListVar::class.java) -> {
             GlobalVarType.BoolList
         }
+
         this is_ (StringVar::class.java) -> {
             GlobalVarType.String
         }
+
         this is_ (StringListVar::class.java) -> {
             GlobalVarType.StringList
         }
+
         else -> {
             null
         }
@@ -69,26 +82,32 @@ fun GlobalVar.valueList(
         val v = this.`var`.unpack(Int64Var::class.java)
         listOf(v.value.toString())
     }
+
     GlobalVarType.IntList -> {
         val v = this.`var`.unpack(Int64ListVar::class.java)
         v.valuesList.map { it.toString() }
     }
+
     GlobalVarType.Bool -> {
         val v = this.`var`.unpack(BoolVar::class.java)
         listOf(v.value.toString())
     }
+
     GlobalVarType.BoolList -> {
         val v = this.`var`.unpack(BoolListVar::class.java)
         v.valuesList.map { it.toString() }
     }
+
     GlobalVarType.String -> {
         val v = this.`var`.unpack(StringVar::class.java)
         listOf(v.value)
     }
+
     GlobalVarType.StringList -> {
         val v = this.`var`.unpack(StringListVar::class.java)
         v.valuesList
     }
+
     null -> {
         noValueReturn()
     }
@@ -116,9 +135,11 @@ fun String.toVarValueNotList(type: GlobalVarType?): ProtoAny? {
                     .pack_()
             }
         }
+
         GlobalVarType.String -> {
             StringVar.newBuilder().setValue(this).build().pack_()
         }
+
         else -> {
             null
         }
@@ -142,4 +163,27 @@ fun GlobalVarOp.toDisplayName(): String {
         GlobalVarOp.IsNotEmpty -> name
         GlobalVarOp.UNRECOGNIZED -> "N/A"
     }
+}
+
+const val GLOBAL_VAR_REF_PREFIX = "globalVarOf$"
+
+fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String {
+    // FAST Check if contains GLOBAL_VAR_REF_PREFIX
+    if (!this.contains(GLOBAL_VAR_REF_PREFIX)) return this
+
+    var strWithGValue = this
+    globalVarsLazy()
+        // In case name override: globalVarOf$applist and globalVarOf$app
+        .sortedByDescending { it.name.length }
+        .forEach { entry ->
+            strWithGValue =
+                strWithGValue.replaceLazy(GLOBAL_VAR_REF_PREFIX + entry.name, {
+                    val valueItems = entry.valueList()
+                    if (valueItems.isEmpty()) "-" else valueItems[kotlin.math.min(
+                        valueItems.size - 1,
+                        3
+                    )]
+                })
+        }
+    return strWithGValue
 }
