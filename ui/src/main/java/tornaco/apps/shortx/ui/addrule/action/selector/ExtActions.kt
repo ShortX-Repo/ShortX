@@ -79,17 +79,17 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.InputText::class -> {
-                inputTextSelectorState.show()
+                inputTextSelectorState.show(source.getActionAs<Action.InputText>()?.text)
                 true
             }
 
             Action.Delay::class -> {
-                delaySelectionState.show()
+                delaySelectionState.show(source.getActionAs<Action.Delay>()?.time?.toString())
                 true
             }
 
             Action.MVEL::class -> {
-                mvelSelectorState.show()
+                mvelSelectorState.show(source.getActionAs<Action.MVEL>()?.expression)
                 true
             }
 
@@ -114,12 +114,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.IfThenElse::class -> {
-                ifThenElseDialogState.show()
+                ifThenElseDialogState.show(source.getActionAs())
                 true
             }
 
             Action.WhileLoop::class -> {
-                whileLoopSelectorState.show()
+                whileLoopSelectorState.show(source.getActionAs())
                 true
             }
 

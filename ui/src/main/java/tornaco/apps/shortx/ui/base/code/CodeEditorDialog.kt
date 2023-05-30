@@ -47,8 +47,8 @@ class CodeEditorState(
 
     var currentText: String = ""
 
-    fun show(initialText: String = "") {
-        this.currentText = initialText
+    fun show(initialText: String? = "") {
+        this.currentText = initialText ?: ""
         this._output = ""
         this._note = ""
         _isShow = true
