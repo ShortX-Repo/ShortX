@@ -120,7 +120,6 @@ private fun FindAndClickViewByTextSelector(
                 ) {
                     SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.text"])
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
-                        
                         colors = TextFieldDefaults.textFieldColors(
                             containerColor = androidx.compose.ui.graphics.Color.Transparent
                         ),

@@ -29,6 +29,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     val delaySelectionState =
         rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
             message = LocalI18N.current["ui.action.delay.input.message"],
+            showSymbolButton = false,
             onSelected = {
                 addAction(Action.Delay(time = it.toLongOrNull() ?: 0))
             })

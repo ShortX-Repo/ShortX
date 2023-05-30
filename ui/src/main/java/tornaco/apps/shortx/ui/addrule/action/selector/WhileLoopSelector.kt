@@ -166,7 +166,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                     val warning = conditionState.conditionWarningMessages
                     ConditionSelectors(
                         header = {
-                            MediumTitle(LocalI18N.current["ui.action.while.loop.condition.message"])
+                            SmallTitle(LocalI18N.current["ui.action.while.loop.condition.message"])
                         },
                         conditions = conditions,
                         warnings = warning,
@@ -177,7 +177,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
-                            MediumTitle(LocalI18N.current["ui.action.while.loop.action.message"])
+                            SmallTitle(LocalI18N.current["ui.action.while.loop.action.message"])
                         },
                         actions = actionState.actions,
                         handler = dialogState.actionHandler.asActionHandler(),

@@ -198,7 +198,6 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             })
         StandardSpacer()
 
-
         val componentSelectorState = rememberAppComponentSelectorState(
             types = listOf(ComponentType.Activity),
             maxItemCount = 1,
@@ -252,6 +251,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
             }
         }
+        StandardSpacer()
 
         SmallTitle(text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"])
         ShortXTextField(
