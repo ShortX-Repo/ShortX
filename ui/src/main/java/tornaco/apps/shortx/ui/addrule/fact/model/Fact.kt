@@ -23,6 +23,7 @@ sealed interface Fact {
     object ScreenOn : Fact
     object ScreenOff : Fact
     object UserPresent : Fact
+    object SystemReady : Fact
 
     data class Alarm(val tag: String, val timeOfADay: TimeOfADay, val repeatDays: RepeatDays) : Fact
 
@@ -84,6 +85,7 @@ val allFactClasses = listOf(
     Fact.ScreenOn::class,
     Fact.ScreenOff::class,
     Fact.UserPresent::class,
+    Fact.SystemReady::class,
 
     Fact.Alarm::class,
     Fact.AppBecomeBackground::class,

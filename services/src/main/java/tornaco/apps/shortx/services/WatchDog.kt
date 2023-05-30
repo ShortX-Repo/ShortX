@@ -28,6 +28,7 @@ fun Handler.postSafety(delay: Long = 0L, runnable: () -> Unit) {
     if (delay == 0L) {
         post {
             kotlin.runCatching { runnable() }.onFailure {
+                // TODO Ref Static
                 shortXContext.watchDog.onFatalError(it)
             }
         }

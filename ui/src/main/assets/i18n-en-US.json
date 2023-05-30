@@ -31,6 +31,7 @@
   "ui.fact.screen.on": "Screen On",
   "ui.fact.screen.user.present": "Screen Unlock",
   "ui.fact.screen": "Screen",
+  "ui.fact.system.ready": "System ready",
   "ui.fact.activity.started": "Activity Start",
   "ui.fact.activity.started.any": "Any activity",
   "ui.fact.activity.started.specific": "Specific activity",

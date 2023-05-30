@@ -31,6 +31,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.UserPresent
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.SystemReady::class.java -> {
+            Fact.SystemReady
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.Alarm::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.Alarm::class.java
             Fact.Alarm(

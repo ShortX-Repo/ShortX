@@ -30,6 +30,7 @@
   "ui.fact.screen.off": "息屏",
   "ui.fact.screen.on": "亮屏",
   "ui.fact.screen.user.present": "屏幕解锁",
+  "ui.fact.system.ready": "系统启动完成",
   "ui.fact.screen": "屏幕状态",
   "ui.fact.activity.started": "Activity启动",
   "ui.fact.activity.started.any": "任意活动",

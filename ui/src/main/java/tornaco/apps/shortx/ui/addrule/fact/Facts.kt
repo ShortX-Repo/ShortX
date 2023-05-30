@@ -193,6 +193,10 @@ fun FactSelectors(
                 vm.setFact(Fact.UserPresent)
             }
 
+            Fact.SystemReady::class -> {
+                vm.setFact(Fact.SystemReady)
+            }
+
             Fact.Alarm::class -> {
                 timeOfADaySelector.show()
             }
@@ -421,7 +425,7 @@ private fun FactSelectorMenu(
             icon(imageVectorForFact(Fact.EdgeGesture::class))
         }
 
-        item(Fact.Alarm::class, i18N["ui.fact.screen"] to null) {
+        item(Fact.ScreenOn::class, i18N["ui.fact.screen"] to null) {
             icon(imageVectorForFact(Fact.ScreenOn::class))
             item(
                 Fact.ScreenOn::class,
@@ -441,6 +445,13 @@ private fun FactSelectorMenu(
             ) {
                 icon(imageVectorForFact(Fact.UserPresent::class))
             }
+        }
+
+        item(
+            Fact.SystemReady::class,
+            labelAndDescriptionForFactSelector(i18N, Fact.SystemReady::class)
+        ) {
+            icon(imageVectorForFact(Fact.SystemReady::class))
         }
 
         item(

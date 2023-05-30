@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
@@ -57,6 +58,10 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         Fact.UserPresent -> {
             UserPresent.newBuilder().build()
+        }
+
+        Fact.SystemReady -> {
+            SystemReady.newBuilder().build()
         }
 
         is Fact.Alarm -> {

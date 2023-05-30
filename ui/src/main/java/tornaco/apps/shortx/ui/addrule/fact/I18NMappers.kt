@@ -32,6 +32,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.ScreenOff::class -> i18n["ui.fact.screen.off"] to null
         Fact.ScreenOn::class -> i18n["ui.fact.screen.on"] to null
         Fact.UserPresent::class -> i18n["ui.fact.screen.user.present"] to null
+        Fact.SystemReady::class -> i18n["ui.fact.system.ready"] to null
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
@@ -128,6 +129,8 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
         Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
         Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
+        Fact.SystemReady -> listOf(i18N["ui.fact.system.ready"])
+
         is Fact.Alarm -> {
             listOf(
                 i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.timeOfADay.toDisplayTime())],
@@ -345,6 +348,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.ScreenOff::class -> Remix.Device.smartphone_fill
         Fact.ScreenOn::class -> Remix.Device.smartphone_fill
         Fact.UserPresent::class -> Remix.Device.phone_lock_fill
+        Fact.SystemReady::class -> Remix.System.login_circle_fill
         Fact.Alarm::class -> Remix.System.alarm_fill
         Fact.AppBecomeBackground::class -> Remix.System.refresh_fill
         Fact.AppBecomeForeground::class -> Remix.System.star_fill
