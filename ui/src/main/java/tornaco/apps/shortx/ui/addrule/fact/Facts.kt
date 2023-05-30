@@ -20,6 +20,7 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorStat
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.contextData
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.dropdown.DropDownMenuBuilder
 import tornaco.apps.shortx.ui.base.dropdown.Dropdown
 import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu
 import java.time.LocalTime
@@ -372,30 +373,24 @@ private fun FactSelectorMenu(
 ) {
     val i18N = LocalI18N.current
     val menu = dropDownMenu {
-        item(
-            Fact.KeyEvent::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.KeyEvent::class)
-        ) {
-            icon(imageVectorForFact(Fact.KeyEvent::class))
-        }
+        fun KClass<out Fact>.factItem(builder: DropDownMenuBuilder<KClass<out Fact>> = this@dropDownMenu) =
+            builder.item(
+                this,
+                labelAndDescriptionForFactSelector(i18N, this)
+            ) {
+                icon(imageVectorForFact(this@factItem), colorForFact(this@factItem))
+            }
+
+        Fact.KeyEvent::class.factItem()
+
         item(
             Fact.ActivityStarted::class,
             "Activity" to null
         ) {
             icon(imageVectorForFact(Fact.ActivityStarted::class))
 
-            item(
-                Fact.ActivityStarted::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.ActivityStarted::class)
-            ) {
-                icon(imageVectorForFact(Fact.ActivityStarted::class))
-            }
-            item(
-                Fact.AnyActivityStarted::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.AnyActivityStarted::class)
-            ) {
-                icon(imageVectorForFact(Fact.AnyActivityStarted::class))
-            }
+            Fact.ActivityStarted::class.factItem(builder = this)
+            Fact.AnyActivityStarted::class.factItem(builder = this)
         }
 
         item(
@@ -404,61 +399,23 @@ private fun FactSelectorMenu(
         ) {
             icon(imageVectorForFact(Fact.TaskRemoved::class))
 
-            item(
-                Fact.TaskRemoved::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.TaskRemoved::class)
-            ) {
-                icon(imageVectorForFact(Fact.TaskRemoved::class))
-            }
-            item(
-                Fact.TaskRemovedAny::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.TaskRemovedAny::class)
-            ) {
-                icon(imageVectorForFact(Fact.TaskRemovedAny::class))
-            }
+            Fact.TaskRemoved::class.factItem(builder = this)
+            Fact.TaskRemovedAny::class.factItem(builder = this)
         }
 
-        item(
-            Fact.EdgeGesture::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.EdgeGesture::class)
-        ) {
-            icon(imageVectorForFact(Fact.EdgeGesture::class))
-        }
+        Fact.EdgeGesture::class.factItem()
 
         item(Fact.ScreenOn::class, i18N["ui.fact.screen"] to null) {
             icon(imageVectorForFact(Fact.ScreenOn::class))
-            item(
-                Fact.ScreenOn::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.ScreenOn::class)
-            ) {
-                icon(imageVectorForFact(Fact.ScreenOn::class))
-            }
-            item(
-                Fact.ScreenOff::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.ScreenOff::class)
-            ) {
-                icon(imageVectorForFact(Fact.ScreenOff::class))
-            }
-            item(
-                Fact.UserPresent::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.UserPresent::class)
-            ) {
-                icon(imageVectorForFact(Fact.UserPresent::class))
-            }
+
+            Fact.ScreenOn::class.factItem(builder = this)
+            Fact.ScreenOff::class.factItem(builder = this)
+            Fact.UserPresent::class.factItem(builder = this)
         }
 
-        item(
-            Fact.SystemReady::class,
-            labelAndDescriptionForFactSelector(i18N, Fact.SystemReady::class)
-        ) {
-            icon(imageVectorForFact(Fact.SystemReady::class))
-        }
+        Fact.SystemReady::class.factItem()
 
-        item(
-            Fact.Alarm::class, labelAndDescriptionForFactSelector(i18N, Fact.Alarm::class)
-        ) {
-            icon(imageVectorForFact(Fact.Alarm::class))
-        }
+        Fact.Alarm::class.factItem()
 
         item(
             Fact.WifiStatusChanged::class,
@@ -475,53 +432,22 @@ private fun FactSelectorMenu(
                 Fact.HotSpotStatusChanged::class,
                 Fact.DarkModeStatusChanged::class,
                 Fact.FlashLightStatusChanged::class,
-
-                ).forEach {
-                item(
-                    it,
-                    labelAndDescriptionForFactSelector(i18N, it)
-                ) {
-                    icon(imageVectorForFact(it))
-                }
+            ).forEach {
+                it.factItem(builder = this)
             }
         }
 
         item(Fact.AppBecomeForeground::class, i18N["ui.fact.app.bg.state"] to null) {
             icon(imageVectorForFact(Fact.AppBecomeForeground::class))
-            item(
-                Fact.AppBecomeForeground::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.AppBecomeForeground::class)
-            ) {
-                icon(imageVectorForFact(Fact.AppBecomeForeground::class))
-            }
-            item(
-                Fact.AppBecomeBackground::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.AppBecomeBackground::class)
-            ) {
-                icon(imageVectorForFact(Fact.AppBecomeBackground::class))
-            }
+            Fact.AppBecomeForeground::class.factItem(builder = this)
+            Fact.AppBecomeBackground::class.factItem(builder = this)
         }
 
         item(Fact.NotificationPosted::class, i18N["ui.fact.n"] to null) {
             icon(imageVectorForFact(Fact.NotificationPosted::class))
-            item(
-                Fact.NotificationPosted::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.NotificationPosted::class)
-            ) {
-                icon(imageVectorForFact(Fact.NotificationPosted::class))
-            }
-            item(
-                Fact.NotificationUpdated::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.NotificationUpdated::class)
-            ) {
-                icon(imageVectorForFact(Fact.NotificationUpdated::class))
-            }
-            item(
-                Fact.NotificationRemoved::class,
-                labelAndDescriptionForFactSelector(i18N, Fact.NotificationRemoved::class)
-            ) {
-                icon(imageVectorForFact(Fact.NotificationRemoved::class))
-            }
+            Fact.NotificationPosted::class.factItem(builder = this)
+            Fact.NotificationUpdated::class.factItem(builder = this)
+            Fact.NotificationRemoved::class.factItem(builder = this)
         }
     }
 

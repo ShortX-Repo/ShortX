@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.base.dropdown
 
 import androidx.compose.ui.graphics.Color
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 
 
 /** DropDownMenuBuilder to build the menu. */
@@ -8,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 class DropDownMenuBuilder<T : Any> {
     var menu: MenuItem<T> = MenuItem<T>()
 
-    fun icon(value: String, color: Color = Color.Unspecified) {
+    fun icon(value: String, color: Color = NoteTextColor) {
         menu.icon = value
         menu.iconColor = color
     }

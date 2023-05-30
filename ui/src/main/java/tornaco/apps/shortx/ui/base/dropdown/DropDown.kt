@@ -4,10 +4,17 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.with
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,16 +22,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 
 // https://github.com/AndroidPoet/Dropdown
-
-val MAX_WIDTH: Dp = 192.dp
 
 /*[animateContent]  enter and exit animation for the menu content. */
 @ExperimentalAnimationApi
@@ -63,10 +69,8 @@ fun <T : Any> Dropdown(
     onDismiss: () -> Unit,
 ) {
 
-    DropdownMenu(
-        modifier = modifier
-            .width(MAX_WIDTH)
-            .background(colors.backgroundColor),
+    androidx.compose.material3.DropdownMenu(
+        modifier = modifier.width(192.dp),
         expanded = isOpen,
         onDismissRequest = onDismiss,
         offset = offset
@@ -93,7 +97,7 @@ fun <T : Any> Dropdown(
                     ), enter, exit
                 )
             }
-        }) { targetMenu ->
+        }, label = "DropdownAnim") { targetMenu ->
             DropdownContent(
                 state = state,
                 targetMenu = targetMenu,
@@ -124,7 +128,12 @@ fun <T : Any> DropdownContent(
             for (item in targetMenu.children!!) {
                 if (item.hasChildren()) {
                     ParentItem(
-                        item.id, item.title, item.description, item.icon, colors.contentColor
+                        item.id,
+                        item.title,
+                        item.description,
+                        item.icon,
+                        item.iconColor,
+                        colors.contentColor
                     ) { id ->
                         val child = targetMenu.getChild(id)
                         if (child != null) {
@@ -158,6 +167,15 @@ fun Space() {
 /*[MenuItemIcon] icon properties. */
 @Composable
 fun MenuItemIcon(icon: String, tint: Color) {
+    ColoredIcon(size = 24.dp, color = tint.copy(alpha = ActionColorBgAlpha)) {
+        RemixIcon(
+            modifier = Modifier.size(12.dp), remixName = icon, tint = tint
+        )
+    }
+}
+
+@Composable
+fun ParentItemArrowIcon(icon: String, tint: Color) {
     RemixIcon(
         modifier = Modifier.size(18.dp), remixName = icon, tint = tint
     )
@@ -172,9 +190,9 @@ fun MenuItemText(
     isHeaderText: Boolean = false,
 ) {
     val style = if (isHeaderText) {
-        MaterialTheme.typography.subtitle2
+        MaterialTheme.typography.titleSmall
     } else {
-        MaterialTheme.typography.subtitle1
+        MaterialTheme.typography.titleSmall
     }
 
     Text(
@@ -191,7 +209,7 @@ fun MenuItemDescription(
     text: String,
     color: Color,
 ) {
-    val style = MaterialTheme.typography.body1.copy(fontSize = 10.sp)
+    val style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
 
     Text(
         modifier = modifier,
@@ -207,7 +225,11 @@ fun MenuItem(onClick: () -> Unit, content: @Composable RowScope.() -> Unit) {
     DropdownMenuItem(
         onClick = onClick,
         interactionSource = remember { MutableInteractionSource() },
-        content = content
+        text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                content()
+            }
+        }
     )
 }
 
@@ -219,15 +241,15 @@ fun CascadeHeaderItem(
     onClick: () -> Unit,
 ) {
     MenuItem(onClick = { onClick() }) {
-        MenuItemIcon(
+        ParentItemArrowIcon(
             icon = Remix.Arrows.arrow_left_s_line,
-            tint = contentColor.copy(alpha = ContentAlpha.medium)
+            tint = contentColor.copy(alpha = 0.8f)
         )
         Spacer(modifier = Modifier.width(4.dp))
         MenuItemText(
             modifier = Modifier.weight(1f),
             text = title,
-            color = contentColor.copy(alpha = ContentAlpha.medium),
+            color = contentColor.copy(alpha = 0.8f),
             isHeaderText = true,
         )
     }
@@ -240,12 +262,13 @@ fun <T> ParentItem(
     title: String,
     description: String?,
     icon: String?,
+    iconColor: Color,
     contentColor: Color,
     onClick: (T) -> Unit,
 ) {
     MenuItem(onClick = { onClick(id) }) {
         if (icon != null) {
-            MenuItemIcon(icon = icon, tint = contentColor)
+            MenuItemIcon(icon = icon, tint = iconColor)
             Space()
         }
         Column(
@@ -267,7 +290,7 @@ fun <T> ParentItem(
             }
         }
         Space()
-        MenuItemIcon(icon = Remix.Arrows.arrow_right_s_line, tint = contentColor)
+        ParentItemArrowIcon(icon = Remix.Arrows.arrow_right_s_line, tint = contentColor)
     }
 }
 
