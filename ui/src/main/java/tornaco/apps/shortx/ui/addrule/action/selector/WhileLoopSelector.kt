@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -36,14 +38,14 @@ import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -142,20 +144,28 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     SmallTitle(text = LocalI18N.current["ui.action.while.loop.repeat"])
-                    TipBody(text = LocalI18N.current["ui.action.while.loop.repeat.message"])
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.repeat.toString(),
+                        label = {
+                            Text(LocalI18N.current["ui.action.while.loop.repeat.message"])
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        showSymbolButton = false,
                         onValueChange = {
                             dialogState.repeat = it.toIntOrNull() ?: 0
                         })
                     StandardSpacer()
 
                     SmallTitle(text = LocalI18N.current["ui.action.while.loop.delay"])
-                    TipBody(text = LocalI18N.current["ui.action.while.loop.delay.message"])
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.delay.toString(),
+                        label = {
+                            Text(LocalI18N.current["ui.action.while.loop.delay.message"])
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        showSymbolButton = false,
                         onValueChange = {
                             dialogState.delay = it.toLongOrNull() ?: 0L
                         })
@@ -166,7 +176,9 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                     val warning = conditionState.conditionWarningMessages
                     ConditionSelectors(
                         header = {
-                            SmallTitle(LocalI18N.current["ui.action.while.loop.condition.message"])
+                            SmallTitle(LocalI18N.current["ui.action.while.loop.condition.title"])
+                            TipRow(LocalI18N.current["ui.action.while.loop.condition.message"])
+                            MediumSpacer()
                         },
                         conditions = conditions,
                         warnings = warning,

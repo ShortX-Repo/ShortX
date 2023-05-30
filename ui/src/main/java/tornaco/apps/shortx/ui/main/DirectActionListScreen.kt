@@ -123,7 +123,6 @@ fun DirectActionListScreen() {
 
 @Composable
 fun DirectActionListContent(
-    modifier: Modifier = Modifier,
     state: MainState,
     showOverflowMenu: Boolean = false,
     onDelete: (DirectActionUM) -> Unit = {},
@@ -144,7 +143,7 @@ fun DirectActionListContent(
     }
 
     if (!state.isLoading && state.das.isEmpty()) {
-        EmptyList(modifier = modifier.fillMaxSize())
+        EmptyList(modifier = Modifier.fillMaxSize())
     } else {
         if (state.isShowDetailedDAItem) {
             DAListContent(

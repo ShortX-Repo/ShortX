@@ -166,8 +166,16 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                 }
             }
         }
-
         StandardSpacer()
+
+        // Add icon
+        FilledTonalButton(onClick = {
+            vm.addButton()
+        }) {
+            Text(text = LocalI18N.current["ui.action.show.add.button"])
+        }
+
+        LargeSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(LocalI18N.current["ui.action.show.overlay.tag"])
             TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
@@ -179,18 +187,10 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
             SmallTitle(text = LocalI18N.current["ui.action.show.auto.collapse"])
+            SmallSpacer()
             ShortXSwitch(checked = state.autoCollapse, onCheckedChange = {
                 vm.setAutoCollapse(it)
             })
-        }
-
-        StandardSpacer()
-
-        // Add icon
-        FilledTonalButton(onClick = {
-            vm.addButton()
-        }) {
-            Text(text = LocalI18N.current["ui.action.show.add.button"])
         }
 
         SuggestedNavEntry()

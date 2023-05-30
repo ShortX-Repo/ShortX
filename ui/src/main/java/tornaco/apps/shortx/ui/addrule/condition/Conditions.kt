@@ -26,7 +26,7 @@ import kotlin.reflect.KClass
 
 @Composable
 fun ConditionSelectors(
-    header: @Composable () -> Unit = {
+    header: @Composable ColumnScope.() -> Unit = {
         MediumTitle(LocalI18N.current["ui.conditions.title"])
     },
     conditions: List<Condition>,
@@ -103,7 +103,7 @@ fun ConditionSelectors(
 @Composable
 fun Conditions(
     readOnly: Boolean,
-    header: @Composable () -> Unit,
+    header: @Composable ColumnScope.() -> Unit,
     conditions: List<Condition>,
     warnings: Map<String, List<String>>,
     conditionOp: Op,
