@@ -88,13 +88,13 @@ fun rememberStartActivityUrlSchemaDialogState(
 fun StartActivityUrlSchemaDialog(state: StartActivityUrlSchemaDialogState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ShowDialogSelector(state)
+            StartActivityIntentSelector(state)
         }
     }
 }
 
 @Composable
-private fun ShowDialogSelector(dialogState: StartActivityUrlSchemaDialogState) {
+private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialogState) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background

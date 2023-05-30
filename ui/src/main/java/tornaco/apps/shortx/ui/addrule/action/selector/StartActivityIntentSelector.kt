@@ -94,13 +94,13 @@ fun rememberStartActivityIntentDialogState(
 fun StartActivityIntentDialog(state: StartActivityIntentDialogState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ShowDialogSelector(state)
+            StartActivityIntentSelector(state)
         }
     }
 }
 
 @Composable
-private fun ShowDialogSelector(dialogState: StartActivityIntentDialogState) {
+private fun StartActivityIntentSelector(dialogState: StartActivityIntentDialogState) {
     val vm = hiltViewModel<StartActivityIntentSelectorViewModel>()
     LaunchedEffect(vm) {
         val current = dialogState.current

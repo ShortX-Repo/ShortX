@@ -34,7 +34,6 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
     val negativeActionContent = ActionContentStateHandler()
     val neutralActionContent = ActionContentStateHandler()
 
-
     override fun resetState() {
         super.resetState()
         positiveActionContent.init(emptyList())

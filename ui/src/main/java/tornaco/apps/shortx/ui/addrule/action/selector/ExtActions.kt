@@ -13,7 +13,6 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
-import kotlin.reflect.KClass
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -57,6 +56,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
 
+    val whileLoopSelectorState = rememberWhileLoopDialogState {
+        addAction(it)
+    }
+    WhileLoopDialog(state = whileLoopSelectorState)
+
     val addGlobalVarDialogState =
         rememberNewGlobalVarState {
             addAction(
@@ -73,38 +77,52 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 shellCommandSelectorState.show()
                 true
             }
+
             Action.InputText::class -> {
                 inputTextSelectorState.show()
                 true
             }
+
             Action.Delay::class -> {
                 delaySelectionState.show()
                 true
             }
+
             Action.MVEL::class -> {
                 mvelSelectorState.show()
                 true
             }
+
             Action.Brk::class -> {
                 addAction(Action.Brk())
                 true
             }
+
             Action.WriteGV::class -> {
                 writeGVSelectorState.show()
                 true
             }
+
             Action.CreateGV::class -> {
                 addGlobalVarDialogState.show()
                 true
             }
+
             Action.FromDA::class -> {
                 fromDASelectorState.show()
                 true
             }
+
             Action.IfThenElse::class -> {
                 ifThenElseDialogState.show()
                 true
             }
+
+            Action.WhileLoop::class -> {
+                whileLoopSelectorState.show()
+                true
+            }
+
             else -> {
                 false
             }
@@ -126,6 +144,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
         Action.WriteGV::class,
         Action.CreateGV::class,
         Action.IfThenElse::class,
+        Action.WhileLoop::class,
     ).map {
         Item(
             type = it,
