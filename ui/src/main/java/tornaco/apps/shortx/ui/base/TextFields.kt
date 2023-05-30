@@ -99,15 +99,15 @@ fun ShortXTextField(
         // CoreTextField's onValueChange is called multiple times without recomposition in between.
         var lastTextValue by remember(value) { mutableStateOf(value) }
 
-        val symbolDropdownState = rememberSymbolDropdownState {
+        val symbolDropdownState = rememberSymbolDropdownState { inputText ->
             val newTextFieldValueState = TextFieldValue(
                 textFieldValueState.text
                     .toMutableList()
                     .apply {
-                        addAll(textFieldValueState.selection.start, it.toList())
+                        addAll(textFieldValueState.selection.start, inputText.toList())
                     }
                     .joinToString(""),
-                TextRange(textFieldValueState.selection.start + 1)
+                TextRange(textFieldValueState.selection.start + inputText.length)
             )
             textFieldValueState = newTextFieldValueState
 

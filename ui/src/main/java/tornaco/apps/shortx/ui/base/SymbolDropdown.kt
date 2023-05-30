@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 val symbols1 = arrayOf(
     "{",
@@ -67,6 +72,7 @@ fun rememberSymbolDropdownState(input: (String) -> Unit): SymbolDropdownState {
 
 @Composable
 fun SymbolDropdown(state: SymbolDropdownState) {
+    val context = LocalContext.current
     DropdownMenu(
         modifier = Modifier
             .fillMaxWidth(0.8f)
@@ -77,11 +83,34 @@ fun SymbolDropdown(state: SymbolDropdownState) {
         },
         content = {
             FlowRow {
+                // Paste
+                TextButton(onClick = {
+                    val clipContent: String? = ClipboardUtils.readClipboard(context)
+                    clipContent?.let { state.input(it) }
+                }) {
+                    Text(
+                        stringResource(id = android.R.string.paste),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // GV
+                TextButton(onClick = {
+                    state.input(GLOBAL_VAR_REF_PREFIX)
+                }) {
+                    Text(
+                        LocalI18N.current["ui.global.var.title"],
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
                 symbols1.forEach {
                     TextButton(onClick = {
                         state.input(it)
                     }) {
-                        Text(it)
+                        Text(
+                            it, color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }

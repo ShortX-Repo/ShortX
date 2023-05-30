@@ -17,7 +17,9 @@ public class ClipboardUtils {
         ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cmb != null && cmb.hasPrimaryClip()) {
 
-            ClipData.Item item = cmb.getPrimaryClip().getItemAt(0);
+            ClipData primaryClip = cmb.getPrimaryClip();
+            if (primaryClip == null) return null;
+            ClipData.Item item = primaryClip.getItemAt(0);
             if (item == null) return null;
             return String.valueOf(item.getText());
         }
