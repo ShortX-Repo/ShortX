@@ -171,8 +171,12 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
     // FAST Check if contains GLOBAL_VAR_REF_PREFIX
     if (!this.contains(GLOBAL_VAR_REF_PREFIX)) return this
 
+    val vars = globalVarsLazy()
+    // FAST Check if vars it empty
+    if (vars.isEmpty()) return this
+
     var strWithGValue = this
-    globalVarsLazy()
+    vars
         // In case name override: globalVarOf$applist and globalVarOf$app
         .sortedByDescending { it.name.length }
         .forEach { entry ->
