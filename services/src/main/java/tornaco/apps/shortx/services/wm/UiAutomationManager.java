@@ -33,7 +33,6 @@ import util.Reflections;
 public class UiAutomationManager extends IAccessibilityServiceClient.Stub implements IUiAutomation {
     public static final int FLAG_PREFETCH_DESCENDANTS_HYBRID = 0x00000004;
 
-
     private static final Logger LOGGER = new Logger("UiAutomationManager");
 
     private final AtomicInteger connectionId = new AtomicInteger(AccessibilityInteractionClient.NO_ID);
@@ -72,10 +71,23 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             }
             if (connection == null) {
                 LOGGER.w("disconnect connection == null.");
+                connectionId.set(AccessibilityInteractionClient.NO_ID);
+                connection = null;
                 return;
             }
+            if (!connection.isBinderAlive()) {
+                LOGGER.w("disconnect isBinderAlive == false");
+                connectionId.set(AccessibilityInteractionClient.NO_ID);
+                connection = null;
+                return;
+            }
+
             LOGGER.w("disconnect now.");
-            connection.disconnect();
+            try {
+                connection.disconnect();
+            } catch (Throwable e) {
+                LOGGER.e(e, "disconnect got error");
+            }
             connectionId.set(AccessibilityInteractionClient.NO_ID);
             connection = null;
         }
