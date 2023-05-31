@@ -2,29 +2,21 @@ import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
-import tornaco.project.android.shortx.Hilt
 import tornaco.project.android.shortx.log
 
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
-    id("dagger.hilt.android.plugin")
+    alias(libs.plugins.agp.app)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
+    namespace = Configs.sxPackageName
+
     defaultConfig {
         applicationId = Configs.sxPackageName
-        vectorDrawables.useSupportLibrary = true
-        versionName = Configs.sxVersionName
-        versionCode = Configs.sxVersionCode
-
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
-        multiDexEnabled = true
     }
 
     signingConfigs {
@@ -75,15 +67,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
     buildFeatures {
         compose = true
         buildConfig = false
@@ -99,7 +82,7 @@ android {
         kotlinCompilerExtensionVersion = Compose.composeVersion
     }
 
-    packagingOptions {
+    packaging {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
 
@@ -115,36 +98,27 @@ android {
 }
 
 dependencies {
-    implementation(Hilt.library)
-    implementation(Hilt.hiltNavigationCompose)
-    kapt(Hilt.googleAndroidCompiler)
+    implementation(libs.dagger.hilt.android)
+    implementation(libs.dagger.hilt.navigation.compose)
+    kapt(libs.dagger.hilt.android.compiler)
 
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:${Compose.bomVersion}"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
+    implementation(libs.appcompat)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material)
+
+    implementation(libs.hiddenapibypass)
 
     implementation(project(":ui"))
-
     implementation(project(":services"))
     implementation(project(":patch"))
     implementation(project(":core"))
 
-    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
-
-    testImplementation("junit:junit:4.13.2")
-
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
-
-    testImplementation("io.mockk:mockk:1.13.2")
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 }
 
 

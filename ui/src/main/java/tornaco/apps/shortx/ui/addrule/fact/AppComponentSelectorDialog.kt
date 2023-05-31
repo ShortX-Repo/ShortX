@@ -356,7 +356,7 @@ private fun AppComponentItemPreview() {
             ).build(),
             rule = ComponentRule(
                 label = "AD",
-                iconRes = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_24_hours_line,
+                iconRes = github.tornaco.shortx.icons.R.drawable.ic_remix_24_hours_line,
                 descriptionUrl = null,
                 isSimpleColorIcon = false,
                 regexName = "Regex"

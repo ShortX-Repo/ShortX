@@ -2,16 +2,16 @@ import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
 
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
-    defaultConfig {
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
+    namespace = "github.tornaco.shortx.sec.net"
 
+    defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
 
         externalNativeBuild {
@@ -19,11 +19,6 @@ android {
                 cppFlags.add("-fexceptions")
             }
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     externalNativeBuild {
@@ -45,7 +40,6 @@ android {
     }
 
     resourcePrefix = resPrefix
-    ndkVersion = Configs.ndkVersion
 }
 
 dependencies {

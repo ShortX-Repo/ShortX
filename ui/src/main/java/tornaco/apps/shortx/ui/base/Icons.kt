@@ -81,7 +81,7 @@ fun RemixIcon(
             )
         }.getOrElse {
             Logger("RemixIcon").e(it, "Fail on: $remixName")
-            painterResource(id = github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_bug_line)
+            painterResource(id = github.tornaco.shortx.icons.R.drawable.ic_remix_bug_line)
         },
         tint = tint,
         contentDescription = "Icon"

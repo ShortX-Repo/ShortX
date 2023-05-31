@@ -1,8 +1,10 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.agp.app)
 }
 
 android {
+    namespace = "github.tornaco.shortx.patch.magisk.bridge.dex.app"
+
     defaultConfig {
         applicationId = tornaco.project.android.shortx.Configs.sxPackageName
         vectorDrawables.useSupportLibrary = true
@@ -25,11 +27,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {

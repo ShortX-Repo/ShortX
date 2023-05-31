@@ -1,25 +1,17 @@
-import tornaco.project.android.shortx.*
+import tornaco.project.android.shortx.Compose
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
+    namespace = "github.tornaco.shortx.android.third.party.compose.color.picker"
+
     defaultConfig {
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
-
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -38,12 +30,11 @@ android {
     }
 }
 dependencies {
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:${tornaco.project.android.shortx.Compose.bomVersion}"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material)
 
-    implementation(tornaco.project.android.shortx.Others.colorMath)
+    implementation("com.github.ajalt.colormath:colormath:3.2.1")
 }

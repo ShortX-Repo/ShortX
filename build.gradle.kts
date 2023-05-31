@@ -1,6 +1,6 @@
+import tornaco.project.android.shortx.Configs.outDir
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
-import tornaco.project.android.shortx.Configs.outDir
 import tornaco.project.android.shortx.log
 
 buildscript {
@@ -9,17 +9,24 @@ buildscript {
         mavenCentral()
         mavenLocal()
     }
-
-    dependencies {
-        classpath(tornaco.project.android.shortx.ClassPaths.gradlePlugin)
-        classpath(tornaco.project.android.shortx.ClassPaths.kotlinPlugin)
-        classpath(tornaco.project.android.shortx.Hilt.gradlePlugin)
-    }
 }
 
 plugins {
-    id("com.diffplug.spotless").version("5.7.0")
-    id("com.gladed.androidgitversion").version("0.4.10")
+    alias(libs.plugins.agp.lib) apply false
+    alias(libs.plugins.agp.app) apply false
+
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.dagger.hilt.android) apply false
+
+    alias(libs.plugins.protobuf.gradle.plugin) apply false
+    alias(libs.plugins.gmazzo.buildconfig) apply false
+
+    alias(libs.plugins.gladed.androidgitversion) apply true
+    alias(libs.plugins.diffplug.spotless) apply true
+
     id("shortx")
 }
 
@@ -32,6 +39,9 @@ androidGitVersion {
 sxVersionCode = androidGitVersion.code()
 sxVersionName = androidGitVersion.name()
 
+val androidSourceCompatibility by extra(JavaVersion.VERSION_17)
+val androidTargetCompatibility by extra(JavaVersion.VERSION_17)
+
 subprojects {
     log("subprojects: ${this.name}")
 
@@ -39,11 +49,56 @@ subprojects {
         options.compilerArgs.addAll(
             arrayOf(
                 "-Xmaxerrs",
-                "1000"))
+                "1000"
+            )
+        )
         options.encoding = "UTF-8"
     }
 
     buildDir = file("${outDir}${path.replace(":", File.separator)}")
+
+    plugins.withType(com.android.build.gradle.api.AndroidBasePlugin::class.java) {
+        extensions.configure(com.android.build.api.dsl.CommonExtension::class.java) {
+            compileSdk = tornaco.project.android.shortx.Configs.compileSdkVersion
+            ndkVersion = tornaco.project.android.shortx.Configs.ndkVersion
+            buildToolsVersion = tornaco.project.android.shortx.Configs.buildToolsVersion
+
+
+            externalNativeBuild {
+                cmake {
+                    version = "3.22.1+"
+                }
+            }
+
+            defaultConfig {
+                minSdk = tornaco.project.android.shortx.Configs.minSdkVersion
+                if (this is com.android.build.api.dsl.ApplicationDefaultConfig) {
+                    targetSdk = tornaco.project.android.shortx.Configs.targetSdkVersion
+                    versionCode = tornaco.project.android.shortx.Configs.sxVersionCode
+                    versionName = tornaco.project.android.shortx.Configs.sxVersionName
+                    testInstrumentationRunner =
+                        tornaco.project.android.shortx.Configs.testInstrumentationRunner
+                }
+            }
+
+            lint {
+                abortOnError = true
+                checkReleaseBuilds = false
+            }
+
+            compileOptions {
+                sourceCompatibility = androidSourceCompatibility
+                targetCompatibility = androidTargetCompatibility
+            }
+
+        }
+    }
+    plugins.withType(JavaPlugin::class.java) {
+        extensions.configure(JavaPluginExtension::class.java) {
+            sourceCompatibility = androidSourceCompatibility
+            targetCompatibility = androidTargetCompatibility
+        }
+    }
 }
 
 rootProject.buildDir = outDir

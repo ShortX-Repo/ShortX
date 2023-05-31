@@ -1,20 +1,12 @@
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.agp.lib)
 }
 
 android {
+    namespace = "github.tornaco.shortx.android.third.party.date.formatter"
+
     defaultConfig {
-        minSdk = tornaco.project.android.shortx.Configs.minSdkVersion
-        compileSdk = tornaco.project.android.shortx.Configs.compileSdkVersion
-        targetSdk = tornaco.project.android.shortx.Configs.targetSdkVersion
-        testInstrumentationRunner = tornaco.project.android.shortx.Configs.testInstrumentationRunner
-
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {

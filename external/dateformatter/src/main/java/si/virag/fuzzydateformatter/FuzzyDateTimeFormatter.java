@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import java.util.Calendar;
 import java.util.Date;
 
+import github.tornaco.shortx.android.third.party.date.formatter.R;
+
 // https://github.com/izacus/FuzzyDateFormatter
 public class FuzzyDateTimeFormatter {
 

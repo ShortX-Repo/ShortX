@@ -1,13 +1,8 @@
-import tornaco.project.android.shortx.Others
-import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
-import tornaco.project.android.shortx.Configs.resPrefix
-import tornaco.project.android.shortx.Hilt
-import tornaco.project.android.shortx.log
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -41,13 +36,6 @@ android {
             path("src/main/cpp/CMakeLists.txt")
             version = "3.18.1"
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 

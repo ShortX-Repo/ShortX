@@ -27,7 +27,7 @@ fun mockNotification(context: Context, title: String?, content: String?, `when`:
     val n = NotificationCompat.Builder(context, "ShortX-Mock")
         .setContentTitle(title)
         .setContentText(content)
-        .setSmallIcon(github.tornaco.shortx.android.third.party.icons.R.drawable.ic_remix_account_pin_box_fill)
+        .setSmallIcon(github.tornaco.shortx.icons.R.drawable.ic_remix_account_pin_box_fill)
         .setWhen(`when`)
         .setStyle(NotificationCompat.BigTextStyle().bigText(content))
         .setContentIntent(

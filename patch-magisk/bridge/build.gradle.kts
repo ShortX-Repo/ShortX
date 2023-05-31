@@ -1,6 +1,5 @@
 plugins {
-    id("java")
-    id("kotlin")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
@@ -8,9 +7,4 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":external:utils"))
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }

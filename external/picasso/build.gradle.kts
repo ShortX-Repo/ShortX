@@ -1,17 +1,9 @@
-import tornaco.project.android.shortx.addAidlTask
-
 plugins {
-    id("java")
-    id("kotlin")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
-    implementation(tornaco.project.android.shortx.Others.okhttp)
-    implementation(tornaco.project.android.shortx.Others.okio)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    implementation(libs.okhttp)
+    implementation("com.squareup.okio:okio:3.2.0")
 }

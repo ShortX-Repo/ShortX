@@ -1,26 +1,17 @@
 import tornaco.project.android.shortx.Compose
-import tornaco.project.android.shortx.Configs
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
+    namespace = "github.tornaco.shortx.icons"
+
     defaultConfig {
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
-
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -39,7 +30,7 @@ android {
     }
 }
 dependencies {
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("com.android.tools:sdk-common:30.4.2")
-    testImplementation("com.android.tools:common:30.4.2")
+    testImplementation(libs.junit)
+    testImplementation("com.android.tools:sdk-common:31.0.2")
+    testImplementation("com.android.tools:common:31.0.2")
 }

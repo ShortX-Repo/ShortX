@@ -1,13 +1,5 @@
-import tornaco.project.android.shortx.Coroutines
-
 plugins {
-    id("java")
-    id("kotlin")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
@@ -16,7 +8,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":external:utils"))
 
-    implementation(Coroutines.android)
-    implementation(Coroutines.core)
-    implementation(Coroutines.stdlib)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlin.stdlib.jdk8)
 }

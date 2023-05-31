@@ -1,22 +1,17 @@
-import tornaco.project.android.shortx.*
+import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs.resPrefix
-import tornaco.project.android.shortx.Compose.bomVersion
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
-    namespace = "${Configs.sxPackageName}.recorderable"
+    namespace = "github.tornaco.shortx.android.third.party.recorderable"
 
     defaultConfig {
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
-
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -31,29 +26,18 @@ android {
         dataBinding = false
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = Compose.composeVersion
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     resourcePrefix = resPrefix
 }
 
 dependencies {
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:$bomVersion"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.ui:ui-util")
-
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.util)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material)
 }

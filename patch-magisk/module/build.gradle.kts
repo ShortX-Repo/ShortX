@@ -13,17 +13,15 @@ import java.nio.file.Files
 import java.security.MessageDigest
 
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.agp.lib)
 }
 
 val libZygiskAbiFilters = listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 
 android {
+    namespace = "github.tornaco.shortx.patch.magisk.module"
+
     defaultConfig {
-        vectorDrawables.useSupportLibrary = true
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
 
         ndk {
             abiFilters.addAll(libZygiskAbiFilters)
@@ -35,11 +33,6 @@ android {
                 arguments("-DMODULE_NAME:STRING=${tornaco.project.android.shortx.MagiskModConfigs.moduleLibraryName}")
             }
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     externalNativeBuild {

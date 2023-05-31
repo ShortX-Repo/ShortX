@@ -1,28 +1,19 @@
 import tornaco.project.android.shortx.Compose
-import tornaco.project.android.shortx.Compose.bomVersion
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
-import tornaco.project.android.shortx.Hilt
-import tornaco.project.android.shortx.Lottie
-import tornaco.project.android.shortx.Others
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
-    id("dagger.hilt.android.plugin")
+    alias(libs.plugins.agp.lib)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
     namespace = "${Configs.sxPackageName}.ui"
 
     defaultConfig {
-        minSdk = Configs.minSdkVersion
-        compileSdk = Configs.compileSdkVersion
-        targetSdk = Configs.targetSdkVersion
-        testInstrumentationRunner = Configs.testInstrumentationRunner
-
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -48,84 +39,69 @@ android {
         dataBinding = false
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = Compose.composeVersion
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     resourcePrefix = resPrefix
 }
 
 dependencies {
-    implementation(Hilt.library)
-    implementation(Hilt.hiltNavigationCompose)
-    kapt(Hilt.googleAndroidCompiler)
+    implementation(libs.dagger.hilt.android)
+    implementation(libs.dagger.hilt.navigation.compose)
+    kapt(libs.dagger.hilt.android.compiler)
 
-    implementation(Others.landscapistGlide)
-    implementation(Others.glide)
-    kapt(Others.glideCompiler)
-    annotationProcessor(Others.glideCompiler)
+    implementation(libs.glide.landscapist)
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json-jvm
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1")
+    implementation(libs.kotlinx.serialization.json.jvm)
+    implementation(libs.kotlin.reflect)
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+    implementation(libs.navigation.compose)
+    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.accompanist.placeholder.material)
 
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation(libs.core.splashscreen)
 
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
-    implementation("com.google.accompanist:accompanist-placeholder-material:0.28.0")
-
-    implementation("androidx.core:core-splashscreen:1.0.1")
-
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0-beta01")
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.core.ktx)
     // Note: Do not upgrade this lib, ComposeOverlay.
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.0")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.browser:browser:1.5.0")
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(libs.swiperefreshlayout)
+    implementation(libs.datastore.preferences)
+    implementation(libs.browser)
 
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:$bomVersion"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material)
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
 
-    debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
-    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chucker.no.op)
 
-    // https://github.com/AmrDeveloper/CodeView
-    implementation("io.github.amrdeveloper:codeview:1.3.8")
+    implementation(libs.codeview)
 
     // https://github.com/LibChecker/LibChecker-Rules-Bundle
-    implementation("com.github.LibChecker:LibChecker-Rules-Bundle:32.1") {
-        exclude(group = "javax.annotation", module = "javax.annotation-api")
-    }
-    implementation("androidx.room:room-runtime:2.5.1")
-    implementation("androidx.room:room-ktx:2.5.1")
+    implementation(libs.libchecker.rules.bundle)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 
-    val markwon_version = "4.6.2"
-    implementation("io.noties.markwon:core:$markwon_version")
-    implementation("io.noties.markwon:ext-strikethrough:$markwon_version")
-    implementation("io.noties.markwon:ext-tables:$markwon_version")
-    implementation("io.noties.markwon:html:$markwon_version")
-    implementation("io.noties.markwon:linkify:$markwon_version")
+    implementation(libs.io.noties.markwo.core)
+    implementation(libs.io.noties.markwo.ext.strikethrough)
+    implementation(libs.io.noties.markwo.ext.tables)
+    implementation(libs.io.noties.markwo.html)
+    implementation(libs.io.noties.markwo.linkify)
+
+    implementation(libs.lottie.compose)
+    implementation(libs.lottie)
 
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
@@ -137,15 +113,9 @@ dependencies {
     implementation(project(":external:icons"))
     implementation(project(":external:sec_net"))
 
-    implementation(Lottie.composeLottie)
-    implementation(Lottie.lottie)
+    testImplementation(libs.junit)
+}
 
-    testImplementation("junit:junit:4.13.2")
-
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.3")
+configurations.all {
+    exclude(group = "javax.annotation", module = "javax.annotation-api")
 }
