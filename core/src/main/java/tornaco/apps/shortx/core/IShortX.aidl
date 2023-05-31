@@ -12,6 +12,7 @@ interface IShortX {
     boolean isLogDebugEnable();
     String getLogDir();
     boolean hasFatalError();
+    void writeLogsTo(in ParcelFileDescriptor pfd);
 
     // Rules start
     void addRule(in ByteArrayWrapper rule);

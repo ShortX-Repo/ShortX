@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ParceledListSlice
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
 import tornaco.apps.shortx.core.proto.common.App
@@ -98,6 +99,12 @@ class ShortXManager(private val service: IShortX) {
     fun hasFatalError(): Boolean {
         return invokeService(false) {
             hasFatalError()
+        }
+    }
+
+    fun writeLogsTo(pfd: ParcelFileDescriptor) {
+        invokeService(Unit) {
+            writeLogsTo(pfd)
         }
     }
 

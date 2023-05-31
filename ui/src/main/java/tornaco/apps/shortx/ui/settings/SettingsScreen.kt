@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.settings
 
+import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -140,6 +141,28 @@ fun SettingsScreen(
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
                                             i18N["ui.settings.toast.backup.error", mapOf("err" to it.error)],
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    LaunchedEffect(vm) {
+                        vm.logExportPerformed.collectLatest {
+                            when (it) {
+                                is ExportLogResult.Success -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            it.path
+                                        )
+                                    }
+                                }
+
+                                is ExportLogResult.Failed -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            it.error
                                         )
                                     }
                                 }
@@ -326,7 +349,17 @@ private fun devSettings(
         onCheckChanged = { enable ->
             vm.setLogDebugEnable(enable)
         }),
-).apply {
+
+    Preference.TextPreference(
+        icon = Remix.Device.save_3_fill,
+        title = LocalI18N.current["ui.settings.debug.log.export"],
+        summary = LocalI18N.current["ui.settings.debug.log.export.description", mapOf("dir" to Environment.DIRECTORY_DOWNLOADS)],
+        onClick = {
+            vm.exportLogs()
+        }
+    ),
+
+    ).apply {
     if (BuildProp.APP_IS_DEBUG) {
         add(Preference.TextPreference(
             icon = Remix.System.download_fill,

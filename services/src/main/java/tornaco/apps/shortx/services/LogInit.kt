@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services
 
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.LogLevel
@@ -11,10 +12,13 @@ import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.ZipUtils
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.data.Dirs
 import util.StringStack
 import java.io.File
+import java.io.FileOutputStream
 
 
 object LogInit {
@@ -91,5 +95,29 @@ object LogInit {
         Log.d("ShortX-Logging", "Init xlog with file and android printer.")
     }.onFailure {
         Log.e("ShortX-Logging", "Error initStartedLogging: ${Log.getStackTraceString(it)}")
+    }
+
+    fun writeLogsTo(pfd: ParcelFileDescriptor) {
+        val logger = Logger("LogExport")
+
+        val logDir = Dirs.baseServerLogDir()
+        val tmpDir = Dirs.baseServerTmpDir().apply { this.mkdirs() }
+        val name = "ShortX-Log-${System.currentTimeMillis()}.zip"
+        ZipUtils.zip(logDir.absolutePath, tmpDir.absolutePath, name)
+        val zipFile = File(tmpDir, name)
+        logger.d("zipFile: $zipFile")
+
+        pfd.use {
+            val output = FileOutputStream(pfd.fileDescriptor)
+            output.use { out ->
+                zipFile.inputStream().use {
+                    it.copyTo(out)
+                }
+            }
+        }
+
+        tmpDir.deleteRecursively()
+
+        logger.d("Write success")
     }
 }

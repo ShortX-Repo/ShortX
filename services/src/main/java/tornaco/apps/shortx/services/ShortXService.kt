@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Binder
 import android.os.Parcel
+import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
 import tornaco.apps.shortx.core.*
@@ -102,6 +103,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun hasFatalError(): Boolean {
             return shortXContext.watchDog.hasFatalError()
+        }
+
+        override fun writeLogsTo(pfd: ParcelFileDescriptor) {
+            LogInit.writeLogsTo(pfd)
         }
 
         override fun addRule(rule: ByteArrayWrapper) {

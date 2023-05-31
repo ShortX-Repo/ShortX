@@ -39,6 +39,11 @@ sealed interface RestoreResult {
     data class Failed(val error: String) : RestoreResult
 }
 
+sealed interface ExportLogResult {
+    data class Success(val path: String) : ExportLogResult
+    data class Failed(val error: String) : ExportLogResult
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(@ApplicationContext context: Context) :
@@ -49,6 +54,9 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
 
     private val _restorePerformed = MutableSharedFlow<RestoreResult>()
     val restorePerformed = _restorePerformed.asSharedFlow()
+
+    private val _logExportPerformed = MutableSharedFlow<ExportLogResult>()
+    val logExportPerformed = _logExportPerformed.asSharedFlow()
 
     private val pref by lazy { Pref(context) }
 
@@ -148,6 +156,14 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     }
 
     fun exportLogs() {
-
+        viewModelScope.launch {
+            kotlin.runCatching {
+                val res = tornaco.apps.shortx.ui.exportLogs(context, shortXManager)
+                _logExportPerformed.emit(ExportLogResult.Success(Environment.DIRECTORY_DOWNLOADS + File.separator + res.name))
+            }.onFailure {
+                logger.e(it, "exportLogs error")
+                _logExportPerformed.emit(ExportLogResult.Failed(it.message ?: "UNKNOWN ERR"))
+            }
+        }
     }
 }

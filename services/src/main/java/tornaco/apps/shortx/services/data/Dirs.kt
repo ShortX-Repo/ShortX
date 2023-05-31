@@ -16,6 +16,10 @@ object Dirs {
     fun baseServerLogDir() =
         File(baseServerDir(), "log")
 
+    fun baseServerTmpDir(): File {
+        return File(baseServerDir(), "tmp")
+    }
+
     fun dataStoreDir() = File(baseServerDataDir(), "data_store")
 
     fun dataStoreFile(prefName: String) = File(dataStoreDir(), prefName.let {
