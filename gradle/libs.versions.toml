@@ -54,7 +54,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.3" }
 # https://github.com/gmazzo/gradle-buildconfig-plugin
-gmazzo-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "3.1.0" }
+gmazzo-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "4.0.4" }
 gladed-androidgitversion = { id = "com.gladed.androidgitversion", version = "0.4.10" }
 diffplug-spotless = { id = "com.diffplug.spotless", version = "6.19.0" }
 
