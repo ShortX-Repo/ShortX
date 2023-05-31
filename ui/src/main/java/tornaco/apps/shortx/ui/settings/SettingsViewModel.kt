@@ -146,4 +146,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             pref.seyIgnoreFrameworkUpdate(value)
         }
     }
+
+    fun exportLogs() {
+
+    }
 }

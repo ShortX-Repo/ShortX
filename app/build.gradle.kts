@@ -4,7 +4,6 @@ import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
 import tornaco.project.android.shortx.Hilt
 import tornaco.project.android.shortx.log
-import tornaco.project.android.shortx.Compose.bomVersion
 
 plugins {
     id("com.android.application")
@@ -133,6 +132,8 @@ dependencies {
     implementation(project(":services"))
     implementation(project(":patch"))
     implementation(project(":core"))
+
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
     testImplementation("junit:junit:4.13.2")
 

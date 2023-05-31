@@ -103,10 +103,9 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material")
 
-    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
-
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
@@ -130,7 +129,6 @@ dependencies {
 
     implementation(project(":binder-retriever"))
     implementation(project(":core"))
-    implementation(project(":services"))
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))

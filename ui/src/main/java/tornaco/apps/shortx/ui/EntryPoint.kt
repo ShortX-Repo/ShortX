@@ -1,21 +1,15 @@
 package tornaco.apps.shortx.ui
 
 import android.content.Context
-import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.TextUtils
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import lang3.RandomStringUtils
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.android.sec.net.S
-import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.isSuccess
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
-import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
@@ -27,26 +21,10 @@ object EntryPoint {
     private val logger = Logger("EntryPoint")
 
     fun onCreate(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            HiddenApiBypass.addHiddenApiExemptions("")
-        }
-
+        initLogger(context)
         initDeviceId(context)
-
         I18NCache.init(context)
-
-        runBlocking {
-            val shouldInstall = Pref(context).installFakeServiceFlow.first()
-            if (shouldInstall) {
-                logger.w("Installing fake service.")
-                FakeServiceInstaller(context).install().apply {
-                    ShortXManagerNative.shortXInjection = this
-                }
-            }
-        }
-
         checkCB(context)
-
         LCRulesAdapter.initRules(context)
     }
 
