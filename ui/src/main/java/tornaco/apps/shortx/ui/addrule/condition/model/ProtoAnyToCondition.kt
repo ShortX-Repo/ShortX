@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition.model
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -58,6 +59,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 varName = data.varName,
                 op = data.op,
                 payload = data.payload
+            )
+        }
+
+        this is_ BatteryPercent::class.java -> {
+            val data = this unpack_ BatteryPercent::class.java
+            Condition.BatteryPercent(
+                id = data.id,
+                note = data.note,
+                op = data.op,
+                value = data.value
             )
         }
 

@@ -39,6 +39,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.BatteryPercent::class -> {
+            listOf(
+                i18N["ui.conditions.battery.percent"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -71,6 +77,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.EvaluateGlobalVar -> listOf(
             i18N["ui.conditions.eva.global.var"]
         )
+
+        is Condition.BatteryPercent -> {
+            listOf(
+                i18N["ui.conditions.battery.percent"],
+                "${condition.op} ${condition.value}%"
+            )
+        }
     }
 }
 
@@ -90,6 +103,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
 
         Condition.EvaluateGlobalVar::class -> {
             Remix.Document.file_list_fill
+        }
+
+        Condition.BatteryPercent::class -> {
+            Remix.Device.battery_2_fill
         }
 
         else -> {

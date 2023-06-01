@@ -67,6 +67,11 @@ fun ConditionSelectors(
     }
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
 
+    val batteryPercentDialog = rememberBatteryPercentSelectorState {
+        handler.addCondition(it)
+    }
+    BatteryPercentSelectorDialog(state = batteryPercentDialog)
+
     Conditions(
         readOnly = readOnly,
         header = header,
@@ -89,6 +94,10 @@ fun ConditionSelectors(
 
                 Condition.EvaluateGlobalVar::class -> {
                     evaluateGlobalVarSelectorDialogState.show()
+                }
+
+                Condition.BatteryPercent::class -> {
+                    batteryPercentDialog.show()
                 }
             }
         },
@@ -188,6 +197,7 @@ fun Conditions(
                             Condition.MVEL::class,
                             Condition.TRUE::class,
                             Condition.EvaluateGlobalVar::class,
+                            Condition.BatteryPercent::class,
                         ).map {
                             DropdownItem(
                                 labelLines = labelForConditionSelector(it),

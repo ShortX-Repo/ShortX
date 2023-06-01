@@ -48,6 +48,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateGlobalVar
     },
+    BatteryPercent {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.BatteryPercent
+    },
 
 }
 

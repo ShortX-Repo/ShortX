@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -43,6 +44,15 @@ sealed interface Condition : Parcelable {
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition
+
+    @Parcelize
+    data class BatteryPercent(
+        val value: Int,
+        val op: IntOp,
+
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition
 }
 
 val allConditionClasses = listOf(
@@ -50,4 +60,5 @@ val allConditionClasses = listOf(
     Condition.MVEL::class,
     Condition.TRUE::class,
     Condition.EvaluateGlobalVar::class,
+    Condition.BatteryPercent::class,
 )

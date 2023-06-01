@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.model
 
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -48,6 +49,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .setVarName(varName)
                 .setOp(op)
                 .setPayload(payload)
+                .build()
+        }
+
+        is Condition.BatteryPercent -> {
+            BatteryPercent.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setValue(value)
+                .setOp(op)
                 .build()
         }
     }
