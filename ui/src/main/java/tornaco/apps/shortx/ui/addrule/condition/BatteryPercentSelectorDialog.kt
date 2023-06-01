@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,7 @@ import tornaco.apps.shortx.core.rule.toDisplayName
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -156,9 +158,14 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
-                        FilledTonalButton(onClick = {
-                            opSelectorState.open()
-                        }) {
+                        FilledTonalButton(
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = ColorDefaults.backgroundSurfaceColor(
+                                    1.dp
+                                )
+                            ), onClick = {
+                                opSelectorState.open()
+                            }) {
                             Text(dialogState.action.op.toDisplayName())
                         }
                         DropdownSelector(

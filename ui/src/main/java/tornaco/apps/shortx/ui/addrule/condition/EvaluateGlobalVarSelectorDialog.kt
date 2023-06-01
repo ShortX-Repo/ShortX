@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,7 @@ import tornaco.apps.shortx.core.rule.toDisplayName
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -65,6 +67,8 @@ class EvaluateGlobalVarSelectorDialogState(
         )
     )
 
+    var showPayloadInputField by mutableStateOf(false)
+
     val action get() = _action
 
     private var _output by mutableStateOf("")
@@ -84,11 +88,13 @@ class EvaluateGlobalVarSelectorDialogState(
         setOutput("")
     }
 
-    infix fun setOp(data: GlobalVarOp) {
+    infix fun setOp(op: GlobalVarOp) {
         _action = _action.copy(
-            op = data
+            op = op
         )
         setOutput("")
+        showPayloadInputField =
+            op != GlobalVarOp.HasBeenSet && op != GlobalVarOp.NotSet && op != GlobalVarOp.IsEmpty && op != GlobalVarOp.IsNotEmpty
     }
 
     fun canSave(): Boolean {
@@ -182,9 +188,15 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
 
                     SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
                     TinySpacer()
-                    FilledTonalButton(onClick = {
-                        globalVarToWriteSelectorState.show()
-                    }) {
+                    FilledTonalButton(
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = ColorDefaults.backgroundSurfaceColor(
+                                1.dp
+                            )
+                        ),
+                        onClick = {
+                            globalVarToWriteSelectorState.show()
+                        }) {
                         if (selectedVarName != null) {
                             Text(text = selectedVarName)
                         } else {
@@ -198,9 +210,15 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
-                        FilledTonalButton(onClick = {
-                            opSelectorState.open()
-                        }) {
+                        FilledTonalButton(
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = ColorDefaults.backgroundSurfaceColor(
+                                    1.dp
+                                )
+                            ),
+                            onClick = {
+                                opSelectorState.open()
+                            }) {
                             Text(dialogState.action.op.toDisplayName())
                         }
                         DropdownSelector(
@@ -217,14 +235,19 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                             dialogState setOp (it.data)
                         }
                     }
-
-                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var.payload"])
-                    TinySpacer()
-                    ShortXTextField(value = payloadValue, onValueChange = {
-                        dialogState.inputValue(it)
-                    })
-
                     StandardSpacer()
+
+                    AnimatedVisibility(visible = dialogState.showPayloadInputField) {
+                        Column {
+                            SmallTitle(text = LocalI18N.current["ui.action.select.global.var.payload"])
+                            TinySpacer()
+                            ShortXTextField(value = payloadValue, onValueChange = {
+                                dialogState.inputValue(it)
+                            })
+                            StandardSpacer()
+                        }
+                    }
+
                     AnimatedVisibility(visible = dialogState.output.isNotEmpty()) {
                         Card(
                             modifier = Modifier
