@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.ui
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import tornaco.apps.shortx.core.doIfDebug
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -37,9 +36,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                     liveDanmuView =
                         LiveDanmuView(context, getDanmuUISettings()).apply { attach() }
                 }
-                doIfDebug {
-                    logger.d("showDanmu: $liveDanmuView $icon $text")
-                }
+                logger.d("showDanmu: $liveDanmuView $icon $text")
                 liveDanmuView?.addDanmu(Danmu(icon, text))
             }
         }

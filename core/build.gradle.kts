@@ -16,6 +16,8 @@ plugins {
 buildConfig {
     packageName("${sxPackageName}.core")
     className("BuildProp")
+    useKotlinOutput { internalVisibility = false }
+
     buildConfigField("String", "APP_PACKAGE_NAME", provider { "\"${sxPackageName}\"" })
     buildConfigField("String", "APP_VERSION_NAME", provider { "\"${sxVersionName}\"" })
     buildConfigField("String", "APP_VERSION_NAME_SUFFIX", provider { "\"${sxVersionNameSuffix}\"" })

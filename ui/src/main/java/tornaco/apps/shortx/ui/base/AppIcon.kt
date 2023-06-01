@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -37,18 +36,13 @@ import tornaco.apps.shortx.ui.util.GlideApp
 fun AppIcon(modifier: Modifier, pkg: AppPkg) {
     GlideImage(
         modifier = modifier,
-        imageModel = pkg,
-        // Crop, Fit, Inside, FillHeight, FillWidth, None
-        contentScale = ContentScale.Crop,
-
+        imageModel = { pkg },
         loading = {
             Box(
                 modifier = Modifier
                     .matchParentSize()
+                    .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
-                    .clip(
-                        CircleShape
-                    )
             ) {}
         },
         // shows an error text if fail to load an image.
