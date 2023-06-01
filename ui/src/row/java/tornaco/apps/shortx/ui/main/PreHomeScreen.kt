@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.base.LocalNavHostController
-import tornaco.apps.shortx.ui.row.LVLCheckScreen
-import tornaco.apps.shortx.ui.row.util.isLVLChecked
+import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 
 @Composable
 fun PreHomeScreen() {

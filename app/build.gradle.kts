@@ -15,10 +15,6 @@ plugins {
 android {
     namespace = Configs.sxPackageName
 
-    defaultConfig {
-        applicationId = Configs.sxPackageName
-    }
-
     signingConfigs {
         create("release") {
             Configs.KeyStorePath.also {
@@ -91,7 +87,7 @@ android {
             val impl =
                 this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
             impl.outputFileName =
-                "shortx-${Configs.sxVersionName}(${Configs.sxVersionCode}).apk"
+                "shortx-${impl.name}-${Configs.sxVersionName}(${Configs.sxVersionCode}).apk"
             log("impl.outputFileName changed to:${impl.outputFileName}")
         }
     }
