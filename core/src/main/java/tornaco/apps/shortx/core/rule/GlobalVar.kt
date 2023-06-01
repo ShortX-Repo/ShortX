@@ -153,7 +153,9 @@ fun String.splitAsGlobalVarOpPayloadStringList(): List<String> {
 fun GlobalVarOp.toDisplayName(): String {
     return when (this) {
         GlobalVarOp.GreaterThan -> "$name (>)"
+        GlobalVarOp.GreaterThanOrEQ -> "$name (>=)"
         GlobalVarOp.LessThan -> "$name (<)"
+        GlobalVarOp.LessThanOrEQ -> "$name (<=)"
         GlobalVarOp.EqualTo -> "$name (==)"
         GlobalVarOp.Contains -> "$name (contains)"
         GlobalVarOp.DoesNotContain -> "$name (!contains)"

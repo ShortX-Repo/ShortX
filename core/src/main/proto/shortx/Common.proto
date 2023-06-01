@@ -86,3 +86,16 @@ message RecentTask {
   AppPkg owner = 1;
   int32 taskId = 2;
 }
+
+enum IntOp {
+  // >
+  IntGreaterThan = 0;
+  // >=
+  IntGreaterThanOrEQ = 1;
+  // <
+  IntLessThan = 2;
+  // <=
+  IntLessThanOrEQ = 3;
+  // ==
+  IntEqualTo = 4;
+}

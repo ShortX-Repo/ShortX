@@ -51,6 +51,14 @@ message MatchMVEL {
   string id = 100;
 }
 
+message BatteryPercent {
+  int32 value = 1;
+  IntOp op = 2;
+
+  string note = 99;
+  string id = 100;
+}
+
 message EvaluateGlobalVar {
   GlobalVarOp op = 1;
   string varName = 2;
@@ -62,14 +70,16 @@ message EvaluateGlobalVar {
 
 enum GlobalVarOp {
   GreaterThan = 0;
-  LessThan = 1;
-  EqualTo = 2;
-  Contains = 3;
-  DoesNotContain = 4;
-  NotSet = 5;
-  HasBeenSet = 6;
-  IsEmpty = 7;
-  IsNotEmpty = 8;
+  GreaterThanOrEQ = 1;
+  LessThan = 2;
+  LessThanOrEQ = 3;
+  EqualTo = 4;
+  Contains = 5;
+  DoesNotContain = 6;
+  NotSet = 7;
+  HasBeenSet = 8;
+  IsEmpty = 9;
+  IsNotEmpty = 10;
 }
 
 message GlobalVarOpPayload {
