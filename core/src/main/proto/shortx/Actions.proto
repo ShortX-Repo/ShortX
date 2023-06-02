@@ -381,3 +381,8 @@ message IfThenElse {
   string note = 99;
   string id = 100;
 }
+
+message ReadClipboard {
+  string note = 99;
+  string id = 100;
+}

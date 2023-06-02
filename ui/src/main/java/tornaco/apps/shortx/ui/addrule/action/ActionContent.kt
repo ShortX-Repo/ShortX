@@ -51,7 +51,7 @@ private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Un
     val selectHandlers = listOf(
         uiActionSelectHandler(addAction = addAction),
         appActionSelectHandler(addAction = addAction),
-        settingsActionSelectHandler(addAction = addAction),
+        systemActionSelectHandler(addAction = addAction),
         lifeActionSelectHandler(addAction = addAction),
         extActionSelectHandler(addAction = addAction),
     )

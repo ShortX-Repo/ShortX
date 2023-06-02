@@ -1,3 +1,5 @@
+@file:Suppress("EnumEntryName")
+
 package tornaco.apps.shortx.core.context
 
 object ContextDataMapping {
@@ -46,5 +48,9 @@ object ContextDataMapping {
         taskId("Id of the removed task"),
         userId("The user id"),
         pkgName("App package name of the task owner"),
+    }
+
+    enum class ReadClipboard(val description: String) {
+        text("Text read from clipboard"),
     }
 }

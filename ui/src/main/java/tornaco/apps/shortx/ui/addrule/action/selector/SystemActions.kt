@@ -10,9 +10,14 @@ import kotlin.reflect.full.createInstance
 
 
 @Composable
-fun settingsActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     return { source ->
         when (source.clazz) {
+            Action.ReadClipboard::class -> {
+                addAction(Action.ReadClipboard())
+                true
+            }
+
             Action.DisableBT::class,
             Action.DisableDND::class,
             Action.DisableDarkMode::class,
@@ -40,40 +45,25 @@ fun settingsActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSourc
 }
 
 @Composable
-fun SettingsActions(addAction: (Action) -> Unit) {
+fun SystemActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Action.ReadClipboard::class,
         Action.EnableWifi::class,
-
         Action.DisableWifi::class,
-
         Action.EnableBT::class,
-
         Action.DisableBT::class,
-
-
         Action.EnableData::class,
-
         Action.DisableData::class,
-
         Action.EnableHotSpot::class,
-
         Action.DisableHotSpot::class,
-
         Action.EnableNFC::class,
-
         Action.DisableNFC::class,
-
         Action.EnableDND::class,
-
         Action.DisableDND::class,
-
         Action.EnableFlashLight::class,
-
         Action.DisableFlashLight::class,
-
         Action.EnableDarkMode::class,
-
         Action.DisableDarkMode::class,
     ).map {
         Item(
@@ -83,7 +73,7 @@ fun SettingsActions(addAction: (Action) -> Unit) {
         )
     }
 
-    val selectHandler = settingsActionSelectHandler(addAction = addAction)
+    val selectHandler = systemActionSelectHandler(addAction = addAction)
     ActionList(
         actionItems = actionItems,
         itemSelected = { it ->

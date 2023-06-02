@@ -55,5 +55,6 @@ val allActionClasses = listOf(
     Action.InputTap::class,
     Action.WaitForIdle::class,
     Action.IfThenElse::class,
+    Action.ReadClipboard::class,
     Action.NoAction::class,
 )

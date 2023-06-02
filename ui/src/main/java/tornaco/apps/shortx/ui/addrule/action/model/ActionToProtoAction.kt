@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetBTEnabled
@@ -400,6 +401,13 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 }
                 .addAllIfActions(ifActions.map { it.toProtoAction().pack_() })
                 .addAllElseActions(elseActions.map { it.toProtoAction().pack_() })
+                .build()
+        }
+
+        is Action.ReadClipboard -> {
+            ReadClipboard.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

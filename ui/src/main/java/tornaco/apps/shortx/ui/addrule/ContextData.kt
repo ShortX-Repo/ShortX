@@ -80,6 +80,10 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
             dats<ContextDataMapping.ExecuteMVEL>()
         }
 
+        Action.ReadClipboard::class -> {
+            dats<ContextDataMapping.ReadClipboard>()
+        }
+
         else -> {
             emptyList()
         }

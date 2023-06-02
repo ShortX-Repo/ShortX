@@ -188,7 +188,7 @@ private fun <ARGS> ActionSelector(
                                             StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Settings)
-                                            SettingsActions(addAction = addAction)
+                                            SystemActions(addAction = addAction)
                                             StandardSpacer()
 
                                             ActionCategoryTitle(ActionCategory.Advanced)

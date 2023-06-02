@@ -206,6 +206,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.IfThenElse
     },
+    ReadClipboard {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ReadClipboard
+    },
 
 
     ;

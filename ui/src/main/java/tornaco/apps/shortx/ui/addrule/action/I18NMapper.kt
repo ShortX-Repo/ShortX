@@ -25,6 +25,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.show.toast"] to null
         }
 
+        Action.ReadClipboard::class -> {
+            i18N["ui.action.read.clipboard"] to null
+        }
+
         Action.ShowDanmu::class -> {
             i18N["ui.action.show.danmu"] to null
         }
@@ -136,6 +140,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)
+        }
+
+        is Action.ReadClipboard -> {
+            listOf(i18N["ui.action.read.clipboard"])
         }
 
         is Action.ShowDanmu -> {
@@ -626,6 +634,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.NoAction::class -> {
             Remix.Media.album_fill
+        }
+
+        Action.ReadClipboard::class -> {
+            Remix.Document.clipboard_fill
         }
 
         else -> {

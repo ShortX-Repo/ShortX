@@ -21,6 +21,11 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.NoAction(id = data.id, note = data.note)
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java
+            Action.ReadClipboard(id = data.id, note = data.note)
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java
             Action.TakeScreenshot(id = data.id, note = data.note)
