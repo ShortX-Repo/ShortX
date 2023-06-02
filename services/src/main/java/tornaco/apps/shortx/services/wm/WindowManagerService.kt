@@ -11,7 +11,6 @@ import androidx.test.uiautomator.adapter.InstrumentationAdapter
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.postSafety
 
 class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
@@ -142,20 +141,17 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         }
     }
 
-    fun clickDelayed(x: Int, y: Int, delay: Long) {
+    fun click(x: Int, y: Int) {
         synchronized(uiAutoLock) {
-            logger.d("clickDelayed ($x, $y) delay: $delay, execute.")
             if (!isSystemReady) return
-            handler.postSafety(delay = delay) {
-                logger.d("clickDelayed ($x, $y), execute.")
-                if (!automationManager.isConnected) {
-                    logger.w("clickDelayed ($x, $y), not connected.")
-                    return@postSafety
-                }
-                val uiDevice =
-                    UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
-                uiDevice.click(x, y)
+            logger.d("click ($x, $y), execute.")
+            if (!automationManager.isConnected) {
+                logger.w("click ($x, $y), not connected.")
+                return
             }
+            val uiDevice =
+                UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+            uiDevice.click(x, y)
         }
     }
 

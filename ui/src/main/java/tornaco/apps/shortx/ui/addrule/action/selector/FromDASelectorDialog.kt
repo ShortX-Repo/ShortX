@@ -114,7 +114,7 @@ private fun FromDASelector(dialogState: FromDADialogState) {
 
                     StandardSpacer()
                     Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(LocalI18N.current["ui.title.select.action"])
+                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.title.select.action"])
 
                         if (state.data.daId.isNotBlank()) {
                             ListItem(titleLines = labelLinesForAction(action = state.data),

@@ -119,7 +119,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    SmallTitle(i18N["ui.action.map.nav"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav"])
 
                     ListItem(title = when (mapApp) {
                         MapApp.Gaode -> {
@@ -153,7 +153,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     StandardSpacer()
                     StandardSpacer()
 
-                    SmallTitle(i18N["ui.action.map.nav.latitude"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav.latitude"])
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         
                         colors = TextFieldDefaults.textFieldColors(
@@ -165,7 +165,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         })
                     StandardSpacer()
 
-                    SmallTitle(i18N["ui.action.map.nav.longitude"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav.longitude"])
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         
                         colors = TextFieldDefaults.textFieldColors(
@@ -180,7 +180,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
 
                     AnimatedVisibility(visible = mapApp == MapApp.Gaode) {
                         Column {
-                            SmallTitle(i18N["ui.action.map.poi"])
+                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.poi"])
                             ShortXTextField(modifier = Modifier.fillMaxWidth(),
                                 
                                 colors = TextFieldDefaults.textFieldColors(

@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GlobalVarType
@@ -72,7 +74,10 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                SmallTitle(text = LocalI18N.current["ui.global.var.name"])
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    text = LocalI18N.current["ui.global.var.name"]
+                )
                 TipBody(text = LocalI18N.current["ui.global.var.name.description"])
                 ShortXTextField(
                     modifier = Modifier
@@ -85,7 +90,10 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                 LargeSpacer()
 
-                SmallTitle(text = LocalI18N.current["ui.global.var.type"])
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    text = LocalI18N.current["ui.global.var.type"]
+                )
                 Box(modifier = Modifier) {
                     val typeDropdownState = rememberDropdownSelectorState()
 

@@ -136,7 +136,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                     StandardSpacer()
 
                     Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(LocalI18N.current["ui.action.show.overlay.text"])
+                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.text"])
                         ShortXTextField(value = button.label, onValueChange = {
                             vm.updateLabel(index, it)
                         })
@@ -144,7 +144,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
                     StandardSpacer()
 
                     Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(LocalI18N.current["ui.action.show.overlay.icon"])
+                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.icon"])
                         TextButton(onClick = {
                             iconSelector.show()
                         }) {
@@ -157,7 +157,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
                     ActionContent(
                         header = {
-                            SmallTitle(text = LocalI18N.current["ui.actions.title"])
+                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.actions.title"])
                         },
                         actions = actionState.actions,
                         warnings = actionState.actionWarningMessages,
@@ -177,7 +177,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
         LargeSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.show.overlay.tag"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.tag"])
             TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
             ShortXTextField(value = state.tag, onValueChange = {
                 vm.updateTag(it)
@@ -186,7 +186,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(text = LocalI18N.current["ui.action.show.auto.collapse"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.show.auto.collapse"])
             SmallSpacer()
             ShortXSwitch(checked = state.autoCollapse, onCheckedChange = {
                 vm.setAutoCollapse(it)

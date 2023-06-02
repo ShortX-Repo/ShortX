@@ -99,9 +99,12 @@ fun MediumTitleWithTip(text: String, tipText: String) {
 }
 
 @Composable
-fun SmallTitle(text: String, color: Color = Color.Unspecified) {
+fun SmallTitle(
+    modifier: Modifier,
+    text: String, color: Color = Color.Unspecified
+) {
     Text(
-        modifier = Modifier.padding(top = 12.dp),
+        modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall.copy(
             fontWeight = FontWeight.W500,

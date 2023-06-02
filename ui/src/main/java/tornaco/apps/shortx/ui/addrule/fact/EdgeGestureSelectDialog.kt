@@ -3,17 +3,32 @@ package tornaco.apps.shortx.ui.addrule.fact
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
-import java.util.*
+import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import java.util.Locale
 
 class EdgeGestureSelectorState(
     val showEdgeHint: (Edge) -> Unit,
@@ -66,7 +81,10 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                     val dropdownState = rememberDropdownSelectorState()
 
                     Column {
-                        SmallTitle(text = i18N["ui.fact.edge.gesture.position"])
+                        SmallTitle(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            text = i18N["ui.fact.edge.gesture.position"]
+                        )
                         ListItem(title = i18N[edge.displayNameKey()],
                             action1 = {
                                 IconButton(onClick = { dropdownState.open() }) {
@@ -95,7 +113,10 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                 Box {
                     val dropdownState = rememberDropdownSelectorState()
                     Column {
-                        SmallTitle(text = i18N["ui.fact.edge.gesture.gesture"])
+                        SmallTitle(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            text = i18N["ui.fact.edge.gesture.gesture"]
+                        )
                         ListItem(title = i18N[gesture.displayNameKey()],
                             action1 = {
                                 IconButton(onClick = { dropdownState.open() }) {

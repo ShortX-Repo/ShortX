@@ -240,7 +240,7 @@ private fun OpSelector(
     setConditionOp: (Op) -> Unit
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        SmallTitle(LocalI18N.current["ui.condition.op"])
+        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.condition.op"])
         ListItem(
             modifier = Modifier,
             titleLines = mutableListOf(

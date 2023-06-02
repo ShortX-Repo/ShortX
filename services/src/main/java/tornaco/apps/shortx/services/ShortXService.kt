@@ -9,6 +9,7 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
+import android.provider.Settings
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -227,6 +228,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     )
                 }
             } ?: emptyList()
+        }
+
+        override fun setPointerLocationEnabled(enable: Boolean) {
+            shortXContext.systemSettings.setPointerLocationEnabled(enable)
+        }
+
+        override fun isPointerLocationEnabled(): Boolean {
+            return shortXContext.systemSettings.isPointerLocationEnabled()
         }
 
         override fun addPkgSet(set: ByteArrayWrapper) {

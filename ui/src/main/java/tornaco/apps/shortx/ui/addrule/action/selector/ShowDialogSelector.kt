@@ -271,7 +271,7 @@ private fun ButtonSettings(
 
     ActionContent(
         header = {
-            SmallTitle(text = LocalI18N.current["ui.actions.title"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.actions.title"])
         },
         actions = actions,
         handler = actionHandler,

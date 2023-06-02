@@ -434,6 +434,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun setPointerLocationEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isPointerLocationEnabled = enable
+        }
+    }
+
+    fun isPointerLocationEnabled(): Boolean {
+        return invokeService(false) {
+            isPointerLocationEnabled
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

@@ -109,7 +109,7 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
             .verticalScroll(rememberScrollState())
     ) {
 
-        SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
+        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var"])
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.varName,
@@ -126,7 +126,7 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
 
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.global.var.value"])
+        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.global.var.value"])
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.valueAsString,

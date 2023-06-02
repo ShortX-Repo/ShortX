@@ -232,5 +232,8 @@ private fun <ARGS> ActionSelector(
 
 @Composable
 private fun ActionCategoryTitle(category: ActionCategory) {
-    SmallTitle(text = LocalI18N.current[category.i18NKey])
+    SmallTitle(
+        modifier = Modifier.padding(vertical = 12.dp),
+        text = LocalI18N.current[category.i18NKey]
+    )
 }

@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.MapNav
@@ -367,6 +368,11 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.FindAndClickViewByText -> {
             FindAndClickViewByText.newBuilder().setId(overrideId ?: id).setText(text)
                 .setIsRegex(isRegex)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.InputTap -> {
+            InputTap.newBuilder().setId(overrideId ?: id).setX(x).setY(y)
                 .setNote(overrideNote ?: note).build()
         }
 

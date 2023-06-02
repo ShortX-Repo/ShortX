@@ -186,7 +186,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         dialogState.action.payload.value
                     }
 
-                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var"])
                     TinySpacer()
                     FilledTonalButton(
                         colors = ButtonDefaults.filledTonalButtonColors(
@@ -206,7 +206,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
 
                     StandardSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.action.select.global.var.op"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var.op"])
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
@@ -239,7 +239,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
 
                     AnimatedVisibility(visible = dialogState.showPayloadInputField) {
                         Column {
-                            SmallTitle(text = LocalI18N.current["ui.action.select.global.var.payload"])
+                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var.payload"])
                             TinySpacer()
                             ShortXTextField(value = payloadValue, onValueChange = {
                                 dialogState.inputValue(it)

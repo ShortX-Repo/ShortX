@@ -228,6 +228,15 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Dev settings
+
+    @Override public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException
+    {
+    }
+    @Override public boolean isPointerLocationEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -898,6 +907,23 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllUsers();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_setPointerLocationEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setPointerLocationEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isPointerLocationEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isPointerLocationEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
           return true;
         }
         default:
@@ -2156,6 +2182,47 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Dev settings
+
+      @Override public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enable)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setPointerLocationEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setPointerLocationEnabled(enable);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public boolean isPointerLocationEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isPointerLocationEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isPointerLocationEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -2212,6 +2279,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 51);
     static final int TRANSACTION_vb = (android.os.IBinder.FIRST_CALL_TRANSACTION + 52);
     static final int TRANSACTION_getAllUsers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 53);
+    static final int TRANSACTION_setPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 54);
+    static final int TRANSACTION_isPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 55);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -2312,4 +2381,8 @@ public interface IShortX extends android.os.IInterface
   // User
 
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException;
+  // Dev settings
+
+  public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException;
+  public boolean isPointerLocationEnabled() throws android.os.RemoteException;
 }

@@ -591,6 +591,19 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class InputTap(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val x: Int,
+        val y: Int
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class WaitForIdle(
         override val id: String = defaultNewActionId(),
         override val note: String = "",

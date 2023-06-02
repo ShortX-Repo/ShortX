@@ -32,7 +32,7 @@ class IconGen {
                 File(
                     "src/main/res/drawable/$androidResFileName.xml"
                 ).outputStream().use {
-                    Svg2Vector.parseSvgToXml(iconFile, it)
+                    Svg2Vector.parseSvgToXml(iconFile.toPath(), it)
                 }
             }
         }

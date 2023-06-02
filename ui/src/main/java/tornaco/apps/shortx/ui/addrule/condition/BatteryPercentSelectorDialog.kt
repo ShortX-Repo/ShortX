@@ -154,7 +154,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                         .padding(paddingValues)
                         .padding(16.dp)
                 ) {
-                    SmallTitle(text = LocalI18N.current["ui.conditions.battery.percent.op"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.conditions.battery.percent.op"])
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
@@ -183,7 +183,7 @@ private fun BatteryPercentSelector(dialogState: BatteryPercentSelectorDialogStat
                         }
                     }
 
-                    SmallTitle(text = LocalI18N.current["ui.conditions.battery.percent.value"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.conditions.battery.percent.value"])
                     TinySpacer()
                     ShortXTextField(
                         value = dialogState.action.value.let {

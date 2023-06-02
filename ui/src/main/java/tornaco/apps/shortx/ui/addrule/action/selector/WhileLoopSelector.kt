@@ -143,7 +143,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    SmallTitle(text = LocalI18N.current["ui.action.while.loop.repeat"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.while.loop.repeat"])
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.repeat.toString(),
@@ -157,7 +157,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         })
                     StandardSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.action.while.loop.delay"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.while.loop.delay"])
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.delay.toString(),
@@ -176,7 +176,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                     val warning = conditionState.conditionWarningMessages
                     ConditionSelectors(
                         header = {
-                            SmallTitle(LocalI18N.current["ui.action.while.loop.condition.title"])
+                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.condition.title"])
                             TipRow(LocalI18N.current["ui.action.while.loop.condition.message"])
                             MediumSpacer()
                         },
@@ -189,7 +189,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
-                            SmallTitle(LocalI18N.current["ui.action.while.loop.action.message"])
+                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.action.message"])
                         },
                         actions = actionState.actions,
                         handler = dialogState.actionHandler.asActionHandler(),

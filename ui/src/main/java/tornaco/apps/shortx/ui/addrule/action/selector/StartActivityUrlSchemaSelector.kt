@@ -137,7 +137,7 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
                 ) {
                     val context = LocalContext.current
 
-                    SmallTitle(text = "URL Schema")
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = "URL Schema")
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.urlSchema,
@@ -156,7 +156,7 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
                         })
                     StandardSpacer()
 
-                    SmallTitle(text = LocalI18N.current["ui.common.user.id"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.common.user.id"])
                     val userSelectorState = rememberUserSelectorDialogState(onSelected = {
                         dialogState.updateUser(it.userId)
                     })

@@ -355,6 +355,14 @@ message FindAndClickViewByText {
   string id = 100;
 }
 
+message InputTap {
+  int32 x = 1;
+  int32 y = 2;
+
+  string note = 99;
+  string id = 100;
+}
+
 message WaitForIdle {
 
   string note = 99;

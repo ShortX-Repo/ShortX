@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -39,7 +41,8 @@ import tornaco.apps.shortx.ui.theme.NoteTextColor
 enum class SuggestedNav(val labelKey: String) {
     GlobalVar("ui.global.var.title"),
     PkgSet("ui.pkg.set.title"),
-    DanmuSettings("ui.settings.danmu")
+    DanmuSettings("ui.settings.danmu"),
+    ShowPointerLocation("ui.common.show.pointer.location"),
 }
 
 @Composable
@@ -58,17 +61,18 @@ fun SuggestedNavEntry() {
 
         StandardSpacer()
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
             RemixIcon(
                 modifier = Modifier.size(18.dp),
                 remixName = Remix.Logos.bard_fill,
                 tint = MaterialTheme.colorScheme.primary
             )
             SmallSpacer()
-            SmallTitle(
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),
                 text = LocalI18N.current["ui.suggest.nav.entry.title"],
             )
         }
+        StandardSpacer()
 
         FlowRow {
             val globalVarScreenState = rememberCommonDialogState()
@@ -87,6 +91,9 @@ fun SuggestedNavEntry() {
                             SuggestedNav.GlobalVar -> globalVarScreenState.show()
                             SuggestedNav.PkgSet -> pkgSetScreenState.show()
                             SuggestedNav.DanmuSettings -> danmuSettingsScreenState.show()
+                            SuggestedNav.ShowPointerLocation -> {
+                                shortXManager.setPointerLocationEnabled(!shortXManager.isPointerLocationEnabled())
+                            }
                         }
                     }, label = {
                         Text(text = LocalI18N.current[it.labelKey])

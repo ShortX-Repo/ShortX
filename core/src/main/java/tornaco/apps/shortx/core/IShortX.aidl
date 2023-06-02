@@ -102,4 +102,8 @@ interface IShortX {
 
     // User
     List<ByteArrayWrapper> getAllUsers();
+
+    // Dev settings
+    void setPointerLocationEnabled(boolean enable);
+    boolean isPointerLocationEnabled();
 }

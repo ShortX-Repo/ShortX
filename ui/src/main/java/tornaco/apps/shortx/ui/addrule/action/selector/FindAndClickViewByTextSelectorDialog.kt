@@ -118,25 +118,27 @@ private fun FindAndClickViewByTextSelector(
                         .padding(paddingValues)
                         .padding(16.dp),
                 ) {
-                    SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.text"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.find.click.view.by.text.text"])
+                    TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
-                        ),
                         value = state.text,
                         onValueChange = {
                             state.setText(it)
                         })
                     StandardSpacer()
 
-                    SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.timeout"])
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.find.click.view.by.text.is.regex"])
+                    TinySpacer()
+                    ShortXSwitch(
+                        checked = state.isRegex,
+                        onCheckedChange = { state.setIsRegex(it) })
+                    StandardSpacer()
+
+                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.find.click.view.by.text.timeout"])
                     TipBody(LocalI18N.current["ui.action.find.click.view.by.text.timeout.description"])
+                    TinySpacer()
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
-                        ),
                         value = state.timeout.toString(),
                         onValueChange = {
                             if (it.isDigitsOnly()) {
@@ -144,12 +146,10 @@ private fun FindAndClickViewByTextSelector(
                                     .getOrElse { 0 })
                             }
                         },
+                        showSymbolButton = false,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     StandardSpacer()
-
-                    SmallTitle(LocalI18N.current["ui.action.find.click.view.by.text.is.regex"])
-                    ShortXSwitch(checked = state.isRegex, onCheckedChange = { state.setIsRegex(it) })
                 }
             }
         }

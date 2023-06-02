@@ -168,7 +168,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
-        SmallTitle(text = LocalI18N.current["ui.common.action"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.action"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.action,
@@ -182,7 +185,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             vm.updateUserId(it.pkg.userId)
         }
         SingleAppSelectorDialog(state = singleAppSelectorState)
-        SmallTitle(text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.pkgName ?: "",
@@ -211,7 +217,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             }
         )
         AppComponentSelectorDialog(componentSelectorState)
-        SmallTitle(text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.className ?: "",
@@ -237,7 +246,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             })
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.common.user.id"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.user.id"]
+        )
         val userSelectorState = rememberUserSelectorDialogState(onSelected = {
             vm.updateUserId(it.userId)
         })
@@ -253,7 +265,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
 
@@ -264,7 +279,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
             })
         StandardSpacer()
 
-        SmallTitle(text = LocalI18N.current["ui.common.extras"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.common.extras"]
+        )
         state.extras.forEachIndexed { index, extra ->
             Row(verticalAlignment = CenterVertically, horizontalArrangement = SpaceBetween) {
                 // Key

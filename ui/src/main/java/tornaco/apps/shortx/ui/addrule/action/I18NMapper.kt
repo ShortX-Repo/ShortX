@@ -115,6 +115,7 @@ fun labelAndDescriptionForActionSelector(
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
+        Action.InputTap::class -> i18N["ui.action.input.tap"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
         Action.NoAction::class -> "Noop" to null
@@ -371,6 +372,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             )
         }
 
+        is Action.InputTap -> {
+            listOf(
+                i18N["ui.action.input.tap"],
+                "x: ${action.x} y: ${action.y}"
+            )
+        }
+
         is Action.WaitForIdle -> listOf(
             i18N["ui.action.wait.for.idle"],
             i18N["ui.action.wait.for.idle.description"]
@@ -602,6 +610,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.FindAndClickViewByText::class -> {
             Remix.Business.window_2_fill
+        }
+
+        Action.InputTap::class -> {
+            Remix.System.touch_fill
         }
 
         Action.WaitForIdle::class -> {

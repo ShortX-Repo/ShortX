@@ -141,7 +141,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.post.notification.tag"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.tag"])
             TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
             ShortXTextField(value = state.data.tag, onValueChange = {
                 vm.updateTag(it)
@@ -158,7 +158,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.post.notification.title"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.title"])
             ShortXTextField(value = state.data.title, onValueChange = {
                 vm.updateTitle(it)
             })
@@ -166,7 +166,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.post.notification.message"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.message"])
             ShortXTextField(value = state.data.message, onValueChange = {
                 vm.updateMessage(it)
             })
@@ -174,7 +174,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.post.notification.small.icon"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.small.icon"])
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateSmallIcon(it)
             }
@@ -188,7 +188,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(LocalI18N.current["ui.action.post.notification.large.icon"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.large.icon"])
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateLargeIcon(it)
             }
@@ -204,7 +204,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(text = LocalI18N.current["ui.action.post.notification.important"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.important"])
             ShortXSwitch(checked = state.data.isImportant, onCheckedChange = {
                 vm.setImportant(it)
             })
@@ -212,7 +212,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(text = LocalI18N.current["ui.action.post.notification.sound"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.sound"])
             ShortXSwitch(checked = state.data.sound, onCheckedChange = {
                 vm.setSound(it)
             })
@@ -220,7 +220,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(text = LocalI18N.current["ui.action.post.notification.vibrate"])
+            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.vibrate"])
             ShortXSwitch(checked = state.data.vibrate, onCheckedChange = {
                 vm.setVibrate(it)
             })

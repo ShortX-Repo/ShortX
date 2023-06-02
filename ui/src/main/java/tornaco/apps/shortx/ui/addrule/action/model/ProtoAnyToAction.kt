@@ -430,6 +430,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.InputTap::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java
+            Action.InputTap(
+                id = data.id,
+                note = data.note,
+                x = data.x,
+                y = data.y
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.WaitForIdle::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WaitForIdle::class.java
             Action.WaitForIdle(

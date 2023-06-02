@@ -68,6 +68,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.InputTap::class -> {
+                subSelectorStates.inputTapSelectorState.show(source.getActionAs())
+                true
+            }
+
             Action.WaitForIdle::class -> {
                 addAction(Action.WaitForIdle())
                 true
@@ -84,25 +89,16 @@ fun UiActions(addAction: (Action) -> Unit) {
 
     val uiActionItems = listOf(
         Action.TakeScreenshot::class,
-
         Action.ShowToast::class,
-
         Action.ShowDanmu::class,
-
         Action.ExpandNotification::class,
-
         Action.PostNotification::class,
-
         Action.ShowOverlay::class,
-
         Action.HideOverlay::class,
-
         Action.HideAllOverlay::class,
-
         Action.ShowAlertDialog::class,
-
         Action.FindAndClickViewByText::class,
-
+        Action.InputTap::class,
         Action.WaitForIdle::class,
     ).map {
         Item(
@@ -127,7 +123,8 @@ data class UiActionSubSelectorStates(
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
     val postNotificationDialogState: PostNotificationDialogState,
-    val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState
+    val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
+    val inputTapSelectorState: InputTapSelectorState,
 )
 
 @Composable
@@ -172,6 +169,11 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     FindAndClickViewByTextSelectorDialog(state = findAndClickViewByTextSelectorState)
 
+    val inputTapSelectorState = rememberInputTapSelectorState {
+        addAction(it)
+    }
+    InputTapSelectorDialog(state = inputTapSelectorState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
@@ -180,5 +182,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         hideOverlayDialogState = hideOverlayDialogState,
         postNotificationDialogState = postNotificationDialogState,
         findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
+        inputTapSelectorState = inputTapSelectorState,
     )
 }
