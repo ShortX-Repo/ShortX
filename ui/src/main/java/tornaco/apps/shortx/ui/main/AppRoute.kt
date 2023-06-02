@@ -10,6 +10,7 @@ enum class AppRoute {
     GlobalVarList,
     GlobalDetails,
     DanmuUISettings,
+    ActionEvaRecord,
     ViewOpenSourceLicense,
     SubscriptionIntro,
     LVLCheck,

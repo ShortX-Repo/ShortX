@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import com.google.protobuf.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import tornaco.apps.shortx.core.context.ContextData
@@ -30,7 +31,15 @@ interface ActionEvaluator {
         logTag: String,
         action: ProtoAny,
         contextData: ContextData
-    )
+    ): EvaluateResult
+
+    sealed interface EvaluateResult {
+        data class Success(val actionProtoType: Class<out Message>) : EvaluateResult
+        data class Fail(val actionProtoType: Class<out Message>, val error: Throwable) :
+            EvaluateResult
+
+        object Break : EvaluateResult
+    }
 }
 
 class StopExecuteException(override val message: String) : RuntimeException()
@@ -76,6 +85,7 @@ class DefaultRuleEngine(
     private val onJobStarted: (String) -> Unit,
     private val onJobCompleted: (String) -> Unit,
     private val onJobCancelled: (String) -> Unit,
+    private val actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -109,14 +119,17 @@ class DefaultRuleEngine(
                     if (conditionRes) {
                         kotlin.run loop@{
                             rule.actionsList.forEach {
-                                kotlin.runCatching {
-                                    actionEvaluator.evaluate(
-                                        rule.title,
-                                        it,
-                                        contextData
-                                    )
-                                }.onFailure { err ->
-                                    logger.e(err, "Error evaluate action, stop execution")
+                                val evaRes = actionEvaluator.evaluate(
+                                    rule.title,
+                                    it,
+                                    contextData
+                                )
+                                actionEvaluateResultListener(evaRes)
+                                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                    logger.e(evaRes.error, "evaluate fail")
+                                    return@loop
+                                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                    logger.w("evaluate break!")
                                     return@loop
                                 }
                             }
@@ -146,11 +159,15 @@ class DefaultRuleEngine(
             logger.d("job for id: $id start.")
             kotlin.run loop@{
                 actions.forEach {
-                    kotlin.runCatching { actionEvaluator.evaluate(logTag, it, contextData) }
-                        .onFailure { err ->
-                            logger.e(err, "Error evaluate action, stop execution")
-                            return@loop
-                        }
+                    val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
+                    actionEvaluateResultListener(evaRes)
+                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                        logger.e(evaRes.error, "evaluate fail")
+                        return@loop
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                        logger.w("evaluate break!")
+                        return@loop
+                    }
                 }
             }
         }

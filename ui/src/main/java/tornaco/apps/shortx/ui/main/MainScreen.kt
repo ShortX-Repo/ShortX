@@ -75,6 +75,9 @@ fun HomeScreen() {
                             goToDanmuUISettings = {
                                 appNavController.navigate(AppRoute.DanmuUISettings.name)
                             },
+                            goToActionRecord = {
+                                appNavController.navigate(AppRoute.ActionEvaRecord.name)
+                            },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
                             })

@@ -42,6 +42,10 @@ interface IShortX {
     void executeAction(in ByteArrayWrapper action);
     // Direct Actions end
 
+    List<ByteArrayWrapper> getActionEvaluateRecords();
+    void clearActionEvaluateRecords();
+    void setActionEvaluateRecorderEnabled(boolean enable);
+    boolean isActionEvaluateRecorderEnabled();
 
     // Pkg Set
     void addPkgSet(in ByteArrayWrapper set);

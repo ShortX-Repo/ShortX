@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.gvar.GlobalVarDetailScreen
 import tornaco.apps.shortx.ui.gvar.GlobalVarListScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
+import tornaco.apps.shortx.ui.record.ActionEvaRecordScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreen
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
@@ -33,20 +34,7 @@ fun AppNavigationGraph(
         }
 
         animateComposable(AppRoute.Settings.name) {
-            SettingsScreen(
-                back = { appNavController.popBackStack() },
-                goToPkgSetList = {
-                    appNavController.navigate(AppRoute.PkgSetList.name)
-                },
-                goToGV = {
-                    appNavController.navigate(AppRoute.GlobalVarList.name)
-                },
-                goToDanmuUISettings = {
-                    appNavController.navigate(AppRoute.DanmuUISettings.name)
-                },
-                viewOpenSourceLicense = {
-                    appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
-                })
+            SettingsScreen()
         }
 
         animateComposable(
@@ -139,6 +127,12 @@ fun AppNavigationGraph(
 
         animateComposable(AppRoute.DanmuUISettings.name) {
             DanmuUISettingsScreen {
+                appNavController.popBackStack()
+            }
+        }
+
+        animateComposable(AppRoute.ActionEvaRecord.name) {
+            ActionEvaRecordScreen {
                 appNavController.popBackStack()
             }
         }

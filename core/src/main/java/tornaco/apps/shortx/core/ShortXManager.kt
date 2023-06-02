@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -443,6 +444,32 @@ class ShortXManager(private val service: IShortX) {
     fun isPointerLocationEnabled(): Boolean {
         return invokeService(false) {
             isPointerLocationEnabled
+        }
+    }
+
+    fun getActionEvaluateRecords(): List<ActionEvaluateRecord> {
+        return invokeService(emptyList()) {
+            actionEvaluateRecords.map {
+                ActionEvaluateRecord.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun clearActionEvaluateRecords() {
+        invokeService(Unit) {
+            clearActionEvaluateRecords()
+        }
+    }
+
+    fun setActionEvaluateRecorderEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isActionEvaluateRecorderEnabled = enable
+        }
+    }
+
+    fun isActionEvaluateRecorderEnabled(): Boolean {
+        return invokeService(false) {
+            isActionEvaluateRecorderEnabled
         }
     }
 

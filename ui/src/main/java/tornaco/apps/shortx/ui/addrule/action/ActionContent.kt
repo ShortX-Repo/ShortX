@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
+import kotlin.reflect.KClass
 
 @Composable
 fun ActionContent(
@@ -351,14 +352,19 @@ private fun Actions(
 
 @Composable
 fun ActionIcon(action: Action) {
+    ActionIcon(action::class)
+}
+
+@Composable
+fun ActionIcon(actionClass: KClass<out Action>) {
     ColoredIcon(
         size = 36.dp,
-        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
+        color = colorForAction(actionClass).copy(alpha = ActionColorBgAlpha)
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
-            remixName = imageVectorForAction(action = action::class),
-            tint = colorForAction(action::class)
+            remixName = imageVectorForAction(action = actionClass),
+            tint = colorForAction(actionClass)
         )
     }
 }

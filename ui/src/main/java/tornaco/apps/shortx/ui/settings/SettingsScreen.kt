@@ -31,6 +31,29 @@ import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+
+@Composable
+fun SettingsScreen() {
+    val appNavController = LocalNavHostController.current
+    SettingsScreen(
+        back = { appNavController.popBackStack() },
+        goToPkgSetList = {
+            appNavController.navigate(AppRoute.PkgSetList.name)
+        },
+        goToGV = {
+            appNavController.navigate(AppRoute.GlobalVarList.name)
+        },
+        goToDanmuUISettings = {
+            appNavController.navigate(AppRoute.DanmuUISettings.name)
+        },
+        goToActionRecord = {
+            appNavController.navigate(AppRoute.ActionEvaRecord.name)
+        },
+        viewOpenSourceLicense = {
+            appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
+        })
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -38,6 +61,7 @@ fun SettingsScreen(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
+    goToActionRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -197,7 +221,8 @@ fun SettingsScreen(
                                 vm = vm,
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
-                                goToDanmuUISettings = goToDanmuUISettings
+                                goToDanmuUISettings = goToDanmuUISettings,
+                                goToActionRecord = goToActionRecord
                             )
                         )
                         addAll(dataSettings(
@@ -253,7 +278,8 @@ private fun generalSettings(
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
-    goToDanmuUISettings: () -> Unit
+    goToDanmuUISettings: () -> Unit,
+    goToActionRecord: () -> Unit,
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
@@ -278,6 +304,14 @@ private fun generalSettings(
         summary = LocalI18N.current["ui.settings.danmu.summary"],
         onClick = {
             goToDanmuUISettings()
+        }
+    ),
+
+    Preference.TextPreference(icon = Remix.System.history_fill,
+        title = LocalI18N.current["ui.settings.action.record"],
+        summary = LocalI18N.current["ui.settings.action.record.summary"],
+        onClick = {
+            goToActionRecord()
         }
     ),
 )

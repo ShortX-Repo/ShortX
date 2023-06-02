@@ -15,12 +15,17 @@
  *
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.base
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,13 +33,17 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 @Composable
@@ -349,6 +358,71 @@ fun TipDialog(state: TipDialogState) {
             text = {
                 Text(text = state.tip)
             })
+    }
+}
+
+
+class ErrorMessageDialogState(
+    val title: String,
+    val message: String,
+) : CommonDialogState()
+
+@Composable
+fun rememberErrorMessageDialogState(
+    title: String,
+    message: String,
+): ErrorMessageDialogState {
+    return remember {
+        ErrorMessageDialogState(title, message)
+    }
+}
+
+@Composable
+fun ErrorMessageDialog(state: ErrorMessageDialogState) {
+    if (state.isShowing) {
+        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
+            val context = LocalContext.current
+            ShortXTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(
+                        modifier = Modifier,
+                        topBar = {
+                            ShortXTopAppBar(
+                                modifier = Modifier,
+                                title = { Text(state.title) },
+                                navigationIcon = {
+                                    IconButton(onClick = {
+                                        state.dismiss()
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.close_line)
+                                    }
+                                },
+                                actions = {
+                                    TextButton(onClick = {
+                                        ClipboardUtils.copyToClipboard(context, "error", state.message)
+                                    }) {
+                                        Text(text = stringResource(id = android.R.string.copy))
+                                    }
+
+                                },
+                            )
+                        }) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .padding(paddingValues)
+                                .animateContentSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(state.message)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

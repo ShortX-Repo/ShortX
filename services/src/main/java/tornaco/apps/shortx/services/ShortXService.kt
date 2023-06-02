@@ -9,7 +9,6 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
-import android.provider.Settings
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -194,6 +193,24 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 "IShortX executeAction",
                 listOf(ProtoAny.parseFrom(action.byte))
             )
+        }
+
+        override fun getActionEvaluateRecords(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getActionEvaluateRecords().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun clearActionEvaluateRecords() {
+            shortXContext.rule.clearActionEvaluateRecords()
+        }
+
+        override fun setActionEvaluateRecorderEnabled(enable: Boolean) {
+            shortXContext.rule.setActionEvaluateRecorderEnabled(enable)
+        }
+
+        override fun isActionEvaluateRecorderEnabled(): Boolean {
+            return shortXContext.rule.isActionEvaluateRecorderEnabled()
         }
 
         override fun executeMVEL(expression: String): String {

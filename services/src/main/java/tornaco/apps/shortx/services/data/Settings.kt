@@ -10,6 +10,8 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
     sealed class BoolSettings(key: String, defaultValue: Boolean) :
         Settings<Boolean>(key, defaultValue) {
+        object EnableActionEvaluateRecorder :
+            BoolSettings(key = "EnableActionEvaluateRecorder", defaultValue = true)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :

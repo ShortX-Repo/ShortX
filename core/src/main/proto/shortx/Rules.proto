@@ -40,3 +40,10 @@ message RuleHook {
 message RuleList {
   repeated Rule rules = 1;
 }
+
+message ActionEvaluateRecord {
+  string actionClassName = 1;
+  bool isSuccess = 2;
+  string message = 3;
+  int64 timeStamp = 4;
+}

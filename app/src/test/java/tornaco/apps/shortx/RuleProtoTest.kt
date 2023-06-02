@@ -5,7 +5,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import tornaco.apps.shortx.core.proto.action.StartActivity
-import tornaco.apps.shortx.core.proto.condition.CurrentPkg
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -20,7 +21,11 @@ class RuleProtoTest {
     fun should_convert_byte_array_correctly() {
         val fact = KeyEvent.newBuilder().setKeyCode(20).build().pack_()
         val conditions = listOf(
-            CurrentPkg.newBuilder().setPkgName("com.example.pkg").build().pack_(),
+            CurrentPkgList.newBuilder().addAllPkgs(
+                listOf(
+                    AppPkg.newBuilder().setPkgName("com.example.pkg").setUserId(2).build()
+                )
+            ).build().pack_(),
             True.newBuilder().build().pack_(),
         )
         val actions = listOf(
@@ -37,9 +42,9 @@ class RuleProtoTest {
         Rule.parseFrom(data).apply {
             Assert.assertTrue(this.fact is_ KeyEvent::class.java)
             Assert.assertEquals((this.fact unpack_ KeyEvent::class.java).keyCode, 20)
-            Assert.assertTrue(this.conditionsList[0].is_(CurrentPkg::class.java))
+            Assert.assertTrue(this.conditionsList[0].is_(CurrentPkgList::class.java))
             Assert.assertEquals(
-                this.conditionsList[0].unpack_(CurrentPkg::class.java).pkgName,
+                this.conditionsList[0].unpack_(CurrentPkgList::class.java).pkgsList[0].pkgName,
                 "com.example.pkg"
             )
             Assert.assertTrue(this.actionsList[0].is_(StartActivity::class.java))
@@ -68,7 +73,11 @@ class RuleProtoTest {
         RuleEngineFactory.newRuleEngine(
             shortXContext = mockk(),
             androidContext = mockk(),
-            handler = mockk()
+            handler = mockk(),
+            onJobCancelled = {},
+            onJobCompleted = {},
+            onJobStarted = {},
+            actionEvaluateResultListener = {}
         ).fire(
             KeyEvent.newBuilder().setKeyCode(20).build(),
             listOf(rule)

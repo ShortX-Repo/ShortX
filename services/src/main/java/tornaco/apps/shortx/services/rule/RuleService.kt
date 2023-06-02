@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -19,6 +20,9 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
@@ -62,6 +66,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
 
+    private val actionEvaluateRecorder = ActionEvaluateRecorder()
+
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
             shortXContext = shortXContext,
@@ -91,6 +97,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                     }
                 }
             },
+            actionEvaluateResultListener = {
+                logger.d("actionEvaluateResultListener: $it")
+                if (isActionEvaluateRecorderEnabled()) {
+                    actionEvaluateRecorder.add(it.toActionEvaluateRecord())
+                }
+            }
         )
     }
 
@@ -332,5 +344,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun unregisterGlobalVarObs(obs: IGlobalVarObserver) {
         globalVarObs.unregister(obs)
+    }
+
+    fun getActionEvaluateRecords(): List<ActionEvaluateRecord> {
+        return actionEvaluateRecorder.actionEvaluateRecords
+    }
+
+    fun clearActionEvaluateRecords() {
+        actionEvaluateRecorder.clear()
+    }
+
+    fun setActionEvaluateRecorderEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableActionEvaluateRecorder, enable)
+    }
+
+    fun isActionEvaluateRecorderEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableActionEvaluateRecorder)
     }
 }

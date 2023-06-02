@@ -23,18 +23,30 @@ class ActionEvaluatorImpl(
         }
 
     @SuppressLint("MissingPermission")
-    override suspend fun evaluate(logTag: String, action: ProtoAny, contextData: ContextData) {
+    override suspend fun evaluate(
+        logTag: String,
+        action: ProtoAny,
+        contextData: ContextData
+    ): ActionEvaluator.EvaluateResult {
         val actor = prebuiltActorFor(action)
         logger.d("evaluate: $logTag - ${action.typeUrl}, actor: $actor")
-        actor?.handle(
-            HandleParams(
-                context,
-                shortXContext,
-                action,
-                contextData,
-                recursiveExecute,
-                conditionEvaluator
+        if (actor == null) {
+            return ActionEvaluator.EvaluateResult.Break
+        }
+        return kotlin.runCatching {
+            actor.handle(
+                HandleParams(
+                    context,
+                    shortXContext,
+                    action,
+                    contextData,
+                    recursiveExecute,
+                    conditionEvaluator
+                )
             )
-        )
+            ActionEvaluator.EvaluateResult.Success(actor.actionsCanHandle())
+        }.getOrElse {
+            ActionEvaluator.EvaluateResult.Fail(actor.actionsCanHandle(), it)
+        }
     }
 }
