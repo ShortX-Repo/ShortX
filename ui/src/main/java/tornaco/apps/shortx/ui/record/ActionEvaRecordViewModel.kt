@@ -8,6 +8,7 @@ import com.google.protobuf.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
@@ -34,6 +35,7 @@ data class ActionEvaluateRecordUM(
 @HiltViewModel
 class ActionEvaRecordViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<ActionEvaRecordState>(context, { ActionEvaRecordState() }) {
+
     fun loadState() {
         viewModelScope.launch {
             updateState {
@@ -66,6 +68,24 @@ class ActionEvaRecordViewModel @Inject constructor(@ApplicationContext context: 
                     }
             }
             updateState { copy(isLoading = false, records = records) }
+        }
+    }
+
+    fun toggleRecorder() {
+        shortXManager.setActionEvaluateRecorderEnabled(!state.value.isEnabled)
+        updateState {
+            copy(
+                isEnabled = shortXManager.isActionEvaluateRecorderEnabled()
+            )
+        }
+    }
+
+    fun clear() {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true) }
+            shortXManager.clearActionEvaluateRecords()
+            delay(666)
+            loadState()
         }
     }
 }

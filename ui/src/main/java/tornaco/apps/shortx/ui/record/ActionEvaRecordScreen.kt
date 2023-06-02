@@ -1,6 +1,7 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterialApi::class
 )
 
 package tornaco.apps.shortx.ui.record
@@ -11,19 +12,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
@@ -32,11 +36,11 @@ import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelecto
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
-import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
-import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -65,11 +69,10 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val i18N = LocalI18N.current
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(modifier = Modifier,
                 topBar = {
-                    ShortXMediumTopAppBar(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    ShortXTopAppBar(
+                        modifier = Modifier,
                         title = { Text(text = i18N["ui.settings.action.record"]) },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -78,21 +81,36 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
-                        actions = {},
-                        scrollBehavior = scrollBehavior
+                        actions = {
+                            IconButton(onClick = {
+                                vm.clear()
+                            }) {
+                                RemixIcon(remixName = Remix.System.delete_bin_5_fill)
+                            }
+                        }
                     )
                 }) { paddingValues ->
-                if (state.isLoading) {
-                    Loading(
+                val pullRefreshState = rememberPullRefreshState(state.isLoading, { vm.loadState() })
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .pullRefresh(pullRefreshState),
+                ) {
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(paddingValues)
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = paddingValues
                     ) {
+                        item {
+                            SwitchBar(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(bottom = 24.dp),
+                                isChecked = state.isEnabled,
+                                onCheckChange = { vm.toggleRecorder() })
+                        }
+
                         items(state.records) {
                             Box {
                                 val actionLabel = labelAndDescriptionForActionSelector(
@@ -130,9 +148,13 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                             }
                         }
                     }
+
+                    PullRefreshIndicator(
+                        state.isLoading,
+                        pullRefreshState,
+                        Modifier.align(Alignment.TopCenter)
+                    )
                 }
-
-
             }
         }
     }
