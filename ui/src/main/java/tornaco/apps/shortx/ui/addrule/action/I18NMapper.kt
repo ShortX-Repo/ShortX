@@ -120,6 +120,7 @@ fun labelAndDescriptionForActionSelector(
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.InputTap::class -> i18N["ui.action.input.tap"] to null
+        Action.InputSwipe::class -> i18N["ui.action.input.swipe"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
         Action.NoAction::class -> "Noop" to null
@@ -383,7 +384,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.InputTap -> {
             listOf(
                 i18N["ui.action.input.tap"],
-                "x: ${action.x} y: ${action.y}"
+                "[${action.x}, ${action.y}]"
+            )
+        }
+
+        is Action.InputSwipe -> {
+            listOf(
+                i18N["ui.action.input.swipe"],
+                "[${action.startX}, ${action.startY}] -> [${action.endX}, ${action.endY}]"
             )
         }
 
@@ -622,6 +630,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.InputTap::class -> {
             Remix.System.touch_fill
+        }
+
+        Action.InputSwipe::class -> {
+            Remix.System.swipe_fill
         }
 
         Action.WaitForIdle::class -> {

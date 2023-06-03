@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.LaunchApp
@@ -374,6 +375,12 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.InputTap -> {
             InputTap.newBuilder().setId(overrideId ?: id).setX(x).setY(y)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.InputSwipe -> {
+            InputSwipe.newBuilder().setId(overrideId ?: id).setStartX(startX).setStartY(startY)
+                .setEndX(endX).setEndY(endY).setSwipeTime(swipeTime)
                 .setNote(overrideNote ?: note).build()
         }
 

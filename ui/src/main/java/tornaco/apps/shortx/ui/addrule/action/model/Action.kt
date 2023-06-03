@@ -604,6 +604,23 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class InputSwipe(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val startX: Int,
+        val startY: Int,
+        val endX: Int,
+        val endY: Int,
+
+        val swipeTime: Long = 500
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class WaitForIdle(
         override val id: String = defaultNewActionId(),
         override val note: String = "",

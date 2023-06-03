@@ -73,6 +73,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.InputSwipe::class -> {
+                subSelectorStates.inputSwipeSelectorState.show(source.getActionAs())
+                true
+            }
+
             Action.WaitForIdle::class -> {
                 addAction(Action.WaitForIdle())
                 true
@@ -99,6 +104,7 @@ fun UiActions(addAction: (Action) -> Unit) {
         Action.ShowAlertDialog::class,
         Action.FindAndClickViewByText::class,
         Action.InputTap::class,
+        Action.InputSwipe::class,
         Action.WaitForIdle::class,
     ).map {
         Item(
@@ -125,6 +131,7 @@ data class UiActionSubSelectorStates(
     val postNotificationDialogState: PostNotificationDialogState,
     val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
     val inputTapSelectorState: InputTapSelectorState,
+    val inputSwipeSelectorState: InputSwipeSelectorState,
 )
 
 @Composable
@@ -174,6 +181,11 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     InputTapSelectorDialog(state = inputTapSelectorState)
 
+    val inputSwipeSelectorState = rememberInputSwipeSelectorState {
+        addAction(it)
+    }
+    InputSwipeSelectorDialog(state = inputSwipeSelectorState)
+
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
@@ -183,5 +195,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         postNotificationDialogState = postNotificationDialogState,
         findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
         inputTapSelectorState = inputTapSelectorState,
+        inputSwipeSelectorState = inputSwipeSelectorState,
     )
 }

@@ -363,6 +363,17 @@ message InputTap {
   string id = 100;
 }
 
+message InputSwipe {
+  int32 startX = 1;
+  int32 startY = 2;
+  int32 endX = 3;
+  int32 endY = 4;
+  int64 swipeTime = 5;
+
+  string note = 99;
+  string id = 100;
+}
+
 message WaitForIdle {
 
   string note = 99;

@@ -155,6 +155,21 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         }
     }
 
+    fun swipe(startX: Int, startY: Int, endX: Int, endY: Int, time: Long): Boolean {
+        val steps = time / 5
+        synchronized(uiAutoLock) {
+            if (!isSystemReady) return false
+            logger.d("swipe ($startX, $startY) -> ($endX, $endY), $steps steps, execute.")
+            if (!automationManager.isConnected) {
+                logger.w("swipe, not connected.")
+                return false
+            }
+            val uiDevice =
+                UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+            return uiDevice.swipe(startX, startY, endX, endY, steps.toInt())
+        }
+    }
+
     fun getScreenSize(): IntArray {
         if (screenSize == null) {
             val displayMetrics = DisplayMetrics()

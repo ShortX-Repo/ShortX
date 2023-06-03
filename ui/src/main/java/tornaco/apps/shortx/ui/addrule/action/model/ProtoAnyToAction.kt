@@ -446,6 +446,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.InputSwipe::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.InputSwipe::class.java
+            Action.InputSwipe(
+                id = data.id,
+                note = data.note,
+                startX = data.startX,
+                startY = data.startY,
+                endX = data.endX,
+                endY = data.endY,
+                swipeTime = data.swipeTime
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.WaitForIdle::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WaitForIdle::class.java
             Action.WaitForIdle(
