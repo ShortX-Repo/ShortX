@@ -14,10 +14,12 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
@@ -351,6 +353,31 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
                 ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
                 ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,
+            )
+        )
+    }
+
+    fun onProcessRemoved(process: ProcessRecord) {
+        logger.d("onProcessRemoved: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
+        val isPkgStillRunning = process.owner.isRunning()
+        if (isPkgStillRunning) {
+            logger.d("${process.owner} is still running.")
+        } else {
+            onPkgStopRunning(process.owner)
+        }
+    }
+
+    private fun onPkgStopRunning(pkg: AppPkg) {
+        logger.d("onPkgStopRunning: $pkg")
+
+        shortXContext.rule.publishFact(
+            "onPkgStopRunning",
+            PkgStopRunning.newBuilder()
+                .addAllApps(listOf(pkg))
+                .build(),
+            mapOf(
+                ContextDataMapping.PkgStopRunning.userId.name to "${pkg.userId}",
+                ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
             )
         )
     }

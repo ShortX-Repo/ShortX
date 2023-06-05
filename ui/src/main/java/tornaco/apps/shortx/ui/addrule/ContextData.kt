@@ -21,7 +21,6 @@ data class ContextData(
     val key: String, val description: String, val accessExample: String
 )
 
-@Suppress("UNCHECKED_CAST")
 private inline fun <reified T : Enum<T>> dats(): List<ContextData> = runCatching {
     val values: Array<T> = enumValues()
     val descriptionField =
@@ -66,6 +65,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
 
         Fact.TaskRemoved::class, Fact.TaskRemovedAny::class -> {
             dats<ContextDataMapping.TaskRemoved>()
+        }
+
+        Fact.PkgStopRunning::class, Fact.PkgStopRunningAny::class -> {
+            dats<ContextDataMapping.PkgStopRunning>()
         }
 
         Fact.AppAdded::class -> {

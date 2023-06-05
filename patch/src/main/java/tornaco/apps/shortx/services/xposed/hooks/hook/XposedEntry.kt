@@ -20,6 +20,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             hookAppWidgetService(lpparam)
             hookNotificationUsageStats(lpparam)
             hookActivityTaskSupervisor(lpparam)
+            hookProcessList(lpparam)
         }
     }
 

@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
@@ -194,6 +195,17 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
 
         Fact.TaskRemovedAny -> {
+            TaskRemoved.newBuilder().build()
+        }
+
+        is Fact.PkgStopRunning -> {
+            PkgStopRunning.newBuilder()
+                .addAllApps(apps.map { it.pkg })
+                .addAllPkgSets(pkgSets.map { it.label })
+                .build()
+        }
+
+        Fact.PkgStopRunningAny -> {
             TaskRemoved.newBuilder().build()
         }
 

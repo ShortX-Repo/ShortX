@@ -4,6 +4,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
+import java.lang.reflect.Method
 
 private val logger = Logger("Hooks")
 
@@ -89,6 +90,28 @@ fun afterMethod(
         }
         logger.w("afterMethod, unhooks: $this for method: $clazz#$methodName")
     }
+}
+
+fun afterMethod(
+    method: Method,
+    afterMethod: (param: XC_MethodHook.MethodHookParam) -> Unit,
+) {
+    val unHook: XC_MethodHook.Unhook? = XposedBridge.hookMethod(method, object : XC_MethodHook() {
+        override fun afterHookedMethod(param: MethodHookParam?) {
+            super.afterHookedMethod(param)
+            param?.let {
+                kotlin.runCatching {
+                    afterMethod(it)
+                }.onFailure {
+                    logger.e(it, "afterHookedMethod-$method")
+                }
+            }
+        }
+    })
+    require(unHook != null) {
+        "afterMethod, unable to hook this method: $method"
+    }
+    logger.w("afterMethod, unhook: $unHook for method: $method")
 }
 
 

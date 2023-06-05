@@ -88,6 +88,13 @@ sealed interface Fact {
     ) : Fact
 
     object TaskRemovedAny : Fact
+
+    data class PkgStopRunning(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList(),
+    ) : Fact
+
+    object PkgStopRunningAny : Fact
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()
@@ -127,4 +134,7 @@ val allFactClasses = listOf(
     Fact.AppAdded::class,
     Fact.AppRemoved::class,
     Fact.AppUpdated::class,
+
+    Fact.PkgStopRunning::class,
+    Fact.PkgStopRunningAny::class,
 )

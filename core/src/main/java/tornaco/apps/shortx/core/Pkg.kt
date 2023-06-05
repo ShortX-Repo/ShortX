@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.core
 
+import android.content.pm.ApplicationInfo
 import android.os.UserHandle
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
@@ -15,3 +16,10 @@ fun Pkg(pkgName: String, userId: Int = UserHandle.myUserId()): AppPkg =
 fun App(pkg: AppPkg, label: String, category: AppCategory): App =
     App.newBuilder().setCategory(category).setLabel(label)
         .setPkg(pkg).build()
+
+fun ApplicationInfo.toAppPkg(): AppPkg {
+    return AppPkg.newBuilder()
+        .setPkgName(this.packageName)
+        .setUserId(UserHandle.getUserId(this.uid))
+        .build()
+}

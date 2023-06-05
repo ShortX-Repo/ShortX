@@ -90,6 +90,14 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.task.removed"] to i18n["ui.fact.task.removed.any"]
         }
 
+        Fact.PkgStopRunning::class -> {
+            i18n["ui.fact.pkg.stop.running"] to i18n["ui.fact.pkg.stop.running.specific"]
+        }
+
+        Fact.PkgStopRunningAny::class -> {
+            i18n["ui.fact.pkg.stop.running"] to i18n["ui.fact.pkg.stop.running.any"]
+        }
+
         Fact.AppAdded::class -> {
             i18n["ui.fact.app.installed"] to null
         }
@@ -273,6 +281,19 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             )
         }
 
+        is Fact.PkgStopRunning -> {
+            mutableListOf(
+                i18N["ui.fact.pkg.stop.running"],
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.PkgStopRunningAny -> {
+            listOf(
+                i18N["ui.fact.pkg.stop.running"],
+                i18N["ui.fact.pkg.stop.running.any"]
+            )
+        }
+
         is Fact.AppAdded -> {
             listOf(i18N["ui.fact.app.installed"])
         }
@@ -391,6 +412,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
         Fact.TaskRemoved::class -> Remix.System.checkbox_multiple_blank_fill
         Fact.TaskRemovedAny::class -> Remix.System.checkbox_multiple_blank_fill
+        Fact.PkgStopRunning::class -> Remix.UserAndFaces.skull_2_fill
+        Fact.PkgStopRunningAny::class -> Remix.UserAndFaces.skull_2_fill
         Fact.AppAdded::class -> Remix.Device.install_fill
         Fact.AppRemoved::class -> Remix.Device.uninstall_fill
         Fact.AppUpdated::class -> Remix.System.refresh_fill

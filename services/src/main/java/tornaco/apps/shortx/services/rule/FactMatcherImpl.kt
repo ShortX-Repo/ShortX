@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -69,6 +70,15 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 TaskRemovedWrapper(trActual),
                 TaskRemovedWrapper(trRule)
+            )
+        }
+
+        register(PkgStopRunning::class.java) { actual, rule ->
+            val trActual = actual as PkgStopRunning
+            val trRule = rule as PkgStopRunning
+            matchWithAppOrPkgSetListFact(
+                PkgStopRunningWrapper(trActual),
+                PkgStopRunningWrapper(trRule)
             )
         }
 
@@ -294,6 +304,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             get() = taskRemoved.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
             get() = taskRemoved.appsList ?: emptyList()
+
+    }
+
+    class PkgStopRunningWrapper(private val stopRunning: PkgStopRunning) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = stopRunning.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = stopRunning.appsList ?: emptyList()
 
     }
 

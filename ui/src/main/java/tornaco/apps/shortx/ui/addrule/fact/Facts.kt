@@ -234,6 +234,16 @@ private fun FactSelectorMenu(
             Fact.AppRemoved::class.factItem(builder = this)
             Fact.AppUpdated::class.factItem(builder = this)
         }
+
+        item(
+            Fact.PkgStopRunning::class,
+            i18N["ui.fact.pkg.stop.running"] to null
+        ) {
+            icon(imageVectorForFact(Fact.PkgStopRunning::class))
+
+            Fact.PkgStopRunning::class.factItem(builder = this)
+            Fact.PkgStopRunningAny::class.factItem(builder = this)
+        }
     }
 
     Dropdown(

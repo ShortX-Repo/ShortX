@@ -3,6 +3,8 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import de.robv.android.xposed.XposedHelpers
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
+import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
+import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_RECORD
 import util.ReflectionsExt
 
 object Classes {
@@ -67,4 +69,19 @@ object Classes {
                 "com.android.server.wm.ActivityTaskSupervisor"
             )
         )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.processListClass(): Class<*> =
+        XposedHelpers.findClass(
+            PROCESS_LIST,
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.processRecordClass(): Class<*> =
+        XposedHelpers.findClass(
+            PROCESS_RECORD,
+            this
+        )
+
 }

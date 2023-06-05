@@ -18,12 +18,16 @@ object Methods {
     const val registerRemovedByApp = "registerRemovedByApp"
     const val registerDismissedByUser = "registerDismissedByUser"
     const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
+    const val removeLruProcessLocked = "removeLruProcessLocked"
 }
 
 object ClassNames {
     const val AMS = "com.android.server.am.ActivityManagerService"
     const val INPUT_MANAGER_SERVICE = "com.android.server.inputmethod.InputMethodManagerService"
-    const val NOTIFICATION_USAGE_STATS_SERVICE = "com.android.server.notification.NotificationUsageStats"
+    const val NOTIFICATION_USAGE_STATS_SERVICE =
+        "com.android.server.notification.NotificationUsageStats"
+    const val PROCESS_LIST = "com.android.server.am.ProcessList"
+    const val PROCESS_RECORD = "com.android.server.am.ProcessRecord"
 }
 
 object Fields {
