@@ -6,6 +6,8 @@ import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppRemoved
+import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -192,6 +194,24 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 ruleN.contentText to actualN.contentText
             ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
         }
+
+        register(AppRemoved::class.java) { actual, rule ->
+            val actualN = (actual as AppRemoved)
+            val ruleN = (rule as AppRemoved)
+            matchWithAppOrPkgSetListFact(
+                AppRemovedWrapper(actualN),
+                AppRemovedWrapper(ruleN)
+            )
+        }
+
+        register(AppUpdated::class.java) { actual, rule ->
+            val actualN = (actual as AppUpdated)
+            val ruleN = (rule as AppUpdated)
+            matchWithAppOrPkgSetListFact(
+                AppUpdatedWrapper(actualN),
+                AppUpdatedWrapper(ruleN)
+            )
+        }
     }
 
     private fun nullEmptyOrEq(vararg ruleAndActuals: Pair<String?, String>) = ruleAndActuals.all {
@@ -274,6 +294,22 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             get() = taskRemoved.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
             get() = taskRemoved.appsList ?: emptyList()
+
+    }
+
+    class AppRemovedWrapper(private val appRemoved: AppRemoved) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = appRemoved.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = appRemoved.appsList ?: emptyList()
+
+    }
+
+    class AppUpdatedWrapper(private val appUpdated: AppUpdated) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = appUpdated.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = appUpdated.appsList ?: emptyList()
 
     }
 }

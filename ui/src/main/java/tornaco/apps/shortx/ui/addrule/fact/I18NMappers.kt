@@ -90,6 +90,18 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.task.removed"] to i18n["ui.fact.task.removed.any"]
         }
 
+        Fact.AppAdded::class -> {
+            i18n["ui.fact.app.installed"] to null
+        }
+
+        Fact.AppRemoved::class -> {
+            i18n["ui.fact.app.uninstalled"] to null
+        }
+
+        Fact.AppUpdated::class -> {
+            i18n["ui.fact.app.updated"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -255,10 +267,24 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.TaskRemovedAny -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.task.removed"],
                 i18N["ui.fact.task.removed.any"]
             )
+        }
+
+        is Fact.AppAdded -> {
+            listOf(i18N["ui.fact.app.installed"])
+        }
+
+        is Fact.AppRemoved -> {
+            mutableListOf(i18N["ui.fact.app.uninstalled"])
+                .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.AppUpdated -> {
+            mutableListOf(i18N["ui.fact.app.updated"])
+                .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
         }
     }
 }
@@ -365,6 +391,9 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
         Fact.TaskRemoved::class -> Remix.System.checkbox_multiple_blank_fill
         Fact.TaskRemovedAny::class -> Remix.System.checkbox_multiple_blank_fill
+        Fact.AppAdded::class -> Remix.Device.install_fill
+        Fact.AppRemoved::class -> Remix.Device.uninstall_fill
+        Fact.AppUpdated::class -> Remix.System.refresh_fill
 
         else -> {
             Remix.Document.file_unknow_fill

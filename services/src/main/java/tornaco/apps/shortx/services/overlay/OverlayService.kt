@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -33,12 +34,13 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
 
     override fun systemReady() {
         super.systemReady()
-        shortXContext.appState.onPackageChanged {
-            logger.d("Dispose overlay object since apk updated")
-            postHideAllOverlay()
-
-            // Reset class loader.
-            overlayClassLoader = OverlayClassLoader(context)
+        shortXContext.appState.onPackageUpdated {
+            if (it.pkg.pkgName == BuildProp.APP_PACKAGE_NAME) {
+                logger.d("Dispose overlay object since ShortX apk updated")
+                postHideAllOverlay()
+                // Reset class loader.
+                overlayClassLoader = OverlayClassLoader(context)
+            }
         }
     }
 

@@ -156,6 +156,25 @@ fun FactSelectors(
         })
     AppPkgSelectorDialog(state = taskRemovedAppSelectorState)
 
+
+    val appRemovedSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                vm.setFact(Fact.AppRemoved(apps = pkg))
+            }, onPkgSetSelected = {
+                vm.setFact(Fact.AppRemoved(pkgSets = it))
+            })
+    AppPkgSelectorDialog(appRemovedSelectorState)
+
+    val appUpdatedSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                vm.setFact(Fact.AppUpdated(apps = pkg))
+            }, onPkgSetSelected = {
+                vm.setFact(Fact.AppUpdated(pkgSets = it))
+            })
+    AppPkgSelectorDialog(appUpdatedSelectorState)
+
     FactSelector(state = state, readOnly = readOnly) { fact ->
         when (fact) {
             Fact.KeyEvent::class -> {
@@ -277,6 +296,20 @@ fun FactSelectors(
                         )
                     )
                 )
+            }
+
+            Fact.AppAdded::class -> {
+                vm.setFact(
+                    Fact.AppAdded
+                )
+            }
+
+            Fact.AppRemoved::class -> {
+                appRemovedSelectorState.show()
+            }
+
+            Fact.AppUpdated::class -> {
+                appUpdatedSelectorState.show()
             }
         }
     }
@@ -448,6 +481,13 @@ private fun FactSelectorMenu(
             Fact.NotificationPosted::class.factItem(builder = this)
             Fact.NotificationUpdated::class.factItem(builder = this)
             Fact.NotificationRemoved::class.factItem(builder = this)
+        }
+
+        item(Fact.AppAdded::class, i18N["ui.fact.app.installed"] to null) {
+            icon(imageVectorForFact(Fact.AppAdded::class))
+            Fact.AppAdded::class.factItem(builder = this)
+            Fact.AppRemoved::class.factItem(builder = this)
+            Fact.AppUpdated::class.factItem(builder = this)
         }
     }
 

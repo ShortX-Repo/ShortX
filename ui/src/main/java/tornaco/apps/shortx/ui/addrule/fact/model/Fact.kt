@@ -37,6 +37,17 @@ sealed interface Fact {
         val pkgSets: List<PkgSet> = emptyList()
     ) : Fact
 
+    object AppAdded : Fact
+    data class AppRemoved(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Fact
+
+    data class AppUpdated(
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Fact
+
     data class WifiStatusChanged(val state: OnOffAny) : Fact
     data class BTStatusChanged(val state: OnOffAny) : Fact
     data class MobileDataStatusChanged(val state: OnOffAny) : Fact
@@ -107,4 +118,8 @@ val allFactClasses = listOf(
 
     Fact.TaskRemoved::class,
     Fact.TaskRemovedAny::class,
+
+    Fact.AppAdded::class,
+    Fact.AppRemoved::class,
+    Fact.AppUpdated::class,
 )

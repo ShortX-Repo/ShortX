@@ -15,4 +15,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     ConnectivityStateTrigger(context, shortXContext),
     TorchStateTrigger(context, shortXContext),
     DNDStateTrigger(context, shortXContext),
+    PackageInstallTrigger(context, shortXContext),
 )

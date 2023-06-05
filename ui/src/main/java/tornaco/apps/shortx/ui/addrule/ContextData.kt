@@ -68,6 +68,18 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.TaskRemoved>()
         }
 
+        Fact.AppAdded::class -> {
+            dats<ContextDataMapping.AppAdded>()
+        }
+
+        Fact.AppUpdated::class -> {
+            dats<ContextDataMapping.AppUpdated>()
+        }
+
+        Fact.AppRemoved::class -> {
+            dats<ContextDataMapping.AppRemoved>()
+        }
+
         else -> {
             emptyList()
         }

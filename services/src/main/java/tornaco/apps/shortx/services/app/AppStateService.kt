@@ -36,7 +36,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     private val pkgPools = mutableListOf<PkgPool>()
 
-    private val onPackageChangedListeners: MutableList<((AppPkg) -> Unit)> = mutableListOf()
+    private val onPackageUpdatedListeners: MutableList<((App) -> Unit)> = mutableListOf()
+    private val onPackageAddedListeners: MutableList<((App) -> Unit)> = mutableListOf()
+    private val onPackageRemovedListeners: MutableList<((App) -> Unit)> = mutableListOf()
 
     private val enableAppPkg by lazy { PmSetAppEnabledApplicationPackageEnabler(context) }
     private val suspendAppPkg by lazy { PmSuspendApplicationPackageEnabler(context) }
@@ -81,10 +83,20 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             userId = id,
             onPackageUpdateFinished = { changed ->
                 handler.postSafety {
-                    onPackageChangedListeners.forEach { it(changed) }
+                    onPackageUpdatedListeners.forEach { it(changed) }
                 }
-            }).apply {
-
+            },
+            onPackageAdded = { added ->
+                handler.postSafety {
+                    onPackageAddedListeners.forEach { it(added) }
+                }
+            },
+            onPackageRemoved = { removed ->
+                handler.postSafety {
+                    onPackageRemovedListeners.forEach { it(removed) }
+                }
+            }
+        ).apply {
             init()
             load()
         }
@@ -156,8 +168,16 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     fun getAppLabel(pkg: AppPkg): String? =
         pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)?.label
 
-    fun onPackageChanged(listener: (AppPkg) -> Unit) {
-        onPackageChangedListeners.add(listener)
+    fun onPackageUpdated(listener: (App) -> Unit) {
+        onPackageUpdatedListeners.add(listener)
+    }
+
+    fun onPackageAdded(listener: (App) -> Unit) {
+        onPackageAddedListeners.add(listener)
+    }
+
+    fun onPackageRemoved(listener: (App) -> Unit) {
+        onPackageRemovedListeners.add(listener)
     }
 
     @SuppressLint("MissingPermission")

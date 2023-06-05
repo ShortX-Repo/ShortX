@@ -182,3 +182,17 @@ message TaskRemoved {
 message SystemReady {
 
 }
+
+message AppAdded {
+
+}
+
+message AppRemoved {
+  repeated AppPkg apps = 3;
+  repeated string pkgSets = 4;
+}
+
+message AppUpdated {
+  repeated AppPkg apps = 3;
+  repeated string pkgSets = 4;
+}

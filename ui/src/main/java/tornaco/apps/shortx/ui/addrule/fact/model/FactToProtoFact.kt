@@ -3,8 +3,11 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppRemoved
+import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -192,6 +195,22 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         Fact.TaskRemovedAny -> {
             TaskRemoved.newBuilder().build()
+        }
+
+        Fact.AppAdded -> {
+            AppAdded.newBuilder().build()
+        }
+
+        is Fact.AppRemoved -> {
+            AppRemoved.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).build()
+        }
+
+        is Fact.AppUpdated -> {
+            AppUpdated.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).build()
         }
     }
 }

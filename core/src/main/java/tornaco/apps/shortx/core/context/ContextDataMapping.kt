@@ -50,6 +50,24 @@ object ContextDataMapping {
         pkgName("App package name of the task owner"),
     }
 
+    enum class AppAdded(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the installed package"),
+        label("App label of the installed package"),
+    }
+
+    enum class AppRemoved(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the uninstalled package"),
+        label("App label of the uninstalled package"),
+    }
+
+    enum class AppUpdated(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the updated package"),
+        label("App label of the updated package"),
+    }
+
     enum class ReadClipboard(val description: String) {
         text("Text read from clipboard"),
     }

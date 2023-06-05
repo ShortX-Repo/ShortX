@@ -10,7 +10,6 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
-import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.util.PackageMonitor
@@ -19,29 +18,34 @@ class PkgPool(
     private val context: Context,
     private val handler: Handler,
     val userId: Int,
-    val onPackageUpdateFinished: (AppPkg) -> Unit = {}
+    val onPackageAdded: (App) -> Unit = {},
+    val onPackageRemoved: (App) -> Unit = {},
+    val onPackageUpdateFinished: (App) -> Unit = {}
 ) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
     private val pkgMonitor = object : PackageMonitor() {
         override fun onPackageAdded(packageName: String?, uid: Int) {
             super.onPackageAdded(packageName, uid)
-            packageName?.let {
-                load(it)
+            packageName?.let { pkgName ->
+                val loaded = load(pkgName)
+                loaded?.let { onPackageAdded(it) }
             }
         }
 
         override fun onPackageRemoved(packageName: String?, uid: Int) {
             super.onPackageRemoved(packageName, uid)
-            packageName?.let {
-                remove(it)
+            packageName?.let { pkgName ->
+                val removed = remove(pkgName)
+                removed?.let { onPackageRemoved(it) }
             }
         }
 
         override fun onPackageUpdateFinished(packageName: String?, uid: Int) {
             super.onPackageUpdateFinished(packageName, uid)
-            packageName?.let {
-                onPackageUpdateFinished(Pkg(it, UserHandle.getUserId(uid)))
+            packageName?.let { pkgName ->
+                val loaded = load(pkgName)
+                loaded?.let { onPackageUpdateFinished(it) }
             }
         }
     }
@@ -75,22 +79,24 @@ class PkgPool(
         }
     }
 
-    fun load(pkgName: String) {
+    fun load(pkgName: String): App? {
         logger.d("load $pkgName")
-        kotlin.runCatching {
+        return kotlin.runCatching {
             _allApps.remove(pkgName)
             val app = PkgUtils.getApplicationInfoAsUser(context, pkgName, userId)?.toApp()
             app?.let {
                 _allApps.put(app.pkg.pkgName, app)
             }
-        }.onFailure {
+            app
+        }.getOrElse {
             logger.e(it, "load: $pkgName")
+            null
         }
     }
 
-    fun remove(pkgName: String) {
+    fun remove(pkgName: String): App? {
         logger.d("remove $pkgName")
-        _allApps.remove(pkgName)
+        return _allApps.remove(pkgName)
     }
 
     private fun ApplicationInfo.toApp(): App {

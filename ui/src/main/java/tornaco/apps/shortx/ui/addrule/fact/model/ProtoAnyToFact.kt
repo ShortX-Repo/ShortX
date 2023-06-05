@@ -62,6 +62,29 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java -> {
+            Fact.AppAdded
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AppRemoved::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppRemoved::class.java
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppRemoved(
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AppUpdated::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppUpdated::class.java
+            val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Fact.AppUpdated(
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
+
         this is_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java
             if (data.componentsList.isEmpty()) {
