@@ -13,17 +13,12 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.contextData
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.dropdown.DropDownMenuBuilder
 import tornaco.apps.shortx.ui.base.dropdown.Dropdown
 import tornaco.apps.shortx.ui.base.dropdown.dropDownMenu
-import java.time.LocalTime
 import kotlin.reflect.KClass
 
 
@@ -33,286 +28,19 @@ fun FactSelectors(
     state: AddRuleState,
     readOnly: Boolean = false,
 ) {
-    // Fact selectors
-    val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
-        vm.setFact(Fact.KeyEvent(code))
-    })
-    KeyEventSelector(keyEventSelectorState)
-
-    val edgeGestureSelectorState = rememberEdgeGestureSelectorState(selected = { eg ->
-        vm.setFact(Fact.EdgeGesture(eg.first, eg.second))
-    }, showEdgeHint = {
-        vm.showEdgeHint(it)
-    })
-    EdgeGestureSelector(edgeGestureSelectorState)
-
-    val timeOfADaySelector = rememberAlarmSelectorState(
-        initialRepeat = emptyArray(),
-        initialTime = LocalTime.now()
-    ) { alarm ->
-        // Use rule id as alarm tag.
-        vm.setFact(Fact.Alarm(state.id, alarm.triggerAt, alarm.repeat))
+    val selectHandler = factSelectHandler {
+        vm.setFact(it)
     }
-    AlarmSelector(timeOfADaySelector)
 
-    // Condition selectors
-    val appBgPkgSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                vm.setFact(Fact.AppBecomeBackground(apps = pkg))
-            }, onPkgSetSelected = {
-                vm.setFact(Fact.AppBecomeBackground(pkgSets = it))
-            })
-    AppPkgSelectorDialog(appBgPkgSelectorState)
-
-    val appFgPkgSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                vm.setFact(Fact.AppBecomeForeground(apps = pkg))
-            }, onPkgSetSelected = {
-                vm.setFact(Fact.AppBecomeForeground(pkgSets = it))
-            })
-    AppPkgSelectorDialog(appFgPkgSelectorState)
-
-    val activityStartAppComponentSelectorState = rememberAppComponentSelectorState(
-        types = listOf(ComponentType.Activity),
-        onAppComponentSelected = { infoList ->
-            vm.setFact(Fact.ActivityStarted(infoList.map { it.component }))
-        }
-    )
-    AppComponentSelectorDialog(activityStartAppComponentSelectorState)
-
-    val activityStartSingleAppSelectorState = rememberSingleAppPkgSelectorState {
-        activityStartAppComponentSelectorState.show(it.pkg)
-    }
-    SingleAppSelectorDialog(state = activityStartSingleAppSelectorState)
-
-
-    val wifiSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
-            vm.setFact(Fact.WifiStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(wifiSelectorState)
-
-    val btSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {
-            vm.setFact(Fact.BTStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(btSelectorState)
-
-    val dndSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dnd.state.changed"]) {
-            vm.setFact(Fact.DNDStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(dndSelectorState)
-
-    val locationSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.location.state.changed"]) {
-            vm.setFact(Fact.LocationStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(locationSelectorState)
-
-    val darkModeSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dark.mode.state.changed"]) {
-            vm.setFact(Fact.DarkModeStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(darkModeSelectorState)
-
-    val mobileDataSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.mobile.data.state.changed"]) {
-            vm.setFact(Fact.MobileDataStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(mobileDataSelectorState)
-
-    val flashLightSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.flash.light.state.changed"]) {
-            vm.setFact(Fact.FlashLightStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(flashLightSelectorState)
-
-    val nfcSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.nfc.state.changed"]) {
-            vm.setFact(Fact.NFCStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(nfcSelectorState)
-
-    val hotspotSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.hotspot.state.changed"]) {
-            vm.setFact(Fact.HotSpotStatusChanged(it))
-        }
-    OnOffAnyStateSelectorDialog(hotspotSelectorState)
-
-
-    val taskRemovedAppSelectorState = rememberAppPkgSelectorState(
-        onPkgSetSelected = {
-            vm.setFact(
-                Fact.TaskRemoved(pkgSets = it)
-            )
+    FactSelector(
+        state = state,
+        readOnly = readOnly,
+        selectFact = { factClass ->
+            selectHandler(FactSelectSource.FromClass(factClass))
         },
-        onAppListSelected = {
-            vm.setFact(
-                Fact.TaskRemoved(apps = it)
-            )
+        editFact = { fact ->
+            selectHandler(FactSelectSource.FromFact(fact))
         })
-    AppPkgSelectorDialog(state = taskRemovedAppSelectorState)
-
-
-    val appRemovedSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                vm.setFact(Fact.AppRemoved(apps = pkg))
-            }, onPkgSetSelected = {
-                vm.setFact(Fact.AppRemoved(pkgSets = it))
-            })
-    AppPkgSelectorDialog(appRemovedSelectorState)
-
-    val appUpdatedSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                vm.setFact(Fact.AppUpdated(apps = pkg))
-            }, onPkgSetSelected = {
-                vm.setFact(Fact.AppUpdated(pkgSets = it))
-            })
-    AppPkgSelectorDialog(appUpdatedSelectorState)
-
-    FactSelector(state = state, readOnly = readOnly) { fact ->
-        when (fact) {
-            Fact.KeyEvent::class -> {
-                keyEventSelectorState.show()
-            }
-
-            Fact.ActivityStarted::class -> {
-                activityStartSingleAppSelectorState.show()
-            }
-
-            Fact.AnyActivityStarted::class -> {
-                vm.setFact(Fact.AnyActivityStarted)
-            }
-
-            Fact.TaskRemoved::class -> {
-                taskRemovedAppSelectorState.show()
-            }
-
-            Fact.TaskRemovedAny::class -> {
-                vm.setFact(Fact.TaskRemovedAny)
-            }
-
-            Fact.EdgeGesture::class -> {
-                edgeGestureSelectorState.show()
-            }
-
-            Fact.ScreenOff::class -> {
-                vm.setFact(Fact.ScreenOff)
-            }
-
-            Fact.ScreenOn::class -> {
-                vm.setFact(Fact.ScreenOn)
-            }
-
-            Fact.UserPresent::class -> {
-                vm.setFact(Fact.UserPresent)
-            }
-
-            Fact.SystemReady::class -> {
-                vm.setFact(Fact.SystemReady)
-            }
-
-            Fact.Alarm::class -> {
-                timeOfADaySelector.show()
-            }
-
-            Fact.AppBecomeBackground::class -> {
-                appBgPkgSelectorState.show()
-            }
-
-            Fact.AppBecomeForeground::class -> {
-                appFgPkgSelectorState.show()
-            }
-
-            Fact.WifiStatusChanged::class -> {
-                wifiSelectorState.show()
-            }
-
-            Fact.BTStatusChanged::class -> {
-                btSelectorState.show()
-            }
-
-            Fact.DNDStatusChanged::class -> {
-                dndSelectorState.show()
-            }
-
-            Fact.DarkModeStatusChanged::class -> {
-                darkModeSelectorState.show()
-            }
-
-            Fact.FlashLightStatusChanged::class -> {
-                flashLightSelectorState.show()
-            }
-
-            Fact.HotSpotStatusChanged::class -> {
-                hotspotSelectorState.show()
-            }
-
-            Fact.LocationStatusChanged::class -> {
-                locationSelectorState.show()
-            }
-
-            Fact.MobileDataStatusChanged::class -> {
-                mobileDataSelectorState.show()
-            }
-
-            Fact.NFCStatusChanged::class -> {
-                nfcSelectorState.show()
-            }
-
-            Fact.NotificationPosted::class -> {
-                vm.setFact(
-                    Fact.NotificationPosted(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }
-
-            Fact.NotificationUpdated::class -> {
-                vm.setFact(
-                    Fact.NotificationUpdated(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }
-
-            Fact.NotificationRemoved::class -> {
-                vm.setFact(
-                    Fact.NotificationRemoved(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }
-
-            Fact.AppAdded::class -> {
-                vm.setFact(
-                    Fact.AppAdded
-                )
-            }
-
-            Fact.AppRemoved::class -> {
-                appRemovedSelectorState.show()
-            }
-
-            Fact.AppUpdated::class -> {
-                appUpdatedSelectorState.show()
-            }
-        }
-    }
 }
 
 
@@ -320,7 +48,8 @@ fun FactSelectors(
 private fun FactSelector(
     state: AddRuleState,
     readOnly: Boolean,
-    selectFact: (KClass<out Fact>) -> Unit
+    selectFact: (KClass<out Fact>) -> Unit,
+    editFact: (Fact) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
@@ -330,49 +59,9 @@ private fun FactSelector(
                 mutableStateOf(false)
             }
 
-            val contextDataInfoDialogState = rememberContextDataInfoDialogState()
-            ContextDataInfoDialog(state = contextDataInfoDialogState)
-            val i18N = LocalI18N.current
-
             Column {
                 state.fact?.let {
-                    ListItem(
-                        modifier = Modifier,
-                        titleLines = labelForFact(fact = it),
-                        icon = {
-                            ColoredIcon(
-                                size = 36.dp, color = colorForFact(it::class).copy(
-                                    ActionColorBgAlpha
-                                )
-                            ) {
-                                RemixIcon(
-                                    modifier = Modifier.size(16.dp),
-                                    remixName = imageVectorForFact(it::class),
-                                    tint = colorForFact(it::class)
-                                )
-                            }
-                        },
-                        action1 = {
-                            if (it.contextData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    contextDataInfoDialogState.show(
-                                        labelAndDescriptionForFactSelector(i18N, it::class).first,
-                                        it.contextData
-                                    )
-                                }) {
-                                    ContextDataIcon()
-                                }
-                                VerticalDivider(modifier = Modifier.height(24.dp))
-                            }
-
-                            if (!readOnly) {
-                                IconButton(onClick = {
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
-                                }
-                            }
-                        }
-                    )
+                    FactItem(fact = it, readOnly = readOnly, onClick = { editFact(it) })
                 }
 
                 TinySpacer()
@@ -390,19 +79,75 @@ private fun FactSelector(
                 }
             }
 
-            FactSelectorMenu(isOpen = showFactSelectorMenu,
-                setIsOpen = { showFactSelectorMenu = it }) {
-                showFactSelectorMenu = false
-                selectFact(it)
-            }
+            FactSelectorMenu(
+                isOpen = showFactSelectorMenu,
+                setIsOpen = { showFactSelectorMenu = it },
+                itemSelected = {
+                    showFactSelectorMenu = false
+                    selectFact(it)
+                })
         }
     }
+}
+
+@Composable
+private fun FactItem(
+    fact: Fact,
+    readOnly: Boolean,
+    onClick: (Fact) -> Unit
+) {
+    val contextDataInfoDialogState = rememberContextDataInfoDialogState()
+    ContextDataInfoDialog(state = contextDataInfoDialogState)
+    val i18N = LocalI18N.current
+
+    ListItem(
+        modifier = Modifier,
+        titleLines = labelForFact(fact = fact),
+        onClick = {
+            onClick(fact)
+        },
+        icon = {
+            ColoredIcon(
+                size = 36.dp, color = colorForFact(fact::class).copy(
+                    ActionColorBgAlpha
+                )
+            ) {
+                RemixIcon(
+                    modifier = Modifier.size(16.dp),
+                    remixName = imageVectorForFact(fact::class),
+                    tint = colorForFact(fact::class)
+                )
+            }
+        },
+        action1 = {
+            if (fact.contextData.isNotEmpty()) {
+                IconButton(onClick = {
+                    contextDataInfoDialogState.show(
+                        labelAndDescriptionForFactSelector(i18N, fact::class).first,
+                        fact.contextData
+                    )
+                }) {
+                    ContextDataIcon()
+                }
+                VerticalDivider(modifier = Modifier.height(24.dp))
+            }
+
+            if (!readOnly) {
+                IconButton(onClick = {
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
+                }
+            }
+        }
+    )
 }
 
 @ExperimentalAnimationApi
 @Composable
 private fun FactSelectorMenu(
-    isOpen: Boolean = false, setIsOpen: (Boolean) -> Unit, itemSelected: (KClass<out Fact>) -> Unit
+    isOpen: Boolean = false,
+    setIsOpen: (Boolean) -> Unit,
+    itemSelected: (KClass<out Fact>) -> Unit
 ) {
     val i18N = LocalI18N.current
     val menu = dropDownMenu {

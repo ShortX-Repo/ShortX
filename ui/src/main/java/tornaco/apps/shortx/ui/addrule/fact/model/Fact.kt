@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.factContextData
 
@@ -25,7 +26,11 @@ sealed interface Fact {
     object UserPresent : Fact
     object SystemReady : Fact
 
-    data class Alarm(val tag: String, val timeOfADay: TimeOfADay, val repeatDays: RepeatDays) : Fact
+    data class Alarm(
+        val tag: String = "Alarm-${DateUtils.formatForFileName(System.currentTimeMillis())}",
+        val timeOfADay: TimeOfADay,
+        val repeatDays: RepeatDays
+    ) : Fact
 
     data class AppBecomeBackground(
         val apps: List<App> = emptyList(),
