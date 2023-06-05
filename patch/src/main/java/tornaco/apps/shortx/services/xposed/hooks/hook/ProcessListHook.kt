@@ -26,7 +26,6 @@ fun XposedEntry.hookProcessList(lpparam: XC_LoadPackage.LoadPackageParam) {
 }
 
 private fun XposedEntry.handleRemoveLruProcessLocked(param: XC_MethodHook.MethodHookParam) {
-    logger.d("removeLruProcessLocked: ${param.args}")
     // void removeLruProcessLocked(ProcessRecord app)
     val record = param.args[0].toProcessRecord()
     ShortXService.shortXContext.appState.onProcessRemoved(record)

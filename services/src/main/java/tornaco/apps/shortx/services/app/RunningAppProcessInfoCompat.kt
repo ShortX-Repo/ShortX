@@ -14,7 +14,7 @@ data class RunningAppProcessInfoCompat(
     val processState: Int,
     val importanceReasonPid: Int,
     val importanceReasonCode: Int,
-    val importanceReasonComponent: ComponentName
+    val importanceReasonComponent: ComponentName?
 )
 
 fun ActivityManager.RunningAppProcessInfo.compat(): RunningAppProcessInfoCompat {
