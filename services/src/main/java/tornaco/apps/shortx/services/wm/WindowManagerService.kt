@@ -32,9 +32,6 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         ensureAutomationConnected(reason)
         waitUntilConnected()
         action.invoke(this)
-        ensureAutomationDisconnected(reason)
-        // Just incase.
-        delay(200)
     }
 
     suspend fun waitUntilConnected(timeout: Long = 3000): Boolean {

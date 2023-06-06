@@ -85,11 +85,11 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
             LOGGER.w("disconnect now.");
             try {
                 connection.disconnect();
+                connectionId.set(AccessibilityInteractionClient.NO_ID);
+                connection = null;
             } catch (Throwable e) {
                 LOGGER.e(e, "disconnect got error");
             }
-            connectionId.set(AccessibilityInteractionClient.NO_ID);
-            connection = null;
         }
     }
 
