@@ -8,7 +8,11 @@ import tornaco.apps.shortx.core.proto.gv.Int64ListVar
 import tornaco.apps.shortx.core.proto.gv.Int64Var
 import tornaco.apps.shortx.core.proto.gv.StringListVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
+import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.replaceLazy
+
+private val logger = Logger("GlobalVar")
 
 enum class GlobalVarType {
     Int,
@@ -192,4 +196,60 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
                 })
         }
     return strWithGValue
+}
+
+
+fun GlobalVar.addOrUpdateValue(value: List<String>) {
+    logger.d("addOrUpdateValue: $value")
+    if (this.isList()) {
+        val newVarProtoAny: ProtoAny? = when (this.type.toType()) {
+            GlobalVarType.IntList -> {
+                value.mapNotNull { kotlin.runCatching { it.toLong() }.getOrNull() }
+                    .let { longV ->
+                        val data = if (this.`var`.`is`(Int64ListVar::class.java)) {
+                            this.`var` unpack_ Int64ListVar::class.java
+                        } else {
+                            Int64ListVar.newBuilder().build()
+                        }
+                        Int64ListVar.newBuilder(data).addAllValues(longV).build().pack_()
+                    }
+            }
+
+            GlobalVarType.BoolList -> {
+                value.mapNotNull { kotlin.runCatching { it.toBoolean() }.getOrNull() }
+                    .let { boolV ->
+                        val data = if (this.`var`.`is`(BoolListVar::class.java)) {
+                            this.`var` unpack_ BoolListVar::class.java
+                        } else {
+                            BoolListVar.newBuilder().build()
+                        }
+                        BoolListVar.newBuilder(data).addAllValues(boolV).build().pack_()
+                    }
+            }
+
+            GlobalVarType.StringList -> {
+                val data = if (this.`var`.`is`(StringListVar::class.java)) {
+                    this.`var` unpack_ StringListVar::class.java
+                } else {
+                    StringListVar.newBuilder().build()
+                }
+                logger.d("before add to StringList: $value --> current: $data")
+                StringListVar.newBuilder(data).addAllValues(value).build().pack_()
+            }
+
+            else -> {
+                null
+            }
+        }
+
+        shortXManager.addGlobalVar(
+            GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
+        )
+    } else {
+        shortXManager.addGlobalVar(
+            GlobalVar.newBuilder(this).setVar(
+                value.first().toVarValueNotList(this.type.toType())
+            ).build()
+        )
+    }
 }

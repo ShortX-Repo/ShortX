@@ -5,17 +5,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.common.AppPkg
-import tornaco.apps.shortx.core.proto.gv.BoolListVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
-import tornaco.apps.shortx.core.proto.gv.Int64ListVar
-import tornaco.apps.shortx.core.proto.gv.StringListVar
-import tornaco.apps.shortx.core.rule.GlobalVarType
-import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.addOrUpdateValue
 import tornaco.apps.shortx.core.rule.isList
-import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.rule.toType
-import tornaco.apps.shortx.core.rule.toVarValueNotList
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
@@ -87,71 +79,8 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVa
 
     fun addOrUpdateValue(value: List<String>) {
         viewModelScope.launch {
-            addOrUpdateValueInternal(value)
-        }
-    }
-
-    private suspend fun addOrUpdateValueInternal(value: List<String>) {
-        logger.d("addOrUpdateValue: $value")
-        if (state.value.isList) {
-            val current = state.value.globalVar
-            current?.let {
-                val newVarProtoAny: ProtoAny? = when (it.type.toType()) {
-                    GlobalVarType.IntList -> {
-                        value.mapNotNull { kotlin.runCatching { it.toLong() }.getOrNull() }
-                            .let { longV ->
-                                val data = if (it.`var`.`is`(Int64ListVar::class.java)) {
-                                    it.`var` unpack_ Int64ListVar::class.java
-                                } else {
-                                    Int64ListVar.newBuilder().build()
-                                }
-                                Int64ListVar.newBuilder(data).addAllValues(longV).build().pack_()
-                            }
-                    }
-
-                    GlobalVarType.BoolList -> {
-                        value.mapNotNull { kotlin.runCatching { it.toBoolean() }.getOrNull() }
-                            .let { boolV ->
-                                val data = if (it.`var`.`is`(BoolListVar::class.java)) {
-                                    it.`var` unpack_ BoolListVar::class.java
-                                } else {
-                                    BoolListVar.newBuilder().build()
-                                }
-                                BoolListVar.newBuilder(data).addAllValues(boolV).build().pack_()
-                            }
-                    }
-
-                    GlobalVarType.StringList -> {
-                        val data = if (it.`var`.`is`(StringListVar::class.java)) {
-                            it.`var` unpack_ StringListVar::class.java
-                        } else {
-                            StringListVar.newBuilder().build()
-                        }
-                        logger.d("before add to StringList: $value --> current: $data")
-                        StringListVar.newBuilder(data).addAllValues(value).build().pack_()
-                    }
-
-                    else -> {
-                        null
-                    }
-                }
-
-                shortXManager.addGlobalVar(
-                    GlobalVar.newBuilder(it).setVar(newVarProtoAny).build()
-                )
-                loadStateInternal(it.name)
-            }
-        } else {
-            val current = state.value.globalVar
-            current?.let {
-                shortXManager.addGlobalVar(
-                    GlobalVar.newBuilder(it).setVar(
-                        value.first().toVarValueNotList(current.type.toType())
-                    )
-                        .build()
-                )
-                loadStateInternal(it.name)
-            }
+            state.value.globalVar?.addOrUpdateValue(value)
+            state.value.globalVar?.name?.let { loadStateInternal(it) }
         }
     }
 }
