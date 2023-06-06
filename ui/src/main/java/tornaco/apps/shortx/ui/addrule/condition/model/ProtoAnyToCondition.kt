@@ -50,7 +50,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
 
         this is_ True::class.java -> {
             val data = this unpack_ True::class.java
-            Condition.TRUE(id = data.id, note = data.note)
+            Condition.TRUE(id = data.id, note = data.note, isInvert = data.isInvert)
         }
 
         this is_ EvaluateGlobalVar::class.java -> {
