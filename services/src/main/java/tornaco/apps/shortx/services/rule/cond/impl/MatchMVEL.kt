@@ -13,9 +13,14 @@ object MatchMVEL : Cond {
         return with(param) {
             val mvel = condition unpack_ MatchMVEL::class.java
             val res = MVELExecutor(context, shortXContext, mvel.expression).invoke()
-            kotlin.runCatching { res as Boolean }.getOrElse {
+            val retValue = kotlin.runCatching { res as Boolean }.getOrElse {
                 logger.e(it, "MatchMVEL check error")
                 false
+            }
+            if (mvel.isInvert) {
+                !retValue
+            } else {
+                retValue
             }
         }
     }

@@ -35,7 +35,12 @@ class ConditionContentStateHandler(
     fun addCondition(condition: Condition) {
         updateState {
             copy(conditions = conditions.toMutableList().apply {
-                add(condition)
+                val existingIndex = indexOfFirst { it.id == condition.id }
+                if (existingIndex >= 0) {
+                    set(existingIndex, condition)
+                } else {
+                    add(condition)
+                }
             }, isChanged = true)
         }
         checkUpdateWarnings()

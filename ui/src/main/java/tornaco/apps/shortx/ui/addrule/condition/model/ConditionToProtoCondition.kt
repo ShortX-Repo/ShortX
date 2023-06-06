@@ -15,6 +15,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
             CurrentPkgList.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .setIsInvert(isInvert)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -32,13 +33,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
         is Condition.MVEL -> {
             MatchMVEL.newBuilder()
                 .setId(id)
-                .setNote(note).setExpression(expression).build()
+                .setNote(note)
+                .setIsInvert(isInvert).setExpression(expression).build()
         }
 
         is Condition.TRUE -> {
             True.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .setIsInvert(isInvert)
                 .build()
         }
 
@@ -46,6 +49,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
             EvaluateGlobalVar.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .setIsInvert(isInvert)
                 .setVarName(varName)
                 .setOp(op)
                 .setPayload(payload)
@@ -56,6 +60,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
             BatteryPercent.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .setIsInvert(isInvert)
                 .setValue(value)
                 .setOp(op)
                 .build()

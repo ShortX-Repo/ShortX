@@ -14,26 +14,44 @@ fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
 sealed interface Condition : Parcelable {
     val id: String
     val note: String
+    val isInvert: Boolean
+
+    fun clone(id: String, note: String, isInvert: Boolean): Condition
 
     @Parcelize
     data class CurrentForegroundApp(
         val apps: List<App>, val pkgSets: List<PkgSet>,
         override val note: String = "",
+        override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()
-    ) : Condition
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 
     @Parcelize
     data class MVEL(
         val expression: String,
+        override val isInvert: Boolean = false,
         override val note: String = "",
         override val id: String = defaultNewConditionId()
-    ) : Condition
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 
     @Parcelize
     data class TRUE(
+        override val isInvert: Boolean = false,
         override val note: String = "",
         override val id: String = defaultNewConditionId()
-    ) : Condition
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 
     @Parcelize
     data class EvaluateGlobalVar(
@@ -41,18 +59,28 @@ sealed interface Condition : Parcelable {
         val op: GlobalVarOp,
         val payload: GlobalVarOpPayload,
 
+        override val isInvert: Boolean = false,
         override val note: String = "",
         override val id: String = defaultNewConditionId()
-    ) : Condition
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 
     @Parcelize
     data class BatteryPercent(
         val value: Int,
         val op: IntOp,
 
+        override val isInvert: Boolean = false,
         override val note: String = "",
         override val id: String = defaultNewConditionId()
-    ) : Condition
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 }
 
 val allConditionClasses = listOf(

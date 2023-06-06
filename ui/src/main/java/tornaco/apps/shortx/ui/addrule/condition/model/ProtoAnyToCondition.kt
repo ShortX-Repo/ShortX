@@ -23,6 +23,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             Condition.CurrentForegroundApp(
                 id = data.id,
                 note = data.note,
+                isInvert = data.isInvert,
                 apps = pkgs.map { pkg ->
                     val appLabel = shortXManager.getAppLabel(pkg)
                     App(
@@ -42,6 +43,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             Condition.MVEL(
                 id = data.id,
                 note = data.note,
+                isInvert = data.isInvert,
                 expression = data.expression
             )
         }
@@ -56,6 +58,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             Condition.EvaluateGlobalVar(
                 id = data.id,
                 note = data.note,
+                isInvert = data.isInvert,
                 varName = data.varName,
                 op = data.op,
                 payload = data.payload
@@ -67,6 +70,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             Condition.BatteryPercent(
                 id = data.id,
                 note = data.note,
+                isInvert = data.isInvert,
                 op = data.op,
                 value = data.value
             )

@@ -19,8 +19,13 @@ object CurrentPkgList : Cond {
             } else {
                 currentPkg.pkgsList
             }
-            requiredPkgList.any {
+            val res = requiredPkgList.any {
                 it.pkgName == state.pkg.pkgName && it.userId == state.pkg.userId
+            }
+            if (currentPkg.isInvert) {
+                !res
+            } else {
+                res
             }
         }
     }

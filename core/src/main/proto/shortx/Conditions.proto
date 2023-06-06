@@ -18,11 +18,13 @@ message ConditionOperatorPayload {
 }
 
 message True {
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message False {
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
@@ -31,6 +33,7 @@ message CurrentPkgList {
   repeated AppPkg pkgs = 1;
   repeated string pkgSets = 2;
 
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
@@ -40,6 +43,7 @@ message CurrentActivity {
   string className = 2;
   int32 userId = 3;
 
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
@@ -47,6 +51,7 @@ message CurrentActivity {
 message MatchMVEL {
   string expression = 1;
 
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
@@ -55,6 +60,7 @@ message BatteryPercent {
   int32 value = 1;
   IntOp op = 2;
 
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
@@ -64,6 +70,7 @@ message EvaluateGlobalVar {
   string varName = 2;
   GlobalVarOpPayload payload = 3;
 
+  bool isInvert = 98;
   string note = 99;
   string id = 100;
 }

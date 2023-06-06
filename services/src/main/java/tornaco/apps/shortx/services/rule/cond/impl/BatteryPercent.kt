@@ -13,9 +13,9 @@ object BatteryPercent : Cond {
     override fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val state = BatteryImpl(context).batteryState ?: return false
-            val condition = param.condition unpack_ BatteryPercent::class.java
-            val value = condition.value
-            when (condition.op ?: IntOp.UNRECOGNIZED) {
+            val batteryPercent = condition unpack_ BatteryPercent::class.java
+            val value = batteryPercent.value
+            val res = when (batteryPercent.op ?: IntOp.UNRECOGNIZED) {
                 IntOp.IntGreaterThan -> {
                     state.batteryLevel > value
                 }
@@ -39,6 +39,12 @@ object BatteryPercent : Cond {
                 IntOp.UNRECOGNIZED -> {
                     false
                 }
+            }
+
+            if (batteryPercent.isInvert) {
+                !res
+            } else {
+                res
             }
         }
     }

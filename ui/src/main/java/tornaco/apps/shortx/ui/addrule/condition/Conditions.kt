@@ -35,82 +35,37 @@ fun ConditionSelectors(
     readOnly: Boolean = false,
     handler: ConditionHandler
 ) {
-    // Condition selectors
-    val currentPkgSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
-                handler.addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            },
-            onPkgSetSelected = { pkgSets ->
-                handler.addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(currentPkgSelectorState)
-
-    val mvelConditionSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
-            handler.addCondition(Condition.MVEL(expression.src))
-        }
-    CodeEditorDialog(state = mvelConditionSelectorState)
-
-    val evaluateGlobalVarSelectorDialogState = rememberEvaluateGlobalVarSelectorState {
+    val selectHandler = conditionSelectHandler {
         handler.addCondition(it)
     }
-    EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
-
-    val batteryPercentDialog = rememberBatteryPercentSelectorState {
-        handler.addCondition(it)
-    }
-    BatteryPercentSelectorDialog(state = batteryPercentDialog)
-
-    Conditions(
+    ConditionList(
         readOnly = readOnly,
         header = header,
         conditions = conditions,
         warnings = warnings,
         conditionOp = conditionOp,
         selectCondition = { con ->
-            when (con) {
-                Condition.CurrentForegroundApp::class -> {
-                    currentPkgSelectorState.show()
-                }
-
-                Condition.MVEL::class -> {
-                    mvelConditionSelectorState.show()
-                }
-
-                Condition.TRUE::class -> {
-                    handler.addCondition(Condition.TRUE())
-                }
-
-                Condition.EvaluateGlobalVar::class -> {
-                    evaluateGlobalVarSelectorDialogState.show()
-                }
-
-                Condition.BatteryPercent::class -> {
-                    batteryPercentDialog.show()
-                }
-            }
+            selectHandler(con)
         },
         removeCondition = { con ->
             handler.removeCondition(con)
         },
         setConditionOp = {
             handler.setConditionOp(it)
+        },
+        invertCondition = {
+            handler.addCondition(
+                it.clone(
+                    id = it.id,
+                    note = it.note,
+                    isInvert = !it.isInvert
+                )
+            )
         })
 }
 
 @Composable
-fun Conditions(
+fun ConditionList(
     readOnly: Boolean,
     header: @Composable ColumnScope.() -> Unit,
     conditions: List<Condition>,
@@ -118,6 +73,7 @@ fun Conditions(
     conditionOp: Op,
     selectCondition: (KClass<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
+    invertCondition: (Condition) -> Unit,
     setConditionOp: (Op) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -128,14 +84,17 @@ fun Conditions(
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 conditions.forEach {
-
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
-                                onClick = { },
-                                onLongClick = { }
+                                onClick = {
+
+                                },
+                                onLongClick = {
+                                    invertCondition(it)
+                                }
                             )
                     ) {
                         ListItem(
@@ -153,6 +112,17 @@ fun Conditions(
                                 }
                             },
                             action1 = {
+                                val invertDialog = rememberTipDialogState(
+                                    title = LocalI18N.current["ui.condition.invert"],
+                                    tip = LocalI18N.current["ui.condition.invert.description"]
+                                )
+                                TipDialog(state = invertDialog)
+                                AnimatedVisibility(visible = it.isInvert) {
+                                    ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
+                                        invertDialog.show()
+                                    }
+                                }
+
                                 if (!readOnly) {
                                     IconButton(onClick = {
                                         removeCondition(it)
@@ -240,7 +210,10 @@ private fun OpSelector(
     setConditionOp: (Op) -> Unit
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.condition.op"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            LocalI18N.current["ui.condition.op"]
+        )
         ListItem(
             modifier = Modifier,
             titleLines = mutableListOf(

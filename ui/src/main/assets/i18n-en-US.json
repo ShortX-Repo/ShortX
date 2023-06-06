@@ -178,6 +178,8 @@
   "ui.action.delay.input.message": "Input milliseconds of delay time",
   "ui.action.take.screenshot": "Take Screenshot",
   "ui.title.mvel": "MVEL expression",
+  "ui.condition.invert": "Invert!",
+  "ui.condition.invert.description": "Invert the Condition match result",
   "ui.condition.op.mvel": "Use c1, c2, c3...cN order to express each condition. \nFor example: c1 && (c2 || c3)",
   "ui.condition.op": "Multiple condition operation",
   "ui.condition.op.edit": "Edit",

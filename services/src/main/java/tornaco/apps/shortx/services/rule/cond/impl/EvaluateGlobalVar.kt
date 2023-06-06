@@ -35,7 +35,7 @@ object EvaluateGlobalVar : Cond {
             val currentValueHasBeenSet = currentValue.isNotEmpty()
             logger.d("EvaluateGlobalVar, var: ${globalVar.name}, currentValueHasBeenSet: $currentValueHasBeenSet, currentValue: $currentValue")
 
-            when (data.op as GlobalVarOp) {
+            val res = when (data.op as GlobalVarOp) {
                 GlobalVarOp.GreaterThan -> {
                     if (!currentValueHasBeenSet) {
                         false
@@ -220,6 +220,12 @@ object EvaluateGlobalVar : Cond {
                 GlobalVarOp.UNRECOGNIZED -> {
                     false
                 }
+            }
+
+            if (data.isInvert) {
+                !res
+            } else {
+                res
             }
         }
     }
