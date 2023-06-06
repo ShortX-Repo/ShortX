@@ -75,6 +75,7 @@
 -dontwarn de.robv.android.xposed.IXposedHookZygoteInit
 -dontwarn de.robv.android.xposed.XC_MethodHook$MethodHookParam
 -dontwarn de.robv.android.xposed.XC_MethodHook
+-dontwarn de.robv.android.xposed.XC_MethodHook$Unhook
 -dontwarn de.robv.android.xposed.XposedBridge
 -dontwarn de.robv.android.xposed.XposedHelpers
 -dontwarn de.robv.android.xposed.callbacks.XC_LoadPackage$LoadPackageParam
