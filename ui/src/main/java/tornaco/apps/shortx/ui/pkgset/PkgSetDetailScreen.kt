@@ -115,7 +115,10 @@ private fun PkgSetContent(
         if (!state.isPrebuilt) {
             stickyHeader {
                 Column {
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.pkg.set.add.input.label"])
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.pkg.set.add.input.label"]
+                    )
                     ShortXTextField(
                         modifier = Modifier
                             .fillMaxWidth()

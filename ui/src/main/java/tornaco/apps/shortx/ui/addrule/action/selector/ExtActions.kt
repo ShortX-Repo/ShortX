@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
+import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -72,6 +74,21 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     NewGlobalVarDialog(addGlobalVarDialogState)
 
+    val i18N = LocalI18N.current
+    val vm = hiltViewModel<PkgSetListViewModel>()
+    val addPkgSetDialogState =
+        rememberTextInputState(
+            title = i18N["ui.pkg.set.add.title"],
+            message = i18N["ui.pkg.set.add.input.label"],
+            showSymbolButton = false,
+            inputValidator = {
+                vm.validateLabel(it, i18N)
+            },
+            onSelected = {
+                addAction(Action.CreatePkgSet(label = it))
+            })
+    TextInputDialog(addPkgSetDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
@@ -124,6 +141,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.CreatePkgSet::class -> {
+                addPkgSetDialogState.show(source.getActionAs<Action.CreatePkgSet>()?.label)
+                true
+            }
+
             else -> {
                 false
             }
@@ -144,6 +166,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
         Action.Brk::class,
         Action.WriteGV::class,
         Action.CreateGV::class,
+        Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,
     ).map {

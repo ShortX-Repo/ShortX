@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
+import tornaco.apps.shortx.core.proto.action.CreatePkgSet
 import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
@@ -415,6 +416,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             ReadClipboard.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.CreatePkgSet -> {
+            CreatePkgSet.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setLabel(label)
+                .apply { description?.let { description = it } }
                 .build()
         }
 

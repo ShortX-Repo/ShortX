@@ -57,5 +57,6 @@ val allActionClasses = listOf(
     Action.WaitForIdle::class,
     Action.IfThenElse::class,
     Action.ReadClipboard::class,
+    Action.CreatePkgSet::class,
     Action.NoAction::class,
 )

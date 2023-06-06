@@ -162,6 +162,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WhileLoop
     },
+    CreatePkgSet {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.CreatePkgSet
+    },
     WriteGlobalVar {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WriteGlobalVar

@@ -270,6 +270,14 @@ message WhileLoop {
   string id = 100;
 }
 
+message CreatePkgSet {
+  string label = 1;
+  string description = 2;
+
+  string note = 99;
+  string id = 100;
+}
+
 message WriteGlobalVar {
   string varName = 1;
   string valueAsString = 2;

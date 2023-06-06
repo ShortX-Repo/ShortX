@@ -484,6 +484,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.CreatePkgSet::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.CreatePkgSet::class.java
+            Action.CreatePkgSet(
+                id = data.id,
+                note = data.note,
+                label = data.label,
+                description = data.description
+            )
+        }
+
         else -> null
     }
 }

@@ -123,6 +123,7 @@ fun labelAndDescriptionForActionSelector(
         Action.InputSwipe::class -> i18N["ui.action.input.swipe"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
+        Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.NoAction::class -> "Noop" to null
 
         else -> {
@@ -423,6 +424,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.NoAction -> {
             listOf("Noop")
         }
+
+        is Action.CreatePkgSet -> {
+            listOfNotNull(i18N["ui.pkg.set.add.title"], action.label, action.description)
+        }
     }
 }
 
@@ -650,6 +655,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.ReadClipboard::class -> {
             Remix.Document.clipboard_fill
+        }
+
+        Action.CreatePkgSet::class -> {
+            Remix.Document.folder_4_line
         }
 
         else -> {
