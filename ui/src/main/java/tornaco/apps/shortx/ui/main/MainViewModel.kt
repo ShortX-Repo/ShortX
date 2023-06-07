@@ -20,12 +20,12 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
-import tornaco.apps.shortx.ui.addrule.action.colorForAction
-import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
-import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact

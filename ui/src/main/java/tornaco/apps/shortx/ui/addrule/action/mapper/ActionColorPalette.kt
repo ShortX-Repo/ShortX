@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.action
+package tornaco.apps.shortx.ui.addrule.action.mapper
 
 import androidx.compose.ui.graphics.Color
 

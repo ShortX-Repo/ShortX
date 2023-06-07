@@ -3,8 +3,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog

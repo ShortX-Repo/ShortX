@@ -1,0 +1,44 @@
+package tornaco.apps.shortx.ui.addrule.fact.mapper
+
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import kotlin.reflect.KClass
+
+
+fun imageVectorForFact(fact: KClass<out Fact>): String {
+    return when (fact) {
+        Fact.ActivityStarted::class -> Remix.Logos.android_fill
+        Fact.AnyActivityStarted::class -> Remix.Logos.android_fill
+        Fact.EdgeGesture::class -> Remix.Editor.sketching
+        Fact.KeyEvent::class -> Remix.Device.keyboard_fill
+        Fact.ScreenOff::class -> Remix.Device.smartphone_fill
+        Fact.ScreenOn::class -> Remix.Device.smartphone_fill
+        Fact.UserPresent::class -> Remix.Device.phone_lock_fill
+        Fact.SystemReady::class -> Remix.System.login_circle_fill
+        Fact.Alarm::class -> Remix.System.alarm_fill
+        Fact.AppBecomeBackground::class -> Remix.System.refresh_fill
+        Fact.AppBecomeForeground::class -> Remix.System.star_fill
+        Fact.WifiStatusChanged::class -> Remix.Device.wifi_fill
+        Fact.BTStatusChanged::class -> Remix.Device.bluetooth_fill
+        Fact.LocationStatusChanged::class -> Remix.Device.gps_fill
+        Fact.NFCStatusChanged::class -> Remix.Device.nfc_fill
+        Fact.MobileDataStatusChanged::class -> Remix.Arrows.arrow_up_down_fill
+        Fact.HotSpotStatusChanged::class -> Remix.Device.hotspot_fill
+        Fact.DarkModeStatusChanged::class -> Remix.Weather.sun_fill
+        Fact.FlashLightStatusChanged::class -> Remix.Others.lightbulb_fill
+        Fact.NotificationPosted::class -> Remix.System.notification_badge_fill
+        Fact.NotificationUpdated::class -> Remix.System.notification_badge_fill
+        Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
+        Fact.TaskRemoved::class -> Remix.System.checkbox_multiple_blank_fill
+        Fact.TaskRemovedAny::class -> Remix.System.checkbox_multiple_blank_fill
+        Fact.PkgStopRunning::class -> Remix.UserAndFaces.skull_2_fill
+        Fact.PkgStopRunningAny::class -> Remix.UserAndFaces.skull_2_fill
+        Fact.AppAdded::class -> Remix.Device.install_fill
+        Fact.AppRemoved::class -> Remix.Device.uninstall_fill
+        Fact.AppUpdated::class -> Remix.System.refresh_fill
+
+        else -> {
+            Remix.Document.file_unknow_fill
+        }
+    }
+}

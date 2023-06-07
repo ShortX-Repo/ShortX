@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.labelLinesForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme

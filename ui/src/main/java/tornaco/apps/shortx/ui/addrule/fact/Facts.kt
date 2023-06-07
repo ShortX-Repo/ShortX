@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.*
-import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector

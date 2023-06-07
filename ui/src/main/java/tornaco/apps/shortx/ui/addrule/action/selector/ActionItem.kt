@@ -24,8 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.addrule.action.colorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon

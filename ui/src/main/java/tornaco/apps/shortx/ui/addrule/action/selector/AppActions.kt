@@ -3,8 +3,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.toComponentName
-import tornaco.apps.shortx.ui.addrule.action.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog

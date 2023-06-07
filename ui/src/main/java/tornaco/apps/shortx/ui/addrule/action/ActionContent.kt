@@ -17,6 +17,11 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*

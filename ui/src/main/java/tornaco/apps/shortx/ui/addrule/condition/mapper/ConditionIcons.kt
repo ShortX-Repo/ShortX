@@ -1,0 +1,55 @@
+package tornaco.apps.shortx.ui.addrule.condition.mapper
+
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import kotlin.reflect.KClass
+
+
+fun iconForCondition(condition: KClass<out Condition>): String {
+    return when (condition) {
+        Condition.CurrentForegroundApp::class -> {
+            Remix.Logos.android_fill
+        }
+
+        Condition.MVEL::class -> {
+            Remix.Development.code_fill
+        }
+
+        Condition.TRUE::class -> {
+            Remix.System.check_fill
+        }
+
+        Condition.EvaluateGlobalVar::class -> {
+            Remix.Document.file_list_fill
+        }
+
+        Condition.BatteryPercent::class -> {
+            Remix.Device.battery_2_fill
+        }
+
+        else -> {
+            Remix.Document.file_unknow_fill
+        }
+    }
+}
+
+fun iconForOp(op: Op): String {
+    return when (op) {
+        Op.All -> {
+            Remix.System.check_double_fill
+        }
+
+        Op.Any -> {
+            Remix.Editor.asterisk
+        }
+
+        Op.None -> {
+            Remix.System.checkbox_blank_circle_fill
+        }
+
+        is Op.MVEL -> {
+            Remix.Development.code_fill
+        }
+    }
+}

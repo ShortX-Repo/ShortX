@@ -15,7 +15,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
-import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
+import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
+import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForOp
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
+import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
+import tornaco.apps.shortx.ui.addrule.condition.mapper.opTitle
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*

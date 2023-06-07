@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
