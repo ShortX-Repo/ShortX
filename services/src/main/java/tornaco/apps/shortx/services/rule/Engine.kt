@@ -18,13 +18,29 @@ interface FactMatcher {
 
 interface ConditionEvaluator {
     fun evaluate(
+        condition: ProtoAny,
+        contextData: ContextData
+    ): EvaluateResult
+
+    fun evaluate(
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
         contextData: ContextData,
     ): Boolean
+
+    sealed interface EvaluateResult {
+        data class Success(val protoType: Class<out Message>, val match: Boolean) : EvaluateResult
+        data class Fail(val protoType: Class<out Message>, val error: Throwable) :
+            EvaluateResult
+
+        object Break : EvaluateResult
+    }
 }
+
+fun ConditionEvaluator.EvaluateResult.isMatch() =
+    this is ConditionEvaluator.EvaluateResult.Success && this.match
 
 interface ActionEvaluator {
     suspend fun evaluate(
@@ -34,8 +50,8 @@ interface ActionEvaluator {
     ): EvaluateResult
 
     sealed interface EvaluateResult {
-        data class Success(val actionProtoType: Class<out Message>) : EvaluateResult
-        data class Fail(val actionProtoType: Class<out Message>, val error: Throwable) :
+        data class Success(val protoType: Class<out Message>) : EvaluateResult
+        data class Fail(val protoType: Class<out Message>, val error: Throwable) :
             EvaluateResult
 
         object Break : EvaluateResult
@@ -85,7 +101,6 @@ class DefaultRuleEngine(
     private val onJobStarted: (String) -> Unit,
     private val onJobCompleted: (String) -> Unit,
     private val onJobCancelled: (String) -> Unit,
-    private val actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -124,7 +139,6 @@ class DefaultRuleEngine(
                                     it,
                                     contextData
                                 )
-                                actionEvaluateResultListener(evaRes)
                                 if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                     logger.e(evaRes.error, "evaluate fail")
                                     return@loop
@@ -160,7 +174,6 @@ class DefaultRuleEngine(
             kotlin.run loop@{
                 actions.forEach {
                     val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
-                    actionEvaluateResultListener(evaRes)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         return@loop

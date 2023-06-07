@@ -7,15 +7,26 @@ import kotlinx.coroutines.SupervisorJob
 import tornaco.apps.shortx.services.ShortXContext
 
 object RuleEngineFactory {
-    private fun newConditionEvaluator(context: Context, shortXContext: ShortXContext) =
-        ConditionEvaluatorImpl(context, shortXContext)
+    private fun newConditionEvaluator(
+        context: Context,
+        shortXContext: ShortXContext,
+        evaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
+    ) =
+        ConditionEvaluatorImpl(context, shortXContext, evaluateResultListener)
 
     private fun newActionEvaluator(
         context: Context,
         shortXContext: ShortXContext,
         handler: Handler,
-        conditionEvaluator: ConditionEvaluator
-    ) = ActionEvaluatorImpl(context, shortXContext, handler, conditionEvaluator)
+        conditionEvaluator: ConditionEvaluator,
+        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
+    ) = ActionEvaluatorImpl(
+        context,
+        shortXContext,
+        handler,
+        actionEvaluateResultListener,
+        conditionEvaluator
+    )
 
     private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl(shortXContext)
 
@@ -23,22 +34,25 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         androidContext: Context,
         handler: Handler,
+        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
+        conditionEvaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
         factMatcher: FactMatcher = newFactMatcher(shortXContext),
         conditionEvaluator: ConditionEvaluator = newConditionEvaluator(
-            androidContext,
-            shortXContext
+            context = androidContext,
+            shortXContext = shortXContext,
+            evaluateResultListener = conditionEvaluateResultListener
         ),
         actionEvaluator: ActionEvaluator = newActionEvaluator(
-            androidContext,
-            shortXContext,
-            handler,
-            conditionEvaluator
+            context = androidContext,
+            shortXContext = shortXContext,
+            handler = handler,
+            conditionEvaluator = conditionEvaluator,
+            actionEvaluateResultListener = actionEvaluateResultListener
         ),
         onJobStarted: (String) -> Unit,
         onJobCompleted: (String) -> Unit,
         onJobCancelled: (String) -> Unit,
         scope: CoroutineScope = CoroutineScope(SupervisorJob()),
-        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
@@ -47,7 +61,6 @@ object RuleEngineFactory {
         onJobStarted = onJobStarted,
         onJobCompleted = onJobCompleted,
         onJobCancelled = onJobCancelled,
-        actionEvaluateResultListener = actionEvaluateResultListener
     )
 }
 

@@ -17,7 +17,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
             ActionEvaluateRecord.newBuilder()
                 .setIsSuccess(false)
                 .setMessage(Log.getStackTraceString(this.error))
-                .setActionClassName(actionProtoType.name)
+                .setActionClassName(protoType.name)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
 
@@ -25,7 +25,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
             ActionEvaluateRecord.newBuilder()
                 .setIsSuccess(true)
                 .setMessage("Success")
-                .setActionClassName(actionProtoType.name)
+                .setActionClassName(protoType.name)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
     }

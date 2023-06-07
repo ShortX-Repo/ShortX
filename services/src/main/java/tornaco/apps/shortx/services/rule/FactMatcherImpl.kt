@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
+import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
 import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
@@ -241,6 +242,10 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 AudioFocusLostWrapper(actualN),
                 AudioFocusLostWrapper(ruleN)
             )
+        }
+
+        register(AudioFocusChanged::class.java) { _, _ ->
+            true
         }
     }
 

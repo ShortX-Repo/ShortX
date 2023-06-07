@@ -22,7 +22,7 @@ import java.io.FileOutputStream
 
 
 object LogInit {
-    private const val LOG_PREFIX = "ShortX"
+    private const val LOG_PREFIX = "ShortX-Core"
 
     private var _logDebug = BuildProp.APP_IS_DEBUG
     val logDebug get() = _logDebug

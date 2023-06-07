@@ -102,6 +102,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                 if (isActionEvaluateRecorderEnabled()) {
                     actionEvaluateRecorder.add(it.toActionEvaluateRecord())
                 }
+            },
+            conditionEvaluateResultListener = {
+                logger.d("conditionEvaluateResultListener: $it")
             }
         )
     }

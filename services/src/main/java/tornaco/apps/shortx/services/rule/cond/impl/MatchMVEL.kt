@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
@@ -12,11 +13,18 @@ object MatchMVEL : Cond {
     override fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val mvel = condition unpack_ MatchMVEL::class.java
-            val res = MVELExecutor(context, shortXContext, mvel.expression).invoke()
-            val retValue = kotlin.runCatching { res as Boolean }.getOrElse {
-                logger.e(it, "MatchMVEL check error")
-                false
-            }
+            val res = MVELExecutor(
+                context,
+                shortXContext,
+                mvel.expression.inflateContextMap(param.contextData.map.mapValues { entry ->
+                    // Wrap all data with ""
+                    entry.value?.let {
+                        if (it is String) "\"$it\"" else it
+                    }
+                }).apply {
+                    logger.d("inflated expression: $this")
+                }).invoke()
+            val retValue = res as Boolean
             if (mvel.isInvert) {
                 !retValue
             } else {

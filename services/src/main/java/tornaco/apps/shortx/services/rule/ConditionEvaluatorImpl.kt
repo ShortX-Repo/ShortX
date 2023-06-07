@@ -4,30 +4,39 @@ import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.cond.Cond
 import tornaco.apps.shortx.services.rule.cond.prebuiltCondFor
 
 class ConditionEvaluatorImpl(
     private val context: Context,
-    private val shortXContext: ShortXContext
+    private val shortXContext: ShortXContext,
+    private val evaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
 ) : ConditionEvaluator {
     private val logger = Logger("ConditionEvaluatorImpl")
 
-    private fun evaluate(condition: ProtoAny, contextData: ContextData): Boolean {
+    override fun evaluate(
+        condition: ProtoAny,
+        contextData: ContextData
+    ): ConditionEvaluator.EvaluateResult {
         val cond = prebuiltCondFor(condition)
         logger.d("evaluate, cond for ${condition.typeUrl}: $cond")
-        return cond?.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
-            ?: false
-    }
-
-    fun tryEvaluate(condition: ProtoAny, contextData: ContextData): Boolean {
-        return kotlin.runCatching { evaluate(condition, contextData) }.getOrElse {
-            logger.e(it, "tryEvaluate condition error")
-            false
+        if (cond == null) {
+            return ConditionEvaluator.EvaluateResult.Break
+        }
+        return kotlin.runCatching {
+            ConditionEvaluator.EvaluateResult.Success(
+                cond.condClass(),
+                cond.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
+            )
+        }.getOrElse {
+            ConditionEvaluator.EvaluateResult.Fail(cond.condClass(), it)
+        }.apply {
+            evaluateResultListener(this)
         }
     }
 
@@ -41,15 +50,15 @@ class ConditionEvaluatorImpl(
         logger.d("evaluate rule condition: $logTag $condOp condition size: ${conditions.size}, context: $contextData")
         return when (condOp) {
             ConditionOperator.ALL -> {
-                conditions.all { tryEvaluate(it, contextData) }
+                conditions.all { evaluate(it, contextData).isMatch() }
             }
 
             ConditionOperator.ANY -> {
-                conditions.any { tryEvaluate(it, contextData) }
+                conditions.any { evaluate(it, contextData).isMatch() }
             }
 
             ConditionOperator.NONE -> {
-                conditions.none { tryEvaluate(it, contextData) }
+                conditions.none { evaluate(it, contextData).isMatch() }
             }
 
             ConditionOperator.MVEL -> {
@@ -69,13 +78,19 @@ class ConditionEvaluatorImpl(
                         expressionTranslation.replace(codeName, "$codeName.call()")
                     logger.d("replace codeName: $codeName, after replace: $expressionTranslation")
                 }
-                val res = MVELExecutor(context, shortXContext, expressionTranslation).invoke(varMap)
-                logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $res")
-                return res.toString().toBooleanStrictOrNull() ?: false
+
+                val matchMVEL = evaluate(
+                    MatchMVEL.newBuilder()
+                        .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
+                        .setExpression(expressionTranslation).build().pack_(),
+                    contextData
+                )
+                logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $matchMVEL")
+                return matchMVEL.isMatch()
             }
 
             else -> {
-                conditions.all { tryEvaluate(it, contextData) }
+                conditions.all { evaluate(it, contextData).isMatch() }
             }
         }
     }

@@ -14,7 +14,8 @@ class ConditionCallable(
     private val contextData: ContextData
 ) {
     fun call(): Boolean {
-        logger.d("call condition class: ${condition.javaClass}")
-        return eva.tryEvaluate(condition, contextData)
+        val evaluateResult = eva.evaluate(condition, contextData)
+        logger.d("call condition class: ${condition.javaClass}, evaluateResult: $evaluateResult")
+        return evaluateResult.isMatch()
     }
 }

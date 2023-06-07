@@ -14,6 +14,7 @@ class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler,
+    private val evaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
@@ -47,6 +48,8 @@ class ActionEvaluatorImpl(
             ActionEvaluator.EvaluateResult.Success(actor.actionsCanHandle())
         }.getOrElse {
             ActionEvaluator.EvaluateResult.Fail(actor.actionsCanHandle(), it)
+        }.apply {
+            evaluateResultListener(this)
         }
     }
 }
