@@ -79,7 +79,7 @@ fun SystemActions(addAction: (Action) -> Unit) {
 
     val selectHandler = systemActionSelectHandler(addAction = addAction)
     SelectorList(
-        actionItems = actionItems,
+        items = actionItems,
         itemSelected = { it ->
             selectHandler(ActionSelectSource.FromClass(it))
         }

@@ -44,10 +44,10 @@ data class SelectorItem<out T : Any>(
 
 @Composable
 fun <T : Any> SelectorList(
-    actionItems: List<SelectorItem<T>>,
+    items: List<SelectorItem<T>>,
     itemSelected: (KClass<out T>) -> Unit
 ) {
-    SelectorList(actionItems = actionItems, itemSelected = { kClass, data ->
+    SelectorList(actionItems = items, itemSelected = { kClass, data ->
         itemSelected(kClass)
     })
 }

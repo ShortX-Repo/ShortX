@@ -43,7 +43,7 @@ fun RecentActions(addAction: (Action) -> Unit) {
         }
     }
     SelectorList(
-        actionItems = actionItems,
+        items = actionItems,
         itemSelected = itemSelected
     )
 }

@@ -48,7 +48,7 @@ fun LifeActions(addAction: (Action) -> Unit) {
 
     val selectHandler = lifeActionSelectHandler(addAction = addAction)
     SelectorList(
-        actionItems = actionItems,
+        items = actionItems,
         itemSelected = { it ->
             selectHandler(ActionSelectSource.FromClass(it))
         }

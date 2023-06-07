@@ -144,7 +144,7 @@ private fun <ARGS> ActionSelector(
 
                             HorizontalPager(
                                 state = pagerState,
-                                pageCount = ActionCategory.values().size,
+                                pageCount = TabItems.values().size,
                             ) { index ->
                                 val addAction: (Action) -> Unit = {
                                     state.onSelected(it, state.args)

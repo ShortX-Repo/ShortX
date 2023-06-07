@@ -120,7 +120,7 @@ fun UiActions(addAction: (Action) -> Unit) {
 
     val handler = uiActionSelectHandler(addAction = addAction)
     SelectorList(
-        actionItems = uiActionItems,
+        items = uiActionItems,
         itemSelected = { it ->
             handler(ActionSelectSource.FromClass(it))
         })

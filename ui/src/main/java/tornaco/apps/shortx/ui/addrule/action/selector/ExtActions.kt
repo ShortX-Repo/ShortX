@@ -184,7 +184,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
     val itemSelected = extActionSelectHandler(addAction = addAction)
 
     SelectorList(
-        actionItems = actionItems,
+        items = actionItems,
         itemSelected = { it ->
             itemSelected(ActionSelectSource.FromClass(it))
         }
