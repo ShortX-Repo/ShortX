@@ -168,6 +168,24 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
             })
     AppPkgSelectorDialog(appUpdatedSelectorState)
 
+    val audioFocusGainSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(Fact.AudioFocusGain(apps = pkg))
+            }, onPkgSetSelected = {
+                setFact(Fact.AudioFocusGain(pkgSets = it))
+            })
+    AppPkgSelectorDialog(audioFocusGainSelectorState)
+
+    val audioFocusLostSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(Fact.AudioFocusLost(apps = pkg))
+            }, onPkgSetSelected = {
+                setFact(Fact.AudioFocusLost(pkgSets = it))
+            })
+    AppPkgSelectorDialog(audioFocusLostSelectorState)
+
 
     return { source ->
         when (source.clazz) {
@@ -361,6 +379,28 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
                 )
                 true
             }
+
+            Fact.AudioFocusGain::class -> {
+                audioFocusGainSelectorState.show(
+                    source.getFactAs<Fact.AppUpdated>()?.apps,
+                    source.getFactAs<Fact.AppUpdated>()?.pkgSets
+                )
+                true
+            }
+
+            Fact.AudioFocusLost::class -> {
+                audioFocusLostSelectorState.show(
+                    source.getFactAs<Fact.AppUpdated>()?.apps,
+                    source.getFactAs<Fact.AppUpdated>()?.pkgSets
+                )
+                true
+            }
+
+            Fact.AudioFocusChanged::class -> {
+                setFact(Fact.AudioFocusChanged())
+                true
+            }
+
 
             else -> false
         }

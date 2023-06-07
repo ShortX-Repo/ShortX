@@ -101,7 +101,10 @@ class PkgPool(
 
     private fun ApplicationInfo.toApp(): App {
         return tornaco.apps.shortx.core.App(
-            pkg = Pkg(packageName, userId), category = getCategory(), label = getLabel()
+            pkg = Pkg(packageName, userId),
+            category = getCategory(),
+            label = getLabel(),
+            uid = uid
         )
     }
 

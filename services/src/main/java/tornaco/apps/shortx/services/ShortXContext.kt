@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services
 
 import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
+import tornaco.apps.shortx.services.audio.AudioService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
 import tornaco.apps.shortx.services.notification.NotificationService
@@ -25,6 +26,7 @@ interface ShortXContext {
     val notification: NotificationService
     val wm: WindowManagerService
     val systemSettings: SystemSettingsService
+    val audio: AudioService
 
     val allServices
         get() = listOf(
@@ -40,6 +42,7 @@ interface ShortXContext {
             notification,
             wm,
             systemSettings,
+            audio,
         )
 }
 
@@ -56,4 +59,5 @@ class ShortXContextImpl : ShortXContext {
     override val notification = NotificationService(this)
     override val wm = WindowManagerService(this)
     override val systemSettings = SystemSettingsService(this)
+    override val audio = AudioService(this)
 }

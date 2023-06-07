@@ -159,8 +159,17 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         )
     }
 
+    private fun poolForUser(userId: Int) = pkgPools.firstOrNull { it.userId == userId }
+
     fun getInstalledApps(): List<App> {
         return pkgPools.map { it.allApps.values }.flatten()
+    }
+
+    fun uidToApp(uid: Int): App? {
+        val userId = UserHandle.getUserId(uid)
+        return poolForUser(userId)?.let { pool ->
+            pool.allApps.values.firstOrNull { it.uid == uid }
+        }
     }
 
     fun pkgToApp(pkg: AppPkg): App? {

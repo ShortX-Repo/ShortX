@@ -8,6 +8,9 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
+import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
+import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
+import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -225,5 +228,22 @@ fun Fact.toProtoFact(): ProtoMessage {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
             }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
         }
+
+        is Fact.AudioFocusGain -> {
+            AudioFocusGain.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+        }
+
+        is Fact.AudioFocusLost -> {
+            AudioFocusLost.newBuilder().addAllApps(apps.map {
+                AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+        }
+
+        is Fact.AudioFocusChanged -> {
+            AudioFocusChanged.newBuilder().setId(id).setNote(note).build()
+        }
+
     }
 }

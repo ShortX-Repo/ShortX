@@ -83,6 +83,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.AppRemoved>()
         }
 
+        Fact.AudioFocusChanged::class -> {
+            dats<ContextDataMapping.AudioFocusChanged>()
+        }
+
         else -> {
             emptyList()
         }

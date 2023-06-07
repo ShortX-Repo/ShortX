@@ -18,6 +18,7 @@ message App {
   AppPkg pkg = 1;
   string label = 2;
   AppCategory category = 3;
+  int32 uid = 4;
 }
 
 message AppComponent {

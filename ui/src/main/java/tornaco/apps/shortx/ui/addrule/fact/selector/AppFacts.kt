@@ -34,6 +34,10 @@ fun AppFacts(setFact: (Fact) -> Unit) {
 
         Fact.PkgStopRunning::class,
         Fact.PkgStopRunningAny::class,
+
+        Fact.AudioFocusGain::class,
+        Fact.AudioFocusLost::class,
+        Fact.AudioFocusChanged::class,
     ).map {
         SelectorItem(
             type = it,

@@ -242,6 +242,42 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             }
         }
 
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AudioFocusGain::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AudioFocusGain::class.java
+            val models =
+                (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+
+            Fact.AudioFocusGain(
+                apps = models.first,
+                pkgSets = models.second,
+                id = data.id, note = data.note
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AudioFocusLost::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AudioFocusLost::class.java
+            val models =
+                (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+
+            Fact.AudioFocusLost(
+                apps = models.first,
+                pkgSets = models.second,
+                id = data.id, note = data.note
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.AudioFocusChanged::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AudioFocusChanged::class.java
+            Fact.AudioFocusChanged(
+                id = data.id, note = data.note
+            )
+        }
+
+
         else -> {
             null
         }

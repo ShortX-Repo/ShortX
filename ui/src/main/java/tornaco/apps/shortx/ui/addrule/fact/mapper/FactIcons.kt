@@ -36,6 +36,9 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.AppAdded::class -> Remix.Device.install_fill
         Fact.AppRemoved::class -> Remix.Device.uninstall_fill
         Fact.AppUpdated::class -> Remix.System.refresh_fill
+        Fact.AudioFocusGain::class -> Remix.Media.music_2_fill
+        Fact.AudioFocusLost::class -> Remix.Media.music_2_fill
+        Fact.AudioFocusChanged::class -> Remix.Media.music_2_fill
 
         else -> {
             Remix.Document.file_unknow_fill

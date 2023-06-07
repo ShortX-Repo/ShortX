@@ -107,6 +107,18 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.app.updated"] to null
         }
 
+        Fact.AudioFocusChanged::class -> {
+            i18n["ui.fact.audio.focus.changed"] to null
+        }
+
+        Fact.AudioFocusGain::class -> {
+            i18n["ui.fact.audio.focus.gain"] to null
+        }
+
+        Fact.AudioFocusLost::class -> {
+            i18n["ui.fact.audio.focus.lost"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -302,6 +314,20 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.AppUpdated -> {
             mutableListOf(i18N["ui.fact.app.updated"])
+                .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.AudioFocusChanged -> {
+            listOf(i18N["ui.fact.audio.focus.changed"])
+        }
+
+        is Fact.AudioFocusGain -> {
+            mutableListOf(i18N["ui.fact.audio.focus.gain"])
+                .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.AudioFocusLost -> {
+            mutableListOf(i18N["ui.fact.audio.focus.lost"])
                 .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
         }
     }

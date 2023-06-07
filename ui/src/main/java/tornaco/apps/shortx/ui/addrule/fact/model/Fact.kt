@@ -335,6 +335,37 @@ sealed interface Fact {
             return copy(id = id, note = note)
         }
     }
+
+    data class AudioFocusGain(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class AudioFocusLost(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class AudioFocusChanged(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()
@@ -377,4 +408,8 @@ val allFactClasses = listOf(
 
     Fact.PkgStopRunning::class,
     Fact.PkgStopRunningAny::class,
+
+    Fact.AudioFocusGain::class,
+    Fact.AudioFocusLost::class,
+    Fact.AudioFocusChanged::class,
 )

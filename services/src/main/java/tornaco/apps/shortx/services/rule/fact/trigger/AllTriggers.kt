@@ -16,4 +16,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     TorchStateTrigger(context, shortXContext),
     DNDStateTrigger(context, shortXContext),
     PackageInstallTrigger(context, shortXContext),
+    AudioFocusTrigger(context, shortXContext),
 )

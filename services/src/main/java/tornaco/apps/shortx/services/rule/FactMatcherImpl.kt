@@ -8,6 +8,8 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
+import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
+import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
@@ -222,6 +224,24 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 AppUpdatedWrapper(ruleN)
             )
         }
+
+        register(AudioFocusGain::class.java) { actual, rule ->
+            val actualN = (actual as AudioFocusGain)
+            val ruleN = (rule as AudioFocusGain)
+            matchWithAppOrPkgSetListFact(
+                AudioFocusGainWrapper(actualN),
+                AudioFocusGainWrapper(ruleN)
+            )
+        }
+
+        register(AudioFocusLost::class.java) { actual, rule ->
+            val actualN = (actual as AudioFocusLost)
+            val ruleN = (rule as AudioFocusLost)
+            matchWithAppOrPkgSetListFact(
+                AudioFocusLostWrapper(actualN),
+                AudioFocusLostWrapper(ruleN)
+            )
+        }
     }
 
     private fun nullEmptyOrEq(vararg ruleAndActuals: Pair<String?, String>) = ruleAndActuals.all {
@@ -328,6 +348,22 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             get() = appUpdated.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
             get() = appUpdated.appsList ?: emptyList()
+
+    }
+
+    class AudioFocusGainWrapper(private val focusGain: AudioFocusGain) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = focusGain.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = focusGain.appsList ?: emptyList()
+
+    }
+
+    class AudioFocusLostWrapper(private val focusLost: AudioFocusLost) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = focusLost.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = focusLost.appsList ?: emptyList()
 
     }
 }

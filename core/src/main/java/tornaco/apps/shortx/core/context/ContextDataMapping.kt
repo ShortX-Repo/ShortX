@@ -89,6 +89,14 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class AudioFocusChanged(val description: String) {
+        userId("The user id"),
+        pkgName("App package name of the focus changed package"),
+        isGain("true if it has gain audio focus"),
+        isLost("true if it has lost audio focus"),
+    }
+
+    @DoNotStrip
     enum class ReadClipboard(val description: String) {
         text("Text read from clipboard"),
     }
