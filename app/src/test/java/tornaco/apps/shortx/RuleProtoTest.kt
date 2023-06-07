@@ -3,6 +3,7 @@ package tornaco.apps.shortx
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -13,10 +14,17 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.RuleEngineFactory
 
-
 class RuleProtoTest {
+    @Before
+    fun installLogger() {
+        logAdapter = { _: Int, tag: String, msg: String ->
+            println("[$tag] $msg")
+        }
+    }
+
     @Test
     fun should_convert_byte_array_correctly() {
         val fact = KeyEvent.newBuilder().setKeyCode(20).build().pack_()
