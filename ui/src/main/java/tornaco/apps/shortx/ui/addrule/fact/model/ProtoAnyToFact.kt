@@ -11,28 +11,37 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
     return when {
         this is_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java
-            Fact.KeyEvent(keyCode = data.keyCode)
+            Fact.KeyEvent(keyCode = data.keyCode, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java
-            Fact.EdgeGesture(edge = data.edge, gesture = data.gesture)
+            Fact.EdgeGesture(
+                edge = data.edge,
+                gesture = data.gesture,
+                id = data.id,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.ScreenOff::class.java -> {
-            Fact.ScreenOff
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ScreenOff::class.java
+            Fact.ScreenOff(id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.ScreenOn::class.java -> {
-            Fact.ScreenOn
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ScreenOn::class.java
+            Fact.ScreenOn(id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.UserPresent::class.java -> {
-            Fact.UserPresent
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.UserPresent::class.java
+            Fact.UserPresent(id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.SystemReady::class.java -> {
-            Fact.SystemReady
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.SystemReady::class.java
+            Fact.SystemReady(id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.Alarm::class.java -> {
@@ -40,7 +49,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.Alarm(
                 timeOfADay = data.triggerAt,
                 repeatDays = data.repeat,
-                tag = data.tag
+                tag = data.tag,
+                id = data.id, note = data.note
             )
         }
 
@@ -49,7 +59,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Fact.AppBecomeForeground(
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                id = data.id, note = data.note
             )
         }
 
@@ -58,12 +69,14 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Fact.AppBecomeBackground(
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                id = data.id, note = data.note
             )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java -> {
-            Fact.AppAdded
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java
+            Fact.AppAdded(id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.AppRemoved::class.java -> {
@@ -71,7 +84,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Fact.AppRemoved(
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                id = data.id, note = data.note
             )
         }
 
@@ -80,7 +94,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Fact.AppUpdated(
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                id = data.id, note = data.note
             )
         }
 
@@ -88,61 +103,61 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         this is_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java
             if (data.componentsList.isEmpty()) {
-                Fact.AnyActivityStarted
+                Fact.AnyActivityStarted(id = data.id, note = data.note)
             } else {
-                Fact.ActivityStarted(data.componentsList)
+                Fact.ActivityStarted(data.componentsList, id = data.id, note = data.note)
             }
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.WifiStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.WifiStatusChanged::class.java
-            Fact.WifiStatusChanged(data.ooa)
+            Fact.WifiStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java
-            Fact.BTStatusChanged(data.ooa)
+            Fact.BTStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java
-            Fact.HotSpotStatusChanged(data.ooa)
+            Fact.HotSpotStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NFCStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.NFCStatusChanged::class.java
-            Fact.NFCStatusChanged(data.ooa)
+            Fact.NFCStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.LocationStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.LocationStatusChanged::class.java
-            Fact.LocationStatusChanged(data.ooa)
+            Fact.LocationStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged::class.java
-            Fact.MobileDataStatusChanged(data.ooa)
+            Fact.MobileDataStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged::class.java
-            Fact.FlashLightStatusChanged(data.ooa)
+            Fact.FlashLightStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.DNDStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.DNDStatusChanged::class.java
-            Fact.DNDStatusChanged(data.ooa)
+            Fact.DNDStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged::class.java
-            Fact.DarkModeStatusChanged(data.ooa)
+            Fact.DarkModeStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NotificationPosted::class.java -> {
@@ -156,7 +171,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.record.title,
                     contentRegex = data.record.contentText
-                )
+                ),
+                id = data.id, note = data.note
             )
         }
 
@@ -171,7 +187,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.record.title,
                     contentRegex = data.record.contentText
-                )
+                ),
+                id = data.id, note = data.note
             )
         }
 
@@ -186,7 +203,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     pkgSets = models.second,
                     titleRegex = data.new.title,
                     contentRegex = data.new.contentText
-                )
+                ),
+                id = data.id, note = data.note
             )
         }
 
@@ -197,11 +215,12 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             if (models.first.isEmpty() && models.second.isEmpty()) {
-                Fact.TaskRemovedAny
+                Fact.TaskRemovedAny(id = data.id, note = data.note)
             } else {
                 Fact.TaskRemoved(
                     apps = models.first,
-                    pkgSets = models.second
+                    pkgSets = models.second,
+                    id = data.id, note = data.note
                 )
             }
         }
@@ -213,11 +232,12 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             if (models.first.isEmpty() && models.second.isEmpty()) {
-                Fact.PkgStopRunningAny
+                Fact.PkgStopRunningAny(id = data.id, note = data.note)
             } else {
                 Fact.PkgStopRunning(
                     apps = models.first,
-                    pkgSets = models.second
+                    pkgSets = models.second,
+                    id = data.id, note = data.note
                 )
             }
         }

@@ -12,56 +12,251 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.factContextData
+import java.util.UUID
+
+fun defaultNewFactId() = "F-" + UUID.randomUUID().toString()
 
 sealed interface Fact {
-    data class KeyEvent(val keyCode: Int) : Fact
+    val id: String
+    val note: String
 
-    object AnyActivityStarted : Fact
-    data class ActivityStarted(val components: List<AppComponent>) : Fact
+    fun clone(id: String, note: String): Fact
 
-    data class EdgeGesture(val edge: Edge, val gesture: Gesture) : Fact
+    data class KeyEvent(
+        val keyCode: Int,
+        override val note: String = "",
+        override val id: String = defaultNewFactId()
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
-    object ScreenOn : Fact
-    object ScreenOff : Fact
-    object UserPresent : Fact
-    object SystemReady : Fact
+    data class AnyActivityStarted(
+        override val note: String = "",
+        override val id: String = defaultNewFactId()
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class ActivityStarted(
+        val components: List<AppComponent>,
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class EdgeGesture(
+        val edge: Edge, val gesture: Gesture,
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class ScreenOn(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class ScreenOff(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class UserPresent(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class SystemReady(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class Alarm(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val tag: String = "Alarm-${DateUtils.formatForFileName(System.currentTimeMillis())}",
         val timeOfADay: TimeOfADay,
         val repeatDays: RepeatDays
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class AppBecomeBackground(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class AppBecomeForeground(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
-    object AppAdded : Fact
+    data class AppAdded(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
     data class AppRemoved(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class AppUpdated(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
-    data class WifiStatusChanged(val state: OnOffAny) : Fact
-    data class BTStatusChanged(val state: OnOffAny) : Fact
-    data class MobileDataStatusChanged(val state: OnOffAny) : Fact
-    data class LocationStatusChanged(val state: OnOffAny) : Fact
-    data class NFCStatusChanged(val state: OnOffAny) : Fact
-    data class DNDStatusChanged(val state: OnOffAny) : Fact
-    data class HotSpotStatusChanged(val state: OnOffAny) : Fact
-    data class FlashLightStatusChanged(val state: OnOffAny) : Fact
-    data class DarkModeStatusChanged(val state: OnOffAny) : Fact
+    data class WifiStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class BTStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class MobileDataStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class LocationStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class NFCStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class DNDStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class HotSpotStatusChanged(
+        val state: OnOffAny, override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class FlashLightStatusChanged(
+        val state: OnOffAny,
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class DarkModeStatusChanged(
+        val state: OnOffAny,
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class Notification(
         val apps: List<App>,
@@ -71,30 +266,75 @@ sealed interface Fact {
     )
 
     data class NotificationPosted(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val n: Notification
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class NotificationRemoved(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val n: Notification
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class NotificationUpdated(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val n: Notification
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class TaskRemoved(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
-    object TaskRemovedAny : Fact
+    data class TaskRemovedAny(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
     data class PkgStopRunning(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
-    ) : Fact
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 
-    object PkgStopRunningAny : Fact
+    data class PkgStopRunningAny(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()

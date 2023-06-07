@@ -182,7 +182,7 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
             }
 
             Fact.AnyActivityStarted::class -> {
-                setFact(Fact.AnyActivityStarted)
+                setFact(Fact.AnyActivityStarted())
                 true
             }
 
@@ -195,7 +195,7 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
             }
 
             Fact.TaskRemovedAny::class -> {
-                setFact(Fact.TaskRemovedAny)
+                setFact(Fact.TaskRemovedAny())
                 true
             }
 
@@ -208,7 +208,7 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
             }
 
             Fact.PkgStopRunningAny::class -> {
-                setFact(Fact.PkgStopRunningAny)
+                setFact(Fact.PkgStopRunningAny())
                 true
             }
 
@@ -218,22 +218,22 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
             }
 
             Fact.ScreenOff::class -> {
-                setFact(Fact.ScreenOff)
+                setFact(Fact.ScreenOff())
                 true
             }
 
             Fact.ScreenOn::class -> {
-                setFact(Fact.ScreenOn)
+                setFact(Fact.ScreenOn())
                 true
             }
 
             Fact.UserPresent::class -> {
-                setFact(Fact.UserPresent)
+                setFact(Fact.UserPresent())
                 true
             }
 
             Fact.SystemReady::class -> {
-                setFact(Fact.SystemReady)
+                setFact(Fact.SystemReady())
                 true
             }
 
@@ -341,7 +341,7 @@ fun factSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
 
             Fact.AppAdded::class -> {
                 setFact(
-                    Fact.AppAdded
+                    Fact.AppAdded()
                 )
                 true
             }

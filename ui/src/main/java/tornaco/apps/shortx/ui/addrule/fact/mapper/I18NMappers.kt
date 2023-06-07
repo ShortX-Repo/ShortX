@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.fact
+package tornaco.apps.shortx.ui.addrule.fact.mapper
 
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.ActionColorPalette
+import tornaco.apps.shortx.ui.addrule.fact.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -146,10 +147,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             getLabelForKeyCode(i18N, keyCode = fact.keyCode)
         )
 
-        Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
-        Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
-        Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
-        Fact.SystemReady -> listOf(i18N["ui.fact.system.ready"])
+        is Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])
+        is Fact.ScreenOn -> listOf(i18N["ui.fact.screen.on"])
+        is Fact.UserPresent -> listOf(i18N["ui.fact.screen.user.present"])
+        is Fact.SystemReady -> listOf(i18N["ui.fact.system.ready"])
 
         is Fact.Alarm -> {
             listOf(

@@ -35,37 +35,38 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 fun Fact.toProtoFact(): ProtoMessage {
     return when (this) {
         is Fact.KeyEvent -> {
-            KeyEvent.newBuilder().setKeyCode(keyCode).build()
+            KeyEvent.newBuilder().setKeyCode(keyCode).setId(id).setNote(note).build()
         }
 
         is Fact.ActivityStarted -> {
             ActivityStarted.newBuilder()
                 .addAllComponents(components)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
-        Fact.AnyActivityStarted -> {
-            ActivityStarted.newBuilder().build()
+        is Fact.AnyActivityStarted -> {
+            ActivityStarted.newBuilder().setId(id).setNote(note).build()
         }
 
         is Fact.EdgeGesture -> {
-            EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).build()
+            EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).setId(id).setNote(note)
+                .build()
         }
 
-        Fact.ScreenOff -> {
-            ScreenOff.newBuilder().build()
+        is Fact.ScreenOff -> {
+            ScreenOff.newBuilder().setId(id).setNote(note).build()
         }
 
-        Fact.ScreenOn -> {
-            ScreenOn.newBuilder().build()
+        is Fact.ScreenOn -> {
+            ScreenOn.newBuilder().setId(id).setNote(note).build()
         }
 
-        Fact.UserPresent -> {
-            UserPresent.newBuilder().build()
+        is Fact.UserPresent -> {
+            UserPresent.newBuilder().setId(id).setNote(note).build()
         }
 
-        Fact.SystemReady -> {
-            SystemReady.newBuilder().build()
+        is Fact.SystemReady -> {
+            SystemReady.newBuilder().setId(id).setNote(note).build()
         }
 
         is Fact.Alarm -> {
@@ -73,73 +74,73 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
                 .setTag(tag)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.AppBecomeBackground -> {
             AppBecomeBg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
         }
 
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
         }
 
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.BTStatusChanged -> {
             BTStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.DNDStatusChanged -> {
             DNDStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.FlashLightStatusChanged -> {
             FlashLightStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.HotSpotStatusChanged -> {
             HotSpotStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.LocationStatusChanged -> {
             LocationStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.MobileDataStatusChanged -> {
             MobileDataStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.NFCStatusChanged -> {
             NFCStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.DarkModeStatusChanged -> {
             DarkModeStatusChanged.newBuilder()
                 .setOoa(state)
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.NotificationPosted -> {
@@ -154,7 +155,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.NotificationRemoved -> {
@@ -169,7 +170,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.NotificationUpdated -> {
@@ -184,45 +185,45 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .build()
+                .setId(id).setNote(note).build()
         }
 
         is Fact.TaskRemoved -> {
             TaskRemoved.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .build()
+                .setId(id).setNote(note).build()
         }
 
-        Fact.TaskRemovedAny -> {
-            TaskRemoved.newBuilder().build()
+        is Fact.TaskRemovedAny -> {
+            TaskRemoved.newBuilder().setId(id).setNote(note).build()
         }
 
         is Fact.PkgStopRunning -> {
             PkgStopRunning.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .build()
+                .setId(id).setNote(note).build()
         }
 
-        Fact.PkgStopRunningAny -> {
-            TaskRemoved.newBuilder().build()
+        is Fact.PkgStopRunningAny -> {
+            TaskRemoved.newBuilder().setId(id).setNote(note).build()
         }
 
-        Fact.AppAdded -> {
-            AppAdded.newBuilder().build()
+        is Fact.AppAdded -> {
+            AppAdded.newBuilder().setId(id).setNote(note).build()
         }
 
         is Fact.AppRemoved -> {
             AppRemoved.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
         }
 
         is Fact.AppUpdated -> {
             AppUpdated.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
         }
     }
 }

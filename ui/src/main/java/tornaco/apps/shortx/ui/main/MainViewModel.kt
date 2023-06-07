@@ -28,9 +28,9 @@ import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
-import tornaco.apps.shortx.ui.addrule.fact.colorForFact
-import tornaco.apps.shortx.ui.addrule.fact.imageVectorForFact
-import tornaco.apps.shortx.ui.addrule.fact.labelAndDescriptionForFactSelector
+import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
+import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
