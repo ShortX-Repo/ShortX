@@ -12,7 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
@@ -52,20 +55,23 @@ private fun ActionContent(
     when (val actionState = state.remoteActionsState) {
         RemoteExecuteMVELActionLoadState.Loading -> {
         }
+
         RemoteExecuteMVELActionLoadState.Error -> {
             LoadError(modifier = Modifier.fillMaxSize())
         }
+
         is RemoteExecuteMVELActionLoadState.Success -> {
             val uiActionItems = actionState.data.map {
-                Item(
+                SelectorItem(
                     type = Action.RemoteMVEL::class,
                     labelAndDescription = it.title to it.description,
                     icon = it.icon,
-                    data = it
+                    data = it,
+                    iconColor = colorForAction(Action.RemoteMVEL::class)
                 )
             }
 
-            ActionList(actionItems = uiActionItems, itemSelected = { _, data ->
+            SelectorList(actionItems = uiActionItems, itemSelected = { _, data ->
                 data?.let {
                     addAction(Action.RemoteMVEL(action = it as RemoteExecuteMVELAction))
                 }

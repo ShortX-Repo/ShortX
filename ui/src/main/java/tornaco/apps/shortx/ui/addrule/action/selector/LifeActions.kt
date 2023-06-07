@@ -2,9 +2,12 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 
 
@@ -21,6 +24,7 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
                 mapNavDialogState.show()
                 true
             }
+
             else -> {
                 false
             }
@@ -34,15 +38,16 @@ fun LifeActions(addAction: (Action) -> Unit) {
 
 
     val actionItems = listOf(
-        Item(
-            Action.MapNav::class,
-            labelAndDescriptionForActionSelector(i18N, Action.MapNav::class),
-            imageVectorForAction(Action.MapNav::class)
+        SelectorItem(
+            type = Action.MapNav::class,
+            labelAndDescription = labelAndDescriptionForActionSelector(i18N, Action.MapNav::class),
+            icon = imageVectorForAction(Action.MapNav::class),
+            iconColor = colorForAction(Action.MapNav::class)
         ),
     )
 
     val selectHandler = lifeActionSelectHandler(addAction = addAction)
-    ActionList(
+    SelectorList(
         actionItems = actionItems,
         itemSelected = { it ->
             selectHandler(ActionSelectSource.FromClass(it))

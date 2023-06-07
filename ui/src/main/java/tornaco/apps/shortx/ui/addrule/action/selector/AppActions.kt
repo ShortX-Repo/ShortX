@@ -3,9 +3,12 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.toComponentName
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
@@ -222,12 +225,17 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.SuspendApp::class,
         Action.UnSuspendApp::class,
     ).map {
-        Item(it, labelAndDescriptionForActionSelector(i18N, it), imageVectorForAction(it))
+        SelectorItem(
+            type = it,
+            labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
+            icon = imageVectorForAction(it),
+            iconColor = colorForAction(it)
+        )
     }
 
     val selectHandler = appActionSelectHandler(addAction = addAction)
 
-    ActionList(
+    SelectorList(
         actionItems = actionItems,
         itemSelected = { it, _ ->
             selectHandler(ActionSelectSource.FromClass(it))

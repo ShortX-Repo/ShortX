@@ -3,7 +3,7 @@
     ExperimentalFoundationApi::class
 )
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.base
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -25,8 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -36,64 +34,50 @@ import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import kotlin.reflect.KClass
 
-data class Item(
-    val type: KClass<out Action>,
+data class SelectorItem<out T : Any>(
+    val type: KClass<out T>,
     val labelAndDescription: Pair<String, String?>,
     val icon: String,
-    val iconColor: Color = colorForAction(type),
+    val iconColor: Color,
     val data: Any? = null
 )
 
-fun item(
-    type: KClass<out Action>, label: String, icon: String, iconColor: Color = colorForAction(type)
-) = Item(type = type, labelAndDescription = label to null, icon = icon, iconColor = iconColor)
-
-
-fun item(
-    type: KClass<out Action>,
-    label: String,
-    description: String,
-    icon: String,
-    iconColor: Color = colorForAction(type)
-) = Item(
-    type = type,
-    labelAndDescription = label to description,
-    icon = icon,
-    iconColor = iconColor
-)
-
 @Composable
-fun ActionList(actionItems: List<Item>, itemSelected: (KClass<out Action>) -> Unit) {
-    ActionList(actionItems = actionItems, itemSelected = { kClass, data ->
+fun <T : Any> SelectorList(
+    actionItems: List<SelectorItem<T>>,
+    itemSelected: (KClass<out T>) -> Unit
+) {
+    SelectorList(actionItems = actionItems, itemSelected = { kClass, data ->
         itemSelected(kClass)
     })
 }
 
 @Composable
-fun ActionList(
-    actionItems: List<Item>,
-    itemSelected: (KClass<out Action>, data: Any?) -> Unit
+fun <T : Any> SelectorList(
+    actionItems: List<SelectorItem<T>>,
+    itemSelected: (KClass<out T>, data: Any?) -> Unit
 ) {
-    ActionList(
-        modifier = Modifier, childModifier = Modifier,
+    SelectorList(
+        modifier = Modifier,
+        childModifier = Modifier,
         actionItems = actionItems,
         itemSelected = itemSelected
     )
 }
 
 @Composable
-fun ActionList(
+fun <T : Any> SelectorList(
     modifier: Modifier = Modifier,
     childModifier: Modifier = Modifier,
-    actionItems: List<Item>,
-    itemSelected: (KClass<out Action>, data: Any?) -> Unit
+    actionItems: List<SelectorItem<T>>,
+    itemSelected: (KClass<out T>, data: Any?) -> Unit
 ) {
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
     ) {
         actionItems.forEach {
-            ActionItem(
+            SelectorListItem(
                 modifier = childModifier,
                 icon = it.icon,
                 iconColor = it.iconColor,
@@ -107,7 +91,7 @@ fun ActionList(
 }
 
 @Composable
-fun ActionItem(
+private fun SelectorListItem(
     modifier: Modifier = Modifier,
     icon: String,
     iconColor: Color,

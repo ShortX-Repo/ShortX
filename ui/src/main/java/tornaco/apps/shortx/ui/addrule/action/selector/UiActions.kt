@@ -2,9 +2,12 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
@@ -107,15 +110,16 @@ fun UiActions(addAction: (Action) -> Unit) {
         Action.InputSwipe::class,
         Action.WaitForIdle::class,
     ).map {
-        Item(
+        SelectorItem(
             it,
             labelAndDescriptionForActionSelector(i18N, it),
-            imageVectorForAction(it)
+            imageVectorForAction(it),
+            iconColor = colorForAction(it)
         )
     }
 
     val handler = uiActionSelectHandler(addAction = addAction)
-    ActionList(
+    SelectorList(
         actionItems = uiActionItems,
         itemSelected = { it ->
             handler(ActionSelectSource.FromClass(it))

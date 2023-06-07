@@ -3,9 +3,12 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
@@ -170,16 +173,17 @@ fun ExtActions(addAction: (Action) -> Unit) {
         Action.IfThenElse::class,
         Action.WhileLoop::class,
     ).map {
-        Item(
+        SelectorItem(
             type = it,
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
-            icon = imageVectorForAction(it)
+            icon = imageVectorForAction(it),
+            iconColor = colorForAction(it)
         )
     }
 
     val itemSelected = extActionSelectHandler(addAction = addAction)
 
-    ActionList(
+    SelectorList(
         actionItems = actionItems,
         itemSelected = { it ->
             itemSelected(ActionSelectSource.FromClass(it))
