@@ -47,11 +47,19 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     private fun handlePlaybackConfigChanged(configs: List<AudioPlaybackConfiguration>) =
         kotlin.runCatching {
-            logger.d("handlePlaybackConfigChanged: $configs")
+            configs.forEach {
+                logger.d(
+                    "Config-> Uid: ${it.clientUid} - isActive: ${it.isActive} - playerType: ${it.playerType} - playerState: ${
+                        playerStateToString(
+                            it.playerState
+                        )
+                    } - audioAttributes: ${it.audioAttributes}"
+                )
+            }
+
             val appToPlayerStates = configs.mapNotNull { configuration ->
                 val uid = configuration.clientUid
                 val appOrNull = shortXContext.appState.uidToApp(uid)
-                logger.d("Playback state: ${configuration.playerState}, app: $appOrNull")
                 appOrNull?.let { it to configuration.playerState }
             }
             logger.d(
