@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -27,6 +28,8 @@ class AppPkgSelectorDialogState(
     val onAppListSelected: (List<App>) -> Unit,
     val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
 ) {
+    private val logger = Logger("AppPkgSelectorDialogState")
+
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -40,6 +43,8 @@ class AppPkgSelectorDialogState(
         currentAppList: List<App>? = null,
         currentPkgSet: List<PkgSet>? = null
     ) {
+        logger.d("show, currentAppList: $currentAppList, currentPkgSet: $currentPkgSet")
+
         _selectedApps = currentAppList ?: emptyList()
         _selectedPkgSets = currentPkgSet ?: emptyList()
 
@@ -234,15 +239,15 @@ private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
                     .padding(horizontal = 12.dp)
             )
         }
-        items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
+        items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) { app ->
             AppItem(
-                app = it,
-                isSelected = dialogState.selectedApps.contains(it),
-                onCheckedChange = { app, isChecked ->
+                app = app,
+                isSelected = dialogState.selectedApps.firstOrNull { app.pkg == it.pkg } != null,
+                onCheckedChange = { checkedApp, isChecked ->
                     if (isChecked) {
-                        dialogState.addApp(app)
+                        dialogState.addApp(checkedApp)
                     } else {
-                        dialogState.removeApp(app)
+                        dialogState.removeApp(checkedApp)
                     }
                 })
         }
