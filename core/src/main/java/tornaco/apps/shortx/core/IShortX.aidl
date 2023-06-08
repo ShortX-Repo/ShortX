@@ -47,6 +47,11 @@ interface IShortX {
     void setActionEvaluateRecorderEnabled(boolean enable);
     boolean isActionEvaluateRecorderEnabled();
 
+    List<ByteArrayWrapper> getConditionEvaluateRecords();
+    void clearConditionEvaluateRecords();
+    void setConditionEvaluateRecorderEnabled(boolean enable);
+    boolean isConditionEvaluateRecorderEnabled();
+
     // Pkg Set
     void addPkgSet(in ByteArrayWrapper set);
     void deletePkgSet(String label);

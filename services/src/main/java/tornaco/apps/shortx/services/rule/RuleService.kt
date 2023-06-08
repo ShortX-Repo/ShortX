@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -67,6 +68,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
 
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
+    private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
 
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
@@ -105,6 +107,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             },
             conditionEvaluateResultListener = {
                 logger.d("conditionEvaluateResultListener: $it")
+                if (isConditionEvaluateRecorderEnabled()) {
+                    conditionEvaluateRecorder.add(it.toConditionEvaluateRecord())
+                }
             }
         )
     }
@@ -363,5 +368,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun isActionEvaluateRecorderEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableActionEvaluateRecorder)
+    }
+
+    fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
+        return conditionEvaluateRecorder.conditionEvaluateRecords
+    }
+
+    fun clearConditionEvaluateRecords() {
+        conditionEvaluateRecorder.clear()
+    }
+
+    fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableConditionEvaluateRecorder, enable)
+    }
+
+    fun isConditionEvaluateRecorderEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableConditionEvaluateRecorder)
     }
 }

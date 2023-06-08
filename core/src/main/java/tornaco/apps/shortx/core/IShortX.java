@@ -115,6 +115,20 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getConditionEvaluateRecords() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void clearConditionEvaluateRecords() throws android.os.RemoteException
+    {
+    }
+    @Override public void setConditionEvaluateRecorderEnabled(boolean enable) throws android.os.RemoteException
+    {
+    }
+    @Override public boolean isConditionEvaluateRecorderEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
     // Pkg Set
 
     @Override public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException
@@ -589,6 +603,38 @@ public interface IShortX extends android.os.IInterface
         {
           data.enforceInterface(descriptor);
           boolean _result = this.isActionEvaluateRecorderEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_getConditionEvaluateRecords:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getConditionEvaluateRecords();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_clearConditionEvaluateRecords:
+        {
+          data.enforceInterface(descriptor);
+          this.clearConditionEvaluateRecords();
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_setConditionEvaluateRecorderEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setConditionEvaluateRecorderEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isConditionEvaluateRecorderEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isConditionEvaluateRecorderEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
           return true;
@@ -1610,6 +1656,83 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getConditionEvaluateRecords() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getConditionEvaluateRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getConditionEvaluateRecords();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void clearConditionEvaluateRecords() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_clearConditionEvaluateRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearConditionEvaluateRecords();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void setConditionEvaluateRecorderEnabled(boolean enable) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enable)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setConditionEvaluateRecorderEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setConditionEvaluateRecorderEnabled(enable);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public boolean isConditionEvaluateRecorderEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isConditionEvaluateRecorderEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isConditionEvaluateRecorderEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       // Pkg Set
 
       @Override public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException
@@ -2378,38 +2501,42 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_clearActionEvaluateRecords = (android.os.IBinder.FIRST_CALL_TRANSACTION + 25);
     static final int TRANSACTION_setActionEvaluateRecorderEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 26);
     static final int TRANSACTION_isActionEvaluateRecorderEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
-    static final int TRANSACTION_addPkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
-    static final int TRANSACTION_deletePkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
-    static final int TRANSACTION_getPkgSetByLabel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 30);
-    static final int TRANSACTION_getAllPkgSets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 31);
-    static final int TRANSACTION_showDanmu = (android.os.IBinder.FIRST_CALL_TRANSACTION + 32);
-    static final int TRANSACTION_getDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 33);
-    static final int TRANSACTION_setDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 34);
-    static final int TRANSACTION_getAppIcon = (android.os.IBinder.FIRST_CALL_TRANSACTION + 35);
-    static final int TRANSACTION_getActiveJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 36);
-    static final int TRANSACTION_cancelJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 37);
-    static final int TRANSACTION_registerJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
-    static final int TRANSACTION_unregisterJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
-    static final int TRANSACTION_getActivities = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
-    static final int TRANSACTION_getReceivers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
-    static final int TRANSACTION_getServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
-    static final int TRANSACTION_getProviders = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
-    static final int TRANSACTION_setComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
-    static final int TRANSACTION_getComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 45);
-    static final int TRANSACTION_getAppComponentInfo = (android.os.IBinder.FIRST_CALL_TRANSACTION + 46);
-    static final int TRANSACTION_addGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 47);
-    static final int TRANSACTION_deleteGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 48);
-    static final int TRANSACTION_getGlobalVarByName = (android.os.IBinder.FIRST_CALL_TRANSACTION + 49);
-    static final int TRANSACTION_getAllGlobalVars = (android.os.IBinder.FIRST_CALL_TRANSACTION + 50);
-    static final int TRANSACTION_registerGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 51);
-    static final int TRANSACTION_unregisterGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 52);
-    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 53);
-    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 54);
-    static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 55);
-    static final int TRANSACTION_vb = (android.os.IBinder.FIRST_CALL_TRANSACTION + 56);
-    static final int TRANSACTION_getAllUsers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 57);
-    static final int TRANSACTION_setPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 58);
-    static final int TRANSACTION_isPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 59);
+    static final int TRANSACTION_getConditionEvaluateRecords = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
+    static final int TRANSACTION_clearConditionEvaluateRecords = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
+    static final int TRANSACTION_setConditionEvaluateRecorderEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 30);
+    static final int TRANSACTION_isConditionEvaluateRecorderEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 31);
+    static final int TRANSACTION_addPkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 32);
+    static final int TRANSACTION_deletePkgSet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 33);
+    static final int TRANSACTION_getPkgSetByLabel = (android.os.IBinder.FIRST_CALL_TRANSACTION + 34);
+    static final int TRANSACTION_getAllPkgSets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 35);
+    static final int TRANSACTION_showDanmu = (android.os.IBinder.FIRST_CALL_TRANSACTION + 36);
+    static final int TRANSACTION_getDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 37);
+    static final int TRANSACTION_setDanmuUISettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
+    static final int TRANSACTION_getAppIcon = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
+    static final int TRANSACTION_getActiveJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
+    static final int TRANSACTION_cancelJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
+    static final int TRANSACTION_registerJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
+    static final int TRANSACTION_unregisterJobStatusListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
+    static final int TRANSACTION_getActivities = (android.os.IBinder.FIRST_CALL_TRANSACTION + 44);
+    static final int TRANSACTION_getReceivers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 45);
+    static final int TRANSACTION_getServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 46);
+    static final int TRANSACTION_getProviders = (android.os.IBinder.FIRST_CALL_TRANSACTION + 47);
+    static final int TRANSACTION_setComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 48);
+    static final int TRANSACTION_getComponentEnabledSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 49);
+    static final int TRANSACTION_getAppComponentInfo = (android.os.IBinder.FIRST_CALL_TRANSACTION + 50);
+    static final int TRANSACTION_addGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 51);
+    static final int TRANSACTION_deleteGlobalVar = (android.os.IBinder.FIRST_CALL_TRANSACTION + 52);
+    static final int TRANSACTION_getGlobalVarByName = (android.os.IBinder.FIRST_CALL_TRANSACTION + 53);
+    static final int TRANSACTION_getAllGlobalVars = (android.os.IBinder.FIRST_CALL_TRANSACTION + 54);
+    static final int TRANSACTION_registerGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 55);
+    static final int TRANSACTION_unregisterGlobalVarObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 56);
+    static final int TRANSACTION_reboot = (android.os.IBinder.FIRST_CALL_TRANSACTION + 57);
+    static final int TRANSACTION_executeMVEL = (android.os.IBinder.FIRST_CALL_TRANSACTION + 58);
+    static final int TRANSACTION_evaluateCondition = (android.os.IBinder.FIRST_CALL_TRANSACTION + 59);
+    static final int TRANSACTION_vb = (android.os.IBinder.FIRST_CALL_TRANSACTION + 60);
+    static final int TRANSACTION_getAllUsers = (android.os.IBinder.FIRST_CALL_TRANSACTION + 61);
+    static final int TRANSACTION_setPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 62);
+    static final int TRANSACTION_isPointerLocationEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 63);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -2463,6 +2590,10 @@ public interface IShortX extends android.os.IInterface
   public void clearActionEvaluateRecords() throws android.os.RemoteException;
   public void setActionEvaluateRecorderEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isActionEvaluateRecorderEnabled() throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getConditionEvaluateRecords() throws android.os.RemoteException;
+  public void clearConditionEvaluateRecords() throws android.os.RemoteException;
+  public void setConditionEvaluateRecorderEnabled(boolean enable) throws android.os.RemoteException;
+  public boolean isConditionEvaluateRecorderEnabled() throws android.os.RemoteException;
   // Pkg Set
 
   public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException;

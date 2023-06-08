@@ -12,6 +12,8 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
         Settings<Boolean>(key, defaultValue) {
         object EnableActionEvaluateRecorder :
             BoolSettings(key = "EnableActionEvaluateRecorder", defaultValue = true)
+        object EnableConditionEvaluateRecorder :
+            BoolSettings(key = "EnableConditionEvaluateRecorder", defaultValue = true)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :

@@ -107,16 +107,7 @@ fun ConditionList(
                         ListItem(
                             titleLines = labelForCondition(condition = it),
                             icon = {
-                                ColoredIcon(
-                                    size = 36.dp,
-                                    color = colorForCondition(it::class).copy(alpha = ActionColorBgAlpha)
-                                ) {
-                                    RemixIcon(
-                                        modifier = Modifier.size(16.dp),
-                                        remixName = iconForCondition(it::class),
-                                        tint = colorForCondition(it::class)
-                                    )
-                                }
+                                ConditionIcon(it)
                             },
                             action1 = {
                                 val invertDialog = rememberTipDialogState(
@@ -206,6 +197,20 @@ fun ConditionList(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ConditionIcon(it: Condition) {
+    ColoredIcon(
+        size = 36.dp,
+        color = colorForCondition(it::class).copy(alpha = ActionColorBgAlpha)
+    ) {
+        RemixIcon(
+            modifier = Modifier.size(16.dp),
+            remixName = iconForCondition(it::class),
+            tint = colorForCondition(it::class)
+        )
     }
 }
 

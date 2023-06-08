@@ -47,3 +47,11 @@ message ActionEvaluateRecord {
   string message = 3;
   int64 timeStamp = 4;
 }
+
+message ConditionEvaluateRecord {
+  string conditionClassName = 1;
+  bool isSuccess = 2;
+  bool isMatch = 3;
+  string message = 4;
+  int64 timeStamp = 5;
+}

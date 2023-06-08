@@ -16,7 +16,5 @@ fun Pair<List<AppPkg>, List<String>>.protoPkgsAndPkgSetsToModels(): Pair<List<Ap
     val pkgSets = second.map {
         shortXManager.getPkgSetByLabel(it) ?: PkgSet.newBuilder().setLabel(it).build()
     }
-
-    logger.d("protoPkgsAndPkgSetsToModels: ${this.second} $pkgSets")
     return apps to pkgSets
 }

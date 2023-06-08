@@ -213,6 +213,24 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             return shortXContext.rule.isActionEvaluateRecorderEnabled()
         }
 
+        override fun getConditionEvaluateRecords(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getConditionEvaluateRecords().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun clearConditionEvaluateRecords() {
+            shortXContext.rule.clearConditionEvaluateRecords()
+        }
+
+        override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
+            shortXContext.rule.setConditionEvaluateRecorderEnabled(enable)
+        }
+
+        override fun isConditionEvaluateRecorderEnabled(): Boolean {
+            return shortXContext.rule.isConditionEvaluateRecorderEnabled()
+        }
+
         override fun executeMVEL(expression: String): String {
             return shortXContext.rule.executeMVEL(expression)
         }

@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.gvar.GlobalVarListScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.record.ActionEvaRecordScreen
+import tornaco.apps.shortx.ui.record.ConditionEvaRecordScreen
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreen
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
@@ -133,6 +134,12 @@ fun AppNavigationGraph(
 
         animateComposable(AppRoute.ActionEvaRecord.name) {
             ActionEvaRecordScreen {
+                appNavController.popBackStack()
+            }
+        }
+
+        animateComposable(AppRoute.ConditionEvaRecord.name) {
+            ConditionEvaRecordScreen {
                 appNavController.popBackStack()
             }
         }

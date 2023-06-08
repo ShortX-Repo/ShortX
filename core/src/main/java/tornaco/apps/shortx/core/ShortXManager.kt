@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -470,6 +471,32 @@ class ShortXManager(private val service: IShortX) {
     fun isActionEvaluateRecorderEnabled(): Boolean {
         return invokeService(false) {
             isActionEvaluateRecorderEnabled
+        }
+    }
+
+    fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
+        return invokeService(emptyList()) {
+            conditionEvaluateRecords.map {
+                ConditionEvaluateRecord.parseFrom(it.byte)
+            }
+        }
+    }
+
+    fun clearConditionEvaluateRecords() {
+        invokeService(Unit) {
+            clearConditionEvaluateRecords()
+        }
+    }
+
+    fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isConditionEvaluateRecorderEnabled = enable
+        }
+    }
+
+    fun isConditionEvaluateRecorderEnabled(): Boolean {
+        return invokeService(false) {
+            isConditionEvaluateRecorderEnabled
         }
     }
 

@@ -49,6 +49,9 @@ fun SettingsScreen() {
         goToActionRecord = {
             appNavController.navigate(AppRoute.ActionEvaRecord.name)
         },
+        goToConditionRecord = {
+            appNavController.navigate(AppRoute.ConditionEvaRecord.name)
+        },
         viewOpenSourceLicense = {
             appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
         })
@@ -62,6 +65,7 @@ fun SettingsScreen(
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToActionRecord: () -> Unit,
+    goToConditionRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -222,7 +226,8 @@ fun SettingsScreen(
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
                                 goToDanmuUISettings = goToDanmuUISettings,
-                                goToActionRecord = goToActionRecord
+                                goToActionRecord = goToActionRecord,
+                                goToConditionRecord = goToConditionRecord,
                             )
                         )
                         addAll(dataSettings(
@@ -280,6 +285,7 @@ private fun generalSettings(
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
     goToActionRecord: () -> Unit,
+    goToConditionRecord: () -> Unit,
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
@@ -307,11 +313,19 @@ private fun generalSettings(
         }
     ),
 
-    Preference.TextPreference(icon = Remix.System.history_fill,
+    Preference.TextPreference(icon = Remix.Document.task_fill,
         title = LocalI18N.current["ui.settings.action.record"],
         summary = LocalI18N.current["ui.settings.action.record.summary"],
         onClick = {
             goToActionRecord()
+        }
+    ),
+
+    Preference.TextPreference(icon = Remix.System.history_fill,
+        title = LocalI18N.current["ui.settings.condition.record"],
+        summary = LocalI18N.current["ui.settings.condition.record.summary"],
+        onClick = {
+            goToConditionRecord()
         }
     ),
 )

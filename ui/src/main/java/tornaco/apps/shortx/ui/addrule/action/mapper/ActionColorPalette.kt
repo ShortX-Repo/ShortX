@@ -36,4 +36,4 @@ val ActionColorPalette = arrayOf(
     Color(0xff35AA53),
 )
 
-const val ActionColorBgAlpha = 0.12f
+const val ActionColorBgAlpha = 0.07f
