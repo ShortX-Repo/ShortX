@@ -17,8 +17,8 @@ fun Any.androidNotificationRecordToNotification(): Notification? {
         val n = sbn.notification ?: return null
         val isFgService = kotlin.runCatching { n.isForegroundService }.getOrElse { false }
         Notification.newBuilder()
-            .setTitle(getTitle(n))
-            .setContentText(getContent(n))
+            .setTitle(getTitle(n) ?: "")
+            .setContentText(getContent(n) ?: "")
             .setIsFgService(isFgService)
             .addApps(
                 AppPkg.newBuilder()
