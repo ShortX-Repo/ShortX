@@ -7,8 +7,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
@@ -52,6 +52,18 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 addAction(action)
             })
     AppPkgSelectorDialog(state = startAppProcessSelectorState)
+
+    val setAppInactiveSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = {
+                val action = Action.SetAppInactive(apps = it)
+                addAction(action)
+            },
+            onPkgSetSelected = {
+                val action = Action.SetAppInactive(pkgSets = it)
+                addAction(action)
+            })
+    AppPkgSelectorDialog(state = setAppInactiveSelectorState)
 
     val enableAppProcessSelectorState =
         rememberAppPkgSelectorState(
@@ -167,40 +179,48 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
             Action.StartAppProcess::class -> {
                 startAppProcessSelectorState.show(
-                    source.getActionAs<Action.StopApp>()?.apps,
-                    source.getActionAs<Action.StopApp>()?.pkgSets
+                    source.getActionAs<Action.StartAppProcess>()?.apps,
+                    source.getActionAs<Action.StartAppProcess>()?.pkgSets
+                )
+                true
+            }
+
+            Action.SetAppInactive::class -> {
+                setAppInactiveSelectorState.show(
+                    source.getActionAs<Action.SetAppInactive>()?.apps,
+                    source.getActionAs<Action.SetAppInactive>()?.pkgSets
                 )
                 true
             }
 
             Action.EnableApp::class -> {
                 enableAppProcessSelectorState.show(
-                    source.getActionAs<Action.StopApp>()?.apps,
-                    source.getActionAs<Action.StopApp>()?.pkgSets
+                    source.getActionAs<Action.EnableApp>()?.apps,
+                    source.getActionAs<Action.EnableApp>()?.pkgSets
                 )
                 true
             }
 
             Action.DisableApp::class -> {
                 disableAppProcessSelectorState.show(
-                    source.getActionAs<Action.StopApp>()?.apps,
-                    source.getActionAs<Action.StopApp>()?.pkgSets
+                    source.getActionAs<Action.DisableApp>()?.apps,
+                    source.getActionAs<Action.DisableApp>()?.pkgSets
                 )
                 true
             }
 
             Action.SuspendApp::class -> {
                 suspendAppProcessSelectorState.show(
-                    source.getActionAs<Action.StopApp>()?.apps,
-                    source.getActionAs<Action.StopApp>()?.pkgSets
+                    source.getActionAs<Action.SuspendApp>()?.apps,
+                    source.getActionAs<Action.SuspendApp>()?.pkgSets
                 )
                 true
             }
 
             Action.UnSuspendApp::class -> {
                 unsuspendAppProcessSelectorState.show(
-                    source.getActionAs<Action.StopApp>()?.apps,
-                    source.getActionAs<Action.StopApp>()?.pkgSets
+                    source.getActionAs<Action.UnSuspendApp>()?.apps,
+                    source.getActionAs<Action.UnSuspendApp>()?.pkgSets
                 )
                 true
             }
@@ -220,6 +240,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.LaunchApp::class,
         Action.StopApp::class,
         Action.StartAppProcess::class,
+        Action.SetAppInactive::class,
         Action.EnableApp::class,
         Action.DisableApp::class,
         Action.SuspendApp::class,

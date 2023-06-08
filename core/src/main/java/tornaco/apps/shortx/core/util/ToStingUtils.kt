@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.core.util
 
 import android.os.Bundle
+import tornaco.apps.shortx.core.proto.common.AppPkg
 
 fun Bundle.bundleToString(): String {
     return when {
@@ -18,4 +19,8 @@ fun Map<*, *>.mapToString(): String {
             "$it-${get(it)}"
         }
     }
+}
+
+fun AppPkg.appPkgToString(): String {
+    return "$pkgName-$userId"
 }

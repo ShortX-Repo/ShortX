@@ -21,6 +21,7 @@ val allActionClasses = listOf(
     Action.ExpandNotification::class,
     Action.PostNotification::class,
     Action.StartAppProcess::class,
+    Action.SetAppInactive::class,
     Action.EnableApp::class,
     Action.DisableApp::class,
     Action.SuspendApp::class,

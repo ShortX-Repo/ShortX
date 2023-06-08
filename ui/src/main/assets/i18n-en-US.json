@@ -270,6 +270,7 @@
   "ui.action.map.poi": "Poi (optional)",
   "ui.action.stop.app": "Force stop app",
   "ui.action.start.app.process": "Start app process",
+  "ui.action.set.app.inactive": "Set app inactive",
   "ui.action.disable.app": "Disable app",
   "ui.action.enable.app": "Enable app",
   "ui.action.suspend.app": "Suspend app",

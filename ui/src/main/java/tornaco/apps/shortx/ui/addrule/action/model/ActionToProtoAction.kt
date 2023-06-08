@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
+import tornaco.apps.shortx.core.proto.action.SetAppInactive
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetBTEnabled
 import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
@@ -213,6 +214,12 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.SetAppInactive -> {
+            SetAppInactive.newBuilder().setId(overrideId ?: id)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }

@@ -153,6 +153,14 @@ message StartAppProcess {
   string id = 100;
 }
 
+message SetAppInactive {
+  repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
+
+  string note = 99;
+  string id = 100;
+}
+
 message SetWifiEnabled {
   bool enable = 1;
 

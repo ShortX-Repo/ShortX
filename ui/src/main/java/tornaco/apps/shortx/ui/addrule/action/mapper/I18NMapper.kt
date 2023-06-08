@@ -101,6 +101,7 @@ fun labelAndDescriptionForActionSelector(
 
         Action.StopApp::class -> i18N["ui.action.stop.app"] to null
         Action.StartAppProcess::class -> i18N["ui.action.start.app.process"] to null
+        Action.SetAppInactive::class -> i18N["ui.action.set.app.inactive"] to null
         Action.EnableApp::class -> i18N["ui.action.enable.app"] to null
         Action.DisableApp::class -> i18N["ui.action.disable.app"] to null
         Action.SuspendApp::class -> i18N["ui.action.suspend.app"] to null
@@ -219,6 +220,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         )
 
         is Action.StartAppProcess -> mutableListOf(i18N["ui.action.start.app.process"]).labelLinesFromAppsAndPkgSets(
+            action.apps,
+            action.pkgSets
+        )
+
+        is Action.SetAppInactive -> mutableListOf(i18N["ui.action.set.app.inactive"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
         )

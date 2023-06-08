@@ -131,6 +131,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.play_fill
         }
 
+        Action.SetAppInactive::class -> {
+            Remix.HealthAndMedical.zzz_fill
+        }
+
         Action.EnableApp::class -> {
             Remix.System.toggle_fill
         }

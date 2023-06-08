@@ -350,6 +350,22 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         return null
     }
 
+    fun setAppInactive(pkgs: List<AppPkg>) {
+        handler.postSafety {
+            pkgs.forEach { USMFuncs.setAppInactive(it) }
+        }
+    }
+
+    fun setAppInactive(pkg: AppPkg) {
+        handler.postSafety {
+            USMFuncs.setAppInactive(pkg)
+        }
+    }
+
+    fun isAppInactive(pkg: AppPkg): Boolean {
+        return runClearCallingIdentity { USMFuncs.isAppInactive(pkg) } ?: false
+    }
+
     fun onTaskRemoved(task: RecentTask) {
         logger.d("onTaskRemoved: ${task.owner.pkgName} - ${task.owner.userId} - ${task.taskId}")
 

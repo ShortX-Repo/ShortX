@@ -236,6 +236,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetAppInactive::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetAppInactive::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Action.SetAppInactive(
+                id = data.id,
+                note = data.note,
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetAppEnabled::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetAppEnabled::class.java
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()

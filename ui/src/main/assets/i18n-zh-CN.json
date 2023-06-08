@@ -270,6 +270,7 @@
   "ui.action.map.poi": "商圈（可选）",
   "ui.action.stop.app": "强行停止应用",
   "ui.action.start.app.process": "启动应用进程",
+  "ui.action.set.app.inactive": "休眠应用",
   "ui.action.disable.app": "冻结应用",
   "ui.action.enable.app": "解冻应用",
   "ui.action.suspend.app": "挂起应用",
