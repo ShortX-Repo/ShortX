@@ -77,11 +77,10 @@ inline fun <T> v(context: Context, run: () -> T): T? {
     return if (match) {
         run()
     } else {
-        run()
         if (BuildProp.APP_IS_DEBUG) {
             logger.e("Not match")
         }
-        null
+        run()
     }
 }
 
