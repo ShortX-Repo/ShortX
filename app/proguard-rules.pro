@@ -83,3 +83,5 @@
 -dontwarn javax.script.Compilable
 -dontwarn javax.script.ScriptEngine
 -dontwarn javax.script.ScriptEngineFactory
+-dontwarn android.app.usage.IUsageStatsManager$Stub
+-dontwarn android.app.usage.IUsageStatsManager
