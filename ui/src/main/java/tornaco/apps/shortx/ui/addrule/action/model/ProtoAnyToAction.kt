@@ -515,6 +515,30 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetBrightness::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetBrightness::class.java
+            Action.SetBrightness(
+                id = data.id,
+                note = data.note,
+                value = data.value
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.SetAutoBrightness::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetAutoBrightness::class.java
+            data.enable.select(
+                Action.EnableAutoBrightness(
+                    id = data.id,
+                    note = data.note,
+                ),
+                Action.DisableAutoBrightness(
+                    id = data.id,
+                    note = data.note,
+                )
+            )
+        }
+
         else -> null
     }
 }

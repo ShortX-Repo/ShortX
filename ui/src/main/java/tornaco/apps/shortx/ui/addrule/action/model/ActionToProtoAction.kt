@@ -22,7 +22,9 @@ import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
+import tornaco.apps.shortx.core.proto.action.SetAutoBrightness
 import tornaco.apps.shortx.core.proto.action.SetBTEnabled
+import tornaco.apps.shortx.core.proto.action.SetBrightness
 import tornaco.apps.shortx.core.proto.action.SetDNDEnabled
 import tornaco.apps.shortx.core.proto.action.SetDarkModeEnabled
 import tornaco.apps.shortx.core.proto.action.SetDataEnabled
@@ -441,6 +443,30 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setMode(mode)
+                .build()
+        }
+
+        is Action.EnableAutoBrightness -> {
+            SetAutoBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setEnable(true)
+                .build()
+        }
+
+        is Action.DisableAutoBrightness -> {
+            SetAutoBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setEnable(false)
+                .build()
+        }
+
+        is Action.SetBrightness -> {
+            SetBrightness.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setValue(value)
                 .build()
         }
 

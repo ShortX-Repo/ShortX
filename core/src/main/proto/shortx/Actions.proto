@@ -430,3 +430,16 @@ enum RingerMode {
   normal = 2;
 }
 
+message SetBrightness {
+  int32 value = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message SetAutoBrightness {
+  bool enable = 1;
+
+  string note = 99;
+  string id = 100;
+}

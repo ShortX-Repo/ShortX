@@ -89,6 +89,7 @@ fun labelAndDescriptionForActionSelector(
         Action.DisableHotSpot::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.hotspot"])] to null
         Action.DisableNFC::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.nfc"])] to null
         Action.DisableWifi::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.wifi"])] to null
+        Action.DisableAutoBrightness::class -> i18N["ui.action.disable", mapOf("s" to i18N["ui.action.auto.brightness"])] to null
 
         Action.EnableBT::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])] to null
         Action.EnableDND::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])] to null
@@ -99,6 +100,7 @@ fun labelAndDescriptionForActionSelector(
         Action.EnableHotSpot::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])] to null
         Action.EnableNFC::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])] to null
         Action.EnableWifi::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])] to null
+        Action.EnableAutoBrightness::class -> i18N["ui.action.enable", mapOf("s" to i18N["ui.action.auto.brightness"])] to null
 
         Action.StopApp::class -> i18N["ui.action.stop.app"] to null
         Action.StartAppProcess::class -> i18N["ui.action.start.app.process"] to null
@@ -125,6 +127,7 @@ fun labelAndDescriptionForActionSelector(
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
+        Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.NoAction::class -> "Noop" to null
 
         else -> {
@@ -204,6 +207,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.DisableHotSpot -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.hotspot"])])
         is Action.DisableNFC -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.nfc"])])
         is Action.DisableWifi -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.wifi"])])
+        is Action.DisableAutoBrightness -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.auto.brightness"])])
 
         is Action.EnableBT -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.bt"])])
         is Action.EnableDND -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.dnd"])])
@@ -214,6 +218,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.EnableHotSpot -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.hotspot"])])
         is Action.EnableNFC -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.nfc"])])
         is Action.EnableWifi -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.wifi"])])
+        is Action.EnableAutoBrightness -> listOf(i18N["ui.action.enable", mapOf("s" to i18N["ui.action.auto.brightness"])])
 
 
         is Action.StopApp -> mutableListOf(i18N["ui.action.stop.app"]).labelLinesFromAppsAndPkgSets(
@@ -436,7 +441,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.SetRingerMode -> {
-            listOf(i18N["SetRingerMode"], i18N[action.mode.labelKey()])
+            listOf(i18N["ui.action.set.ringer.mode"], i18N[action.mode.labelKey()])
+        }
+
+        is Action.SetBrightness -> {
+            listOf(i18N["ui.action.set.brightness"], action.value.toString())
         }
     }
 }

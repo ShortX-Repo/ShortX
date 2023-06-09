@@ -10,6 +10,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
@@ -33,6 +35,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     SelectionDialog(state = ringerModeSelectDialogState)
 
 
+    val setBrightnessState = rememberBrightnessValueSelectorState {
+        addAction(Action.SetBrightness(value = it))
+    }
+    BrightnessValueSelector(state = setBrightnessState)
+
     return { source ->
         when (source.clazz) {
             Action.ReadClipboard::class -> {
@@ -45,6 +52,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.SetBrightness::class -> {
+                setBrightnessState.show(100)
+                true
+            }
+
             Action.DisableBT::class,
             Action.DisableDND::class,
             Action.DisableDarkMode::class,
@@ -53,6 +65,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.DisableHotSpot::class,
             Action.DisableNFC::class,
             Action.DisableWifi::class,
+            Action.DisableAutoBrightness::class,
 
             Action.EnableBT::class,
             Action.EnableDND::class,
@@ -61,6 +74,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.EnableFlashLight::class,
             Action.EnableHotSpot::class,
             Action.EnableNFC::class,
+            Action.EnableAutoBrightness::class,
             Action.EnableWifi::class -> {
                 addAction(source.clazz.createInstance())
                 true
@@ -93,6 +107,9 @@ fun SystemActions(addAction: (Action) -> Unit) {
         Action.DisableFlashLight::class,
         Action.EnableDarkMode::class,
         Action.DisableDarkMode::class,
+        Action.EnableAutoBrightness::class,
+        Action.DisableAutoBrightness::class,
+        Action.SetBrightness::class,
     ).map {
         SelectorItem(
             it,

@@ -2408,6 +2408,7 @@ val star_line =  "star-line"
 val upload_2_fill =  "upload-2-fill"
 val menu_3_fill =  "menu-3-fill"
 val menu_2_fill =  "menu-2-fill"
+val brightness_7_fill =  "brightness-7-fill"
 val checkbox_blank_circle_line =  "checkbox-blank-circle-line"
 val equal_fill =  "equal-fill"
 val logout_circle_r_fill =  "logout-circle-r-fill"
@@ -2547,6 +2548,7 @@ val side_bar_line =  "side-bar-line"
 val delete_back_2_line =  "delete-back-2-line"
 val delete_bin_fill =  "delete-bin-fill"
 val notification_badge_fill =  "notification-badge-fill"
+val brightness_auto_fill =  "brightness-auto-fill"
 val forbid_fill =  "forbid-fill"
 val checkbox_indeterminate_fill =  "checkbox-indeterminate-fill"
 val shield_fill =  "shield-fill"
@@ -2563,6 +2565,7 @@ val find_replace_line =  "find-replace-line"
 val checkbox_multiple_line =  "checkbox-multiple-line"
 val alert_fill =  "alert-fill"
 val star_half_fill =  "star-half-fill"
+val brightness_5_fill =  "brightness-5-fill"
 val history_fill =  "history-fill"
 val menu_fold_line =  "menu-fold-line"
 val spam_line =  "spam-line"
@@ -2676,6 +2679,7 @@ System.star_line to "ic_remix_star_line",
 System.upload_2_fill to "ic_remix_upload_2_fill",
 System.menu_3_fill to "ic_remix_menu_3_fill",
 System.menu_2_fill to "ic_remix_menu_2_fill",
+System.brightness_7_fill to "ic_remix_brightness_7_fill",
 System.checkbox_blank_circle_line to "ic_remix_checkbox_blank_circle_line",
 System.equal_fill to "ic_remix_equal_fill",
 System.logout_circle_r_fill to "ic_remix_logout_circle_r_fill",
@@ -2815,6 +2819,7 @@ System.side_bar_line to "ic_remix_side_bar_line",
 System.delete_back_2_line to "ic_remix_delete_back_2_line",
 System.delete_bin_fill to "ic_remix_delete_bin_fill",
 System.notification_badge_fill to "ic_remix_notification_badge_fill",
+System.brightness_auto_fill to "ic_remix_brightness_auto_fill",
 System.forbid_fill to "ic_remix_forbid_fill",
 System.checkbox_indeterminate_fill to "ic_remix_checkbox_indeterminate_fill",
 System.shield_fill to "ic_remix_shield_fill",
@@ -2831,6 +2836,7 @@ System.find_replace_line to "ic_remix_find_replace_line",
 System.checkbox_multiple_line to "ic_remix_checkbox_multiple_line",
 System.alert_fill to "ic_remix_alert_fill",
 System.star_half_fill to "ic_remix_star_half_fill",
+System.brightness_5_fill to "ic_remix_brightness_5_fill",
 System.history_fill to "ic_remix_history_fill",
 System.menu_fold_line to "ic_remix_menu_fold_line",
 System.spam_line to "ic_remix_spam_line",

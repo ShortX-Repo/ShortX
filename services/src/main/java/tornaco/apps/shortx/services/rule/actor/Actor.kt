@@ -226,6 +226,14 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetRingerMode
     },
+    SetBrightness {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetBrightness
+    },
+    SetAutoBrightness {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAutoBrightness
+    },
 
 
     ;

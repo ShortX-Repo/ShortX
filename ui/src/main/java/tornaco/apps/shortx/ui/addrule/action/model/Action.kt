@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
 import android.os.Parcelable
+import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
@@ -691,6 +692,39 @@ sealed interface Action : Parcelable {
             return this.copy(id = id, note = note)
         }
     }
+
+    @Parcelize
+    data class EnableAutoBrightness(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
+    data class DisableAutoBrightness(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
+    data class SetBrightness(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+        @IntRange(0, 255)
+        val value: Int
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
 
     @Parcelize
     data class NoAction(

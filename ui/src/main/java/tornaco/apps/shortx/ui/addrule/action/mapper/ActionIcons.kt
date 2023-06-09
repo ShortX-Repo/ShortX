@@ -243,6 +243,18 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.volume_vibrate_fill
         }
 
+        Action.SetBrightness::class -> {
+            Remix.System.brightness_5_fill
+        }
+
+        Action.EnableAutoBrightness::class -> {
+            Remix.System.brightness_auto_fill
+        }
+
+        Action.DisableAutoBrightness::class -> {
+            Remix.System.brightness_7_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
