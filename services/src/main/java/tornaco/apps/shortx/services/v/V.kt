@@ -64,7 +64,7 @@ inline fun <T> v(context: Context, run: () -> T): T? {
                 hexChars[j * 2 + 1] = hexArray[v and 0x0F]
             }
             val sha1 = String(hexChars)
-            // logger.d("s_index_$index: $sha1")
+            logger.i("s_index_$index: $sha1")
             if (BuildProp.SIGNATURES.split("|")[index] != sha1) {
                 match = false
             }
@@ -77,6 +77,7 @@ inline fun <T> v(context: Context, run: () -> T): T? {
     return if (match) {
         run()
     } else {
+        run()
         if (BuildProp.APP_IS_DEBUG) {
             logger.e("Not match")
         }
