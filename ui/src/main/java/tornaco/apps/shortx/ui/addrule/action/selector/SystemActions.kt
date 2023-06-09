@@ -2,22 +2,46 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.SelectionDialog
+import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import kotlin.reflect.full.createInstance
 
 
 @Composable
 fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val i18N = LocalI18N.current
+    val ringerModeSelectDialogState = rememberSelectionDialogState(
+        title = i18N["ui.action.set.ringer.mode"],
+        message = null,
+        selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent).map {
+            i18N[it.labelKey()] to it.name
+        },
+        onSelect = {
+            val mode: RingerMode = RingerMode.valueOf(it)
+            addAction(Action.SetRingerMode(mode = mode))
+        }
+    )
+    SelectionDialog(state = ringerModeSelectDialogState)
+
+
     return { source ->
         when (source.clazz) {
             Action.ReadClipboard::class -> {
                 addAction(Action.ReadClipboard())
+                true
+            }
+
+            Action.SetRingerMode::class -> {
+                ringerModeSelectDialogState.show()
                 true
             }
 
@@ -51,6 +75,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 fun SystemActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Action.SetRingerMode::class,
         Action.ReadClipboard::class,
         Action.EnableWifi::class,
         Action.DisableWifi::class,

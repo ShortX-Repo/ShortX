@@ -10,7 +10,7 @@ import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.fact.displayNameKey
+import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N

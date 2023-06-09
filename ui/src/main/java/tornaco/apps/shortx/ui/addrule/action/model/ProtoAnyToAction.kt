@@ -506,6 +506,15 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java
+            Action.SetRingerMode(
+                id = data.id,
+                note = data.note,
+                mode = data.mode
+            )
+        }
+
         else -> null
     }
 }

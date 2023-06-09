@@ -239,6 +239,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.folder_4_line
         }
 
+        Action.SetRingerMode::class -> {
+            Remix.Media.volume_vibrate_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

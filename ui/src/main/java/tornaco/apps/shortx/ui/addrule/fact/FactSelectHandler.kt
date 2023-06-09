@@ -7,6 +7,17 @@ import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import java.time.LocalTime
 

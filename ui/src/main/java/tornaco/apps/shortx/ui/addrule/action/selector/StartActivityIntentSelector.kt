@@ -48,9 +48,9 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.AppComponentSelectorDialog
-import tornaco.apps.shortx.ui.addrule.fact.ComponentType
-import tornaco.apps.shortx.ui.addrule.fact.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.I18N

@@ -24,9 +24,9 @@ import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.AppComponentSelectorDialog
-import tornaco.apps.shortx.ui.addrule.fact.ComponentType
-import tornaco.apps.shortx.ui.addrule.fact.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 

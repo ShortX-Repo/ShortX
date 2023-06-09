@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.proto.action.SetFlashLightEnabled
 import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
 import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
+import tornaco.apps.shortx.core.proto.action.SetRingerMode
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
@@ -432,6 +433,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setLabel(label)
                 .apply { description?.let { description = it } }
+                .build()
+        }
+
+        is Action.SetRingerMode -> {
+            SetRingerMode.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setMode(mode)
                 .build()
         }
 

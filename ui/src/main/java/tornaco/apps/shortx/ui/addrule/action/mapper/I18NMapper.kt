@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.mapper
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -123,6 +124,7 @@ fun labelAndDescriptionForActionSelector(
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
         Action.IfThenElse::class -> i18N["ui.action.if.then.else"] to null
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
+        Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.NoAction::class -> "Noop" to null
 
         else -> {
@@ -432,5 +434,16 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.CreatePkgSet -> {
             listOfNotNull(i18N["ui.pkg.set.add.title"], action.label, action.description)
         }
+
+        is Action.SetRingerMode -> {
+            listOf(i18N["SetRingerMode"], i18N[action.mode.labelKey()])
+        }
     }
+}
+
+fun RingerMode.labelKey() = when (this) {
+    RingerMode.silent -> "ui.action.set.ringer.mode.silent"
+    RingerMode.vibrate -> "ui.action.set.ringer.mode.vibrate"
+    RingerMode.normal -> "ui.action.set.ringer.mode.normal"
+    RingerMode.UNRECOGNIZED -> "N/A"
 }

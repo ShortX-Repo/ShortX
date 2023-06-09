@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.fact
+package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

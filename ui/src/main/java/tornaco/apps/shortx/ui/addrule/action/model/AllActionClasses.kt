@@ -59,5 +59,6 @@ val allActionClasses = listOf(
     Action.IfThenElse::class,
     Action.ReadClipboard::class,
     Action.CreatePkgSet::class,
+    Action.SetRingerMode::class,
     Action.NoAction::class,
 )

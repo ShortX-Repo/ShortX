@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.fact
+package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import github.tornaco.shortx.icons.R
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -356,7 +357,7 @@ private fun AppComponentItemPreview() {
             ).build(),
             rule = ComponentRule(
                 label = "AD",
-                iconRes = github.tornaco.shortx.icons.R.drawable.ic_remix_24_hours_line,
+                iconRes = R.drawable.ic_remix_24_hours_line,
                 descriptionUrl = null,
                 isSimpleColorIcon = false,
                 regexName = "Regex"
