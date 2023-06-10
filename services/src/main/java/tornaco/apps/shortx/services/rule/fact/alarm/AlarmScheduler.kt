@@ -28,8 +28,10 @@ import android.os.SystemClock
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
+import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.util.AlarmManagerCompat
 import java.time.Duration
 import java.util.Locale
@@ -38,34 +40,46 @@ import kotlin.math.abs
 private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.alarm.action"
 private const val BROADCAST_EXTRA_TAG =
     "tornaco.apps.shortx.services.rule.fact.alarm.extra.tag"
+private const val BROADCAST_EXTRA_RULE_ID =
+    "tornaco.apps.shortx.services.rule.fact.alarm.extra.rule.id"
 
 class AlarmScheduler(
     private val context: Context,
     private val handler: Handler,
-    private val onAlarm: (alarmLabel: String) -> Unit,
+    private val onAlarm: AlarmScheduler.(ruleId: String, tag: String) -> Unit,
 ) {
-    private val logger = Logger("Alarm")
+    private val logger = Logger("ShortXAlarm")
     private val alarmManager get() = context.alarmManager
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             val action = intent.action ?: return
             if (action != BROADCAST_ACTION) return
-            val tag = intent.getStringExtra(BROADCAST_EXTRA_TAG) ?: ""
-            handler.post {
-                logger.w("AlarmScheduler, on alarm: $tag")
-                onAlarm(tag)
+            val tag = intent.getStringExtra(BROADCAST_EXTRA_TAG)
+            if (tag == null) {
+                logger.w("onReceive, tag extra is null.")
+                return
+            }
+            val ruleId = intent.getStringExtra(BROADCAST_EXTRA_RULE_ID)
+            if (ruleId == null) {
+                logger.w("onReceive, ruleId extra is null.")
+                return
+            }
+            handler.postSafety {
+                logger.w("receiver, call on alarm, ruleId: $ruleId, tag: $tag")
+                onAlarm(ruleId, tag)
             }
         }
     }
 
-    fun schedule(alarm: Alarm, reason: String) = kotlin.runCatching {
+    fun schedule(rule: Rule, alarm: Alarm, reason: String) = kotlin.runCatching {
         val pi = PendingIntent.getBroadcast(
             context,
             requestCode(alarm),
             Intent(BROADCAST_ACTION)
                 .setPackage("android")
                 .putExtra(BROADCAST_EXTRA_TAG, alarm.tag)
+                .putExtra(BROADCAST_EXTRA_RULE_ID, rule.id)
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -76,7 +90,7 @@ class AlarmScheduler(
             logger.w("AlarmScheduler, skip this alarm since offset < 0, maybe we have missed this alarm")
         } else {
             logger.w(
-                "AlarmScheduler schedule: $alarm, reason: $reason, pi: $pi, trigger offset: ${
+                "AlarmScheduler schedule: ${alarm.tag}, reason: $reason, pi: $pi, trigger offset: ${
                     formatDuration(Duration.ofMillis(triggerOffset))
                 }"
             )
