@@ -31,7 +31,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
 import tornaco.apps.shortx.services.util.AlarmManagerCompat
 import java.time.Duration
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 private const val BROADCAST_ACTION = "github.tornaco.android.thanos.service.alarm.engine.action"
@@ -102,7 +102,7 @@ class AlarmScheduler(
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
-        logger.w("AlarmScheduler cancel: $alarm, $reason, pi: $pi")
+        logger.w("AlarmScheduler cancel: ${alarm.tag}, $reason, pi: $pi")
         pi?.let {
             alarmManager.cancel(pi)
         }

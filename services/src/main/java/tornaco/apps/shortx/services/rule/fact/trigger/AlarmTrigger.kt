@@ -64,6 +64,15 @@ class AlarmTrigger(
         }
     }
 
+    override fun onDeleteRule(rule: Rule) {
+        super.onDeleteRule(rule)
+        logger.d("onDeleteRule: ${rule.title}")
+        if (rule.fact is_ Alarm::class.java) {
+            val alarm = rule.fact unpack_ Alarm::class.java
+            alarmScheduler.cancel(alarm, "onDeleteRule")
+        }
+    }
+
     override fun unRegister() {
         alarmScheduler.shutdown()
     }
