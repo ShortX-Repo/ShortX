@@ -40,7 +40,7 @@ buildConfig {
     buildConfigField(
         "String",
         "PLAY_PUBLIC_KEY",
-        "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmqDRzFFEKnhoclz6m0+9pkN8M/tokdZ6adHQhN9QXEwSy+w0OM4UZQwUOmmn9JvQd9/ibiGZbPK0Phmazvt3dVqgLYgOm0Z+qQFc2TnJ2SsxnjxilEt9HQvGLACH1OpNVxB3GgsXRyLPc4SqfUGtb9Wlh+qz4L01yLFhsq/AnSHQlQj37I+xYHUv0pZOSlkx7ORXJsTufXcEsL4Yc9dLHh7wEBWJqwuhQVT/BOIr1yipK1a3adzEnX6Iv1+yDmQy/EIfIt6jOJowOHMHW8MvtQ71c1WvuYfE4biS3xr2pybRxfipBEJBcdMdU+yMrsBzhp++QpGOxrfQitasmRB4twIDAQAB\""
+        "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmRCHlj+Ht08vWkDq77KiPNjwqsXhxvOJr8mb0yZ0DTMKFBlE6Jhzb1EhUu4AQBq0LnRSvWoQBnQwvAijTSRiiuOcAHhvyEXZh4k7kTh/uQQRVaODsbWTxj3d+Yu8m6FWgAaHrzoyelozOkxOX5j8NC4k2JtwOXtNZ6vr2qhmONfL/cC00jXvfbgLU5qMp9rEe/W6a/8rRHUnbikQFu8d5zfGVpnbGCcl18ttnFmsOaE+t5Uyk5+bNMlYSYfDcgia9shJGvIASSvwjxWo3UMR/EMN9IbzSeJpzBlUyS/b4BYCADo9TGpP3UDKZeRFKkuJnCAOHNeWui+kN3/pRyBFmwIDAQAB\""
     )
 
     buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
