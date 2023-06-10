@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.util.Logger
@@ -14,7 +15,10 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 import java.util.concurrent.atomic.AtomicReference
 
-class WifiConnectionStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
+class WifiConnectionStateTrigger(
+    override val context: Context,
+    override val shortXContext: ShortXContext
+) :
     Trigger {
     private val logger = Logger("WifiStateTrigger")
     private lateinit var wifiStatusTracker: WifiStatusTracker
@@ -66,7 +70,12 @@ class WifiConnectionStateTrigger(override val context: Context, override val sho
         wifiIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         wifiIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         wifiIntentFilter.addAction(WifiManager.RSSI_CHANGED_ACTION)
-        context.registerReceiver(receiver, wifiIntentFilter)
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            wifiIntentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     override fun unRegister() {

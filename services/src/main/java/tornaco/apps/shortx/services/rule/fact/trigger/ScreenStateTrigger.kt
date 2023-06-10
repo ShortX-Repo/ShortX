@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
@@ -59,7 +60,12 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
         screenFilter.addAction(Intent.ACTION_SCREEN_OFF)
         screenFilter.addAction(Intent.ACTION_SCREEN_ON)
         screenFilter.addAction(Intent.ACTION_USER_PRESENT)
-        context.registerReceiver(receiver, screenFilter)
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            screenFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     override fun unRegister() {

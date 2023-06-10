@@ -14,11 +14,14 @@ class AlarmTrigger(
     override val shortXContext: ShortXContext
 ) :
     Trigger {
-    private val logger = Logger("AlarmTrigger")
+    private val logger = Logger("ShortXAlarmTrigger")
     private val alarmScheduler by lazy {
         AlarmScheduler(context, shortXContext.rule.handler) {
             logger.d("onAlarm: $it")
             shortXContext.rule.publishFact("onAlarm", Alarm.newBuilder().setTag(it).build())
+
+            // Repeat
+
         }
     }
 

@@ -50,6 +50,7 @@ import com.squareup.picasso3.Utils.getLogIdsForHunter
 import com.squareup.picasso3.Utils.hasPermission
 import com.squareup.picasso3.Utils.isAirplaneModeOn
 import com.squareup.picasso3.Utils.log
+import tornaco.apps.shortx.core.compat.ContextCompat
 import java.util.*
 import java.util.concurrent.ExecutorService
 
@@ -460,37 +461,46 @@ internal class Dispatcher internal constructor(
                     val action = msg.obj as Action
                     dispatcher.performSubmit(action)
                 }
+
                 REQUEST_CANCEL -> {
                     val action = msg.obj as Action
                     dispatcher.performCancel(action)
                 }
+
                 TAG_PAUSE -> {
                     val tag = msg.obj
                     dispatcher.performPauseTag(tag)
                 }
+
                 TAG_RESUME -> {
                     val tag = msg.obj
                     dispatcher.performResumeTag(tag)
                 }
+
                 HUNTER_COMPLETE -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performComplete(hunter)
                 }
+
                 HUNTER_RETRY -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performRetry(hunter)
                 }
+
                 HUNTER_DECODE_FAILED -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performError(hunter)
                 }
+
                 NETWORK_STATE_CHANGE -> {
                     val info = msg.obj as NetworkInfo
                     dispatcher.performNetworkStateChange(info)
                 }
+
                 AIRPLANE_MODE_CHANGE -> {
                     dispatcher.performAirplaneModeChange(msg.arg1 == AIRPLANE_MODE_ON)
                 }
+
                 else -> {
                     Picasso.HANDLER.post {
                         throw AssertionError("Unknown handler message received: ${msg.what}")
@@ -514,7 +524,11 @@ internal class Dispatcher internal constructor(
             if (dispatcher.scansNetworkChanges) {
                 filter.addAction(CONNECTIVITY_ACTION)
             }
-            dispatcher.context.registerReceiver(this, filter)
+
+            ContextCompat.registerReceiver(
+                dispatcher.context, this, filter,
+                ContextCompat.RECEIVER_EXPORTED
+            )
         }
 
         fun unregister() {
@@ -540,6 +554,7 @@ internal class Dispatcher internal constructor(
                         )
                     )
                 }
+
                 CONNECTIVITY_ACTION -> {
                     val connectivityManager =
                         context.getSystemService(ConnectivityManager::class.java)

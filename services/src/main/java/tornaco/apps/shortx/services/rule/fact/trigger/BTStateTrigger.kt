@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.text.TextUtils
 import com.elvishew.xlog.XLog
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
@@ -49,7 +50,7 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
     override fun register() {
         val btFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         btFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
-        context.registerReceiver(receiver, btFilter)
+        ContextCompat.registerReceiver(context, receiver, btFilter, ContextCompat.RECEIVER_EXPORTED)
     }
 
     override fun unRegister() {

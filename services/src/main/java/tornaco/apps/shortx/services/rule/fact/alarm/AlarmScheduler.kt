@@ -26,6 +26,7 @@ import android.content.IntentFilter
 import android.os.Handler
 import android.os.SystemClock
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
@@ -34,9 +35,9 @@ import java.time.Duration
 import java.util.Locale
 import kotlin.math.abs
 
-private const val BROADCAST_ACTION = "github.tornaco.android.thanos.service.alarm.engine.action"
+private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.alarm.action"
 private const val BROADCAST_EXTRA_TAG =
-    "github.tornaco.android.thanos.service.alarm.engine.extra.tag"
+    "tornaco.apps.shortx.services.rule.fact.alarm.extra.tag"
 
 class AlarmScheduler(
     private val context: Context,
@@ -114,7 +115,10 @@ class AlarmScheduler(
 
     fun systemReady() {
         logger.w("AlarmScheduler systemReady")
-        context.registerReceiver(receiver, IntentFilter(BROADCAST_ACTION))
+        ContextCompat.registerReceiver(
+            context, receiver, IntentFilter(BROADCAST_ACTION),
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     fun shutdown() {

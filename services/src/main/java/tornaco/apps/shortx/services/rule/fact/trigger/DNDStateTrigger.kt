@@ -1,10 +1,16 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
-import android.app.NotificationManager.*
+import android.app.NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED
+import android.app.NotificationManager.INTERRUPTION_FILTER_ALARMS
+import android.app.NotificationManager.INTERRUPTION_FILTER_ALL
+import android.app.NotificationManager.INTERRUPTION_FILTER_NONE
+import android.app.NotificationManager.INTERRUPTION_FILTER_PRIORITY
+import android.app.NotificationManager.INTERRUPTION_FILTER_UNKNOWN
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.util.Logger
@@ -52,7 +58,7 @@ class DNDStateTrigger(
     override fun register() {
         val filter = IntentFilter()
         filter.addAction(ACTION_INTERRUPTION_FILTER_CHANGED)
-        context.registerReceiver(receiver, filter)
+        ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
     }
 
     override fun unRegister() {
@@ -64,18 +70,23 @@ class DNDStateTrigger(
             INTERRUPTION_FILTER_UNKNOWN -> {
                 "INTERRUPTION_FILTER_UNKNOWN"
             }
+
             INTERRUPTION_FILTER_ALL -> {
                 "INTERRUPTION_FILTER_ALL"
             }
+
             INTERRUPTION_FILTER_PRIORITY -> {
                 "INTERRUPTION_FILTER_PRIORITY"
             }
+
             INTERRUPTION_FILTER_NONE -> {
                 "INTERRUPTION_FILTER_NONE"
             }
+
             INTERRUPTION_FILTER_ALARMS -> {
                 "INTERRUPTION_FILTER_ALARMS"
             }
+
             else -> {
                 "N/A"
             }

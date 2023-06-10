@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.util.select
@@ -34,7 +35,7 @@ class LocationStateTrigger(
     override fun register() {
         val filter = IntentFilter()
         filter.addAction(LocationManager.MODE_CHANGED_ACTION)
-        context.registerReceiver(receiver, filter)
+        ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
     }
 
     override fun unRegister() {

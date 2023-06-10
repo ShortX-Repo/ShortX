@@ -33,6 +33,8 @@ import com.android.internal.os.BackgroundThread;
 import java.util.HashSet;
 import java.util.Objects;
 
+import tornaco.apps.shortx.core.compat.ContextCompat;
+
 /**
  * Helper class for monitoring the state of packages: adding, removing,
  * updating, and disappearing and reappearing on the SD card.
@@ -102,10 +104,10 @@ public abstract class PackageMonitor extends android.content.BroadcastReceiver {
                         mRegisteredHandler);
             }
         } else {
-            context.registerReceiver(this, sPackageFilt, null, mRegisteredHandler);
-            context.registerReceiver(this, sNonDataFilt, null, mRegisteredHandler);
+            ContextCompat.registerReceiver(context, this, sPackageFilt, null, mRegisteredHandler, ContextCompat.RECEIVER_EXPORTED);
+            ContextCompat.registerReceiver(context, this, sNonDataFilt, null, mRegisteredHandler, ContextCompat.RECEIVER_EXPORTED);
             if (externalStorage) {
-                context.registerReceiver(this, sExternalFilt, null, mRegisteredHandler);
+                ContextCompat.registerReceiver(context, this, sExternalFilt, null, mRegisteredHandler, ContextCompat.RECEIVER_EXPORTED);
             }
         }
     }

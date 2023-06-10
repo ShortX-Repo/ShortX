@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -102,6 +103,11 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
         userFilter.addAction(Intent.ACTION_USER_INFO_CHANGED)
 
-        context.registerReceiver(userBroadcastReceiver, userFilter)
+        ContextCompat.registerReceiver(
+            context,
+            userBroadcastReceiver,
+            userFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 }
