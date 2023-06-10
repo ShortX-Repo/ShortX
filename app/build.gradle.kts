@@ -86,10 +86,12 @@ android {
         outputs.all {
             val impl =
                 this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
-            impl.outputFileName =
-                "shortx-${impl.name}-${Configs.sxVersionName}(${Configs.sxVersionCode}).apk"
             log("impl.outputFileName changed to:${impl.outputFileName}")
         }
+    }
+
+    defaultConfig {
+        setProperty("archivesBaseName", "shortx-${Configs.sxVersionName}(${Configs.sxVersionCode})")
     }
 }
 
@@ -116,7 +118,6 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
 }
-
 
 
 
