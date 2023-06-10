@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services
 
+import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.elvishew.xlog.LogConfiguration
@@ -12,6 +13,7 @@ import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
 import tornaco.apps.shortx.core.util.logAdapter
@@ -31,6 +33,7 @@ object LogInit {
     private val INIT_LOG_BUFFER: StringStack = StringStack()
 
     init {
+        Log.w("$LOG_PREFIX-LogInit", "Installing logAdapter")
         logAdapter = { level: Int, tag: String, msg: String ->
             when (level) {
                 Log.VERBOSE -> if (logDebug) XLog.v("$tag $msg")
@@ -52,7 +55,7 @@ object LogInit {
                 super.println(logLevel, tag, msg)
                 synchronized(INIT_LOG_BUFFER) {
                     // Push to stack.
-                    INIT_LOG_BUFFER.pushString("$tag: $msg")
+                    INIT_LOG_BUFFER.pushString("${DateUtils.formatLongForMessageTime(System.currentTimeMillis())} $tag: $msg")
                 }
             }
         }
@@ -61,7 +64,7 @@ object LogInit {
                 .tag(LOG_PREFIX).build(),
             androidPrinter
         )
-        Log.d("ShortX-Init-Logging", "Init xlog with xposed printer.")
+        Log.d("$LOG_PREFIX-LogInit", "Init xlog with xposed printer.")
     }
 
     fun initStartedLogging() = kotlin.runCatching {
@@ -88,13 +91,29 @@ object LogInit {
                 File(Dirs.baseServerLogDir(), "log"),
                 "shortx-init.log"
             )
+
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("-------------------")
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("DEVICE: ${Build.DEVICE}")
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("MODEL: ${Build.MODEL}")
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("SDK: ${Build.VERSION.SDK_INT}")
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("SHORTX: ${BuildProp.APP_VERSION_NAME} ${BuildProp.APP_VERSION_CODE}")
+            initLogFile.appendText(System.lineSeparator())
+            initLogFile.appendText("-------------------")
+
             INIT_LOG_BUFFER.forEach {
-                initLogFile.writeText(it)
+                initLogFile.appendText(it)
+                initLogFile.appendText(System.lineSeparator())
             }
         }
-        Log.d("ShortX-Logging", "Init xlog with file and android printer.")
+        Log.d("$LOG_PREFIX-LogInit", "Init xlog with file and android printer.")
     }.onFailure {
-        Log.e("ShortX-Logging", "Error initStartedLogging: ${Log.getStackTraceString(it)}")
+        Log.e("$LOG_PREFIX-LogInit", "Error initStartedLogging: ${Log.getStackTraceString(it)}")
     }
 
     fun writeLogsTo(pfd: ParcelFileDescriptor) {

@@ -31,11 +31,9 @@ import tornaco.apps.shortx.services.v.v
 object ShortXService : SystemService(ShortXContextImpl()) {
     private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
 
-    init {
+    fun main() {
         LogInit.initEarlyLogging()
     }
-
-    fun main() {}
 
     override fun start(context: Context) {
         super.start(context)
