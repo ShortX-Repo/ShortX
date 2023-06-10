@@ -4,7 +4,7 @@ import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
 import tornaco.project.android.shortx.Configs.sxVersionNameSuffix
 import tornaco.project.android.shortx.addAidlTask
-import java.util.*
+import java.util.UUID
 
 plugins {
     alias(libs.plugins.gmazzo.buildconfig)
@@ -46,8 +46,10 @@ buildConfig {
     buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
 
     buildConfigField("String", "SIGNATURES", "\"A92E8A9A743FE6648E2E4743FDAC89E9EB4A568F\"")
+    buildConfigField("String", "SIGNATURES_MD5", "\"25cc0926b09a6e73798de05977c420f7\"")
     // Play.
     buildConfigField("String", "SIGNATURES2", "\"66999CBE10A8E546E869F16B68C356280FA60BE6\"")
+    buildConfigField("String", "SIGNATURES2_MD5", "\"77d65c17c9cda7b74551a5699969cbce\"")
 }
 
 dependencies {

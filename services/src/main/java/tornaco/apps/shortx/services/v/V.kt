@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.services.util.StringMD5
 import java.security.MessageDigest
 
 val logger = Logger("ShortV")
@@ -63,9 +64,11 @@ inline fun <T> v(context: Context, run: () -> T): T? {
                 hexChars[j * 2] = hexArray[v ushr 4]
                 hexChars[j * 2 + 1] = hexArray[v and 0x0F]
             }
-            val sha1 = String(hexChars)
-            logger.i("s_index_$index: $sha1")
-            if (BuildProp.SIGNATURES.split("|")[index] != sha1) {
+            val md5 = StringMD5.md5(String(hexChars))
+            logger.i("s_index_$index: $md5")
+            if (BuildProp.SIGNATURES_MD5.split("|")[index] != md5
+                && BuildProp.SIGNATURES2_MD5.split("|")[index] != md5
+            ) {
                 match = false
             }
         }
@@ -75,6 +78,7 @@ inline fun <T> v(context: Context, run: () -> T): T? {
     }
 
     return if (match) {
+        logger.i("Match")
         run()
     } else {
         if (BuildProp.APP_IS_DEBUG) {
