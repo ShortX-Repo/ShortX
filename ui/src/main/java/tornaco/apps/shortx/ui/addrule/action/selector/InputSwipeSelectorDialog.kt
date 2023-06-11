@@ -4,7 +4,9 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
@@ -109,7 +111,8 @@ private fun InputSwipeSelector(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
                 ) {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
