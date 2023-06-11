@@ -46,7 +46,8 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerPostedByApp",
-                NotificationPosted.newBuilder().setRecord(n).build()
+                NotificationPosted.newBuilder().setRecord(n).build(),
+                n.contextMap()
             )
         }
     }
