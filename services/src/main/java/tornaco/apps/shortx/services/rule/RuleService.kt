@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import android.annotation.TestApi
 import android.content.Context
 import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.IJobStatusListener
@@ -29,6 +30,8 @@ import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 
 class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
@@ -201,6 +204,33 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             actions = actions,
             initialContextData = initialContextData
         )
+    }
+
+    @TestApi
+    fun executeActionsBlocking(
+        id: String,
+        reason: String,
+        actions: List<ProtoAny>,
+        initialContextData: Map<String, Any> = emptyMap()
+    ) {
+        val latch = CountDownLatch(1)
+        val listener = object : IJobStatusListener.Stub() {
+            override fun onJobStarted(id: String?) {
+            }
+
+            override fun onJobCompleted(completion: String?) {
+                if (id == completion) {
+                    latch.countDown()
+                }
+            }
+
+            override fun onJobCancelled(id: String?) {
+            }
+        }
+        registerJobStatusListener(listener)
+        executeActions(id, reason, actions, initialContextData)
+        latch.await(60, TimeUnit.SECONDS)
+        unregisterJobStatusListener(listener)
     }
 
     fun addRule(rule: Rule) {

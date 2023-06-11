@@ -19,7 +19,7 @@ import android.view.accessibility.AccessibilityInteractionClient;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
-import androidx.test.uiautomator.adapter.IUiAutomation;
+import androidx.test.uiautomator.imp.adapter.IUiAutomation;
 
 import java.util.ArrayList;
 import java.util.List;

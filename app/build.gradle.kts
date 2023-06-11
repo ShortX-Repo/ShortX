@@ -41,7 +41,7 @@ android {
         }
 
         getByName("debug") {
-            isMinifyEnabled = !noMinify
+            isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -117,6 +117,13 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotest.assertions.core)
+
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.uiautomator)
+    androidTestImplementation(libs.kotest.assertions.core)
 }
 
 

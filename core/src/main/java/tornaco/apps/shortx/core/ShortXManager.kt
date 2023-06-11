@@ -224,6 +224,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun executeActionBlocking(action: ProtoAny) {
+        invokeService(Unit) {
+            executeActionBlocking(ByteArrayWrapper(action.toByteArray()))
+        }
+    }
+
     fun executeMVEL(expression: String): String {
         return invokeService("") {
             executeMVEL(expression)

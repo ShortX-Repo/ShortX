@@ -40,6 +40,7 @@ interface IShortX {
     void executeDirectionActionById(String id);
     
     void executeAction(in ByteArrayWrapper action);
+    void executeActionBlocking(in ByteArrayWrapper action);
     // Direct Actions end
 
     List<ByteArrayWrapper> getActionEvaluateRecords();

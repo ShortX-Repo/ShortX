@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.v.v
+import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl()) {
@@ -187,7 +188,15 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun executeAction(action: ByteArrayWrapper) {
             shortXContext.rule.executeActions(
-                "NO-ID",
+                "EA-${UUID.randomUUID()}",
+                "IShortX executeAction",
+                listOf(ProtoAny.parseFrom(action.byte))
+            )
+        }
+
+        override fun executeActionBlocking(action: ByteArrayWrapper) {
+            shortXContext.rule.executeActionsBlocking(
+                "EAB-${UUID.randomUUID()}",
                 "IShortX executeAction",
                 listOf(ProtoAny.parseFrom(action.byte))
             )

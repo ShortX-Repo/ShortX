@@ -5,9 +5,9 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.adapter.InstrumentationAdapter
+import androidx.test.uiautomator.imp.UiDevice
+import androidx.test.uiautomator.imp.UiSelector
+import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -79,7 +79,12 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
                 logger.w("findAndClickViewByViewIdInternal, not connected.")
                 return false
             }
-            val uiDevice = UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+            val uiDevice = UiDevice.getInstance(
+                InstrumentationAdapter(
+                    context,
+                    automationManager
+                )
+            )
             uiDevice.waitForIdle()
             logger.d("waitForIdle finish")
             return true
@@ -98,7 +103,12 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
                 return false
             }
 
-            val uiDevice = UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+            val uiDevice = UiDevice.getInstance(
+                InstrumentationAdapter(
+                    context,
+                    automationManager
+                )
+            )
             val uiObject = if (isRegex) {
                 uiDevice.findObject(UiSelector().textMatches(text))
             } else {
@@ -127,8 +137,14 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
             }
             logger.d("findAndClickViewByViewIdInternal: $viewId")
 
-            val uiDevice = UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
-            val uiObject = uiDevice.findObject(UiSelector().resourceId(viewId))
+            val uiDevice = UiDevice.getInstance(
+                InstrumentationAdapter(
+                    context,
+                    automationManager
+                )
+            )
+            val uiObject = uiDevice.findObject(
+                UiSelector().resourceId(viewId))
             logger.d("findAndClickViewByViewIdInternal: $uiObject")
             if (!uiObject.waitForExists(timeout)) {
                 logger.d("findAndClickViewByViewIdInternal: waitForExists timeout")
@@ -147,7 +163,12 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
                 return
             }
             val uiDevice =
-                UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+                UiDevice.getInstance(
+                    InstrumentationAdapter(
+                        context,
+                        automationManager
+                    )
+                )
             uiDevice.click(x, y)
         }
     }
@@ -162,7 +183,12 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
                 return false
             }
             val uiDevice =
-                UiDevice.getInstance(InstrumentationAdapter(context, automationManager))
+                UiDevice.getInstance(
+                    InstrumentationAdapter(
+                        context,
+                        automationManager
+                    )
+                )
             return uiDevice.swipe(startX, startY, endX, endY, steps.toInt())
         }
     }
