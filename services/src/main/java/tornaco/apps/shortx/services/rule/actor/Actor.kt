@@ -222,6 +222,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ReadClipboard
     },
+    WriteClipboard {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.WriteClipboard
+    },
     SetRingerMode {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetRingerMode

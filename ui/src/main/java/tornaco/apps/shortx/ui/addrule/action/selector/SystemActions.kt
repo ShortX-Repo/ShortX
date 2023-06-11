@@ -14,7 +14,9 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SelectionDialog
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import kotlin.reflect.full.createInstance
 
 
@@ -40,10 +42,24 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     }
     BrightnessValueSelector(state = setBrightnessState)
 
+    val writeClipboardSelectorDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.write.clipboard"],
+        message = null,
+        inputValidator = { true to "" },
+        onSelected = {
+            addAction(Action.WriteClipboard(text = it))
+        })
+    TextInputDialog(state = writeClipboardSelectorDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.ReadClipboard::class -> {
                 addAction(Action.ReadClipboard())
+                true
+            }
+
+            Action.WriteClipboard::class -> {
+                writeClipboardSelectorDialogState.show(source.getActionAs<Action.WriteClipboard>()?.text)
                 true
             }
 
@@ -91,6 +107,7 @@ fun SystemActions(addAction: (Action) -> Unit) {
     val actionItems = listOf(
         Action.SetRingerMode::class,
         Action.ReadClipboard::class,
+        Action.WriteClipboard::class,
         Action.EnableWifi::class,
         Action.DisableWifi::class,
         Action.EnableBT::class,

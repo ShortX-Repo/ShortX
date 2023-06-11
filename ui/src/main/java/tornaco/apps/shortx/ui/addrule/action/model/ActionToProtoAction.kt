@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WhileLoop
+import tornaco.apps.shortx.core.proto.action.WriteClipboard
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.Location
@@ -426,6 +427,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             ReadClipboard.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.WriteClipboard -> {
+            WriteClipboard.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setText(text)
                 .build()
         }
 

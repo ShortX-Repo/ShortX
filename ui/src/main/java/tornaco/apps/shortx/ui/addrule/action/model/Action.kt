@@ -670,6 +670,17 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class WriteClipboard(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+        val text: String
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class CreatePkgSet(
         override val id: String = defaultNewActionId(),
         override val note: String = "",

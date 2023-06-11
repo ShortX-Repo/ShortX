@@ -28,6 +28,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.read.clipboard"] to null
         }
 
+        Action.WriteClipboard::class -> {
+            i18N["ui.action.write.clipboard"] to null
+        }
+
         Action.ShowDanmu::class -> {
             i18N["ui.action.show.danmu"] to null
         }
@@ -150,6 +154,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ReadClipboard -> {
             listOf(i18N["ui.action.read.clipboard"])
+        }
+
+        is Action.WriteClipboard -> {
+            listOf(i18N["ui.action.write.clipboard"], action.text)
         }
 
         is Action.ShowDanmu -> {

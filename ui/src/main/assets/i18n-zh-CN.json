@@ -171,6 +171,7 @@
   "ui.keycode.label.home": "主页",
   "ui.keycode.label.back": "返回",
   "ui.action.read.clipboard": "读取剪贴板",
+  "ui.action.write.clipboard": "写入剪贴板",
   "ui.action.show.toast": "显示吐司",
   "ui.action.show.danmu": "显示弹幕",
   "ui.action.danmu.text": "文本",

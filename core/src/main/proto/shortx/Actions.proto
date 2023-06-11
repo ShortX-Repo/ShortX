@@ -414,6 +414,13 @@ message ReadClipboard {
   string id = 100;
 }
 
+message WriteClipboard {
+  string text = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
 message SetRingerMode {
   RingerMode mode = 1;
 

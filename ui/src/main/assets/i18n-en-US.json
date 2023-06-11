@@ -172,6 +172,7 @@
   "ui.keycode.label.back": "Back",
   "ui.action.show.toast": "Show toast",
   "ui.action.read.clipboard": "Read clipboard",
+  "ui.action.write.clipboard": "Write clipboard",
   "ui.action.show.danmu": "Show danmu",
   "ui.action.danmu.text": "Message",
   "ui.action.danmu.icon": "Icon (optional)",
