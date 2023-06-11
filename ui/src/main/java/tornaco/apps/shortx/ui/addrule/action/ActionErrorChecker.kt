@@ -26,6 +26,7 @@ class ActionErrorChecker {
             .filterNot { willBeCreatedGlobalVar.contains(it) }
             .filter { shortXManager.getGlobalVarByName(it) == null }
             .mapIndexed { index, it ->
+                logger.d("Missing var: $it")
                 "${index + 1}. " + i18N["ui.condition.warning.message.global.var.missing", mapOf("name" to it)]
             }
 

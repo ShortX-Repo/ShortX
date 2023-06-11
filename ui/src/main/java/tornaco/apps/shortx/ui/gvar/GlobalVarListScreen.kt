@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -145,20 +144,8 @@ private fun GlobalVarListItem(
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = name, style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 16.sp,
-                )
-            )
-            OutlineBadge(text = type)
-        }
-
+        OutlineBadge(text = type)
+        Text(text = name, style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp))
         Text(value ?: "", fontSize = 12.sp, maxLines = 3)
     }
 }

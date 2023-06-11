@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
-import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toDisplayName
@@ -74,9 +73,9 @@ class EvaluateGlobalVarSelectorDialogState(
     private var _output by mutableStateOf("")
     val output get() = _output
 
-    fun selectGlobalVar(globalVar: GlobalVar) {
+    fun selectGlobalVar(varName: String) {
         _action = _action.copy(
-            varName = globalVar.name
+            varName = varName
         )
         setOutput("")
     }
@@ -175,38 +174,35 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                         .padding(16.dp)
                 ) {
                     val globalVarToWriteSelectorState = rememberGlobalVarSelectorState {
-                        dialogState.selectGlobalVar(it)
+                        dialogState.selectGlobalVar(it.name)
                     }
                     GlobalVarSelectorDialog(globalVarToWriteSelectorState)
 
-                    val selectedVarName = remember(dialogState.action.varName) {
-                        shortXManager.getGlobalVarByName(dialogState.action.varName)?.name
-                    }
                     val payloadValue = remember(dialogState.action.payload) {
                         dialogState.action.payload.value
                     }
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var"])
-                    TinySpacer()
-                    FilledTonalButton(
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = ColorDefaults.backgroundSurfaceColor(
-                                1.dp
-                            )
-                        ),
-                        onClick = {
-                            globalVarToWriteSelectorState.show()
-                        }) {
-                        if (selectedVarName != null) {
-                            Text(text = selectedVarName)
-                        } else {
-                            RemixIcon(remixName = Remix.System.add_line)
-                        }
-                    }
+                    ShortXTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = dialogState.action.varName,
+                        label = {
+                            Text(LocalI18N.current["ui.action.select.global.var"])
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { globalVarToWriteSelectorState.show() }) {
+                                RemixIcon(remixName = Remix.System.search_2_line)
+                            }
+                        },
+                        onValueChange = {
+                            dialogState.selectGlobalVar(it)
+                        })
 
                     StandardSpacer()
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var.op"])
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.action.select.global.var.op"]
+                    )
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
                     Box {
@@ -239,7 +235,10 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
 
                     AnimatedVisibility(visible = dialogState.showPayloadInputField) {
                         Column {
-                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var.payload"])
+                            SmallTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                text = LocalI18N.current["ui.action.select.global.var.payload"]
+                            )
                             TinySpacer()
                             ShortXTextField(value = payloadValue, onValueChange = {
                                 dialogState.inputValue(it)
