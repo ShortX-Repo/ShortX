@@ -341,6 +341,7 @@ private fun dataSettings(
     val backUpFileNameDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.settings.data.backup.title"],
         message = LocalI18N.current["ui.settings.data.backup.input.file.name"],
+        showSymbolButton = false,
         onSelected = {
             vm.backup(it)
         })

@@ -28,7 +28,7 @@ class TextInputState(
     fun show(initialValue: String? = null) {
         this.currentValue = initialValue ?: ""
         this.errorMsg = ""
-        this.isValid = false
+        this.isValid = true
 
         _isShow = true
     }
