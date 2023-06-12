@@ -35,6 +35,8 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.settings.ResetEventRegistry
+import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
@@ -245,6 +247,22 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             pref.ignoreFrameworkUpdate.collectLatest {
                 logger.d("ignoreFrameworkUpdate changed: $it")
                 updateState { copy(isIgnoreFrameworkUpdate = it) }
+            }
+        }
+
+        viewModelScope.launch {
+            ResetEventRegistry.dataResetComplete.collect {
+                logger.d("reload data since data has been reset")
+                loadRules()
+                loadDA()
+            }
+        }
+
+        viewModelScope.launch {
+            RestoreEventRegistry.dataRestoreComplete.collect {
+                logger.d("reload data since data restored")
+                loadRules()
+                loadDA()
             }
         }
     }

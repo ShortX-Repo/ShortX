@@ -242,9 +242,9 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun deletePkgSet(pkgSetId: String) {
+    fun deletePkgSet(label: String) {
         invokeService(Unit) {
-            deletePkgSet(pkgSetId)
+            deletePkgSet(label)
         }
     }
 

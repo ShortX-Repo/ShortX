@@ -106,6 +106,16 @@ class BackupAgent(private val context: Context) {
                 logger.w("Delete da: ${it.title}")
                 shortXManager.deleteDirectAction(it.id)
             }
+            shortXManager.getAllGlobalVars().forEach {
+                logger.w("Delete gv: ${it.name}")
+                shortXManager.deleteGlobalVar(it.name)
+            }
+            shortXManager.getAllPkgSets(withPkgList = false).forEach {
+                logger.w("Delete pkg set: ${it.label}")
+                shortXManager.deletePkgSet(it.label)
+            }
+            shortXManager.clearActionEvaluateRecords()
+            shortXManager.clearConditionEvaluateRecords()
         }
     }
 
@@ -127,7 +137,7 @@ class BackupAgent(private val context: Context) {
                 shortXManager.addPkgSet(it)
             }
             content.gvs.forEach {
-                logger.d("restore, add pkgset: ${it.name}")
+                logger.d("restore, add gv: ${it.name}")
                 shortXManager.addGlobalVar(it)
             }
         }

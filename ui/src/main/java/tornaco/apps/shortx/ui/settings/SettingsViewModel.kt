@@ -114,6 +114,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             kotlin.runCatching {
                 BackupAgent(context).restore(fileUri)
+                RestoreEventRegistry.dataHasBeenRestore()
                 _restorePerformed.emit(RestoreResult.Success)
             }.onFailure {
                 logger.e(it, "Restore error")
@@ -126,6 +127,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             kotlin.runCatching {
                 BackupAgent(context).restore("dev/dev-all.zip")
+                RestoreEventRegistry.dataHasBeenRestore()
                 _restorePerformed.emit(RestoreResult.Success)
             }.onFailure {
                 logger.e(it, "Restore error")
@@ -140,6 +142,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             kotlin.runCatching {
                 BackupAgent(context).resetAllData()
             }
+            ResetEventRegistry.dataHasBeenReset()
         }
     }
 
