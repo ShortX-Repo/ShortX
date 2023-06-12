@@ -13,6 +13,8 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
+import tornaco.apps.shortx.core.proto.fact.ChargerPlug
+import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
@@ -248,6 +250,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         }
 
         register(AudioFocusChanged::class.java) { _, _ ->
+            true
+        }
+
+        register(ChargerPlug::class.java) { _, _ ->
+            true
+        }
+
+        register(ChargerUnplug::class.java) { _, _ ->
             true
         }
 

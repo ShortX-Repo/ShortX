@@ -203,6 +203,16 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
+            Fact.ChargerPlug::class -> {
+                setFact(Fact.ChargerPlug())
+                true
+            }
+
+            Fact.ChargerUnplug::class -> {
+                setFact(Fact.ChargerUnplug())
+                true
+            }
+
 
             else -> false
         }

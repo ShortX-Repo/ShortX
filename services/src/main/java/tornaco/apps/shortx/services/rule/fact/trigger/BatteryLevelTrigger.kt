@@ -8,7 +8,6 @@ import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.actor.mvel.handle.BatteryState
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.BatteryImpl
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
@@ -18,17 +17,17 @@ class BatteryLevelTrigger(
 ) :
     Trigger {
     private val logger = Logger("BatteryLevelTrigger")
-    private val _state = MutableStateFlow(BatteryState())
+    private val _level = MutableStateFlow(-1)
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
                 val newState = BatteryImpl.retrieveBatteryState(intent)
                 logger.d("newState: $newState")
-                val stateChanged = (newState != _state.value)
+                val stateChanged = (newState.batteryLevel != _level.value)
                 if (stateChanged) {
                     logger.d("state changed")
-                    _state.value = newState
+                    _level.value = newState.batteryLevel
 
                     shortXContext.rule.publishFact(
                         reason = "BatteryState changed",

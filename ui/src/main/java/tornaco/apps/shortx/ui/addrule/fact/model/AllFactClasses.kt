@@ -44,4 +44,6 @@ val allFactClasses = listOf(
     Fact.AudioFocusChanged::class,
 
     Fact.BatteryLevelChanged::class,
+    Fact.ChargerPlug::class,
+    Fact.ChargerUnplug::class,
 )

@@ -36,6 +36,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.DarkModeStatusChanged::class,
 
         Fact.BatteryLevelChanged::class,
+        Fact.ChargerPlug::class,
+        Fact.ChargerUnplug::class,
     ).map {
         SelectorItem(
             type = it,

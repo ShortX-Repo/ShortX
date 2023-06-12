@@ -286,6 +286,22 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java
+            Fact.ChargerPlug(
+                id = data.id, note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.ChargerUnplug::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerUnplug::class.java
+            Fact.ChargerUnplug(
+                id = data.id, note = data.note,
+            )
+        }
+
 
         else -> {
             null

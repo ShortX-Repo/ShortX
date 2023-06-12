@@ -40,6 +40,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.AudioFocusLost::class -> Remix.Media.music_2_fill
         Fact.AudioFocusChanged::class -> Remix.Media.music_2_fill
         Fact.BatteryLevelChanged::class -> Remix.Device.battery_low_fill
+        Fact.ChargerPlug::class -> Remix.Device.battery_charge_line
+        Fact.ChargerUnplug::class -> Remix.Device.battery_fill
 
         else -> {
             Remix.Document.file_unknow_fill
