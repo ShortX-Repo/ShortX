@@ -24,6 +24,8 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
     private val _focusEvent = MutableSharedFlow<FocusEvent>()
     val focusEvent = _focusEvent.asSharedFlow()
 
+    fun AppPkg.hasFocus() = currentPlayingAppPkgs.contains(this)
+
     override fun systemReady() {
         super.systemReady()
         registerListener()

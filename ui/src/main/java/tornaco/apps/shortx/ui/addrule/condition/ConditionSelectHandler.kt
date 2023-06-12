@@ -48,6 +48,17 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             })
     AppPkgSelectorDialog(appIsRunningSelectorState)
 
+    val appHasAudioFocusSelectorState =
+        rememberSingleAppPkgSelectorState {
+            addCondition(
+                Condition.AppHasAudioFocus(
+                    apps = listOf(it),
+                    pkgSets = emptyList()
+                )
+            )
+        }
+    SingleAppSelectorDialog(appHasAudioFocusSelectorState)
+
     val mvelConditionSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
             addCondition(Condition.MVEL(expression.src))
@@ -79,6 +90,11 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
                     source.getConditionAs<Condition.AppIsRunning>()?.apps,
                     source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
                 )
+                true
+            }
+
+            Condition.AppHasAudioFocus::class -> {
+                appHasAudioFocusSelectorState.show()
                 true
             }
 

@@ -7,4 +7,5 @@ val allConditionClasses = listOf(
     Condition.EvaluateGlobalVar::class,
     Condition.BatteryPercent::class,
     Condition.AppIsRunning::class,
+    Condition.AppHasAudioFocus::class,
 )

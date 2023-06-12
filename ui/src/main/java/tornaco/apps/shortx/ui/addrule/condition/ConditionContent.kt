@@ -195,6 +195,7 @@ private fun ConditionSelectorDropdown(
         items = listOf(
             Condition.CurrentForegroundApp::class,
             Condition.AppIsRunning::class,
+            Condition.AppHasAudioFocus::class,
             Condition.MVEL::class,
             Condition.TRUE::class,
             Condition.EvaluateGlobalVar::class,
