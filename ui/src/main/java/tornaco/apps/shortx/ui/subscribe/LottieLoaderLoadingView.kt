@@ -17,13 +17,13 @@ fun LottieLoaderLoadingView() {
 }
 
 @Composable
-fun LottieLoaderSuccessView() {
+fun LottieLoaderSuccessView(iterations: Int = 1) {
     LottieLoadingView(
         file = "64787-success.json",
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp),
-        iterations = 1
+        iterations = iterations
     )
 }
 

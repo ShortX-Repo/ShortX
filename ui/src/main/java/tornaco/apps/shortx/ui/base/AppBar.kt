@@ -20,7 +20,9 @@ fun ShortXTopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+        containerColor = ColorDefaults.backgroundSurfaceColor()
+    ),
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     TopAppBar(

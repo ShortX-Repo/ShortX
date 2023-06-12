@@ -21,10 +21,23 @@ package tornaco.apps.shortx.ui.subscribe
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -42,10 +54,36 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ImageDialog
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalAppName
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
+import tornaco.apps.shortx.ui.base.MarkdownText
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.ProgressDialog
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TextInputState
+import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.UiState
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberProgressDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.main.AppRoute
 import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
-import tornaco.apps.shortx.ui.theme.*
+import tornaco.apps.shortx.ui.theme.AliBlue
+import tornaco.apps.shortx.ui.theme.PayPalBlue
+import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.VerifiedGreen
+import tornaco.apps.shortx.ui.theme.VipColorGold
+import tornaco.apps.shortx.ui.theme.WeChatGreen
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @Composable
@@ -54,10 +92,9 @@ fun SubscribeScreen(back: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            Scaffold(modifier = Modifier,
                 topBar = {
-                    ShortXMediumTopAppBar(
+                    ShortXTopAppBar(
                         title = {
                             Text(
                                 text = LocalI18N.current["ui.subscription.intro.title"]
@@ -70,7 +107,6 @@ fun SubscribeScreen(back: () -> Unit) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
-                        scrollBehavior = scrollBehavior,
                     )
                 }) { contentPadding ->
 
@@ -89,12 +125,14 @@ fun SubscribeScreen(back: () -> Unit) {
                             is UiState.Loaded -> {
                                 UnsubscribedUi(subState.data)
                             }
+
                             is UiState.Error -> {
                                 LoadError(
                                     modifier = Modifier
                                         .fillMaxSize()
                                 )
                             }
+
                             UiState.Loading -> {
                                 Loading(
                                     modifier = Modifier
@@ -117,24 +155,46 @@ private fun SubscribedUi() {
 
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(top = 32.dp)
             .verticalScroll(rememberScrollState())
     ) {
         when (state.source) {
             is SubscriptionSource.ActivationCode -> {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                LottieLoaderSuccessView()
+                StandardSpacer()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     RemixIcon(remixName = Remix.System.shield_check_fill, tint = VerifiedGreen)
                     SmallSpacer()
-                    MediumTitle(text = "Verified by Activation Code")
+                    MediumTitle(text = "Verified via Activation Code")
                 }
             }
+
             SubscriptionSource.GooglePlay -> {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RemixIcon(remixName = Remix.Logos.google_play_fill, tint = VerifiedGreen)
-                    SmallSpacer()
-                    MediumTitle(text = "Verified by Google Play")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    LottieLoaderSuccessView()
+                    StandardSpacer()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        RemixIcon(remixName = Remix.Logos.google_play_fill, tint = VerifiedGreen)
+                        SmallSpacer()
+                        MediumTitle(text = "Verified via Google Play")
+                    }
                 }
             }
+
             null -> {}
         }
     }
@@ -167,18 +227,22 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
                     CodeVerifyEvent.Verifying -> {
                         progressDialog.show()
                     }
+
                     CodeVerifyEvent.Success -> {
                         progressDialog.dismiss()
                     }
+
                     CodeVerifyEvent.Fail -> {
                         progressDialog.dismiss()
                         Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
                     }
+
                     CodeVerifyEvent.NetworkError -> {
                         progressDialog.dismiss()
                         Toast.makeText(context, failNetworkMsg, Toast.LENGTH_LONG)
                             .show()
                     }
+
                     CodeVerifyEvent.Error -> {
                         progressDialog.dismiss()
                         Toast.makeText(context, failMsg, Toast.LENGTH_LONG).show()
