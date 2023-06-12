@@ -65,6 +65,15 @@ message BatteryPercent {
   string id = 100;
 }
 
+message AppIsRunning {
+  repeated AppPkg pkgs = 1;
+  repeated string pkgSets = 2;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message EvaluateGlobalVar {
   GlobalVarOp op = 1;
   string varName = 2;

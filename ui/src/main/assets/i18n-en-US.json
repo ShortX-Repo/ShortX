@@ -12,6 +12,7 @@
   "ui.conditions.true.desc": "Actions will always be performed when they are triggered.",
   "ui.conditions.eva.global.var": "Check global var",
   "ui.conditions.battery.percent": "Battery percent",
+  "ui.conditions.app.running": "App is running",
   "ui.conditions.battery.percent.op": "Select op",
   "ui.conditions.battery.percent.value": "Value (0-100)",
   "ui.actions.title": "Actions",

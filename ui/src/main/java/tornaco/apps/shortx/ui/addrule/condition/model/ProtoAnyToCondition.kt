@@ -1,8 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.model
 
-import tornaco.apps.shortx.core.App
-import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
@@ -11,30 +10,32 @@ import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 
 fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
     return when {
         this is_ CurrentPkgList::class.java -> {
             val data = this unpack_ CurrentPkgList::class.java
-            val pkgs = data.pkgsList.map { pkg ->
-                Pkg(pkg.pkgName, userId = pkg.userId)
-            }
+            val models = (data.pkgsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Condition.CurrentForegroundApp(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
-                apps = pkgs.map { pkg ->
-                    val appLabel = shortXManager.getAppLabel(pkg)
-                    App(
-                        pkg = pkg,
-                        label = appLabel,
-                        category = tornaco.apps.shortx.core.proto.common.AppCategory.User
-                    )
-                },
-                pkgSets = data.pkgSetsList.mapNotNull {
-                    shortXManager.getPkgSetByLabel(it)
-                }
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
+        this is_ AppIsRunning::class.java -> {
+            val data = this unpack_ AppIsRunning::class.java
+            val models = (data.pkgsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Condition.AppIsRunning(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                apps = models.first,
+                pkgSets = models.second
             )
         }
 

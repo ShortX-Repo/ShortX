@@ -5,11 +5,9 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
-import kotlin.reflect.KClass
 
 @Composable
-fun conditionSelectHandler(addCondition: (Condition) -> Unit): (KClass<out Condition>) -> Boolean {
-    // Condition selectors
+fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
     val currentPkgSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = { appList ->
@@ -30,6 +28,26 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (KClass<out Condi
             })
     AppPkgSelectorDialog(currentPkgSelectorState)
 
+    val appIsRunningSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { appList ->
+                addCondition(
+                    Condition.AppIsRunning(
+                        apps = appList,
+                        pkgSets = emptyList()
+                    )
+                )
+            },
+            onPkgSetSelected = { pkgSets ->
+                addCondition(
+                    Condition.AppIsRunning(
+                        apps = emptyList(),
+                        pkgSets = pkgSets
+                    )
+                )
+            })
+    AppPkgSelectorDialog(appIsRunningSelectorState)
+
     val mvelConditionSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
             addCondition(Condition.MVEL(expression.src))
@@ -46,10 +64,21 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (KClass<out Condi
     }
     BatteryPercentSelectorDialog(state = batteryPercentDialog)
 
-    return { conClass ->
-        when (conClass) {
+    return { source ->
+        when (source.clazz) {
             Condition.CurrentForegroundApp::class -> {
-                currentPkgSelectorState.show()
+                currentPkgSelectorState.show(
+                    source.getConditionAs<Condition.CurrentForegroundApp>()?.apps,
+                    source.getConditionAs<Condition.CurrentForegroundApp>()?.pkgSets
+                )
+                true
+            }
+
+            Condition.AppIsRunning::class -> {
+                appIsRunningSelectorState.show(
+                    source.getConditionAs<Condition.AppIsRunning>()?.apps,
+                    source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
+                )
                 true
             }
 

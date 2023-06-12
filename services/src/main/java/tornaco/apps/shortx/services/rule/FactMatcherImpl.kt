@@ -40,8 +40,10 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         mutableMapOf()
 
     init {
-        register(KeyEvent::class.java) { l, f ->
-            l == f
+        register(KeyEvent::class.java) { actual, rule ->
+            val lk = actual as KeyEvent
+            val rk = rule as KeyEvent
+            lk.keyCode == rk.keyCode
         }
         register(Alarm::class.java) { l, f ->
             // Alarm match label.
@@ -271,8 +273,9 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
     private fun match0(l: ProtoMessage, r: ProtoMessage): Boolean {
         val matcher = factValueMatchers[l.javaClass]
-        logger.d("matching $l $r")
-        return matcher?.invoke(l, r) ?: (l == r)
+        val res = matcher?.invoke(l, r) ?: (l == r)
+        logger.d("matching $l $r, res: $res")
+        return res
     }
 
 

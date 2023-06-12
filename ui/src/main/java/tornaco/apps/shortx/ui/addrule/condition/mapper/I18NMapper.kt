@@ -19,6 +19,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.dialog.title.current.app"])
         }
 
+        Condition.AppIsRunning::class -> {
+            listOf(i18N["ui.conditions.app.running"])
+        }
+
         Condition.MVEL::class -> {
             listOf(i18N["ui.title.mvel"])
         }
@@ -56,6 +60,11 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
     return when (condition) {
         is Condition.CurrentForegroundApp -> {
             mutableListOf(i18N["ui.dialog.title.current.app"])
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppIsRunning -> {
+            mutableListOf(i18N["ui.conditions.app.running"])
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 

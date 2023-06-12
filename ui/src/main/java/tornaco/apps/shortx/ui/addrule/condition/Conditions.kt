@@ -51,14 +51,17 @@ fun ConditionSelectors(
         conditions = conditions,
         warnings = warnings,
         conditionOp = conditionOp,
-        selectCondition = { con ->
-            selectHandler(con)
+        selectCondition = { clazz ->
+            selectHandler(ConditionSelectSource.FromClass(clazz))
         },
         removeCondition = { con ->
             handler.removeCondition(con)
         },
         setConditionOp = {
             handler.setConditionOp(it)
+        },
+        editCondition = {
+            selectHandler(ConditionSelectSource.FromCondition(it))
         },
         invertCondition = {
             handler.addCondition(
@@ -80,6 +83,7 @@ fun ConditionList(
     conditionOp: Op,
     selectCondition: (KClass<out Condition>) -> Unit,
     removeCondition: (Condition) -> Unit,
+    editCondition: (Condition) -> Unit,
     invertCondition: (Condition) -> Unit,
     setConditionOp: (Op) -> Unit
 ) {
@@ -97,7 +101,7 @@ fun ConditionList(
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
                                 onClick = {
-
+                                    editCondition(it)
                                 },
                                 onLongClick = {
                                     invertCondition(it)
@@ -162,6 +166,7 @@ fun ConditionList(
                         state = conditionSelectorState,
                         items = listOf(
                             Condition.CurrentForegroundApp::class,
+                            Condition.AppIsRunning::class,
                             Condition.MVEL::class,
                             Condition.TRUE::class,
                             Condition.EvaluateGlobalVar::class,
