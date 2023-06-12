@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +31,7 @@ import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
 
 @Composable
@@ -445,30 +447,40 @@ private fun devSettings(
 private fun aboutSettings(
     state: SettingsState,
     viewOpenSourceLicense: () -> Unit
-) = listOf(
-    Preference.Category(LocalI18N.current["ui.settings.about"]),
+): List<Preference> {
+    val context = LocalContext.current
+    return listOf(
+        Preference.Category(LocalI18N.current["ui.settings.about"]),
 
-    Preference.ExpandablePreference(
-        icon = Remix.System.information_fill,
-        title = LocalI18N.current["ui.settings.app.info"],
-        summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
-        preferences = listOf(
-            Preference.TextPreference(icon = Remix.Device.instance_fill,
-                title = LocalI18N.current["ui.settings.core.info"],
-                summary = if (state.isActivated) {
-                    "${state.coreVersion.name}\n${state.coreVersion.code}"
-                } else {
-                    LocalI18N.current["ui.settings.core.info.na"]
-                },
-                onClick = {}
-            )
+        Preference.ExpandablePreference(
+            icon = Remix.System.information_fill,
+            title = LocalI18N.current["ui.settings.app.info"],
+            summary = "${BuildProp.APP_VERSION_NAME}\n${BuildProp.APP_VERSION_CODE}",
+            preferences = listOf(
+                Preference.TextPreference(icon = Remix.Device.instance_fill,
+                    title = LocalI18N.current["ui.settings.core.info"],
+                    summary = if (state.isActivated) {
+                        "${state.coreVersion.name}\n${state.coreVersion.code}"
+                    } else {
+                        LocalI18N.current["ui.settings.core.info.na"]
+                    },
+                    onClick = {}
+                )
+            ),
         ),
-    ),
 
-    Preference.TextPreference(icon = Remix.Logos.open_source_fill,
-        title = LocalI18N.current["ui.settings.open.source.license"],
-        onClick = {
-            viewOpenSourceLicense()
-        }
+        Preference.TextPreference(icon = Remix.Logos.telegram_fill,
+            title = "Telegram",
+            summary = BuildProp.TG_GROUP,
+            onClick = {
+                BrowserUtils.launch(context, BuildProp.TG_GROUP)
+            }
+        ),
+        Preference.TextPreference(icon = Remix.Logos.open_source_fill,
+            title = LocalI18N.current["ui.settings.open.source.license"],
+            onClick = {
+                viewOpenSourceLicense()
+            }
+        )
     )
-)
+}

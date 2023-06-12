@@ -25,6 +25,7 @@ buildConfig {
     buildConfigField("boolean", "APP_IS_DEBUG", provider { "$sxIsDebugBuild" })
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
+    buildConfigField("String", "TG_GROUP", "\"https://t.me/shortxmod\"")
 
     buildConfigField(
         "String",
