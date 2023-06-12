@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
 import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
+import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -243,6 +244,10 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         is Fact.AudioFocusChanged -> {
             AudioFocusChanged.newBuilder().setId(id).setNote(note).build()
+        }
+
+        is Fact.BatteryLevelChanged -> {
+            BatteryLevelChanged.newBuilder().setId(id).setNote(note).setLevel(level).build()
         }
 
     }

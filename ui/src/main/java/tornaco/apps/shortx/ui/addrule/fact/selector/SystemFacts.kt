@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectSource
-import tornaco.apps.shortx.ui.addrule.fact.factSelectHandler
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.systemFactSelectHandler
 import tornaco.apps.shortx.ui.base.LocalI18N
 
 @Composable
@@ -34,6 +34,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.HotSpotStatusChanged::class,
         Fact.FlashLightStatusChanged::class,
         Fact.DarkModeStatusChanged::class,
+
+        Fact.BatteryLevelChanged::class,
     ).map {
         SelectorItem(
             type = it,
@@ -43,7 +45,7 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         )
     }
 
-    val itemSelected = factSelectHandler(setFact)
+    val itemSelected = systemFactSelectHandler(setFact)
 
     SelectorList(
         items = items,

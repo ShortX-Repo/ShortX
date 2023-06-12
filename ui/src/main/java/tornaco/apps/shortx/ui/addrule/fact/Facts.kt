@@ -35,9 +35,15 @@ fun FactSelectors(
     })
     FactSelectorDialog(state = factSelectorState)
 
-    val editFactHandler = factSelectHandler(setFact = {
-        vm.setFact(it)
-    })
+    val factHandlers = listOf(
+        appFactSelectHandler(vm::setFact),
+        systemFactSelectHandler(vm::setFact)
+    )
+    val editFactHandler: (FactSelectSource) -> Unit = { source ->
+        for (h in factHandlers) {
+            if (h(source)) break
+        }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])

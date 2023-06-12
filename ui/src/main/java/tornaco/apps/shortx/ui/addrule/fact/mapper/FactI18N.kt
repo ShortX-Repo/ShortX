@@ -10,8 +10,8 @@ import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -117,6 +117,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.AudioFocusLost::class -> {
             i18n["ui.fact.audio.focus.lost"] to null
+        }
+
+        Fact.BatteryLevelChanged::class -> {
+            i18n["ui.fact.battery.level.changed"] to null
         }
 
         else -> "N/A" to null
@@ -329,6 +333,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.AudioFocusLost -> {
             mutableListOf(i18N["ui.fact.audio.focus.lost"])
                 .labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.BatteryLevelChanged -> {
+            mutableListOf(i18N["ui.fact.battery.level.changed"], "${fact.level}%")
         }
     }
 }

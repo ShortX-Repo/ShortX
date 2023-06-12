@@ -157,6 +157,8 @@
   "ui.fact.app.uninstalled": "App uninstalled",
   "ui.fact.app.updated": "App updated",
   "ui.fact.system.settings": "Settings change",
+  "ui.fact.battery.level.changed": "Battery level changed",
+  "ui.fact.battery.level.changed.level": "Level value(0-100)",
   "ui.fact.audio.focus.gain": "App get audio focus",
   "ui.fact.audio.focus.lost": "App lose audio focus",
   "ui.fact.audio.focus.changed": "Audio focus changed",

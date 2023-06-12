@@ -17,4 +17,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     DNDStateTrigger(context, shortXContext),
     PackageInstallTrigger(context, shortXContext),
     AudioFocusTrigger(context, shortXContext),
+    BatteryLevelTrigger(context, shortXContext),
 )

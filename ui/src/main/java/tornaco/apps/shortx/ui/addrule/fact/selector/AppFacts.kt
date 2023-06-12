@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectSource
-import tornaco.apps.shortx.ui.addrule.fact.factSelectHandler
+import tornaco.apps.shortx.ui.addrule.fact.appFactSelectHandler
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
@@ -47,7 +47,7 @@ fun AppFacts(setFact: (Fact) -> Unit) {
         )
     }
 
-    val itemSelected = factSelectHandler(setFact)
+    val itemSelected = appFactSelectHandler(setFact)
 
     SelectorList(
         items = items,

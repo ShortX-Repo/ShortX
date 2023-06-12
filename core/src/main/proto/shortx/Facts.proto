@@ -28,40 +28,19 @@ message UserPresent {
   string id = 100;
 }
 
-message BatteryLevelChange {
-  int32 level = 2;
+message BatteryLevelChanged {
+  int32 level = 1;
 
   string note = 99;
   string id = 100;
 }
 
 message ChargerPlug {
-  bool requireAC = 1;
-  bool requireUSB = 2;
-
   string note = 99;
   string id = 100;
 }
 
 message ChargerUnplug {
-  bool requireAC = 1;
-  bool requireUSB = 2;
-
-  string note = 99;
-  string id = 100;
-}
-
-message BatteryLow {
-  string note = 99;
-  string id = 100;
-}
-
-message BatteryNotLow {
-  string note = 99;
-  string id = 100;
-}
-
-message BatteryFull {
   string note = 99;
   string id = 100;
 }

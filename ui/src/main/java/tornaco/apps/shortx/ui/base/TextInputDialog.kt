@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ class TextInputState(
     val title: String,
     val message: String?,
     val showSymbolButton: Boolean,
+    val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val inputValidator: ((String) -> Pair<Boolean, String>),
     val onSelected: (String) -> Unit
 ) {
@@ -30,6 +32,11 @@ class TextInputState(
         this.errorMsg = ""
         this.isValid = true
 
+        // Trigger validate
+        val validate = inputValidator(this.currentValue)
+        this.isValid = validate.first
+        this.errorMsg = validate.second
+
         _isShow = true
     }
 
@@ -43,11 +50,19 @@ fun rememberTextInputState(
     title: String,
     message: String?,
     showSymbolButton: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     inputValidator: ((String) -> Pair<Boolean, String>) = { it.isNotEmpty() to "" },
     onSelected: (String) -> Unit
 ): TextInputState {
     return remember {
-        TextInputState(title, message, showSymbolButton, inputValidator, onSelected)
+        TextInputState(
+            title,
+            message,
+            showSymbolButton,
+            keyboardOptions,
+            inputValidator,
+            onSelected
+        )
     }
 }
 
@@ -84,6 +99,7 @@ fun TextInputDialog(state: TextInputState) {
                     isError = state.isValid.not(),
                     value = state.currentValue,
                     showSymbolButton = state.showSymbolButton,
+                    keyboardOptions = state.keyboardOptions,
                     onValueChange = {
                         val validate = state.inputValidator(it)
                         state.currentValue = it
