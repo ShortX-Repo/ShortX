@@ -125,7 +125,7 @@ fun AddRuleScreen(
                     AnimatedVisibility(visible = addRuleState.showConditionSection) {
                         val conditions = conditionContentState.conditions
                         val conditionOp = conditionContentState.conditionOp
-                        ConditionSelectors(
+                        ConditionContent(
                             conditions = conditions,
                             warnings = conditionContentState.conditionWarningMessages,
                             conditionOp = conditionOp,

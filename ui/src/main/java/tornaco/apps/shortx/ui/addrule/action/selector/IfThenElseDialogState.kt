@@ -16,7 +16,7 @@ import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
-import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
@@ -127,7 +127,7 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                     val conditions = conditionState.conditions
                     val conditionOp = conditionState.conditionOp
                     val warning = conditionState.conditionWarningMessages
-                    ConditionSelectors(
+                    ConditionContent(
                         header = {
                             MediumTitle(LocalI18N.current["ui.action.if"])
                         },

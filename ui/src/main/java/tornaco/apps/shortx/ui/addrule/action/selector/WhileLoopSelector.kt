@@ -34,7 +34,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
-import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectors
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -174,7 +174,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                     val conditions = conditionState.conditions
                     val conditionOp = conditionState.conditionOp
                     val warning = conditionState.conditionWarningMessages
-                    ConditionSelectors(
+                    ConditionContent(
                         header = {
                             SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.condition.title"])
                             TipRow(LocalI18N.current["ui.action.while.loop.condition.message"])

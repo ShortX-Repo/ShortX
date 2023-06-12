@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
 
 
 @Composable
-fun ConditionSelectors(
+fun ConditionContent(
     header: @Composable ColumnScope.() -> Unit = {
         MediumTitle(LocalI18N.current["ui.conditions.title"])
     },
@@ -42,36 +42,15 @@ fun ConditionSelectors(
     readOnly: Boolean = false,
     handler: ConditionHandler
 ) {
-    val selectHandler = conditionSelectHandler {
-        handler.addCondition(it)
-    }
+
     ConditionList(
         readOnly = readOnly,
         header = header,
         conditions = conditions,
         warnings = warnings,
         conditionOp = conditionOp,
-        selectCondition = { clazz ->
-            selectHandler(ConditionSelectSource.FromClass(clazz))
-        },
-        removeCondition = { con ->
-            handler.removeCondition(con)
-        },
-        setConditionOp = {
-            handler.setConditionOp(it)
-        },
-        editCondition = {
-            selectHandler(ConditionSelectSource.FromCondition(it))
-        },
-        invertCondition = {
-            handler.addCondition(
-                it.clone(
-                    id = it.id,
-                    note = it.note,
-                    isInvert = !it.isInvert
-                )
-            )
-        })
+        handler = handler,
+    )
 }
 
 @Composable
@@ -80,54 +59,66 @@ fun ConditionList(
     header: @Composable ColumnScope.() -> Unit,
     conditions: List<Condition>,
     warnings: Map<String, List<String>>,
+    handler: ConditionHandler,
     conditionOp: Op,
-    selectCondition: (KClass<out Condition>) -> Unit,
-    removeCondition: (Condition) -> Unit,
-    editCondition: (Condition) -> Unit,
-    invertCondition: (Condition) -> Unit,
-    setConditionOp: (Op) -> Unit
 ) {
+    val selectHandler = conditionSelectHandler {
+        handler.addCondition(it)
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
         Box {
-            val conditionSelectorState = rememberDropdownSelectorState()
-            val opSelectorState = rememberDropdownSelectorState()
-
             Column(modifier = Modifier.fillMaxWidth()) {
-                conditions.forEach {
+                conditions.forEach { conditionItem ->
+                    val editHandler = conditionSelectHandler {
+                        handler.addCondition(
+                            it.clone(
+                                id = conditionItem.id,
+                                note = conditionItem.note,
+                                isInvert = conditionItem.isInvert
+                            )
+                        )
+                    }
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
                                 onClick = {
-                                    editCondition(it)
+                                    editHandler(ConditionSelectSource.FromCondition(conditionItem))
                                 },
                                 onLongClick = {
-                                    invertCondition(it)
+                                    handler.addCondition(
+                                        conditionItem.clone(
+                                            id = conditionItem.id,
+                                            note = conditionItem.note,
+                                            isInvert = !conditionItem.isInvert
+                                        )
+                                    )
                                 }
                             )
                     ) {
                         ListItem(
-                            titleLines = labelForCondition(condition = it),
+                            titleLines = labelForCondition(condition = conditionItem),
                             icon = {
-                                ConditionIcon(it)
+                                ConditionIcon(conditionItem)
                             },
                             action1 = {
                                 val invertDialog = rememberTipDialogState(
-                                    title = LocalI18N.current["ui.condition.invert"],
-                                    tip = LocalI18N.current["ui.condition.invert.description"]
+                                    title = LocalI18N.current["ui.conditionItem.invert"],
+                                    tip = LocalI18N.current["ui.conditionItem.invert.description"]
                                 )
                                 TipDialog(state = invertDialog)
-                                AnimatedVisibility(visible = it.isInvert) {
-                                    ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
+                                AnimatedVisibility(visible = conditionItem.isInvert) {
+                                    ClickableBadge(text = LocalI18N.current["ui.conditionItem.invert"]) {
                                         invertDialog.show()
                                     }
                                 }
 
                                 if (!readOnly) {
                                     IconButton(onClick = {
-                                        removeCondition(it)
+                                        handler.removeCondition(conditionItem)
                                     }) {
                                         RemixIcon(remixName = Remix.System.close_line)
                                     }
@@ -135,11 +126,11 @@ fun ConditionList(
                             })
 
                         // Warning.
-                        val actionWarning: List<String>? = warnings[it.id]
+                        val actionWarning: List<String>? = warnings[conditionItem.id]
                         AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
                             actionWarning?.let {
                                 WarningCard(
-                                    LocalI18N.current["ui.condition.warning.message"],
+                                    LocalI18N.current["ui.conditionItem.warning.message"],
                                     it
                                 )
                             }
@@ -149,43 +140,8 @@ fun ConditionList(
 
                 // Add button
                 TinySpacer()
-                Box {
-                    if (!readOnly) {
-                        FilledTonalButton(onClick = {
-                            conditionSelectorState.open()
-                        }) {
-                            RemixIcon(
-                                modifier = Modifier.size(16.dp),
-                                remixName = Remix.System.add_line
-                            )
-                            TinySpacer()
-                            Text(LocalI18N.current["ui.conditions.add"])
-                        }
-                    }
-                    DropdownSelector(
-                        state = conditionSelectorState,
-                        items = listOf(
-                            Condition.CurrentForegroundApp::class,
-                            Condition.AppIsRunning::class,
-                            Condition.MVEL::class,
-                            Condition.TRUE::class,
-                            Condition.EvaluateGlobalVar::class,
-                            Condition.BatteryPercent::class,
-                        ).map {
-                            DropdownItem(
-                                labelLines = labelForConditionSelector(it),
-                                data = it,
-                                icon = {
-                                    RemixIcon(
-                                        modifier = Modifier.size(16.dp),
-                                        remixName = iconForCondition(condition = it)
-                                    )
-                                }
-                            )
-                        }
-                    ) {
-                        selectCondition(it.data)
-                    }
+                ConditionSelector(readOnly) { clazz ->
+                    selectHandler(ConditionSelectSource.FromClass(clazz))
                 }
 
 
@@ -196,12 +152,67 @@ fun ConditionList(
                     OpSelector(
                         conditionOp = conditionOp,
                         readOnly = readOnly,
-                        opSelectorState = opSelectorState,
-                        setConditionOp = setConditionOp
+                        setConditionOp = {
+                            handler.setConditionOp(it)
+                        }
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ConditionSelector(
+    readOnly: Boolean,
+    selectCondition: (KClass<out Condition>) -> Unit
+) {
+    Box {
+        val conditionSelectorState = rememberDropdownSelectorState()
+        if (!readOnly) {
+            FilledTonalButton(onClick = {
+                conditionSelectorState.open()
+            }) {
+                RemixIcon(
+                    modifier = Modifier.size(16.dp),
+                    remixName = Remix.System.add_line
+                )
+                TinySpacer()
+                Text(LocalI18N.current["ui.conditions.add"])
+            }
+        }
+        ConditionSelectorDropdown(conditionSelectorState, selectCondition)
+    }
+}
+
+@Composable
+private fun ConditionSelectorDropdown(
+    conditionSelectorState: DropdownSelectorState,
+    selectCondition: (KClass<out Condition>) -> Unit
+) {
+    DropdownSelector(
+        state = conditionSelectorState,
+        items = listOf(
+            Condition.CurrentForegroundApp::class,
+            Condition.AppIsRunning::class,
+            Condition.MVEL::class,
+            Condition.TRUE::class,
+            Condition.EvaluateGlobalVar::class,
+            Condition.BatteryPercent::class,
+        ).map {
+            DropdownItem(
+                labelLines = labelForConditionSelector(it),
+                data = it,
+                icon = {
+                    RemixIcon(
+                        modifier = Modifier.size(16.dp),
+                        remixName = iconForCondition(condition = it)
+                    )
+                }
+            )
+        }
+    ) {
+        selectCondition(it.data)
     }
 }
 
@@ -223,9 +234,9 @@ fun ConditionIcon(it: Condition) {
 private fun OpSelector(
     conditionOp: Op,
     readOnly: Boolean,
-    opSelectorState: DropdownSelectorState,
     setConditionOp: (Op) -> Unit
 ) {
+    val opSelectorState = rememberDropdownSelectorState()
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
