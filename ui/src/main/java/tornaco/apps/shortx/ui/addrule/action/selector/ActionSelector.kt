@@ -42,17 +42,17 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
-    Ui("UI", Remix.Design.layout_2_line),
-    Apps("ui.action.category.app", Remix.System.apps_2_line),
-    Settings("ui.action.system.settings", Remix.System.settings_2_line),
-    Life("ui.action.life", Remix.Map.riding_line),
-    Advanced("ui.action.advanced", Remix.System.function_line),
-
+    Ui("UI", Remix.Design.layout_2_fill),
+    Apps("ui.action.category.app", Remix.System.apps_2_fill),
+    Settings("ui.action.system.settings", Remix.System.settings_2_fill),
+    Life("ui.action.life", Remix.Map.riding_fill),
+    Advanced("ui.action.advanced", Remix.System.function_fill),
+    Misc("ui.action.advanced", Remix.Others.box_1_fill),
 }
 
 enum class TabItems(val i18NKey: String, val icon: String) {
-    Recent("Recent", Remix.System.history_line),
-    All("All", Remix.Business.cloud_line),
+    Recent("ui.action.recent", Remix.System.history_line),
+    All("ui.action.all", Remix.Buildings.store_2_line),
     Remote("ui.action.remote", Remix.Business.cloud_line)
 }
 
@@ -197,6 +197,10 @@ private fun <ARGS> ActionSelector(
 
                                             ActionCategoryTitle(ActionCategory.Life)
                                             LifeActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Misc)
+                                            MiscActions(addAction = addAction)
                                             StandardSpacer()
                                         }
                                     }

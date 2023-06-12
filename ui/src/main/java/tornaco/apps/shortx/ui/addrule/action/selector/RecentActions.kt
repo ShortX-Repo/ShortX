@@ -9,8 +9,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 
@@ -35,6 +35,7 @@ fun RecentActions(addAction: (Action) -> Unit) {
         systemActionSelectHandler(addAction = addAction),
         lifeActionSelectHandler(addAction = addAction),
         extActionSelectHandler(addAction = addAction),
+        miscActionSelectHandler(addAction = addAction),
     )
 
     val itemSelected: (KClass<out Action>) -> Unit = { it ->

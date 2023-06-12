@@ -58,8 +58,9 @@ private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Un
         uiActionSelectHandler(addAction = addAction),
         appActionSelectHandler(addAction = addAction),
         systemActionSelectHandler(addAction = addAction),
-        lifeActionSelectHandler(addAction = addAction),
         extActionSelectHandler(addAction = addAction),
+        lifeActionSelectHandler(addAction = addAction),
+        miscActionSelectHandler(addAction = addAction),
     )
 
     val itemSelected: (Action) -> Unit = { it ->
@@ -357,7 +358,16 @@ private fun Actions(
 
 @Composable
 fun ActionIcon(action: Action) {
-    ActionIcon(action::class)
+    ColoredIcon(
+        size = 36.dp,
+        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
+    ) {
+        RemixIcon(
+            modifier = Modifier.size(16.dp),
+            remixName = imageVectorForAction(action = action),
+            tint = colorForAction(action::class)
+        )
+    }
 }
 
 @Composable

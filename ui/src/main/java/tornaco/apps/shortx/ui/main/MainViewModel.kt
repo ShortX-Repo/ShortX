@@ -107,9 +107,7 @@ fun <T> ContextViewModel<T>.daToDirectActionUM(
             Date(directAction.createTime)
         ),
         icon = firstAction?.let {
-            imageVectorForAction(
-                it::class
-            )
+            imageVectorForAction(it)
         } ?: Remix.Weather.sparkling_line,
         iconColor = firstAction?.let {
             colorForAction(it::class).value
@@ -161,9 +159,7 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
             colorForFact(it::class).value
         } ?: Color.Unspecified.value,
         actionIcon = firstAction?.let {
-            imageVectorForAction(
-                it::class
-            )
+            imageVectorForAction(it)
         } ?: Remix.Weather.sparkling_line,
         actionIconColor = firstAction?.let {
             colorForAction(it::class).value

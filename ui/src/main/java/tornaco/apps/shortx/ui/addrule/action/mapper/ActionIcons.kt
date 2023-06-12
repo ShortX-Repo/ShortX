@@ -4,6 +4,12 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import kotlin.reflect.KClass
 
+fun imageVectorForAction(action: Action): String {
+    return if (action is Action.NoAction) {
+        action.icon
+    } else imageVectorForAction(action::class)
+}
+
 
 fun imageVectorForAction(action: KClass<out Action>): String {
     return when (action) {

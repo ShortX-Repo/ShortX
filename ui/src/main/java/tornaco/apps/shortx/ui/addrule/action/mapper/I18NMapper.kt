@@ -132,7 +132,7 @@ fun labelAndDescriptionForActionSelector(
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
-        Action.NoAction::class -> "Noop" to null
+        Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
             "N/A" to null
@@ -441,7 +441,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.NoAction -> {
-            listOf("Noop")
+            listOf(i18N["ui.action.no.action"])
         }
 
         is Action.CreatePkgSet -> {

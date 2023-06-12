@@ -18,7 +18,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
     return when {
         this is_ tornaco.apps.shortx.core.proto.action.NoAction::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.NoAction::class.java
-            Action.NoAction(id = data.id, note = data.note)
+            Action.NoAction(id = data.id, note = data.note, icon = data.icon)
         }
 
         this is_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java -> {

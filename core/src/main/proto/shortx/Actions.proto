@@ -11,6 +11,7 @@ import "shortx/GlobalVars.proto";
 import "shortx/Settings.proto";
 
 message NoAction {
+  string icon = 1;
 
   string note = 99;
   string id = 100;

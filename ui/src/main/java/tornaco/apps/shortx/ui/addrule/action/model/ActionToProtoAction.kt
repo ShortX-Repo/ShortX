@@ -483,6 +483,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             NoAction.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .setIcon(icon)
                 .build()
         }
     }

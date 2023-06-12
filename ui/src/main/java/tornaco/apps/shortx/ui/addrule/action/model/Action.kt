@@ -741,6 +741,7 @@ sealed interface Action : Parcelable {
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
+        val icon: String
     ) : Action {
         override fun clone(id: String, note: String): Action {
             return this.copy(id = id, note = note)
