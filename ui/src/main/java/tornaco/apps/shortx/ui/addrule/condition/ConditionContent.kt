@@ -111,7 +111,7 @@ fun ConditionList(
                                 )
                                 TipDialog(state = invertDialog)
                                 AnimatedVisibility(visible = conditionItem.isInvert) {
-                                    ClickableBadge(text = LocalI18N.current["ui.conditionItem.invert"]) {
+                                    ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
                                         invertDialog.show()
                                     }
                                 }

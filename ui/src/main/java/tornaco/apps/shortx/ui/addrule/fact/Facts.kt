@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
@@ -40,6 +41,7 @@ fun FactSelectors(
         systemFactSelectHandler(vm::setFact)
     )
     val editFactHandler: (FactSelectSource) -> Unit = { source ->
+        Logger("FactItem").d("editFactHandler: $source")
         for (h in factHandlers) {
             if (h(source)) break
         }
@@ -49,12 +51,12 @@ fun FactSelectors(
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
         Column {
-            state.fact?.let { fact ->
+            state.facts.forEach { fact ->
                 FactItem(
                     fact = fact,
                     readOnly = readOnly,
                     onClick = {
-                        editFactHandler(FactSelectSource.FromFact(it))
+                        editFactHandler(FactSelectSource.FromFact(fact))
                     }
                 )
             }
@@ -81,7 +83,7 @@ fun FactSelectors(
 private fun FactItem(
     fact: Fact,
     readOnly: Boolean,
-    onClick: (Fact) -> Unit
+    onClick: () -> Unit
 ) {
     val contextDataInfoDialogState = rememberContextDataInfoDialogState()
     ContextDataInfoDialog(state = contextDataInfoDialogState)
@@ -90,9 +92,7 @@ private fun FactItem(
     ListItem(
         modifier = Modifier,
         titleLines = labelForFact(fact = fact),
-        onClick = {
-            onClick(fact)
-        },
+        onClick = onClick,
         icon = {
             ColoredIcon(
                 size = 36.dp, color = colorForFact(fact::class).copy(

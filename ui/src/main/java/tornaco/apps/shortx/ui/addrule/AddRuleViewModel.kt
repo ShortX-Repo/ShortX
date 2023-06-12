@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
-import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.rule.pack_
@@ -37,7 +36,7 @@ data class AddRuleState(
     val id: String = defaultNewRuleId(),
     val title: String = "",
     val description: String = "",
-    val fact: Fact? = null,
+    val facts: List<Fact> = emptyList(),
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
@@ -79,16 +78,15 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
-    fun setFact(fact: Fact?) {
-        if (fact != state.value.fact) {
+    fun setFact(fact: Fact) {
+        if (!state.value.facts.contains(fact)) {
             updateState {
-                copy(fact = fact, ruleChanged = true)
+                copy(
+                    facts = listOf(fact),
+                    ruleChanged = true
+                )
             }
         }
-    }
-
-    fun showEdgeHint(edge: Edge) {
-        shortXManager.showEdgeHint(edge)
     }
 
     fun setShowAdvancedOptions(show: Boolean) {
@@ -97,7 +95,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun save() {
         viewModelScope.launch {
-            val fact = state.value.fact ?: return@launch
+            if (state.value.facts.isEmpty()) return@launch
+            val fact = state.value.facts[0]
 
             val conditions = conditionContentStateHandler.state.value.conditions
             val condOp = conditionContentStateHandler.state.value.conditionOp
@@ -234,7 +233,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         id = r.id,
                         title = r.title,
                         description = r.description,
-                        fact = r.fact.toFact(shortXManager),
+                        facts = listOfNotNull(r.fact.toFact(shortXManager)),
                         isEditRule = true,
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
