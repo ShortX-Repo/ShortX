@@ -131,6 +131,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.battery.charge.unplug"] to null
         }
 
+        Fact.Broadcast::class -> {
+            i18n["ui.fact.broadcast"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -348,11 +352,18 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.ChargerPlug -> {
-            mutableListOf(i18N["ui.fact.battery.charge.plug"])
+            listOf(i18N["ui.fact.battery.charge.plug"])
         }
 
         is Fact.ChargerUnplug -> {
-            mutableListOf(i18N["ui.fact.battery.charge.unplug"])
+            listOf(i18N["ui.fact.battery.charge.unplug"])
+        }
+
+        is Fact.Broadcast -> {
+            mutableListOf(
+                i18N["ui.fact.broadcast"],
+                fact.actions.joinToString(System.lineSeparator())
+            )
         }
     }
 }

@@ -109,7 +109,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun addRule(rule: ByteArrayWrapper) {
-            shortXContext.rule.addRule(Rule.parseFrom(rule.byte))
+            shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byte))
         }
 
         override fun deleteRule(ruleId: String) {

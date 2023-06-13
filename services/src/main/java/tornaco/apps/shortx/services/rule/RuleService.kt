@@ -233,12 +233,25 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         unregisterJobStatusListener(listener)
     }
 
-    fun addRule(rule: Rule) {
-        ruleSettingsStore.addRule(rule)
-        handler.postSafety {
-            ruleChanged()
-            allTriggers.forEach { it.onAddRule(rule) }
+    fun addOrUpdateRule(rule: Rule) {
+        val existing = getRuleById(rule.id)
+        if (existing == null) {
+            // Add
+            ruleSettingsStore.addRule(rule)
+            handler.postSafety {
+                ruleChanged()
+                allTriggers.forEach { it.onAddRule(rule) }
+            }
+        } else {
+            // Update
+            ruleSettingsStore.addRule(rule)
+            handler.postSafety {
+                ruleChanged()
+                allTriggers.forEach { it.onUpdateRule(oldRule = existing, newRule = rule) }
+            }
         }
+
+
     }
 
     fun deleteRule(ruleId: String) {

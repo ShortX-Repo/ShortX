@@ -66,7 +66,7 @@ class AlarmScheduler(
                 return
             }
             handler.postSafety {
-                logger.w("receiver, call on alarm, ruleId: $ruleId, tag: $tag")
+                logger.i("receiver, call on alarm, ruleId: $ruleId, tag: $tag")
                 onAlarm(ruleId, tag)
             }
         }
@@ -87,9 +87,9 @@ class AlarmScheduler(
         val triggerOffset = alarm.getTriggerTimeOffset()
 
         if (triggerOffset <= 0) {
-            logger.w("AlarmScheduler, skip this alarm since offset < 0, maybe we have missed this alarm")
+            logger.i("AlarmScheduler, skip this alarm since offset < 0, maybe we have missed this alarm")
         } else {
-            logger.w(
+            logger.i(
                 "AlarmScheduler schedule: ${alarm.tag}, reason: $reason, pi: $pi, trigger offset: ${
                     formatDuration(Duration.ofMillis(triggerOffset))
                 }"
@@ -117,7 +117,7 @@ class AlarmScheduler(
                 .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
-        logger.w("AlarmScheduler cancel: ${alarm.tag}, $reason, pi: $pi")
+        logger.i("AlarmScheduler cancel: ${alarm.tag}, $reason, pi: $pi")
         pi?.let {
             alarmManager.cancel(pi)
         }
@@ -128,7 +128,7 @@ class AlarmScheduler(
     private fun requestCode(alarm: Alarm) = alarm.tag.hashCode()
 
     fun systemReady() {
-        logger.w("AlarmScheduler systemReady")
+        logger.i("AlarmScheduler systemReady")
         ContextCompat.registerReceiver(
             context, receiver, IntentFilter(BROADCAST_ACTION),
             ContextCompat.RECEIVER_EXPORTED
@@ -136,7 +136,7 @@ class AlarmScheduler(
     }
 
     fun shutdown() {
-        logger.w("AlarmScheduler shutdown")
+        logger.i("AlarmScheduler shutdown")
         context.unregisterReceiver(receiver)
     }
 

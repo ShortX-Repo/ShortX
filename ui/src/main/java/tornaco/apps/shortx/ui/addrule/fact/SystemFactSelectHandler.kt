@@ -116,6 +116,20 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = batteryLevelSelectorState)
 
+    val broadcastSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.broadcast"],
+        message = LocalI18N.current["ui.common.action"],
+        inputValidator = {
+            (it.isNotEmpty()) to ""
+        },
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSelected = { actionString ->
+            setFact(Fact.Broadcast(actions = listOf(actionString)))
+        }
+    )
+    TextInputDialog(state = broadcastSelectorState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -210,6 +224,13 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ChargerUnplug::class -> {
                 setFact(Fact.ChargerUnplug())
+                true
+            }
+
+            Fact.Broadcast::class -> {
+                broadcastSelectorState.show(source.getFactAs<Fact.Broadcast>()?.actions?.let {
+                    if (it.isEmpty()) null else it[0]
+                })
                 true
             }
 

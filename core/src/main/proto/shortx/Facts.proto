@@ -314,3 +314,11 @@ message AudioFocusChanged {
   string note = 99;
   string id = 100;
 }
+
+message Broadcast {
+  repeated string actions = 1;
+  string dataSchema = 2;
+
+  string note = 99;
+  string id = 100;
+}

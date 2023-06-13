@@ -157,6 +157,7 @@
   "ui.fact.app.uninstalled": "App uninstalled",
   "ui.fact.app.updated": "App updated",
   "ui.fact.system.settings": "Settings change",
+  "ui.fact.broadcast": "Broadcast",
   "ui.fact.battery.charge.plug": "Charger plug",
   "ui.fact.battery.charge.unplug": "Charger unplug",
   "ui.fact.battery.level.changed": "Battery level changed",

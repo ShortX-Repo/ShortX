@@ -394,6 +394,16 @@ sealed interface Fact {
             return copy(id = id, note = note)
         }
     }
+
+    data class Broadcast(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val actions: List<String>
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()

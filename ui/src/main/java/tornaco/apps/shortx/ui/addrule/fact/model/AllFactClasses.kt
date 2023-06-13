@@ -46,4 +46,6 @@ val allFactClasses = listOf(
     Fact.BatteryLevelChanged::class,
     Fact.ChargerPlug::class,
     Fact.ChargerUnplug::class,
+
+    Fact.Broadcast::class,
 )

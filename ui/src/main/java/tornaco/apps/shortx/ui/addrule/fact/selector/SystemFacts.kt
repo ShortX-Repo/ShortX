@@ -38,6 +38,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.BatteryLevelChanged::class,
         Fact.ChargerPlug::class,
         Fact.ChargerUnplug::class,
+
+        Fact.Broadcast::class,
     ).map {
         SelectorItem(
             type = it,

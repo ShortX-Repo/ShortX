@@ -302,6 +302,14 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.Broadcast::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.Broadcast::class.java
+            Fact.Broadcast(
+                id = data.id, note = data.note, actions = data.actionsList
+            )
+        }
+
 
         else -> {
             null

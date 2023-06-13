@@ -157,6 +157,7 @@
   "ui.fact.app.uninstalled": "应用卸载",
   "ui.fact.app.updated": "应用更新",
   "ui.fact.system.settings": "设置变化",
+  "ui.fact.broadcast": "广播",
   "ui.fact.battery.charge.plug": "充电器插入",
   "ui.fact.battery.charge.unplug": "充电器拔出",
   "ui.fact.battery.level.changed": "电量发生变化",
