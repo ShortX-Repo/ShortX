@@ -214,7 +214,7 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
 
         is Fact.PkgStopRunningAny -> {
-            TaskRemoved.newBuilder().setId(id).setNote(note).build()
+            PkgStopRunning.newBuilder().setId(id).setNote(note).build()
         }
 
         is Fact.AppAdded -> {

@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -79,7 +80,9 @@ data class MainState(
     val isPrivacyStatementAccepted: Boolean = false,
     val isShowRuleDescription: Boolean = true,
     val rules: List<RuleUM> = emptyList(),
+    val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
     val das: List<DirectActionUM> = emptyList(),
+    val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val isLoading: Boolean = true
 )
@@ -287,7 +290,45 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
                 val rules = shortXManager.getAllRules()
-                    .sortedByDescending { it.createTime }
+                    .apply {
+                        when (state.value.ruleSortBy) {
+                            RuleSortBy.Name -> {
+                                sortedWith { o1, o2 ->
+                                    Collator.getInstance(Locale.CHINESE).compare(o1, o2)
+                                }
+                            }
+
+                            RuleSortBy.NameReverse -> {
+                                sortedWith { o1, o2 ->
+                                    Collator.getInstance(Locale.CHINESE).compare(o1, o2)
+                                }.reversed()
+                            }
+
+                            RuleSortBy.LastUpdateTime -> {
+                                sortedByDescending { it.lastUpdateTime }
+                            }
+
+                            RuleSortBy.LastUpdateTimeReverse -> {
+                                sortedByDescending { it.lastUpdateTime }.reversed()
+                            }
+
+                            RuleSortBy.CreateTime -> {
+                                sortedByDescending { it.createTime }
+                            }
+
+                            RuleSortBy.CreateTimeReverse -> {
+                                sortedByDescending { it.createTime }.reversed()
+                            }
+
+                            RuleSortBy.EnableState -> {
+                                sortedBy { it.isEnabled }
+                            }
+
+                            RuleSortBy.EnableStateReverse -> {
+                                sortedBy { it.isEnabled }.reversed()
+                            }
+                        }
+                    }
                     .map { rule ->
                         ruleToRuleUM(rule)
                     }
@@ -298,6 +339,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+
+    fun setRuleSortBy(ruleSortBy: RuleSortBy) {
+        updateState { copy(ruleSortBy = ruleSortBy) }
+        loadRules(false)
+    }
 
     fun toggleShowDetailedDAItem() {
         viewModelScope.launch {
