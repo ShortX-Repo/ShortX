@@ -106,8 +106,8 @@ fun ConditionList(
                             },
                             action1 = {
                                 val invertDialog = rememberTipDialogState(
-                                    title = LocalI18N.current["ui.conditionItem.invert"],
-                                    tip = LocalI18N.current["ui.conditionItem.invert.description"]
+                                    title = LocalI18N.current["ui.condition.invert"],
+                                    tip = LocalI18N.current["ui.condition.invert.description"]
                                 )
                                 TipDialog(state = invertDialog)
                                 AnimatedVisibility(visible = conditionItem.isInvert) {
@@ -130,7 +130,7 @@ fun ConditionList(
                         AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
                             actionWarning?.let {
                                 WarningCard(
-                                    LocalI18N.current["ui.conditionItem.warning.message"],
+                                    LocalI18N.current["ui.condition.warning.message"],
                                     it
                                 )
                             }
