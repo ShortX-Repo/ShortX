@@ -71,6 +71,7 @@ class ComposeOverlay(
                     startY = event.rawY
                     isDragging = false
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (event.rawX - startX).toInt()
                     val dy = (event.rawY - startY).toInt()
@@ -86,6 +87,7 @@ class ComposeOverlay(
                         return true
                     }
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     run {
                         touchY = 0.0f
@@ -96,6 +98,7 @@ class ComposeOverlay(
                         return true
                     }
                 }
+
                 else -> {}
             }
             return false
@@ -223,13 +226,16 @@ class ComposeOverlay(
                 show()
                 true
             }
+
             "dismiss" -> {
                 dismiss()
                 true
             }
+
             "isShow" -> {
                 isShow()
             }
+
             else -> {
                 false
             }

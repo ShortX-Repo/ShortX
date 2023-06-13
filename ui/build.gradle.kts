@@ -94,16 +94,11 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
 
-    implementation(libs.io.noties.markwo.core)
-    implementation(libs.io.noties.markwo.ext.strikethrough)
-    implementation(libs.io.noties.markwo.ext.tables)
-    implementation(libs.io.noties.markwo.html)
-    implementation(libs.io.noties.markwo.linkify)
-
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
 
     implementation(project(":binder-retriever"))
+    implementation(project(":ui-base"))
     implementation(project(":core"))
     implementation(project(":external:shell"))
     implementation(project(":external:dateformatter"))

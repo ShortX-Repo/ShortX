@@ -49,7 +49,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.webview.components.ErrorView
@@ -203,14 +202,14 @@ private fun WebViewContainer(
 
                     addView(
                         WebView(context).apply {
-                            id = R.id.ui_webView
+                            id = github.tornaco.shortx.ui.base.R.id.ui_webView
                             initWebView(this)
                         }
                     )
                 }
             },
             update = { swipeRefreshLayout ->
-                val webView = swipeRefreshLayout.findViewById<WebView>(R.id.ui_webView)
+                val webView = swipeRefreshLayout.findViewById<WebView>(github.tornaco.shortx.ui.base.R.id.ui_webView)
 
                 swipeRefreshLayout.layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

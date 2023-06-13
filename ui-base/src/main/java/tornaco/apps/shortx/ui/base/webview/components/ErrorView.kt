@@ -30,7 +30,13 @@ import android.content.res.Configuration
 import android.webkit.WebViewClient.ERROR_HOST_LOOKUP
 import android.webkit.WebViewClient.ERROR_TIMEOUT
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
@@ -46,7 +52,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Preview
@@ -94,7 +99,7 @@ fun ErrorView(
                     .padding(start = 32.dp, end = 32.dp)
                     .fillMaxWidth(),
                 painter = painterResource(
-                    id = R.drawable.ui_load_error
+                    id = github.tornaco.shortx.ui.base.R.drawable.ui_load_error
                 ),
                 contentDescription = null,
             )

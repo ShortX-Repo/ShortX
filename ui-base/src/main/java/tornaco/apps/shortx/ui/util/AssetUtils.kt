@@ -18,7 +18,6 @@
 package tornaco.apps.shortx.ui.util
 
 import android.content.Context
-import com.elvishew.xlog.XLog
 import java.io.File
 import java.io.IOException
 
@@ -52,7 +51,6 @@ object AssetUtils {
         return try {
             readFileToString(context, name)
         } catch (e: IOException) {
-            XLog.e("readFileToStringOrThrow", e)
             null
         }
     }

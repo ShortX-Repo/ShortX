@@ -67,36 +67,6 @@ fun MediumTitle(text: String) {
     )
 }
 
-@Composable
-fun MediumTitleWithTip(text: String, tipText: String) {
-    val tipDialogState = rememberTipDialogState(title = text, tip = tipText)
-
-    Row(
-        modifier = Modifier
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.W500,
-                fontSize = 17.sp
-            )
-        )
-
-        IconButton(onClick = {
-            tipDialogState.show()
-        }) {
-            RemixIcon(
-                remixName = Remix.System.question_line,
-                modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-
-    TipDialog(tipDialogState)
-}
 
 @Composable
 fun SmallTitle(

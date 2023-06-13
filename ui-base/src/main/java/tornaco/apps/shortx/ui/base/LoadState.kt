@@ -1,14 +1,18 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.ui.R
 
 sealed interface LoadState<out T> {
     data class Success<T>(val data: T) : LoadState<T>
@@ -49,7 +53,7 @@ fun LoadError(modifier: Modifier = Modifier) {
                 .offset(y = (-80).dp)
                 .fillMaxWidth(),
             painter = painterResource(
-                id = R.drawable.ui_load_error
+                id = github.tornaco.shortx.ui.base.R.drawable.ui_load_error
             ),
             contentDescription = null,
         )
@@ -70,7 +74,7 @@ fun EmptyList(modifier: Modifier = Modifier) {
                 .offset(y = (-80).dp)
                 .fillMaxWidth(),
             painter = painterResource(
-                id = R.drawable.ui_empty_list
+                id = github.tornaco.shortx.ui.base.R.drawable.ui_empty_list
             ),
             contentDescription = null,
         )

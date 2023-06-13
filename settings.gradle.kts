@@ -22,11 +22,13 @@ pluginManagement {
 }
 
 include(":app")
+include(":ui-base")
 include(":ui")
 include(":binder-retriever")
 include(":core")
 include(":services")
 include(":services-33")
+include(":services-ui")
 include(":patch")
 include(":patch-magisk:module")
 include(":patch-magisk:bridge")

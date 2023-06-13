@@ -272,57 +272,6 @@ fun RebootConfirmDialog(
 }
 
 
-data class MenuDialogItem(val title: String, val iconName: String? = null, val onClick: () -> Unit)
-
-class MenuDialogState(
-    val title: String,
-    val menuItems: List<MenuDialogItem>
-) :
-    CommonDialogState()
-
-@Composable
-fun rememberMenuDialogState(
-    title: String,
-    menuItems: List<MenuDialogItem>
-): MenuDialogState {
-    return remember {
-        MenuDialogState(title, menuItems)
-    }
-}
-
-@Composable
-fun MenuDialog(
-    state: MenuDialogState,
-) {
-    if (state.isShowing) {
-        ShortXDialog(
-            onDismissRequest = {
-                state.dismiss()
-            },
-
-            title = {
-                Text(text = state.title)
-            }) {
-
-            state.menuItems.forEach { dialogItem ->
-                ListItem(
-                    title = dialogItem.title,
-                    icon = {
-                        dialogItem.iconName?.let {
-                            RemixIcon(remixName = it)
-                        }
-                    },
-                    onClick = {
-                        dialogItem.onClick()
-                        state.dismiss()
-                    })
-            }
-
-        }
-    }
-}
-
-
 class TipDialogState(
     val title: String,
     val tip: String,
@@ -486,56 +435,6 @@ fun ImageDialog(state: CommonDialogState, resId: Int) {
                     painter = painterResource(id = resId),
                     contentDescription = ""
                 )
-            }
-        }
-    }
-}
-
-
-class SelectionDialogState(
-    val title: String,
-    val message: String?,
-    val selectionLabel2Ids: List<Pair<String, String>>,
-    val onSelect: (id: String) -> Unit
-) : CommonDialogState()
-
-@Composable
-fun rememberSelectionDialogState(
-    title: String,
-    message: String?,
-    selectionLabel2Ids: List<Pair<String, String>>,
-    onSelect: (id: String) -> Unit
-): SelectionDialogState {
-    return remember {
-        SelectionDialogState(title, message, selectionLabel2Ids, onSelect)
-    }
-}
-
-@Composable
-fun SelectionDialog(state: SelectionDialogState) {
-    if (state.isShowing) {
-        ShortXDialog(
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false,
-            ),
-            onDismissRequest = {
-                state.dismiss()
-            },
-            title = {
-                DialogTitle(text = state.title)
-            }) {
-
-            state.message?.let {
-                DialogMessage(text = it)
-                StandardSpacer()
-            }
-
-            state.selectionLabel2Ids.forEach {
-                ListItem(title = it.first, onClick = {
-                    state.onSelect(it.second)
-                    state.dismiss()
-                })
             }
         }
     }
