@@ -153,7 +153,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             ActivityStarted.newBuilder().addComponents(componentName.toAppComponent(userId))
                 .build(),
             initialContextData = mapOf(
-                ContextDataMapping.ActivityStarted.pkgName.name to lastFgPkg.pkgName,
+                ContextDataMapping.ActivityStarted.pkgName.name to currentFgPkg.pkgName,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
             )
         )
