@@ -47,6 +47,15 @@
 -keep class tornaco.apps.shortx.ui.addrule.condition.model.** { *; }
 -keep class tornaco.apps.shortx.ui.addrule.fact.model.** { *; }
 
+
+
+# java.lang.VerifyError: Verifier rejected class t7.e0: void t7.e0.b(int, int[])
+# failed to verify: void t7.e0.b(int, int[]): [0x7] register v5 has type Precise Reference:
+# int[] but expected Integer (declaration of 't7.e0' appears in Anonymous-DexFile@3310950862)
+-keep class com.squareup.** { *; }
+
+
+
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn android.accessibilityservice.IAccessibilityServiceClient$Stub

@@ -12,12 +12,12 @@ import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
-import com.elvishew.xlog.XLog
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.Pools
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Async
 import tornaco.apps.shortx.services.ui.LaneView.Speed.Sync
-import java.util.*
+import java.util.LinkedList
 
 /**
  * [LaneView] is used to show live comments all over the screen
@@ -28,6 +28,8 @@ class LaneView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) :
     FrameLayout(context, attrs, defStyleAttr) {
+    private val logger = Logger("LaneView")
+
     /**
      * whether live comments overlap with each other
      */
@@ -168,7 +170,7 @@ class LaneView @JvmOverloads constructor(
                     }
                 }
             }.onFailure {
-                XLog.e("show error", it)
+                logger.e(it, "show error")
             }
         }
     }
@@ -254,6 +256,7 @@ class LaneView @JvmOverloads constructor(
                         val speed = laneWidth.toFloat() / duration
                         (distance / speed).toLong()
                     }
+
                     is Async -> {
                         duration
                     }
