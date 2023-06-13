@@ -135,7 +135,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 fact = AppBecomeFg.newBuilder().addApps(currentFgPkg).build(),
                 initialContextData = mapOf(
                     ContextDataMapping.AppBecomeFg.componentName.name to componentName.flattenToShortString(),
-                    ContextDataMapping.AppBecomeFg.pkgName.name to currentFgPkg.pkgName
+                    ContextDataMapping.AppBecomeFg.pkgName.name to currentFgPkg.pkgName,
+                    ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(currentFgPkg)
+                        ?: "N/A"),
                 )
             )
 
@@ -143,7 +145,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 reason = "onComponentMoveToBg",
                 fact = AppBecomeBg.newBuilder().addApps(lastFgPkg).build(),
                 initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeBg.pkgName.name to lastFgPkg.pkgName
+                    ContextDataMapping.AppBecomeBg.pkgName.name to lastFgPkg.pkgName,
+                    ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(lastFgPkg)
+                        ?: "N/A"),
                 )
             )
         }
@@ -155,6 +159,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             initialContextData = mapOf(
                 ContextDataMapping.ActivityStarted.pkgName.name to currentFgPkg.pkgName,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
+                ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(currentFgPkg)
+                    ?: "N/A"),
             )
         )
     }
