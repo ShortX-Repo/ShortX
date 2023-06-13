@@ -337,7 +337,7 @@
   "ui.settings.debug.log.export": "导出日志",
   "ui.settings.debug.log.export.description": "导出日志文件到 {dir}",
   "ui.settings.fatal.error.title": "兼容性错误",
-  "ui.settings.fatal.error.message": "检测到兼容性错误，可能会导致某些功能出现异常，建议将 {dir} 下的日志反馈给开发者",
+  "ui.settings.fatal.error.message": "检测到兼容性错误，可能会导致某些功能出现异常，请在下方设置中导出日志反馈给开发者",
   "ui.settings.data.backup.title": "备份",
   "ui.settings.data.backup.input.file.name": "请输入备份文件名",
   "ui.settings.data.backup.summary": "将现有数据备份到Download文件夹下",

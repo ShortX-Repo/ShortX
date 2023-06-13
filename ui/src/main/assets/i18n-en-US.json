@@ -337,7 +337,7 @@
   "ui.settings.debug.log.export": "Export Log",
   "ui.settings.debug.log.export.description": "Export logs to {dir}",
   "ui.settings.fatal.error.title": "Compatibility error",
-  "ui.settings.fatal.error.message": "A compatibility error has been detected. It is recommended to feed back the logs under {dir} to developer",
+  "ui.settings.fatal.error.message": "A compatibility error has been detected. It is recommended to feed back the logs to developer",
   "ui.settings.data.backup.title": "Backup data",
   "ui.settings.data.backup.input.file.name": "Input backup file name",
   "ui.settings.data.backup.summary": "Save your data to external Download folder",
