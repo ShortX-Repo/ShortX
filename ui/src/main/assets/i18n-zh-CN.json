@@ -12,6 +12,7 @@
   "ui.conditions.true.desc": "触发器触发后，动作会无条件执行",
   "ui.conditions.eva.global.var": "比较全局变量",
   "ui.conditions.app.running": "应用正在运行",
+  "ui.conditions.app.not.running": "应用未在运行",
   "ui.conditions.has.audio.focus": "应用正在播放音频",
   "ui.conditions.battery.percent": "电量",
   "ui.conditions.battery.percent.op": "判断条件",

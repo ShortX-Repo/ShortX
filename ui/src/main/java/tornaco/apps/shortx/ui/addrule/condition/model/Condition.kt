@@ -44,6 +44,20 @@ sealed interface Condition : Parcelable {
         }
     }
 
+
+    @Parcelize
+    data class AppIsNotRunning(
+        val apps: List<App>,
+        val pkgSets: List<PkgSet>,
+        override val note: String = "",
+        override val isInvert: Boolean = false,
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
     @Parcelize
     data class AppHasAudioFocus(
         val apps: List<App>,

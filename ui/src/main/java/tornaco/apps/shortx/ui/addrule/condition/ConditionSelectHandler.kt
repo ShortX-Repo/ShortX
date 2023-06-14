@@ -48,6 +48,26 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             })
     AppPkgSelectorDialog(appIsRunningSelectorState)
 
+    val appIsNotRunningSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { appList ->
+                addCondition(
+                    Condition.AppIsNotRunning(
+                        apps = appList,
+                        pkgSets = emptyList()
+                    )
+                )
+            },
+            onPkgSetSelected = { pkgSets ->
+                addCondition(
+                    Condition.AppIsNotRunning(
+                        apps = emptyList(),
+                        pkgSets = pkgSets
+                    )
+                )
+            })
+    AppPkgSelectorDialog(appIsNotRunningSelectorState)
+
     val appHasAudioFocusSelectorState =
         rememberSingleAppPkgSelectorState {
             addCondition(
@@ -89,6 +109,14 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
                 appIsRunningSelectorState.show(
                     source.getConditionAs<Condition.AppIsRunning>()?.apps,
                     source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
+                )
+                true
+            }
+
+            Condition.AppIsNotRunning::class -> {
+                appIsNotRunningSelectorState.show(
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
                 )
                 true
             }

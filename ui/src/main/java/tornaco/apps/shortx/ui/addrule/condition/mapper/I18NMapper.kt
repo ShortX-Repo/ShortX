@@ -23,6 +23,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.conditions.app.running"])
         }
 
+        Condition.AppIsNotRunning::class -> {
+            listOf(i18N["ui.conditions.app.not.running"])
+        }
+
         Condition.AppHasAudioFocus::class -> {
             listOf(i18N["ui.conditions.has.audio.focus"])
         }
@@ -69,6 +73,11 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.AppIsRunning -> {
             mutableListOf(i18N["ui.conditions.app.running"])
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppIsNotRunning -> {
+            mutableListOf(i18N["ui.conditions.app.not.running"])
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 
