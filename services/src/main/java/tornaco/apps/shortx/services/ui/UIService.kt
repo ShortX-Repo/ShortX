@@ -59,7 +59,13 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         store.write(Settings.IntSettings.DanmuTextColor, settings.textColor)
         store.write(Settings.IntSettings.DanmuTextSize, settings.textSizeSp)
 
-        liveDanmuView?.detach()
+        liveDanmuView?.apply {
+            uiHandler.postSafety {
+                if (isAttached()) {
+                    detach()
+                }
+            }
+        }
         liveDanmuView = null
     }
 }
