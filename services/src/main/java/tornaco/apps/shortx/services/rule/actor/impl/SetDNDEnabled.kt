@@ -22,11 +22,11 @@ object SetDNDEnabled : Actor {
         val currentFilter = notificationManager.currentInterruptionFilter
         logger.d("currentFilter: $currentFilter")
         if (d.enable) {
-            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-        } else {
             notificationManager.setInterruptionFilter(
                 NotificationManager.INTERRUPTION_FILTER_PRIORITY
             )
+        } else {
+            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
         }
     }
 }
