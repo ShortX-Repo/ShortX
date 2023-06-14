@@ -327,6 +327,16 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class EnableSensorsOff(
+        override val id: String = defaultNewActionId(),
+        override val note: String = ""
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class EnableHotSpot(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
@@ -408,6 +418,16 @@ sealed interface Action : Parcelable {
 
     @Parcelize
     data class DisableWifi(
+        override val id: String = defaultNewActionId(),
+        override val note: String = ""
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
+    data class DisableSensorsOff(
         override val id: String = defaultNewActionId(),
         override val note: String = ""
     ) : Action {

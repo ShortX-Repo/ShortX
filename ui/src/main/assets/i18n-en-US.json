@@ -295,6 +295,8 @@
   "ui.action.bt": "Bluetooth",
   "ui.action.wifi": "Wifi",
   "ui.action.auto.brightness": "Auto brightness",
+  "ui.action.sensors.off": "Sensors off",
+  "ui.action.sensors.off.description": "Turns off all sensors. This means the microphone, camera, accelerometer, gyroscope, proximity sensor, magnetometer, and more can't be accessed by the phone or your apps.",
   "ui.action.data": "Mobile data",
   "ui.action.nfc": "NFC",
   "ui.action.hotspot": "Hotspot",

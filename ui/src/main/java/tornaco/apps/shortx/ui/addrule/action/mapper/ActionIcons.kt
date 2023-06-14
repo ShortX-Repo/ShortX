@@ -93,6 +93,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.wifi_off_fill
         }
 
+        Action.DisableSensorsOff::class -> {
+            Remix.Device.sensor_fill
+        }
+
         Action.EnableBT::class -> {
             Remix.Device.bluetooth_connect_fill
         }
@@ -127,6 +131,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
 
         Action.EnableWifi::class -> {
             Remix.Device.wifi_fill
+        }
+
+        Action.EnableSensorsOff::class -> {
+            Remix.Device.sensor_line
         }
 
         Action.StopApp::class -> {

@@ -227,6 +227,13 @@ message SetLocationEnabled {
   string id = 100;
 }
 
+message SetSensorsOffEnabled {
+  bool enable = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
 message BreakActionExecute {
 
   string note = 99;

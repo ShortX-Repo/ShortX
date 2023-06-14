@@ -1,6 +1,5 @@
 @file:OptIn(
     ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
-    ExperimentalFoundationApi::class
 )
 
 package tornaco.apps.shortx.ui.addrule.base
@@ -16,9 +15,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -37,8 +42,6 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeLarge
 import tornaco.apps.shortx.ui.base.TinySpacer
-import tornaco.apps.shortx.ui.base.TipDialog
-import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import kotlin.reflect.KClass
 
 data class SelectorItem<out T : Any>(
@@ -97,6 +100,7 @@ fun <T : Any> SelectorList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SelectorListItem(
     modifier: Modifier = Modifier,
@@ -106,8 +110,8 @@ private fun SelectorListItem(
     text1: String? = null,
     onClick: () -> Unit,
 ) {
-    val tipDialogState = rememberTipDialogState(title = title, tip = text1 ?: title)
-    TipDialog(state = tipDialogState)
+    val tooltipState = remember { PlainTooltipState() }
+    val scope = rememberCoroutineScope()
 
     ShortXCard(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -116,7 +120,7 @@ private fun SelectorListItem(
         Box(modifier = modifier
             .clip(ShortXCardRoundedCornerShapeLarge)
             .combinedClickable(onLongClick = {
-                tipDialogState.show()
+                scope.launch { tooltipState.show() }
             }) {
                 onClick()
             },
@@ -126,17 +130,25 @@ private fun SelectorListItem(
                 modifier = Modifier.padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ColoredIcon(
-                    size = 24.dp,
-                    padding = 0.dp,
-                    color = iconColor.copy(alpha = ActionColorBgAlpha)
+
+                PlainTooltipBox(
+                    tooltip = { Text(text1 ?: title) },
+                    tooltipState = tooltipState
                 ) {
-                    RemixIcon(
-                        modifier = Modifier.size(10.dp),
-                        remixName = icon,
-                        tint = iconColor
-                    )
+                    ColoredIcon(
+                        size = 24.dp,
+                        padding = 0.dp,
+                        color = iconColor.copy(alpha = ActionColorBgAlpha)
+                    ) {
+                        RemixIcon(
+                            modifier = Modifier.size(10.dp),
+                            remixName = icon,
+                            tint = iconColor
+                        )
+                    }
                 }
+
+
                 TinySpacer()
 
                 Column {
@@ -145,10 +157,10 @@ private fun SelectorListItem(
                         fontSize = 13.sp,
                         textAlign = TextAlign.Center
                     )
-                    text1?.let {
+                    if (text1 != null && text1.length < 10) {
                         TinySpacer()
                         Text(
-                            text = it,
+                            text = text1,
                             fontSize = 11.sp,
                             textAlign = TextAlign.Center
                         )

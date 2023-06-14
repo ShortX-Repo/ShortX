@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
 import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
+import tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
@@ -167,6 +168,11 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
+        is Action.DisableSensorsOff -> SetSensorsOffEnabled.newBuilder().setId(overrideId ?: id)
+            .setEnable(false)
+            .setNote(overrideNote ?: note)
+            .build()
+
         is Action.EnableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
@@ -201,6 +207,11 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             .build()
 
         is Action.EnableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id).setEnable(true)
+            .setNote(overrideNote ?: note)
+            .build()
+
+        is Action.EnableSensorsOff -> SetSensorsOffEnabled.newBuilder().setId(overrideId ?: id)
+            .setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 

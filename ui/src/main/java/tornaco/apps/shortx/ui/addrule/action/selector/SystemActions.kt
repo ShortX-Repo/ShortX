@@ -82,6 +82,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.DisableHotSpot::class,
             Action.DisableNFC::class,
             Action.DisableWifi::class,
+            Action.DisableSensorsOff::class,
             Action.DisableAutoBrightness::class,
 
             Action.EnableBT::class,
@@ -93,6 +94,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.EnableHotSpot::class,
             Action.EnableNFC::class,
             Action.EnableAutoBrightness::class,
+            Action.EnableSensorsOff::class,
             Action.EnableWifi::class -> {
                 addAction(source.clazz.createInstance())
                 true
@@ -131,6 +133,8 @@ fun SystemActions(addAction: (Action) -> Unit) {
         Action.EnableAutoBrightness::class,
         Action.DisableAutoBrightness::class,
         Action.SetBrightness::class,
+        Action.EnableSensorsOff::class,
+        Action.DisableSensorsOff::class,
     ).map {
         SelectorItem(
             it,

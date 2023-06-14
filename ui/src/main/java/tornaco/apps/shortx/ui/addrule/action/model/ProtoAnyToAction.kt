@@ -142,6 +142,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             }
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled::class.java
+            if (data.enable) {
+                Action.EnableSensorsOff(id = data.id)
+            } else {
+                Action.DisableSensorsOff(id = data.id)
+            }
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetBTEnabled::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetBTEnabled::class.java
             if (data.enable) {

@@ -114,6 +114,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppSuspend
     },
+    SetSensorOffEnabled {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetSensorsOffEnabled
+    },
     SetWifiEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetWifiEnabled
