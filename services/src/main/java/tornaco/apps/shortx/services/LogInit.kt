@@ -36,9 +36,9 @@ object LogInit {
         Log.w("$LOG_PREFIX-LogInit", "Installing logAdapter")
         logAdapter = { level: Int, tag: String, msg: String ->
             when (level) {
-                Log.VERBOSE -> if (logDebug) XLog.v("$tag $msg")
-                Log.DEBUG -> if (logDebug) XLog.d("$tag $msg")
-                Log.INFO -> if (logDebug) XLog.i("$tag $msg")
+                Log.VERBOSE -> XLog.v("$tag $msg")
+                Log.DEBUG -> XLog.d("$tag $msg")
+                Log.INFO -> XLog.i("$tag $msg")
                 Log.WARN -> XLog.w("$tag $msg")
                 Log.ERROR -> XLog.e("$tag $msg")
             }
