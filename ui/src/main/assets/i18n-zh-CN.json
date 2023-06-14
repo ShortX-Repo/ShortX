@@ -268,7 +268,7 @@
   "ui.action.while.loop.delay": "延迟",
   "ui.action.while.loop.delay.message": "每次循环内的延时时间，单位为毫秒",
   "ui.action.while.loop.condition.title": "循环条件",
-  "ui.action.while.loop.condition.message": "一旦循环条件不满足，整个While循环遍会结束",
+  "ui.action.while.loop.condition.message": "一旦循环条件不满足，整个While循环遍就会结束",
   "ui.action.while.loop.action.message": "循环动作",
   "ui.action.write.global.var": "写入全局变量",
   "ui.action.create.global.var": "新建全局变量",
