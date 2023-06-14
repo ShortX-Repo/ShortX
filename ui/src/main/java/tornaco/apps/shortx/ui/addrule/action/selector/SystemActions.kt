@@ -112,6 +112,8 @@ fun SystemActions(addAction: (Action) -> Unit) {
         Action.WriteClipboard::class,
         Action.EnableWifi::class,
         Action.DisableWifi::class,
+        Action.EnableLocation::class,
+        Action.DisableLocation::class,
         Action.EnableBT::class,
         Action.DisableBT::class,
         Action.EnableData::class,
