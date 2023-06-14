@@ -121,7 +121,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     }
 
     fun onComponentMoveToFg(componentName: ComponentName, userId: Int) {
-        logger.d("onComponentMoveToFg: $componentName user: $userId")
+        logger.w("onComponentMoveToFg: $componentName user: $userId")
         _currentFgComponentName.value =
             AppComponent(Pkg(componentName.packageName, userId), componentName.className)
 
