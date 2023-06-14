@@ -74,6 +74,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.DisableBT::class,
+            Action.DisableLocation::class,
             Action.DisableDND::class,
             Action.DisableDarkMode::class,
             Action.DisableData::class,
@@ -84,6 +85,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             Action.DisableAutoBrightness::class,
 
             Action.EnableBT::class,
+            Action.EnableLocation::class,
             Action.EnableDND::class,
             Action.EnableDarkMode::class,
             Action.EnableData::class,

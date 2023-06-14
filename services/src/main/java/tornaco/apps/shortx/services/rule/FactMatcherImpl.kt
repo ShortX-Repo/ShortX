@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
@@ -28,7 +29,11 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
+import tornaco.apps.shortx.core.proto.fact.ScreenOff
+import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -253,12 +258,25 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(AudioFocusChanged::class.java) { _, _ ->
             true
         }
-
         register(ChargerPlug::class.java) { _, _ ->
             true
         }
-
         register(ChargerUnplug::class.java) { _, _ ->
+            true
+        }
+        register(SystemReady::class.java) { _, _ ->
+            true
+        }
+        register(ScreenOn::class.java) { _, _ ->
+            true
+        }
+        register(ScreenOff::class.java) { _, _ ->
+            true
+        }
+        register(UserPresent::class.java) { _, _ ->
+            true
+        }
+        register(AppAdded::class.java) { _, _ ->
             true
         }
 
@@ -277,6 +295,8 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val ruleN = (rule as Broadcast)
             actualN.id == ruleN.id
         }
+
+        logger.i("Init complete.")
     }
 
     private fun nullEmptyOrEq(vararg ruleAndActuals: Pair<String?, String>) = ruleAndActuals.all {
@@ -287,6 +307,8 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         ruleField.isNullOrEmpty() || ruleField == actualField
 
     private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, f: ProtoMessage) -> Boolean) {
+        logger.d("register: $clazz --> $matcher")
+        if (factValueMatchers[clazz] != null) throw IllegalStateException("Dup matcher for class: $clazz")
         factValueMatchers[clazz] = matcher
     }
 
