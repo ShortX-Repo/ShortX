@@ -106,7 +106,6 @@ sealed interface Fact {
     data class Alarm(
         override val note: String = "",
         override val id: String = defaultNewFactId(),
-        val tag: String = "Alarm-${DateUtils.formatForFileName(System.currentTimeMillis())}",
         val timeOfADay: TimeOfADay,
         val repeatDays: RepeatDays
     ) : Fact {

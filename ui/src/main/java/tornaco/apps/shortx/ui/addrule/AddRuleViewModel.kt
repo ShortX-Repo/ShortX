@@ -78,11 +78,26 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
-    fun setFact(fact: Fact) {
+    fun addFact(fact: Fact) {
         if (!state.value.facts.contains(fact)) {
             updateState {
                 copy(
-                    facts = listOf(fact),
+                    facts = state.value.facts.toMutableList().apply {
+                        add(fact)
+                    },
+                    ruleChanged = true
+                )
+            }
+        }
+    }
+
+    fun removeFact(fact: Fact) {
+        if (state.value.facts.contains(fact)) {
+            updateState {
+                copy(
+                    facts = state.value.facts.toMutableList().apply {
+                        remove(fact)
+                    },
                     ruleChanged = true
                 )
             }
@@ -95,9 +110,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun save() {
         viewModelScope.launch {
-            if (state.value.facts.isEmpty()) return@launch
-            val fact = state.value.facts[0]
-
             val conditions = conditionContentStateHandler.state.value.conditions
             val condOp = conditionContentStateHandler.state.value.conditionOp
 
@@ -108,7 +120,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val actionsOnDisabled = actionOnDisabledStateHandler.actions
             val actionsOnDeleted = actionOnDeletedStateHandler.actions
 
-            val protoFact = fact.toProtoFact().pack_()
+            val protoFacts = state.value.facts.map { it.toProtoFact().pack_() }
             val protoConditions = conditions.map {
                 it.toProtoCondition().pack_()
             }
@@ -116,7 +128,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setId(state.value.id)
                 .setCreateTime(state.value.createTime)
                 .setLastUpdateTime(System.currentTimeMillis())
-                .setFact(protoFact)
+                .addAllFacts(protoFacts)
                 .setTitle(
                     state.value.title.fallbackOnEmpty(
                         DateUtils.formatShortForMessageTime(
@@ -233,7 +245,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         id = r.id,
                         title = r.title,
                         description = r.description,
-                        facts = listOfNotNull(r.fact.toFact(shortXManager)),
+                        facts = r.factsList.mapNotNull {
+                            it.toFact(shortXManager)
+                        },
                         isEditRule = true,
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,

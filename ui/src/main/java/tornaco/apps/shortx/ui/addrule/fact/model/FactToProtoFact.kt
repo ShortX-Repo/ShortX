@@ -80,7 +80,6 @@ fun Fact.toProtoFact(): ProtoMessage {
             Alarm.newBuilder()
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
-                .setTag(tag)
                 .setId(id).setNote(note).build()
         }
 

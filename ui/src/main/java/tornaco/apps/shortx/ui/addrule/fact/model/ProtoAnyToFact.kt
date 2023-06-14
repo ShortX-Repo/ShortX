@@ -49,7 +49,6 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.Alarm(
                 timeOfADay = data.triggerAt,
                 repeatDays = data.repeat,
-                tag = data.tag,
                 id = data.id, note = data.note
             )
         }

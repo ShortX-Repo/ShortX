@@ -9,7 +9,7 @@ import "shortx/Common.proto";
 import "shortx/Conditions.proto";
 
 message Rule {
-  google.protobuf.Any fact = 1;
+  repeated google.protobuf.Any facts = 1;
   repeated google.protobuf.Any conditions = 2;
   repeated google.protobuf.Any actions = 3;
 

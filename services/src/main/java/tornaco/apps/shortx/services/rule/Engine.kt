@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
 
 interface FactMatcher {
-    fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean
+    fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean
 }
 
 interface ConditionEvaluator {
@@ -107,7 +107,7 @@ class DefaultRuleEngine(
 
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         return rules.filterInvalid().firstOrNull {
-            factMatcher.match(fact, it.fact) && conditionEvaluator.evaluate(
+            factMatcher.match(fact, it.factsList) && conditionEvaluator.evaluate(
                 logTag = it.title,
                 condOp = it.condOp,
                 condOpPayload = it.condOpPayload,
@@ -120,7 +120,7 @@ class DefaultRuleEngine(
     override fun fire(fact: ProtoMessage, rules: List<Rule>, initialContextData: Map<String, Any>) {
         logger.d("fire: ${fact.javaClass}")
         rules.filterInvalid().forEach { rule ->
-            if (factMatcher.match(fact, rule.fact)) {
+            if (factMatcher.match(fact, rule.factsList)) {
                 val contextData = ContextData.obtain(initialContextData)
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")

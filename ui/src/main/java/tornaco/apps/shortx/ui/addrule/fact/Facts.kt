@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
@@ -32,16 +31,15 @@ fun FactSelectors(
     readOnly: Boolean = false,
 ) {
     val factSelectorState = rememberFactSelectorDialogState<String>(onSelected = { fact, _ ->
-        vm.setFact(fact)
+        vm.addFact(fact)
     })
     FactSelectorDialog(state = factSelectorState)
 
     val factHandlers = listOf(
-        appFactSelectHandler(vm::setFact),
-        systemFactSelectHandler(vm::setFact)
+        appFactSelectHandler(vm::addFact),
+        systemFactSelectHandler(vm::addFact)
     )
     val editFactHandler: (FactSelectSource) -> Unit = { source ->
-        Logger("FactItem").d("editFactHandler: $source")
         for (h in factHandlers) {
             if (h(source)) break
         }
@@ -55,6 +53,9 @@ fun FactSelectors(
                 FactItem(
                     fact = fact,
                     readOnly = readOnly,
+                    removeFact = {
+                        vm.removeFact(fact)
+                    },
                     onClick = {
                         editFactHandler(FactSelectSource.FromFact(fact))
                     }
@@ -83,7 +84,8 @@ fun FactSelectors(
 private fun FactItem(
     fact: Fact,
     readOnly: Boolean,
-    onClick: () -> Unit
+    removeFact: () -> Unit,
+    onClick: () -> Unit,
 ) {
     val contextDataInfoDialogState = rememberContextDataInfoDialogState()
     ContextDataInfoDialog(state = contextDataInfoDialogState)
@@ -121,6 +123,7 @@ private fun FactItem(
 
             if (!readOnly) {
                 IconButton(onClick = {
+                    removeFact()
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }

@@ -132,7 +132,8 @@ private fun <T> ContextViewModel<T>.translateDA(da: DirectAction) =
     })
 
 fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
-    val firstFact: Fact? = rule.fact?.toFact(shortXManager)
+    val firstFact: Fact? =
+        if (rule.factsList.isEmpty()) null else rule.factsList[0]?.toFact(shortXManager)
     val firstAction: Action? = rule.actionsList?.let {
         if (it.isEmpty()) {
             null
@@ -174,9 +175,12 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
 }
 
 fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
-    val fact: String = rule.fact.toFact(shortXManager)?.let {
-        labelAndDescriptionForFactSelector(i18N, it::class).first
-    } ?: "N/A"
+    val fact: String = rule.factsList
+        .mapNotNull { factProto ->
+            factProto.toFact(shortXManager)?.let { fact ->
+                labelAndDescriptionForFactSelector(i18N, fact::class).first
+            }
+        }.joinToString(" / ")
 
     val condition = rule.conditionsList.mapNotNull {
         it.toCondition(shortXManager)

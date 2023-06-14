@@ -114,7 +114,7 @@ message RepeatDays {
 
 message Alarm {
   // For fact matcher.
-  string tag = 1;
+  // string tag = 1;
   TimeOfADay triggerAt = 2;
   RepeatDays repeat = 3;
 

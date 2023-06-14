@@ -20,16 +20,16 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import java.time.LocalTime
 
 @Composable
-fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
+fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
     // Fact selectors
     val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
-        setFact(Fact.KeyEvent(code))
+        addFact(Fact.KeyEvent(code))
     })
     KeyEventSelector(keyEventSelectorState)
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->
-            setFact(Fact.EdgeGesture(eg.first, eg.second))
+            addFact(Fact.EdgeGesture(eg.first, eg.second))
         },
         showEdgeHint = {
             shortXManager.showEdgeHint(it)
@@ -40,62 +40,61 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         initialRepeat = emptyArray(),
         initialTime = LocalTime.now()
     ) { alarm ->
-        // Use rule id as alarm tag.
-        setFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
+        addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
     }
     AlarmSelector(timeOfADaySelector)
 
     val wifiSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
-            setFact(Fact.WifiStatusChanged(it))
+            addFact(Fact.WifiStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
 
     val btSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {
-            setFact(Fact.BTStatusChanged(it))
+            addFact(Fact.BTStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(btSelectorState)
 
     val dndSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dnd.state.changed"]) {
-            setFact(Fact.DNDStatusChanged(it))
+            addFact(Fact.DNDStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(dndSelectorState)
 
     val locationSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.location.state.changed"]) {
-            setFact(Fact.LocationStatusChanged(it))
+            addFact(Fact.LocationStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(locationSelectorState)
 
     val darkModeSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dark.mode.state.changed"]) {
-            setFact(Fact.DarkModeStatusChanged(it))
+            addFact(Fact.DarkModeStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(darkModeSelectorState)
 
     val mobileDataSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.mobile.data.state.changed"]) {
-            setFact(Fact.MobileDataStatusChanged(it))
+            addFact(Fact.MobileDataStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(mobileDataSelectorState)
 
     val flashLightSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.flash.light.state.changed"]) {
-            setFact(Fact.FlashLightStatusChanged(it))
+            addFact(Fact.FlashLightStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(flashLightSelectorState)
 
     val nfcSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.nfc.state.changed"]) {
-            setFact(Fact.NFCStatusChanged(it))
+            addFact(Fact.NFCStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(nfcSelectorState)
 
     val hotspotSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.hotspot.state.changed"]) {
-            setFact(Fact.HotSpotStatusChanged(it))
+            addFact(Fact.HotSpotStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(hotspotSelectorState)
 
@@ -110,7 +109,7 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         onSelected = { levelString ->
             val level = levelString.toIntOrNull()
             level?.let {
-                setFact(Fact.BatteryLevelChanged(level = it))
+                addFact(Fact.BatteryLevelChanged(level = it))
             }
         }
     )
@@ -125,7 +124,7 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { actionString ->
-            setFact(Fact.Broadcast(actions = listOf(actionString)))
+            addFact(Fact.Broadcast(actions = listOf(actionString)))
         }
     )
     TextInputDialog(state = broadcastSelectorState)
@@ -143,22 +142,22 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.ScreenOff::class -> {
-                setFact(Fact.ScreenOff())
+                addFact(Fact.ScreenOff())
                 true
             }
 
             Fact.ScreenOn::class -> {
-                setFact(Fact.ScreenOn())
+                addFact(Fact.ScreenOn())
                 true
             }
 
             Fact.UserPresent::class -> {
-                setFact(Fact.UserPresent())
+                addFact(Fact.UserPresent())
                 true
             }
 
             Fact.SystemReady::class -> {
-                setFact(Fact.SystemReady())
+                addFact(Fact.SystemReady())
                 true
             }
 
@@ -218,12 +217,12 @@ fun systemFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.ChargerPlug::class -> {
-                setFact(Fact.ChargerPlug())
+                addFact(Fact.ChargerPlug())
                 true
             }
 
             Fact.ChargerUnplug::class -> {
-                setFact(Fact.ChargerUnplug())
+                addFact(Fact.ChargerUnplug())
                 true
             }
 

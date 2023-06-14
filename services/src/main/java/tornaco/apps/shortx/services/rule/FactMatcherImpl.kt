@@ -53,7 +53,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             // Alarm match label.
             val la = l as Alarm
             val ra = f as Alarm
-            la.tag == ra.tag
+            la.id == ra.id
         }
         register(AppBecomeFg::class.java) { actual, rule ->
             val fgActual = actual as AppBecomeFg
@@ -290,7 +290,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         factValueMatchers[clazz] = matcher
     }
 
-    override fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
+    override fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean {
+        return ruleFacts.any { match(actualFact, it) }
+    }
+
+    private fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
         return if (ruleFact is_ actualFact.javaClass) {
             val targetFactMessage = ruleFact unpack_ actualFact.javaClass
             match0(actualFact, targetFactMessage)

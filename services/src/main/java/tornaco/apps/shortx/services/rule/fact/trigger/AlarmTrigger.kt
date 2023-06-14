@@ -18,8 +18,8 @@ class AlarmTrigger(
     Trigger {
     private val logger = Logger("ShortXAlarmTrigger")
     private val alarmScheduler by lazy {
-        AlarmScheduler(context, shortXContext.rule.handler) { ruleId, tag ->
-            logger.d("onAlarm: $ruleId $tag")
+        AlarmScheduler(context, shortXContext.rule.handler) { ruleTitle, ruleId, factId ->
+            logger.i("onAlarm: $ruleTitle $ruleId $factId")
 
             val ruleOrNull = shortXContext.rule.getRuleById(ruleId)
             if (ruleOrNull == null) {
@@ -30,94 +30,91 @@ class AlarmTrigger(
                 logger.i("Rule ${ruleOrNull.title} it not enabled now, will not publish fact.")
                 return@AlarmScheduler
             }
-            if (!(ruleOrNull.fact.isAlarm())) {
-                logger.i("Rule ${ruleOrNull.title} fact it not Alarm anymore, will not publish fact.")
+            if (ruleOrNull.factsList.all { !it.isAlarm() }) {
+                logger.i("Rule ${ruleOrNull.title} fact it not contains Alarm anymore, will not publish fact.")
                 return@AlarmScheduler
             }
 
-            val alarm = ruleOrNull.fact unpack_ Alarm::class.java
-            if (alarm.tag != tag) {
-                logger.i("Rule ${ruleOrNull.title} tag changed to: ${alarm.tag}, will not publish fact.")
+            val alarmList =
+                ruleOrNull.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+            val targetFact = alarmList.firstOrNull { it.id == factId }
+            if (targetFact == null) {
+                logger.i("Rule ${ruleOrNull.title} does not have this fact with id: $factId, will not publish fact.")
                 return@AlarmScheduler
             }
 
             logger.i("Good, will publish fact.")
-            shortXContext.rule.publishFact("onAlarm", Alarm.newBuilder().setTag(tag).build())
+            shortXContext.rule.publishFact("onAlarm", Alarm.newBuilder().setId(factId).build())
 
             // Repeat
-            if (!alarm.repeat.isNo) {
+            if (!targetFact.repeat.isNo) {
                 logger.i("Repeat alarm")
-                schedule(ruleOrNull, alarm, "AlarmTrigger.repeat")
-            } else {
-                logger.i("Disable rule since the alarm is not repeat.")
-                shortXContext.rule.setRuleEnabled(ruleId, false)
+                schedule(ruleOrNull, targetFact, "AlarmTrigger.repeat")
             }
         }
     }
 
     override fun register() {
         alarmScheduler.systemReady()
-        shortXContext.rule.getAllRules().filter {
-            it.isEnabled && it.fact.isAlarm()
-        }.forEach {
-            val alarm = it.fact unpack_ Alarm::class.java
-            alarmScheduler.schedule(it, alarm, "AlarmTrigger.register")
+        shortXContext.rule.getAllRules().filter { rule ->
+            rule.isEnabled
+        }.forEach { rule ->
+            checkAndScheduleAlarmForRule(rule) { "AlarmTrigger.register for rule: ${rule.title}" }
+        }
+    }
+
+    private fun checkAndScheduleAlarmForRule(rule: Rule, reason: () -> String) {
+        if (rule.isEnabled) {
+            val alarms = rule.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+            if (alarms.isNotEmpty()) {
+                alarms.forEach { alarm ->
+                    alarmScheduler.schedule(
+                        rule,
+                        alarm,
+                        reason()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun cancelAlarmForRule(rule: Rule, reason: () -> String) {
+        val alarms = rule.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+        if (alarms.isNotEmpty()) {
+            alarms.forEach { alarm ->
+                alarmScheduler.cancel(rule, alarm, reason())
+            }
         }
     }
 
     override fun onAddRule(rule: Rule) {
         super.onAddRule(rule)
-        if (rule.fact.isAlarm()) {
-            val alarm = rule.fact unpack_ Alarm::class.java
-            alarmScheduler.cancel(alarm, "onAddRule")
-            if (rule.isEnabled) alarmScheduler.schedule(rule, alarm, "onAddRule")
-        }
+        checkAndScheduleAlarmForRule(rule) { "onAddRule: ${rule.title}" }
     }
 
     override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
         super.onUpdateRule(oldRule, newRule)
 
-        // FAST: If both old or new is not alarm, skip.
-        if (!oldRule.fact.isAlarm() && !newRule.fact.isAlarm()) {
-            logger.d("Both old or new rule is not alarm.")
+        if (oldRule.factsList == newRule.factsList) {
+            logger.d("Facts not change for this rule(new label): ${newRule.title}")
             return
         }
 
-        // FAST: If alarm not changed, skip.
-        if (oldRule.fact.isAlarm() && newRule.fact.isAlarm()) {
-            val oldAlarm = oldRule.fact unpack_ Alarm::class.java
-            val newAlarm = newRule.fact unpack_ Alarm::class.java
-            if (oldAlarm == newAlarm) {
-                logger.d("Alarm not change for this rule(new label): ${newRule.title}")
-                return
-            }
+        if (oldRule.factsList.filter { it.isAlarm() } == newRule.factsList.filter { it.isAlarm() }) {
+            logger.d("Alarm not change for this rule(new label): ${newRule.title}")
+            return
         }
 
-        if (oldRule.fact.isAlarm()) {
-            val alarm = oldRule.fact unpack_ Alarm::class.java
-            alarmScheduler.cancel(alarm, "onUpdateRule, cancel old")
-        }
-
-        if (newRule.fact.isAlarm()) {
-            val alarm = newRule.fact unpack_ Alarm::class.java
-            alarmScheduler.cancel(alarm, "onUpdateRule")
-            if (newRule.isEnabled) alarmScheduler.schedule(
-                rule = newRule,
-                alarm = alarm,
-                reason = "onUpdateRule, schedule new"
-            )
-        }
+        // Cancel old, check new.
+        cancelAlarmForRule(oldRule) { "onUpdateRule, cancel for old: ${oldRule.title}" }
+        checkAndScheduleAlarmForRule(newRule) { "onUpdateRule, check for new: ${newRule.title}" }
     }
 
     override fun onRuleEnabled(ruleId: String) {
         super.onRuleEnabled(ruleId)
         val rule = shortXContext.rule.getRuleById(ruleId)
         rule?.let {
-            if (it.isEnabled && it.fact.isAlarm()) {
-                val alarm = it.fact unpack_ Alarm::class.java
-                alarmScheduler.cancel(alarm, "onRuleEnabled")
-                alarmScheduler.schedule(it, alarm, "onRuleEnabled")
-            }
+            checkAndScheduleAlarmForRule(it) { "onRuleEnabled: ${it.title}" }
         }
     }
 
@@ -125,20 +122,13 @@ class AlarmTrigger(
         super.onRuleDisabled(ruleId)
         val rule = shortXContext.rule.getRuleById(ruleId)
         rule?.let {
-            if (!it.isEnabled && it.fact.isAlarm()) {
-                val alarm = it.fact unpack_ Alarm::class.java
-                alarmScheduler.cancel(alarm, "onRuleDisabled")
-            }
+            cancelAlarmForRule(it) { "onRuleDisabled: ${it.title}" }
         }
     }
 
     override fun onDeleteRule(rule: Rule) {
         super.onDeleteRule(rule)
-        logger.d("onDeleteRule: ${rule.title}")
-        if (rule.fact.isAlarm()) {
-            val alarm = rule.fact unpack_ Alarm::class.java
-            alarmScheduler.cancel(alarm, "onDeleteRule")
-        }
+        cancelAlarmForRule(rule) { "onDeleteRule: ${rule.title}" }
     }
 
     override fun unRegister() {
