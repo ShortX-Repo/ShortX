@@ -18,7 +18,11 @@ class ShellCommandSelectorState(val onSelected: (Action.ShellCommand) -> Unit) {
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
-    fun show() {
+    var commandString by mutableStateOf("")
+
+    fun show(current: String? = null) {
+        this.commandString = current ?: ""
+
         _isShow = true
     }
 
@@ -37,16 +41,13 @@ fun rememberShellCommandSelectorState(onSelected: (Action.ShellCommand) -> Unit)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShellCommandSelector(state: ShellCommandSelectorState) {
-    var commandString by remember(state) {
-        mutableStateOf("")
-    }
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = "Shell Command")
         }, buttons = {
             TextButton(onClick = {
-                if (commandString.isNotBlank()) {
-                    state.onSelected(Action.ShellCommand(command = commandString))
+                if (state.commandString.isNotBlank()) {
+                    state.onSelected(Action.ShellCommand(command = state.commandString))
                     state.dismiss()
                 }
             }) {
@@ -58,16 +59,16 @@ fun ShellCommandSelector(state: ShellCommandSelectorState) {
                     leadingIcon = {
                         RemixIcon(Remix.Development.terminal_line)
                     },
-                    
+
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),
                     label = {
                         Text(text = "Command")
                     },
-                    value = commandString,
+                    value = state.commandString,
                     onValueChange = {
-                        commandString = it
+                        state.commandString = it
                     })
             }
         })
