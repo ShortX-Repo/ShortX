@@ -15,7 +15,7 @@ class I18NImpl : I18N {
 }
 
 object I18NCache {
-    private const val DEFAULT_LANGUAGE = "en-US"
+    private const val DEFAULT_LANGUAGE = "zh-CN"
 
     private val logger = Logger("I18NCache")
     private val res: MutableMap<String, String> = mutableMapOf()
