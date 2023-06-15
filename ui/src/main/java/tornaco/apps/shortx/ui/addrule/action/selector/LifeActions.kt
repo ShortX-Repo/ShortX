@@ -21,7 +21,7 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     return { source ->
         when (source.clazz) {
             Action.MapNav::class -> {
-                mapNavDialogState.show()
+                mapNavDialogState.show(source.getActionAs())
                 true
             }
 

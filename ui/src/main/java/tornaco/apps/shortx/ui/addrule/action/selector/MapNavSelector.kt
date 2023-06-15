@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -30,6 +31,7 @@ class MapNavDialogState(
     var currentSettings: Action.MapNav? = null
 
     fun show(currentSettings: Action.MapNav? = null) {
+        Logger("MapNavDialogState").d("show: $currentSettings")
         this.currentSettings = currentSettings
         isShowing = true
     }
