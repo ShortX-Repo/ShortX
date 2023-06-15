@@ -127,7 +127,7 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             }
 
             Condition.MVEL::class -> {
-                mvelConditionSelectorState.show()
+                mvelConditionSelectorState.show(source.getConditionAs<Condition.MVEL>()?.expression)
                 true
             }
 
