@@ -23,14 +23,24 @@ fun Project.addAidlTask() {
                 tree.forEach { file ->
                     if (file.name.endsWith(".aidl")) {
                         val aidlPath = file.path
+                        val commands = arrayOf(
+                            aidl(),
+                            "-I$srcDir",
+                            "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
+                            "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
+                            aidlPath
+                        )
+                        println("command: ${commands.map { it }}")
                         exec {
                             commandLine(
                                 aidl(),
                                 "-I$srcDir",
-                                "-p$projectPrebuiltAndroidSdkDir/framework.aidl",
-                                "-p$projectPrebuiltAndroidSdkDir/shortx.aidl",
+                                "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
+                                "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
                                 aidlPath
                             )
+                        }.apply {
+                            println("Result: ${this}")
                         }
                     }
                 }
