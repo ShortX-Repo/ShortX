@@ -183,7 +183,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         fact: ProtoMessage,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
-        logger.d("publishFact: $reason")
+        logger.i("publishFact: $reason")
         engine.fire(
             fact = fact,
             rules = getAllRules().filter { rule -> rule.isEnabled },

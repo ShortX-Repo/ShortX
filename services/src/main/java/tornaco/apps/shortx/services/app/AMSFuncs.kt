@@ -15,10 +15,15 @@ object AMSFuncs {
     private val logger = Logger("AMSFuncs")
 
     fun hasRunningAppProcessForPackage(context: Context, pkg: AppPkg): Boolean {
-        return getRunningAppProcessLegacy(context).firstOrNull {
-            pkg.userId == UserHandle.getUserId(it.uid)
-                    && it.pkgList.contains(pkg.pkgName)
-        } != null
+        return getRunningAppProcessLegacy(context)
+            .apply {
+                logger.d("check hasRunningAppProcessForPackage: $pkg")
+                logger.d("processes: ${this.joinToString(System.lineSeparator()) { compat -> "${compat.pkgList.map { it }} - ${compat.processName} - ${compat.processState}" }}")
+            }
+            .firstOrNull {
+                pkg.userId == UserHandle.getUserId(it.uid)
+                        && it.pkgList.contains(pkg.pkgName)
+            } != null
     }
 
     fun getRunningAppProcessLegacy(context: Context): List<RunningAppProcessInfoCompat> {
@@ -59,6 +64,7 @@ object AMSFuncs {
                     Process.ZYGOTE_POLICY_FLAG_EMPTY
                 )
             }
+
             OsUtils.isOOrAbove() -> {
                 Reflections.callMethod(
                     ams,
@@ -69,6 +75,7 @@ object AMSFuncs {
                     abiOverride
                 )
             }
+
             else -> Reflections.callMethod(
                 ams,
                 "addAppLocked",
