@@ -116,4 +116,7 @@ interface IShortX {
     // Dev settings
     void setPointerLocationEnabled(boolean enable);
     boolean isPointerLocationEnabled();
+
+    // Ext
+    void directExecuteRuleActions(in String ruleId);
 }

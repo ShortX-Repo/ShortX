@@ -186,6 +186,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.executeDirectionActionById(id)
         }
 
+        override fun directExecuteRuleActions(ruleId: String) {
+            shortXContext.rule.directExecuteRuleActions(ruleId)
+        }
+
         override fun executeAction(action: ByteArrayWrapper) {
             shortXContext.rule.executeActions(
                 "EA-${UUID.randomUUID()}",

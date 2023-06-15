@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
@@ -92,6 +93,9 @@ fun RuleScreen() {
             },
             setRuleEnabled = { id, enable ->
                 vm.setRuleEnabled(id, enable)
+            },
+            onExecute = {
+                vm.directExecuteRuleActions(it.id)
             }
         )
     }
@@ -106,6 +110,7 @@ private fun RuleContent(
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
+    onExecute: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     Box(
@@ -128,7 +133,8 @@ private fun RuleContent(
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
-            onShare = onShare
+            onShare = onShare,
+            onExecute = onExecute
         )
     }
 
@@ -142,7 +148,8 @@ private fun RuleListContent(
     onDup: (RuleUM) -> Unit = {},
     onDelete: (RuleUM) -> Unit = {},
     onEdit: (RuleUM) -> Unit = {},
-    onShare: (RuleUM) -> Unit = {}
+    onShare: (RuleUM) -> Unit = {},
+    onExecute: (RuleUM) -> Unit = {},
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -180,53 +187,13 @@ private fun RuleListContent(
                     onDelete = onDelete,
                     onEdit = onEdit,
                     onShare = onShare,
+                    onExecute = onExecute,
                 )
             }
 
         }
     }
 }
-
-@Composable
-private fun RuleItem(
-    rule: RuleUM,
-    onClick: () -> Unit,
-    setRuleEnabled: (String, Boolean) -> Unit,
-    onDup: (RuleUM) -> Unit,
-    onDelete: (RuleUM) -> Unit,
-    onEdit: (RuleUM) -> Unit,
-    onShare: (RuleUM) -> Unit,
-) {
-    Box {
-        val popMenuState = listItemOverflowMenu(
-            rule = rule,
-            onDup = onDup,
-            onDelete = onDelete,
-            onEdit = onEdit,
-            onShare = onShare
-        )
-        ListItem(
-            icon = {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    RuleIcon(rule = rule, arrow = Remix.Arrows.arrow_down_line)
-                }
-            },
-            title = rule.title,
-            text1 = rule.description,
-            text2 = LocalI18N.current["ui.update.time", mapOf("date" to rule.updateTime)],
-            overflow = {
-            },
-            checked = rule.isEnabled,
-            onClick = onClick,
-            onLongClick = { popMenuState.open() },
-            onCheckedChange = { setRuleEnabled(rule.id, it) }
-        )
-    }
-}
-
 
 @Composable
 private fun RuleItem2(
@@ -237,6 +204,7 @@ private fun RuleItem2(
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
+    onExecute: (RuleUM) -> Unit,
 ) {
     Box {
         val popMenuState = listItemOverflowMenu(
@@ -244,7 +212,8 @@ private fun RuleItem2(
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
-            onShare = onShare
+            onShare = onShare,
+            onExecute = onExecute,
         )
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -357,6 +326,7 @@ private fun listItemOverflowMenu(
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
+    onExecute: (RuleUM) -> Unit,
 ): DropdownSelectorState {
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
@@ -372,6 +342,11 @@ private fun listItemOverflowMenu(
         widthFraction = 0.3f,
         state = menuState,
         items = listOf(
+            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.execute.actions"]),
+                data = "execute",
+                icon = {
+                    RemixIcon(Remix.Media.play_fill)
+                }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
                 data = "dup",
                 icon = {
@@ -395,6 +370,7 @@ private fun listItemOverflowMenu(
                     RemixIcon(Remix.System.delete_bin_4_line)
                 })
         ), onSelect = {
+            Logger("RuleMenu").d("onSelect: ${it.data}")
             when (it.data) {
                 "dup" -> {
                     onDup(rule)
@@ -410,6 +386,10 @@ private fun listItemOverflowMenu(
 
                 "share" -> {
                     onShare(rule)
+                }
+
+                "execute" -> {
+                    onExecute(rule)
                 }
 
                 else -> {}

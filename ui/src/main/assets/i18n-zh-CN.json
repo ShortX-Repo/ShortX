@@ -130,6 +130,7 @@
   "ui.common.extras.v": "值",
   "ui.common.optional": "可选",
   "ui.common.show.pointer.location": "显示指针位置",
+  "ui.common.execute.actions": "执行动作",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

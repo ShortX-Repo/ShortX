@@ -393,6 +393,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+    fun directExecuteRuleActions(ruleId: String) {
+        logger.d("directExecuteRuleActions: $ruleId")
+        viewModelScope.launch {
+            shortXManager.directExecuteRuleActions(ruleId)
+        }
+    }
+
     fun deleteRule(ruleId: String) {
         viewModelScope.launch {
             shortXManager.deleteRule(ruleId)
@@ -401,6 +408,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     fun dupRule(ruleId: String) {
+        logger.d("dupRule: $ruleId")
         viewModelScope.launch {
             shortXManager.getRuleById(ruleId)?.let { importRule(it) }
         }
@@ -462,6 +470,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
     fun importRule(rule: Rule) {
+        logger.d("importRule: $rule")
         val ruleWithSameNameExists =
             state.value.rules.firstOrNull { it.title == rule.title } != null
         val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())

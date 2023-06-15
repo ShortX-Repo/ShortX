@@ -130,6 +130,7 @@
   "ui.common.extras.v": "Value",
   "ui.common.optional": "Optional",
   "ui.common.show.pointer.location": "Show pointer location",
+  "ui.common.execute.actions": "Execute actions",
   "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",

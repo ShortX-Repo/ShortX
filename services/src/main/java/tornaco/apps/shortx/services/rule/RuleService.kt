@@ -344,6 +344,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
     }
 
+    fun directExecuteRuleActions(ruleId: String) {
+        val rule = getRuleById(ruleId)
+        logger.d("directExecuteRuleActions: $ruleId ${rule?.title}")
+        rule?.let {
+            val actions = it.actionsList
+            executeActions(ruleId, "directExecuteRuleActions", actions)
+        }
+    }
+
     fun executeMVEL(expression: String): String {
         return kotlin.runCatching {
             "${MVELExecutor(context, shortXContext, expression).invoke()}"
