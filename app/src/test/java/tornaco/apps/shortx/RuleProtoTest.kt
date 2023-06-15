@@ -40,7 +40,7 @@ class RuleProtoTest {
             StartActivity.newBuilder().setComponentNameAsString("name").build().pack_()
         )
         val rule = Rule.newBuilder()
-            .setFact(fact)
+            .addFacts(fact)
             .addAllConditions(conditions)
             .addAllActions(actions)
             .build()
@@ -48,8 +48,8 @@ class RuleProtoTest {
         val data: ByteArray = rule.toByteArray()
 
         Rule.parseFrom(data).apply {
-            Assert.assertTrue(this.fact is_ KeyEvent::class.java)
-            Assert.assertEquals((this.fact unpack_ KeyEvent::class.java).keyCode, 20)
+            Assert.assertTrue(this.factsList[0] is_ KeyEvent::class.java)
+            Assert.assertEquals((this.factsList[0] unpack_ KeyEvent::class.java).keyCode, 20)
             Assert.assertTrue(this.conditionsList[0].is_(CurrentPkgList::class.java))
             Assert.assertEquals(
                 this.conditionsList[0].unpack_(CurrentPkgList::class.java).pkgsList[0].pkgName,
@@ -73,7 +73,7 @@ class RuleProtoTest {
             StartActivity.newBuilder().setComponentNameAsString("name").build().pack_()
         )
         val rule = Rule.newBuilder()
-            .setFact(fact)
+            .addFacts(fact)
             .addAllConditions(conditions)
             .addAllActions(actions)
             .build()
