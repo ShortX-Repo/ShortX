@@ -83,4 +83,14 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVa
             state.value.globalVar?.name?.let { loadStateInternal(it) }
         }
     }
+
+    fun removeAt(index: Int) {
+        val gv = state.value.globalVar ?: return
+        val valueItems = gv.valueList()
+        val isList = gv.isList()
+        if (isList && valueItems.size > index) {
+            val newValues = valueItems.toMutableList().apply { removeAt(index) }
+
+        }
+    }
 }

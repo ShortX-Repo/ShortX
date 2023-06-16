@@ -23,7 +23,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,6 +74,41 @@ fun OutlineBadge(text: String) {
             fontSize = 10.sp,
             fontFamily = fontFamilyProductSansRegular()
         )
+    }
+}
+
+
+@Composable
+fun OutlineIconBadge(icon: @Composable () -> Unit, text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = ShortXCardRoundedCornerShape
+            )
+            .padding(1.dp)
+            .clip(ShortXCardRoundedCornerShape)
+            .clickableWithRipple {
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TinySpacer()
+            Box(
+                modifier = Modifier
+                    .size(18.dp)
+            ) {
+                icon()
+            }
+            Text(
+                modifier = Modifier.padding(end = 4.dp),
+                text = text,
+                fontSize = 10.sp,
+                fontFamily = fontFamilyProductSansRegular()
+            )
+        }
     }
 }
 

@@ -5,7 +5,6 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -37,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,17 +49,17 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.base.AppIcon
-import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.OutlineIconBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ComponentRule
@@ -408,27 +405,22 @@ private fun AppComponentItem(
                         )
                         ComponentRuleInfoDialog(state = ruleInfoDialogState)
 
-                        val context = LocalContext.current
-                        FilledTonalButton(
-                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 16.dp),
-                            enabled = it.descriptionUrl != null,
-                            onClick = {
-                                it.descriptionUrl?.let {
-                                    ruleInfoDialogState.show()
-                                }
-                            }) {
+                        OutlineIconBadge(text = it.label, icon = {
                             Icon(
                                 painter = painterResource(id = it.iconRes),
                                 contentDescription = null,
                                 tint = if (it.isSimpleColorIcon) LocalContentColor.current else Color.Unspecified
                             )
-                            TinySpacer()
-                            Text(text = it.label)
+                        }) {
+                            it.descriptionUrl?.let {
+                                ruleInfoDialogState.show()
+                            }
                         }
+
+                        StandardSpacer()
                     }
 
                     if (app.isRunning) {
-                        LargeSpacer()
                         OutlineBadge(text = LocalI18N.current["ui.common.running"])
                     }
                 }
