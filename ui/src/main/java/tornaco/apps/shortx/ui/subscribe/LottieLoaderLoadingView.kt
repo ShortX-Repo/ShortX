@@ -30,7 +30,7 @@ fun LottieLoaderSuccessView(iterations: Int = 1) {
 @Composable
 fun LottieLoaderFailView() {
     LottieLoadingView(
-        file = "68783-bad-emoji.json",
+        file = "94303-failed.json",
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp),
