@@ -253,3 +253,43 @@ fun GlobalVar.addOrUpdateValue(value: List<String>) {
         )
     }
 }
+
+
+fun GlobalVar.setValue(value: List<String>) {
+    logger.d("setValue: $value")
+    if (this.isList()) {
+        val newVarProtoAny: ProtoAny? = when (this.type.toType()) {
+            GlobalVarType.IntList -> {
+                value.mapNotNull { kotlin.runCatching { it.toLong() }.getOrNull() }
+                    .let { longV ->
+                        Int64ListVar.newBuilder().addAllValues(longV).build().pack_()
+                    }
+            }
+
+            GlobalVarType.BoolList -> {
+                value.mapNotNull { kotlin.runCatching { it.toBoolean() }.getOrNull() }
+                    .let { boolV ->
+                        BoolListVar.newBuilder().addAllValues(boolV).build().pack_()
+                    }
+            }
+
+            GlobalVarType.StringList -> {
+                StringListVar.newBuilder().addAllValues(value).build().pack_()
+            }
+
+            else -> {
+                null
+            }
+        }
+
+        shortXManager.addGlobalVar(
+            GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
+        )
+    } else {
+        shortXManager.addGlobalVar(
+            GlobalVar.newBuilder(this).setVar(
+                value.first().toVarValueNotList(this.type.toType())
+            ).build()
+        )
+    }
+}

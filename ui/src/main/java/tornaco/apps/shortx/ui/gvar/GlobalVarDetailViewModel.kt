@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.addOrUpdateValue
 import tornaco.apps.shortx.core.rule.isList
+import tornaco.apps.shortx.core.rule.setValue
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
@@ -84,13 +85,14 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVa
         }
     }
 
-    fun removeAt(index: Int) {
+    fun removeAtForList(index: Int) {
         val gv = state.value.globalVar ?: return
         val valueItems = gv.valueList()
         val isList = gv.isList()
         if (isList && valueItems.size > index) {
             val newValues = valueItems.toMutableList().apply { removeAt(index) }
-
+            gv.setValue(newValues)
+            loadState(gv.name)
         }
     }
 }

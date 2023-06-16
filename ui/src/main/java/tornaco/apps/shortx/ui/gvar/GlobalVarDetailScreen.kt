@@ -5,7 +5,7 @@ package tornaco.apps.shortx.ui.gvar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -154,15 +154,24 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                             StandardSpacer()
                         }
 
-                        items(state.valueItems) {
-                            ListItem(title = it.value, icon = {
-                                val hint = it.hint
-                                if (hint is TextHint.AppComponent) {
-                                    AppIcon(modifier = Modifier.size(24.dp), pkg = hint.appPkg)
-                                } else {
-                                    RemixIcon(remixName = Remix.Development.code_line)
-                                }
-                            }) {
+                        itemsIndexed(state.valueItems) { index, it ->
+                            ListItem(title = it.value,
+                                icon = {
+                                    val hint = it.hint
+                                    if (hint is TextHint.AppComponent) {
+                                        AppIcon(modifier = Modifier.size(24.dp), pkg = hint.appPkg)
+                                    } else {
+                                        RemixIcon(remixName = Remix.Development.code_line)
+                                    }
+                                }, action1 = {
+                                    if (state.isList) {
+                                        IconButton(onClick = {
+                                            vm.removeAtForList(index)
+                                        }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
+                                    }
+                                }) {
                                 if (!state.isList) {
                                     valueInputState.show()
                                 }

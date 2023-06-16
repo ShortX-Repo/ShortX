@@ -102,8 +102,11 @@ fun OutlineIconBadge(icon: @Composable () -> Unit, text: String, onClick: () -> 
             ) {
                 icon()
             }
+            TinySpacer()
             Text(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .padding(vertical = 4.dp),
                 text = text,
                 fontSize = 10.sp,
                 fontFamily = fontFamilyProductSansRegular()
