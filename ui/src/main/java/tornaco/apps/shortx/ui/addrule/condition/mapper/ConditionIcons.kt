@@ -17,7 +17,7 @@ fun iconForCondition(condition: KClass<out Condition>): String {
         }
 
         Condition.AppIsNotRunning::class -> {
-            Remix.System.refresh_fill
+            Remix.Media.stop_line
         }
 
         Condition.ServiceIsRunning::class -> {
@@ -42,6 +42,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
 
         Condition.BatteryPercent::class -> {
             Remix.Device.battery_2_fill
+        }
+
+        Condition.ScreenIsOn::class -> {
+            Remix.Device.phone_line
         }
 
         else -> {

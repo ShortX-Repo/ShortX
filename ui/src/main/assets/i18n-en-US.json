@@ -11,6 +11,7 @@
   "ui.conditions.true": "No Condition",
   "ui.conditions.true.desc": "Actions will always be performed when they are triggered.",
   "ui.conditions.eva.global.var": "Check global var",
+  "ui.conditions.screen.on": "Screen is ON",
   "ui.conditions.battery.percent": "Battery percent",
   "ui.conditions.app.running": "App is running",
   "ui.conditions.app.not.running": "App is NOT running",

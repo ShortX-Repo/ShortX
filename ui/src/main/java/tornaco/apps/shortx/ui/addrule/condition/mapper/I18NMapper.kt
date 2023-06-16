@@ -58,6 +58,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.ScreenIsOn::class -> {
+            listOf(
+                i18N["ui.conditions.screen.on"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -105,6 +111,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.true"],
                 i18N["ui.conditions.true.desc"]
+            )
+        }
+
+        is Condition.ScreenIsOn -> {
+            listOf(
+                i18N["ui.conditions.screen.on"],
             )
         }
 

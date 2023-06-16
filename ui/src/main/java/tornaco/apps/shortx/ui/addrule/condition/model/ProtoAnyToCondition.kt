@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -89,6 +90,11 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ True::class.java -> {
             val data = this unpack_ True::class.java
             Condition.TRUE(id = data.id, note = data.note, isInvert = data.isInvert)
+        }
+
+        this is_ ScreenIsOn::class.java -> {
+            val data = this unpack_ ScreenIsOn::class.java
+            Condition.ScreenIsOn(id = data.id, note = data.note, isInvert = data.isInvert)
         }
 
         this is_ EvaluateGlobalVar::class.java -> {

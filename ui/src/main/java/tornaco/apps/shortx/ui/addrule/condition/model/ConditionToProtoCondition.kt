@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -133,6 +134,14 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setValue(value)
                 .setOp(op)
+                .build()
+        }
+
+        is Condition.ScreenIsOn -> {
+            ScreenIsOn.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
                 .build()
         }
     }

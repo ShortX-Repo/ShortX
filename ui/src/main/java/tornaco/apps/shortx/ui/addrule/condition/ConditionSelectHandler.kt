@@ -159,6 +159,11 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
                 true
             }
 
+            Condition.ScreenIsOn::class -> {
+                addCondition(Condition.ScreenIsOn())
+                true
+            }
+
             Condition.EvaluateGlobalVar::class -> {
                 evaluateGlobalVarSelectorDialogState.show()
                 true

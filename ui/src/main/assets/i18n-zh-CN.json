@@ -17,6 +17,7 @@
   "ui.conditions.service.running.input.service": "输入服务组件",
   "ui.conditions.service.running.empty": "你还没有选择服务组件，点击下方的选择按钮选择，或者从下方手动输入框处输入",
   "ui.conditions.has.audio.focus": "应用正在播放音频",
+  "ui.conditions.screen.on": "屏幕亮着",
   "ui.conditions.battery.percent": "电量",
   "ui.conditions.battery.percent.op": "判断条件",
   "ui.conditions.battery.percent.value": "电量值 (0-100)",

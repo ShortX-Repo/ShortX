@@ -196,12 +196,13 @@ private fun ConditionSelectorDropdown(
             Condition.CurrentForegroundApp::class,
             Condition.AppIsRunning::class,
             Condition.AppIsNotRunning::class,
-            Condition.ServiceIsRunning::class,
             Condition.AppHasAudioFocus::class,
             Condition.MVEL::class,
             Condition.TRUE::class,
+            Condition.ScreenIsOn::class,
             Condition.EvaluateGlobalVar::class,
             Condition.BatteryPercent::class,
+            Condition.ServiceIsRunning::class,
         ).map {
             DropdownItem(
                 labelLines = labelForConditionSelector(it),
