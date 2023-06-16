@@ -45,7 +45,7 @@ fun iconForCondition(condition: KClass<out Condition>): String {
         }
 
         Condition.ScreenIsOn::class -> {
-            Remix.Device.phone_line
+            Remix.Device.smartphone_line
         }
 
         else -> {
