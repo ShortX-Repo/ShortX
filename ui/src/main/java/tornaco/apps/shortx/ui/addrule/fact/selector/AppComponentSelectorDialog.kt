@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -423,6 +424,11 @@ private fun AppComponentItem(
                         TinySpacer()
                         Text(text = it.label)
                     }
+                }
+
+                if (app.isRunning) {
+                    SmallSpacer()
+                    OutlineBadge(text = LocalI18N.current["ui.common.running"])
                 }
             }
         }

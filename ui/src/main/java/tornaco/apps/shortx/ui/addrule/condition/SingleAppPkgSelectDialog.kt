@@ -188,6 +188,7 @@ private fun AppItem(
                         )
 
                         if (app.isRunning) {
+                            SmallSpacer()
                             OutlineBadge(text = LocalI18N.current["ui.common.running"])
                         }
                     }

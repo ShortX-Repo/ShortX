@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 data class AppComponentInfoWithRule(
     val info: AppComponentInfo,
-    val rule: ComponentRule?
+    val rule: ComponentRule?,
+    val isRunning: Boolean = false
 )
 
 data class AppComponentStates(
@@ -79,11 +80,13 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
+                val runningService = shortXManager.getRunningServices(pkg)
                 shortXManager.getServices(pkg).distinctBy { it.component }.map {
                     AppComponentInfoWithRule(
-                        it,
-                        kotlin.runCatching { LCRulesAdapter.getServiceRule(it.component.toComponentName()) }
-                            .getOrNull()
+                        info = it,
+                        rule = kotlin.runCatching { LCRulesAdapter.getServiceRule(it.component.toComponentName()) }
+                            .getOrNull(),
+                        isRunning = runningService.contains(it.component)
                     )
                 }
             }.filter(filterKeyword())
