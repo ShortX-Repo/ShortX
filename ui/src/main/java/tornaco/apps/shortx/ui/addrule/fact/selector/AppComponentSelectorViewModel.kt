@@ -81,6 +81,7 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 val runningService = shortXManager.getRunningServices(pkg)
+                logger.d("runningService: $runningService")
                 shortXManager.getServices(pkg).distinctBy { it.component }.map {
                     AppComponentInfoWithRule(
                         info = it,

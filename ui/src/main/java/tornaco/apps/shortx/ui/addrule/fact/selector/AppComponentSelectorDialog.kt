@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.unKnownPkg
 import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
@@ -399,36 +400,37 @@ private fun AppComponentItem(
                     })
                 }
 
-
-                app.rule?.let {
-                    val ruleInfoDialogState = rememberComponentRuleInfoDialogState(
-                        ruleLabel = it.label,
-                        ruleUrl = it.descriptionUrl ?: ""
-                    )
-                    ComponentRuleInfoDialog(state = ruleInfoDialogState)
-
-                    val context = LocalContext.current
-                    FilledTonalButton(
-                        contentPadding = PaddingValues(vertical = 6.dp, horizontal = 16.dp),
-                        enabled = it.descriptionUrl != null,
-                        onClick = {
-                            it.descriptionUrl?.let {
-                                ruleInfoDialogState.show()
-                            }
-                        }) {
-                        Icon(
-                            painter = painterResource(id = it.iconRes),
-                            contentDescription = null,
-                            tint = if (it.isSimpleColorIcon) LocalContentColor.current else Color.Unspecified
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    app.rule?.let {
+                        val ruleInfoDialogState = rememberComponentRuleInfoDialogState(
+                            ruleLabel = it.label,
+                            ruleUrl = it.descriptionUrl ?: ""
                         )
-                        TinySpacer()
-                        Text(text = it.label)
-                    }
-                }
+                        ComponentRuleInfoDialog(state = ruleInfoDialogState)
 
-                if (app.isRunning) {
-                    SmallSpacer()
-                    OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        val context = LocalContext.current
+                        FilledTonalButton(
+                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 16.dp),
+                            enabled = it.descriptionUrl != null,
+                            onClick = {
+                                it.descriptionUrl?.let {
+                                    ruleInfoDialogState.show()
+                                }
+                            }) {
+                            Icon(
+                                painter = painterResource(id = it.iconRes),
+                                contentDescription = null,
+                                tint = if (it.isSimpleColorIcon) LocalContentColor.current else Color.Unspecified
+                            )
+                            TinySpacer()
+                            Text(text = it.label)
+                        }
+                    }
+
+                    if (app.isRunning) {
+                        LargeSpacer()
+                        OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                    }
                 }
             }
         }

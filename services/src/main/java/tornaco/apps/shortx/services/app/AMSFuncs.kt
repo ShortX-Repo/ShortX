@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Binder
 import android.os.Process
 import android.os.UserHandle
+import tornaco.apps.shortx.core.appComponentToString
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.toAppComponent
@@ -22,7 +23,7 @@ object AMSFuncs {
             .firstOrNull {
                 it.service.toAppComponent(UserHandle.getUserId(it.uid)) == service
             }
-        logger.d("found running service: ${services?.let { it.service }}")
+        logger.d("found running service: ${services?.let { it.service }} for: ${service.appComponentToString()}")
         return services != null
     }
 
@@ -30,8 +31,18 @@ object AMSFuncs {
         context: Context,
         max: Int
     ): List<ActivityManager.RunningServiceInfo> {
-        val activityManager = context.activityManager
-        return activityManager.getRunningServices(max)
+        val id = Binder.clearCallingIdentity()
+        return try {
+            val activityManager = context.activityManager
+
+            activityManager.getRunningServices(max)
+
+        } catch (e: Throwable) {
+            logger.e(e, "getRunningServiceLegacy")
+            emptyList()
+        } finally {
+            Binder.restoreCallingIdentity(id)
+        }
     }
 
     fun hasRunningAppProcessForPackage(context: Context, pkg: AppPkg): Boolean {
@@ -45,16 +56,16 @@ object AMSFuncs {
     fun getRunningAppProcessLegacy(context: Context): List<RunningAppProcessInfoCompat> {
         val activityManager = context.activityManager
         val id = Binder.clearCallingIdentity()
-        try {
-            return activityManager.runningAppProcesses.mapNotNull {
+        return try {
+            activityManager.runningAppProcesses.mapNotNull {
                 it.compat()
             }
         } catch (e: Throwable) {
             logger.e(e, "getRunningAppProcesses")
+            emptyList()
         } finally {
             Binder.restoreCallingIdentity(id)
         }
-        return emptyList()
     }
 
     fun addAppLocked(

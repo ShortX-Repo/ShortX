@@ -344,8 +344,12 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     }
 
     fun getRunningServices(pkg: AppPkg): List<AppComponent> {
-        if (!pkg.isRunning()) return emptyList()
-        return getServices(pkg.userId, pkg.pkgName).map { it.component }
+        if (!pkg.isRunning()) {
+            logger.d("getRunningServices, pkg is not running.")
+            return emptyList()
+        }
+        return getServices(pkg.userId, pkg.pkgName)
+            .map { it.component }
             .filter { it.isServiceRunning() }
     }
 
