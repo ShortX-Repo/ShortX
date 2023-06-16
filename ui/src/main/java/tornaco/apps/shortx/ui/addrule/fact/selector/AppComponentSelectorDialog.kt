@@ -1,12 +1,39 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,8 +51,17 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.unKnownPkg
-import tornaco.apps.shortx.ui.addrule.action.selector.*
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ComponentRule
 
@@ -181,6 +217,18 @@ private fun ActivityListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.activities
 
+    val searchBarState = rememberSearchBarState() {
+        vm.updateKeyword(it)
+        vm.loadActivities(selectorState.pkg)
+    }
+
+    SearchBar(
+        searchBarState = searchBarState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    )
+
     if (state.isLoading) {
         Loading(modifier = Modifier.fillMaxSize())
     } else {
@@ -198,6 +246,18 @@ private fun ServiceListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.services
 
+    val searchBarState = rememberSearchBarState() {
+        vm.updateKeyword(it)
+        vm.loadServices(selectorState.pkg)
+    }
+
+    SearchBar(
+        searchBarState = searchBarState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    )
+
     if (state.isLoading) {
         Loading(modifier = Modifier.fillMaxSize())
     } else {
@@ -213,6 +273,18 @@ private fun ReceiverListContent(selectorState: AppComponentSelectorState) {
     }
     val state by vm.state.collectAsState()
     val components = state.receivers
+
+    val searchBarState = rememberSearchBarState() {
+        vm.updateKeyword(it)
+        vm.loadReceivers(selectorState.pkg)
+    }
+
+    SearchBar(
+        searchBarState = searchBarState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    )
 
     if (state.isLoading) {
         Loading(modifier = Modifier.fillMaxSize())
@@ -230,6 +302,18 @@ private fun ProviderListContent(selectorState: AppComponentSelectorState) {
     val state by vm.state.collectAsState()
     val components = state.providers
 
+    val searchBarState = rememberSearchBarState() {
+        vm.updateKeyword(it)
+        vm.loadProviders(selectorState.pkg)
+    }
+
+    SearchBar(
+        searchBarState = searchBarState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    )
+
     if (state.isLoading) {
         Loading(modifier = Modifier.fillMaxSize())
     } else {
@@ -240,7 +324,7 @@ private fun ProviderListContent(selectorState: AppComponentSelectorState) {
 @Composable
 private fun ComponentList(
     components: List<AppComponentInfoWithRule>,
-    selectorState: AppComponentSelectorState
+    selectorState: AppComponentSelectorState,
 ) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(components, key = {

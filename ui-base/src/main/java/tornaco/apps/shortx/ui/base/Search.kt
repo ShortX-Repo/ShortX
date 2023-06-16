@@ -21,9 +21,12 @@ fun List<App>.filterSearchKeyword(keyword: String?): List<App> {
 }
 
 @Composable
-fun rememberSearchBarState(itemCount: Int): SearchBarState {
+fun rememberSearchBarState(
+    itemCount: Int = 0,
+    keywordChanged: (String) -> Unit = {}
+): SearchBarState {
     return remember(itemCount) {
-        SearchBarState(itemCount)
+        SearchBarState(itemCount, keywordChanged)
     }
 }
 
@@ -51,12 +54,16 @@ fun SearchTextField(searchBarState: SearchBarState) {
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        label = {
-            Text(
-                text = LocalI18N.current["ui.search.title.search.n.items", mapOf(
-                    "count" to searchBarState.count.toString()
-                )]
-            )
+        label = if (searchBarState.count > 0) {
+            {
+                Text(
+                    text = LocalI18N.current["ui.search.title.search.n.items", mapOf(
+                        "count" to searchBarState.count.toString()
+                    )]
+                )
+            }
+        } else {
+            null
         },
         shape = ShortXTextFieldCornerShape,
         maxLines = 1,
@@ -79,11 +86,13 @@ fun SearchTextField(searchBarState: SearchBarState) {
         })
 }
 
-class SearchBarState(val count: Int) {
+class SearchBarState(val count: Int, val keywordChanged: (String) -> Unit) {
     private var _keyword by mutableStateOf("")
     val keyword get() = _keyword
 
     fun inputKeyword(value: String) {
         _keyword = value
+
+        keywordChanged(value)
     }
 }
