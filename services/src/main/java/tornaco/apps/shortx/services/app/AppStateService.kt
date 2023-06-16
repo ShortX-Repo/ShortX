@@ -334,6 +334,21 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         } ?: emptyList()
     }
 
+    fun getRunningAppPkgs(pkgSetLabel: String): List<AppPkg> {
+        val pkgSet = shortXContext.pkgSet.getPkgSetByLabel(pkgSetLabel)
+        if (pkgSet == null) {
+            logger.w("pkgSet not found: $pkgSetLabel")
+            return emptyList()
+        }
+        return pkgSet.appPkgsList.filter { it.isRunning() }
+    }
+
+    fun getRunningServices(pkg: AppPkg): List<AppComponent> {
+        if (!pkg.isRunning()) return emptyList()
+        return getServices(pkg.userId, pkg.pkgName).map { it.component }
+            .filter { it.isServiceRunning() }
+    }
+
     fun setComponentEnabledSetting(
         component: AppComponent,
         newState: Int,

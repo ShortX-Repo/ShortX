@@ -14,8 +14,17 @@ import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
+fun List<AppWithState>.filterSearchKeyword(keyword: String?): List<AppWithState> {
+    return if (keyword.isNullOrBlank()) this else filter {
+        it.app.label.contains(keyword, ignoreCase = true)
+                || it.app.pkg.pkgName.contains(keyword, ignoreCase = true)
+    }
+}
+
+data class AppWithState(val app: App, val isRunning: Boolean)
+
 data class AppStates(
-    val installedApps: List<App> = emptyList(),
+    val installedApps: List<AppWithState> = emptyList(),
     val isLoading: Boolean = false
 )
 
@@ -26,11 +35,16 @@ class AppSelectorViewModel @Inject constructor(@ApplicationContext context: Cont
 
     fun loadInstalledApps() {
         viewModelScope.launch {
+            val runningApps = withContext(Dispatchers.IO) {
+                shortXManager.getRunningAppPkgs("All")
+            }
             val apps = withContext(Dispatchers.IO) {
                 shortXManager.getInstalledApps()
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
                     }.sortedBy { it.category.ordinal }
+            }.map {
+                AppWithState(app = it, isRunning = runningApps.contains(it.pkg))
             }
             updateState {
                 copy(installedApps = apps)

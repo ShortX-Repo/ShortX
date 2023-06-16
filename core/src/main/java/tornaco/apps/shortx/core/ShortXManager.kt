@@ -368,6 +368,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getRunningAppPkgs(pkgSetLabel: String): List<AppPkg> {
+        return invokeService(emptyList()) {
+            getRunningAppPkgs(pkgSetLabel).map { AppPkg.parseFrom(it.byte) }
+        }
+    }
+
+    fun getRunningServices(pkg: AppPkg): List<AppComponent> {
+        return invokeService(emptyList()) {
+            getRunningServices(ByteArrayWrapper(pkg.toByteArray())).map { AppComponent.parseFrom(it.byte) }
+        }
+    }
+
     fun setComponentEnabledSetting(
         component: AppComponent,
         newState: Int,

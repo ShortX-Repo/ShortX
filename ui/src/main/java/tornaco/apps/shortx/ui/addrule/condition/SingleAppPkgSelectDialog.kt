@@ -39,13 +39,13 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.filterSearchKeyword
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -148,12 +148,12 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
 
 @Composable
 private fun AppItem(
-    app: App, onClick: (App) -> Unit
+    app: AppWithState, onClick: (App) -> Unit
 ) {
     Box(modifier = Modifier
         .clip(ShortXCardRoundedCornerShape)
         .clickable {
-            onClick(app)
+            onClick(app.app)
         }) {
         Row(
             modifier = Modifier
@@ -175,17 +175,21 @@ private fun AppItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    AppIcon(modifier = Modifier.size(38.dp), app.pkg)
+                    AppIcon(modifier = Modifier.size(38.dp), app.app.pkg)
                     Spacer(modifier = Modifier.size(12.dp))
 
                     Column(verticalArrangement = Arrangement.Center) {
                         Text(
-                            text = app.label, fontSize = 14.sp
+                            text = app.app.label, fontSize = 14.sp
                         )
                         SmallSpacer()
                         Text(
-                            text = app.pkg.pkgName, fontSize = 12.sp
+                            text = app.app.pkg.pkgName, fontSize = 12.sp
                         )
+
+                        if (app.isRunning) {
+                            OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        }
                     }
                 }
             }

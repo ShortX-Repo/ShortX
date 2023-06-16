@@ -440,6 +440,16 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.unregisterGlobalVarObs(obs)
         }
 
+        override fun getRunningAppPkgs(pkgSetLabel: String): List<ByteArrayWrapper> {
+            return shortXContext.appState.getRunningAppPkgs(pkgSetLabel)
+                .map { ByteArrayWrapper(it.toByteArray()) }
+        }
+
+        override fun getRunningServices(pkg: ByteArrayWrapper): List<ByteArrayWrapper> {
+            return shortXContext.appState.getRunningServices(AppPkg.parseFrom(pkg.byte))
+                .map { ByteArrayWrapper(it.toByteArray()) }
+        }
+
         @SuppressLint("MissingPermission")
         override fun reboot(reason: String?) {
             logger.w("reboot: $reason")

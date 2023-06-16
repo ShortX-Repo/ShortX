@@ -242,7 +242,7 @@ private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
         items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) { app ->
             AppItem(
                 app = app,
-                isSelected = dialogState.selectedApps.firstOrNull { app.pkg == it.pkg } != null,
+                isSelected = dialogState.selectedApps.firstOrNull { app.app.pkg == it.pkg } != null,
                 onCheckedChange = { checkedApp, isChecked ->
                     if (isChecked) {
                         dialogState.addApp(checkedApp)
@@ -257,12 +257,12 @@ private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
 
 @Composable
 private fun AppItem(
-    app: App, isSelected: Boolean, onCheckedChange: (App, Boolean) -> Unit
+    app: AppWithState, isSelected: Boolean, onCheckedChange: (App, Boolean) -> Unit
 ) {
     Box(modifier = Modifier
         .clip(ShortXCardRoundedCornerShape)
         .clickable {
-            onCheckedChange(app, !isSelected)
+            onCheckedChange(app.app, !isSelected)
         }) {
         Row(
             modifier = Modifier
@@ -284,21 +284,25 @@ private fun AppItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    AppIcon(modifier = Modifier.size(38.dp), app.pkg)
+                    AppIcon(modifier = Modifier.size(38.dp), app.app.pkg)
                     Spacer(modifier = Modifier.size(12.dp))
 
                     Column(verticalArrangement = Arrangement.Center) {
                         Text(
-                            text = app.label, fontSize = 14.sp
+                            text = app.app.label, fontSize = 14.sp
                         )
                         SmallSpacer()
                         Text(
-                            text = app.pkg.pkgName, fontSize = 12.sp
+                            text = app.app.pkg.pkgName, fontSize = 12.sp
                         )
+
+                        if (app.isRunning) {
+                            OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        }
                     }
                 }
                 Checkbox(checked = isSelected, onCheckedChange = {
-                    onCheckedChange(app, it)
+                    onCheckedChange(app.app, it)
                 })
             }
         }

@@ -139,6 +139,7 @@
   "ui.common.from.component": "From components",
   "ui.common.from.global.var": "From global var",
   "ui.common.selected.components": "Selected components",
+  "ui.common.running": "Running",
   "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",

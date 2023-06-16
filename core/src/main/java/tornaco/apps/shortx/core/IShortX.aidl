@@ -119,4 +119,7 @@ interface IShortX {
 
     // Ext
     void directExecuteRuleActions(in String ruleId);
+
+    List<ByteArrayWrapper> getRunningServices(in ByteArrayWrapper pkg);
+    List<ByteArrayWrapper> getRunningAppPkgs(String pkgSetLabel);
 }

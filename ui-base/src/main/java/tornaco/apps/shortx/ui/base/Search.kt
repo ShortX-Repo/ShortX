@@ -10,15 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
-
-fun List<App>.filterSearchKeyword(keyword: String?): List<App> {
-    return if (keyword.isNullOrBlank()) this else filter {
-        it.label.contains(keyword, ignoreCase = true)
-                || it.pkg.pkgName.contains(keyword, ignoreCase = true)
-    }
-}
 
 @Composable
 fun rememberSearchBarState(

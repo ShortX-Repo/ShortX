@@ -139,6 +139,7 @@
   "ui.common.from.component": "从组件",
   "ui.common.from.global.var": "从全局变量",
   "ui.common.selected.components": "已选择的组件",
+  "ui.common.running": "运行中",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",
