@@ -309,19 +309,19 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                             }
 
                             RuleSortBy.LastUpdateTime -> {
-                                sortedByDescending { it.lastUpdateTime }
+                                sortedBy { it.lastUpdateTime }
                             }
 
                             RuleSortBy.LastUpdateTimeReverse -> {
-                                sortedByDescending { it.lastUpdateTime }.reversed()
+                                sortedBy { it.lastUpdateTime }.reversed()
                             }
 
                             RuleSortBy.CreateTime -> {
-                                sortedByDescending { it.createTime }
+                                sortedBy { it.createTime }
                             }
 
                             RuleSortBy.CreateTimeReverse -> {
-                                sortedByDescending { it.createTime }.reversed()
+                                sortedBy { it.createTime }.reversed()
                             }
 
                             RuleSortBy.EnableState -> {
