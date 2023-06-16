@@ -40,7 +40,6 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
-import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -294,45 +293,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
                 val rules = shortXManager.getAllRules()
-                    .apply {
-                        when (state.value.ruleSortBy) {
-                            RuleSortBy.Name -> {
-                                sortedWith { o1, o2 ->
-                                    Collator.getInstance(Locale.CHINESE).compare(o1, o2)
-                                }
-                            }
-
-                            RuleSortBy.NameReverse -> {
-                                sortedWith { o1, o2 ->
-                                    Collator.getInstance(Locale.CHINESE).compare(o1, o2)
-                                }.reversed()
-                            }
-
-                            RuleSortBy.LastUpdateTime -> {
-                                sortedBy { it.lastUpdateTime }
-                            }
-
-                            RuleSortBy.LastUpdateTimeReverse -> {
-                                sortedBy { it.lastUpdateTime }.reversed()
-                            }
-
-                            RuleSortBy.CreateTime -> {
-                                sortedBy { it.createTime }
-                            }
-
-                            RuleSortBy.CreateTimeReverse -> {
-                                sortedBy { it.createTime }.reversed()
-                            }
-
-                            RuleSortBy.EnableState -> {
-                                sortedBy { it.isEnabled }
-                            }
-
-                            RuleSortBy.EnableStateReverse -> {
-                                sortedBy { it.isEnabled }.reversed()
-                            }
-                        }
-                    }
+                    .let(sort(state.value.ruleSortBy))
                     .map { rule ->
                         ruleToRuleUM(rule)
                     }
