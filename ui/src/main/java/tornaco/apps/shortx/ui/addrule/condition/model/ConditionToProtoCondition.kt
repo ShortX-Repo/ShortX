@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoMessage
 
@@ -49,6 +50,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .build()
+        }
+
+        is Condition.ServiceIsRunning -> {
+            ServiceIsRunning.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .addAllServices(services)
                 .build()
         }
 

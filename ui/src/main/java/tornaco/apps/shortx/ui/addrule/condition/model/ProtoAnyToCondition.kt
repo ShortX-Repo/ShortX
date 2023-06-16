@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -50,6 +51,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 apps = models.first,
                 pkgSets = models.second
+            )
+        }
+
+        this is_ ServiceIsRunning::class.java -> {
+            val data = this unpack_ ServiceIsRunning::class.java
+            Condition.ServiceIsRunning(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                services = data.servicesList
             )
         }
 

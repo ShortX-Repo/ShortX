@@ -116,6 +116,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
 
+    fun AppComponent.isServiceRunning() = AMSFuncs.isServiceRunning(context, this)
+
     fun onComponentMoveToBg(componentName: ComponentName, userId: Int) {
         logger.d("onComponentMoveToBg: $componentName user: $userId")
     }

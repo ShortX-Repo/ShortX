@@ -9,4 +9,5 @@ val allConditionClasses = listOf(
     Condition.AppIsRunning::class,
     Condition.AppIsNotRunning::class,
     Condition.AppHasAudioFocus::class,
+    Condition.ServiceIsRunning::class,
 )

@@ -20,6 +20,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.refresh_fill
         }
 
+        Condition.ServiceIsRunning::class -> {
+            Remix.System.refresh_fill
+        }
+
         Condition.AppHasAudioFocus::class -> {
             Remix.Media.music_2_fill
         }

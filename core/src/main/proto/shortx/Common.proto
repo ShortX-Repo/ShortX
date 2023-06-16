@@ -32,6 +32,11 @@ message AppComponentInfo {
   int32 enableSetting = 3;
 }
 
+message AppProcessName {
+  AppPkg pkg = 1;
+  string processName = 2;
+}
+
 message Author {
   string name = 1;
 }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition.mapper
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -25,6 +26,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
 
         Condition.AppIsNotRunning::class -> {
             listOf(i18N["ui.conditions.app.not.running"])
+        }
+
+        Condition.ServiceIsRunning::class -> {
+            listOf(i18N["ui.conditions.service.running"])
         }
 
         Condition.AppHasAudioFocus::class -> {
@@ -79,6 +84,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.AppIsNotRunning -> {
             mutableListOf(i18N["ui.conditions.app.not.running"])
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.ServiceIsRunning -> {
+            mutableListOf(i18N["ui.conditions.service.running"]).labelLinesFromAppComponents(
+                condition.services
+            )
         }
 
         is Condition.AppHasAudioFocus -> {

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.condition.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
@@ -35,6 +36,19 @@ sealed interface Condition : Parcelable {
     data class AppIsRunning(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
+        override val note: String = "",
+        override val isInvert: Boolean = false,
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
+    data class ServiceIsRunning(
+        val services: List<AppComponent>,
+
         override val note: String = "",
         override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()

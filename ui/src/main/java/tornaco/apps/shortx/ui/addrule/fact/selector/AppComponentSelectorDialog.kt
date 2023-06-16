@@ -133,7 +133,7 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                         .padding(paddingValues)
                 ) {
                     var selectedTabIndex by remember {
-                        mutableStateOf(0)
+                        mutableStateOf(state.types[0].ordinal)
                     }
                     TabRow(selectedTabIndex = selectedTabIndex) {
                         val titles = state.types.map { it.name }

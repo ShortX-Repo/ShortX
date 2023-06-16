@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
@@ -68,6 +69,7 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             })
     AppPkgSelectorDialog(appIsNotRunningSelectorState)
 
+
     val appHasAudioFocusSelectorState =
         rememberSingleAppPkgSelectorState {
             addCondition(
@@ -95,6 +97,14 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
     }
     BatteryPercentSelectorDialog(state = batteryPercentDialog)
 
+    val serviceIsRunningSelectorState = rememberComponentOrGVSelectorState(
+        types = listOf(ComponentType.Service),
+        onSelected = {
+            addCondition(Condition.ServiceIsRunning(it.components))
+        }
+    )
+    ComponentOrGVSelectorDialog(state = serviceIsRunningSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.CurrentForegroundApp::class -> {
@@ -110,6 +120,19 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
                     source.getConditionAs<Condition.AppIsRunning>()?.apps,
                     source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
                 )
+                true
+            }
+
+            Condition.AppIsNotRunning::class -> {
+                appIsNotRunningSelectorState.show(
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
+                )
+                true
+            }
+
+            Condition.ServiceIsRunning::class -> {
+                serviceIsRunningSelectorState.show(source.getConditionAs<Condition.ServiceIsRunning>()?.services)
                 true
             }
 

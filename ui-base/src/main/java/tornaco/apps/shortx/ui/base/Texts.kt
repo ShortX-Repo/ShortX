@@ -108,7 +108,7 @@ fun TipBody(text: String) {
         modifier = Modifier.padding(vertical = 4.dp),
         text = text,
         style = MaterialTheme.typography.bodySmall.copy(
-            fontSize = 10.sp
+            fontSize = 11.sp
         )
     )
 }

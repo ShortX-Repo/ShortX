@@ -121,3 +121,26 @@ enum GlobalVarOp {
 message GlobalVarOpPayload {
   string value = 1;
 }
+
+message ServiceIsRunning {
+  repeated AppComponent services = 1;
+  repeated string globalVarNames = 2;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ProcessIsRunning {
+  repeated AppProcessName processList = 1;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ScreenIsOn {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
