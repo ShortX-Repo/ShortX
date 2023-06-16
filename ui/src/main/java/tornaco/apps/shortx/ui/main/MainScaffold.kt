@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +42,27 @@ fun MainScaffold(
         mutableStateOf(false)
     }
 
+    val fabState = rememberFabState(onCollapsed = {
+        enableFabMask = false
+    },
+        onExpanded = {
+            enableFabMask = true
+        },
+        onFabItemClicked = {
+            when (it.id) {
+                "clipboard" -> {
+                    onClipboardClick()
+                }
+
+                "file" -> {
+                }
+
+                "new" -> {
+                    onAddClick()
+                }
+            }
+        })
+
     MainScaffold(
         state = state,
         appBarTitleKey = appBarTitleKey,
@@ -48,23 +70,9 @@ fun MainScaffold(
         appBarActions = appBarActions,
         acceptPrivacyStatement = acceptPrivacyStatement,
         floatingActionButton = {
-            Fab(
-                onClipboardClick = {
-                    onClipboardClick()
-                },
-                onFileClick = {
-
-                },
-                onCreateClick = {
-                    onAddClick()
-                },
-                onExpanded = {
-                    enableFabMask = true
-                },
-                onCollapsed = {
-                    enableFabMask = false
-                })
+            Fab(fabState)
         },
+        onMaskClickOutside = { fabState.collapse() },
         content = content
     )
 }
@@ -77,6 +85,7 @@ fun MainScaffold(
     appBarActions: @Composable () -> Unit = {},
     acceptPrivacyStatement: () -> Unit,
     floatingActionButton: @Composable () -> Unit = {},
+    onMaskClickOutside: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var isShowActiveDialog by remember {
@@ -229,7 +238,9 @@ fun MainScaffold(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
                     .pointerInput(key1 = "MASK") {
-
+                        detectTapGestures(onTap = {
+                            onMaskClickOutside()
+                        })
                     }) {
                 }
             }
@@ -300,11 +311,7 @@ private fun PrivacyStatementDialog(
 
 @Composable
 private fun Fab(
-    onClipboardClick: () -> Unit,
-    onFileClick: () -> Unit,
-    onCreateClick: () -> Unit,
-    onCollapsed: () -> Unit = {},
-    onExpanded: () -> Unit = {},
+    fabState: FabState
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
@@ -319,26 +326,12 @@ private fun Fab(
             id = "new", icon = Remix.System.add_line, label = "New"
         )
     )
+
     MultiFloatingActionButton(
         srcIcon = Icons.Outlined.Add,
         showLabels = true,
         items = expandFbItemList,
-        onCollapsed = onCollapsed,
-        onExpanded = onExpanded,
-        onFabItemClicked = {
-            when (it.id) {
-                "clipboard" -> {
-                    onClipboardClick()
-                }
-
-                "file" -> {
-                    onFileClick()
-                }
-
-                "new" -> {
-                    onCreateClick()
-                }
-            }
-        })
+        state = fabState
+    )
 }
 

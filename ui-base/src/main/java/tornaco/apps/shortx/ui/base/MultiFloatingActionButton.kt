@@ -5,7 +5,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,18 +31,50 @@ import androidx.compose.ui.unit.sp
 /**
  * https://gist.github.com/TheMelody/5681affaf39600b1f974f4db214a7b0a
  */
+
+class FabState(
+    val onCollapsed: () -> Unit = {},
+    val onExpanded: () -> Unit = {},
+    val onFabItemClicked: (item: MultiFabItem) -> Unit,
+) {
+    val currentState = mutableStateOf(MultiFabState.Collapsed)
+
+    fun collapse() {
+        currentState.value = MultiFabState.Collapsed
+        onCollapsed()
+    }
+
+    fun toggle() {
+        currentState.value =
+            if (currentState.value == MultiFabState.Collapsed) MultiFabState.Expanded else MultiFabState.Collapsed
+        if (currentState.value == MultiFabState.Collapsed) {
+            onCollapsed()
+        } else {
+            onExpanded()
+        }
+    }
+}
+
+@Composable
+fun rememberFabState(
+    onCollapsed: () -> Unit = {},
+    onExpanded: () -> Unit = {},
+    onFabItemClicked: (item: MultiFabItem) -> Unit
+): FabState {
+    return remember {
+        FabState(onCollapsed, onExpanded, onFabItemClicked)
+    }
+}
+
 @Composable
 fun MultiFloatingActionButton(
     modifier: Modifier = Modifier,
+    state: FabState,
     srcIcon: ImageVector,
     showLabels: Boolean = true,
     items: List<MultiFabItem>,
-    onCollapsed: () -> Unit = {},
-    onExpanded: () -> Unit = {},
-    onFabItemClicked: (item: MultiFabItem) -> Unit,
 ) {
-    val currentState = remember { mutableStateOf(MultiFabState.Collapsed) }
-    val transition = updateTransition(targetState = currentState, label = "")
+    val transition = updateTransition(targetState = state.currentState, label = "")
     val rotateAnim: Float by transition.animateFloat(
         transitionSpec = {
             if (targetState.value == MultiFabState.Expanded) {
@@ -80,7 +117,7 @@ fun MultiFloatingActionButton(
                         top = 6.dp,
                         end = 6.dp
                     )
-                    .alpha(animateFloatAsState(alphaAnim).value)
+                    .alpha(animateFloatAsState(alphaAnim, label = "Alpha").value)
             ) {
                 if (showLabels) {
                     Text(
@@ -98,9 +135,9 @@ fun MultiFloatingActionButton(
                     modifier = Modifier.size(46.dp),
                     containerColor = MaterialTheme.colorScheme.secondary,
                     onClick = {
-                        currentState.value = MultiFabState.Collapsed
-                        onFabItemClicked(item)
-                        onCollapsed()
+                        state.onFabItemClicked(item)
+                        state.onCollapsed()
+                        state.collapse()
                     }
                 ) {
                     RemixIcon(
@@ -113,13 +150,7 @@ fun MultiFloatingActionButton(
         FloatingActionButton(
             modifier = Modifier,
             onClick = {
-                currentState.value =
-                    if (currentState.value == MultiFabState.Collapsed) MultiFabState.Expanded else MultiFabState.Collapsed
-                if (currentState.value == MultiFabState.Collapsed) {
-                    onCollapsed()
-                } else {
-                    onExpanded()
-                }
+                state.toggle()
             }) {
             Icon(
                 imageVector = srcIcon,

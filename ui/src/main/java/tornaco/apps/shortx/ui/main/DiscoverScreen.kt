@@ -55,6 +55,7 @@ fun DiscoverScreen() {
 
         },
         floatingActionButton = {},
+        onMaskClickOutside = {},
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
         }
