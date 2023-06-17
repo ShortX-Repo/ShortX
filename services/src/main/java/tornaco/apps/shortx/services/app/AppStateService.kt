@@ -5,8 +5,6 @@ import android.content.ComponentName
 import android.content.pm.ApplicationInfo
 import android.os.UserHandle
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -30,11 +28,8 @@ import tornaco.apps.shortx.services.os.UserEvent
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    private val _currentFgComponentName = MutableStateFlow(unknownAppComponent)
-    val currentFgComponentName = _currentFgComponentName.asStateFlow()
-
-    private val _currentFgAppPkg = MutableStateFlow(unKnownPkg)
-    val currentFgAppPkg = _currentFgAppPkg.asStateFlow()
+    private val _currentResumedActivities: MutableSet<AppComponent> = mutableSetOf()
+    val currentResumedActivities: Set<AppComponent> = _currentResumedActivities.toSet()
 
     private val pkgPools = mutableListOf<PkgPool>()
 
@@ -112,59 +107,78 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         }
     }
 
-    fun AppPkg.isFront() = currentFgComponentName.value.pkg == this
+    fun AppPkg.isFront() = _currentResumedActivities.firstOrNull { it.pkg == this } != null
 
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
 
     fun AppComponent.isServiceRunning() = AMSFuncs.isServiceRunning(context, this)
 
-    fun onComponentMoveToBg(componentName: ComponentName, userId: Int) {
-        logger.d("onComponentMoveToBg: $componentName user: $userId")
-    }
+    fun onActivityResumed(componentName: ComponentName, userId: Int) {
+        logger.d("onActivityResumed: $componentName userId: $userId")
+        val activity = AppComponent(
+            Pkg(componentName.packageName, userId),
+            componentName.className
+        )
+        val activityPkg = Pkg(componentName.packageName, userId)
+        val isThisPkgFrontBefore = activityPkg.isFront()
 
-    fun onComponentMoveToFg(componentName: ComponentName, userId: Int) {
-        logger.w("onComponentMoveToFg: $componentName user: $userId")
-        _currentFgComponentName.value =
-            AppComponent(Pkg(componentName.packageName, userId), componentName.className)
-
-        val lastFgPkg = _currentFgAppPkg.value
-        val currentFgPkg = Pkg(componentName.packageName, userId)
-        if (lastFgPkg != currentFgPkg) {
-            _currentFgAppPkg.value = currentFgPkg
-
+        if (!isThisPkgFrontBefore) {
+            logger.i("This package changed from back to front: $activityPkg")
             shortXContext.rule.publishFact(
-                reason = "onComponentMoveToFg",
-                fact = AppBecomeFg.newBuilder().addApps(currentFgPkg).build(),
+                reason = "onActivityResumed",
+                fact = AppBecomeFg.newBuilder().addApps(activityPkg).build(),
                 initialContextData = mapOf(
                     ContextDataMapping.AppBecomeFg.componentName.name to componentName.flattenToShortString(),
-                    ContextDataMapping.AppBecomeFg.pkgName.name to currentFgPkg.pkgName,
-                    ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(currentFgPkg)
-                        ?: "N/A"),
-                )
-            )
-
-            shortXContext.rule.publishFact(
-                reason = "onComponentMoveToBg",
-                fact = AppBecomeBg.newBuilder().addApps(lastFgPkg).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeBg.pkgName.name to lastFgPkg.pkgName,
-                    ContextDataMapping.AppBecomeBg.appLabel.name to (getAppLabel(lastFgPkg)
-                        ?: "N/A"),
+                    ContextDataMapping.AppBecomeFg.pkgName.name to activityPkg.pkgName,
+                    ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(activityPkg)
+                        ?: activityPkg.pkgName),
                 )
             )
         }
 
+
+        logger.i("Publish Activity resume fact.")
+        _currentResumedActivities.add(activity)
         shortXContext.rule.publishFact(
-            "onComponentMoveToFg",
-            ActivityStarted.newBuilder().addComponents(componentName.toAppComponent(userId))
+            reason = "onComponentMoveToFg",
+            fact = ActivityStarted.newBuilder()
+                .addComponents(componentName.toAppComponent(userId))
                 .build(),
             initialContextData = mapOf(
-                ContextDataMapping.ActivityStarted.pkgName.name to currentFgPkg.pkgName,
+                ContextDataMapping.ActivityStarted.pkgName.name to activityPkg.pkgName,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
-                ContextDataMapping.ActivityStarted.appLabel.name to (getAppLabel(currentFgPkg)
-                    ?: "N/A"),
+                ContextDataMapping.ActivityStarted.appLabel.name to (getAppLabel(activityPkg)
+                    ?: activityPkg.pkgName),
             )
         )
+    }
+
+    fun onActivityPaused(componentName: ComponentName, userId: Int) {
+        logger.d("onActivityPaused: $componentName userId: $userId")
+        val activity = AppComponent(
+            Pkg(componentName.packageName, userId),
+            componentName.className
+        )
+        val activityPkg = Pkg(componentName.packageName, userId)
+        val isThisPkgFrontBefore = activityPkg.isFront()
+
+        _currentResumedActivities.remove(activity)
+        val isThisPkgFrontNow = activityPkg.isFront()
+
+        if (isThisPkgFrontBefore && !isThisPkgFrontNow) {
+            logger.i("This pkg has moved to background: $activityPkg")
+            shortXContext.rule.publishFact(
+                reason = "onActivityPaused",
+                fact = AppBecomeBg.newBuilder().addApps(activityPkg).build(),
+                initialContextData = mapOf(
+                    ContextDataMapping.AppBecomeBg.pkgName.name to activityPkg.pkgName,
+                    ContextDataMapping.AppBecomeBg.appLabel.name to (getAppLabel(activityPkg)
+                        ?: activityPkg.pkgName),
+                )
+            )
+        }
+
+
     }
 
     private fun poolForUser(userId: Int) = pkgPools.firstOrNull { it.userId == userId }

@@ -11,7 +11,6 @@ object CurrentPkgList : Cond {
     override fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val currentPkg = condition unpack_ CurrentPkgList::class.java
-            val state = shortXContext.appState.currentFgComponentName.value
             val requiredPkgList = if (currentPkg.pkgSetsList.isNotEmpty()) {
                 currentPkg.pkgSetsList.flatMap {
                     shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
@@ -20,7 +19,9 @@ object CurrentPkgList : Cond {
                 currentPkg.pkgsList
             }
             val res = requiredPkgList.any {
-                it.pkgName == state.pkg.pkgName && it.userId == state.pkg.userId
+                with(shortXContext.appState) {
+                    it.isFront()
+                }
             }
             if (currentPkg.isInvert) {
                 !res
