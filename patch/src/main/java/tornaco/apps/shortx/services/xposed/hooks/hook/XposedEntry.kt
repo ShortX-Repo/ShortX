@@ -16,11 +16,12 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             logger.i("Loading android.")
             hookAMS(lpparam)
             hookInputManager(lpparam)
-            hookUsageStats(lpparam)
             hookAppWidgetService(lpparam)
             hookNotificationUsageStats(lpparam)
             hookActivityTaskSupervisor(lpparam)
             hookProcessList(lpparam)
+            hookActivityResumed(lpparam)
+            hookActivityStopped(lpparam)
         }
     }
 

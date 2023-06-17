@@ -19,6 +19,8 @@ object Methods {
     const val registerDismissedByUser = "registerDismissedByUser"
     const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
     const val removeLruProcessLocked = "removeLruProcessLocked"
+    const val activityResumedLocked = "activityResumedLocked"
+    const val activityStopped = "activityStopped"
 }
 
 object ClassNames {
@@ -28,6 +30,8 @@ object ClassNames {
         "com.android.server.notification.NotificationUsageStats"
     const val PROCESS_LIST = "com.android.server.am.ProcessList"
     const val PROCESS_RECORD = "com.android.server.am.ProcessRecord"
+    const val ACTIVITY_RECORD_WM = "com.android.server.wm.ActivityRecord"
+    const val ACTIVITY_RECORD_AM = "com.android.server.am.ActivityRecord"
 }
 
 object Fields {

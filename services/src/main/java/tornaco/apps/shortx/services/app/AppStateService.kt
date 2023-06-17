@@ -153,8 +153,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         )
     }
 
-    fun onActivityPaused(componentName: ComponentName, userId: Int) {
-        logger.d("onActivityPaused: $componentName userId: $userId")
+    fun onActivityStopped(componentName: ComponentName, userId: Int) {
+        logger.d("onActivityStopped: $componentName userId: $userId")
         val activity = AppComponent(
             Pkg(componentName.packageName, userId),
             componentName.className
@@ -168,7 +168,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         if (isThisPkgFrontBefore && !isThisPkgFrontNow) {
             logger.i("This pkg has moved to background: $activityPkg")
             shortXContext.rule.publishFact(
-                reason = "onActivityPaused",
+                reason = "onActivityStopped",
                 fact = AppBecomeBg.newBuilder().addApps(activityPkg).build(),
                 initialContextData = mapOf(
                     ContextDataMapping.AppBecomeBg.pkgName.name to activityPkg.pkgName,

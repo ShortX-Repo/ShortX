@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.XposedHelpers
+import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_AM
+import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_WM
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
@@ -82,6 +84,15 @@ object Classes {
         XposedHelpers.findClass(
             PROCESS_RECORD,
             this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.activityRecordClass(): Class<*> =
+        ReflectionsExt.anyClassFromNames(
+            this, arrayOf(
+                ACTIVITY_RECORD_WM,
+                ACTIVITY_RECORD_AM
+            )
         )
 
 }

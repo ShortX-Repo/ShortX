@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
 
+@Deprecated("Use ActivityRecord hook instead, this can not cover STOP RESUME event for float windows.")
 fun XposedEntry.hookUsageStats(lpparam: XC_LoadPackage.LoadPackageParam) {
     beforeMethod(lpparam.classLoader.usageStatsServiceClass(), Methods.reportEvent) { param ->
         val event = param.args[0] as UsageEvents.Event
@@ -15,11 +16,9 @@ fun XposedEntry.hookUsageStats(lpparam: XC_LoadPackage.LoadPackageParam) {
         val packageName: String? = event.packageName
         val className: String? = event.className
 
-        // logger.d("reportEvent: $type $packageName $className")
-
         if (type == UsageEvents.Event.ACTIVITY_PAUSED) {
             logger.d("ACTIVITY_PAUSED: $packageName $className")
-            ShortXService.shortXContext.appState.onActivityPaused(
+            ShortXService.shortXContext.appState.onActivityStopped(
                 ComponentName(
                     packageName,
                     className

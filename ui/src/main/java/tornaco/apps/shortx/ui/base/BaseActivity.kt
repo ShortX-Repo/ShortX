@@ -7,11 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import tornaco.apps.shortx.core.util.ApkUtils
+import tornaco.apps.shortx.core.util.Logger
 
 abstract class BaseActivity : AppCompatActivity() {
+    private val logger = Logger("ActivityLifecycle")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         beforeOnCreate()
         super.onCreate(savedInstanceState)
+        logger.i("onCreate")
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val appName = ApkUtils.loadNameByPkgName(this, packageName) ?: ""
@@ -29,4 +33,19 @@ abstract class BaseActivity : AppCompatActivity() {
 
     @Composable
     abstract fun Content()
+
+    override fun onResume() {
+        super.onResume()
+        logger.i("onResume")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        logger.i("onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        logger.i("onDestroy")
+    }
 }
