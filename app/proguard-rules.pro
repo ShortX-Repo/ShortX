@@ -54,6 +54,9 @@
 # int[] but expected Integer (declaration of 't7.e0' appears in Anonymous-DexFile@3310950862)
 -keep class com.squareup.** { *; }
 
+# Keep, just incase.
+-keep class com.topjohnwu.superuser.** { *; }
+
 
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
