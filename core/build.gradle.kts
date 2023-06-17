@@ -68,6 +68,6 @@ addAidlTask()
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.23.2"
+        artifact = "com.google.protobuf:protoc:3.23.3"
     }
 }
