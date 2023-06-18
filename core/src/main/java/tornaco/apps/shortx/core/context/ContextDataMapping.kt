@@ -103,4 +103,11 @@ object ContextDataMapping {
     enum class ReadClipboard(val description: String) {
         text("Text read from clipboard"),
     }
+
+    @DoNotStrip
+    enum class ShellCommand(val description: String) {
+        shellOut("Output message of the shell command"),
+        shellErr("Error message of the shell command, error will redirect to out by default."),
+        shellCode("Code of the shell command"),
+    }
 }

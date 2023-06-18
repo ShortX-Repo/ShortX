@@ -112,3 +112,9 @@ message ProcessRecord {
   int32 uid = 3;
   string processName = 4;
 }
+
+message ShellRes {
+  repeated string out = 1;
+  repeated string err = 2;
+  int32 code = 3;
+}

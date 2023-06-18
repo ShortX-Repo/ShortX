@@ -103,6 +103,10 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
             dats<ContextDataMapping.ReadClipboard>()
         }
 
+        Action.ShellCommand::class -> {
+            dats<ContextDataMapping.ShellCommand>()
+        }
+
         else -> {
             emptyList()
         }
