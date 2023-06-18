@@ -3,17 +3,17 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.pm.ApplicationInfo
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.processListClass
 import tornaco.apps.shortx.core.platform.Methods.removeLruProcessLocked
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.toAppPkg
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.core.platform.Classes.amsClass
-import tornaco.apps.shortx.core.platform.Classes.processListClass
 import util.Reflections
 import util.ReflectionsExt
 
-fun XposedEntry.hookProcessList(lpparam: XC_LoadPackage.LoadPackageParam) {
+fun XposedEntry.hookProcessList(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
     if (OsUtils.isQOrAbove()) {
         afterMethod(lpparam.classLoader.processListClass(), removeLruProcessLocked) {
             handleRemoveLruProcessLocked(it)
@@ -23,6 +23,8 @@ fun XposedEntry.hookProcessList(lpparam: XC_LoadPackage.LoadPackageParam) {
             handleRemoveLruProcessLocked(it)
         }
     }
+}.getOrElse {
+    logger.e(it, "hookProcessList")
 }
 
 private fun XposedEntry.handleRemoveLruProcessLocked(param: XC_MethodHook.MethodHookParam) {

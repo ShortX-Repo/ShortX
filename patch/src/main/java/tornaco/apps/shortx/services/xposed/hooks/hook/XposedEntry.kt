@@ -20,8 +20,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             hookNotificationUsageStats(lpparam)
             hookActivityTaskSupervisor(lpparam)
             hookProcessList(lpparam)
-            hookActivityResumed(lpparam)
-            hookActivityStopped(lpparam)
+            ActivityRecordHook.hook(lpparam)
         }
     }
 

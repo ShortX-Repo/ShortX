@@ -2,12 +2,12 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import util.Reflections
 
-fun XposedEntry.hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {
+fun XposedEntry.hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
     afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
         val nat = param.thisObject.fieldOrNull<Any>("mNative")
         if (nat != null) {
@@ -31,4 +31,6 @@ fun XposedEntry.hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {
             param.result = it
         }
     }
+}.onFailure {
+    logger.e(it, "hookInputManager")
 }

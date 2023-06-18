@@ -93,6 +93,7 @@ object LogInit {
                 File(Dirs.baseServerLogDir(), "log"),
                 "shortx-init.log"
             )
+            initLogFile.parentFile.mkdirs()
 
             initLogFile.appendText(System.lineSeparator())
             initLogFile.appendText(System.lineSeparator())

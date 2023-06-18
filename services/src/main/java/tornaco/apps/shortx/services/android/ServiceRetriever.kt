@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.android
 
+import android.app.ActivityManagerInternal
 import tornaco.apps.shortx.core.platform.ClassNames
 import tornaco.apps.shortx.core.platform.lifecycleClassName
 import tornaco.apps.shortx.core.util.Logger
@@ -11,7 +12,8 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
 
     fun getInputMethodManagerService(): Any? = kotlin.runCatching {
         val className = ClassNames.INPUT_MANAGER_SERVICE.lifecycleClassName()
-        val lifecycle = getService(Reflections.findClass(className, classLoader))
+        val lifecycle =
+            getServiceFromSystemServiceManager(Reflections.findClass(className, classLoader))
         return@runCatching Reflections.getObjectField(lifecycle, "mService")
     }.getOrElse {
         logger.e(it, "getInputMethodManagerService error")
@@ -20,7 +22,8 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
 
     fun getAMS(): Any? = kotlin.runCatching {
         val className = ClassNames.AMS.lifecycleClassName()
-        val lifecycle = getService(Reflections.findClass(className, classLoader))
+        val lifecycle =
+            getServiceFromSystemServiceManager(Reflections.findClass(className, classLoader))
         return@runCatching Reflections.getObjectField(lifecycle, "mService")
     }.getOrElse {
         logger.e(it, "getAMS error")
@@ -29,7 +32,8 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
 
     fun getATMS(): Any? = kotlin.runCatching {
         val className = ClassNames.ATMS.lifecycleClassName()
-        val lifecycle = getService(Reflections.findClass(className, classLoader))
+        val lifecycle =
+            getServiceFromSystemServiceManager(Reflections.findClass(className, classLoader))
         return@runCatching Reflections.getObjectField(lifecycle, "mService")
     }.getOrElse {
         logger.e(it, "getATMS error")
@@ -41,17 +45,24 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
             Reflections.getObjectField(it, "mInternal")
         }
     }.getOrElse {
-        logger.e(it, "getATMS error")
+        logger.e(it, "getATMSInternal error")
         null
     }
 
-    fun getService(serviceClass: Class<*>): Any? {
-        return getServices().firstOrNull {
+    fun getAMSInternal(): Any? = kotlin.runCatching {
+        getService(ActivityManagerInternal::class.java, classLoader)
+    }.getOrElse {
+        logger.e(it, "getAMSInternal error")
+        null
+    }
+
+    private fun getServiceFromSystemServiceManager(serviceClass: Class<*>): Any? {
+        return getServicesFromSystemServiceManager().firstOrNull {
             it::class.java == serviceClass
         }
     }
 
-    fun getServices(): List<Any> {
+    private fun getServicesFromSystemServiceManager(): List<Any> {
         val systemServiceManager = getSystemServiceManager()
         if (systemServiceManager == null) {
             logger.w("LocalServices.getService, systemServiceManager is null.")

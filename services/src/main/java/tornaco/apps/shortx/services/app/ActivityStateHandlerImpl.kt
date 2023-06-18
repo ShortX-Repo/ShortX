@@ -24,7 +24,8 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     )
 
     private val func: Funs by lazy {
-        if (OsUtils.isROrAbove()) {
+        if (OsUtils.isQOrAbove()) {
+            // Android10
             FuncV29(context)
         } else {
             FuncV28(context)
@@ -132,8 +133,9 @@ private interface Funs {
 
 // http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/ActivityTaskManagerService.java#6125
 private class FuncV29(val context: Context) : Funs {
+    private val logger = Logger("FuncV29")
     private val atmsInt by lazy {
-        ServiceRetriever(context.classLoader).getATMSInternal()
+        ServiceRetriever(context.classLoader).getATMSInternal().also { logger.w("atmsInt=$it") }
     }
 
     override fun getTopVisibleActivities(): List<AppComponent> {
@@ -143,11 +145,12 @@ private class FuncV29(val context: Context) : Funs {
 
 // http://aospxref.com/android-9.0.0_r61/search?project=frameworks&full=getTopVisibleActivities&defs=&refs=&path=&hist=&type=&xrd=&nn=1
 private class FuncV28(val context: Context) : Funs {
+    private val logger = Logger("FuncV28")
     private val amsInt by lazy {
-        ServiceRetriever(context.classLoader).getATMSInternal()
+        ServiceRetriever(context.classLoader).getAMSInternal().also { logger.w("amsInt=$it") }
     }
 
     override fun getTopVisibleActivities(): List<AppComponent> {
-        return emptyList()
+        return AMSIntFuncs.getTopVisibleActivities(requireNotNull(amsInt) { "amsInt is null." })
     }
 }

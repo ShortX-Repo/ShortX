@@ -18,4 +18,5 @@ fun ComponentName.toAppComponent(userId: Int) = AppComponent.newBuilder()
     .setClassName(className)
     .build()
 
-fun AppComponent.appComponentToString() = "${this.pkg.pkgName}-${this.pkg.userId}-${this.className}"
+fun AppComponent.appComponentToString() =
+    "${this.pkg.pkgName}-${this.className} u${this.pkg.userId}"

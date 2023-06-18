@@ -3,17 +3,24 @@ package tornaco.apps.shortx.core.platform
 import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_AM
 import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_WM
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
+import tornaco.apps.shortx.core.platform.ClassNames.ATMS
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_RECORD
 import util.Reflections
 import util.ReflectionsExt
+import java.lang.reflect.Method
 
 object Classes {
 
     @Throws(ClassNotFoundException::class)
     fun ClassLoader.amsClass(): Class<*> {
         return Reflections.findClass(AMS, this)
+    }
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.atmsClass(): Class<*> {
+        return Reflections.findClass(ATMS, this)
     }
 
     @Throws(ClassNotFoundException::class)
@@ -95,4 +102,7 @@ object Classes {
             )
         )
 
+    fun Class<*>.activityStoppedMethod(): Method? {
+        return declaredMethods.firstOrNull { it.name == Methods.activityStopped || it.name == Methods.activityStoppedLocked }
+    }
 }

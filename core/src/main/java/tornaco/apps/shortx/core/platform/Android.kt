@@ -19,8 +19,10 @@ object Methods {
     const val registerDismissedByUser = "registerDismissedByUser"
     const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
     const val removeLruProcessLocked = "removeLruProcessLocked"
+    const val activityResumed = "activityResumed"
     const val activityResumedLocked = "activityResumedLocked"
     const val activityStopped = "activityStopped"
+    const val activityStoppedLocked = "activityStoppedLocked"
 }
 
 object ClassNames {

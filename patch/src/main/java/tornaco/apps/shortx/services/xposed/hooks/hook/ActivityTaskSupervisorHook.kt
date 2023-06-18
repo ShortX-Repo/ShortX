@@ -3,31 +3,34 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.Intent
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
+import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
-import tornaco.apps.shortx.core.platform.Classes.amsClass
 import util.Reflections
 import util.ReflectionsExt
 
-fun XposedEntry.hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) {
-    if (OsUtils.isOOrAbove()) {
-        afterMethod(
-            lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTaskLocked),
-            Methods.cleanUpRemovedTaskLocked
-        ) {
-            handleTaskRemoved(it)
+fun XposedEntry.hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) =
+    kotlin.runCatching {
+        if (OsUtils.isOOrAbove()) {
+            afterMethod(
+                lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTaskLocked),
+                Methods.cleanUpRemovedTaskLocked
+            ) {
+                handleTaskRemoved(it)
+            }
+        } else {
+            afterMethod(lpparam.classLoader.amsClass(), Methods.cleanUpRemovedTaskLocked) {
+                handleTaskRemoved(it)
+            }
         }
-    } else {
-        afterMethod(lpparam.classLoader.amsClass(), Methods.cleanUpRemovedTaskLocked) {
-            handleTaskRemoved(it)
-        }
+    }.onFailure {
+        logger.e(it, "hookActivityTaskSupervisor")
     }
-}
 
 private fun XposedEntry.handleTaskRemoved(param: XC_MethodHook.MethodHookParam) {
     // void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents)
