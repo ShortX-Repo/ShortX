@@ -40,6 +40,7 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.app.PrebuiltPkgSet
 
@@ -325,10 +326,10 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         }
     }
 
-    private fun match0(l: ProtoMessage, r: ProtoMessage): Boolean {
-        val matcher = factValueMatchers[l.javaClass]
-        val res = matcher?.invoke(l, r) ?: (l == r)
-        logger.d("matching $l $r, res: $res")
+    private fun match0(actual: ProtoMessage, rule: ProtoMessage): Boolean {
+        val matcher = factValueMatchers[actual.javaClass]
+        val res = matcher?.invoke(actual, rule) ?: (actual == rule)
+        logger.d("matching actual: $actual, rule: $rule, res: $res")
         return res
     }
 
@@ -356,7 +357,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             return true
         }
 
-        logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.pkgName }}, pkgListRule: ${pkgListRule.map { it.pkgName }}")
+        logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
         return pkgListRule.containsAll(pkgListActual)
     }
 

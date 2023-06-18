@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Intent
 import android.os.IBinder
+import android.os.UserHandle
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
@@ -19,16 +20,17 @@ fun XposedEntry.hookActivityResumed(lpparam: XC_LoadPackage.LoadPackageParam) {
         val activityRecord =
             ActivityRecordUtils.forTokenLocked(param.args[0] as IBinder?, lpparam.classLoader)
         val intent = ActivityRecordUtils.getIntent(activityRecord)
-        val userId = ActivityRecordUtils.getUid(activityRecord)
-        logger.i("activityStopped, user: $userId, intent: $intent")
-        if (intent == null || userId < 0) {
-            logger.e("Can not get intent or user for activityRecord: $activityRecord")
+        val uid = ActivityRecordUtils.getUid(activityRecord)
+        if (intent == null || uid < 0) {
+            logger.e("activityResumedLocked, can not get intent or uid for activityRecord: $activityRecord")
             return@afterMethod
         }
+        val userId = UserHandle.getUserId(uid)
+        logger.i("activityResumedLocked, user: $userId, intent: $intent")
 
         val componentName = intent.component
         if (componentName == null) {
-            logger.e("Can not get component from Intent: $intent")
+            logger.e("activityResumedLocked, can not get component from Intent: $intent")
             return@afterMethod
         }
         ShortXService.shortXContext.appState.onActivityResumed(
@@ -45,15 +47,17 @@ fun XposedEntry.hookActivityStopped(lpparam: XC_LoadPackage.LoadPackageParam) {
     ) { param ->
         val activityRecord = param.thisObject
         val intent = ActivityRecordUtils.getIntent(activityRecord)
-        val userId = ActivityRecordUtils.getUid(activityRecord)
-        logger.i("activityStopped, user: $userId, intent: $intent")
-        if (intent == null || userId < 0) {
-            logger.e("Can not get intent or user for activityRecord: $activityRecord")
+        val uid = ActivityRecordUtils.getUid(activityRecord)
+        if (intent == null || uid < 0) {
+            logger.e("activityStopped, can not get intent or user for activityRecord: $activityRecord")
             return@afterMethod
         }
+        val userId = UserHandle.getUserId(uid)
+        logger.i("activityStopped, user: $userId, intent: $intent")
+
         val componentName = intent.component
         if (componentName == null) {
-            logger.e("Can not get component from Intent: $intent")
+            logger.e("activityStopped, can not get component from Intent: $intent")
             return@afterMethod
         }
         ShortXService.shortXContext.appState.onActivityStopped(
