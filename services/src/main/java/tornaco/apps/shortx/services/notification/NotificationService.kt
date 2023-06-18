@@ -42,7 +42,7 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
 
 
     fun registerPostedByApp(n: Notification) {
-        logger.d("registerPostedByApp: $n")
+        logger.p("registerPostedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerPostedByApp",
@@ -53,7 +53,7 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
     }
 
     fun registerUpdatedByApp(n: Notification) {
-        logger.d("registerUpdatedByApp: $n")
+        logger.p("registerUpdatedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerUpdatedByApp",
@@ -64,7 +64,7 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
     }
 
     fun registerDismissedByUser(n: Notification) {
-        logger.d("registerDismissedByUser: $n")
+        logger.p("registerDismissedByUser: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",
@@ -75,7 +75,7 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
     }
 
     fun registerRemovedByApp(n: Notification) {
-        logger.d("registerRemovedByApp: $n")
+        logger.p("registerRemovedByApp: $n")
         systemServiceScope.launchSafety {
             shortXContext.rule.publishFact(
                 "registerDismissedByUser",

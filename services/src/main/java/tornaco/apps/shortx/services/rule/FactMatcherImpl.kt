@@ -44,9 +44,14 @@ import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.app.PrebuiltPkgSet
 
+internal class Matcher(
+    val targetClass: String,
+    val impl: (l: ProtoMessage, r: ProtoMessage) -> Boolean
+)
+
 class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     private val logger = Logger("FactMatcher")
-    private val factValueMatchers: MutableMap<Class<*>, (l: ProtoMessage, r: ProtoMessage) -> Boolean> =
+    private val factValueMatchers: MutableMap<Class<*>, Matcher> =
         mutableMapOf()
 
     init {
@@ -310,7 +315,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, f: ProtoMessage) -> Boolean) {
         logger.d("register: $clazz --> $matcher")
         if (factValueMatchers[clazz] != null) throw IllegalStateException("Dup matcher for class: $clazz")
-        factValueMatchers[clazz] = matcher
+        factValueMatchers[clazz] = Matcher(clazz.name, matcher)
     }
 
     override fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean {
@@ -328,8 +333,9 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
     private fun match0(actual: ProtoMessage, rule: ProtoMessage): Boolean {
         val matcher = factValueMatchers[actual.javaClass]
-        val res = matcher?.invoke(actual, rule) ?: (actual == rule)
-        logger.d("matching actual: $actual, rule: $rule, res: $res")
+        val res = matcher?.impl?.invoke(actual, rule) ?: (actual == rule)
+        logger.p("matching actual: $actual, rule: $rule, res: $res")
+        logger.d("matching class: ${matcher?.targetClass} res: $res")
         return res
     }
 

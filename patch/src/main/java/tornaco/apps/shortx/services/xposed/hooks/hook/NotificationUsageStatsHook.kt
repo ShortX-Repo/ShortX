@@ -10,7 +10,7 @@ fun XposedEntry.hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackagePa
         lpparam.classLoader.notificationUsageStatsClass(),
         Methods.registerPostedByApp
     ) { methodHookParam ->
-        logger.d("registerPostedByApp: ${methodHookParam.args}")
+        logger.d("registerPostedByApp")
         methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
             ShortXService.shortXContext.notification.registerPostedByApp(it)
         }
@@ -20,7 +20,7 @@ fun XposedEntry.hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackagePa
         lpparam.classLoader.notificationUsageStatsClass(),
         Methods.registerUpdatedByApp
     ) { methodHookParam ->
-        logger.d("registerUpdatedByApp: ${methodHookParam.args}")
+        logger.d("registerUpdatedByApp")
         methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
             ShortXService.shortXContext.notification.registerUpdatedByApp(it)
         }
@@ -30,7 +30,7 @@ fun XposedEntry.hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackagePa
         lpparam.classLoader.notificationUsageStatsClass(),
         Methods.registerRemovedByApp
     ) { methodHookParam ->
-        logger.d("registerRemovedByApp: ${methodHookParam.args}")
+        logger.d("registerRemovedByApp")
         methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
             ShortXService.shortXContext.notification.registerRemovedByApp(it)
         }
@@ -40,7 +40,7 @@ fun XposedEntry.hookNotificationUsageStats(lpparam: XC_LoadPackage.LoadPackagePa
         lpparam.classLoader.notificationUsageStatsClass(),
         Methods.registerDismissedByUser
     ) { methodHookParam ->
-        logger.d("registerDismissedByUser: ${methodHookParam.args}")
+        logger.d("registerDismissedByUser")
         methodHookParam.args[0]?.androidNotificationRecordToNotification()?.let {
             ShortXService.shortXContext.notification.registerDismissedByUser(it)
         }

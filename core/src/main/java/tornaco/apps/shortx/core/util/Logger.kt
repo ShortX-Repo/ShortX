@@ -1,9 +1,20 @@
 package tornaco.apps.shortx.core.util
 
 import android.util.Log
+import tornaco.apps.shortx.core.BuildProp
+
+const val LOG_LEVEL_P = 200
 
 class Logger(private val tag: String = "-") {
     private val fullTag get() = tag
+
+    fun p(any: Any?) {
+        if (BuildProp.APP_IS_DEBUG) logAdapter(
+            LOG_LEVEL_P,
+            fullTag,
+            "[${Thread.currentThread().name}] $any"
+        )
+    }
 
     fun d(any: Any?) {
         logAdapter(Log.DEBUG, fullTag, "[${Thread.currentThread().name}] $any")

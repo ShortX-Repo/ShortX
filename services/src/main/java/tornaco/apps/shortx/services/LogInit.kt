@@ -14,6 +14,7 @@ import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.LOG_LEVEL_P
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.ZipUtils
 import tornaco.apps.shortx.core.util.logAdapter
@@ -41,6 +42,7 @@ object LogInit {
                 Log.INFO -> XLog.i("$tag $msg")
                 Log.WARN -> XLog.w("$tag $msg")
                 Log.ERROR -> XLog.e("$tag $msg")
+                LOG_LEVEL_P -> if (BuildProp.APP_IS_DEBUG) XLog.d("$tag $msg")
             }
         }
     }
