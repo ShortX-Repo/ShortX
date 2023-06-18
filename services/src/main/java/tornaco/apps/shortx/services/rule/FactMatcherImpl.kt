@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
+import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -300,6 +301,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as Broadcast)
             val ruleN = (rule as Broadcast)
             actualN.id == ruleN.id
+        }
+
+        register(EdgeGesture::class.java) { actual, rule ->
+            val actualN = (actual as EdgeGesture)
+            val ruleN = (rule as EdgeGesture)
+            actualN.edge == ruleN.edge && actualN.gesture == ruleN.gesture
         }
 
         logger.i("Init complete.")
