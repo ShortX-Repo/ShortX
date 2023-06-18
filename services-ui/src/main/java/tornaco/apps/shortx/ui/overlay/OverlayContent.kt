@@ -14,7 +14,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -112,13 +115,16 @@ fun OverlayContent(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .heightIn(max = 240.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Expand tool.
+                val expandSizeDp: MutableState<Dp> = remember {
+                    mutableStateOf(minWidth)
+                }
+                val density = LocalDensity.current
                 AnimatedVisibility(visible = !expandState.isExpand) {
                     Box(modifier = Modifier
-                        .widthIn(min = minWidth)
+                        .width(expandSizeDp.value)
                         .height(24.dp)
                         .clickable {
                             expandState.expand()
@@ -137,7 +143,10 @@ fun OverlayContent(
                     Column(
                         modifier = Modifier
                             .widthIn(min = minWidth)
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp)
+                            .onSizeChanged {
+                                expandSizeDp.value = with(density) { it.width.toDp() }
+                            },
                         horizontalAlignment = CenterHorizontally
                     ) {
                         formattedValues.forEachIndexed { index, label ->
