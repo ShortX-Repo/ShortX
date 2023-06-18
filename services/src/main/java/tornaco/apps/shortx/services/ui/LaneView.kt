@@ -210,7 +210,7 @@ class LaneView @JvmOverloads constructor(
         return if (overlap == 0f) {
             val lanesHeight =
                 measuredHeight - paddingTop - paddingBottom
-            val lanesCapacity = (lanesHeight + verticalGap) / (commentHeight + verticalGap)
+            val lanesCapacity = 1 // (lanesHeight + verticalGap) / (commentHeight + verticalGap)
             val extraPadding =
                 lanesHeight - commentHeight * lanesCapacity - verticalGap * (lanesCapacity - 1)
             val firstLaneTop = paddingTop + extraPadding / 2
