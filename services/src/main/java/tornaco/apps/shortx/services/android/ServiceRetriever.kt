@@ -27,6 +27,24 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
         null
     }
 
+    fun getATMS(): Any? = kotlin.runCatching {
+        val className = ClassNames.ATMS.lifecycleClassName()
+        val lifecycle = getService(Reflections.findClass(className, classLoader))
+        return@runCatching Reflections.getObjectField(lifecycle, "mService")
+    }.getOrElse {
+        logger.e(it, "getATMS error")
+        null
+    }
+
+    fun getATMSInternal(): Any? = kotlin.runCatching {
+        getATMS()?.let {
+            Reflections.getObjectField(it, "mInternal")
+        }
+    }.getOrElse {
+        logger.e(it, "getATMS error")
+        null
+    }
+
     fun getService(serviceClass: Class<*>): Any? {
         return getServices().firstOrNull {
             it::class.java == serviceClass

@@ -5,7 +5,7 @@ import android.os.Bundle
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.appWidgetServiceImplClass
+import tornaco.apps.shortx.core.platform.Classes.appWidgetServiceImplClass
 
 fun XposedEntry.hookAppWidgetService(lpparam: XC_LoadPackage.LoadPackageParam) {
     beforeMethod(

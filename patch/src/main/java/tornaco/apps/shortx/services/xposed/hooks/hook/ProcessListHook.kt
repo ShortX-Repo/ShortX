@@ -8,8 +8,8 @@ import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.toAppPkg
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.processListClass
+import tornaco.apps.shortx.core.platform.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.processListClass
 import util.Reflections
 import util.ReflectionsExt
 

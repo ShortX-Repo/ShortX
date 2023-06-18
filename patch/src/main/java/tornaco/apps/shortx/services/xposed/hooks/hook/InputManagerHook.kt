@@ -4,7 +4,7 @@ import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.inputManagerService
+import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import util.Reflections
 
 fun XposedEntry.hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) {

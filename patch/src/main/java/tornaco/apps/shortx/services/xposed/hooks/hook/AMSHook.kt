@@ -5,7 +5,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Fields
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.amsClass
 
 fun XposedEntry.hookAMS(lpparam: XC_LoadPackage.LoadPackageParam) {
     afterMethod(lpparam.classLoader.amsClass(), Methods.start) { param ->

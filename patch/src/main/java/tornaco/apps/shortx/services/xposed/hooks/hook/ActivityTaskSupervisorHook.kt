@@ -9,8 +9,8 @@ import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.activityStackSupervisorClass
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.activityStackSupervisorClass
+import tornaco.apps.shortx.core.platform.Classes.amsClass
 import util.Reflections
 import util.ReflectionsExt
 

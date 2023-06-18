@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlin.stdlib.jdk8)
+
+    implementation(project(":external:utils"))
 }
 
 addAidlTask()

@@ -14,9 +14,6 @@ import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
-import tornaco.apps.shortx.core.proto.fact.ActivityStarted
-import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
-import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.util.PkgUtils
@@ -28,9 +25,6 @@ import tornaco.apps.shortx.services.os.UserEvent
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    private val _currentResumedActivities: MutableSet<AppComponent> = mutableSetOf()
-    val currentResumedActivities: Set<AppComponent> = _currentResumedActivities.toSet()
-
     private val pkgPools = mutableListOf<PkgPool>()
 
     private val onPackageUpdatedListeners: MutableList<((App) -> Unit)> = mutableListOf()
@@ -42,6 +36,10 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     private val ams by lazy {
         ServiceRetriever(context.classLoader).getAMS()
+    }
+
+    private val activityState by lazy {
+        ActivityStateHandlerImpl(context, shortXContext)
     }
 
     override fun systemReady() {
@@ -71,6 +69,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 }
             }
         }
+
+        logger.w("AMS: $ams")
     }
 
     private suspend fun initPoolForUser(id: Int): PkgPool {
@@ -107,79 +107,21 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         }
     }
 
-    fun AppPkg.isFront() = _currentResumedActivities.firstOrNull { it.pkg == this } != null
+    fun AppPkg.isFront(): Boolean {
+        return activityState.isFront(this)
+    }
+
+    fun onActivityResumed(componentName: ComponentName, userId: Int) {
+        activityState.onActivityResumed(componentName, userId)
+    }
+
+    fun onActivityStopped(componentName: ComponentName, userId: Int) {
+        activityState.onActivityStopped(componentName, userId)
+    }
 
     fun AppPkg.isRunning() = AMSFuncs.hasRunningAppProcessForPackage(context, this)
 
     fun AppComponent.isServiceRunning() = AMSFuncs.isServiceRunning(context, this)
-
-    fun onActivityResumed(componentName: ComponentName, userId: Int) {
-        logger.d("onActivityResumed: $componentName userId: $userId")
-        val activity = AppComponent(
-            Pkg(componentName.packageName, userId),
-            componentName.className
-        )
-        val activityPkg = Pkg(componentName.packageName, userId)
-        val isThisPkgFrontBefore = activityPkg.isFront()
-
-        if (!isThisPkgFrontBefore) {
-            logger.i("This package changed from back to front: $activityPkg")
-            shortXContext.rule.publishFact(
-                reason = "onActivityResumed",
-                fact = AppBecomeFg.newBuilder().addApps(activityPkg).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeFg.componentName.name to componentName.flattenToShortString(),
-                    ContextDataMapping.AppBecomeFg.pkgName.name to activityPkg.pkgName,
-                    ContextDataMapping.AppBecomeFg.appLabel.name to (getAppLabel(activityPkg)
-                        ?: activityPkg.pkgName),
-                )
-            )
-        }
-
-
-        logger.i("Publish Activity resume fact.")
-        _currentResumedActivities.add(activity)
-        shortXContext.rule.publishFact(
-            reason = "onComponentMoveToFg",
-            fact = ActivityStarted.newBuilder()
-                .addComponents(componentName.toAppComponent(userId))
-                .build(),
-            initialContextData = mapOf(
-                ContextDataMapping.ActivityStarted.pkgName.name to activityPkg.pkgName,
-                ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
-                ContextDataMapping.ActivityStarted.appLabel.name to (getAppLabel(activityPkg)
-                    ?: activityPkg.pkgName),
-            )
-        )
-    }
-
-    fun onActivityStopped(componentName: ComponentName, userId: Int) {
-        logger.d("onActivityStopped: $componentName userId: $userId")
-        val activity = AppComponent(
-            Pkg(componentName.packageName, userId),
-            componentName.className
-        )
-        val activityPkg = Pkg(componentName.packageName, userId)
-        val isThisPkgFrontBefore = activityPkg.isFront()
-
-        _currentResumedActivities.remove(activity)
-        val isThisPkgFrontNow = activityPkg.isFront()
-
-        if (isThisPkgFrontBefore && !isThisPkgFrontNow) {
-            logger.i("This pkg has moved to background: $activityPkg")
-            shortXContext.rule.publishFact(
-                reason = "onActivityStopped",
-                fact = AppBecomeBg.newBuilder().addApps(activityPkg).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeBg.pkgName.name to activityPkg.pkgName,
-                    ContextDataMapping.AppBecomeBg.appLabel.name to (getAppLabel(activityPkg)
-                        ?: activityPkg.pkgName),
-                )
-            )
-        }
-
-
-    }
 
     private fun poolForUser(userId: Int) = pkgPools.firstOrNull { it.userId == userId }
 

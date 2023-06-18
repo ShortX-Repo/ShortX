@@ -25,6 +25,7 @@ object Methods {
 
 object ClassNames {
     const val AMS = "com.android.server.am.ActivityManagerService"
+    const val ATMS = "com.android.server.wm.ActivityTaskManagerService"
     const val INPUT_MANAGER_SERVICE = "com.android.server.inputmethod.InputMethodManagerService"
     const val NOTIFICATION_USAGE_STATS_SERVICE =
         "com.android.server.notification.NotificationUsageStats"

@@ -1,14 +1,12 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.content.Intent
 import android.os.IBinder
 import android.os.UserHandle
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.ActivityRecordUtils
+import tornaco.apps.shortx.core.platform.Classes.activityRecordClass
 import tornaco.apps.shortx.core.platform.Methods
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.activityRecordClass
-import util.Reflections
 
 fun XposedEntry.hookActivityResumed(lpparam: XC_LoadPackage.LoadPackageParam) {
     val activityRecordClazz = lpparam.classLoader.activityRecordClass()
@@ -25,8 +23,7 @@ fun XposedEntry.hookActivityResumed(lpparam: XC_LoadPackage.LoadPackageParam) {
             logger.e("activityResumedLocked, can not get intent or uid for activityRecord: $activityRecord")
             return@afterMethod
         }
-        val userId = UserHandle.getUserId(uid)
-        logger.i("activityResumedLocked, user: $userId, intent: $intent")
+        logger.i("activityResumedLocked, user: $uid, intent: $intent")
 
         val componentName = intent.component
         if (componentName == null) {
@@ -34,7 +31,7 @@ fun XposedEntry.hookActivityResumed(lpparam: XC_LoadPackage.LoadPackageParam) {
             return@afterMethod
         }
         ShortXService.shortXContext.appState.onActivityResumed(
-            componentName, userId
+            componentName, UserHandle.getUserId(uid)
         )
     }
 }
@@ -52,8 +49,7 @@ fun XposedEntry.hookActivityStopped(lpparam: XC_LoadPackage.LoadPackageParam) {
             logger.e("activityStopped, can not get intent or user for activityRecord: $activityRecord")
             return@afterMethod
         }
-        val userId = UserHandle.getUserId(uid)
-        logger.i("activityStopped, user: $userId, intent: $intent")
+        logger.i("activityStopped, uid: $uid, intent: $intent")
 
         val componentName = intent.component
         if (componentName == null) {
@@ -61,49 +57,8 @@ fun XposedEntry.hookActivityStopped(lpparam: XC_LoadPackage.LoadPackageParam) {
             return@afterMethod
         }
         ShortXService.shortXContext.appState.onActivityStopped(
-            componentName, userId
+            componentName, UserHandle.getUserId(uid)
         )
     }
 }
 
-
-internal object ActivityRecordUtils {
-    private val logger = Logger("ActivityRecordUtils")
-
-    // final ActivityRecord r = ActivityRecord.forTokenLocked(token);
-    fun forTokenLocked(token: IBinder?, classLoader: ClassLoader): Any? {
-        return if (token == null) null else try {
-            val clazz = classLoader.activityRecordClass()
-            Reflections.callStaticMethod(
-                clazz,
-                "forTokenLocked",
-                token
-            )
-        } catch (e: Throwable) {
-            logger.e(e, "ActivityRecordUtils#forTokenLocked error")
-            null
-        }
-    }
-
-    fun getIntent(activityRecord: Any?): Intent? {
-        return if (activityRecord == null) {
-            null
-        } else try {
-            Reflections.getObjectField(activityRecord, "intent") as Intent
-        } catch (e: Throwable) {
-            logger.e(e, "ActivityRecordUtils#getIntent error")
-            null
-        }
-    }
-
-    fun getUid(activityRecord: Any?): Int {
-        return if (activityRecord == null) {
-            -1
-        } else try {
-            Reflections.callMethod(activityRecord, "getUid") as Int
-        } catch (e: Throwable) {
-            logger.e(e, "ActivityRecordUtils#getUid error")
-            -1
-        }
-    }
-}

@@ -5,7 +5,7 @@ import android.content.ComponentName
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
-import tornaco.apps.shortx.services.xposed.hooks.hook.Classes.usageStatsServiceClass
+import tornaco.apps.shortx.core.platform.Classes.usageStatsServiceClass
 
 @Deprecated("Use ActivityRecord hook instead, this can not cover STOP RESUME event for float windows.")
 fun XposedEntry.hookUsageStats(lpparam: XC_LoadPackage.LoadPackageParam) {
