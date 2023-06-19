@@ -2,9 +2,9 @@ package tornaco.apps.shortx.ui.base
 
 import android.content.Context
 import android.icu.text.MessageFormat
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.R
 
 val i18NIns by lazy { I18NImpl() }
 
@@ -15,7 +15,7 @@ class I18NImpl : I18N {
 }
 
 object I18NCache {
-    private const val DEFAULT_LANGUAGE = "zh-CN"
+    private const val DEFAULT_LANGUAGE = "i18n-en-US.json"
 
     private val logger = Logger("I18NCache")
     private val res: MutableMap<String, String> = mutableMapOf()
@@ -27,20 +27,11 @@ object I18NCache {
     }
 
     fun init(context: Context) {
-        val locale = kotlin.runCatching {
-            context.resources.configuration.locales.get(0).let {
-                it.language + "-" + it.country
-            }
-        }.getOrElse {
-            logger.e(it, "Get locale error.")
-            DEFAULT_LANGUAGE
-        }
-        logger.d("locale: $locale")
-        val fileName = "i18n-$locale.json"
-        val fallbackFileName = "i18n-$DEFAULT_LANGUAGE.json"
-        kotlin.runCatching { context.assets.open(fileName) }.getOrElse {
-            logger.w("Using fallback file: $fallbackFileName")
-            context.assets.open(fallbackFileName)
+        val name = context.getString(R.string.ui_i18n_name)
+        logger.d("locale: $name")
+        kotlin.runCatching { context.assets.open(name) }.getOrElse {
+            logger.e(it, "Using fallback file: $DEFAULT_LANGUAGE")
+            context.assets.open(DEFAULT_LANGUAGE)
         }.use {
             val content = it.bufferedReader(Charsets.UTF_8).readText()
             res.putAll(Json.decodeFromString<Map<String, String>>(content))
