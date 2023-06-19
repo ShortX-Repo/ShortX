@@ -136,6 +136,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
+        Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -473,6 +474,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             mutableListOf(i18N["ui.action.remove.tasks"]).labelLinesFromAppsAndPkgSets(
                 action.apps,
                 action.pkgSets
+            )
+        }
+
+        is Action.KillProcessByName -> {
+            listOf(
+                i18N["ui.action.kill.process.by.name"],
+                i18N["ui.action.kill.process.by.name.summary", mapOf("count" to "${action.processList.size}")]
             )
         }
     }

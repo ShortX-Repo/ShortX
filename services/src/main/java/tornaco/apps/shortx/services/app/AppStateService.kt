@@ -5,6 +5,7 @@ import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
 import kotlinx.coroutines.delay
@@ -15,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
@@ -437,4 +439,15 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
         tasksIds.forEach { activity.removeTask(it) }
     }
 
+    fun killProcessByName(processList: List<ProcessName>) {
+        AMSFuncs.getRunningAppProcessLegacy(context).filter {
+            processList.contains(
+                ProcessName.newBuilder().setProcessName(it.processName)
+                    .setUserId(UserHandle.getUserId(it.uid)).build()
+            )
+        }.forEach {
+            logger.d("killProcess: ${it.processName}-${it.pkgList}")
+            Process.killProcessQuiet(it.pid)
+        }
+    }
 }

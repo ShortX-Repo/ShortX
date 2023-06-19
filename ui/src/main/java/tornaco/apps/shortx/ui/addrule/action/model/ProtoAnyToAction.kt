@@ -576,6 +576,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.KillProcessByName::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.KillProcessByName::class.java
+            Action.KillProcessByName(
+                id = data.id,
+                note = data.note,
+                processList = data.processesList.distinct()
+            )
+        }
+
         else -> null
     }
 }

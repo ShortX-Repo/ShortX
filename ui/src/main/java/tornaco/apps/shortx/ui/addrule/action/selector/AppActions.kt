@@ -166,6 +166,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         })
     ComponentOrGVSelectorDialog(state = stopServiceSelectorState)
 
+    val killProcessSelectorState = rememberProcessListSelectorState(onSelected = {
+        addAction(Action.KillProcessByName(processList = it))
+    })
+    ProcessListSelectorDialog(state = killProcessSelectorState)
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
@@ -259,6 +264,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.KillProcessByName::class -> {
+                killProcessSelectorState.show(source.getActionAs<Action.KillProcessByName>()?.processList)
+                true
+            }
+
             else -> false
         }
     }
@@ -281,6 +291,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.UnSuspendApp::class,
         Action.StopService::class,
         Action.RemoveTasks::class,
+        Action.KillProcessByName::class,
     ).map {
         SelectorItem(
             type = it,

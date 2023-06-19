@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
+import tornaco.apps.shortx.core.proto.action.KillProcessByName
 import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.NoAction
@@ -505,6 +506,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .build()
+        }
+
+        is Action.KillProcessByName -> {
+            KillProcessByName.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .addAllProcesses(processList.distinct())
                 .build()
         }
 

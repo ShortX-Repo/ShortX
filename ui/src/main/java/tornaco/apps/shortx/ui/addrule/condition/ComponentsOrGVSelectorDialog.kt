@@ -156,7 +156,7 @@ private fun ComponentOrGVSelectorContent(dialogState: AppComponentOrGVSelectorDi
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.conditions.service.running"]) },
+                        title = { Text(text = LocalI18N.current["ui.common.select.component"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -266,7 +266,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     )
     if (dialogState.componentsOrGV.components.isEmpty()) {
         TipBody(
-            text = LocalI18N.current["ui.conditions.service.running.empty"]
+            text = LocalI18N.current["ui.common.select.component.empty"]
         )
     } else {
         LazyColumn(
@@ -349,7 +349,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
             },
             showSymbolButton = true,
             label = {
-                Text(text = i18N["ui.conditions.service.running.input.service"])
+                Text(text = i18N["ui.common.select.component.input"])
             }
         )
         StandardSpacer()
