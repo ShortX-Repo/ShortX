@@ -57,7 +57,8 @@
 # Keep, just incase.
 -keep class com.topjohnwu.superuser.** { *; }
 
-
+# Keep thanox core.
+-keep class github.tornaco.android.thanos.core** {*;}
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
@@ -108,3 +109,5 @@
 -dontwarn android.app.usage.IUsageStatsManager$Stub
 -dontwarn android.app.usage.IUsageStatsManager
 -dontwarn android.app.ActivityManagerInternal
+-dontwarn android.app.IActivityManager$Stub
+-dontwarn android.app.IActivityManager

@@ -28,6 +28,7 @@ fun Project.addAidlTask() {
                             "-I$srcDir",
                             "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
                             "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
+                            "-p$projectPrebuiltAndroidSdkDir${File.separator}thanos.aidl",
                             aidlPath
                         )
                         println("command: ${commands.map { it }}")
@@ -37,6 +38,7 @@ fun Project.addAidlTask() {
                                 "-I$srcDir",
                                 "-p$projectPrebuiltAndroidSdkDir${File.separator}framework.aidl",
                                 "-p$projectPrebuiltAndroidSdkDir${File.separator}shortx.aidl",
+                                "-p$projectPrebuiltAndroidSdkDir${File.separator}thanos.aidl",
                                 aidlPath
                             )
                         }.apply {

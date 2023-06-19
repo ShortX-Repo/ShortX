@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
+import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.*
@@ -440,14 +441,24 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     }
 
     fun killProcessByName(processList: List<ProcessName>) {
-        AMSFuncs.getRunningAppProcessLegacy(context).filter {
-            processList.contains(
-                ProcessName.newBuilder().setProcessName(it.processName)
-                    .setUserId(UserHandle.getUserId(it.uid)).build()
+        val thanoxAvailable = ThanosManagerNative.isServiceInstalled()
+        if (thanoxAvailable) {
+            ThanosManagerNative.getDefault().activityManager.killProcessByNames(
+                processList.map {
+                    logger.d("killProcessByName via thanox: $it")
+                    github.tornaco.android.thanos.core.os.ProcessName(it.processName, it.userId)
+                }
             )
-        }.forEach {
-            logger.d("killProcess: ${it.processName}-${it.pkgList}")
-            Process.killProcessQuiet(it.pid)
+        } else {
+            AMSFuncs.getRunningAppProcessLegacy(context).filter {
+                processList.contains(
+                    ProcessName.newBuilder().setProcessName(it.processName)
+                        .setUserId(UserHandle.getUserId(it.uid)).build()
+                )
+            }.forEach {
+                logger.d("killProcess: ${it.processName}-${it.pkgList}")
+                Process.killProcessQuiet(it.pid)
+            }
         }
     }
 }
