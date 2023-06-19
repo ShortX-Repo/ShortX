@@ -37,6 +37,11 @@ message AppProcessName {
   string processName = 2;
 }
 
+message ProcessName {
+  int32 userId = 1;
+  string processName = 2;
+}
+
 message Author {
   string name = 1;
 }

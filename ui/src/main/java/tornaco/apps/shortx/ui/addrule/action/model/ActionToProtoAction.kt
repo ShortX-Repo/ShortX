@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
+import tornaco.apps.shortx.core.proto.action.RemoveTasks
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
@@ -496,6 +497,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .addAllServices(services.distinct())
+                .build()
+        }
+
+        is Action.RemoveTasks -> {
+            RemoveTasks.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .build()
         }
 

@@ -43,6 +43,18 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = stopAppSelectorState)
 
+    val removeTasksSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = {
+                val action = Action.RemoveTasks(apps = it)
+                addAction(action)
+            },
+            onPkgSetSelected = {
+                val action = Action.RemoveTasks(pkgSets = it)
+                addAction(action)
+            })
+    AppPkgSelectorDialog(state = removeTasksSelectorState)
+
     val startAppProcessSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -186,6 +198,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.RemoveTasks::class -> {
+                removeTasksSelectorState.show(
+                    source.getActionAs<Action.RemoveTasks>()?.apps,
+                    source.getActionAs<Action.RemoveTasks>()?.pkgSets
+                )
+                true
+            }
+
             Action.StartAppProcess::class -> {
                 startAppProcessSelectorState.show(
                     source.getActionAs<Action.StartAppProcess>()?.apps,
@@ -260,6 +280,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.SuspendApp::class,
         Action.UnSuspendApp::class,
         Action.StopService::class,
+        Action.RemoveTasks::class,
     ).map {
         SelectorItem(
             type = it,

@@ -473,3 +473,10 @@ message RemoveTasks {
   string note = 99;
   string id = 100;
 }
+
+message KillProcessByName {
+  repeated ProcessName processes = 1;
+
+  string note = 99;
+  string id = 100;
+}

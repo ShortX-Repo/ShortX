@@ -135,6 +135,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
+        Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -465,6 +466,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.stop.service"],
                 i18N["ui.action.stop.service.summary", mapOf("count" to action.services.size.toString())]
+            )
+        }
+
+        is Action.RemoveTasks -> {
+            mutableListOf(i18N["ui.action.remove.tasks"]).labelLinesFromAppsAndPkgSets(
+                action.apps,
+                action.pkgSets
             )
         }
     }

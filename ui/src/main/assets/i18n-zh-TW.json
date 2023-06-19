@@ -302,6 +302,7 @@
   "ui.action.enable.app": "解冻应用",
   "ui.action.suspend.app": "挂起应用",
   "ui.action.unsuspend.app": "解除挂起应用",
+  "ui.action.remove.tasks": "移除最近任务",
   "ui.action.enable": "开启{s}",
   "ui.action.disable": "关闭{s}",
   "ui.action.bt": "蓝牙",

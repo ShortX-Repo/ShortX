@@ -132,7 +132,7 @@ message ServiceIsRunning {
 }
 
 message ProcessIsRunning {
-  repeated AppProcessName processList = 1;
+  repeated ProcessName processList = 1;
 
   bool isInvert = 98;
   string note = 99;

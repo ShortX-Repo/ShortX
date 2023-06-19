@@ -1,8 +1,11 @@
 package tornaco.apps.shortx.services.app
 
 import android.annotation.SuppressLint
+import android.app.IActivityManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.os.ServiceManager
 import android.os.UserHandle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -18,6 +21,7 @@ import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.*
@@ -423,4 +427,14 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 }
             }
         }
+
+    fun removeTasksForPackage(appPkgs: List<AppPkg>) {
+        logger.d("removeTasksForPackage: ${appPkgs.map { it.appPkgToString() }}")
+        val tasksIds = TaskMapping.getTasksIdForPackage(context, appPkgs, false)
+        logger.d("tasksIds: $tasksIds")
+        val activity =
+            IActivityManager.Stub.asInterface(ServiceManager.getService(Context.ACTIVITY_SERVICE))
+        tasksIds.forEach { activity.removeTask(it) }
+    }
+
 }

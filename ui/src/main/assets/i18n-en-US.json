@@ -302,6 +302,7 @@
   "ui.action.enable.app": "Enable app",
   "ui.action.suspend.app": "Suspend app",
   "ui.action.unsuspend.app": "Unsuspend app",
+  "ui.action.remove.tasks": "Remove recent tasks",
   "ui.action.enable": "Enable {s}",
   "ui.action.disable": "Disable {s}",
   "ui.action.bt": "Bluetooth",

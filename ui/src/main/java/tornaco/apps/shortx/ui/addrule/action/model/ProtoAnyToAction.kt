@@ -564,6 +564,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.RemoveTasks::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.RemoveTasks::class.java
+            val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Action.RemoveTasks(
+                id = data.id,
+                note = data.note,
+                apps = models.first,
+                pkgSets = models.second
+            )
+        }
+
         else -> null
     }
 }

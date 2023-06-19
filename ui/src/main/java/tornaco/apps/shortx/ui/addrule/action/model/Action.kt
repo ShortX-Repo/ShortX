@@ -770,6 +770,19 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class RemoveTasks(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList()
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
