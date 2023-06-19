@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.os.isMaskForAnyUser
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -47,7 +48,9 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 shortXManager.getActivities(pkg)
-                    .filter { !excludeList.contains(it.component) }
+                    .filter { info ->
+                        exclude(excludeList, info)
+                    }
                     .distinctBy { it.component }.map {
                         AppComponentInfoWithRule(
                             it,
@@ -59,6 +62,17 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
             updateState {
                 copy(activities = res, isLoading = false)
             }
+        }
+    }
+
+    private fun exclude(
+        excludeList: List<AppComponent>,
+        info: AppComponentInfo
+    ) = excludeList.none {
+        if (it.pkg.userId.isMaskForAnyUser()) {
+            it.toComponentName() == info.component.toComponentName()
+        } else {
+            it == info.component
         }
     }
 
@@ -85,7 +99,9 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
                 val runningService = shortXManager.getRunningServices(pkg)
                 logger.d("runningService: $runningService")
                 shortXManager.getServices(pkg)
-                    .filter { !excludeList.contains(it.component) }
+                    .filter { info ->
+                        exclude(excludeList, info)
+                    }
                     .distinctBy { it.component }.map {
                         AppComponentInfoWithRule(
                             info = it,
@@ -106,7 +122,9 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 shortXManager.getProviders(pkg)
-                    .filter { !excludeList.contains(it.component) }
+                    .filter { info ->
+                        exclude(excludeList, info)
+                    }
                     .distinctBy { it.component }.map {
                         AppComponentInfoWithRule(
                             it,
@@ -126,7 +144,9 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 shortXManager.getReceivers(pkg)
-                    .filter { !excludeList.contains(it.component) }
+                    .filter { info ->
+                        exclude(excludeList, info)
+                    }
                     .distinctBy { it.component }.map {
                         AppComponentInfoWithRule(
                             it,

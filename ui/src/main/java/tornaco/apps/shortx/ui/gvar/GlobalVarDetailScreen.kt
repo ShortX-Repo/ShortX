@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.gvar
 
+import android.content.ComponentName
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.os.USER_MASK_ANY
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toType
+import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
@@ -73,8 +76,12 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
             )
             AppComponentSelectorDialog(state = appComponentSelectorState)
 
-            val singleAppSelectorState = rememberSingleAppPkgSelectorState {
-                appComponentSelectorState.show(it.pkg)
+            val singleAppSelectorState = rememberSingleAppPkgSelectorState { app ->
+                appComponentSelectorState.show(app.pkg, state.valueItems.mapNotNull {
+                    if (it.hint is TextHint.AppComponent) {
+                        ComponentName.unflattenFromString(it.value)?.toAppComponent(USER_MASK_ANY)
+                    } else null
+                })
             }
             SingleAppSelectorDialog(state = singleAppSelectorState)
 
