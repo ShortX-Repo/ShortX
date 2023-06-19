@@ -458,3 +458,18 @@ message SetAutoBrightness {
   string note = 99;
   string id = 100;
 }
+
+message StopService {
+  repeated AppComponent services = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message RemoveTasks {
+  repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
+
+  string note = 99;
+  string id = 100;
+}

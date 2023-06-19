@@ -235,6 +235,8 @@
   "ui.action.set.ringer.mode.silent": "Silent",
   "ui.action.set.ringer.mode.vibrate": "Vibrate",
   "ui.action.set.brightness": "Set brightness",
+  "ui.action.stop.service": "Stop service",
+  "ui.action.stop.service.summary": "{count} services",
   "ui.action.no.action": "No action",
   "ui.action.if.then.else": "if... then... else",
   "ui.action.if": "If",

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
@@ -756,6 +757,17 @@ sealed interface Action : Parcelable {
         }
     }
 
+    @Parcelize
+    data class StopService(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val services: List<AppComponent>
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
 
     @Parcelize
     data class NoAction(

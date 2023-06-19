@@ -273,6 +273,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.brightness_7_fill
         }
 
+        Action.StopService::class -> {
+            Remix.Media.stop_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

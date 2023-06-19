@@ -37,6 +37,9 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     private val ams by lazy {
         ServiceRetriever(context.classLoader).getAMS()
     }
+    private val activeServices by lazy {
+        ServiceRetriever(context.classLoader).getActiveServices()
+    }
 
     private val activityState by lazy {
         ActivityStateHandlerImpl(context, shortXContext)
@@ -388,5 +391,45 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                 ContextDataMapping.PkgStopRunning.pkgName.name to pkg.pkgName,
             )
         )
+    }
+
+    fun stopServices(services: List<AppComponent>) {
+        val targetUsers = services.map { it.pkg.userId }.distinct()
+        logger.d("stopServices, targetUsers: $targetUsers")
+        val asIns = requireNotNull(activeServices) { "activeServices is null." }
+        logger.d("stopServices with asIns: $asIns")
+
+        targetUsers.forEach { userId ->
+            val nameToServiceRecords = ActiveServiceFunc.getServicesLocked(
+                asIns,
+                userId
+            )
+            nameToServiceRecords.forEach {
+                val k: ComponentName? = it.key
+                logger.d("nameToServiceRecords: $k - ${it.value}")
+            }
+            // E  DefaultRuleEngine [DefaultDispatcher-worker-1] evaluate fail --- java.lang.NullPointerException: it.key must not be null
+            // at tornaco.apps.shortx.services.app.AppStateService.stopServices(AppStateService.kt:409)
+            // at tornaco.apps.shortx.services.rule.actor.impl.StopService.handle(StopService.kt:23)
+            // at tornaco.apps.shortx.services.rule.ActionEvaluatorImpl.evaluate(ActionEvaluatorImpl.kt:38)
+            // at tornaco.apps.shortx.services.rule.DefaultRuleEngine$evaluate$job$1.invokeSuspend(Engine.kt:176)
+            // at tornaco.apps.shortx.services.rule.DefaultRuleEngine$evaluate$job$1.invoke(Unknown Source:8)
+            // at tornaco.apps.shortx.services.rule.DefaultRuleEngine$evaluate$job$1.invoke(Unknown Source:4)
+            // at tornaco.apps.shortx.services.WatchDogKt$launchSafety$1.invokeSuspend(WatchDog.kt:49)
+            // at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+            // at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+            // at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:584)
+            // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:793)
+            // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:697)
+            // at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:684)
+            nameToServiceRecords.filter { it.key != null }.forEach {
+                val keyName = it.key.toAppComponent(userId)
+                if (services.contains(keyName)) {
+                    logger.d("Found target service: $keyName - ${it.value}")
+                    val serviceRecord = it.value
+                    ActiveServiceFunc.stopService(asIns, serviceRecord)
+                }
+            }
+        }
     }
 }

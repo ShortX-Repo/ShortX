@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StopApp
+import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WhileLoop
@@ -489,6 +490,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setValue(value)
                 .build()
         }
+
+        is Action.StopService -> {
+            StopService.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .addAllServices(services)
+                .build()
+        }
+
 
         is Action.NoAction -> {
             NoAction.newBuilder()

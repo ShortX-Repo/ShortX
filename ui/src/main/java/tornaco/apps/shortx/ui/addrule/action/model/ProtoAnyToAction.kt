@@ -554,6 +554,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StopService::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StopService::class.java
+            Action.StopService(
+                id = data.id,
+                note = data.note,
+                services = data.servicesList
+            )
+        }
+
         else -> null
     }
 }

@@ -66,5 +66,6 @@ val allActionClasses = listOf(
     Action.EnableAutoBrightness::class,
     Action.DisableAutoBrightness::class,
     Action.SetBrightness::class,
+    Action.StopService::class,
     Action.NoAction::class,
 )

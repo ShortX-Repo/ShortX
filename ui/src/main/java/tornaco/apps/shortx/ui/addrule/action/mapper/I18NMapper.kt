@@ -134,6 +134,7 @@ fun labelAndDescriptionForActionSelector(
         Action.CreatePkgSet::class -> i18N["ui.pkg.set.add.title"] to null
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
+        Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -458,6 +459,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.SetBrightness -> {
             listOf(i18N["ui.action.set.brightness"], action.value.toString())
+        }
+
+        is Action.StopService -> {
+            listOf(
+                i18N["ui.action.stop.service"],
+                i18N["ui.action.stop.service.summary", mapOf("count" to action.services.size.toString())]
+            )
         }
     }
 }

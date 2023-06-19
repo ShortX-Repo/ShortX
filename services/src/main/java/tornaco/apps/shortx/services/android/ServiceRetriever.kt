@@ -30,6 +30,15 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
         null
     }
 
+    fun getActiveServices(): Any? = kotlin.runCatching {
+        getAMS()?.let {
+            Reflections.getObjectField(it, "mServices")
+        }
+    }.getOrElse {
+        logger.e(it, "getActiveServices error")
+        null
+    }
+
     fun getATMS(): Any? = kotlin.runCatching {
         val className = ClassNames.ATMS.lifecycleClassName()
         val lifecycle =

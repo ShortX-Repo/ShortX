@@ -10,8 +10,10 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
@@ -145,6 +147,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     StartActivityUrlSchemaDialog(state = startActivityUrlSchemaDialogState)
 
+
+    val stopServiceSelectorState =
+        rememberComponentOrGVSelectorState(types = listOf(ComponentType.Service), onSelected = {
+            addAction(Action.StopService(services = it.components))
+        })
+    ComponentOrGVSelectorDialog(state = stopServiceSelectorState)
+
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
@@ -225,6 +234,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.StopService::class -> {
+                stopServiceSelectorState.show(source.getActionAs<Action.StopService>()?.services)
+                true
+            }
+
             else -> false
         }
     }
@@ -245,6 +259,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.DisableApp::class,
         Action.SuspendApp::class,
         Action.UnSuspendApp::class,
+        Action.StopService::class,
     ).map {
         SelectorItem(
             type = it,
