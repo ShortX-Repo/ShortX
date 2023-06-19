@@ -177,7 +177,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                     ConditionContent(
                         header = {
                             SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.condition.title"])
-                            TipRow(LocalI18N.current["ui.action.while.loop.condition.message"])
+                            TipRow(text = LocalI18N.current["ui.action.while.loop.condition.message"])
                             MediumSpacer()
                         },
                         conditions = conditions,

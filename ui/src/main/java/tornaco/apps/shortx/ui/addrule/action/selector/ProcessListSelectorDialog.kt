@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.os.isMainUser
@@ -34,19 +37,24 @@ import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toProcessName
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.theme.ThanoxBlue
+import tornaco.apps.shortx.ui.util.ThanoxFuncs
 
 class ProcessListSelectorDialogState(
     val onSelected: (List<ProcessName>) -> Unit
@@ -54,6 +62,8 @@ class ProcessListSelectorDialogState(
 
     private var _processNameList: List<ProcessName> by mutableStateOf(emptyList())
     val processNameList get() = _processNameList
+
+    val isThanoxAvailable by lazy { ThanoxFuncs.isThanoxActivated }
 
     fun show(current: List<ProcessName>? = emptyList()) {
         this._processNameList = current ?: emptyList()
@@ -175,7 +185,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
     var userLabel by remember {
         mutableStateOf(i18N["ui.common.user.main"])
     }
-
+    val context = LocalContext.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         ShortXTextField(
             modifier = Modifier.weight(1f),
@@ -183,6 +193,15 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
             onValueChange = {
                 inputNameString = it
             },
+            trailingIcon = if (dialogState.isThanoxAvailable) {
+                {
+                    IconButton(onClick = {
+                        ThanoxFuncs.goToProcessManagement(context)
+                    }) {
+                        RemixIcon(remixName = Remix.System.search_2_line)
+                    }
+                }
+            } else null,
             showSymbolButton = true,
             label = {
                 Text(text = i18N["ui.common.selected.process.input"])
@@ -225,9 +244,25 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
         }
     }
 
-
-    StandardSpacer()
+    SectionSpacer()
     SuggestedNavEntry()
+
+    SectionSpacer()
+    SectionSpacer()
+    SectionSpacer()
+
+    if (dialogState.isThanoxAvailable) {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            TipRow(
+                text = LocalI18N.current["ui.common.handle.process.via.thanox"],
+                icon = {
+                    ColoredIcon(color = ThanoxBlue, size = 16.dp) {
+                        RemixIcon(remixName = Remix.System.shield_flash_fill, tint = Color.White)
+                    }
+                })
+        }
+    }
+
 }
 
 

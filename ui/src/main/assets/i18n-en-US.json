@@ -145,6 +145,7 @@
   "ui.common.select.component": "Select component",
   "ui.common.select.component.input": "Input component",
   "ui.common.select.component.empty": "You can Select or Manually input component",
+  "ui.common.handle.process.via.thanox": "Will handle process with the power of Thanox",
   "ui.title.jobs.count": "{count} jobs",
   "ui.fact.overlay.button.click": "Sidebar button click",
   "ui.fact.app.become.bg": "App Become Background",

@@ -145,6 +145,7 @@
   "ui.common.select.component": "选择组件",
   "ui.common.select.component.input": "輸入組件",
   "ui.common.select.component.empty": "你還沒有選擇組件，點擊下方的選擇按鈕選擇，或者從下方手動輸入框處輸入",
+  "ui.common.handle.process.via.thanox": "将使用Thanox的能力处理进程",
   "ui.title.jobs.count": "{count}個任務",
   "ui.fact.overlay.button.click": "點擊側邊欄按鈕",
   "ui.fact.app.become.bg": "應用回到後臺",

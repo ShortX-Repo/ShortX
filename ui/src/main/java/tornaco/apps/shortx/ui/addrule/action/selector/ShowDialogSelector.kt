@@ -265,7 +265,7 @@ private fun ButtonSettings(
             onTextChange(it)
         })
     TinySpacer()
-    TipRow(LocalI18N.current["ui.actions.dialog.button.optional"])
+    TipRow(text = LocalI18N.current["ui.actions.dialog.button.optional"])
     TinySpacer()
 
 

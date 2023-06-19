@@ -145,6 +145,7 @@
   "ui.common.select.component": "选择组件",
   "ui.common.select.component.input": "输入组件",
   "ui.common.select.component.empty": "你还没有选择组件，点击下方的选择按钮选择，或者从下方手动输入框处输入",
+  "ui.common.handle.process.via.thanox": "将使用Thanox的能力处理进程",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

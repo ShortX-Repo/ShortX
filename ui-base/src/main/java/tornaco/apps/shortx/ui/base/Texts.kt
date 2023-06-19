@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -114,9 +112,34 @@ fun TipBody(text: String) {
 }
 
 @Composable
-fun TipRow(text: String, color: Color = Color.Unspecified) {
+fun TipRow(
+    text: String,
+    icon: String = Remix.Others.lightbulb_fill,
+    color: Color = Color.Unspecified
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        RemixIcon(modifier = Modifier.size(14.dp), remixName = Remix.Others.lightbulb_fill)
+        RemixIcon(modifier = Modifier.size(14.dp), remixName = icon)
+        SmallSpacer()
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = color
+        )
+    }
+}
+
+
+@Composable
+fun TipRow(
+    text: String,
+    icon: @Composable () -> Unit,
+    color: Color = Color.Unspecified
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        icon()
         SmallSpacer()
         Text(
             modifier = Modifier,
