@@ -165,7 +165,7 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             }
 
             Condition.EvaluateGlobalVar::class -> {
-                evaluateGlobalVarSelectorDialogState.show()
+                evaluateGlobalVarSelectorDialogState.show(source.getConditionAs())
                 true
             }
 

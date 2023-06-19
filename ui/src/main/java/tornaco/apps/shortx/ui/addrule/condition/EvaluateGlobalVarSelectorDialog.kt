@@ -59,21 +59,29 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class EvaluateGlobalVarSelectorDialogState(
     val onSelected: (Condition.EvaluateGlobalVar) -> Unit
 ) : CommonDialogState() {
-
-    private var _action by mutableStateOf(
+    private val newDefaultAction: () -> Condition.EvaluateGlobalVar = {
         Condition.EvaluateGlobalVar(
             varName = "",
             op = GlobalVarOp.EqualTo,
             payload = GlobalVarOpPayload.newBuilder().setValue("").build(),
         )
-    )
+    }
+
+    private var _action by mutableStateOf(newDefaultAction())
+    val action get() = _action
 
     var showPayloadInputField by mutableStateOf(false)
 
-    val action get() = _action
-
     private var _output by mutableStateOf("")
     val output get() = _output
+
+    fun show(current: Condition.EvaluateGlobalVar? = null) {
+        _action = current ?: newDefaultAction()
+        _output = ""
+        checkShowPayloadInputField()
+
+        show()
+    }
 
     fun selectGlobalVar(varName: String) {
         _action = _action.copy(
@@ -94,6 +102,11 @@ class EvaluateGlobalVarSelectorDialogState(
             op = op
         )
         setOutput("")
+        checkShowPayloadInputField()
+    }
+
+    private fun checkShowPayloadInputField() {
+        val op = _action.op
         showPayloadInputField =
             op != GlobalVarOp.HasBeenSet && op != GlobalVarOp.NotSet && op != GlobalVarOp.IsEmpty && op != GlobalVarOp.IsNotEmpty
     }
