@@ -4,12 +4,17 @@ package tornaco.apps.shortx.ui.addrule.condition
 
 import android.content.ComponentName
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,11 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.appComponentToString
 import tornaco.apps.shortx.core.os.isMainUser
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toAppComponent
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.selector.UserSelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberUserSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
@@ -43,11 +51,12 @@ import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
-import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
@@ -56,6 +65,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -252,35 +262,25 @@ private fun GVContent(dialogState: AppComponentOrGVSelectorDialogState) {
 @Composable
 private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     MediumTitle(
-        text = LocalI18N.current["ui.common.selected.components"]
+        text = "${LocalI18N.current["ui.common.selected.components"]} ${dialogState.componentsOrGV.components.size}"
     )
     if (dialogState.componentsOrGV.components.isEmpty()) {
         TipBody(
             text = LocalI18N.current["ui.conditions.service.running.empty"]
         )
     } else {
-        dialogState.componentsOrGV.components.forEach { appComponent ->
-            ListItem(
-                titleLines = mutableListOf(appComponent.className).apply {
-                    val userId = appComponent.pkg.userId
-                    if (!userId.isMainUser()) {
-                        add(
-                            shortXManager.getAllUsers()
-                                .firstOrNull { it.userId == userId }?.name
-                                ?: "user: $userId"
-                        )
-                    }
-                },
-                icon = {
-                    AppIcon(modifier = Modifier.size(38.dp), pkg = appComponent.pkg)
-                },
-                action1 = {
-                    IconButton(onClick = {
-                        dialogState.removeComponent(appComponent)
-                    }) {
-                        RemixIcon(remixName = Remix.System.close_line)
-                    }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 520.dp)
+        ) {
+            items(
+                items = dialogState.componentsOrGV.components.distinctBy { it },
+                key = { it.appComponentToString() }) { appComponent ->
+                AppComponentItem(component = appComponent, remove = {
+                    dialogState.removeComponent(appComponent)
                 })
+            }
         }
     }
 
@@ -295,7 +295,10 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     )
     AppComponentSelectorDialog(state = componentSelectorState)
     val singleAppSelectorState = rememberSingleAppPkgSelectorState(onAppSelected = {
-        componentSelectorState.show(it.pkg)
+        componentSelectorState.show(
+            pkg = it.pkg,
+            excludeList = dialogState.componentsOrGV.components
+        )
     })
 
     SingleAppSelectorDialog(state = singleAppSelectorState)
@@ -335,7 +338,6 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     var userLabel by remember {
         mutableStateOf(i18N["ui.common.user.main"])
     }
-
 
 
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -388,9 +390,73 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
         }
     }
+
+
+    StandardSpacer()
+    SuggestedNavEntry()
 }
 
 
+@Composable
+private fun AppComponentItem(
+    component: AppComponent,
+    remove: (AppComponent) -> Unit
+) {
+    ShortXCard(
+        modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .heightIn(min = 64.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .padding(end = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        AppIcon(modifier = Modifier.size(38.dp), component.pkg)
+                        Spacer(modifier = Modifier.size(12.dp))
+
+                        Column(verticalArrangement = Arrangement.Center) {
+                            Text(
+                                text = component.toComponentName().flattenToShortString(),
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    IconButton(onClick = {
+                        remove(component)
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val userId = component.pkg.userId
+                    if (!userId.isMainUser()) {
+                        val name = shortXManager.getAllUsers()
+                            .firstOrNull { it.userId == userId }?.name
+                            ?: "user: $userId"
+                        OutlineBadge(text = name)
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 

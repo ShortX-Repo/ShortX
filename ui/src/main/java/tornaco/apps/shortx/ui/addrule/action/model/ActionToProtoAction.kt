@@ -495,7 +495,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StopService.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
-                .addAllServices(services)
+                .addAllServices(services.distinct())
                 .build()
         }
 

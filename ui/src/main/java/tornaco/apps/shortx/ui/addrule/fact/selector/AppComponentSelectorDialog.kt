@@ -84,9 +84,13 @@ class AppComponentSelectorState(
     private var _selectedAppComponents by mutableStateOf(emptyList<AppComponentInfo>())
     val selectedAppComponents get() = _selectedAppComponents
 
-    fun show(pkg: AppPkg) {
+    private var _excludeList: List<AppComponent> by mutableStateOf(emptyList())
+    val excludeList: List<AppComponent> get() = _excludeList
+
+    fun show(pkg: AppPkg, excludeList: List<AppComponent>? = null) {
         this.pkg = pkg
         _selectedAppComponents = emptyList()
+        _excludeList = excludeList ?: emptyList()
         _isShow = true
     }
 
@@ -211,14 +215,14 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
 private fun ActivityListContent(selectorState: AppComponentSelectorState) {
     val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
-        vm.loadActivities(selectorState.pkg)
+        vm.loadActivities(selectorState.pkg, selectorState.excludeList)
     }
     val state by vm.state.collectAsState()
     val components = state.activities
 
     val searchBarState = rememberSearchBarState() {
         vm.updateKeyword(it)
-        vm.loadActivities(selectorState.pkg)
+        vm.loadActivities(selectorState.pkg, selectorState.excludeList)
     }
 
     SearchBar(
@@ -240,14 +244,14 @@ private fun ActivityListContent(selectorState: AppComponentSelectorState) {
 private fun ServiceListContent(selectorState: AppComponentSelectorState) {
     val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
-        vm.loadServices(selectorState.pkg)
+        vm.loadServices(selectorState.pkg, selectorState.excludeList)
     }
     val state by vm.state.collectAsState()
     val components = state.services
 
     val searchBarState = rememberSearchBarState() {
         vm.updateKeyword(it)
-        vm.loadServices(selectorState.pkg)
+        vm.loadServices(selectorState.pkg, selectorState.excludeList)
     }
 
     SearchBar(
@@ -268,14 +272,14 @@ private fun ServiceListContent(selectorState: AppComponentSelectorState) {
 private fun ReceiverListContent(selectorState: AppComponentSelectorState) {
     val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
-        vm.loadReceivers(selectorState.pkg)
+        vm.loadReceivers(selectorState.pkg, selectorState.excludeList)
     }
     val state by vm.state.collectAsState()
     val components = state.receivers
 
     val searchBarState = rememberSearchBarState() {
         vm.updateKeyword(it)
-        vm.loadReceivers(selectorState.pkg)
+        vm.loadReceivers(selectorState.pkg, selectorState.excludeList)
     }
 
     SearchBar(
@@ -296,14 +300,14 @@ private fun ReceiverListContent(selectorState: AppComponentSelectorState) {
 private fun ProviderListContent(selectorState: AppComponentSelectorState) {
     val vm = hiltViewModel<AppComponentSelectorViewModel>()
     LaunchedEffect(vm) {
-        vm.loadProviders(selectorState.pkg)
+        vm.loadProviders(selectorState.pkg, selectorState.excludeList)
     }
     val state by vm.state.collectAsState()
     val components = state.providers
 
     val searchBarState = rememberSearchBarState() {
         vm.updateKeyword(it)
-        vm.loadProviders(selectorState.pkg)
+        vm.loadProviders(selectorState.pkg, selectorState.excludeList)
     }
 
     SearchBar(

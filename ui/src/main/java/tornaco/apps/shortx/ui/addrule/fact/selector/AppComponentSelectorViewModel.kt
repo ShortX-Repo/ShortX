@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.toComponentName
@@ -41,11 +42,12 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
         updateState { copy(keyword = keyword) }
     }
 
-    fun loadActivities(pkg: AppPkg) {
+    fun loadActivities(pkg: AppPkg, excludeList: List<AppComponent>) {
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 shortXManager.getActivities(pkg)
+                    .filter { !excludeList.contains(it.component) }
                     .distinctBy { it.component }.map {
                         AppComponentInfoWithRule(
                             it,
@@ -76,20 +78,22 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
         }
     }
 
-    fun loadServices(pkg: AppPkg) {
+    fun loadServices(pkg: AppPkg, excludeList: List<AppComponent>) {
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
                 val runningService = shortXManager.getRunningServices(pkg)
                 logger.d("runningService: $runningService")
-                shortXManager.getServices(pkg).distinctBy { it.component }.map {
-                    AppComponentInfoWithRule(
-                        info = it,
-                        rule = kotlin.runCatching { LCRulesAdapter.getServiceRule(it.component.toComponentName()) }
-                            .getOrNull(),
-                        isRunning = runningService.contains(it.component)
-                    )
-                }
+                shortXManager.getServices(pkg)
+                    .filter { !excludeList.contains(it.component) }
+                    .distinctBy { it.component }.map {
+                        AppComponentInfoWithRule(
+                            info = it,
+                            rule = kotlin.runCatching { LCRulesAdapter.getServiceRule(it.component.toComponentName()) }
+                                .getOrNull(),
+                            isRunning = runningService.contains(it.component)
+                        )
+                    }
             }.filter(filterKeyword())
             updateState {
                 copy(services = res, isLoading = false)
@@ -97,17 +101,19 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
         }
     }
 
-    fun loadProviders(pkg: AppPkg) {
+    fun loadProviders(pkg: AppPkg, excludeList: List<AppComponent>) {
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
-                shortXManager.getProviders(pkg).distinctBy { it.component }.map {
-                    AppComponentInfoWithRule(
-                        it,
-                        kotlin.runCatching { LCRulesAdapter.getProviderRule(it.component.toComponentName()) }
-                            .getOrNull()
-                    )
-                }
+                shortXManager.getProviders(pkg)
+                    .filter { !excludeList.contains(it.component) }
+                    .distinctBy { it.component }.map {
+                        AppComponentInfoWithRule(
+                            it,
+                            kotlin.runCatching { LCRulesAdapter.getProviderRule(it.component.toComponentName()) }
+                                .getOrNull()
+                        )
+                    }
             }.filter(filterKeyword())
             updateState {
                 copy(providers = res, isLoading = false)
@@ -115,17 +121,19 @@ class AppComponentSelectorViewModel @Inject constructor(@ApplicationContext cont
         }
     }
 
-    fun loadReceivers(pkg: AppPkg) {
+    fun loadReceivers(pkg: AppPkg, excludeList: List<AppComponent>) {
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             val res = withContext(Dispatchers.IO) {
-                shortXManager.getReceivers(pkg).distinctBy { it.component }.map {
-                    AppComponentInfoWithRule(
-                        it,
-                        kotlin.runCatching { LCRulesAdapter.getReceiverRule(it.component.toComponentName()) }
-                            .getOrNull()
-                    )
-                }
+                shortXManager.getReceivers(pkg)
+                    .filter { !excludeList.contains(it.component) }
+                    .distinctBy { it.component }.map {
+                        AppComponentInfoWithRule(
+                            it,
+                            kotlin.runCatching { LCRulesAdapter.getReceiverRule(it.component.toComponentName()) }
+                                .getOrNull()
+                        )
+                    }
             }.filter(filterKeyword())
             updateState {
                 copy(receivers = res, isLoading = false)

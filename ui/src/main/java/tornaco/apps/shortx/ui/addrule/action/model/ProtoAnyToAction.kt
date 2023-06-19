@@ -560,7 +560,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopService(
                 id = data.id,
                 note = data.note,
-                services = data.servicesList
+                services = data.servicesList.distinct()
             )
         }
 
