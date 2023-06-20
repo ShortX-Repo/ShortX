@@ -96,6 +96,7 @@ enum Gesture {
   SwipeFromBottom = 3;
   SwipeFromRight = 4;
   SwipeFromLeft = 5;
+  SwipeFromTop = 6;
 }
 
 message TimeOfADay {

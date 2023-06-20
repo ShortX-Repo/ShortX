@@ -53,6 +53,7 @@
   "ui.fact.edge.gesture.SwipeFromBottom": "Swipe from bottom",
   "ui.fact.edge.gesture.SwipeFromRight": "Swipe from right",
   "ui.fact.edge.gesture.SwipeFromLeft": "Swipe from left",
+  "ui.fact.edge.gesture.SwipeFromTop": "Swipe from top",
   "ui.fact.edge.lefttop": "Left top",
   "ui.fact.edge.leftcenter": "Left center",
   "ui.fact.edge.leftbottom": "Left bottom",

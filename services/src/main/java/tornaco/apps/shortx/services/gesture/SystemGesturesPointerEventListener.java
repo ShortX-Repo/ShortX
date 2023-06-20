@@ -163,7 +163,13 @@ public class SystemGesturesPointerEventListener {
                     mSwipeFireable = swipe == SWIPE_NONE;
                     if (swipe == SWIPE_FROM_TOP) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromTop");
-                        return mCallbacks.onSwipeFromTop();
+                        int pointerId = event.getPointerId(0);
+                        final int i = findIndex(pointerId);
+                        if (i >= 0 && i < mDownX.length) {
+                            int x = (int) mDownX[i];
+                            int y = (int) mDownY[i];
+                            return mCallbacks.onSwipeFromTop(x, y);
+                        }
                     } else if (swipe == SWIPE_FROM_BOTTOM) {
                         if (DEBUG) Log.d(TAG, "Firing onSwipeFromBottom");
                         int pointerId = event.getPointerId(0);
@@ -315,7 +321,7 @@ public class SystemGesturesPointerEventListener {
     }
 
     interface Callbacks {
-        boolean onSwipeFromTop();
+        boolean onSwipeFromTop(int x, int y);
 
         boolean onSwipeFromBottom(int x, int y);
 
@@ -338,7 +344,7 @@ public class SystemGesturesPointerEventListener {
 
     public static class CallbacksAdapter implements Callbacks {
         @Override
-        public boolean onSwipeFromTop() {
+        public boolean onSwipeFromTop(int x, int y) {
             return false;
         }
 

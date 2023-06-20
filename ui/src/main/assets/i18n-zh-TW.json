@@ -53,6 +53,7 @@
   "ui.fact.edge.gesture.swipefrombottom": "從底部向上滑動",
   "ui.fact.edge.gesture.swipefromright": "從右側向左滑動",
   "ui.fact.edge.gesture.swipefromleft": "從左側向右滑動",
+  "ui.fact.edge.gesture.swipefromtop": "从上往下滑动",
   "ui.fact.edge.lefttop": "左 上",
   "ui.fact.edge.leftcenter": "左 中間",
   "ui.fact.edge.leftbottom": "左 底部",

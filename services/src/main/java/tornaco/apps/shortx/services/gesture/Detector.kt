@@ -58,6 +58,10 @@ class Detector(
             override fun onSwipeFromLeft(x: Int, y: Int): Boolean {
                 return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromLeft)
             }
+
+            override fun onSwipeFromTop(x: Int, y: Int): Boolean {
+                return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
+            }
         })
 
     private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
