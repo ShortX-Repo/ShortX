@@ -11,4 +11,5 @@ val allConditionClasses = listOf(
     Condition.AppHasAudioFocus::class,
     Condition.ServiceIsRunning::class,
     Condition.ScreenIsOn::class,
+    Condition.VPNIsConnected::class,
 )

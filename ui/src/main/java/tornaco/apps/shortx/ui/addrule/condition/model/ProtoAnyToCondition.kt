@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
+import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -95,6 +96,11 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ ScreenIsOn::class.java -> {
             val data = this unpack_ ScreenIsOn::class.java
             Condition.ScreenIsOn(id = data.id, note = data.note, isInvert = data.isInvert)
+        }
+
+        this is_ VPNIsConnected::class.java -> {
+            val data = this unpack_ VPNIsConnected::class.java
+            Condition.VPNIsConnected(id = data.id, note = data.note, isInvert = data.isInvert)
         }
 
         this is_ EvaluateGlobalVar::class.java -> {

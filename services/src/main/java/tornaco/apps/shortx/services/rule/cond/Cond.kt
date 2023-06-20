@@ -72,6 +72,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ScreenIsOn
     },
+    VPNIsConnected {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.VPNIsConnected
+    },
 
 }
 

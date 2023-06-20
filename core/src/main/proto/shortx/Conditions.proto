@@ -144,3 +144,9 @@ message ScreenIsOn {
   string note = 99;
   string id = 100;
 }
+
+message VPNIsConnected {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

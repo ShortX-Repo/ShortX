@@ -48,6 +48,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.smartphone_line
         }
 
+        Condition.VPNIsConnected::class -> {
+            Remix.Others.key_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

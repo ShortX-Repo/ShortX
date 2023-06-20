@@ -200,6 +200,7 @@ private fun ConditionSelectorDropdown(
             Condition.MVEL::class,
             Condition.TRUE::class,
             Condition.ScreenIsOn::class,
+            Condition.VPNIsConnected::class,
             Condition.EvaluateGlobalVar::class,
             Condition.BatteryPercent::class,
             Condition.ServiceIsRunning::class,

@@ -164,6 +164,11 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
                 true
             }
 
+            Condition.VPNIsConnected::class -> {
+                addCondition(Condition.VPNIsConnected())
+                true
+            }
+
             Condition.EvaluateGlobalVar::class -> {
                 evaluateGlobalVarSelectorDialogState.show(source.getConditionAs())
                 true
