@@ -127,6 +127,18 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = unsuspendAppProcessSelectorState)
 
+    val removeNotificationDialogState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = {
+                val action = Action.RemoveNotificationForPackage(apps = it)
+                addAction(action)
+            },
+            onPkgSetSelected = {
+                val action = Action.RemoveNotificationForPackage(pkgSets = it)
+                addAction(action)
+            })
+    AppPkgSelectorDialog(state = removeNotificationDialogState)
+
     val startActivityIntentSelectorState = rememberStartActivityIntentDialogState(onSelected = {
         addAction(it)
     })
@@ -269,6 +281,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.RemoveNotificationForPackage::class -> {
+                removeNotificationDialogState.show(
+                    source.getActionAs<Action.RemoveNotificationForPackage>()?.apps,
+                    source.getActionAs<Action.RemoveNotificationForPackage>()?.pkgSets
+                )
+                true
+            }
+
             else -> false
         }
     }
@@ -292,6 +312,7 @@ fun AppActions(addAction: (Action) -> Unit) {
         Action.StopService::class,
         Action.RemoveTasks::class,
         Action.KillProcessByName::class,
+        Action.RemoveNotificationForPackage::class,
     ).map {
         SelectorItem(
             type = it,

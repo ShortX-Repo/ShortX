@@ -1,14 +1,19 @@
 package tornaco.apps.shortx.services.notification
 
+import android.app.INotificationManager
+import android.content.Context
+import android.os.ServiceManager
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
@@ -82,6 +87,17 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
                 NotificationRemoved.newBuilder().setByUser(false).setRecord(n).build(),
                 n.contextMap()
             )
+        }
+    }
+
+    fun removeNotificationForPackage(appPkgs: List<AppPkg>) {
+        logger.p("Remove n for pkg: ${appPkgs.map { it.appPkgToString() }}")
+        val nms =
+            INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
+        requireNotNull(nms) { "Can not get nms" }
+        appPkgs.forEach {
+            nms.cancelAllNotifications(it.pkgName, it.userId)
+            logger.p("Notification has been removed: ${it.appPkgToString()}")
         }
     }
 

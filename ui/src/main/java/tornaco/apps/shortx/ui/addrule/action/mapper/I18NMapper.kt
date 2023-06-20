@@ -119,6 +119,7 @@ fun labelAndDescriptionForActionSelector(
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
+        Action.RemoveNotificationForPackage::class -> i18N["ui.action.remove.notification"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.CreateGV::class -> i18N["ui.action.create.global.var"] to null
@@ -322,6 +323,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ExpandNotification -> {
             listOf(i18N["ui.action.expand.notification"])
+        }
+
+        is Action.RemoveNotificationForPackage -> {
+            listOf(i18N["ui.action.remove.notification"])
         }
 
         is Action.RemoteMVEL -> {

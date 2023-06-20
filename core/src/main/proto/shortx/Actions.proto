@@ -480,3 +480,11 @@ message KillProcessByName {
   string note = 99;
   string id = 100;
 }
+
+message RemoveNotificationForPackage {
+  repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
+
+  string note = 99;
+  string id = 100;
+}

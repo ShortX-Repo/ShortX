@@ -281,6 +281,9 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.close_circle_fill
         }
 
+        Action.RemoveNotificationForPackage::class -> {
+            Remix.System.notification_badge_fill
+        }
 
         Action.KillProcessByName::class -> {
             Remix.Media.stop_circle_fill
