@@ -1,5 +1,4 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
@@ -122,6 +121,9 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                     PkgSetListItem(modifier = Modifier,
                                         title = it.label,
                                         text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                        badge = if (it.isPrebuilt) {
+                                            i18N["ui.pkg.set.prebuilt"]
+                                        } else null,
                                         onClick = {
                                             goToDetail(it.label)
                                         },
@@ -148,6 +150,7 @@ private fun PkgSetListItem(
     modifier: Modifier,
     title: String,
     text1: String,
+    badge: String?,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
@@ -184,6 +187,11 @@ private fun PkgSetListItem(
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
             maxLines = 3
         )
+
+        if (badge != null) {
+            MediumSpacer()
+            OutlineBadge(text = badge)
+        }
     }
 }
 

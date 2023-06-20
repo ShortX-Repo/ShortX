@@ -380,6 +380,7 @@
   "ui.pkg.set.add.input.label": "Input label of the Application Set",
   "ui.pkg.set.add.input.label.exists": "Label exists, please use another one",
   "ui.pkg.set.items.count": "{count} items",
+  "ui.pkg.set.prebuilt": "Prebuilt",
   "ui.active.dialog.message": "Please enable {app_name} in Xposed Manager",
   "ui.delete.dialog.confirm": "Do you really want to delete {wht}?",
   "ui.global.var.title": "Global var",
