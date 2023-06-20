@@ -28,6 +28,7 @@ import android.media.projection.MediaProjectionManager
 import android.media.session.MediaSessionManager
 import android.media.tv.TvInputManager
 import android.net.ConnectivityManager
+import android.net.VpnManager
 import android.net.nsd.NsdManager
 import android.net.wifi.WifiManager
 import android.net.wifi.aware.WifiAwareManager
@@ -335,3 +336,6 @@ val Context.statusBarManager: StatusBarManager
 
 val Context.vibrate: Vibrator
     get() = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+val Context.vpn: VpnManager
+    get() = getSystemService(Context.VPN_MANAGEMENT_SERVICE) as VpnManager
