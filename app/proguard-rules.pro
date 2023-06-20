@@ -117,3 +117,5 @@
 -dontwarn android.net.ScoredNetwork
 -dontwarn android.net.wifi.WifiNetworkScoreCache$CacheListener
 -dontwarn android.net.wifi.WifiNetworkScoreCache
+-dontwarn android.app.INotificationManager$Stub
+-dontwarn android.app.INotificationManager
