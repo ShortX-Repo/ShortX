@@ -17,10 +17,22 @@ fun App(pkg: AppPkg, label: String, category: AppCategory): App =
     App.newBuilder().setCategory(category).setLabel(label)
         .setPkg(pkg).build()
 
-fun App(pkg: AppPkg, label: String, category: AppCategory, uid: Int): App =
-    App.newBuilder().setCategory(category).setLabel(label)
+fun App(
+    pkg: AppPkg,
+    label: String,
+    category: AppCategory,
+    uid: Int,
+    isGame: Boolean,
+    isXposedMode: Boolean
+): App =
+    App.newBuilder()
+        .setCategory(category)
+        .setLabel(label)
         .setUid(uid)
-        .setPkg(pkg).build()
+        .setPkg(pkg)
+        .setIsGame(isGame)
+        .setIsXposedMod(isXposedMode)
+        .build()
 
 fun ApplicationInfo.toAppPkg(): AppPkg {
     return AppPkg.newBuilder()

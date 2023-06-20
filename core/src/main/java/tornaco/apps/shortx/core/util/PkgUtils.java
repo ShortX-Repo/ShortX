@@ -55,7 +55,7 @@ public class PkgUtils {
         }
         PackageManager pm = context.getPackageManager();
         try {
-            return pm.getApplicationInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
+            return pm.getApplicationInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA, userId);
         } catch (Throwable e) {
             return null;
         }
@@ -65,7 +65,7 @@ public class PkgUtils {
         PackageManager pm = context.getPackageManager();
         try {
             ApplicationInfo info;
-            info = pm.getApplicationInfo(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES);
+            info = pm.getApplicationInfo(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
             return info;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
@@ -93,7 +93,7 @@ public class PkgUtils {
         PackageManager pm = context.getPackageManager();
         try {
             PackageInfo info;
-            info = pm.getPackageInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
+            info = pm.getPackageInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA, userId);
             return info;
         } catch (Throwable e) {
             return null;
@@ -102,9 +102,9 @@ public class PkgUtils {
 
     public static List<ApplicationInfo> getInstalledApplications(Context context) {
         if (OsUtils.isNOrAbove()) {
-            return getInstalledApplications(context, PackageManager.MATCH_UNINSTALLED_PACKAGES);
+            return getInstalledApplications(context, PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
         } else {
-            return getInstalledApplications(context, PackageManager.GET_UNINSTALLED_PACKAGES);
+            return getInstalledApplications(context, PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
         }
     }
 
@@ -115,7 +115,8 @@ public class PkgUtils {
     }
 
     public static List<ApplicationInfo> getInstalledApplicationsAsUser(Context context, int userId) {
-        int flags = OsUtils.isNOrAbove() ? PackageManager.MATCH_UNINSTALLED_PACKAGES : PackageManager.GET_UNINSTALLED_PACKAGES;
+        int flags = OsUtils.isNOrAbove() ? PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA
+                : PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA;
         if (!OsUtils.isOOrAbove()) {
             return getInstalledApplications(context, flags);
         }

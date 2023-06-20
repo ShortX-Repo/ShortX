@@ -19,6 +19,9 @@ message App {
   string label = 2;
   AppCategory category = 3;
   int32 uid = 4;
+
+  bool isGame = 5;
+  bool isXposedMod = 6;
 }
 
 message AppComponent {

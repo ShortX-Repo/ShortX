@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.app
 
+import tornaco.apps.shortx.core.PrebuiltPkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.services.ShortXContext
@@ -15,6 +16,8 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
     private val prebuiltPkgSets = listOf(
         PrebuiltPkgSet.User,
         PrebuiltPkgSet.System,
+        PrebuiltPkgSet.Game,
+        PrebuiltPkgSet.XposedModule,
         PrebuiltPkgSet.All,
     )
 
@@ -37,7 +40,9 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
     }
 
     fun getPkgSetByLabel(label: String): PkgSet? {
-        return prebuiltPkgSets.firstOrNull { it.label == label }?.getPkgSet?.invoke(shortXContext)
+        return prebuiltPkgSets.firstOrNull { it.label.name == label }?.getPkgSet?.invoke(
+            shortXContext
+        )
             ?: pkgSetsStore.getPkgSet(label)
     }
 
@@ -52,32 +57,26 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
 
 
 sealed class PrebuiltPkgSet(
-    val label: String,
+    val label: PrebuiltPkgSetLabel,
     val getPkgSet: (ShortXContext) -> PkgSet
 ) {
-    companion object {
-        const val LABEL_ALL = "All"
-        const val LABEL_SYSTEM = "System"
-        const val LABEL_USER = "User"
-    }
-
     object All : PrebuiltPkgSet(
-        LABEL_ALL,
+        PrebuiltPkgSetLabel.All,
         { shortXContext ->
             PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel(LABEL_ALL)
+                .setLabel(PrebuiltPkgSetLabel.All.name)
                 .addAllAppPkgs(shortXContext.appState.getInstalledApps().map { it.pkg })
                 .build()
         }
     )
 
     object System : PrebuiltPkgSet(
-        LABEL_SYSTEM,
+        PrebuiltPkgSetLabel.System,
         { shortXContext ->
             PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel(LABEL_SYSTEM)
+                .setLabel(PrebuiltPkgSetLabel.System.name)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
                         .filter { it.category == AppCategory.System }.map { it.pkg })
@@ -86,14 +85,40 @@ sealed class PrebuiltPkgSet(
     )
 
     object User : PrebuiltPkgSet(
-        LABEL_USER,
+        PrebuiltPkgSetLabel.User,
         { shortXContext ->
             PkgSet.newBuilder()
                 .setIsPrebuilt(true)
-                .setLabel(LABEL_USER)
+                .setLabel(PrebuiltPkgSetLabel.User.name)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
                         .filter { it.category == AppCategory.User }.map { it.pkg })
+                .build()
+        }
+    )
+
+    object Game : PrebuiltPkgSet(
+        PrebuiltPkgSetLabel.Game,
+        { shortXContext ->
+            PkgSet.newBuilder()
+                .setIsPrebuilt(true)
+                .setLabel(PrebuiltPkgSetLabel.Game.name)
+                .addAllAppPkgs(
+                    shortXContext.appState.getInstalledApps()
+                        .filter { it.isGame }.map { it.pkg })
+                .build()
+        }
+    )
+
+    object XposedModule : PrebuiltPkgSet(
+        PrebuiltPkgSetLabel.XposedModule,
+        { shortXContext ->
+            PkgSet.newBuilder()
+                .setIsPrebuilt(true)
+                .setLabel(PrebuiltPkgSetLabel.XposedModule.name)
+                .addAllAppPkgs(
+                    shortXContext.appState.getInstalledApps()
+                        .filter { it.isXposedMod }.map { it.pkg })
                 .build()
         }
     )

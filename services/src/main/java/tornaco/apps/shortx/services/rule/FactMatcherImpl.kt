@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import tornaco.apps.shortx.core.PrebuiltPkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
@@ -43,7 +44,6 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.app.PrebuiltPkgSet
 
 internal class Matcher(
     val targetClass: String,
@@ -354,7 +354,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         val pkgListActual = actual.appList
 
         val hasAllPkgSetInRule = rule.pkgSetList.firstOrNull {
-            it == PrebuiltPkgSet.LABEL_ALL
+            it == PrebuiltPkgSetLabel.All.name
         } != null
         if (hasAllPkgSetInRule) {
             logger.d("matchWithAppOrPkgSetListFact, hasAllPkgSetInRule, assume true")

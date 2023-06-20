@@ -65,13 +65,14 @@ class PkgPool(
 
     suspend fun load() = withContext(Dispatchers.IO) {
         logger.d("Load at thread: ${Thread.currentThread()}")
-        val apps = PkgUtils.getInstalledApplicationsAsUser(context, userId, 0)
-            .mapNotNull { applicationInfo ->
-                kotlin.runCatching { applicationInfo.toApp() }.getOrElse {
-                    logger.e(it, "applicationInfo toApp error.")
-                    null
+        val apps =
+            PkgUtils.getInstalledApplicationsAsUser(context, userId)
+                .mapNotNull { applicationInfo ->
+                    kotlin.runCatching { applicationInfo.toApp() }.getOrElse {
+                        logger.e(it, "applicationInfo toApp error.")
+                        null
+                    }
                 }
-            }
 
         _allApps.clear()
         apps.forEach {
@@ -100,11 +101,19 @@ class PkgPool(
     }
 
     private fun ApplicationInfo.toApp(): App {
+        val isXposedMod =
+            kotlin.runCatching { this.metaData.get("xposedmodule").toString().toBoolean() }
+                .getOrElse { false }
+        val isGame =
+            (this.flags and ApplicationInfo.FLAG_IS_GAME) != 0 || kotlin.runCatching { this.category == ApplicationInfo.CATEGORY_GAME }
+                .getOrElse { false }
         return tornaco.apps.shortx.core.App(
             pkg = Pkg(packageName, userId),
             category = getCategory(),
             label = getLabel(),
-            uid = uid
+            uid = uid,
+            isGame = isGame,
+            isXposedMode = isXposedMod
         )
     }
 
