@@ -122,4 +122,9 @@ interface IShortX {
 
     List<ByteArrayWrapper> getRunningServices(in ByteArrayWrapper pkg);
     List<ByteArrayWrapper> getRunningAppPkgs(String pkgSetLabel);
+
+    List<ByteArrayWrapper> getFactPublishRecords();
+    void clearFactPublishRecords();
+    void setFactPublishRecordEnabled(boolean enable);
+    boolean isFactPublishRecordEnabled();
 }

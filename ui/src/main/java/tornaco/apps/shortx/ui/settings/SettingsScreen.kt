@@ -54,6 +54,9 @@ fun SettingsScreen() {
         goToConditionRecord = {
             appNavController.navigate(AppRoute.ConditionEvaRecord.name)
         },
+        goToFactPublishRecord = {
+            appNavController.navigate(AppRoute.FactPublishRecord.name)
+        },
         viewOpenSourceLicense = {
             appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
         })
@@ -68,6 +71,7 @@ fun SettingsScreen(
     goToDanmuUISettings: () -> Unit,
     goToActionRecord: () -> Unit,
     goToConditionRecord: () -> Unit,
+    goToFactPublishRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -230,6 +234,7 @@ fun SettingsScreen(
                                 goToDanmuUISettings = goToDanmuUISettings,
                                 goToActionRecord = goToActionRecord,
                                 goToConditionRecord = goToConditionRecord,
+                                goToFactPublishRecord = goToFactPublishRecord,
                             )
                         )
                         addAll(dataSettings(
@@ -288,6 +293,7 @@ private fun generalSettings(
     goToDanmuUISettings: () -> Unit,
     goToActionRecord: () -> Unit,
     goToConditionRecord: () -> Unit,
+    goToFactPublishRecord: () -> Unit,
 ) = listOf(
     Preference.Category(LocalI18N.current["ui.settings.general"]),
 
@@ -315,6 +321,13 @@ private fun generalSettings(
         }
     ),
 
+    Preference.TextPreference(icon = Remix.Media.notification_3_line,
+        title = LocalI18N.current["ui.settings.fact.record"],
+        summary = LocalI18N.current["ui.settings.fact.record.summary"],
+        onClick = {
+            goToFactPublishRecord()
+        }
+    ),
     Preference.TextPreference(icon = Remix.Document.task_fill,
         title = LocalI18N.current["ui.settings.action.record"],
         summary = LocalI18N.current["ui.settings.action.record.summary"],

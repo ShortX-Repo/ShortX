@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -521,6 +522,31 @@ class ShortXManager(private val service: IShortX) {
     fun isConditionEvaluateRecorderEnabled(): Boolean {
         return invokeService(false) {
             isConditionEvaluateRecorderEnabled
+        }
+    }
+
+
+    fun getFactPublishRecords(): List<FactPublishRecord> {
+        return invokeService(emptyList()) {
+            factPublishRecords.map { FactPublishRecord.parseFrom(it.byte) }
+        }
+    }
+
+    fun clearFactPublishRecords() {
+        invokeService(Unit) {
+            clearFactPublishRecords()
+        }
+    }
+
+    fun setFactPublishRecordEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isFactPublishRecordEnabled = enable
+        }
+    }
+
+    fun isFactPublishRecordEnabled(): Boolean {
+        return invokeService(false) {
+            isFactPublishRecordEnabled
         }
     }
 

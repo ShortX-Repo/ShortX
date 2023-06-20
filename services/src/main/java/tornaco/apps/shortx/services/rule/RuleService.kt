@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -72,6 +73,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
     private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
+    private val factPublishRecorder = FactPublishRecorder()
 
     private val engine by lazy {
         RuleEngineFactory.newRuleEngine(
@@ -183,12 +185,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         fact: ProtoMessage,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
-        logger.i("publishFact: $reason")
+        logger.i("publishFact, ${fact::class.java}: $reason")
         engine.fire(
             fact = fact,
             rules = getAllRules().filter { rule -> rule.isEnabled },
             initialContextData = initialContextData
         )
+
+        if (isFactPublishRecordEnabled()) {
+            factPublishRecorder.add(fact.toFactPublishRecord())
+        }
     }
 
     fun executeActions(
@@ -436,5 +442,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun isConditionEvaluateRecorderEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableConditionEvaluateRecorder)
+    }
+
+    fun getFactPublishRecords(): List<FactPublishRecord> {
+        return factPublishRecorder.records
+    }
+
+    fun clearFactPublishRecords() {
+        factPublishRecorder.clear()
+    }
+
+    fun setFactPublishRecordEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableFactPublishRecorder, enable)
+    }
+
+    fun isFactPublishRecordEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableFactPublishRecorder)
     }
 }

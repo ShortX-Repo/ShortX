@@ -352,6 +352,8 @@
   "ui.action.recent": "最近",
   "ui.settings.danmu": "弹幕设置",
   "ui.settings.danmu.summary": "调整弹幕颜色，字体大小，速度等",
+  "ui.settings.fact.record": "触发器记录",
+  "ui.settings.fact.record.summary": "查看触发器记录",
   "ui.settings.action.record": "动作记录",
   "ui.settings.action.record.summary": "查看历史执行动作的记录",
   "ui.settings.condition.record": "条件记录",

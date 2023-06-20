@@ -55,3 +55,8 @@ message ConditionEvaluateRecord {
   string message = 4;
   int64 timeStamp = 5;
 }
+
+message FactPublishRecord {
+  string factClassName = 1;
+  int64 timeStamp = 2;
+}

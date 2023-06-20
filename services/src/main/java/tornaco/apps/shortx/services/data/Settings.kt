@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.data
 
 import android.os.Bundle
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_ALPHA
 import tornaco.apps.shortx.core.settings.DANMU_DEFAULT_DURATION
@@ -11,9 +12,19 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
     sealed class BoolSettings(key: String, defaultValue: Boolean) :
         Settings<Boolean>(key, defaultValue) {
         object EnableActionEvaluateRecorder :
-            BoolSettings(key = "EnableActionEvaluateRecorder", defaultValue = true)
+            BoolSettings(
+                key = "EnableActionEvaluateRecorder",
+                defaultValue = BuildProp.APP_IS_DEBUG
+            )
+
         object EnableConditionEvaluateRecorder :
-            BoolSettings(key = "EnableConditionEvaluateRecorder", defaultValue = true)
+            BoolSettings(
+                key = "EnableConditionEvaluateRecorder",
+                defaultValue = BuildProp.APP_IS_DEBUG
+            )
+
+        object EnableFactPublishRecorder :
+            BoolSettings(key = "EnableFactPublishRecorder", defaultValue = BuildProp.APP_IS_DEBUG)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :

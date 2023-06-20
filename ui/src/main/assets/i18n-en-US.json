@@ -352,6 +352,8 @@
   "ui.action.recent": "Recent",
   "ui.settings.danmu": "Danmu",
   "ui.settings.danmu.summary": "Adjust danmu color, font size, speed, etc.",
+  "ui.settings.fact.record": "Fact record",
+  "ui.settings.fact.record.summary": "View fact publish records",
   "ui.settings.action.record": "Action record",
   "ui.settings.action.record.summary": "View action execute records",
   "ui.settings.condition.record": "Condition record",

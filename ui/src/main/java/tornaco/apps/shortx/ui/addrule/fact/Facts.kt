@@ -106,17 +106,7 @@ private fun FactItem(
             editFactHandler(FactSelectSource.FromFact(fact))
         },
         icon = {
-            ColoredIcon(
-                size = 36.dp, color = colorForFact(fact::class).copy(
-                    ActionColorBgAlpha
-                )
-            ) {
-                RemixIcon(
-                    modifier = Modifier.size(16.dp),
-                    remixName = imageVectorForFact(fact::class),
-                    tint = colorForFact(fact::class)
-                )
-            }
+            FactIcon(fact)
         },
         action1 = {
             if (fact.contextData.isNotEmpty()) {
@@ -140,4 +130,19 @@ private fun FactItem(
             }
         }
     )
+}
+
+@Composable
+fun FactIcon(fact: Fact) {
+    ColoredIcon(
+        size = 36.dp, color = colorForFact(fact::class).copy(
+            ActionColorBgAlpha
+        )
+    ) {
+        RemixIcon(
+            modifier = Modifier.size(16.dp),
+            remixName = imageVectorForFact(fact::class),
+            tint = colorForFact(fact::class)
+        )
+    }
 }

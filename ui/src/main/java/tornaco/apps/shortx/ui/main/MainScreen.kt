@@ -81,6 +81,9 @@ fun HomeScreen() {
                             goToConditionRecord = {
                                 appNavController.navigate(AppRoute.ConditionEvaRecord.name)
                             },
+                            goToFactPublishRecord = {
+                                appNavController.navigate(AppRoute.FactPublishRecord.name)
+                            },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
                             })

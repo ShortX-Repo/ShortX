@@ -12,6 +12,7 @@ enum class AppRoute {
     DanmuUISettings,
     ActionEvaRecord,
     ConditionEvaRecord,
+    FactPublishRecord,
     ViewOpenSourceLicense,
     SubscriptionIntro,
     LVLCheck,

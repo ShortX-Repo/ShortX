@@ -234,6 +234,24 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.clearConditionEvaluateRecords()
         }
 
+        override fun getFactPublishRecords(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getFactPublishRecords().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun clearFactPublishRecords() {
+            shortXContext.rule.clearFactPublishRecords()
+        }
+
+        override fun setFactPublishRecordEnabled(enable: Boolean) {
+            shortXContext.rule.setFactPublishRecordEnabled(enable)
+        }
+
+        override fun isFactPublishRecordEnabled(): Boolean {
+            return shortXContext.rule.isFactPublishRecordEnabled()
+        }
+
         override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
             shortXContext.rule.setConditionEvaluateRecorderEnabled(enable)
         }
