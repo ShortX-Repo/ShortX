@@ -79,11 +79,17 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     }
 
     fun addFact(fact: Fact) {
+        logger.d("addFact: $fact")
         if (!state.value.facts.contains(fact)) {
             updateState {
                 copy(
                     facts = state.value.facts.toMutableList().apply {
-                        add(fact)
+                        val existingIndex = indexOfFirst { it.id == fact.id }
+                        if (existingIndex >= 0) {
+                            set(existingIndex, fact)
+                        } else {
+                            add(fact)
+                        }
                     },
                     ruleChanged = true
                 )

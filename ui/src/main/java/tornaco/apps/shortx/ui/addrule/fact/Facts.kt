@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
@@ -35,16 +36,6 @@ fun FactSelectors(
     })
     FactSelectorDialog(state = factSelectorState)
 
-    val factHandlers = listOf(
-        appFactSelectHandler(vm::addFact),
-        systemFactSelectHandler(vm::addFact)
-    )
-    val editFactHandler: (FactSelectSource) -> Unit = { source ->
-        for (h in factHandlers) {
-            if (h(source)) break
-        }
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
         MediumTitle(LocalI18N.current["ui.fact.title"])
 
@@ -56,8 +47,8 @@ fun FactSelectors(
                     removeFact = {
                         vm.removeFact(fact)
                     },
-                    onClick = {
-                        editFactHandler(FactSelectSource.FromFact(fact))
+                    updateFact = {
+                        vm.addFact(it)
                     }
                 )
             }
@@ -85,8 +76,25 @@ private fun FactItem(
     fact: Fact,
     readOnly: Boolean,
     removeFact: () -> Unit,
-    onClick: () -> Unit,
+    updateFact: (Fact) -> Unit,
 ) {
+    val factHandlers = listOf(
+        appFactSelectHandler {
+            updateFact(it.clone(id = fact.id, note = fact.note))
+        },
+        systemFactSelectHandler {
+            Logger("").d("systemFactSelectHandler: $it")
+            updateFact(it.clone(id = fact.id, note = fact.note).apply {
+                Logger("").d("systemFactSelectHandler: $this")
+            })
+        }
+    )
+    val editFactHandler: (FactSelectSource) -> Unit = { source ->
+        for (h in factHandlers) {
+            if (h(source)) break
+        }
+    }
+
     val contextDataInfoDialogState = rememberContextDataInfoDialogState()
     ContextDataInfoDialog(state = contextDataInfoDialogState)
     val i18N = LocalI18N.current
@@ -94,7 +102,9 @@ private fun FactItem(
     ListItem(
         modifier = Modifier,
         titleLines = labelForFact(fact = fact),
-        onClick = onClick,
+        onClick = {
+            editFactHandler(FactSelectSource.FromFact(fact))
+        },
         icon = {
             ColoredIcon(
                 size = 36.dp, color = colorForFact(fact::class).copy(
