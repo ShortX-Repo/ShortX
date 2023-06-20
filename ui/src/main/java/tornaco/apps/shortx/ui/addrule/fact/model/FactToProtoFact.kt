@@ -35,6 +35,8 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.VPNConnected
+import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
@@ -276,6 +278,14 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         is Fact.Broadcast -> {
             Broadcast.newBuilder().setId(id).setNote(note).addAllActions(actions).build()
+        }
+
+        is Fact.VPNConnected -> {
+            VPNConnected.newBuilder().setId(id).setNote(note).build()
+        }
+
+        is Fact.VPNDisconnected -> {
+            VPNDisconnected.newBuilder().setId(id).setNote(note).build()
         }
 
     }

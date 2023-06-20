@@ -7,6 +7,8 @@ import tornaco.apps.shortx.core.platform.ClassNames.ATMS
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_RECORD
+import tornaco.apps.shortx.core.platform.ClassNames.VPN
+import tornaco.apps.shortx.core.platform.Classes.processListClass
 import util.Reflections
 import util.ReflectionsExt
 import java.lang.reflect.Method
@@ -100,6 +102,13 @@ object Classes {
                 ACTIVITY_RECORD_WM,
                 ACTIVITY_RECORD_AM
             )
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.vpnClass(): Class<*> =
+        Reflections.findClass(
+            VPN,
+            this
         )
 
     fun Class<*>.activityStoppedMethod(): Method? {

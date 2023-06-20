@@ -321,6 +321,22 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.VPNConnected::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.VPNConnected::class.java
+            Fact.VPNConnected(
+                id = data.id, note = data.note
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.VPNDisconnected::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.VPNDisconnected::class.java
+            Fact.VPNDisconnected(
+                id = data.id, note = data.note
+            )
+        }
+
 
         else -> {
             null

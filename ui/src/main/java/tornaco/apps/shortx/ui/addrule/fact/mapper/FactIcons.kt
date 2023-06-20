@@ -45,6 +45,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.ChargerPlug::class -> Remix.Device.battery_charge_line
         Fact.ChargerUnplug::class -> Remix.Device.battery_fill
         Fact.Broadcast::class -> Remix.Media.broadcast_fill
+        Fact.VPNConnected::class -> Remix.Others.key_line
+        Fact.VPNDisconnected::class -> Remix.Others.key_line
 
         else -> {
             Remix.Document.file_unknow_fill

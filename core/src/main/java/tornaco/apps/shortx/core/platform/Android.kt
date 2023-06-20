@@ -23,6 +23,7 @@ object Methods {
     const val activityResumedLocked = "activityResumedLocked"
     const val activityStopped = "activityStopped"
     const val activityStoppedLocked = "activityStoppedLocked"
+    const val updateState = "updateState"
 }
 
 object ClassNames {
@@ -35,6 +36,7 @@ object ClassNames {
     const val PROCESS_RECORD = "com.android.server.am.ProcessRecord"
     const val ACTIVITY_RECORD_WM = "com.android.server.wm.ActivityRecord"
     const val ACTIVITY_RECORD_AM = "com.android.server.am.ActivityRecord"
+    const val VPN = "com.android.server.connectivity.Vpn"
 }
 
 object Fields {

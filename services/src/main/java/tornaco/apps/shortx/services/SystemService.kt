@@ -12,13 +12,15 @@ import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
 
 open class SystemService(val shortXContext: ShortXContext) {
+    open val logTag: String = this.javaClass.simpleName
+
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
     val handler by lazy {
         newHandlerOfNewThread(this.javaClass.simpleName)
     }
 
     val logger by lazy {
-        Logger(this.javaClass.simpleName)
+        Logger(logTag)
     }
 
     var isStarted: Boolean = false

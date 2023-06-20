@@ -138,6 +138,14 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.broadcast"] to null
         }
 
+        Fact.VPNConnected::class -> {
+            i18n["ui.fact.vpn.connected"] to null
+        }
+
+        Fact.VPNDisconnected::class -> {
+            i18n["ui.fact.vpn.disconnected"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -380,6 +388,18 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             mutableListOf(
                 i18N["ui.fact.broadcast"],
                 fact.actions.joinToString(System.lineSeparator())
+            )
+        }
+
+        is Fact.VPNConnected -> {
+            listOf(
+                i18N["ui.fact.vpn.connected"]
+            )
+        }
+
+        is Fact.VPNDisconnected -> {
+            listOf(
+                i18N["ui.fact.vpn.disconnected"]
             )
         }
     }

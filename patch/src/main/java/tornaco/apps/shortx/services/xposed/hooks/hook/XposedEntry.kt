@@ -21,6 +21,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             hookActivityTaskSupervisor(lpparam)
             hookProcessList(lpparam)
             ActivityRecordHook.hook(lpparam)
+            VPNHook.hook(lpparam)
         }
     }
 

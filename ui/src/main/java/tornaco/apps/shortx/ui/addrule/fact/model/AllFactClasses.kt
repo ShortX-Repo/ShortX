@@ -51,4 +51,7 @@ val allFactClasses = listOf(
     Fact.ChargerUnplug::class,
 
     Fact.Broadcast::class,
+
+    Fact.VPNConnected::class,
+    Fact.VPNDisconnected::class,
 )

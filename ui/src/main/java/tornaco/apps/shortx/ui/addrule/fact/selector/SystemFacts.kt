@@ -43,6 +43,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.ChargerUnplug::class,
 
         Fact.Broadcast::class,
+        Fact.VPNConnected::class,
+        Fact.VPNDisconnected::class,
     ).map {
         SelectorItem(
             type = it,

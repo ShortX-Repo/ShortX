@@ -328,3 +328,13 @@ message Broadcast {
   string note = 99;
   string id = 100;
 }
+
+message VPNConnected {
+  string note = 99;
+  string id = 100;
+}
+
+message VPNDisconnected {
+  string note = 99;
+  string id = 100;
+}

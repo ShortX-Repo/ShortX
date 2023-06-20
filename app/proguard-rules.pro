@@ -111,3 +111,9 @@
 -dontwarn android.app.ActivityManagerInternal
 -dontwarn android.app.IActivityManager$Stub
 -dontwarn android.app.IActivityManager
+-dontwarn android.net.INetworkScoreCache
+-dontwarn android.net.NetworkKey
+-dontwarn android.net.NetworkScoreManager
+-dontwarn android.net.ScoredNetwork
+-dontwarn android.net.wifi.WifiNetworkScoreCache$CacheListener
+-dontwarn android.net.wifi.WifiNetworkScoreCache

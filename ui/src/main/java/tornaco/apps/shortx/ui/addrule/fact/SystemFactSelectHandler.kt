@@ -267,6 +267,16 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 true
             }
 
+            Fact.VPNConnected::class -> {
+                addFact(Fact.VPNConnected())
+                true
+            }
+
+            Fact.VPNDisconnected::class -> {
+                addFact(Fact.VPNDisconnected())
+                true
+            }
+
 
             else -> false
         }

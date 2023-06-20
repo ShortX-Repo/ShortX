@@ -180,6 +180,8 @@
   "ui.fact.app.updated": "用更新",
   "ui.fact.system.settings": "設定變化",
   "ui.fact.broadcast": "廣播",
+  "ui.fact.vpn.connected": "VPN连接了",
+  "ui.fact.vpn.disconnected": "VPN断开连接了",
   "ui.fact.battery.charge.plug": "充電器插入",
   "ui.fact.battery.charge.unplug": "充電器拔出",
   "ui.fact.battery.level.changed": "電量發生變化",

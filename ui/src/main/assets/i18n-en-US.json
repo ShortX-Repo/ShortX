@@ -180,6 +180,8 @@
   "ui.fact.app.updated": "App updated",
   "ui.fact.system.settings": "Settings change",
   "ui.fact.broadcast": "Broadcast",
+  "ui.fact.vpn.connected": "VPN connected",
+  "ui.fact.vpn.disconnected": "VPN disconnected",
   "ui.fact.battery.charge.plug": "Charger plug",
   "ui.fact.battery.charge.unplug": "Charger unplug",
   "ui.fact.battery.level.changed": "Battery level changed",

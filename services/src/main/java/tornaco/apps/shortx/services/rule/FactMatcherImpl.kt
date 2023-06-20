@@ -36,6 +36,8 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.VPNConnected
+import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
@@ -325,6 +327,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             ruleN.ssidListList.isEmpty() || ruleN.ssidListList.any { it == "*" } || ruleN.ssidListList.containsAll(
                 actualN.ssidListList
             )
+        }
+
+
+        register(VPNConnected::class.java) { actual, rule ->
+            true
+        }
+        register(VPNDisconnected::class.java) { actual, rule ->
+            true
         }
 
         logger.i("Init complete.")
