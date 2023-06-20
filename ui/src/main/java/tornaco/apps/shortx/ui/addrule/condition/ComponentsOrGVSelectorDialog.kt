@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
 import android.content.ComponentName
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.appComponentToString
@@ -68,6 +70,7 @@ import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 private enum class SelectorType {
     GV,
@@ -402,9 +405,23 @@ private fun AppComponentItem(
     component: AppComponent,
     remove: (AppComponent) -> Unit
 ) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
     ShortXCard(
         modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        onClick = {
+            ClipboardUtils.copyToClipboard(
+                context,
+                "component",
+                component.toComponentName().flattenToShortString()
+            )
+            Toast.makeText(
+                context,
+                i18N["ui.common.copied.to.clipboard"],
+                Toast.LENGTH_LONG
+            ).show()
+        }
     ) {
         Row(
             modifier = Modifier
