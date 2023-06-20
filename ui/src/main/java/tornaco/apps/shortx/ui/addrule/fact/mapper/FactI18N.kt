@@ -33,7 +33,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
+
         Fact.WifiStatusChanged::class -> i18n["ui.fact.wifi.state.changed"] to null
+        Fact.WifiConnectedTo::class -> i18n["ui.fact.wifi.connect.to"] to null
+        Fact.WifiDisconnectedFrom::class -> i18n["ui.fact.wifi.disconnected.from"] to null
 
         Fact.BTStatusChanged::class -> {
             i18n["ui.fact.bt.state.changed"] to null
@@ -207,70 +210,84 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
 
         is Fact.WifiStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.wifi.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
+        is Fact.WifiConnectedTo -> {
+            listOf(
+                i18N["ui.fact.wifi.connect.to"],
+                fact.ssidList.joinToString()
+            )
+        }
+
+        is Fact.WifiDisconnectedFrom -> {
+            listOf(
+                i18N["ui.fact.wifi.disconnected.from"],
+                fact.ssidList.joinToString()
+            )
+        }
+
         is Fact.BTStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.bt.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.DNDStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.dnd.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.DarkModeStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.dark.mode.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.FlashLightStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.flash.light.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.HotSpotStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.hotspot.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.LocationStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.location.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.MobileDataStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.mobile.data.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.NFCStatusChanged -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.nfc.state.changed"],
                 fact.state.label(i18N)
             )
         }
 
         is Fact.NotificationPosted -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.n.posted"],
                 fact.n.titleRegex.fallbackOnEmpty(""),
                 fact.n.contentRegex.fallbackOnEmpty("")
@@ -278,7 +295,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.NotificationRemoved -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.n.removed"],
                 fact.n.titleRegex.fallbackOnEmpty(""),
                 fact.n.contentRegex.fallbackOnEmpty("")
@@ -286,7 +303,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.NotificationUpdated -> {
-            mutableListOf(
+            listOf(
                 i18N["ui.fact.n.updated"],
                 fact.n.titleRegex.fallbackOnEmpty(""),
                 fact.n.contentRegex.fallbackOnEmpty("")

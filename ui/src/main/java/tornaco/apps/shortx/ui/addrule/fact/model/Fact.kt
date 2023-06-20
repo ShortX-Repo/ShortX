@@ -5,11 +5,9 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
-import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
-import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.factContextData
 import java.util.UUID
@@ -170,6 +168,28 @@ sealed interface Fact {
     data class WifiStatusChanged(
         val state: OnOffAny, override val note: String = "",
         override val id: String = defaultNewFactId(),
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class WifiConnectedTo(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val ssidList: List<String>
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class WifiDisconnectedFrom(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val ssidList: List<String>
     ) : Fact {
 
         override fun clone(id: String, note: String): Fact {

@@ -110,4 +110,18 @@ object ContextDataMapping {
         shellErr("Error message of the shell command, error will redirect to out by default."),
         shellCode("Code of the shell command"),
     }
+
+    @DoNotStrip
+    enum class WifiConnectedTo(val description: String) {
+        ssid("SSID of the connection"),
+        isWifiEnabled("True of wifi is in Enable state"),
+        wifiStatusLabel("Status label of current wifi connection"),
+    }
+
+    @DoNotStrip
+    enum class WifiDisconnectedFrom(val description: String) {
+        ssid("SSID from which wifi disconnected"),
+        isWifiEnabled("True of wifi is in Enable state"),
+        wifiStatusLabel("Status label of current wifi connection"),
+    }
 }

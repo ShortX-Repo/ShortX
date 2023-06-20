@@ -114,6 +114,18 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.WifiStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.WifiConnectedTo::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.WifiConnectedTo::class.java
+            Fact.WifiConnectedTo(ssidList = data.ssidListList, id = data.id, note = data.note)
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom::class.java
+            Fact.WifiDisconnectedFrom(ssidList = data.ssidListList, id = data.id, note = data.note)
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java
             Fact.BTStatusChanged(data.ooa, id = data.id, note = data.note)

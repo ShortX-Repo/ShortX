@@ -87,6 +87,14 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.AudioFocusChanged>()
         }
 
+        Fact.WifiConnectedTo::class -> {
+            dats<ContextDataMapping.WifiConnectedTo>()
+        }
+
+        Fact.WifiDisconnectedFrom::class -> {
+            dats<ContextDataMapping.WifiDisconnectedFrom>()
+        }
+
         else -> {
             emptyList()
         }

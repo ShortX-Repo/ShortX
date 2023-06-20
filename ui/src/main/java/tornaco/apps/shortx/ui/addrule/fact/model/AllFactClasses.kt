@@ -16,6 +16,9 @@ val allFactClasses = listOf(
     Fact.AppBecomeForeground::class,
 
     Fact.WifiStatusChanged::class,
+    Fact.WifiConnectedTo::class,
+    Fact.WifiDisconnectedFrom::class,
+
     Fact.BTStatusChanged::class,
     Fact.MobileDataStatusChanged::class,
     Fact.LocationStatusChanged::class,

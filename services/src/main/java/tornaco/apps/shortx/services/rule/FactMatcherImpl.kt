@@ -36,6 +36,8 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
+import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -307,6 +309,22 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as EdgeGesture)
             val ruleN = (rule as EdgeGesture)
             actualN.edge == ruleN.edge && actualN.gesture == ruleN.gesture
+        }
+
+        register(WifiConnectedTo::class.java) { actual, rule ->
+            val actualN = (actual as WifiConnectedTo)
+            val ruleN = (rule as WifiConnectedTo)
+            ruleN.ssidListList.isEmpty() || ruleN.ssidListList.any { it == "*" } || ruleN.ssidListList.containsAll(
+                actualN.ssidListList
+            )
+        }
+
+        register(WifiDisconnectedFrom::class.java) { actual, rule ->
+            val actualN = (actual as WifiDisconnectedFrom)
+            val ruleN = (rule as WifiDisconnectedFrom)
+            ruleN.ssidListList.isEmpty() || ruleN.ssidListList.any { it == "*" } || ruleN.ssidListList.containsAll(
+                actualN.ssidListList
+            )
         }
 
         logger.i("Init complete.")

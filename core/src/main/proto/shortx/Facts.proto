@@ -148,15 +148,20 @@ message BTStatusChanged {
 
 message WifiStatusChanged {
   OnOffAny ooa = 1;
-  string ssid = 2;
 
   string note = 99;
   string id = 100;
 }
 
-message WifiConnectionStatusChanged {
-  string ssid = 1;
-  bool isConnected = 2;
+message WifiConnectedTo {
+  repeated string ssidList = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message WifiDisconnectedFrom {
+  repeated string ssidList = 1;
 
   string note = 99;
   string id = 100;

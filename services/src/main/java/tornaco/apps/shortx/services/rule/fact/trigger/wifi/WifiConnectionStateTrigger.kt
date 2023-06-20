@@ -6,11 +6,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import tornaco.apps.shortx.core.compat.ContextCompat
-import tornaco.apps.shortx.core.proto.common.OnOffAny
-import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
+import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 import java.util.concurrent.atomic.AtomicReference
@@ -20,9 +20,10 @@ class WifiConnectionStateTrigger(
     override val shortXContext: ShortXContext
 ) :
     Trigger {
-    private val logger = Logger("WifiStateTrigger")
+    private val logger = Logger("WifiConnectionStateTrigger")
     private lateinit var wifiStatusTracker: WifiStatusTracker
-    private val currentWifiState = AtomicReference(WifiState(false, null, null))
+
+    private val connectedSSID: AtomicReference<String?> = AtomicReference(null)
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -45,24 +46,46 @@ class WifiConnectionStateTrigger(
                 ssid = wifiStatusTracker.ssid?.replace("\"", "")
             )
             logger.d("WifiStatusTracker, callback.run, ws: $ws")
-            if (ws != currentWifiState.get()) {
-                logger.d("WifiStatusTracker Wifi update: $ws")
-                currentWifiState.set(ws)
 
+            val lastConnectedSSID = connectedSSID.get()
+
+            if (ws.ssid != null && lastConnectedSSID != ws.ssid) {
+                logger.i("Connect changed to: ${ws.ssid}")
                 shortXContext.rule.publishFact(
-                    reason = "Wifi update",
-                    fact = WifiStatusChanged.newBuilder()
-                        .setSsid(ws.ssid ?: "")
-                        .setOoa(ws.enabled.select(OnOffAny.On, OnOffAny.Off)).build(),
+                    reason = "Wifi SSID changed.",
+                    fact = WifiConnectedTo.newBuilder()
+                        .addAllSsidList(listOf(ws.ssid)).build(),
                     initialContextData = mapOf(
-                        "ssid" to ws.ssid.fallbackOnEmpty(""),
-                        "enabled" to ws.enabled.toString(),
-                        "statusLabel" to ws.statusLabel.fallbackOnEmpty("")
+                        ContextDataMapping.WifiConnectedTo.ssid.name to ws.ssid.fallbackOnEmpty(""),
+                        ContextDataMapping.WifiConnectedTo.isWifiEnabled.name to ws.enabled.toString(),
+                        ContextDataMapping.WifiConnectedTo.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                            ""
+                        )
                     )
                 )
             }
 
+            if (ws.ssid == null && lastConnectedSSID != null) {
+                logger.i("Disconnected from: $lastConnectedSSID")
+                shortXContext.rule.publishFact(
+                    reason = "Wifi disconnected.",
+                    fact = WifiDisconnectedFrom.newBuilder()
+                        .addAllSsidList(listOf(lastConnectedSSID)).build(),
+                    initialContextData = mapOf(
+                        ContextDataMapping.WifiDisconnectedFrom.ssid.name to lastConnectedSSID.fallbackOnEmpty(
+                            ""
+                        ),
+                        ContextDataMapping.WifiDisconnectedFrom.isWifiEnabled.name to ws.enabled.toString(),
+                        ContextDataMapping.WifiDisconnectedFrom.wifiStatusLabel.name to ws.statusLabel.fallbackOnEmpty(
+                            ""
+                        )
+                    )
+                )
+            }
+
+            connectedSSID.set(ws.ssid)
         }
+
         wifiStatusTracker.setListening(true)
 
         val wifiIntentFilter = IntentFilter()

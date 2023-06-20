@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import tornaco.apps.shortx.core.util.Logger
 
 class TextInputState(
     val title: String,
@@ -19,6 +20,8 @@ class TextInputState(
     val inputValidator: ((String) -> Pair<Boolean, String>),
     val onSelected: (String) -> Unit
 ) {
+    private val logger = Logger("TextInputState")
+
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
 
@@ -28,6 +31,7 @@ class TextInputState(
     var isValid by mutableStateOf(false)
 
     fun show(initialValue: String? = null) {
+        logger.p("initialValue: $initialValue")
         this.currentValue = initialValue ?: ""
         this.errorMsg = ""
         this.isValid = true

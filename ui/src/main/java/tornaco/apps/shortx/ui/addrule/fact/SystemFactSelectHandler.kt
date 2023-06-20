@@ -50,6 +50,26 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
 
+    val wifiConnectedToSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.wifi.connect.to"],
+        message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
+        showSymbolButton = false,
+        onSelected = {
+            addFact(Fact.WifiConnectedTo(ssidList = listOf(it)))
+        }
+    )
+    TextInputDialog(state = wifiConnectedToSelectorState)
+
+    val wifiDisconnectedFromSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.wifi.disconnected.from"],
+        message = LocalI18N.current["ui.fact.wifi.disconnected.from.input.ssid"],
+        showSymbolButton = false,
+        onSelected = {
+            addFact(Fact.WifiDisconnectedFrom(ssidList = listOf(it)))
+        }
+    )
+    TextInputDialog(state = wifiDisconnectedFromSelectorState)
+
     val btSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {
             addFact(Fact.BTStatusChanged(it))
@@ -168,6 +188,20 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.WifiStatusChanged::class -> {
                 wifiSelectorState.show()
+                true
+            }
+
+            Fact.WifiConnectedTo::class -> {
+                wifiConnectedToSelectorState.show(source.getFactAs<Fact.WifiConnectedTo>()?.ssidList?.let {
+                    if (it.isEmpty()) null else it[0]
+                })
+                true
+            }
+
+            Fact.WifiDisconnectedFrom::class -> {
+                wifiDisconnectedFromSelectorState.show(source.getFactAs<Fact.WifiDisconnectedFrom>()?.ssidList?.let {
+                    if (it.isEmpty()) null else it[0]
+                })
                 true
             }
 

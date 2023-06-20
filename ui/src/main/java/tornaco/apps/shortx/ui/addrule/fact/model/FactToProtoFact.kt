@@ -35,6 +35,8 @@ import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
+import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
+import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoMessage
 
@@ -98,6 +100,18 @@ fun Fact.toProtoFact(): ProtoMessage {
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
                 .setOoa(state)
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.WifiConnectedTo -> {
+            WifiConnectedTo.newBuilder()
+                .addAllSsidList(ssidList)
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.WifiDisconnectedFrom -> {
+            WifiDisconnectedFrom.newBuilder()
+                .addAllSsidList(ssidList)
                 .setId(id).setNote(note).build()
         }
 
