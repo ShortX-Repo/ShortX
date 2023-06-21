@@ -2,18 +2,13 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.ComponentsOrGV
 import tornaco.apps.shortx.ui.addrule.condition.ConditionAppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberConditionAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
-import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MenuDialog
-import tornaco.apps.shortx.ui.base.MenuDialogState
 
 @Composable
 fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -106,31 +101,15 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             })
     ConditionAppPkgSelectorDialog(appHasAudioFocusSelectorState)
 
-    val serviceIsRunningOpSelectorDialog: MenuDialogState<ComponentsOrGV> =
-        rememberAllAnyMenuDialogState(
-            conditionTitle = LocalI18N.current["ui.conditions.service.running"],
-            onItemSelected = { componentsOrGV, op ->
-                addCondition(
-                    Condition.ServiceIsRunning(
-                        services = requireNotNull(componentsOrGV?.components) { "Data to menu dialog is null!!" },
-                        op = op
-                    )
-                )
-            })
-    MenuDialog(state = serviceIsRunningOpSelectorDialog)
     val serviceIsRunningSelectorState = rememberComponentOrGVSelectorState(
         types = listOf(ComponentType.Service),
-        onSelected = {
-            if (it.components.size > 1) {
-                serviceIsRunningOpSelectorDialog.show(it)
-            } else {
-                addCondition(
-                    Condition.ServiceIsRunning(
-                        services = it.components,
-                        op = Op.All
-                    )
+        onSelected = { it, op ->
+            addCondition(
+                Condition.ServiceIsRunning(
+                    services = it.components,
+                    op = op
                 )
-            }
+            )
         }
     )
     ComponentOrGVSelectorDialog(state = serviceIsRunningSelectorState)
@@ -162,7 +141,10 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             }
 
             Condition.ServiceIsRunning::class -> {
-                serviceIsRunningSelectorState.show(source.getConditionAs<Condition.ServiceIsRunning>()?.services)
+                serviceIsRunningSelectorState.show(
+                    source.getConditionAs<Condition.ServiceIsRunning>()?.services,
+                    source.getConditionAs<Condition.ServiceIsRunning>()?.op
+                )
                 true
             }
 

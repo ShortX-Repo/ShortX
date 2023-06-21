@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.addrule.condition
 
 import android.content.ComponentName
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,9 @@ import tornaco.apps.shortx.ui.addrule.action.selector.UserSelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberUserSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.selector.rememberComponentAllAnyMenuDialogState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
@@ -55,8 +59,12 @@ import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -86,7 +94,7 @@ data class ComponentsOrGV(
 
 class AppComponentOrGVSelectorDialogState(
     val types: List<ComponentType>,
-    val onSelected: (ComponentsOrGV) -> Unit
+    val onSelected: (ComponentsOrGV, Op) -> Unit
 ) : CommonDialogState() {
 
     private var _componentsOrGV by mutableStateOf(
@@ -95,8 +103,25 @@ class AppComponentOrGVSelectorDialogState(
 
     val componentsOrGV get() = _componentsOrGV
 
+    private var _showOpSelector by mutableStateOf(false)
+    val showOpSelector get() = _showOpSelector
+    private var _op by mutableStateOf<Op>(Op.All)
+    val op get() = _op
+
+    fun selectOp(op: Op) {
+        _op = op
+    }
+
     fun show(components: List<AppComponent>? = emptyList()) {
         this._componentsOrGV = ComponentsOrGV(components = components ?: emptyList())
+        this._showOpSelector = false
+        show()
+    }
+
+    fun show(components: List<AppComponent>? = emptyList(), op: Op? = Op.All) {
+        this._componentsOrGV = ComponentsOrGV(components = components ?: emptyList())
+        this._op = op ?: Op.All
+        this._showOpSelector = true
         show()
     }
 
@@ -135,7 +160,7 @@ class AppComponentOrGVSelectorDialogState(
 @Composable
 fun rememberComponentOrGVSelectorState(
     types: List<ComponentType>,
-    onSelected: (ComponentsOrGV) -> Unit
+    onSelected: (ComponentsOrGV, Op) -> Unit
 ): AppComponentOrGVSelectorDialogState {
     return remember {
         AppComponentOrGVSelectorDialogState(types, onSelected)
@@ -172,7 +197,7 @@ private fun ComponentOrGVSelectorContent(dialogState: AppComponentOrGVSelectorDi
                         actions = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
-                                dialogState.onSelected(dialogState.componentsOrGV)
+                                dialogState.onSelected(dialogState.componentsOrGV, dialogState.op)
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
@@ -266,6 +291,34 @@ private fun GVContent(dialogState: AppComponentOrGVSelectorDialogState) {
 
 @Composable
 private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
+    AnimatedVisibility(
+        visible = (dialogState.showOpSelector && dialogState.componentsOrGV.components.size > 1)
+    ) {
+        Column(modifier = Modifier) {
+            MediumTitle(
+                text = LocalI18N.current["ui.condition.selector.component.all.any.op.title"]
+            )
+            MediumSpacer()
+            val opSelectorDialogState: MenuDialogState<String> =
+                rememberComponentAllAnyMenuDialogState(
+                    onItemSelected = { data, op ->
+                        dialogState.selectOp(op)
+                    })
+            MenuDialog(state = opSelectorDialogState)
+            FilledTonalButton(onClick = {
+                opSelectorDialogState.show()
+            }) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = opDescription(dialogState.op, LocalI18N.current).get(0))
+                    StandardSpacer()
+                    RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                }
+            }
+            LargeSpacer()
+        }
+    }
+
+
     MediumTitle(
         text = "${LocalI18N.current["ui.common.selected.components"]} ${dialogState.componentsOrGV.components.size}"
     )

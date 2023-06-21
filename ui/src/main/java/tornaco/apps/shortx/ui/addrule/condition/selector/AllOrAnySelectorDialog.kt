@@ -9,10 +9,9 @@ import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 
 @Composable
-fun <DATA> rememberAllAnyMenuDialogState(
+fun <DATA> rememberAppAllAnyMenuDialogState(
     title: String = LocalI18N.current["ui.condition.selector.app.all.any.op.title"],
-    conditionTitle: String = "",
-    message: String? = LocalI18N.current["ui.condition.selector.app.all.any.op.message", mapOf("cond" to conditionTitle)],
+    message: String? = LocalI18N.current["ui.condition.selector.app.all.any.op.message"],
     menuItems: List<MenuDialogItem> = listOf(
         MenuDialogItem(
             id = "all",
@@ -22,6 +21,41 @@ fun <DATA> rememberAllAnyMenuDialogState(
         MenuDialogItem(
             id = "any",
             title = LocalI18N.current["ui.condition.selector.app.op.any.desc"],
+            iconName = iconForOp(Op.Any)
+        ),
+    ),
+    onItemSelected: (DATA?, Op) -> Unit
+): MenuDialogState<DATA> {
+    val state = rememberMenuDialogState<DATA>(
+        title = title,
+        message = message,
+        menuItems = menuItems,
+        onItemSelected = { data: DATA?, s: String ->
+            val op = if (s == "all") {
+                Op.All
+            } else {
+                Op.Any
+            }
+            onItemSelected(data, op)
+        })
+
+    return state
+}
+
+
+@Composable
+fun <DATA> rememberComponentAllAnyMenuDialogState(
+    title: String = LocalI18N.current["ui.condition.selector.component.all.any.op.title"],
+    message: String? = LocalI18N.current["ui.condition.selector.component.all.any.op.message"],
+    menuItems: List<MenuDialogItem> = listOf(
+        MenuDialogItem(
+            id = "all",
+            title = LocalI18N.current["ui.condition.selector.component.op.all.desc"],
+            iconName = iconForOp(Op.All)
+        ),
+        MenuDialogItem(
+            id = "any",
+            title = LocalI18N.current["ui.condition.selector.component.op.any.desc"],
             iconName = iconForOp(Op.Any)
         ),
     ),

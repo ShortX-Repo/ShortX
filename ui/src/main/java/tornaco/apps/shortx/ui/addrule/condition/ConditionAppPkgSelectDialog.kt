@@ -19,7 +19,7 @@ import tornaco.apps.shortx.ui.addrule.base.BaseAppPkgSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.base.PkgSetContent
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
-import tornaco.apps.shortx.ui.addrule.condition.selector.rememberAllAnyMenuDialogState
+import tornaco.apps.shortx.ui.addrule.condition.selector.rememberAppAllAnyMenuDialogState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -119,7 +119,7 @@ private fun AppPkgSelector(state: ConditionAppPkgSelectorDialogState) {
                             )
                             MediumSpacer()
                             val opSelectorDialogState: MenuDialogState<String> =
-                                rememberAllAnyMenuDialogState(
+                                rememberAppAllAnyMenuDialogState(
                                     onItemSelected = { data, op ->
                                         state.selectOp(op)
                                     })

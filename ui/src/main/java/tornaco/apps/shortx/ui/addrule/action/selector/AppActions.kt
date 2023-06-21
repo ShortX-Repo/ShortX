@@ -7,14 +7,14 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
-import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
@@ -173,9 +173,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
 
     val stopServiceSelectorState =
-        rememberComponentOrGVSelectorState(types = listOf(ComponentType.Service), onSelected = {
-            addAction(Action.StopService(services = it.components))
-        })
+        rememberComponentOrGVSelectorState(
+            types = listOf(ComponentType.Service),
+            onSelected = { it, _ ->
+                addAction(Action.StopService(services = it.components))
+            })
     ComponentOrGVSelectorDialog(state = stopServiceSelectorState)
 
     val killProcessSelectorState = rememberProcessListSelectorState(onSelected = {

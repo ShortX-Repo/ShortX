@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
 
@@ -30,7 +31,7 @@ fun MutableList<String>.labelLinesFromAppComponents(
     return apply {
         if (apps.isNotEmpty()) {
             addAll(apps.map {
-                "${it.pkg.pkgName}/${it.className} $PREFIX_APP_ICON${it.pkg.pkgName}"
+                "${it.toComponentName().flattenToShortString()} $PREFIX_APP_ICON${it.pkg.pkgName}"
             })
         }
     }

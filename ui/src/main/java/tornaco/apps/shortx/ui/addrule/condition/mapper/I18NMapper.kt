@@ -112,7 +112,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.ServiceIsRunning -> {
             mutableListOf(i18N["ui.conditions.service.running"]).apply {
                 if (condition.services.size > 1) {
-                    addAll(opDescription(op = condition.op, i18N = i18N))
+                    add(opDescriptionForComponent(op = condition.op, i18N = i18N))
                 }
             }.labelLinesFromAppComponents(
                 condition.services
@@ -224,6 +224,22 @@ fun opDescriptionForApps(op: Op, i18N: I18N): String {
 
         Op.Any -> {
             (i18N["ui.condition.selector.app.op.any.desc"])
+        }
+
+        else -> {
+            op.toString()
+        }
+    }
+}
+
+fun opDescriptionForComponent(op: Op, i18N: I18N): String {
+    return when (op) {
+        Op.All -> {
+            (i18N["ui.condition.selector.component.op.all.desc"])
+        }
+
+        Op.Any -> {
+            (i18N["ui.condition.selector.component.op.any.desc"])
         }
 
         else -> {
