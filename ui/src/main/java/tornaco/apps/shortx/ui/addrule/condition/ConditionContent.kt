@@ -10,6 +10,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -23,9 +25,10 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opTitle
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.selector.conditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.selector.appConditionSelectHandler
+import tornaco.apps.shortx.ui.addrule.condition.selector.conditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
@@ -68,15 +71,32 @@ fun ConditionList(
         Box {
             Column(modifier = Modifier.fillMaxWidth()) {
                 conditions.forEach { conditionItem ->
-                    val editHandler = conditionSelectHandler {
-                        handler.addCondition(
-                            it.clone(
-                                id = conditionItem.id,
-                                note = conditionItem.note,
-                                isInvert = conditionItem.isInvert
+                    val currentCondition by rememberUpdatedState(newValue = conditionItem)
+                    val allHandlers = listOf(
+                        appConditionSelectHandler {
+                            handler.addCondition(
+                                it.clone(
+                                    id = currentCondition.id,
+                                    note = currentCondition.note,
+                                    isInvert = currentCondition.isInvert
+                                )
                             )
-                        )
+                        },
+                        conditionSelectHandler {
+                            handler.addCondition(
+                                it.clone(
+                                    id = currentCondition.id,
+                                    note = currentCondition.note,
+                                    isInvert = currentCondition.isInvert
+                                )
+                            )
+                        }
+                    )
+
+                    val editHandler: (ConditionSelectSource) -> Boolean = { source ->
+                        allHandlers.any { it(source) }
                     }
+
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -217,7 +237,7 @@ private fun OpSelector(
             titleLines = mutableListOf(
                 opTitle(op = conditionOp),
             ).apply {
-                addAll(opDescription(op = conditionOp))
+                addAll(opDescription(op = conditionOp, i18N = LocalI18N.current))
             },
             icon = {
                 ColoredIcon(size = 28.dp) {

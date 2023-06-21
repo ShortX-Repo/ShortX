@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 
 
 fun Condition.toProtoCondition(): ProtoMessage {
@@ -59,6 +60,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
             ServiceIsRunning.newBuilder()
                 .setId(id)
                 .setNote(note)
+                .setOp(op.toConditionOperator())
                 .setIsInvert(isInvert)
                 .addAllServices(services)
                 .build()

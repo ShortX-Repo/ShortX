@@ -85,19 +85,25 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
             }
             SingleAppSelectorDialog(state = singleAppSelectorState)
 
-            val addMenuState = rememberMenuDialogState(
-                title = LocalI18N.current["ui.common.add"], menuItems = listOf(
+            val addMenuState = rememberMenuDialogState<String>(
+                title = LocalI18N.current["ui.common.add"],
+                menuItems = listOf(
                     MenuDialogItem(
+                        id = "input",
                         title = LocalI18N.current["ui.common.manually.input"],
-                        onClick = {
-                            valueInputState.show()
-                        }),
+                    ),
                     MenuDialogItem(
+                        id = "select",
                         title = LocalI18N.current["ui.title.select.component"],
-                        onClick = {
-                            singleAppSelectorState.show()
-                        })
-                )
+                    )
+                ),
+                onItemSelected = { _, id ->
+                    if (id == "input") {
+                        valueInputState.show()
+                    } else {
+                        singleAppSelectorState.show()
+                    }
+                }
             )
             MenuDialog(state = addMenuState)
 

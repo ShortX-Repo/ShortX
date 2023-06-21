@@ -1,105 +1,19 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 
 @Composable
 fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
-    val currentPkgSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
-                addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            },
-            onPkgSetSelected = { pkgSets ->
-                addCondition(
-                    Condition.CurrentForegroundApp(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(currentPkgSelectorState)
-
-    val appIsRunningSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
-                addCondition(
-                    Condition.AppIsRunning(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            },
-            onPkgSetSelected = { pkgSets ->
-                addCondition(
-                    Condition.AppIsRunning(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(appIsRunningSelectorState)
-
-    val appIsNotRunningSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
-                addCondition(
-                    Condition.AppIsNotRunning(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            },
-            onPkgSetSelected = { pkgSets ->
-                addCondition(
-                    Condition.AppIsNotRunning(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(appIsNotRunningSelectorState)
-
-
-    val appHasAudioFocusSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
-                addCondition(
-                    Condition.AppHasAudioFocus(
-                        apps = appList,
-                        pkgSets = emptyList()
-                    )
-                )
-            },
-            onPkgSetSelected = { pkgSets ->
-                addCondition(
-                    Condition.AppHasAudioFocus(
-                        apps = emptyList(),
-                        pkgSets = pkgSets
-                    )
-                )
-            })
-    AppPkgSelectorDialog(appHasAudioFocusSelectorState)
-
     val mvelConditionSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
             addCondition(Condition.MVEL(expression.src))
@@ -116,61 +30,8 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
     }
     BatteryPercentSelectorDialog(state = batteryPercentDialog)
 
-    val serviceIsRunningSelectorState = rememberComponentOrGVSelectorState(
-        types = listOf(ComponentType.Service),
-        onSelected = {
-            addCondition(Condition.ServiceIsRunning(it.components))
-        }
-    )
-    ComponentOrGVSelectorDialog(state = serviceIsRunningSelectorState)
-
     return { source ->
         when (source.clazz) {
-            Condition.CurrentForegroundApp::class -> {
-                currentPkgSelectorState.show(
-                    source.getConditionAs<Condition.CurrentForegroundApp>()?.apps,
-                    source.getConditionAs<Condition.CurrentForegroundApp>()?.pkgSets
-                )
-                true
-            }
-
-            Condition.AppIsRunning::class -> {
-                appIsRunningSelectorState.show(
-                    source.getConditionAs<Condition.AppIsRunning>()?.apps,
-                    source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
-                )
-                true
-            }
-
-            Condition.AppIsNotRunning::class -> {
-                appIsNotRunningSelectorState.show(
-                    source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
-                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
-                )
-                true
-            }
-
-            Condition.ServiceIsRunning::class -> {
-                serviceIsRunningSelectorState.show(source.getConditionAs<Condition.ServiceIsRunning>()?.services)
-                true
-            }
-
-            Condition.AppIsNotRunning::class -> {
-                appIsNotRunningSelectorState.show(
-                    source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
-                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
-                )
-                true
-            }
-
-            Condition.AppHasAudioFocus::class -> {
-                appHasAudioFocusSelectorState.show(
-                    source.getConditionAs<Condition.AppHasAudioFocus>()?.apps,
-                    source.getConditionAs<Condition.AppHasAudioFocus>()?.pkgSets
-                )
-                true
-            }
-
             Condition.MVEL::class -> {
                 mvelConditionSelectorState.show(source.getConditionAs<Condition.MVEL>()?.expression)
                 true

@@ -99,7 +99,11 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         }
 
         is Condition.ServiceIsRunning -> {
-            mutableListOf(i18N["ui.conditions.service.running"]).labelLinesFromAppComponents(
+            mutableListOf(i18N["ui.conditions.service.running"]).apply {
+                if (condition.services.size > 1) {
+                    addAll(opDescription(op = condition.op, i18N = i18N))
+                }
+            }.labelLinesFromAppComponents(
                 condition.services
             )
         }
@@ -167,24 +171,27 @@ fun opTitle(op: Op): String {
     }
 }
 
-
 @Composable
 fun opDescription(op: Op): List<String> {
+    return opDescription(op, LocalI18N.current)
+}
+
+fun opDescription(op: Op, i18N: I18N): List<String> {
     return when (op) {
         Op.All -> {
-            listOf(LocalI18N.current["ui.condition.op.all.desc"])
+            listOf(i18N["ui.condition.op.all.desc"])
         }
 
         Op.Any -> {
-            listOf(LocalI18N.current["ui.condition.op.any.desc"])
+            listOf(i18N["ui.condition.op.any.desc"])
         }
 
         Op.None -> {
-            listOf(LocalI18N.current["ui.condition.op.none.desc"])
+            listOf(i18N["ui.condition.op.none.desc"])
         }
 
         is Op.MVEL -> {
-            listOf(LocalI18N.current["ui.condition.op.mvel.desc"], op.expression)
+            listOf(i18N["ui.condition.op.mvel.desc"], op.expression)
         }
     }
 }

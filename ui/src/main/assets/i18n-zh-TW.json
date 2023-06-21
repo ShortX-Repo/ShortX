@@ -224,6 +224,8 @@
   "ui.condition.op.none.desc": "要求所有條件都不符合",
   "ui.condition.op.mvel.desc": "使用MVEL表达式来表述多条件操作",
   "ui.condition.warning.message": "注意，你的條件配寘有以下問題，請檢查後修改",
+  "ui.condition.selector.all.any.op.title": "多个项目",
+  "ui.condition.selector.all.any.op.message": "你在 {cond} 条件里选择了多个项目，请选择将如何匹配该条件，这些项目必须都符合该条件还是任何一个项目符合即可？",
   "ui.action.warning.message": "注意，你的動作配寘有以下問題，請檢查後修改",
   "ui.condition.warning.message.global.var.missing": "全域變數 {name} 不存在，請進入設定，全域變數，創建或導入",
   "ui.condition.warning.message.pkgset.missing": "應用集 {label} 不存在，請進入設定，應用集，創建或導入",

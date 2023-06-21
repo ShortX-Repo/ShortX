@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import java.util.UUID
 
 fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
@@ -48,6 +49,7 @@ sealed interface Condition : Parcelable {
     @Parcelize
     data class ServiceIsRunning(
         val services: List<AppComponent>,
+        val op: Op,
 
         override val note: String = "",
         override val isInvert: Boolean = false,

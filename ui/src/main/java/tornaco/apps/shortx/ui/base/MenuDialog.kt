@@ -1,12 +1,11 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
 @Composable
-fun MenuDialog(
-    state: MenuDialogState,
+fun <T> MenuDialog(
+    state: MenuDialogState<T>,
 ) {
     if (state.isShowing) {
         ShortXDialog(
@@ -15,9 +14,13 @@ fun MenuDialog(
             },
 
             title = {
-                Text(text = state.title)
+                DialogTitle(text = state.title)
             }) {
 
+            state.message?.let {
+                DialogMessage(text = it)
+                StandardSpacer()
+            }
             state.menuItems.forEach { dialogItem ->
                 ListItem(
                     title = dialogItem.title,
@@ -27,8 +30,8 @@ fun MenuDialog(
                         }
                     },
                     onClick = {
-                        dialogItem.onClick()
                         state.dismiss()
+                        state.onItemSelected(state._data, dialogItem.id)
                     })
             }
 
@@ -37,21 +40,33 @@ fun MenuDialog(
 }
 
 
-data class MenuDialogItem(val title: String, val iconName: String? = null, val onClick: () -> Unit)
+data class MenuDialogItem(val id: String, val title: String, val iconName: String? = null)
 
-class MenuDialogState(
+open class MenuDialogState<DATA>(
     val title: String,
-    val menuItems: List<MenuDialogItem>
+    val message: String? = null,
+    val menuItems: List<MenuDialogItem>,
+    val onItemSelected: (DATA?, String) -> Unit
 ) :
-    CommonDialogState()
+    CommonDialogState() {
+    var _data: DATA? = null
+
+    fun show(data: DATA? = null) {
+        _data = data
+
+        show()
+    }
+}
 
 @Composable
-fun rememberMenuDialogState(
+fun <T> rememberMenuDialogState(
     title: String,
-    menuItems: List<MenuDialogItem>
-): MenuDialogState {
+    message: String? = null,
+    menuItems: List<MenuDialogItem>,
+    onItemSelected: (T?, String) -> Unit
+): MenuDialogState<T> {
     return remember {
-        MenuDialogState(title, menuItems)
+        MenuDialogState(title, message, menuItems, onItemSelected)
     }
 }
 

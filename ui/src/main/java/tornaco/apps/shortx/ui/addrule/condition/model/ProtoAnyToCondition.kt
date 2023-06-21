@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 
@@ -62,6 +63,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,
+                op = data.op.toOp(null),
                 services = data.servicesList
             )
         }
