@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
@@ -18,9 +19,18 @@ object CurrentPkgList : Cond {
             } else {
                 currentPkg.pkgsList
             }
-            val res = requiredPkgList.any {
-                with(shortXContext.appState) {
-                    it.isFront()
+
+            val res = if (currentPkg.op == ConditionOperator.ALL) {
+                requiredPkgList.all {
+                    with(shortXContext.appState) {
+                        it.isFront()
+                    }
+                }
+            } else {
+                requiredPkgList.any {
+                    with(shortXContext.appState) {
+                        it.isFront()
+                    }
                 }
             }
             if (currentPkg.isInvert) {

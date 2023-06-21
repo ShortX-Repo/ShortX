@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
 
@@ -21,8 +22,14 @@ object AppIsNotRunning : Cond {
                 data.pkgsList
             }
 
-            val res = requiredPkgList.all {
-                with(shortXContext.appState) { !it.isRunning() }
+            val res = if (data.op == ConditionOperator.ANY) {
+                requiredPkgList.any {
+                    with(shortXContext.appState) { !it.isRunning() }
+                }
+            } else {
+                requiredPkgList.all {
+                    with(shortXContext.appState) { !it.isRunning() }
+                }
             }
             if (data.isInvert) {
                 !res

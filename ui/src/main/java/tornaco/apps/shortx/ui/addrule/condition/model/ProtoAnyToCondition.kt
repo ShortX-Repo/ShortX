@@ -29,7 +29,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                op = data.op.toOp(null)
             )
         }
 
@@ -41,7 +42,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                op = data.op.toOp(null)
             )
         }
 
@@ -53,7 +55,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                op = data.op.toOp(null)
             )
         }
 
@@ -76,7 +79,8 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 apps = models.first,
-                pkgSets = models.second
+                pkgSets = models.second,
+                op = data.op.toOp(null)
             )
         }
 

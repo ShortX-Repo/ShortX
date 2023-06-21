@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.condition.mapper
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.common.App
+import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
@@ -85,16 +87,25 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
     return when (condition) {
         is Condition.CurrentForegroundApp -> {
             mutableListOf(i18N["ui.dialog.title.current.app"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 
         is Condition.AppIsRunning -> {
             mutableListOf(i18N["ui.conditions.app.running"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 
         is Condition.AppIsNotRunning -> {
             mutableListOf(i18N["ui.conditions.app.not.running"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppHasAudioFocus -> {
+            mutableListOf(i18N["ui.conditions.has.audio.focus"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 
@@ -106,11 +117,6 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             }.labelLinesFromAppComponents(
                 condition.services
             )
-        }
-
-        is Condition.AppHasAudioFocus -> {
-            mutableListOf(i18N["ui.conditions.has.audio.focus"])
-                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }
 
         is Condition.MVEL -> {
@@ -192,6 +198,36 @@ fun opDescription(op: Op, i18N: I18N): List<String> {
 
         is Op.MVEL -> {
             listOf(i18N["ui.condition.op.mvel.desc"], op.expression)
+        }
+    }
+}
+
+private fun MutableList<String>.appendConditionOp(
+    apps: List<App> = emptyList(),
+    pkgSets: List<PkgSet> = emptyList(),
+    op: Op,
+    i18N: I18N
+): MutableList<String> {
+    val showOp = pkgSets.isNotEmpty() || apps.size > 1
+    return apply {
+        if (showOp) {
+            add(opDescriptionForApps(op, i18N))
+        }
+    }
+}
+
+fun opDescriptionForApps(op: Op, i18N: I18N): String {
+    return when (op) {
+        Op.All -> {
+            (i18N["ui.condition.selector.app.op.all.desc"])
+        }
+
+        Op.Any -> {
+            (i18N["ui.condition.selector.app.op.any.desc"])
+        }
+
+        else -> {
+            op.toString()
         }
     }
 }

@@ -23,7 +23,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.CurrentForegroundApp(
                         apps = appList,
-                        pkgSets = emptyList()
+                        pkgSets = emptyList(),
+                        op
                     )
                 )
             },
@@ -31,7 +32,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.CurrentForegroundApp(
                         apps = emptyList(),
-                        pkgSets = pkgSets
+                        pkgSets = pkgSets,
+                        op
                     )
                 )
             })
@@ -43,7 +45,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppIsRunning(
                         apps = appList,
-                        pkgSets = emptyList()
+                        pkgSets = emptyList(),
+                        op
                     )
                 )
             },
@@ -51,7 +54,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppIsRunning(
                         apps = emptyList(),
-                        pkgSets = pkgSets
+                        pkgSets = pkgSets,
+                        op
                     )
                 )
             })
@@ -63,7 +67,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppIsNotRunning(
                         apps = appList,
-                        pkgSets = emptyList()
+                        pkgSets = emptyList(),
+                        op
                     )
                 )
             },
@@ -71,7 +76,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppIsNotRunning(
                         apps = emptyList(),
-                        pkgSets = pkgSets
+                        pkgSets = pkgSets,
+                        op
                     )
                 )
             })
@@ -84,7 +90,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppHasAudioFocus(
                         apps = appList,
-                        pkgSets = emptyList()
+                        pkgSets = emptyList(),
+                        op
                     )
                 )
             },
@@ -92,7 +99,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 addCondition(
                     Condition.AppHasAudioFocus(
                         apps = emptyList(),
-                        pkgSets = pkgSets
+                        pkgSets = pkgSets,
+                        op
                     )
                 )
             })

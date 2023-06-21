@@ -34,6 +34,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .setOp(op.toConditionOperator())
                 .build()
         }
 
@@ -53,6 +54,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .setOp(op.toConditionOperator())
                 .build()
         }
 
@@ -82,6 +84,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .setOp(op.toConditionOperator())
                 .build()
         }
 
@@ -101,6 +104,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .setOp(op.toConditionOperator())
                 .build()
         }
 

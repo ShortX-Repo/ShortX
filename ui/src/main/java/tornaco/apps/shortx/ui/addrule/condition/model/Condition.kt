@@ -24,6 +24,7 @@ sealed interface Condition : Parcelable {
     data class CurrentForegroundApp(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
+        val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()
@@ -37,6 +38,7 @@ sealed interface Condition : Parcelable {
     data class AppIsRunning(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
+        val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()
@@ -87,6 +89,7 @@ sealed interface Condition : Parcelable {
     data class AppIsNotRunning(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
+        val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()
@@ -100,6 +103,8 @@ sealed interface Condition : Parcelable {
     data class AppHasAudioFocus(
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
+        val op: Op,
+
         override val note: String = "",
         override val isInvert: Boolean = false,
         override val id: String = defaultNewConditionId()
