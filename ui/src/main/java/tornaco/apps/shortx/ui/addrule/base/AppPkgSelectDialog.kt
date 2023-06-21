@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.condition
+package tornaco.apps.shortx.ui.addrule.base
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

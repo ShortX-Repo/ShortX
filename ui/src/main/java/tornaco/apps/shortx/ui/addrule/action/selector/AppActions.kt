@@ -9,12 +9,12 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
-import tornaco.apps.shortx.ui.addrule.condition.AppPkgSelectorDialog
+import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
+import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState

@@ -46,6 +46,8 @@ import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.selector.UserSelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberUserSelectorDialogState
+import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
+import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState

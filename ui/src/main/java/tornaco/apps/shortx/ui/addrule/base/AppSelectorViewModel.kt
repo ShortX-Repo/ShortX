@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.addrule.condition
+package tornaco.apps.shortx.ui.addrule.base
 
 import android.annotation.SuppressLint
 import android.content.Context
