@@ -16,6 +16,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlin.stdlib.jdk8)
 
+    implementation(libs.kotlinx.serialization.json.jvm)
+    implementation(libs.kotlin.reflect)
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)

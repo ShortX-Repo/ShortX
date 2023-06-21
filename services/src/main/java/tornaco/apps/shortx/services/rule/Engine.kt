@@ -121,6 +121,7 @@ class DefaultRuleEngine(
         logger.d("fire: ${fact.javaClass}")
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.factsList)) {
+                logger.d("fire, matched: ${fact.javaClass} ${rule.title}")
                 val contextData = ContextData.obtain(initialContextData)
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
@@ -131,14 +132,17 @@ class DefaultRuleEngine(
                         conditions = rule.conditionsList,
                         contextData = contextData
                     )
+                    logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
                     if (conditionRes) {
                         kotlin.run loop@{
+                            logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
                             rule.actionsList.forEach {
                                 val evaRes = actionEvaluator.evaluate(
                                     rule.title,
                                     it,
                                     contextData
                                 )
+                                logger.d("action evaluate res: $evaRes")
                                 if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                     logger.e(evaRes.error, "evaluate fail")
                                     return@loop
@@ -150,6 +154,7 @@ class DefaultRuleEngine(
                         }
                     }
                 }
+                logger.d("Created job: $job")
                 jobs.add(JobRecord(rule.id, job))
                 onJobStarted(rule.id)
                 job.invokeOnCompletion {
@@ -158,6 +163,8 @@ class DefaultRuleEngine(
                     contextData.recycle()
                     onJobCompleted(rule.id)
                 }
+            } else {
+                logger.d("fire, not match: ${fact.javaClass} ${rule.title}")
             }
         }
     }
