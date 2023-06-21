@@ -20,15 +20,16 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForOp
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
-import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opTitle
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.selector.conditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
-import kotlin.reflect.KClass
 
 
 @Composable
@@ -62,10 +63,6 @@ fun ConditionList(
     handler: ConditionHandler,
     conditionOp: Op,
 ) {
-    val selectHandler = conditionSelectHandler {
-        handler.addCondition(it)
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
         Box {
@@ -140,8 +137,8 @@ fun ConditionList(
 
                 // Add button
                 TinySpacer()
-                ConditionSelector(readOnly) { clazz ->
-                    selectHandler(ConditionSelectSource.FromClass(clazz))
+                ConditionSelector(readOnly) { condition ->
+                    handler.addCondition(condition)
                 }
 
 
@@ -165,13 +162,18 @@ fun ConditionList(
 @Composable
 private fun ConditionSelector(
     readOnly: Boolean,
-    selectCondition: (KClass<out Condition>) -> Unit
+    selectCondition: (Condition) -> Unit
 ) {
     Box {
-        val conditionSelectorState = rememberDropdownSelectorState()
+        val conditionSelectorState =
+            rememberConditionSelectorDialogState<String>(onSelected = { condition: Condition, s: String? ->
+                selectCondition(condition)
+            })
+        ConditionSelectorDialog(state = conditionSelectorState)
+
         if (!readOnly) {
             FilledTonalButton(onClick = {
-                conditionSelectorState.open()
+                conditionSelectorState.show()
             }) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
@@ -181,43 +183,6 @@ private fun ConditionSelector(
                 Text(LocalI18N.current["ui.conditions.add"])
             }
         }
-        ConditionSelectorDropdown(conditionSelectorState, selectCondition)
-    }
-}
-
-@Composable
-private fun ConditionSelectorDropdown(
-    conditionSelectorState: DropdownSelectorState,
-    selectCondition: (KClass<out Condition>) -> Unit
-) {
-    DropdownSelector(
-        state = conditionSelectorState,
-        items = listOf(
-            Condition.CurrentForegroundApp::class,
-            Condition.AppIsRunning::class,
-            Condition.AppIsNotRunning::class,
-            Condition.AppHasAudioFocus::class,
-            Condition.MVEL::class,
-            Condition.TRUE::class,
-            Condition.ScreenIsOn::class,
-            Condition.VPNIsConnected::class,
-            Condition.EvaluateGlobalVar::class,
-            Condition.BatteryPercent::class,
-            Condition.ServiceIsRunning::class,
-        ).map {
-            DropdownItem(
-                labelLines = labelForConditionSelector(it),
-                data = it,
-                icon = {
-                    RemixIcon(
-                        modifier = Modifier.size(16.dp),
-                        remixName = iconForCondition(condition = it)
-                    )
-                }
-            )
-        }
-    ) {
-        selectCondition(it.data)
     }
 }
 
