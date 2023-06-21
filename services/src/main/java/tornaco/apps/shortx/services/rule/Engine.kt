@@ -125,13 +125,18 @@ class DefaultRuleEngine(
                 val contextData = ContextData.obtain(initialContextData)
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
-                    val conditionRes = conditionEvaluator.evaluate(
-                        logTag = rule.title,
-                        condOp = rule.condOp,
-                        condOpPayload = rule.condOpPayload,
-                        conditions = rule.conditionsList,
-                        contextData = contextData
-                    )
+                    val conditionRes = if (rule.conditionsList.isEmpty()) {
+                        logger.d("this rule: ${rule.title} has no condition, assume match!")
+                        true
+                    } else {
+                        conditionEvaluator.evaluate(
+                            logTag = rule.title,
+                            condOp = rule.condOp,
+                            condOpPayload = rule.condOpPayload,
+                            conditions = rule.conditionsList,
+                            contextData = contextData
+                        )
+                    }
                     logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
                     if (conditionRes) {
                         kotlin.run loop@{
