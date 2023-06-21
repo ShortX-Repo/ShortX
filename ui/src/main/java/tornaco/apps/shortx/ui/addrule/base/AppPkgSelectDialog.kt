@@ -24,11 +24,8 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class AppPkgSelectorDialogState(
-    val onAppListSelected: (List<App>) -> Unit,
-    val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
-) {
-    private val logger = Logger("AppPkgSelectorDialogState")
+open class BaseAppPkgSelectorDialogState {
+    val logger = Logger("AppPkgSelectorDialogState")
 
     private var _isShow by mutableStateOf(false)
     val isShow get() = _isShow
@@ -82,6 +79,12 @@ class AppPkgSelectorDialogState(
             removeIf { it.label == pkgSet.label }
         }
     }
+}
+
+class AppPkgSelectorDialogState(
+    val onAppListSelected: (List<App>) -> Unit,
+    val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
+) : BaseAppPkgSelectorDialogState() {
 }
 
 @Composable
@@ -177,7 +180,7 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
 }
 
 @Composable
-private fun PkgSetContent(selectorState: AppPkgSelectorDialogState) {
+fun PkgSetContent(selectorState: BaseAppPkgSelectorDialogState) {
     val vm = hiltViewModel<PkgSetListViewModel>()
     val state by vm.state.collectAsState()
 
@@ -219,7 +222,7 @@ private fun PkgSetContent(selectorState: AppPkgSelectorDialogState) {
 }
 
 @Composable
-private fun AppListContent(dialogState: AppPkgSelectorDialogState) {
+fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
     val vm = hiltViewModel<AppSelectorViewModel>()
     LaunchedEffect(vm) {
         vm.loadInstalledApps()

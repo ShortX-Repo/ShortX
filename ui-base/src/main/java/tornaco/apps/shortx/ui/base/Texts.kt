@@ -68,7 +68,7 @@ fun MediumTitle(text: String) {
 
 @Composable
 fun SmallTitle(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     text: String, color: Color = Color.Unspecified
 ) {
     Text(

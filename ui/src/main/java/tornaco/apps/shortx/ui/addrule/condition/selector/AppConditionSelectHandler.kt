@@ -1,15 +1,15 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
-import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ComponentsOrGV
+import tornaco.apps.shortx.ui.addrule.condition.ConditionAppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
-import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberConditionAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -18,8 +18,8 @@ import tornaco.apps.shortx.ui.base.MenuDialogState
 @Composable
 fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
     val currentPkgSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
                 addCondition(
                     Condition.CurrentForegroundApp(
                         apps = appList,
@@ -27,7 +27,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             },
-            onPkgSetSelected = { pkgSets ->
+            onPkgSetSelected = { pkgSets, op ->
                 addCondition(
                     Condition.CurrentForegroundApp(
                         apps = emptyList(),
@@ -35,11 +35,11 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             })
-    AppPkgSelectorDialog(currentPkgSelectorState)
+    ConditionAppPkgSelectorDialog(currentPkgSelectorState)
 
     val appIsRunningSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
                 addCondition(
                     Condition.AppIsRunning(
                         apps = appList,
@@ -47,7 +47,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             },
-            onPkgSetSelected = { pkgSets ->
+            onPkgSetSelected = { pkgSets, op ->
                 addCondition(
                     Condition.AppIsRunning(
                         apps = emptyList(),
@@ -55,11 +55,11 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             })
-    AppPkgSelectorDialog(appIsRunningSelectorState)
+    ConditionAppPkgSelectorDialog(appIsRunningSelectorState)
 
     val appIsNotRunningSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
                 addCondition(
                     Condition.AppIsNotRunning(
                         apps = appList,
@@ -67,7 +67,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             },
-            onPkgSetSelected = { pkgSets ->
+            onPkgSetSelected = { pkgSets, op ->
                 addCondition(
                     Condition.AppIsNotRunning(
                         apps = emptyList(),
@@ -75,12 +75,12 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             })
-    AppPkgSelectorDialog(appIsNotRunningSelectorState)
+    ConditionAppPkgSelectorDialog(appIsNotRunningSelectorState)
 
 
     val appHasAudioFocusSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { appList ->
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
                 addCondition(
                     Condition.AppHasAudioFocus(
                         apps = appList,
@@ -88,7 +88,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             },
-            onPkgSetSelected = { pkgSets ->
+            onPkgSetSelected = { pkgSets, op ->
                 addCondition(
                     Condition.AppHasAudioFocus(
                         apps = emptyList(),
@@ -96,8 +96,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     )
                 )
             })
-    AppPkgSelectorDialog(appHasAudioFocusSelectorState)
-
+    ConditionAppPkgSelectorDialog(appHasAudioFocusSelectorState)
 
     val serviceIsRunningOpSelectorDialog: MenuDialogState<ComponentsOrGV> =
         rememberAllAnyMenuDialogState(
