@@ -98,19 +98,22 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
 
         val topVisibleActivities = func.getTopVisibleActivities()
         logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
-        if (topVisibleActivities.isEmpty()) {
-            logger.e("Can not get topVisibleActivities")
-            return
-        }
 
         val activity = componentName.toAppComponent(userId)
         val activityPkg = activity.pkg
         val isThisPkgFrontNow = topVisibleActivities.any { it.pkg == activityPkg }
 
-        _currentResumedActivities.value = topVisibleActivities
+        // Do not update here, will cause check fail on ActivityResume.
+        // _currentResumedActivities.value = topVisibleActivities
+        // But still need to remove it.
 
         if (!isThisPkgFrontNow) {
             logger.i("This pkg has moved to background: $activityPkg")
+            _currentResumedActivities.value =
+                _currentResumedActivities.value.toMutableList().apply {
+                    remove(activity)
+                }
+
             shortXContext.rule.publishFact(
                 reason = "onActivityStopped",
                 fact = AppBecomeBg.newBuilder().addApps(activityPkg).build(),
