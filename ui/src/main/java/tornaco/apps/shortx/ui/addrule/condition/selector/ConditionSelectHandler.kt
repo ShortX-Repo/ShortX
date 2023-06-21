@@ -6,14 +6,12 @@ import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
-import tornaco.apps.shortx.ui.addrule.condition.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
-import tornaco.apps.shortx.ui.addrule.condition.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
@@ -83,15 +81,24 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
 
 
     val appHasAudioFocusSelectorState =
-        rememberSingleAppPkgSelectorState {
-            addCondition(
-                Condition.AppHasAudioFocus(
-                    apps = listOf(it),
-                    pkgSets = emptyList()
+        rememberAppPkgSelectorState(
+            onAppListSelected = { appList ->
+                addCondition(
+                    Condition.AppHasAudioFocus(
+                        apps = appList,
+                        pkgSets = emptyList()
+                    )
                 )
-            )
-        }
-    SingleAppSelectorDialog(appHasAudioFocusSelectorState)
+            },
+            onPkgSetSelected = { pkgSets ->
+                addCondition(
+                    Condition.AppHasAudioFocus(
+                        apps = emptyList(),
+                        pkgSets = pkgSets
+                    )
+                )
+            })
+    AppPkgSelectorDialog(appHasAudioFocusSelectorState)
 
     val mvelConditionSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
@@ -157,7 +164,10 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
             }
 
             Condition.AppHasAudioFocus::class -> {
-                appHasAudioFocusSelectorState.show()
+                appHasAudioFocusSelectorState.show(
+                    source.getConditionAs<Condition.AppHasAudioFocus>()?.apps,
+                    source.getConditionAs<Condition.AppHasAudioFocus>()?.pkgSets
+                )
                 true
             }
 
