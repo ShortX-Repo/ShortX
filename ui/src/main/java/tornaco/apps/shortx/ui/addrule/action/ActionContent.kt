@@ -10,10 +10,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
@@ -27,6 +30,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.composeLogger
 import kotlin.reflect.KClass
 
 @Composable
@@ -46,32 +50,6 @@ fun ActionContent(
         readOnly = readOnly,
         handler = handler
     )
-}
-
-@Composable
-private fun actionClickHandler(action: Action, handler: ActionHandler): () -> Unit {
-    val addAction: (Action) -> Unit = {
-        handler.addAction(it.clone(id = action.id, note = action.note))
-    }
-
-    val selectHandlers = listOf(
-        uiActionSelectHandler(addAction = addAction),
-        appActionSelectHandler(addAction = addAction),
-        systemActionSelectHandler(addAction = addAction),
-        extActionSelectHandler(addAction = addAction),
-        lifeActionSelectHandler(addAction = addAction),
-        miscActionSelectHandler(addAction = addAction),
-    )
-
-    val itemSelected: (Action) -> Unit = { it ->
-        for (h in selectHandlers) {
-            if (h(ActionSelectSource.FromAction(it))) break
-        }
-    }
-
-    return {
-        itemSelected(action)
-    }
 }
 
 @Composable
@@ -136,8 +114,34 @@ private fun Actions(
         ActionSelectorDialog(state = actionSelectorState)
 
         Column(modifier = Modifier.fillMaxWidth()) {
+
             actions.forEachIndexed { _, action ->
-                val onActionClick = actionClickHandler(action = action, handler = handler)
+                val currentAction by rememberUpdatedState(newValue = action)
+                val editAction: (Action) -> Unit = { newAction ->
+                    composeLogger.d("addAction, new: ${newAction.id}, old: ${currentAction.id}")
+                    handler.addAction(
+                        newAction.clone(
+                            id = currentAction.id,
+                            note = currentAction.note
+                        )
+                    )
+                }
+
+                val selectHandlers = listOf(
+                    uiActionSelectHandler(addAction = editAction),
+                    appActionSelectHandler(addAction = editAction),
+                    systemActionSelectHandler(addAction = editAction),
+                    extActionSelectHandler(addAction = editAction),
+                    lifeActionSelectHandler(addAction = editAction),
+                    miscActionSelectHandler(addAction = editAction),
+                )
+
+                val onActionClick = {
+                    composeLogger.d("addAction, onActionClick: ${action.id}")
+                    for (h in selectHandlers) {
+                        if (h(ActionSelectSource.FromAction(action))) break
+                    }
+                }
 
                 val noteDialogState =
                     rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
@@ -160,7 +164,12 @@ private fun Actions(
                     ) {
                         ListItem(
                             modifier = Modifier,
-                            titleLines = labelLinesForAction(action = action),
+                            titleLines = mutableListOf<String>().apply {
+                                addAll(labelLinesForAction(action = action))
+                                if (BuildProp.APP_IS_DEBUG) {
+                                    add(action.id)
+                                }
+                            },
                             icon = {
                                 ActionIcon(action)
                             },

@@ -69,6 +69,7 @@ class ActionContentStateHandler(
         updateState {
             copy(actions = actions.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == action.id }
+                logger.d("addAction, existing index: $existingIndex")
                 if (existingIndex >= 0) {
                     set(existingIndex, action)
                 } else {

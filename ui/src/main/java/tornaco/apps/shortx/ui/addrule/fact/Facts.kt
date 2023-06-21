@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
@@ -23,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.contextData
 import tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFactSelectorDialogState
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.composeLogger
 
 
 @Composable
@@ -78,14 +78,15 @@ private fun FactItem(
     removeFact: () -> Unit,
     updateFact: (Fact) -> Unit,
 ) {
+    val currentFact by rememberUpdatedState(newValue = fact)
     val factHandlers = listOf(
-        appFactSelectHandler {
-            updateFact(it.clone(id = fact.id, note = fact.note))
+        appFactSelectHandler { newFact ->
+            updateFact(newFact.clone(id = currentFact.id, note = currentFact.note))
         },
-        systemFactSelectHandler {
-            Logger("").d("systemFactSelectHandler: $it")
-            updateFact(it.clone(id = fact.id, note = fact.note).apply {
-                Logger("").d("systemFactSelectHandler: $this")
+        systemFactSelectHandler { newFact ->
+            composeLogger.d("systemFactSelectHandler: $newFact")
+            updateFact(newFact.clone(id = currentFact.id, note = currentFact.note).apply {
+                composeLogger.d("systemFactSelectHandler: $this")
             })
         }
     )
