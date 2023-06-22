@@ -38,6 +38,11 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class HttpRequest(val description: String) {
+        httpRequestRet("The return value of the Http request")
+    }
+
+    @DoNotStrip
     enum class ActivityStarted(val description: String) {
         pkgName("App package name of the started Activity"),
         componentName("Short string of the started Activity component name"),

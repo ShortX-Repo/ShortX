@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -595,6 +596,25 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 processList = data.processesList.distinct()
+            )
+        }
+
+
+        this is_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
+            Action.HttpRequest(
+                id = data.id,
+                note = data.note,
+                url = data.url,
+                adapter = data.adapter.let {
+                    if (it is_ HttpRequestJsonMapAdapter::class.java) {
+                        val ja = it unpack_ HttpRequestJsonMapAdapter::class.java
+                        HttpRequestAdapter.JsonMap(ja.expression)
+                    } else {
+                        HttpRequestAdapter.Raw
+                    }
+                }
             )
         }
 

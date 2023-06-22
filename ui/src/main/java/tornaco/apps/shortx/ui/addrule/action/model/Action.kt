@@ -809,6 +809,19 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class HttpRequest(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val url: String,
+        val adapter: HttpRequestAdapter
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
@@ -818,6 +831,12 @@ sealed interface Action : Parcelable {
             return this.copy(id = id, note = note)
         }
     }
+}
+
+@Parcelize
+sealed interface HttpRequestAdapter : Parcelable {
+    object Raw : HttpRequestAdapter
+    data class JsonMap(val expression: String) : HttpRequestAdapter
 }
 
 val Action.contextData: List<ContextData> get() = this::class.actionContextData()

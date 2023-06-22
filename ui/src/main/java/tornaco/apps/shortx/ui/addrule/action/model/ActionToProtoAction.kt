@@ -10,6 +10,9 @@ import tornaco.apps.shortx.core.proto.action.ExpandNotification
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
+import tornaco.apps.shortx.core.proto.action.HttpRequest
+import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
+import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
@@ -523,6 +526,23 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .addAllProcesses(processList.distinct())
+                .build()
+        }
+
+        is Action.HttpRequest -> {
+            HttpRequest.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setAdapter(
+                    if (this.adapter is HttpRequestAdapter.JsonMap) {
+                        HttpRequestJsonMapAdapter.newBuilder()
+                            .setExpression(this.adapter.expression)
+                            .build().pack_()
+                    } else {
+                        HttpRequestRawAdapter.newBuilder().build().pack_()
+                    }
+                )
+                .setUrl(url)
                 .build()
         }
 

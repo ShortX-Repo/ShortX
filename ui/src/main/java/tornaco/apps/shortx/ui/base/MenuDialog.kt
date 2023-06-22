@@ -24,6 +24,7 @@ fun <T> MenuDialog(
             state.menuItems.forEach { dialogItem ->
                 ListItem(
                     title = dialogItem.title,
+                    text1 = dialogItem.summary,
                     icon = {
                         dialogItem.iconName?.let {
                             RemixIcon(remixName = it)
@@ -40,7 +41,12 @@ fun <T> MenuDialog(
 }
 
 
-data class MenuDialogItem(val id: String, val title: String, val iconName: String? = null)
+data class MenuDialogItem(
+    val id: String,
+    val title: String,
+    val summary: String? = null,
+    val iconName: String? = null
+)
 
 open class MenuDialogState<DATA>(
     val title: String,

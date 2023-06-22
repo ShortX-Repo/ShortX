@@ -289,6 +289,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.stop_circle_fill
         }
 
+        Action.HttpRequest::class -> {
+            Remix.Business.global_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

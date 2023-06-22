@@ -491,13 +491,14 @@ message RemoveNotificationForPackage {
 
 message HttpRequest {
   string url = 1;
-  HttpRequestAdapter adapter = 2;
+  google.protobuf.Any adapter = 2;
 
   string note = 99;
   string id = 100;
 }
 
-enum HttpRequestAdapter {
-  Json = 0;
-  Raw = 1;
+message HttpRequestJsonMapAdapter {
+  string expression = 1;
 }
+
+message HttpRequestRawAdapter {}

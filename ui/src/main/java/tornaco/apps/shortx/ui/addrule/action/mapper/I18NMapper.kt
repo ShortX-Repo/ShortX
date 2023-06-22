@@ -138,6 +138,7 @@ fun labelAndDescriptionForActionSelector(
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
+        Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -486,6 +487,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.kill.process.by.name"],
                 i18N["ui.action.kill.process.by.name.summary", mapOf("count" to "${action.processList.size}")]
+            )
+        }
+
+        is Action.HttpRequest -> {
+            listOf(
+                i18N["ui.action.http.request"],
+                action.url
             )
         }
     }

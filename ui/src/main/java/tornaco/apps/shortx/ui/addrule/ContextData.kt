@@ -115,6 +115,10 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
             dats<ContextDataMapping.ShellCommand>()
         }
 
+        Action.HttpRequest::class -> {
+            dats<ContextDataMapping.HttpRequest>()
+        }
+
         else -> {
             emptyList()
         }

@@ -92,6 +92,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     TextInputDialog(addPkgSetDialogState)
 
+    val httpRequestDialogState = rememberHttpRequestDialogState(onSelected = {
+        addAction(it)
+    })
+    HttpRequestDialog(state = httpRequestDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
@@ -149,6 +154,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.HttpRequest::class -> {
+                httpRequestDialogState.show(source.getActionAs())
+                true
+            }
+
             else -> {
                 false
             }
@@ -172,6 +182,7 @@ fun ExtActions(addAction: (Action) -> Unit) {
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,
+        Action.HttpRequest::class,
     ).map {
         SelectorItem(
             type = it,

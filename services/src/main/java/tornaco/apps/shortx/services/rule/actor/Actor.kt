@@ -82,6 +82,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.RemoteExecuteMVEL
     },
+    HttpRequest {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
+    },
     ShowOverlayButton {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowOverlayButton
