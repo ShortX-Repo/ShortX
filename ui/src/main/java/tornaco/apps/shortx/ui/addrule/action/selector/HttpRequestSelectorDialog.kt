@@ -2,18 +2,28 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
+import java.net.URL
 
 internal enum class AdapterType {
     Raw, Json
@@ -24,10 +34,12 @@ class HttpRequestDialogState(
 ) : CommonDialogState() {
     internal var url by mutableStateOf("")
     internal var expression by mutableStateOf("")
-    internal var adapter by mutableStateOf<AdapterType>(AdapterType.Raw)
+    internal var output by mutableStateOf("")
+    internal var adapter by mutableStateOf(AdapterType.Raw)
 
     fun show(currentAction: Action.HttpRequest? = null) {
         this.url = currentAction?.url ?: ""
+        this.output = ""
         this.expression = currentAction?.let {
             if (it.adapter is HttpRequestAdapter.JsonMap) it.adapter.expression else null
         } ?: ""
@@ -40,6 +52,10 @@ class HttpRequestDialogState(
 
     fun updateExpression(expression: String) {
         this.expression = expression
+    }
+
+    fun setOutput(output: String) {
+        this.output = output
     }
 }
 
@@ -107,7 +123,9 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         .fillMaxSize()
                         .padding(paddingValues)
                         .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
+                    val scope = rememberCoroutineScope()
                     ShortXTextField(
                         value = dialogState.url,
                         onValueChange = {
@@ -116,10 +134,67 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         label = {
                             Text(text = "Url")
                         },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    withContext(Dispatchers.IO) {
+                                        val output = kotlin.runCatching {
+                                            URL(dialogState.url).readText()
+                                        }.getOrElse {
+                                            Log.getStackTraceString(it)
+                                        }
+                                        dialogState.setOutput(output)
+                                    }
+                                }
+
+                            }) {
+                                RemixIcon(remixName = Remix.Media.play_fill)
+                            }
+                        },
                         showSymbolButton = false
                     )
-
                     StandardSpacer()
+
+                    val i18N = LocalI18N.current
+                    val context = LocalContext.current
+                    AnimatedVisibility(visible = dialogState.output.isNotBlank()) {
+                        Column {
+                            ShortXCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 72.dp, max = 300.dp),
+                                onClick = {
+                                    ClipboardUtils.copyToClipboard(
+                                        context,
+                                        "output",
+                                        dialogState.output
+                                    )
+                                    Toast.makeText(
+                                        context,
+                                        i18N["ui.common.copied.to.clipboard"],
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(
+                                            rememberScrollState()
+                                        )
+                                ) {
+                                    Text(
+                                        modifier = Modifier.padding(16.dp),
+                                        text = dialogState.output,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+                            StandardSpacer()
+
+                        }
+                    }
+
 
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         MediumTitle(

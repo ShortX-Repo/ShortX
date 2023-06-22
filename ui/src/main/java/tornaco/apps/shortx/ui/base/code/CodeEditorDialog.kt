@@ -6,14 +6,18 @@ package tornaco.apps.shortx.ui.base.code
 import android.graphics.Color
 import android.view.Gravity
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
@@ -27,6 +31,7 @@ import tornaco.apps.shortx.ui.base.code.codeditor.syntax.LanguageManager
 import tornaco.apps.shortx.ui.base.code.codeditor.syntax.LanguageName
 import tornaco.apps.shortx.ui.base.code.codeditor.syntax.ThemeName
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.TypefaceHelper
 
 data class Code(val src: String, val note: String)
@@ -134,7 +139,8 @@ private fun CodeEditor(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     state.message?.let {
@@ -142,12 +148,25 @@ private fun CodeEditor(
                         StandardSpacer()
                     }
 
+                    val i18N = LocalI18N.current
+                    val context = LocalContext.current
                     AnimatedVisibility(visible = state.output.isNotEmpty()) {
-                        Card(
+                        ShortXCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 72.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                                .heightIn(min = 72.dp, max = 300.dp),
+                            onClick = {
+                                ClipboardUtils.copyToClipboard(
+                                    context,
+                                    "output",
+                                    state.output
+                                )
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         ) {
                             Text(
                                 modifier = Modifier.padding(16.dp),
