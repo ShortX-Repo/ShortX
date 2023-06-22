@@ -44,6 +44,7 @@ class FactPublishRecordViewModel @Inject constructor(@ApplicationContext context
                     isEnabled = shortXManager.isFactPublishRecordEnabled()
                 )
             }
+            delay(1000)
             val records = withContext(Dispatchers.IO) {
                 shortXManager.getFactPublishRecords()
                     .reversed()

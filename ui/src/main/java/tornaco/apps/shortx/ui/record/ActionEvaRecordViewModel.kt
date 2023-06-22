@@ -44,6 +44,7 @@ class ActionEvaRecordViewModel @Inject constructor(@ApplicationContext context: 
                     isEnabled = shortXManager.isActionEvaluateRecorderEnabled()
                 )
             }
+            delay(1000)
             val records = withContext(Dispatchers.IO) {
                 shortXManager.getActionEvaluateRecords()
                     .reversed()
