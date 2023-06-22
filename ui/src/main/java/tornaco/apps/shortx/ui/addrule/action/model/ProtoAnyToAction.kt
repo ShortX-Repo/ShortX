@@ -610,7 +610,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 adapter = data.adapter.let {
                     if (it is_ HttpRequestJsonMapAdapter::class.java) {
                         val ja = it unpack_ HttpRequestJsonMapAdapter::class.java
-                        HttpRequestAdapter.JsonMap(ja.expression)
+                        HttpRequestAdapter.JsonMap(ja.expressionsList)
                     } else {
                         HttpRequestAdapter.Raw
                     }

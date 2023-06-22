@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
@@ -33,16 +35,22 @@ class HttpRequestDialogState(
     val onSelected: (Action.HttpRequest) -> Unit
 ) : CommonDialogState() {
     internal var url by mutableStateOf("")
-    internal var expression by mutableStateOf("")
+    internal var expressionInput by mutableStateOf("")
+    internal var expressions by mutableStateOf(listOf<String>())
     internal var output by mutableStateOf("")
     internal var adapter by mutableStateOf(AdapterType.Raw)
 
     fun show(currentAction: Action.HttpRequest? = null) {
         this.url = currentAction?.url ?: ""
         this.output = ""
-        this.expression = currentAction?.let {
-            if (it.adapter is HttpRequestAdapter.JsonMap) it.adapter.expression else null
-        } ?: ""
+        this.expressionInput = ""
+        this.expressions = currentAction?.let {
+            if (it.adapter is HttpRequestAdapter.JsonMap) {
+                it.adapter.expressions
+            } else {
+                emptyList()
+            }
+        } ?: emptyList()
         this.adapter = currentAction?.let {
             if (it.adapter is HttpRequestAdapter.JsonMap) AdapterType.Json else AdapterType.Raw
         } ?: AdapterType.Raw
@@ -50,8 +58,26 @@ class HttpRequestDialogState(
         show()
     }
 
-    fun updateExpression(expression: String) {
-        this.expression = expression
+    fun addExpression(expression: String) {
+        this.expressions = this.expressions.toMutableList().apply {
+            add(expression)
+        }
+    }
+
+    fun removeExpression(expression: Int) {
+        this.expressions = this.expressions.toMutableList().apply {
+            removeAt(expression)
+        }
+    }
+
+    fun updateExpression(expression: String, index: Int) {
+        this.expressions = this.expressions.toMutableList().apply {
+            set(index, expression)
+        }
+    }
+
+    fun inputExpression(expression: String) {
+        this.expressionInput = expression
     }
 
     fun setOutput(output: String) {
@@ -102,7 +128,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                         Action.HttpRequest(
                                             url = dialogState.url,
                                             adapter = if (dialogState.adapter == AdapterType.Json) {
-                                                HttpRequestAdapter.JsonMap(expression = dialogState.expression)
+                                                HttpRequestAdapter.JsonMap(expressions = dialogState.expressions)
                                             } else {
                                                 HttpRequestAdapter.Raw
                                             }
@@ -196,7 +222,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     }
 
 
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Column(modifier = Modifier) {
                         MediumTitle(
                             text = LocalI18N.current["ui.action.http.request.adapter"]
                         )
@@ -242,20 +268,100 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     StandardSpacer()
 
                     AnimatedVisibility(visible = dialogState.adapter == AdapterType.Json) {
-                        ShortXTextField(
-                            value = dialogState.expression,
-                            onValueChange = {
-                                dialogState.updateExpression(it)
-                            },
-                            label = {
-                                Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
-                            },
-                            showSymbolButton = false
-                        )
+                        Column {
+                            TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
+                            StandardSpacer()
+                            dialogState.expressions.forEachIndexed { index, s ->
+                                ExpressionItem(expression = s, index = index) {
+                                    dialogState.removeExpression(index)
+                                }
+                            }
+                            StandardSpacer()
+                            ShortXTextField(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = dialogState.expressionInput,
+                                onValueChange = {
+                                    dialogState.inputExpression(it)
+                                },
+                                label = {
+                                    Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
+                                },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            if (dialogState.expressionInput.isNotBlank()) {
+                                                dialogState.addExpression(dialogState.expressionInput)
+                                            }
+                                        }) {
+                                        RemixIcon(remixName = Remix.System.add_fill)
+                                    }
+                                },
+                                showSymbolButton = false
+                            )
+
+                        }
                     }
                 }
             }
         }
     }
 
+}
+
+
+@Composable
+private fun ExpressionItem(
+    expression: String,
+    index: Int,
+    remove: () -> Unit,
+) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
+    val contextDataKey = "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}"
+    ShortXCard(
+        modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        onClick = {
+            ClipboardUtils.copyToClipboard(
+                context,
+                "key",
+                contextDataKey
+            )
+            Toast.makeText(
+                context,
+                i18N["ui.common.copied.to.clipboard"],
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .heightIn(min = 64.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f, fill = false),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = expression,
+                    fontSize = 14.sp
+                )
+                SmallSpacer()
+                Text(
+                    text = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf("key" to contextDataKey)],
+                    fontSize = 12.sp
+                )
+            }
+
+            IconButton(onClick = {
+                remove()
+            }) {
+                RemixIcon(remixName = Remix.System.close_line)
+            }
+        }
+    }
 }

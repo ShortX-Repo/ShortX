@@ -536,7 +536,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setAdapter(
                     if (this.adapter is HttpRequestAdapter.JsonMap) {
                         HttpRequestJsonMapAdapter.newBuilder()
-                            .setExpression(this.adapter.expression)
+                            .addAllExpressions(this.adapter.expressions)
                             .build().pack_()
                     } else {
                         HttpRequestRawAdapter.newBuilder().build().pack_()

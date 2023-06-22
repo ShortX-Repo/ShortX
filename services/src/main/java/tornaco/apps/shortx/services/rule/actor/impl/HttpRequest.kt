@@ -29,11 +29,18 @@ object HttpRequest : Actor {
         val url = data.url
         logger.d("url: $url")
         handleUrl(url, data.adapter).apply {
-            params.contextData.add(ContextDataMapping.HttpRequest.httpRequestRet.name, this)
+            forEachIndexed { index, value ->
+                val key = "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}"
+                logger.d("Add context data: $key $value")
+                params.contextData.add(
+                    key = key,
+                    value = value
+                )
+            }
         }
     }
 
-    fun handleUrl(url: String, adapter: ProtoAny): String {
+    fun handleUrl(url: String, adapter: ProtoAny): List<String> {
         URL(url).readText().apply {
             logger.d("response: $this")
             return if (adapter is_ HttpRequestJsonMapAdapter::class.java) {
@@ -41,18 +48,19 @@ object HttpRequest : Actor {
                 val jsonElement = Json.parseToJsonElement(this)
                 val map: Map<String, JsonElement> = jsonElement.jsonObject.toMap()
                 logger.d("map: $map")
-                val expression = jsonAdapter.expression
-                logger.d("expression: $expression")
-                val res = MVEL.executeExpression(MVEL.compileExpression(expression), map)
-                val resAsString = if (res is JsonPrimitive) {
-                    res.content
-                } else {
-                    res.toString()
+                jsonAdapter.expressionsList.map { expression ->
+                    logger.d("expression: $expression")
+                    val res = MVEL.executeExpression(MVEL.compileExpression(expression), map)
+                    val resAsString = if (res is JsonPrimitive) {
+                        res.content
+                    } else {
+                        res.toString()
+                    }
+                    logger.d("resAsString: $resAsString")
+                    resAsString
                 }
-                logger.d("resAsString: $resAsString")
-                resAsString
             } else {
-                this.trim()
+                listOf(this.trim())
             }
         }
     }

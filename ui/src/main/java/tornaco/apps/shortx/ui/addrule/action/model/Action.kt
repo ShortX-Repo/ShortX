@@ -835,8 +835,11 @@ sealed interface Action : Parcelable {
 
 @Parcelize
 sealed interface HttpRequestAdapter : Parcelable {
+    @Parcelize
     object Raw : HttpRequestAdapter
-    data class JsonMap(val expression: String) : HttpRequestAdapter
+
+    @Parcelize
+    data class JsonMap(val expressions: List<String>) : HttpRequestAdapter
 }
 
 val Action.contextData: List<ContextData> get() = this::class.actionContextData()

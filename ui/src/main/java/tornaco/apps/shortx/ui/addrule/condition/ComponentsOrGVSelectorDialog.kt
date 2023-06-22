@@ -398,32 +398,31 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     }
 
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        ShortXTextField(
-            modifier = Modifier.weight(1f),
-            value = inputComponentString,
-            onValueChange = {
-                inputComponentString = it
-            },
-            showSymbolButton = true,
-            label = {
-                Text(text = i18N["ui.common.select.component.input"])
+    ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = inputComponentString,
+        onValueChange = {
+            inputComponentString = it
+        },
+        trailingIcon = {
+            IconButton(onClick = {
+                val name: ComponentName? =
+                    ComponentName.unflattenFromString(inputComponentString)
+                name?.let {
+                    dialogState.addComponent(
+                        it.toAppComponent(userId)
+                    )
+                }
+            }) {
+                RemixIcon(remixName = Remix.System.add_fill)
             }
-        )
-        StandardSpacer()
-
-        FilledTonalButton(onClick = {
-            val name: ComponentName? =
-                ComponentName.unflattenFromString(inputComponentString)
-            name?.let {
-                dialogState.addComponent(
-                    it.toAppComponent(userId)
-                )
-            }
-        }) {
-            RemixIcon(remixName = Remix.System.add_fill)
+        },
+        showSymbolButton = false,
+        label = {
+            Text(text = i18N["ui.common.select.component.input"])
         }
-    }
+    )
+
 
     StandardSpacer()
 

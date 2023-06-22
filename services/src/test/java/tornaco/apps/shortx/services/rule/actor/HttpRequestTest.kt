@@ -21,18 +21,20 @@ class HttpRequestTest {
     fun testJsonAdapter() {
         val res = HttpRequest.handleUrl(
             "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/profiles/forceidle.json",
-            HttpRequestJsonMapAdapter.newBuilder().setExpression("author").build().pack_(),
+            HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author")).build()
+                .pack_(),
         )
-        Assert.assertEquals("countrysideboy", res)
+        Assert.assertEquals(listOf("countrysideboy"), res)
     }
 
     @Test
     fun testJsonAdapter2() {
         val res = HttpRequest.handleUrl(
             "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
-            HttpRequestJsonMapAdapter.newBuilder().setExpression("colors.red").build().pack_(),
+            HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("colors.red")).build()
+                .pack_(),
         )
-        Assert.assertEquals("#FF5252", res)
+        Assert.assertEquals(listOf("#FF5252"), res)
     }
 
     @Test
@@ -42,7 +44,9 @@ class HttpRequestTest {
             HttpRequestRawAdapter.newBuilder().build().pack_()
         )
         Assert.assertEquals(
-            res, """
+            res,
+            listOf(
+                """
             {
                 "colors": {
                     "green": "#43A047",
@@ -65,6 +69,7 @@ class HttpRequestTest {
                 }
             }
         """.trimIndent()
+            )
         )
     }
 }
