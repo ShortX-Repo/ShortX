@@ -32,6 +32,8 @@ fun ConditionEvaluator.EvaluateResult.toConditionEvaluateRecord(): ConditionEval
     }
 }
 
+private const val MAX_ENTRY_SIZE = 200
+
 class ConditionEvaluateRecorder {
     private val _conditionEvaluateRecords = mutableListOf<ConditionEvaluateRecord>()
 
@@ -39,6 +41,9 @@ class ConditionEvaluateRecorder {
 
     fun add(record: ConditionEvaluateRecord) {
         _conditionEvaluateRecords.add(record)
+        if (_conditionEvaluateRecords.size > MAX_ENTRY_SIZE) {
+            _conditionEvaluateRecords.removeFirst()
+        }
     }
 
     fun clear() = _conditionEvaluateRecords.clear()

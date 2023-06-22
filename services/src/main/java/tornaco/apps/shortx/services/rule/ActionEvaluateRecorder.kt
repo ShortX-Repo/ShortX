@@ -31,6 +31,9 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
     }
 }
 
+
+private const val MAX_ENTRY_SIZE = 200
+
 class ActionEvaluateRecorder {
     private val _actionEvaluateRecords = mutableListOf<ActionEvaluateRecord>()
 
@@ -38,6 +41,9 @@ class ActionEvaluateRecorder {
 
     fun add(record: ActionEvaluateRecord) {
         _actionEvaluateRecords.add(record)
+        if (_actionEvaluateRecords.size > MAX_ENTRY_SIZE) {
+            _actionEvaluateRecords.removeFirst()
+        }
     }
 
     fun clear() = _actionEvaluateRecords.clear()
