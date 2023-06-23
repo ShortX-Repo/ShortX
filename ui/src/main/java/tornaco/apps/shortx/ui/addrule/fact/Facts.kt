@@ -90,11 +90,6 @@ private fun FactItem(
             })
         }
     )
-    val editFactHandler: (FactSelectSource) -> Unit = { source ->
-        for (h in factHandlers) {
-            if (h(source)) break
-        }
-    }
 
     val contextDataInfoDialogState = rememberContextDataInfoDialogState()
     ContextDataInfoDialog(state = contextDataInfoDialogState)
@@ -104,7 +99,9 @@ private fun FactItem(
         modifier = Modifier,
         titleLines = labelForFact(fact = fact),
         onClick = {
-            editFactHandler(FactSelectSource.FromFact(fact))
+            factHandlers.any {
+                it(FactSelectSource.FromFact(currentFact))
+            }
         },
         icon = {
             FactIcon(fact)

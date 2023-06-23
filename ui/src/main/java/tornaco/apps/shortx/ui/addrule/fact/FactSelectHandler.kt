@@ -301,16 +301,16 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
 
             Fact.AudioFocusGain::class -> {
                 audioFocusGainSelectorState.show(
-                    source.getFactAs<Fact.AppUpdated>()?.apps,
-                    source.getFactAs<Fact.AppUpdated>()?.pkgSets
+                    source.getFactAs<Fact.AudioFocusGain>()?.apps,
+                    source.getFactAs<Fact.AudioFocusGain>()?.pkgSets
                 )
                 true
             }
 
             Fact.AudioFocusLost::class -> {
                 audioFocusLostSelectorState.show(
-                    source.getFactAs<Fact.AppUpdated>()?.apps,
-                    source.getFactAs<Fact.AppUpdated>()?.pkgSets
+                    source.getFactAs<Fact.AudioFocusLost>()?.apps,
+                    source.getFactAs<Fact.AudioFocusLost>()?.pkgSets
                 )
                 true
             }

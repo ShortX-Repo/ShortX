@@ -27,6 +27,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
@@ -170,52 +171,28 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(NotificationPosted::class.java) { actual, rule ->
             val actualN = (actual as NotificationPosted).record
             val ruleN = (rule as NotificationPosted).record
-
-            val pkgListActual = actualN.appsList
-
-            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
-                ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
-                }
-            } else {
-                ruleN.appsList
-            }
-
-            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
+            matchWithAppOrPkgSetListFact(
+                actual = NotificationWrapper(actualN),
+                rule = NotificationWrapper(ruleN)
+            )
         }
 
         register(NotificationUpdated::class.java) { actual, rule ->
             val actualN = (actual as NotificationUpdated).new
             val ruleN = (rule as NotificationUpdated).new
-
-            val pkgListActual = actualN.appsList
-
-            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
-                ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
-                }
-            } else {
-                ruleN.appsList
-            }
-
-            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
+            matchWithAppOrPkgSetListFact(
+                actual = NotificationWrapper(actualN),
+                rule = NotificationWrapper(ruleN)
+            )
         }
 
         register(NotificationRemoved::class.java) { actual, rule ->
             val actualN = (actual as NotificationRemoved).record
             val ruleN = (rule as NotificationRemoved).record
-
-            val pkgListActual = actualN.appsList
-
-            val pkgListRule = if (ruleN.pkgSetsList.isEmpty().not()) {
-                ruleN.pkgSetsList.flatMap {
-                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
-                }
-            } else {
-                ruleN.appsList
-            }
-
-            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
+            matchWithAppOrPkgSetListFact(
+                actual = NotificationWrapper(actualN),
+                rule = NotificationWrapper(ruleN)
+            )
         }
 
         register(AppRemoved::class.java) { actual, rule ->
@@ -377,17 +354,16 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             return true
         }
 
-        val pkgListRule = rule.pkgSetList.flatMap { label ->
-            shortXContext.pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
-        } + rule.appList
-
-        if (pkgListRule.isEmpty()) {
-            logger.d("matchWithAppOrPkgSetListFact, pkgListRule is empty, assume true")
+        if (rule.appList.isEmpty() && rule.pkgSetList.isEmpty()) {
+            logger.d("matchWithAppOrPkgSetListFact, appList and pkgSetList is empty, assume true")
             return true
         }
 
+        val pkgListRule = rule.pkgSetList.flatMap { label ->
+            shortXContext.pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
+        } + rule.appList
         logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
-        return pkgListRule.containsAll(pkgListActual)
+        return pkgListRule.isNotEmpty() && pkgListRule.containsAll(pkgListActual)
     }
 
     internal interface WithAppOrPkgSetListFact {
@@ -456,6 +432,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             get() = focusLost.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
             get() = focusLost.appsList ?: emptyList()
+
+    }
+
+    class NotificationWrapper(private val n: Notification) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = n.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = n.appsList ?: emptyList()
 
     }
 }

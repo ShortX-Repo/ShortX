@@ -23,13 +23,11 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 @Composable
 fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val launchAppSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = {
-                val first = it[0]
-                val action = Action.LaunchApp(app = first)
-                addAction(action)
-            })
-    AppPkgSelectorDialog(state = launchAppSelectorState)
+        rememberSingleAppPkgSelectorState(onAppSelected = {
+            val action = Action.LaunchApp(app = it)
+            addAction(action)
+        })
+    SingleAppSelectorDialog(state = launchAppSelectorState)
 
     val stopAppSelectorState =
         rememberAppPkgSelectorState(
@@ -203,9 +201,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.LaunchApp::class -> {
-                launchAppSelectorState.show(source.getActionAs<Action.LaunchApp>()?.app?.let {
-                    listOf(it)
-                })
+                launchAppSelectorState.show()
                 true
             }
 

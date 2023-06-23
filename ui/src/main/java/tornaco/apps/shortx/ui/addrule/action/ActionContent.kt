@@ -138,9 +138,7 @@ private fun Actions(
 
                 val onActionClick = {
                     composeLogger.d("addAction, onActionClick: ${action.id}")
-                    for (h in selectHandlers) {
-                        if (h(ActionSelectSource.FromAction(action))) break
-                    }
+                    selectHandlers.any { it(ActionSelectSource.FromAction(currentAction)) }
                 }
 
                 val noteDialogState =

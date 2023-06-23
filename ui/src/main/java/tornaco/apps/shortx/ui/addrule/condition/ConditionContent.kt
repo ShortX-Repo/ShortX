@@ -93,24 +93,26 @@ fun ConditionList(
                         }
                     )
 
-                    val editHandler: (ConditionSelectSource) -> Boolean = { source ->
-                        allHandlers.any { it(source) }
-                    }
-
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
                             .combinedClickable(
                                 onClick = {
-                                    editHandler(ConditionSelectSource.FromCondition(conditionItem))
+                                    allHandlers.any {
+                                        it(
+                                            ConditionSelectSource.FromCondition(
+                                                currentCondition
+                                            )
+                                        )
+                                    }
                                 },
                                 onLongClick = {
                                     handler.addCondition(
-                                        conditionItem.clone(
-                                            id = conditionItem.id,
-                                            note = conditionItem.note,
-                                            isInvert = !conditionItem.isInvert
+                                        currentCondition.clone(
+                                            id = currentCondition.id,
+                                            note = currentCondition.note,
+                                            isInvert = !currentCondition.isInvert
                                         )
                                     )
                                 }
