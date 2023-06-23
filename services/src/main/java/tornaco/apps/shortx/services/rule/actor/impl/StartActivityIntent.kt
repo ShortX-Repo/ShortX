@@ -21,7 +21,7 @@ object StartActivityIntent : Actor {
         val startActivity =
             action unpack_ tornaco.apps.shortx.core.proto.action.StartActivityIntent::class.java
 
-        val intent = startActivity.intent.toIntent()
+        val intent = startActivity.intent.toIntent(contextData)
         val userId = startActivity.userId
         logger.d("startActivityAsUser: $intent $userId")
         context.startActivityAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))

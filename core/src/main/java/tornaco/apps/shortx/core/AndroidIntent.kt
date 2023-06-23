@@ -2,16 +2,28 @@ package tornaco.apps.shortx.core
 
 import android.content.Intent
 import android.net.Uri
+import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 
-fun AndroidIntent.toIntent() = Intent().apply {
+fun AndroidIntent.toIntent(contextData: ContextData) = Intent().apply {
     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    this@toIntent.action?.let { action = it }
-    this@toIntent.pkgName?.let { pkgName ->
-        `package` = pkgName
-        this@toIntent.className?.let { setClassName(pkgName, it) }
+    this@toIntent.action.ifEmpty { Intent.ACTION_VIEW }.let { action = it }
+
+    val pkgName = this@toIntent.pkgName.inflateContextMap(contextData)
+    val className = this@toIntent.className.inflateContextMap(contextData)
+    if (pkgName.isNotBlank()) {
+        setPackage(pkgName)
+        if (className.isNotBlank()) {
+            setClassName(pkgName, className)
+        }
     }
+    val data = this@toIntent.data
+    if (data.isNotBlank()) {
+        setData(Uri.parse(data.inflateContextMap(contextData)))
+    }
+
     this@toIntent.extrasList?.let { extras ->
         extras.forEach {
             @Suppress("MoveVariableDeclarationIntoWhen")
@@ -47,6 +59,5 @@ fun AndroidIntent.toIntent() = Intent().apply {
             }
         }
     }
-    this@toIntent.data?.let { data = Uri.parse(it) }
 
 }

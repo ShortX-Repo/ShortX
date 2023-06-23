@@ -42,7 +42,17 @@ class StartActivityIntentSelectorViewModel @Inject constructor(@ApplicationConte
     override fun resetState() {
         super.resetState()
         logger.d("resetState")
-        updateState(StartActivityIntentSelectorState())
+        initFrom(
+            Action.StartActivityIntent(
+                userId = myUserId,
+                action = Intent.ACTION_VIEW,
+                pkgName = null,
+                className = null,
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK,
+                data = null,
+                extras = emptyList()
+            )
+        )
     }
 
     fun initFrom(settings: Action.StartActivityIntent) {
