@@ -317,7 +317,7 @@ private fun ExpressionItem(
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
-    val contextDataKey = "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}"
+    val contextDataKey = "{${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}}"
     ShortXCard(
         modifier = Modifier
             .padding(horizontal = 12.dp, vertical = 4.dp),
@@ -348,7 +348,7 @@ private fun ExpressionItem(
             ) {
                 Text(
                     text = expression,
-                    fontSize = 14.sp
+                    fontSize = 14.5.sp
                 )
                 SmallSpacer()
                 Text(
