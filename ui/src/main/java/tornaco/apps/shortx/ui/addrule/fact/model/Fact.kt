@@ -279,7 +279,7 @@ sealed interface Fact {
 
     data class Notification(
         val apps: List<App>,
-        val pkgSets: List<PkgSet> = emptyList(),
+        val pkgSets: List<PkgSet>,
         val titleRegex: String? = null,
         val contentRegex: String? = null
     )
@@ -308,6 +308,34 @@ sealed interface Fact {
         override val note: String = "",
         override val id: String = defaultNewFactId(),
         val n: Notification
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+
+    data class NotificationPostedAny(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class NotificationRemovedAny(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class NotificationUpdatedAny(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
     ) : Fact {
         override fun clone(id: String, note: String): Fact {
             return copy(id = id, note = note)

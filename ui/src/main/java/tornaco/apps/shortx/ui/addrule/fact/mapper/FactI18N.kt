@@ -9,7 +9,6 @@ import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -80,6 +79,18 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.NotificationRemoved::class -> {
             i18n["ui.fact.n.removed"] to null
+        }
+
+        Fact.NotificationPostedAny::class -> {
+            i18n["ui.fact.n.posted"] to i18n["ui.fact.n.any"]
+        }
+
+        Fact.NotificationUpdatedAny::class -> {
+            i18n["ui.fact.n.updated"] to i18n["ui.fact.n.any"]
+        }
+
+        Fact.NotificationRemovedAny::class -> {
+            i18n["ui.fact.n.removed"] to i18n["ui.fact.n.any"]
         }
 
         Fact.TaskRemoved::class -> {
@@ -295,27 +306,39 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.NotificationPosted -> {
-            listOf(
+            mutableListOf(
                 i18N["ui.fact.n.posted"],
-                fact.n.titleRegex.fallbackOnEmpty(""),
-                fact.n.contentRegex.fallbackOnEmpty("")
-            ).filterNot { it.isBlank() }
+            ).labelLinesFromAppsAndPkgSets(fact.n.apps, fact.n.pkgSets)
         }
 
         is Fact.NotificationRemoved -> {
-            listOf(
+            mutableListOf(
                 i18N["ui.fact.n.removed"],
-                fact.n.titleRegex.fallbackOnEmpty(""),
-                fact.n.contentRegex.fallbackOnEmpty("")
-            ).filterNot { it.isBlank() }
+            ).labelLinesFromAppsAndPkgSets(fact.n.apps, fact.n.pkgSets)
         }
 
         is Fact.NotificationUpdated -> {
-            listOf(
+            mutableListOf(
                 i18N["ui.fact.n.updated"],
-                fact.n.titleRegex.fallbackOnEmpty(""),
-                fact.n.contentRegex.fallbackOnEmpty("")
-            ).filterNot { it.isBlank() }
+            ).labelLinesFromAppsAndPkgSets(fact.n.apps, fact.n.pkgSets)
+        }
+
+        is Fact.NotificationPostedAny -> {
+            listOf(
+                i18N["ui.fact.n.posted"], i18N["ui.fact.n.any"]
+            )
+        }
+
+        is Fact.NotificationRemovedAny -> {
+            listOf(
+                i18N["ui.fact.n.removed"], i18N["ui.fact.n.any"]
+            )
+        }
+
+        is Fact.NotificationUpdatedAny -> {
+            listOf(
+                i18N["ui.fact.n.updated"], i18N["ui.fact.n.any"]
+            )
         }
 
         is Fact.TaskRemoved -> {

@@ -181,11 +181,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 ruleN.appsList
             }
 
-            nullEmptyOrEq(
-                ruleN.notificationChannel to actualN.notificationChannel,
-                ruleN.title to actualN.title,
-                ruleN.contentText to actualN.contentText
-            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
         }
 
         register(NotificationUpdated::class.java) { actual, rule ->
@@ -202,11 +198,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 ruleN.appsList
             }
 
-            nullEmptyOrEq(
-                ruleN.notificationChannel to actualN.notificationChannel,
-                ruleN.title to actualN.title,
-                ruleN.contentText to actualN.contentText
-            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
         }
 
         register(NotificationRemoved::class.java) { actual, rule ->
@@ -223,11 +215,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 ruleN.appsList
             }
 
-            nullEmptyOrEq(
-                ruleN.notificationChannel to actualN.notificationChannel,
-                ruleN.title to actualN.title,
-                ruleN.contentText to actualN.contentText
-            ) && pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual)
+            (pkgListRule.isEmpty() || pkgListRule.containsAll(pkgListActual))
         }
 
         register(AppRemoved::class.java) { actual, rule ->

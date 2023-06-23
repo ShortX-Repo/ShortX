@@ -1,9 +1,11 @@
 package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 
@@ -174,48 +176,74 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         this is_ tornaco.apps.shortx.core.proto.fact.NotificationPosted::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.NotificationPosted::class.java
-            val models =
-                (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
-            Fact.NotificationPosted(
-                n = Fact.Notification(
-                    apps = models.first,
-                    pkgSets = models.second,
-                    titleRegex = data.record.title,
-                    contentRegex = data.record.contentText
-                ),
-                id = data.id, note = data.note
-            )
+
+            (data.record == Notification.getDefaultInstance()).select(
+                t = {
+                    Fact.NotificationPostedAny(
+                        id = data.id, note = data.note
+                    )
+                },
+                f = {
+                    val models =
+                        (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
+                    Fact.NotificationPosted(
+                        n = Fact.Notification(
+                            apps = models.first,
+                            pkgSets = models.second,
+                            titleRegex = data.record.title,
+                            contentRegex = data.record.contentText
+                        ),
+                        id = data.id, note = data.note
+                    )
+                })
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NotificationRemoved::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.NotificationRemoved::class.java
-            val models =
-                (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
-            Fact.NotificationRemoved(
-                n = Fact.Notification(
-                    apps = models.first,
-                    pkgSets = models.second,
-                    titleRegex = data.record.title,
-                    contentRegex = data.record.contentText
-                ),
-                id = data.id, note = data.note
-            )
+            (data.record == Notification.getDefaultInstance()).select(
+                t = {
+                    Fact.NotificationRemovedAny(
+                        id = data.id, note = data.note
+                    )
+                },
+                f = {
+                    val models =
+                        (data.record.appsList to data.record.pkgSetsList).protoPkgsAndPkgSetsToModels()
+                    Fact.NotificationRemoved(
+                        n = Fact.Notification(
+                            apps = models.first,
+                            pkgSets = models.second,
+                            titleRegex = data.record.title,
+                            contentRegex = data.record.contentText
+                        ),
+                        id = data.id, note = data.note
+                    )
+                })
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NotificationUpdated::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.NotificationUpdated::class.java
-            val models =
-                (data.new.appsList to data.new.pkgSetsList).protoPkgsAndPkgSetsToModels()
-            Fact.NotificationUpdated(
-                n = Fact.Notification(
-                    apps = models.first,
-                    pkgSets = models.second,
-                    titleRegex = data.new.title,
-                    contentRegex = data.new.contentText
-                ),
-                id = data.id, note = data.note
+            (data.new == Notification.getDefaultInstance()).select(
+                t = {
+                    Fact.NotificationUpdatedAny(
+                        id = data.id, note = data.note
+                    )
+                },
+                f = {
+                    val models =
+                        (data.new.appsList to data.new.pkgSetsList).protoPkgsAndPkgSetsToModels()
+                    Fact.NotificationUpdated(
+                        n = Fact.Notification(
+                            apps = models.first,
+                            pkgSets = models.second,
+                            titleRegex = data.new.title,
+                            contentRegex = data.new.contentText
+                        ),
+                        id = data.id, note = data.note
+                    )
+                }
             )
         }
 

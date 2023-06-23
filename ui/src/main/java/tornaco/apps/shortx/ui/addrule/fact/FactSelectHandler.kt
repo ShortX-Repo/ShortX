@@ -107,6 +107,75 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
             })
     AppPkgSelectorDialog(audioFocusLostSelectorState)
 
+    val notificationPostedSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(
+                    Fact.NotificationPosted(
+                        n = Fact.Notification(
+                            apps = pkg,
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }, onPkgSetSelected = {
+                setFact(
+                    Fact.NotificationPosted(
+                        n = Fact.Notification(
+                            pkgSets = it,
+                            apps = emptyList()
+                        )
+                    )
+                )
+            })
+    AppPkgSelectorDialog(notificationPostedSelectorState)
+
+    val notificationUpdatedSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(
+                    Fact.NotificationUpdated(
+                        n = Fact.Notification(
+                            apps = pkg,
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }, onPkgSetSelected = {
+                setFact(
+                    Fact.NotificationUpdated(
+                        n = Fact.Notification(
+                            pkgSets = it,
+                            apps = emptyList()
+                        )
+                    )
+                )
+            })
+    AppPkgSelectorDialog(notificationUpdatedSelectorState)
+
+
+    val notificationRemovedSelectorState =
+        rememberAppPkgSelectorState(
+            onAppListSelected = { pkg ->
+                setFact(
+                    Fact.NotificationRemoved(
+                        n = Fact.Notification(
+                            apps = pkg,
+                            pkgSets = emptyList()
+                        )
+                    )
+                )
+            }, onPkgSetSelected = {
+                setFact(
+                    Fact.NotificationRemoved(
+                        n = Fact.Notification(
+                            pkgSets = it,
+                            apps = emptyList()
+                        )
+                    )
+                )
+            })
+    AppPkgSelectorDialog(notificationRemovedSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -162,38 +231,47 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
                 true
             }
 
-            Fact.NotificationPosted::class -> {
+            Fact.NotificationPostedAny::class -> {
                 setFact(
-                    Fact.NotificationPosted(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
+                    Fact.NotificationPostedAny()
+                )
+                true
+            }
+
+            Fact.NotificationUpdatedAny::class -> {
+                setFact(
+                    Fact.NotificationUpdatedAny()
+                )
+                true
+            }
+
+            Fact.NotificationRemovedAny::class -> {
+                setFact(
+                    Fact.NotificationRemovedAny()
+                )
+                true
+            }
+
+            Fact.NotificationPosted::class -> {
+                notificationPostedSelectorState.show(
+                    source.getFactAs<Fact.NotificationPosted>()?.n?.apps,
+                    source.getFactAs<Fact.NotificationPosted>()?.n?.pkgSets
                 )
                 true
             }
 
             Fact.NotificationUpdated::class -> {
-                setFact(
-                    Fact.NotificationUpdated(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
+                notificationUpdatedSelectorState.show(
+                    source.getFactAs<Fact.NotificationUpdated>()?.n?.apps,
+                    source.getFactAs<Fact.NotificationUpdated>()?.n?.pkgSets
                 )
                 true
             }
 
             Fact.NotificationRemoved::class -> {
-                setFact(
-                    Fact.NotificationRemoved(
-                        n = Fact.Notification(
-                            apps = emptyList(),
-                            pkgSets = emptyList()
-                        )
-                    )
+                notificationRemovedSelectorState.show(
+                    source.getFactAs<Fact.NotificationRemoved>()?.n?.apps,
+                    source.getFactAs<Fact.NotificationRemoved>()?.n?.pkgSets
                 )
                 true
             }

@@ -169,6 +169,7 @@
   "ui.fact.n.posted": "有新通知",
   "ui.fact.n.updated": "通知更新",
   "ui.fact.n.removed": "通知被移除",
+  "ui.fact.n.any": "任意應用",
   "ui.fact.n": "通知",
   "ui.fact.task.removed": "任務被移除",
   "ui.fact.task.removed.any": "任意任務",

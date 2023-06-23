@@ -210,6 +210,30 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setId(id).setNote(note).build()
         }
 
+        is Fact.NotificationPostedAny -> {
+            NotificationPosted.newBuilder()
+                .setRecord(
+                    Notification.getDefaultInstance()
+                )
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.NotificationRemovedAny -> {
+            NotificationRemoved.newBuilder()
+                .setRecord(
+                    Notification.getDefaultInstance()
+                )
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.NotificationUpdatedAny -> {
+            NotificationUpdated.newBuilder()
+                .setNew(
+                    Notification.getDefaultInstance()
+                )
+                .setId(id).setNote(note).build()
+        }
+
         is Fact.TaskRemoved -> {
             TaskRemoved.newBuilder()
                 .addAllApps(apps.map { it.pkg })
