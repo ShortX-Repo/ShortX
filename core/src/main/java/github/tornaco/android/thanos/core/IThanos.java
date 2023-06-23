@@ -49,7 +49,7 @@ public interface IThanos extends android.os.IInterface
     {
       return null;
     }
-    @Override public android.os.IBinder getProfileManager() throws android.os.RemoteException
+    @Override public github.tornaco.android.thanos.core.profile.IProfileManager getProfileManager() throws android.os.RemoteException
     {
       return null;
     }
@@ -256,9 +256,9 @@ public interface IThanos extends android.os.IInterface
         case TRANSACTION_getProfileManager:
         {
           data.enforceInterface(descriptor);
-          android.os.IBinder _result = this.getProfileManager();
+          github.tornaco.android.thanos.core.profile.IProfileManager _result = this.getProfileManager();
           reply.writeNoException();
-          reply.writeStrongBinder(_result);
+          reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
           return true;
         }
         case TRANSACTION_getBackupAgent:
@@ -656,11 +656,11 @@ public interface IThanos extends android.os.IInterface
         }
         return _result;
       }
-      @Override public android.os.IBinder getProfileManager() throws android.os.RemoteException
+      @Override public github.tornaco.android.thanos.core.profile.IProfileManager getProfileManager() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
-        android.os.IBinder _result;
+        github.tornaco.android.thanos.core.profile.IProfileManager _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getProfileManager, _data, _reply, 0);
@@ -668,7 +668,7 @@ public interface IThanos extends android.os.IInterface
             return getDefaultImpl().getProfileManager();
           }
           _reply.readException();
-          _result = _reply.readStrongBinder();
+          _result = github.tornaco.android.thanos.core.profile.IProfileManager.Stub.asInterface(_reply.readStrongBinder());
         }
         finally {
           _reply.recycle();
@@ -1142,7 +1142,7 @@ public interface IThanos extends android.os.IInterface
   public android.os.IBinder getPushManager() throws android.os.RemoteException;
   public android.os.IBinder getNotificationManager() throws android.os.RemoteException;
   public android.os.IBinder getAudioManager() throws android.os.RemoteException;
-  public android.os.IBinder getProfileManager() throws android.os.RemoteException;
+  public github.tornaco.android.thanos.core.profile.IProfileManager getProfileManager() throws android.os.RemoteException;
   public android.os.IBinder getBackupAgent() throws android.os.RemoteException;
   public android.os.IBinder getWindowManager() throws android.os.RemoteException;
   public android.os.IBinder getPowerManager() throws android.os.RemoteException;

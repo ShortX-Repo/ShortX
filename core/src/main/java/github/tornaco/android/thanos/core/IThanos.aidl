@@ -1,6 +1,7 @@
 package github.tornaco.android.thanos.core;
 
 import github.tornaco.android.thanos.core.app.IActivityManager;
+import github.tornaco.android.thanos.core.profile.IProfileManager;
 
 import android.content.IntentFilter;
 
@@ -17,7 +18,7 @@ interface IThanos {
     IBinder getPushManager();
     IBinder getNotificationManager();
     IBinder getAudioManager();
-    IBinder getProfileManager();
+    IProfileManager getProfileManager();
     IBinder getBackupAgent();
     IBinder getWindowManager();
     IBinder getPowerManager();

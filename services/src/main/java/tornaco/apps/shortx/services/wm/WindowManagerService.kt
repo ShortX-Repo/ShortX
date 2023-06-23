@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.test.uiautomator.imp.UiDevice
 import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
+import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -54,9 +55,24 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
         synchronized(uiAutoLock) {
             kotlin.runCatching {
                 logger.w("ensureAutomationConnected: $reason")
+                disableThanoxProfileAutoEngine()
                 automationManager.connect()
             }.onFailure {
                 shortXContext.watchDog.onFatalError(it, "ensureAutomationConnected")
+            }
+        }
+    }
+
+    private fun disableThanoxProfileAutoEngine() {
+        kotlin.runCatching {
+            if (ThanosManagerNative.isServiceInstalled()) {
+                val thanox = ThanosManagerNative.getDefault()
+                val currentEnabled = thanox.profileManager.isProfileEngineUiAutomationEnabled
+                logger.w("disableThanoxProfileAutoEngine, current thanox enable state: ${currentEnabled}")
+                if (currentEnabled) {
+                    thanox.profileManager.isProfileEngineUiAutomationEnabled = false
+                    logger.w("disableThanoxProfileAutoEngine success.")
+                }
             }
         }
     }
@@ -144,7 +160,8 @@ class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXC
                 )
             )
             val uiObject = uiDevice.findObject(
-                UiSelector().resourceId(viewId))
+                UiSelector().resourceId(viewId)
+            )
             logger.d("findAndClickViewByViewIdInternal: $uiObject")
             if (!uiObject.waitForExists(timeout)) {
                 logger.d("findAndClickViewByViewIdInternal: waitForExists timeout")
