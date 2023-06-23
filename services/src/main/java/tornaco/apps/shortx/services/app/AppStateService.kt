@@ -32,6 +32,8 @@ import tornaco.apps.shortx.services.os.UserEvent
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+    override val logTag: String
+        get() = "AppState"
     private val pkgPools = mutableListOf<PkgPool>()
 
     private val onPackageUpdatedListeners: MutableList<((App) -> Unit)> = mutableListOf()
@@ -442,6 +444,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun killProcessByName(processList: List<ProcessName>) {
         val thanoxAvailable = ThanosManagerNative.isServiceInstalled()
+        logger.d("killProcessByName, thanoxAvailable: $thanoxAvailable")
         if (thanoxAvailable) {
             ThanosManagerNative.getDefault().activityManager.killProcessByNames(
                 processList.map {
