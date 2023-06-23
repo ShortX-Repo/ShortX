@@ -22,13 +22,18 @@ object AppHasAudioFocus : Cond {
                 data.pkgsList
             }
 
-            val res = if (data.op == ConditionOperator.ANY) {
-                requiredPkgList.any {
-                    with(shortXContext.audio) { it.hasFocus() }
-                }
+            val res = if (requiredPkgList.isEmpty()) {
+                logger.w("requiredPkgList is empty, return false.")
+                false
             } else {
-                requiredPkgList.all {
-                    with(shortXContext.audio) { it.hasFocus() }
+                if (data.op == ConditionOperator.ANY) {
+                    requiredPkgList.any {
+                        with(shortXContext.audio) { it.hasFocus() }
+                    }
+                } else {
+                    requiredPkgList.all {
+                        with(shortXContext.audio) { it.hasFocus() }
+                    }
                 }
             }
             if (data.isInvert) {

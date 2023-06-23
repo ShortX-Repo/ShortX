@@ -17,13 +17,18 @@ object ServiceIsRunning : Cond {
             val services = data.servicesList
             logger.d("Checking services: ${data.op} $services")
 
-            val res = if (data.op == ConditionOperator.ANY) {
-                services.any {
-                    with(shortXContext.appState) { it.isServiceRunning() }
-                }
+            val res = if (services.isEmpty()) {
+                logger.w("servicesList is empty, return false.")
+                false
             } else {
-                services.all {
-                    with(shortXContext.appState) { it.isServiceRunning() }
+                if (data.op == ConditionOperator.ANY) {
+                    services.any {
+                        with(shortXContext.appState) { it.isServiceRunning() }
+                    }
+                } else {
+                    services.all {
+                        with(shortXContext.appState) { it.isServiceRunning() }
+                    }
                 }
             }
             if (data.isInvert) {

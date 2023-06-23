@@ -20,16 +20,21 @@ object CurrentPkgList : Cond {
                 currentPkg.pkgsList
             }
 
-            val res = if (currentPkg.op == ConditionOperator.ALL) {
-                requiredPkgList.all {
-                    with(shortXContext.appState) {
-                        it.isFront()
-                    }
-                }
+            val res = if (requiredPkgList.isEmpty()) {
+                logger.w("requiredPkgList is empty, return false.")
+                false
             } else {
-                requiredPkgList.any {
-                    with(shortXContext.appState) {
-                        it.isFront()
+                if (currentPkg.op == ConditionOperator.ALL) {
+                    requiredPkgList.all {
+                        with(shortXContext.appState) {
+                            it.isFront()
+                        }
+                    }
+                } else {
+                    requiredPkgList.any {
+                        with(shortXContext.appState) {
+                            it.isFront()
+                        }
                     }
                 }
             }

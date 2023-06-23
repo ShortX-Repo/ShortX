@@ -22,13 +22,18 @@ object AppIsRunning : Cond {
                 data.pkgsList
             }
 
-            val res = if (data.op == ConditionOperator.ANY) {
-                requiredPkgList.any {
-                    with(shortXContext.appState) { it.isRunning() }
-                }
+            val res = if (requiredPkgList.isEmpty()) {
+                logger.w("requiredPkgList is empty, return false.")
+                false
             } else {
-                requiredPkgList.all {
-                    with(shortXContext.appState) { it.isRunning() }
+                if (data.op == ConditionOperator.ANY) {
+                    requiredPkgList.any {
+                        with(shortXContext.appState) { it.isRunning() }
+                    }
+                } else {
+                    requiredPkgList.all {
+                        with(shortXContext.appState) { it.isRunning() }
+                    }
                 }
             }
             if (data.isInvert) {
