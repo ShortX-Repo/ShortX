@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -107,6 +108,7 @@ fun ProcessListSelectorDialog(state: ProcessListSelectorDialogState) {
 
 @Composable
 private fun ProcessListSelectorContent(dialogState: ProcessListSelectorDialogState) {
+    val context = LocalContext.current
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -124,6 +126,20 @@ private fun ProcessListSelectorContent(dialogState: ProcessListSelectorDialogSta
                             }
                         },
                         actions = {
+
+                            if (dialogState.isThanoxAvailable) {
+                                IconButton(onClick = {
+                                    ThanoxFuncs.goToProcessManagement(context)
+                                }) {
+                                    ColoredIcon(color = ThanoxBlue, size = 24.dp) {
+                                        RemixIcon(
+                                            remixName = Remix.System.shield_flash_fill,
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
+                            }
+
                             IconButton(onClick = {
                                 dialogState.dismiss()
                                 dialogState.onSelected(dialogState.processNameList)
@@ -185,43 +201,6 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
     var userLabel by remember {
         mutableStateOf(i18N["ui.common.user.main"])
     }
-    val context = LocalContext.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        ShortXTextField(
-            modifier = Modifier.weight(1f),
-            value = inputNameString,
-            onValueChange = {
-                inputNameString = it
-            },
-            trailingIcon = if (dialogState.isThanoxAvailable) {
-                {
-                    IconButton(onClick = {
-                        ThanoxFuncs.goToProcessManagement(context)
-                    }) {
-                        RemixIcon(remixName = Remix.System.search_2_line)
-                    }
-                }
-            } else null,
-            showSymbolButton = true,
-            label = {
-                Text(text = i18N["ui.common.selected.process.input"])
-            }
-        )
-        StandardSpacer()
-
-        FilledTonalButton(onClick = {
-            if (inputNameString.isNotBlank()) {
-                dialogState.addProcessName(
-                    inputNameString.toProcessName(userId)
-                )
-            }
-        }) {
-            RemixIcon(remixName = Remix.System.add_fill)
-        }
-    }
-
-    StandardSpacer()
-
     val userSelectorState =
         rememberUserSelectorDialogState(onSelected = { userInfo ->
             userId = userInfo.userId
@@ -243,6 +222,32 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
         }
     }
+    StandardSpacer()
+
+    ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = inputNameString,
+        onValueChange = {
+            inputNameString = it
+        },
+        trailingIcon = {
+            FilledTonalIconButton(onClick = {
+                if (inputNameString.isNotBlank()) {
+                    dialogState.addProcessName(
+                        inputNameString.toProcessName(userId)
+                    )
+                }
+            }) {
+                RemixIcon(remixName = Remix.System.add_fill)
+            }
+        },
+        showSymbolButton = false,
+
+        label = {
+            Text(text = i18N["ui.common.selected.process.input"])
+        }
+    )
+
 
     SectionSpacer()
     SuggestedNavEntry()

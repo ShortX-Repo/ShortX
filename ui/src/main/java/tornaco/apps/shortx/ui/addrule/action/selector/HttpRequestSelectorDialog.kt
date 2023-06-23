@@ -287,7 +287,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                     Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
                                 },
                                 trailingIcon = {
-                                    IconButton(
+                                    FilledTonalIconButton(
                                         onClick = {
                                             if (dialogState.expressionInput.isNotBlank()) {
                                                 dialogState.addExpression(dialogState.expressionInput)
