@@ -48,7 +48,7 @@ class ActionSelectorViewModel @Inject constructor(@ApplicationContext context: C
                         logger.e(it, "Action class error")
                         null
                     }
-                }.filterIsInstance<KClass<out Action>>().reversed()
+                }.filterIsInstance<KClass<out Action>>().reversed().take(6)
                 logger.d("recentSelectedActions: $actionClasses")
                 updateState {
                     copy(recentActions = actionClasses)

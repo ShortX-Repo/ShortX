@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
+    Recent("ui.action.recent", Remix.System.history_line),
     Ui("UI", Remix.Design.layout_2_fill),
     Apps("ui.action.category.app", Remix.System.apps_2_fill),
     Settings("ui.action.system.settings", Remix.System.settings_2_fill),
@@ -51,12 +52,11 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
 }
 
 enum class TabItems(val i18NKey: String, val icon: String) {
-    Recent("ui.action.recent", Remix.System.history_line),
     All("ui.action.all", Remix.Buildings.store_2_line),
     Remote("ui.action.remote", Remix.Business.cloud_line)
 }
 
-val initialPageIndex = TabItems.Recent.ordinal
+val initialPageIndex = TabItems.All.ordinal
 
 class ActionSelectorDialogState<ARGS>(val onSelected: (Action, ARGS?) -> Unit) {
     var isShowing by mutableStateOf(false)
@@ -153,16 +153,6 @@ private fun <ARGS> ActionSelector(
                                 }
 
                                 when (index) {
-                                    TabItems.Recent.ordinal -> {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(16.dp)
-                                        ) {
-                                            RecentActions(addAction = addAction)
-                                        }
-                                    }
-
                                     TabItems.Remote.ordinal -> {
                                         Box(
                                             modifier = Modifier
@@ -179,6 +169,12 @@ private fun <ARGS> ActionSelector(
                                                 .padding(16.dp)
                                                 .verticalScroll(rememberScrollState())
                                         ) {
+
+
+                                            ActionCategoryTitle(ActionCategory.Recent)
+                                            RecentActions(addAction = addAction)
+                                            StandardSpacer()
+
                                             ActionCategoryTitle(ActionCategory.Ui)
                                             UiActions(addAction = addAction)
                                             StandardSpacer()
