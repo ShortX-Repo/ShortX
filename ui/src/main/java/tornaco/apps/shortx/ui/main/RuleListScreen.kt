@@ -54,10 +54,12 @@ fun RuleScreen() {
         },
         onClipboardClick = {
             featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
-                vm.parseShareContentRule(ClipboardUtils.readClipboard(context))
-                    ?.let {
-                        vm.importRule(it)
-                    }
+                ClipboardUtils.readClipboard(context)?.let { clip ->
+                    vm.parseShareContentRule(clip)
+                        ?.let {
+                            vm.importRule(it)
+                        }
+                }
             }
         },
         onAddClick = {

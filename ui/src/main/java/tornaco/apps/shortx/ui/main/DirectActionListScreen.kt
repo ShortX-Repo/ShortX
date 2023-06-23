@@ -76,10 +76,12 @@ fun DirectActionListScreen() {
         },
         onClipboardClick = {
             featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
-                vm.parseShareContentDA(ClipboardUtils.readClipboard(context))
-                    ?.let {
-                        vm.importDA(it)
-                    }
+                ClipboardUtils.readClipboard(context)?.let { clip ->
+                    vm.parseShareContentDA(clip)
+                        ?.let {
+                            vm.importDA(it)
+                        }
+                }
             }
         },
         onAddClick = {
