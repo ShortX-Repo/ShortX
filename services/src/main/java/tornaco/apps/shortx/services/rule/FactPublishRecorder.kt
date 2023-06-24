@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.rule
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.rule.ProtoMessage
 
-fun ProtoMessage.toFactPublishRecord() =
+fun ProtoMessage.toFactPublishRecord(): FactPublishRecord =
     FactPublishRecord.newBuilder().setFactClassName(this::class.java.name)
         .setTimeStamp(System.currentTimeMillis()).build()
 

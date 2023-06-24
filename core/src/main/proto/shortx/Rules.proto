@@ -42,14 +42,14 @@ message RuleList {
 }
 
 message ActionEvaluateRecord {
-  string actionClassName = 1;
+  google.protobuf.Any action = 1;
   bool isSuccess = 2;
   string message = 3;
   int64 timeStamp = 4;
 }
 
 message ConditionEvaluateRecord {
-  string conditionClassName = 1;
+  google.protobuf.Any condition = 1;
   bool isSuccess = 2;
   bool isMatch = 3;
   string message = 4;

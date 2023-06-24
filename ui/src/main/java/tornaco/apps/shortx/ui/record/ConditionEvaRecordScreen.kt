@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.ConditionIcon
-import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
@@ -113,19 +113,19 @@ fun ConditionEvaRecordScreen(back: () -> Unit) {
 
                         items(state.records) {
                             Box {
-                                val actionLabel = labelForConditionSelector(
+                                val actionLabel = labelForCondition(
                                     i18N,
-                                    it.actionIns::class
-                                )[0]
+                                    it.actionIns
+                                ).toMutableList().apply { add(it.formattedTimeStr) }
                                 val messageDialogState = rememberErrorMessageDialogState(
-                                    title = actionLabel,
+                                    title = actionLabel[0],
                                     message = it.record.message
                                 )
                                 ErrorMessageDialog(state = messageDialogState)
 
                                 ListItem(
                                     modifier = Modifier.padding(end = 16.dp),
-                                    titleLines = listOf(actionLabel, it.formattedTimeStr),
+                                    titleLines = actionLabel,
                                     icon = {
                                         ConditionIcon(it.actionIns)
                                     },

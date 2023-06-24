@@ -45,9 +45,9 @@ class ActionEvaluatorImpl(
                     conditionEvaluator
                 )
             )
-            ActionEvaluator.EvaluateResult.Success(actor.actionsCanHandle())
+            ActionEvaluator.EvaluateResult.Success(action)
         }.getOrElse {
-            ActionEvaluator.EvaluateResult.Fail(actor.actionsCanHandle(), it)
+            ActionEvaluator.EvaluateResult.Fail(action, it)
         }.apply {
             evaluateResultListener(this)
         }

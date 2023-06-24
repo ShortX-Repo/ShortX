@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.rule
 
-import com.google.protobuf.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import tornaco.apps.shortx.core.context.ContextData
@@ -31,8 +30,8 @@ interface ConditionEvaluator {
     ): Boolean
 
     sealed interface EvaluateResult {
-        data class Success(val protoType: Class<out Message>, val match: Boolean) : EvaluateResult
-        data class Fail(val protoType: Class<out Message>, val error: Throwable) :
+        data class Success(val condition: ProtoAny, val match: Boolean) : EvaluateResult
+        data class Fail(val condition: ProtoAny, val error: Throwable) :
             EvaluateResult
 
         object Break : EvaluateResult
@@ -50,8 +49,8 @@ interface ActionEvaluator {
     ): EvaluateResult
 
     sealed interface EvaluateResult {
-        data class Success(val protoType: Class<out Message>) : EvaluateResult
-        data class Fail(val protoType: Class<out Message>, val error: Throwable) :
+        data class Success(val action: ProtoAny) : EvaluateResult
+        data class Fail(val action: ProtoAny, val error: Throwable) :
             EvaluateResult
 
         object Break : EvaluateResult

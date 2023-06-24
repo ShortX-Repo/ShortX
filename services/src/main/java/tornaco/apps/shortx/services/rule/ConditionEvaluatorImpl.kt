@@ -30,11 +30,11 @@ class ConditionEvaluatorImpl(
         }
         return kotlin.runCatching {
             ConditionEvaluator.EvaluateResult.Success(
-                cond.condClass(),
+                condition,
                 cond.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
             )
         }.getOrElse {
-            ConditionEvaluator.EvaluateResult.Fail(cond.condClass(), it)
+            ConditionEvaluator.EvaluateResult.Fail(condition, it)
         }.apply {
             evaluateResultListener(this)
         }

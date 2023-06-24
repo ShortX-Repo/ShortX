@@ -3,8 +3,6 @@ package tornaco.apps.shortx.ui.record
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.google.protobuf.Any
-import com.google.protobuf.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +14,6 @@ import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import util.Reflections
 import javax.inject.Inject
 
 data class ConditionEvaRecordState(
@@ -50,12 +47,7 @@ class ConditionEvaRecordViewModel @Inject constructor(@ApplicationContext contex
                     .reversed()
                     .mapNotNull { record ->
                         val actionIns = kotlin.runCatching {
-                            logger.d("Map class: ${record.conditionClassName}")
-                            val protoClass = Class.forName(record.conditionClassName)
-                            val defIns =
-                                Reflections.callStaticMethod(protoClass, "getDefaultInstance")
-                            val packedIns = Any.pack(defIns as Message?)
-                            packedIns.toCondition(shortXManager)
+                            record.condition.toCondition(shortXManager)
                         }.getOrElse {
                             logger.e(it, "Map Condition record error")
                             null

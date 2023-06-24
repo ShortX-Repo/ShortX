@@ -17,7 +17,7 @@ fun ConditionEvaluator.EvaluateResult.toConditionEvaluateRecord(): ConditionEval
             ConditionEvaluateRecord.newBuilder()
                 .setIsSuccess(false)
                 .setMessage(Log.getStackTraceString(this.error))
-                .setConditionClassName(protoType.name)
+                .setCondition(condition)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
 
@@ -26,7 +26,7 @@ fun ConditionEvaluator.EvaluateResult.toConditionEvaluateRecord(): ConditionEval
                 .setIsSuccess(true)
                 .setIsMatch(match)
                 .setMessage("Success")
-                .setConditionClassName(protoType.name)
+                .setCondition(condition)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
     }

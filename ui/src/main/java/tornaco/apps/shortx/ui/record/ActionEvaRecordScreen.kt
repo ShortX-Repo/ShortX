@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionIcon
-import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
@@ -113,19 +113,19 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
 
                         items(state.records) {
                             Box {
-                                val actionLabel = labelAndDescriptionForActionSelector(
+                                val actionLabel = labelLinesForAction(
                                     i18N,
-                                    it.actionIns::class
-                                ).first
+                                    it.actionIns
+                                ).toMutableList().apply { add(it.formattedTimeStr) }
                                 val messageDialogState = rememberErrorMessageDialogState(
-                                    title = actionLabel,
+                                    title = actionLabel[0],
                                     message = it.record.message
                                 )
                                 ErrorMessageDialog(state = messageDialogState)
 
                                 ListItem(
                                     modifier = Modifier.padding(end = 16.dp),
-                                    titleLines = listOf(actionLabel, it.formattedTimeStr),
+                                    titleLines = actionLabel,
                                     icon = {
                                         ActionIcon(it.actionIns)
                                     },
