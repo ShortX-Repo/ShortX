@@ -371,6 +371,8 @@
   "ui.action.recent": "最近",
   "ui.settings.danmu": "弹幕设置",
   "ui.settings.danmu.summary": "调整弹幕颜色，字体大小，速度等",
+  "ui.settings.edge.gesture.size": "边缘手势",
+  "ui.settings.edge.gesture.size.summary": "设置边缘手势触摸区域大小",
   "ui.settings.fact.record": "触发器记录",
   "ui.settings.fact.record.summary": "查看触发器记录",
   "ui.settings.action.record": "动作记录",

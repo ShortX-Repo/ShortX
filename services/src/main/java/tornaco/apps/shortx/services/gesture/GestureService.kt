@@ -8,10 +8,17 @@ import android.view.MotionEvent
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
-import tornaco.apps.shortx.services.*
+import tornaco.apps.shortx.core.util._dp
+import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 
-private const val GUIDELINE_VIEW_SHOWN_TIME = 3000L
+private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
 class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private var gestureDetector: Detector? = null
@@ -20,6 +27,8 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
     private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = null
 
     private val blockingEventDownTimes: MutableSet<Long> = mutableSetOf()
+
+    private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
     override fun start(context: Context) {
         super.start(context)
@@ -49,10 +58,22 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
 
     private fun showGideLineViewForArea(area: Edge) {
         systemServiceScope.launchSafety {
+            // Dismiss first.
+            showingHints.forEach {
+                kotlin.runCatching { it.detach() }.onFailure { logger.e(it, "detach fail") }
+            }
+            showingHints.clear()
+
             val guideLineView =
-                GuideLineView(context, listOf(HotSeat(area, Color.RED))).apply { attach() }
+                GuideLineView(
+                    context,
+                    listOf(HotSeat(area, Color.RED)),
+                    getGestureAreaSize()._dp
+                ).apply { attach() }
+            showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
             guideLineView.detach()
+            showingHints.remove(guideLineView)
         }
     }
 
@@ -85,4 +106,8 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
     fun handleGestureEvent(area: Edge, gestureEvent: Gesture): Boolean {
         return onGestureEvent?.invoke(area to gestureEvent) ?: false
     }
+
+    fun getGestureAreaSize(): Int = store.read(Settings.IntSettings.GestureAreaSizeDp)
+
+    fun setGestureAreaSize(dp: Int) = store.write(Settings.IntSettings.GestureAreaSizeDp, dp)
 }

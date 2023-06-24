@@ -24,6 +24,8 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValueSelectorState
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.main.AppRoute
@@ -294,56 +296,72 @@ private fun generalSettings(
     goToActionRecord: () -> Unit,
     goToConditionRecord: () -> Unit,
     goToFactPublishRecord: () -> Unit,
-) = listOf(
-    Preference.Category(LocalI18N.current["ui.settings.general"]),
+): List<Preference> {
+    val edgeGestureSizeSelectorState = rememberEdgeGestureSizeValueSelectorState(selected = {
+        vm.setGestureAreaSize(it)
+    })
+    EdgeGestureSizeValueSelector(state = edgeGestureSizeSelectorState)
 
-    Preference.TextPreference(icon = Remix.System.apps_fill,
-        title = LocalI18N.current["ui.pkg.set.title"],
-        summary = LocalI18N.current["ui.pkg.set.desc"],
-        onClick = {
-            goToPkgSetList()
-        }
-    ),
+    return listOf(
+        Preference.Category(LocalI18N.current["ui.settings.general"]),
 
-    Preference.TextPreference(icon = Remix.Document.file_list_fill,
-        title = LocalI18N.current["ui.global.var.title"],
-        summary = LocalI18N.current["ui.global.var.desc"],
-        onClick = {
-            goToGV()
-        }
-    ),
+        Preference.TextPreference(icon = Remix.System.apps_fill,
+            title = LocalI18N.current["ui.pkg.set.title"],
+            summary = LocalI18N.current["ui.pkg.set.desc"],
+            onClick = {
+                goToPkgSetList()
+            }
+        ),
 
-    Preference.TextPreference(icon = Remix.Communication.message_fill,
-        title = LocalI18N.current["ui.settings.danmu"],
-        summary = LocalI18N.current["ui.settings.danmu.summary"],
-        onClick = {
-            goToDanmuUISettings()
-        }
-    ),
+        Preference.TextPreference(icon = Remix.Document.file_list_fill,
+            title = LocalI18N.current["ui.global.var.title"],
+            summary = LocalI18N.current["ui.global.var.desc"],
+            onClick = {
+                goToGV()
+            }
+        ),
 
-    Preference.TextPreference(icon = Remix.Media.notification_3_line,
-        title = LocalI18N.current["ui.settings.fact.record"],
-        summary = LocalI18N.current["ui.settings.fact.record.summary"],
-        onClick = {
-            goToFactPublishRecord()
-        }
-    ),
-    Preference.TextPreference(icon = Remix.Document.task_fill,
-        title = LocalI18N.current["ui.settings.action.record"],
-        summary = LocalI18N.current["ui.settings.action.record.summary"],
-        onClick = {
-            goToActionRecord()
-        }
-    ),
+        Preference.TextPreference(icon = Remix.Communication.message_fill,
+            title = LocalI18N.current["ui.settings.danmu"],
+            summary = LocalI18N.current["ui.settings.danmu.summary"],
+            onClick = {
+                goToDanmuUISettings()
+            }
+        ),
 
-    Preference.TextPreference(icon = Remix.System.history_fill,
-        title = LocalI18N.current["ui.settings.condition.record"],
-        summary = LocalI18N.current["ui.settings.condition.record.summary"],
-        onClick = {
-            goToConditionRecord()
-        }
-    ),
-)
+
+        Preference.TextPreference(icon = Remix.Editor.sketching,
+            title = LocalI18N.current["ui.settings.edge.gesture.size"],
+            summary = LocalI18N.current["ui.settings.edge.gesture.size.summary"],
+            onClick = {
+                edgeGestureSizeSelectorState.show(state.gestureAreaSize)
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.Media.notification_3_line,
+            title = LocalI18N.current["ui.settings.fact.record"],
+            summary = LocalI18N.current["ui.settings.fact.record.summary"],
+            onClick = {
+                goToFactPublishRecord()
+            }
+        ),
+        Preference.TextPreference(icon = Remix.Document.task_fill,
+            title = LocalI18N.current["ui.settings.action.record"],
+            summary = LocalI18N.current["ui.settings.action.record.summary"],
+            onClick = {
+                goToActionRecord()
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.System.history_fill,
+            title = LocalI18N.current["ui.settings.condition.record"],
+            summary = LocalI18N.current["ui.settings.condition.record.summary"],
+            onClick = {
+                goToConditionRecord()
+            }
+        ),
+    )
+}
 
 @Composable
 private fun dataSettings(

@@ -43,6 +43,9 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
         object DanmuTextColor : IntSettings(key = "DanmuTextColor", defaultValue = DANMU_COLOR_AUTO)
         object DanmuTextSize :
             IntSettings(key = "DanmuTextSize", defaultValue = DANMU_DEFAULT_TEXT_SIZE)
+
+        object GestureAreaSizeDp :
+            IntSettings(key = "GestureAreaSize", defaultValue = 28)
     }
 
     sealed class FloatSettings(key: String, defaultValue: Float) :

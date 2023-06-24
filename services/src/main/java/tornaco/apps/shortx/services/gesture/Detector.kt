@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.vibrate
 import tornaco.apps.shortx.services.gesture.SystemGesturesPointerEventListener.CallbacksAdapter
@@ -86,7 +87,11 @@ class Detector(
 
     private fun detectArea(downX: Float, downY: Float): Edge? {
         val area = Edge.values().firstOrNull {
-            it.getRect(screenSize.x.toFloat(), screenSize.y.toFloat()).contains(downX, downY)
+            it.getRect(
+                screenSize.x.toFloat(),
+                screenSize.y.toFloat(),
+                service.getGestureAreaSize()._dp.toFloat()
+            ).contains(downX, downY)
         }
         return area
     }

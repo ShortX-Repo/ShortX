@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.Version
+import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -26,7 +27,8 @@ data class SettingsState(
     val logDir: String = "N/A",
     val installFakeService: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
-    val hasFatalError: Boolean = false
+    val hasFatalError: Boolean = false,
+    val gestureAreaSize: Int = 0
 )
 
 sealed interface BackupResult {
@@ -68,7 +70,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 coreFP = shortXManager.fingerprint(),
                 isDebugLogEnabled = shortXManager.isLogDebugEnable(),
                 logDir = shortXManager.getLogDir(),
-                hasFatalError = shortXManager.hasFatalError()
+                hasFatalError = shortXManager.hasFatalError(),
+                gestureAreaSize = shortXManager.getGestureAreaSize()
             )
         }
 
@@ -167,6 +170,15 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 logger.e(it, "exportLogs error")
                 _logExportPerformed.emit(ExportLogResult.Failed(it.message ?: "UNKNOWN ERR"))
             }
+        }
+    }
+
+    fun setGestureAreaSize(size: Int) {
+        viewModelScope.launch {
+            shortXManager.setGestureAreaSize(size)
+            updateState { copy(gestureAreaSize = shortXManager.getGestureAreaSize()) }
+
+            shortXManager.showEdgeHint(Edge.RightCenter)
         }
     }
 }

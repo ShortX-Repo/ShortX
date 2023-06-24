@@ -296,6 +296,13 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    @Override public int getGestureAreaSize() throws android.os.RemoteException
+    {
+      return 0;
+    }
+    @Override public void setGestureAreaSize(int dp) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1127,6 +1134,23 @@ public interface IShortX extends android.os.IInterface
           boolean _result = this.isFactPublishRecordEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_getGestureAreaSize:
+        {
+          data.enforceInterface(descriptor);
+          int _result = this.getGestureAreaSize();
+          reply.writeNoException();
+          reply.writeInt(_result);
+          return true;
+        }
+        case TRANSACTION_setGestureAreaSize:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          this.setGestureAreaSize(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -2752,6 +2776,45 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public int getGestureAreaSize() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        int _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureAreaSize, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getGestureAreaSize();
+          }
+          _reply.readException();
+          _result = _reply.readInt();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void setGestureAreaSize(int dp) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(dp);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureAreaSize, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setGestureAreaSize(dp);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -2826,6 +2889,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_clearFactPublishRecords = (android.os.IBinder.FIRST_CALL_TRANSACTION + 69);
     static final int TRANSACTION_setFactPublishRecordEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 70);
     static final int TRANSACTION_isFactPublishRecordEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 71);
+    static final int TRANSACTION_getGestureAreaSize = (android.os.IBinder.FIRST_CALL_TRANSACTION + 72);
+    static final int TRANSACTION_setGestureAreaSize = (android.os.IBinder.FIRST_CALL_TRANSACTION + 73);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -2949,4 +3014,6 @@ public interface IShortX extends android.os.IInterface
   public void clearFactPublishRecords() throws android.os.RemoteException;
   public void setFactPublishRecordEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isFactPublishRecordEnabled() throws android.os.RemoteException;
+  public int getGestureAreaSize() throws android.os.RemoteException;
+  public void setGestureAreaSize(int dp) throws android.os.RemoteException;
 }

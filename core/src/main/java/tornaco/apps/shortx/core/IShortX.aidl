@@ -127,4 +127,7 @@ interface IShortX {
     void clearFactPublishRecords();
     void setFactPublishRecordEnabled(boolean enable);
     boolean isFactPublishRecordEnabled();
+
+    int getGestureAreaSize();
+    void setGestureAreaSize(int dp);
 }

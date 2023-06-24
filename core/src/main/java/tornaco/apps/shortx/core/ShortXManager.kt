@@ -550,6 +550,16 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getGestureAreaSize(): Int = invokeService(0) {
+        gestureAreaSize
+    }
+
+    fun setGestureAreaSize(dp: Int) {
+        invokeService(Unit) {
+            gestureAreaSize = dp
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

@@ -252,6 +252,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             return shortXContext.rule.isFactPublishRecordEnabled()
         }
 
+        override fun getGestureAreaSize(): Int {
+            return shortXContext.gesture.getGestureAreaSize()
+        }
+
+        override fun setGestureAreaSize(dp: Int) {
+            shortXContext.gesture.setGestureAreaSize(dp)
+        }
+
         override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
             shortXContext.rule.setConditionEvaluateRecorderEnabled(enable)
         }

@@ -13,13 +13,15 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import com.android.internal.R
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.gesture.HotSeat
 import tornaco.apps.shortx.services.gesture.getRect
 import util.Reflections
 
 @SuppressLint("ViewConstructor")
-class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(context) {
+class GuideLineView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
+    FrameLayout(context) {
 
     private val logger = Logger(GuideLineView::class.java.simpleName)
     private val windowManager: WindowManager by lazy {
@@ -29,7 +31,11 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(con
     private var isAttached = false
 
     init {
-        addView(Guideline(context, hotSeats), LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        addView(
+            Guideline(context, hotSeats, areaSize),
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT
+        )
     }
 
     fun attach() {
@@ -61,8 +67,10 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(con
             (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                     or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        lp.layoutInDisplayCutoutMode =
-            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+        if (OsUtils.isROrAbove()) {
+            lp.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+        }
         lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
         lp.packageName = mContext.packageName
         lp.windowAnimations = R.style.Animation_Toast
@@ -75,7 +83,12 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(con
         }
     }
 
-    class Guideline(context: Context, private val hotSeats: List<HotSeat>) : View(context) {
+    class Guideline(
+        context: Context,
+        private val hotSeats: List<HotSeat>,
+        private val areaSize: Int
+    ) :
+        View(context) {
         private val screenSize by lazy {
             context.screenSize()
         }
@@ -91,7 +104,11 @@ class GuideLineView(context: Context, hotSeats: List<HotSeat>) : FrameLayout(con
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
             hotSeats.forEach {
-                val rect = it.area.getRect(screenSize.x.toFloat(), screenSize.y.toFloat())
+                val rect = it.area.getRect(
+                    screenSize.x.toFloat(),
+                    screenSize.y.toFloat(),
+                    areaSize.toFloat()
+                )
                 canvas.drawRect(rect, paint.apply {
                     color = it.color
                 })
