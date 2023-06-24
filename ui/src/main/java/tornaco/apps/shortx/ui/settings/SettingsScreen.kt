@@ -345,19 +345,20 @@ private fun generalSettings(
                 goToFactPublishRecord()
             }
         ),
-        Preference.TextPreference(icon = Remix.Document.task_fill,
-            title = LocalI18N.current["ui.settings.action.record"],
-            summary = LocalI18N.current["ui.settings.action.record.summary"],
-            onClick = {
-                goToActionRecord()
-            }
-        ),
 
         Preference.TextPreference(icon = Remix.System.history_fill,
             title = LocalI18N.current["ui.settings.condition.record"],
             summary = LocalI18N.current["ui.settings.condition.record.summary"],
             onClick = {
                 goToConditionRecord()
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.Document.task_fill,
+            title = LocalI18N.current["ui.settings.action.record"],
+            summary = LocalI18N.current["ui.settings.action.record.summary"],
+            onClick = {
+                goToActionRecord()
             }
         ),
     )
