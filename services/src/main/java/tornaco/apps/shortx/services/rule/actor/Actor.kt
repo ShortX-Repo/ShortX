@@ -262,6 +262,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveNotificationForPackage
     },
+    InjectKeyCode {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.InjectKeyCode
+    },
 
 
     ;

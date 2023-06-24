@@ -618,6 +618,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
+            Action.InjectKeyCode(
+                id = data.id,
+                note = data.note,
+                code = data.keyCode
+            )
+        }
+
         else -> null
     }
 }

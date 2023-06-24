@@ -293,6 +293,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Business.global_line
         }
 
+        Action.InjectKeyCode::class -> {
+            Remix.Device.keyboard_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

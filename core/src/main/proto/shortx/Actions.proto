@@ -503,3 +503,10 @@ message HttpRequestJsonMapAdapter {
 }
 
 message HttpRequestRawAdapter {}
+
+message InjectKeyCode {
+  int32 keyCode = 1;
+
+  string note = 99;
+  string id = 100;
+}

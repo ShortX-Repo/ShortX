@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InjectKeyCode
 import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
@@ -543,6 +544,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                     }
                 )
                 .setUrl(url)
+                .build()
+        }
+
+        is Action.InjectKeyCode -> {
+            InjectKeyCode.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setKeyCode(code)
                 .build()
         }
 

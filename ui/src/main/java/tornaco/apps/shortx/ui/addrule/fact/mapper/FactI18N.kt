@@ -429,18 +429,18 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 }
 
 @Composable
-private fun getLabelForKeyCode(keyCode: Int): String {
+fun getLabelForKeyCode(keyCode: Int): String {
     return getLabelForKeyCode(LocalI18N.current, keyCode)
 }
 
-private fun getLabelForKeyCode(i18N: I18N, keyCode: Int): String {
+fun getLabelForKeyCode(i18N: I18N, keyCode: Int): String {
     return when (keyCode) {
         KeyEvent.KEYCODE_VOLUME_DOWN -> i18N["ui.keycode.label.volume.down"]
         KeyEvent.KEYCODE_VOLUME_UP -> i18N["ui.keycode.label.volume.up"]
         KeyEvent.KEYCODE_BACK -> i18N["ui.keycode.label.back"]
         KeyEvent.KEYCODE_HOME -> i18N["ui.keycode.label.home"]
         KeyEvent.KEYCODE_POWER -> i18N["ui.keycode.label.power"]
-        else -> keyCode.toString()
+        else -> i18N["ui.action.custom.keycode"] + " " + keyCode.toString()
     }
 }
 

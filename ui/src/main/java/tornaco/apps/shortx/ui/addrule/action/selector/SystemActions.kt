@@ -11,7 +11,9 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
@@ -51,6 +53,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         })
     TextInputDialog(state = writeClipboardSelectorDialogState)
 
+    val injectKeyCodeSelectorState = rememberKeyEventSelectorState(selected = { code ->
+        addAction(Action.InjectKeyCode(code = code))
+    })
+    KeyEventSelector(injectKeyCodeSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.ReadClipboard::class -> {
@@ -70,6 +77,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.SetBrightness::class -> {
                 setBrightnessState.show(100)
+                true
+            }
+
+            Action.InjectKeyCode::class -> {
+                injectKeyCodeSelectorState.show()
                 true
             }
 
@@ -109,6 +121,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 fun SystemActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Action.InjectKeyCode::class,
         Action.SetRingerMode::class,
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,

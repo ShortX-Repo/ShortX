@@ -822,6 +822,18 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class InjectKeyCode(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+
+        val code: Int
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",
