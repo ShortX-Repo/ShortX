@@ -8,4 +8,5 @@ data class SubscriptionConfig(
     val priceCNY: Float,
     val email: String,
     val qq: String,
+    val extra1: String,
 )

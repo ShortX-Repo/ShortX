@@ -52,10 +52,6 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     private val _codeVerifyEvent = MutableSharedFlow<CodeVerifyEvent>()
     val codeVerifyEvent = _codeVerifyEvent.asSharedFlow()
 
-    init {
-        loadState()
-    }
-
     fun loadState() {
         val isSubscribed = isLVLChecked(context)
         var source: SubscriptionSource? = null

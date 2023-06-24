@@ -21,10 +21,8 @@ package tornaco.apps.shortx.ui.subscribe
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,15 +60,14 @@ import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.MarkdownText
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UiState
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
@@ -81,7 +78,6 @@ import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.theme.AliBlue
 import tornaco.apps.shortx.ui.theme.PayPalBlue
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import tornaco.apps.shortx.ui.theme.VerifiedGreen
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.theme.WeChatGreen
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -117,6 +113,10 @@ fun SubscribeScreen(back: () -> Unit) {
                         .padding(contentPadding)
                 ) {
                     val vm = hiltViewModel<SubscribeViewModel>()
+                    LaunchedEffect(vm) {
+                        vm.loadState()
+                    }
+
                     val state by vm.state.collectAsState()
                     if (state.isSubscribed) {
                         SubscribedUi()
@@ -162,37 +162,10 @@ private fun SubscribedUi() {
         when (state.source) {
             is SubscriptionSource.ActivationCode -> {
                 LottieLoaderSuccessView()
-                StandardSpacer()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    RemixIcon(remixName = Remix.System.shield_check_fill, tint = VerifiedGreen)
-                    SmallSpacer()
-                    MediumTitle(text = "Verified via Activation Code")
-                }
             }
 
             SubscriptionSource.GooglePlay -> {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    LottieLoaderSuccessView()
-                    StandardSpacer()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        RemixIcon(remixName = Remix.Logos.google_play_fill, tint = VerifiedGreen)
-                        SmallSpacer()
-                        MediumTitle(text = "Verified via Google Play")
-                    }
-                }
+                LottieLoaderSuccessView()
             }
 
             null -> {}
@@ -265,6 +238,11 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
 
 
         LargeSpacer()
+
+        if (config.extra1.isNotBlank()) {
+            TipRow(text = config.extra1)
+            LargeSpacer()
+        }
 
         val textColor = LocalContentColor.current.takeOrElse {
             MaterialTheme.colorScheme.onPrimaryContainer
@@ -382,7 +360,10 @@ private fun Fabs(
             containerColor = VipColorGold,
             onClick = { inputDialogState.show() },
             text = {
-                Text(text = "Verify Code", color = Color.White)
+                Text(
+                    text = LocalI18N.current["ui.subscription.subscribe.verify.code"],
+                    color = Color.White
+                )
             },
             icon = {
                 RemixIcon(tint = Color.White, remixName = Remix.System.login_circle_fill)
@@ -393,7 +374,10 @@ private fun Fabs(
             containerColor = VipColorGold,
             onClick = { navHost.navigate(AppRoute.LVLCheck.name) },
             text = {
-                Text(text = "Verify Google", color = Color.White)
+                Text(
+                    text = LocalI18N.current["ui.subscription.subscribe.verify.play"],
+                    color = Color.White
+                )
             },
             icon = {
                 RemixIcon(tint = Color.White, remixName = Remix.Logos.google_play_fill)
