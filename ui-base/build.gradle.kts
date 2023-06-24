@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.accompanist.placeholder.material)
+    implementation(libs.accompanist.systemuicontroller)
+
     implementation(libs.swiperefreshlayout)
 
     implementation(libs.appcompat)
