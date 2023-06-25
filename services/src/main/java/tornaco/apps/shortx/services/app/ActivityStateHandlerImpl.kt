@@ -65,10 +65,6 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     fun onActivityStopped(componentName: ComponentName, userId: Int) {
         // Just dump.
         logger.d("onActivityStopped: $componentName userId: $userId")
-        val topVisibleActivities = func.getTopVisibleActivities()
-        logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
-        logger.d("currentResumedActivities: ${_currentResumedActivities.value.map { it.appComponentToString() }}")
-
         onActivityStateChanged()
     }
 
