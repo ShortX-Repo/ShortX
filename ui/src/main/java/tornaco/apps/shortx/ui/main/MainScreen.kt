@@ -20,6 +20,9 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
+import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -82,13 +85,13 @@ fun HomeScreen() {
                                 DanmuUISettingsActivity.start(context)
                             },
                             goToActionRecord = {
-                                appNavController.navigate(AppRoute.ActionEvaRecord.name)
+                                ActionEvaRecordActivity.start(context)
                             },
                             goToConditionRecord = {
-                                appNavController.navigate(AppRoute.ConditionEvaRecord.name)
+                                ConditionEvaRecordActivity.start(context)
                             },
                             goToFactPublishRecord = {
-                                appNavController.navigate(AppRoute.FactPublishRecord.name)
+                                FactPublishRecordActivity.start(context)
                             },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)

@@ -4,6 +4,8 @@
 
 package tornaco.apps.shortx.ui.record
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.FactIcon
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -38,6 +42,22 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@AndroidEntryPoint
+class FactPublishRecordActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, FactPublishRecordActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        FactPublishRecordScreen { finish() }
+    }
+}
 
 @Composable
 fun FactPublishRecordScreenDialog(state: CommonDialogState) {

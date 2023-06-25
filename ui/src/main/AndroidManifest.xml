@@ -53,6 +53,15 @@
         <activity
             android:name="tornaco.apps.shortx.ui.pkgset.PkgSetDetailActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.record.ActionEvaRecordActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.record.FactPublishRecordActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

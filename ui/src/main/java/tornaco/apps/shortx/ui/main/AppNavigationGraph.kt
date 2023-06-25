@@ -13,9 +13,6 @@ import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
-import tornaco.apps.shortx.ui.record.ActionEvaRecordScreen
-import tornaco.apps.shortx.ui.record.ConditionEvaRecordScreen
-import tornaco.apps.shortx.ui.record.FactPublishRecordScreen
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
 import tornaco.apps.shortx.ui.subscribe.SubscribeScreen
 
@@ -65,24 +62,6 @@ fun AppNavigationGraph(
                 LocalI18N.current["ui.title.edit.da"]
             }
             AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
-                appNavController.popBackStack()
-            }
-        }
-
-        animateComposable(AppRoute.ActionEvaRecord.name) {
-            ActionEvaRecordScreen {
-                appNavController.popBackStack()
-            }
-        }
-
-        animateComposable(AppRoute.ConditionEvaRecord.name) {
-            ConditionEvaRecordScreen {
-                appNavController.popBackStack()
-            }
-        }
-
-        animateComposable(AppRoute.FactPublishRecord.name) {
-            FactPublishRecordScreen {
                 appNavController.popBackStack()
             }
         }

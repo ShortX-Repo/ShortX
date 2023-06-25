@@ -1,12 +1,12 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalMaterialApi::class
 )
 
 package tornaco.apps.shortx.ui.record
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,9 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionIcon
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
@@ -45,6 +47,22 @@ import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.SuccessGreen
+
+@AndroidEntryPoint
+class ActionEvaRecordActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, ActionEvaRecordActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        ActionEvaRecordScreen { finish() }
+    }
+}
 
 @Composable
 fun ActionEvaRecordScreenDialog(state: CommonDialogState) {
