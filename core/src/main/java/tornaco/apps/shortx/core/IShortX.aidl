@@ -4,6 +4,8 @@ import tornaco.apps.shortx.core.IJobStatusListener;
 import tornaco.apps.shortx.core.ICallback;
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 import tornaco.apps.shortx.core.rule.IPkgSetObserver;
+import tornaco.apps.shortx.core.rule.IRuleObserver;
+import tornaco.apps.shortx.core.rule.IDAObserver;
 
 interface IShortX {
     Version version();
@@ -134,4 +136,10 @@ interface IShortX {
 
     void registerPkgSetObs(in IPkgSetObserver obs);
     void unregisterPkgSetObs(in IPkgSetObserver obs);
+
+    void registerRuleObs(in IRuleObserver obs);
+    void unregisterRuleObs(in IRuleObserver obs);
+
+    void registerDAObs(in IDAObserver obs);
+    void unregisterDAObs(in IDAObserver obs);
 }

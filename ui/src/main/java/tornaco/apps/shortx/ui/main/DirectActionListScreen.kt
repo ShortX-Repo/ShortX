@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
+import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
@@ -86,7 +87,7 @@ fun DirectActionListScreen() {
         },
         onAddClick = {
             featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddDirectAction) {
-                appNavController.navigate(AppRoute.AddDA.name)
+                AddDirectActionActivity.start(context)
             }
         },
         acceptPrivacyStatement = {
@@ -106,7 +107,7 @@ fun DirectActionListScreen() {
                 vm.dupDA(it.id)
             },
             onEdit = {
-                appNavController.navigate("${AppRoute.AddDA.name}?daId=${it.id}")
+                AddDirectActionActivity.start(context, it.id)
             },
             onShare = { um ->
                 vm.daToShareString(um)?.let {

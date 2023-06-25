@@ -15,7 +15,9 @@ import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.services.ShortXContext
@@ -64,12 +66,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         allTriggers(context, shortXContext)
     }
 
-    private val ruleChangeListeners = mutableListOf<() -> Unit>()
-    private val daChangeListeners = mutableListOf<() -> Unit>()
-
     private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
 
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
+    private val ruleObs = RemoteCallbackList<IRuleObserver>()
+    private val daObs = RemoteCallbackList<IDAObserver>()
 
     private val actionEvaluateRecorder = ActionEvaluateRecorder()
     private val conditionEvaluateRecorder = ConditionEvaluateRecorder()
@@ -245,28 +246,33 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             // Add
             ruleSettingsStore.addRule(rule)
             handler.postSafety {
-                ruleChanged()
                 allTriggers.forEach { it.onAddRule(rule) }
             }
         } else {
             // Update
             ruleSettingsStore.addRule(rule)
             handler.postSafety {
-                ruleChanged()
                 allTriggers.forEach { it.onUpdateRule(oldRule = existing, newRule = rule) }
             }
         }
 
-
+        ruleObs.broadcast {
+            kotlin.runCatching { it.onAddOrUpdate(rule.id) }
+                .onFailure { logger.e("Call onAddOrUpdate") }
+        }
     }
 
     fun deleteRule(ruleId: String) {
         val rules = ruleSettingsStore.deleteRule(ruleId)
         handler.postSafety {
-            ruleChanged()
             rules.forEach { r ->
                 allTriggers.forEach { it.onDeleteRule(r) }
             }
+        }
+
+        ruleObs.broadcast {
+            kotlin.runCatching { it.onDelete(ruleId) }
+                .onFailure { logger.e("Call onDelete") }
         }
     }
 
@@ -278,7 +284,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         logger.d("setRuleEnabled: $ruleId $enable")
         ruleSettingsStore.setRuleEnabled(ruleId, enable)
         handler.postSafety {
-            ruleChanged()
             allTriggers.forEach {
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
@@ -299,39 +304,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun getRuleCount() = ruleSettingsStore.getRuleCount()
 
-    fun addRuleChangeListener(listener: () -> Unit) {
-        ruleChangeListeners.add(listener)
-    }
-
-    fun removeRuleChangeListener(listener: () -> Unit) {
-        ruleChangeListeners.remove(listener)
-    }
-
-    private fun ruleChanged() {
-        ruleChangeListeners.forEach { it() }
-    }
-
-    fun addDAChangeListener(listener: () -> Unit) {
-        daChangeListeners.add(listener)
-    }
-
-    fun removeDAChangeListener(listener: () -> Unit) {
-        daChangeListeners.remove(listener)
-    }
-
-    private fun daChanged() {
-        daChangeListeners.forEach { it() }
-    }
-
     fun addDirectAction(da: DirectAction) {
         logger.d("addDirectAction: $da")
         dasSettingsStore.addDirectAction(da)
-        daChanged()
+        daObs.broadcast {
+            kotlin.runCatching { it.onAddOrUpdate(da.id) }
+                .onFailure { logger.e("Call onAddOrUpdate") }
+        }
     }
 
     fun deleteDirectAction(id: String) {
         dasSettingsStore.deleteDirectAction(id)
-        daChanged()
+        daObs.broadcast {
+            kotlin.runCatching { it.onDelete(id) }
+                .onFailure { logger.e("Call onDelete") }
+        }
     }
 
     fun getDirectActionById(id: String): DirectAction? {
@@ -458,5 +445,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun isFactPublishRecordEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableFactPublishRecorder)
+    }
+
+    fun registerRuleObs(obs: IRuleObserver) {
+        ruleObs.register(obs)
+    }
+
+    fun unregisterRuleObs(obs: IRuleObserver) {
+        ruleObs.unregister(obs)
+    }
+
+    fun registerDAObs(obs: IDAObserver) {
+        daObs.register(obs)
+    }
+
+    fun unregisterDAObs(obs: IDAObserver) {
+        daObs.unregister(obs)
     }
 }

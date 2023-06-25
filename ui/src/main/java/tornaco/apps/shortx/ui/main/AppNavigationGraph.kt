@@ -2,12 +2,8 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
-import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
@@ -23,25 +19,6 @@ fun AppNavigationGraph(
     AnimatedNavHost(appNavController, startDestination = startDestination) {
         animateComposable(AppRoute.Home.name) {
             HomeScreen()
-        }
-
-        animateComposable(
-            "${AppRoute.AddDA.name}?daId={daId}",
-            arguments = listOf(navArgument("daId") {
-                type = NavType.StringType
-                defaultValue = null
-                nullable = true
-            })
-        ) { backStackEntry ->
-            val daId = backStackEntry.arguments?.getString("daId")
-            val screenTitle = if (daId == null) {
-                LocalI18N.current["ui.title.add.da"]
-            } else {
-                LocalI18N.current["ui.title.edit.da"]
-            }
-            AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
-                appNavController.popBackStack()
-            }
         }
 
         animateComposable(AppRoute.ViewOpenSourceLicense.name) {

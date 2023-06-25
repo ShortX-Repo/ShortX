@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addda
 
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
@@ -12,16 +14,47 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@AndroidEntryPoint
+class AddDirectActionActivity : BaseActivity() {
+    companion object {
+        private const val KEY_DA_ID = "daId"
+
+        @JvmStatic
+        fun start(context: Context, daId: String? = null) {
+            val starter = Intent(context, AddDirectActionActivity::class.java)
+                .putExtra(KEY_DA_ID, daId)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        val daId = intent.getStringExtra(KEY_DA_ID)
+        val screenTitle = if (daId == null) {
+            LocalI18N.current["ui.title.add.da"]
+        } else {
+            LocalI18N.current["ui.title.edit.da"]
+        }
+        AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
+            setResult(it.select(RESULT_OK, RESULT_CANCELED))
+            finish()
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +65,7 @@ fun AddDirectActionScreen(
     canSaveWithoutChanges: Boolean = false,
     readOnly: Boolean = false,
     saveIconName: String = Remix.System.check_line,
-    back: () -> Unit
+    back: (Boolean) -> Unit
 ) {
     val vm = hiltViewModel<AddDirectActionViewModel>()
     val addDirectActionState by vm.state.collectAsState()
@@ -69,7 +102,7 @@ fun AddDirectActionScreen(
                         title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                back()
+                                back(false)
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -79,7 +112,7 @@ fun AddDirectActionScreen(
                                 enabled = canSaveWithoutChanges || addDirectActionState.daChanged || actionContentState.isChanged,
                                 onClick = {
                                     vm.save()
-                                    back()
+                                    back(true)
                                 }) {
                                 RemixIcon(saveIconName)
                             }

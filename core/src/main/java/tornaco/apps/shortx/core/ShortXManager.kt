@@ -23,8 +23,10 @@ import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
+import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.settings.defaultDanmuUISettings
@@ -457,6 +459,31 @@ class ShortXManager(private val service: IShortX) {
             unregisterPkgSetObs(obs)
         }
     }
+
+    fun registerRuleObs(obs: IRuleObserver) {
+        invokeService(Unit) {
+            registerRuleObs(obs)
+        }
+    }
+
+    fun unregisterRuleObs(obs: IRuleObserver) {
+        invokeService(Unit) {
+            unregisterRuleObs(obs)
+        }
+    }
+
+    fun registerDAObs(obs: IDAObserver) {
+        invokeService(Unit) {
+            registerDAObs(obs)
+        }
+    }
+
+    fun unregisterDAObs(obs: IDAObserver) {
+        invokeService(Unit) {
+            unregisterDAObs(obs)
+        }
+    }
+
 
     fun vb(code: String, deviceId: String, callback: (CommonApiRes) -> Unit) {
         invokeService(Unit) {

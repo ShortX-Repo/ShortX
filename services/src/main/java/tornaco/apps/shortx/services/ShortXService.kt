@@ -17,8 +17,10 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
+import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.ApkUtils
@@ -267,6 +269,22 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun unregisterPkgSetObs(obs: IPkgSetObserver) {
             shortXContext.pkgSet.unregisterPkgSetObs(obs)
+        }
+
+        override fun registerRuleObs(obs: IRuleObserver) {
+            shortXContext.rule.registerRuleObs(obs)
+        }
+
+        override fun unregisterRuleObs(obs: IRuleObserver) {
+            shortXContext.rule.unregisterRuleObs(obs)
+        }
+
+        override fun registerDAObs(obs: IDAObserver) {
+            shortXContext.rule.registerDAObs(obs)
+        }
+
+        override fun unregisterDAObs(obs: IDAObserver) {
+            shortXContext.rule.unregisterDAObs(obs)
         }
 
         override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {

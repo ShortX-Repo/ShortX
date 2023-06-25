@@ -309,6 +309,18 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException
     {
     }
+    @Override public void registerRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void registerDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1174,6 +1186,42 @@ public interface IShortX extends android.os.IInterface
           tornaco.apps.shortx.core.rule.IPkgSetObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IPkgSetObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterPkgSetObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerRuleObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IRuleObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IRuleObserver.Stub.asInterface(data.readStrongBinder());
+          this.registerRuleObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterRuleObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IRuleObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IRuleObserver.Stub.asInterface(data.readStrongBinder());
+          this.unregisterRuleObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerDAObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IDAObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IDAObserver.Stub.asInterface(data.readStrongBinder());
+          this.registerDAObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterDAObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IDAObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IDAObserver.Stub.asInterface(data.readStrongBinder());
+          this.unregisterDAObs(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -2877,6 +2925,82 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void registerRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerRuleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerRuleObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterRuleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterRuleObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void registerDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerDAObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerDAObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterDAObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterDAObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -2955,6 +3079,10 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_setGestureAreaSize = (android.os.IBinder.FIRST_CALL_TRANSACTION + 73);
     static final int TRANSACTION_registerPkgSetObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 74);
     static final int TRANSACTION_unregisterPkgSetObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 75);
+    static final int TRANSACTION_registerRuleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 76);
+    static final int TRANSACTION_unregisterRuleObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 77);
+    static final int TRANSACTION_registerDAObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 78);
+    static final int TRANSACTION_unregisterDAObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 79);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3082,4 +3210,8 @@ public interface IShortX extends android.os.IInterface
   public void setGestureAreaSize(int dp) throws android.os.RemoteException;
   public void registerPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException;
   public void unregisterPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException;
+  public void registerRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException;
+  public void unregisterRuleObs(tornaco.apps.shortx.core.rule.IRuleObserver obs) throws android.os.RemoteException;
+  public void registerDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException;
+  public void unregisterDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException;
 }

@@ -17,6 +17,8 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.IDAObserver
+import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
@@ -224,6 +226,29 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+    private val ruleObs = object : IRuleObserver.Stub() {
+        override fun onAddOrUpdate(id: String?) {
+            logger.d("ruleObs, onAddOrUpdate: $id")
+            loadRules()
+        }
+
+        override fun onDelete(id: String?) {
+            logger.d("ruleObs, onDelete: $id")
+            loadRules()
+        }
+    }
+    private val daObs = object : IDAObserver.Stub() {
+        override fun onAddOrUpdate(id: String?) {
+            logger.d("daObs, onAddOrUpdate: $id")
+            loadDA()
+        }
+
+        override fun onDelete(id: String?) {
+            logger.d("daObs, onDelete: $id")
+            loadDA()
+        }
+    }
+
     init {
         updateState {
             copy(
@@ -234,6 +259,8 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
 
         shortXManager.registerJobStatusListener(jobStatusListener)
+        shortXManager.registerRuleObs(ruleObs)
+        shortXManager.registerDAObs(daObs)
 
         viewModelScope.launch {
             pref.privacyStatementAcceptedFlow.collectLatest {
@@ -284,6 +311,8 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     override fun onCleared() {
         super.onCleared()
         shortXManager.unregisterJobStatusListener(jobStatusListener)
+        shortXManager.unregisterRuleObs(ruleObs)
+        shortXManager.unregisterDAObs(daObs)
     }
 
     fun loadRules(delay: Boolean = false) {
