@@ -62,6 +62,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.AddRuleActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

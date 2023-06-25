@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule
 
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -13,6 +15,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,6 +30,42 @@ import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+@AndroidEntryPoint
+class AddRuleActivity : BaseActivity() {
+    companion object {
+        private const val KEY_RULE_ID = "ruleId"
+
+        @JvmStatic
+        fun start(context: Context, ruleId: String?) {
+            val starter = Intent(context, AddRuleActivity::class.java)
+                .putExtra(KEY_RULE_ID, ruleId)
+            context.startActivity(starter)
+        }
+
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, AddRuleActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        val ruleId = intent.getStringExtra(KEY_RULE_ID)
+        AddRuleScreen(
+            ruleId = ruleId,
+            screenTitle = if (ruleId != null) {
+                LocalI18N.current["ui.title.edit.rule"]
+            } else {
+                LocalI18N.current["ui.title.add.rule"]
+            }
+        ) {
+            finish()
+        }
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRuleScreen(
@@ -36,7 +75,7 @@ fun AddRuleScreen(
     canSaveWithoutChanges: Boolean = false,
     readOnly: Boolean = false,
     saveIconName: String = Remix.System.check_line,
-    back: () -> Unit
+    back: (Boolean) -> Unit
 ) {
     val vm = hiltViewModel<AddRuleViewModel>()
     val addRuleState by vm.state.collectAsState()
@@ -83,7 +122,7 @@ fun AddRuleScreen(
                         title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                back()
+                                back(false)
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -99,7 +138,7 @@ fun AddRuleScreen(
                                         || actionOnDeletedState.isChanged,
                                 onClick = {
                                     vm.save()
-                                    back()
+                                    back(true)
                                 }) {
                                 RemixIcon(remixName = saveIconName)
                             }

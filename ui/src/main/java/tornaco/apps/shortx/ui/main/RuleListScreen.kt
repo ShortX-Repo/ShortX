@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
@@ -42,9 +43,7 @@ fun RuleScreen() {
         vm.refreshStates()
     }
 
-    val appNavController = LocalNavHostController.current
     val context = LocalContext.current
-
     val featureAccess = featureAccessCheckUi()
 
     MainScaffold(
@@ -64,7 +63,7 @@ fun RuleScreen() {
         },
         onAddClick = {
             featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddRule) {
-                appNavController.navigate(AppRoute.AddRule.name)
+                AddRuleActivity.start(context)
             }
         },
         acceptPrivacyStatement = {
@@ -83,7 +82,7 @@ fun RuleScreen() {
                 vm.deleteRule(rule.id)
             },
             onEdit = { rule ->
-                appNavController.navigate("${AppRoute.AddRule.name}?ruleId=${rule.id}")
+                AddRuleActivity.start(context, rule.id)
             },
             onShare = { rule ->
                 vm.ruleToShareString(rule)?.let {

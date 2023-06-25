@@ -7,7 +7,6 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
-import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
@@ -24,27 +23,6 @@ fun AppNavigationGraph(
     AnimatedNavHost(appNavController, startDestination = startDestination) {
         animateComposable(AppRoute.Home.name) {
             HomeScreen()
-        }
-
-        animateComposable(
-            "${AppRoute.AddRule.name}?ruleId={ruleId}",
-            arguments = listOf(navArgument("ruleId") {
-                type = NavType.StringType
-                defaultValue = null
-                nullable = true
-            })
-        ) { backStackEntry ->
-            val ruleId = backStackEntry.arguments?.getString("ruleId")
-            AddRuleScreen(
-                ruleId = ruleId,
-                screenTitle = if (ruleId != null) {
-                    LocalI18N.current["ui.title.edit.rule"]
-                } else {
-                    LocalI18N.current["ui.title.add.rule"]
-                }
-            ) {
-                appNavController.popBackStack()
-            }
         }
 
         animateComposable(
