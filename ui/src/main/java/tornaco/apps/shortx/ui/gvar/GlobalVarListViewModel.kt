@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
 
@@ -12,6 +13,19 @@ data class GlobalVarListState(
 )
 
 class GlobalVarListViewModel : StateViewModel<GlobalVarListState>({ GlobalVarListState() }) {
+    private val globalVarObs = object : IGlobalVarObserver.Stub() {
+        override fun onAddOrUpdate(id: String?) {
+            loadState()
+        }
+
+        override fun onDelete(id: String?) {
+            loadState()
+        }
+    }
+
+    init {
+        shortXManager.registerGlobalVarObs(globalVarObs)
+    }
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -36,4 +50,8 @@ class GlobalVarListViewModel : StateViewModel<GlobalVarListState>({ GlobalVarLis
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterGlobalVarObs(globalVarObs)
+    }
 }

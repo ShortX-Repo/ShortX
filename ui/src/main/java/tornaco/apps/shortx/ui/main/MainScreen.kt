@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -17,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -64,13 +66,15 @@ fun HomeScreen() {
                         StandardSpacer()
 
                         val appNavController = LocalNavHostController.current
+                        val context = LocalContext.current
+
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
                             goToPkgSetList = {
                                 appNavController.navigate(AppRoute.PkgSetList.name)
                             },
                             goToGV = {
-                                appNavController.navigate(AppRoute.GlobalVarList.name)
+                                GlobalVarListActivity.start(context)
                             },
                             goToDanmuUISettings = {
                                 appNavController.navigate(AppRoute.DanmuUISettings.name)

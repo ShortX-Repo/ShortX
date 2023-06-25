@@ -4,7 +4,6 @@ enum class AppRoute {
     Home,
     AddDA,
     AddRule,
-    Settings,
     PkgSetList,
     PkgSetDetails,
     GlobalVarList,

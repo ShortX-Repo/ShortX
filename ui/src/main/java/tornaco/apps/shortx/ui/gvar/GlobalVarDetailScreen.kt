@@ -3,6 +3,8 @@
 package tornaco.apps.shortx.ui.gvar
 
 import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +34,27 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+
+class GlobalVarDetailActivity : BaseActivity() {
+    companion object {
+        private const val KEY_NAME = "name"
+
+        @JvmStatic
+        fun start(context: Context, name: String) {
+            val starter = Intent(context, GlobalVarDetailActivity::class.java).apply {
+                putExtra(KEY_NAME, name)
+            }
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        intent.getStringExtra(KEY_NAME)
+            ?.let { GlobalVarDetailScreen(name = it, back = { finish() }) }
+    }
+}
 
 
 @OptIn(ExperimentalFoundationApi::class)

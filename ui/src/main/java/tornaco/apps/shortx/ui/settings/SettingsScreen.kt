@@ -36,34 +36,6 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
 
-@Composable
-fun SettingsScreen() {
-    val appNavController = LocalNavHostController.current
-    SettingsScreen(
-        back = { appNavController.popBackStack() },
-        goToPkgSetList = {
-            appNavController.navigate(AppRoute.PkgSetList.name)
-        },
-        goToGV = {
-            appNavController.navigate(AppRoute.GlobalVarList.name)
-        },
-        goToDanmuUISettings = {
-            appNavController.navigate(AppRoute.DanmuUISettings.name)
-        },
-        goToActionRecord = {
-            appNavController.navigate(AppRoute.ActionEvaRecord.name)
-        },
-        goToConditionRecord = {
-            appNavController.navigate(AppRoute.ConditionEvaRecord.name)
-        },
-        goToFactPublishRecord = {
-            appNavController.navigate(AppRoute.FactPublishRecord.name)
-        },
-        viewOpenSourceLicense = {
-            appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
-        })
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(

@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
@@ -33,7 +34,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.gvar.GlobalVarListScreenDialog
+import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreenDialog
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
@@ -68,15 +69,15 @@ fun SuggestedNavEntry() {
                 tint = MaterialTheme.colorScheme.primary
             )
             SmallSpacer()
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
                 text = LocalI18N.current["ui.suggest.nav.entry.title"],
             )
         }
         StandardSpacer()
 
         FlowRow {
-            val globalVarScreenState = rememberCommonDialogState()
-            GlobalVarListScreenDialog(state = globalVarScreenState)
+            val context = LocalContext.current
 
             val pkgSetScreenState = rememberCommonDialogState()
             PkgSetListScreenDialog(state = pkgSetScreenState)
@@ -88,7 +89,7 @@ fun SuggestedNavEntry() {
                 SuggestionChip(
                     onClick = {
                         when (it) {
-                            SuggestedNav.GlobalVar -> globalVarScreenState.show()
+                            SuggestedNav.GlobalVar -> GlobalVarListActivity.start(context)
                             SuggestedNav.PkgSet -> pkgSetScreenState.show()
                             SuggestedNav.DanmuSettings -> danmuSettingsScreenState.show()
                             SuggestedNav.ShowPointerLocation -> {

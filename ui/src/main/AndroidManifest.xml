@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
 
     <application android:theme="@style/UiTheme.ShortX">
@@ -38,6 +38,12 @@
             </intent-filter>
 
         </activity>
+        <activity
+            android:name="tornaco.apps.shortx.ui.gvar.GlobalVarListActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.gvar.GlobalVarDetailActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

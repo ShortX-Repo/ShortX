@@ -5,6 +5,8 @@
 
 package tornaco.apps.shortx.ui.gvar
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +33,25 @@ import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+class GlobalVarListActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, GlobalVarListActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        GlobalVarListScreen(back = { finish() },
+            goToDetail = {
+                GlobalVarDetailActivity.start(this@GlobalVarListActivity, it)
+            })
+    }
+}
+
 
 @Composable
 fun GlobalVarListScreenDialog(state: CommonDialogState) {
