@@ -52,7 +52,6 @@ object ContextDataMapping {
     @DoNotStrip
     enum class AppBecomeFg(val description: String) {
         pkgName("App package name of the FG Activity"),
-        componentName("Short string of the FG Activity component name"),
         appLabel("The app label")
     }
 

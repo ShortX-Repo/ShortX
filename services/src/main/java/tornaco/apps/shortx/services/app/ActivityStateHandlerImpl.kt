@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
 import tornaco.apps.shortx.core.toAppComponent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.android.ServiceRetriever
 
@@ -33,9 +34,8 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     }
 
     fun isFront(appPkg: AppPkg): Boolean {
-        val topVisibleActivities = func.getTopVisibleActivities().also {
-            // Update our cache...
-            _currentResumedActivities.value = it
+        val topVisibleActivities = func.getTopVisibleActivities().also { appComponents ->
+            logger.d("Check isFront, topVisibleActivities: ${appComponents.map { it.appComponentToString() }}")
         }
         return topVisibleActivities.any { it.pkg == appPkg }
     }
@@ -43,91 +43,84 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
     fun onActivityResumed(componentName: ComponentName, userId: Int) {
         logger.d("onActivityResumed: $componentName userId: $userId")
 
-        val topVisibleActivities = func.getTopVisibleActivities()
-        logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
-        if (topVisibleActivities.isEmpty()) {
-            logger.e("Can not get topVisibleActivities")
-            return
-        }
-
-        val currentResumedActivities = _currentResumedActivities.value
-        logger.d("currentResumedActivities: ${currentResumedActivities.map { it.appComponentToString() }}")
+        onActivityStateChanged()
 
         val activity = componentName.toAppComponent(userId)
-        val activityPkg = activity.pkg
-        val isThisPkgFrontBefore = currentResumedActivities.any { it.pkg == activityPkg }
-
-        if (!isThisPkgFrontBefore) {
-            logger.i("This package changed from back to front: $activityPkg")
-            shortXContext.rule.publishFact(
-                reason = "onActivityResumed",
-                fact = AppBecomeFg.newBuilder().addApps(activityPkg).build(),
-                initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeFg.componentName.name to componentName.flattenToShortString(),
-                    ContextDataMapping.AppBecomeFg.pkgName.name to activityPkg.pkgName,
-                    ContextDataMapping.AppBecomeFg.appLabel.name to (shortXContext.appState.getAppLabel(
-                        activityPkg
-                    )
-                        ?: activityPkg.pkgName),
-                )
-            )
-        }
-
-
-        logger.i("Publish Activity resume fact.")
-        _currentResumedActivities.value = topVisibleActivities
-
         shortXContext.rule.publishFact(
-            reason = "onComponentMoveToFg",
+            reason = "onActivityResumed",
             fact = ActivityStarted.newBuilder()
                 .addComponents(activity)
                 .build(),
             initialContextData = mapOf(
-                ContextDataMapping.ActivityStarted.pkgName.name to activityPkg.pkgName,
+                ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
                 ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(
-                    activityPkg
-                )
-                    ?: activityPkg.pkgName),
+                    activity.pkg
+                ) ?: activity.pkg.pkgName),
             )
         )
+
     }
 
     fun onActivityStopped(componentName: ComponentName, userId: Int) {
+        // Just dump.
         logger.d("onActivityStopped: $componentName userId: $userId")
-
         val topVisibleActivities = func.getTopVisibleActivities()
         logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
+        logger.d("currentResumedActivities: ${_currentResumedActivities.value.map { it.appComponentToString() }}")
 
-        val activity = componentName.toAppComponent(userId)
-        val activityPkg = activity.pkg
-        val isThisPkgFrontNow = topVisibleActivities.any { it.pkg == activityPkg }
+        onActivityStateChanged()
+    }
 
-        // Do not update here, will cause check fail on ActivityResume.
-        // _currentResumedActivities.value = topVisibleActivities
-        // But still need to remove it.
+    private fun onActivityStateChanged() {
+        val topVisibleActivities = func.getTopVisibleActivities()
+        val topVisibleApps = topVisibleActivities.map { it.pkg }.distinct()
+        logger.d("topVisibleActivities: ${topVisibleActivities.map { it.appComponentToString() }}")
+        logger.d("topVisibleApps: ${topVisibleApps.map { it.appPkgToString() }}")
 
-        if (!isThisPkgFrontNow) {
-            logger.i("This pkg has moved to background: $activityPkg")
-            _currentResumedActivities.value =
-                _currentResumedActivities.value.toMutableList().apply {
-                    remove(activity)
-                }
+        val currentResumedActivities = _currentResumedActivities.value
+        val currentResumedApps = currentResumedActivities.map { it.pkg }.distinct()
+        logger.d("currentResumedActivities: ${currentResumedActivities.map { it.appComponentToString() }}")
+        logger.d("currentResumedApps: ${currentResumedApps.map { it.appPkgToString() }}")
 
+        // Added
+        val addedApps = topVisibleApps.filterNot { currentResumedApps.contains(it) }
+        val removedApps = currentResumedApps.filterNot { topVisibleApps.contains(it) }
+
+        logger.d("addedApps: ${addedApps.map { it.appPkgToString() }}")
+        logger.d("removedApps: ${removedApps.map { it.appPkgToString() }}")
+
+        addedApps.forEach {
+            logger.i("+++++++++> Pkg to FRONT: $it")
             shortXContext.rule.publishFact(
-                reason = "onActivityStopped",
-                fact = AppBecomeBg.newBuilder().addApps(activityPkg).build(),
+                reason = "onActivityResumed",
+                fact = AppBecomeFg.newBuilder().addApps(it).build(),
                 initialContextData = mapOf(
-                    ContextDataMapping.AppBecomeBg.pkgName.name to activityPkg.pkgName,
-                    ContextDataMapping.AppBecomeBg.appLabel.name to (shortXContext.appState.getAppLabel(
-                        activityPkg
-                    )
-                        ?: activityPkg.pkgName),
+                    ContextDataMapping.AppBecomeFg.pkgName.name to it.pkgName,
+                    ContextDataMapping.AppBecomeFg.appLabel.name to (shortXContext.appState.getAppLabel(
+                        it
+                    ) ?: it.pkgName),
                 )
             )
         }
-    }
 
+        removedApps.forEach {
+            logger.i("---------> Pkg to BACKGROUND: $it")
+            shortXContext.rule.publishFact(
+                reason = "onActivityResumed",
+                fact = AppBecomeBg.newBuilder().addApps(it).build(),
+                initialContextData = mapOf(
+                    ContextDataMapping.AppBecomeBg.pkgName.name to it.pkgName,
+                    ContextDataMapping.AppBecomeBg.appLabel.name to (shortXContext.appState.getAppLabel(
+                        it
+                    )
+                        ?: it.pkgName),
+                )
+            )
+        }
+        logger.i("----> Update _currentResumedActivities to: ${topVisibleActivities.map { it.appComponentToString() }}")
+        _currentResumedActivities.value = topVisibleActivities
+    }
 }
 
 private interface Funs {
