@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
+import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
@@ -67,7 +68,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             lk.keyCode == rk.keyCode
         }
         register(Alarm::class.java) { l, f ->
-            // Alarm match label.
+            val la = l as Alarm
+            val ra = f as Alarm
+            la.id == ra.id
+        }
+        register(RandomInPeriod::class.java) { l, f ->
             val la = l as Alarm
             val ra = f as Alarm
             la.id == ra.id

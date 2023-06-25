@@ -25,6 +25,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.SystemClock
+import tornaco.apps.shortx.core.alarm.formatDuration
+import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -33,9 +35,7 @@ import tornaco.apps.shortx.core.util.alarmManager
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.util.AlarmManagerCompat
 import java.time.Duration
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.abs
 
 private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.period.action"
 private const val BROADCAST_EXTRA_RULE_ID =
@@ -92,10 +92,10 @@ class RandomInPeriodScheduler(
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerOffset = 1L
+        val triggerOffset = period.getTriggerTimeOffset()
 
         if (triggerOffset <= 0) {
-            logger.i("skip this alarm since offset < 0, maybe we have missed this alarm")
+            logger.i("skip this period since offset < 0, maybe we have missed this alarm")
         } else {
             logger.i(
                 "schedule for rule: ${rule.title}, reason: $reason, pi: $pi, trigger offset: ${
@@ -149,16 +149,6 @@ class RandomInPeriodScheduler(
     fun shutdown() {
         logger.i("shutdown")
         context.unregisterReceiver(receiver)
-    }
-
-    private fun formatDuration(duration: Duration): String {
-        val seconds = duration.seconds
-        val absSeconds = abs(seconds)
-        val positive = String.format(
-            Locale.ENGLISH,
-            "%d:%02d:%02d", absSeconds / 3600, absSeconds % 3600 / 60, absSeconds % 60
-        )
-        return if (seconds < 0) "-$positive" else positive
     }
 }
 

@@ -9,6 +9,7 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listO
     RuleHooksTrigger(context, shortXContext),
     ScreenStateTrigger(context, shortXContext),
     AlarmTrigger(context, shortXContext),
+    RandomInPeriodTrigger(context, shortXContext),
     WifiStateTrigger(context, shortXContext),
     WifiConnectionStateTrigger(context, shortXContext),
     BTStateTrigger(context, shortXContext),
