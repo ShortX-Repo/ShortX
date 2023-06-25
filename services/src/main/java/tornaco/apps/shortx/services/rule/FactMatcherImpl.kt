@@ -73,8 +73,8 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             la.id == ra.id
         }
         register(RandomInPeriod::class.java) { l, f ->
-            val la = l as Alarm
-            val ra = f as Alarm
+            val la = l as RandomInPeriod
+            val ra = f as RandomInPeriod
             la.id == ra.id
         }
         register(AppBecomeFg::class.java) { actual, rule ->
