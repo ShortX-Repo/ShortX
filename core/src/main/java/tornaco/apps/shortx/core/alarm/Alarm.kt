@@ -20,7 +20,11 @@ package tornaco.apps.shortx.core.alarm
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
-import java.util.*
+import java.time.Duration
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
 val Alarm.triggerDateToday: Date
     get() = android.icu.util.Calendar.getInstance().apply {
@@ -105,4 +109,15 @@ fun Alarm.getNextTriggerDayOfWeekOffset(): Int {
         // nextWeekDayOffset
         7 - todayWeekToday + minRepeatDay
     }
+}
+
+
+fun formatDuration(duration: Duration): String {
+    val seconds = duration.seconds
+    val absSeconds = abs(seconds)
+    val positive = String.format(
+        Locale.ENGLISH,
+        "%d:%02d:%02d", absSeconds / 3600, absSeconds % 3600 / 60, absSeconds % 60
+    )
+    return if (seconds < 0) "-$positive" else positive
 }

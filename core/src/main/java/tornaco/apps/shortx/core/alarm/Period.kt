@@ -19,27 +19,83 @@ package tornaco.apps.shortx.core.alarm
 
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.util.Logger
+import java.util.Calendar
 import java.util.Date
 
 private val logger = Logger("RandomInPeriodExt")
 
-fun RandomInPeriod.triggerDate(): Date {
-    val start = android.icu.util.Calendar.getInstance().apply {
-        time = Date()
-        set(android.icu.util.Calendar.HOUR_OF_DAY, start.hour)
-        set(android.icu.util.Calendar.MINUTE, start.minutes)
-        set(android.icu.util.Calendar.SECOND, start.seconds)
-    }.time
+typealias JCalendar = java.util.Calendar
 
-    val end = android.icu.util.Calendar.getInstance().apply {
-        time = Date()
-        set(android.icu.util.Calendar.HOUR_OF_DAY, end.hour)
-        set(android.icu.util.Calendar.MINUTE, end.minutes)
-        set(android.icu.util.Calendar.SECOND, end.seconds)
-    }.time
+val RandomInPeriod.triggerDateToday: Date
+    get() {
+        val current = Date()
+        val start = JCalendar.getInstance().apply {
+            time = Date()
+            set(JCalendar.HOUR_OF_DAY, start.hour)
+            set(JCalendar.MINUTE, start.minutes)
+            set(JCalendar.SECOND, start.seconds)
+        }.time
 
-    val randomTime = (start.time..end.time).random()
-    return Date(randomTime).also {
-        logger.d("triggerDateToday, start: $start end: $end rand: $it")
+        val end = JCalendar.getInstance().apply {
+            time = Date()
+            set(JCalendar.HOUR_OF_DAY, end.hour)
+            set(JCalendar.MINUTE, end.minutes)
+            set(JCalendar.SECOND, end.seconds)
+        }.time
+
+        val startTime = if (current >= end) {
+            // Missed today.
+            start.time
+        } else {
+            maxOf(current.time, start.time)
+        }
+
+        val randomTime = (startTime..end.time).random()
+        return Date(randomTime).also {
+            logger.d("triggerDateToday, current: $current")
+            logger.d("triggerDateToday, start: $start")
+            logger.d("triggerDateToday, end: $end")
+            logger.d("triggerDateToday, rand: $it")
+        }
+    }
+
+
+fun RandomInPeriod.getTriggerTimeOffset(): Long {
+    val dateToday = triggerDateToday
+    val timeMillisOffset = (dateToday.time - System.currentTimeMillis())
+    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset(dateToday)
+    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+}
+
+fun RandomInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
+    // No repeat
+    if (repeat.isNo) {
+        return 0
+    }
+
+    val todayWeekToday =
+        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
+
+    // Today will trigger
+    val hasRepeatToday =
+        repeat.daysList.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
+    val isCurrentBeforeTodayTriggerTime = System.currentTimeMillis() < triggerDateToday.time
+    if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
+        return 0
+    }
+
+    // Today will not, find next day
+    val nextRepeatDay = repeat.daysList.firstOrNull { it.toCalendarInt() > todayWeekToday }
+    return if (nextRepeatDay != null) {
+        // nextDayOffsetFromToday
+        nextRepeatDay.toCalendarInt() - todayWeekToday
+    } else {
+        // This is last day of repeat, just find the min one.
+        // 1 2 3 4 5 6 7
+        // 5 -> 1 = 3 = 7 - 5 + 1
+        // 3 -> 2 = 6 = 7 - 3 + 2
+        val minRepeatDay = repeat.daysList.minBy { it.toCalendarInt() }.toCalendarInt()
+        // nextWeekDayOffset
+        7 - todayWeekToday + minRepeatDay
     }
 }

@@ -25,6 +25,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.SystemClock
+import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.Alarm
@@ -150,16 +151,6 @@ class AlarmScheduler(
     fun shutdown() {
         logger.i("AlarmScheduler shutdown")
         context.unregisterReceiver(receiver)
-    }
-
-    private fun formatDuration(duration: Duration): String {
-        val seconds = duration.seconds
-        val absSeconds = abs(seconds)
-        val positive = String.format(
-            Locale.ENGLISH,
-            "%d:%02d:%02d", absSeconds / 3600, absSeconds % 3600 / 60, absSeconds % 60
-        )
-        return if (seconds < 0) "-$positive" else positive
     }
 }
 
