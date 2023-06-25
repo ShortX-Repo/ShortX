@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
+import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
@@ -15,7 +16,6 @@ import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
-import java.util.Calendar
 import kotlin.reflect.KClass
 
 
@@ -500,12 +500,8 @@ fun getLongLabelForWeekDay(i18n: I18N, weekDay: WeekDay): String {
 }
 
 fun TimeOfADay.toDisplayTime(): String {
-    val date = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, hour)
-        set(Calendar.MINUTE, minutes)
-        set(Calendar.SECOND, 0)
-    }.time
-    return DateUtils.formatShortForMessageTime(date.time)
+    val time = toLocalTime()
+    return DateUtils.formatLocalTime(time)
 }
 
 fun OnOffAny.label(i18n: I18N): String {

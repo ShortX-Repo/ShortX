@@ -109,7 +109,7 @@ fun AlarmContent(state: AlarmSelectorState) {
     Column(
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BottomTimePicker(is24TimeFormat = true, currentTime = state.time) {
+        BottomTimePicker(is24TimeFormat = false, currentTime = state.time) {
             state.time = it
         }
         RepeatSelector(state)

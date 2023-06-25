@@ -3,6 +3,8 @@ package tornaco.apps.shortx.core.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -18,6 +20,8 @@ public class DateUtils {
     private static final String DATE_FORMAT_PATTERN_FILE_NAME = "yyyy-MMdd-HHmmss";
     private static final String DATE_FORMAT_PATTERN_MESSAGE_TIME_SHORT = "HH:mm:ss";
     private static final String DATE_FORMAT_PATTERN_MESSAGE_TIME_LONG = "yyyy-MM-dd HH:mm:ss";
+
+    private static final DateTimeFormatter LOCAL_TIME_FORMAT = DateTimeFormatter.ofPattern("hh:mm a");
 
     public static String formatLong(long l) {
         String time;
@@ -96,5 +100,9 @@ public class DateUtils {
 
         return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
                 && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static String formatLocalTime(LocalTime time) {
+        return time.format(LOCAL_TIME_FORMAT);
     }
 }

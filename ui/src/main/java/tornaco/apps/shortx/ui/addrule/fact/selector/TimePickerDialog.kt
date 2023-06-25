@@ -30,9 +30,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
-import java.text.SimpleDateFormat
 import java.time.LocalTime
-import java.util.Locale
 
 class TimePickerDialogState(val onSelected: (LocalTime) -> Unit) : CommonDialogState() {
     internal val logger = Logger("TimePickerDialogState")
@@ -49,9 +47,7 @@ fun rememberTimePickerDialogState(
 
 @Composable
 fun TimePickerDialog(dialogState: TimePickerDialogState) {
-    val pickState = rememberTimePickerState()
-    val formatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
-
+    val pickState = rememberTimePickerState(is24Hour = false)
     if (dialogState.isShowing) {
         DialogContainer(
             onCancel = { dialogState.dismiss() },

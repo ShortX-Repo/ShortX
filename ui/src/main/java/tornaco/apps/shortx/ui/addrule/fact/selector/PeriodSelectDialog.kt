@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -41,7 +42,6 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class PeriodSelectorState(
     val selected: (Fact.RandomInPeriod) -> Unit
@@ -143,8 +143,6 @@ private fun TimeContent(state: PeriodSelectorState) {
     })
     TimePickerDialog(dialogState = endSelectState)
 
-    val formatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
-
     TipRow(text = LocalI18N.current["ui.fact.time.of.a.day.random.summary"])
     StandardSpacer()
     StandardSpacer()
@@ -152,7 +150,7 @@ private fun TimeContent(state: PeriodSelectorState) {
     SmallTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.start"])
     FilledTonalButton(onClick = { startSelectState.show() }) {
         Text(
-            text = state.start?.format(formatter)
+            text = state.start?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]
         )
     }
@@ -162,7 +160,7 @@ private fun TimeContent(state: PeriodSelectorState) {
     SmallTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.end"])
     FilledTonalButton(onClick = { endSelectState.show() }) {
         Text(
-            text = state.end?.format(formatter)
+            text = state.end?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]
         )
     }
