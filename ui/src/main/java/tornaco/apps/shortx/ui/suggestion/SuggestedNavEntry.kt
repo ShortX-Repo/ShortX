@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreenDialog
+import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 
@@ -91,7 +92,7 @@ fun SuggestedNavEntry() {
                         when (it) {
                             SuggestedNav.GlobalVar -> GlobalVarListActivity.start(context)
                             SuggestedNav.PkgSet -> pkgSetScreenState.show()
-                            SuggestedNav.DanmuSettings -> danmuSettingsScreenState.show()
+                            SuggestedNav.DanmuSettings -> DanmuUISettingsActivity.start(context)
                             SuggestedNav.ShowPointerLocation -> {
                                 shortXManager.setPointerLocationEnabled(!shortXManager.isPointerLocationEnabled())
                             }

@@ -13,14 +13,11 @@ import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
-import tornaco.apps.shortx.ui.gvar.GlobalVarDetailScreen
-import tornaco.apps.shortx.ui.gvar.GlobalVarListScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.record.ActionEvaRecordScreen
 import tornaco.apps.shortx.ui.record.ConditionEvaRecordScreen
 import tornaco.apps.shortx.ui.record.FactPublishRecordScreen
-import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreen
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
 import tornaco.apps.shortx.ui.subscribe.SubscribeScreen
 
@@ -95,36 +92,6 @@ fun AppNavigationGraph(
                 PkgSetDetailScreen(id = id) {
                     appNavController.popBackStack()
                 }
-            }
-        }
-
-        animateComposable(AppRoute.GlobalVarList.name) {
-            GlobalVarListScreen(back = {
-                appNavController.popBackStack()
-            }, goToDetail = {
-                appNavController.navigate("${AppRoute.GlobalDetails.name}?id=$it")
-            })
-        }
-
-        animateComposable(
-            "${AppRoute.GlobalDetails.name}?id={id}",
-            arguments = listOf(navArgument("id") {
-                type = NavType.StringType
-                defaultValue = null
-                nullable = true
-            })
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")
-            id?.let {
-                GlobalVarDetailScreen(name = id) {
-                    appNavController.popBackStack()
-                }
-            }
-        }
-
-        animateComposable(AppRoute.DanmuUISettings.name) {
-            DanmuUISettingsScreen {
-                appNavController.popBackStack()
             }
         }
 

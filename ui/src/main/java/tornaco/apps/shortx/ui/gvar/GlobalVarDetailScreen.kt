@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.os.USER_MASK_ANY
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
@@ -35,7 +36,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelector
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-
+@AndroidEntryPoint
 class GlobalVarDetailActivity : BaseActivity() {
     companion object {
         private const val KEY_NAME = "name"

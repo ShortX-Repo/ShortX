@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
+import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class HomeBottomRoute {
@@ -77,7 +78,7 @@ fun HomeScreen() {
                                 GlobalVarListActivity.start(context)
                             },
                             goToDanmuUISettings = {
-                                appNavController.navigate(AppRoute.DanmuUISettings.name)
+                                DanmuUISettingsActivity.start(context)
                             },
                             goToActionRecord = {
                                 appNavController.navigate(AppRoute.ActionEvaRecord.name)

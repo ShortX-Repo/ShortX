@@ -26,6 +26,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
@@ -34,6 +35,7 @@ import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+@AndroidEntryPoint
 class GlobalVarListActivity : BaseActivity() {
     companion object {
         @JvmStatic

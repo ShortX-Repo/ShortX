@@ -17,6 +17,8 @@
 
 package tornaco.apps.shortx.ui.settings.danmu
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,8 +37,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -45,6 +49,25 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@AndroidEntryPoint
+class DanmuUISettingsActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, DanmuUISettingsActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        DanmuUISettingsScreen {
+            finish()
+        }
+    }
+}
+
 
 @Composable
 fun DanmuUISettingsScreenDialog(state: CommonDialogState) {
