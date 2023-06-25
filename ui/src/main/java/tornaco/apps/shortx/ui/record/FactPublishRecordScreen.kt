@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.FactIcon
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
@@ -126,14 +126,19 @@ fun FactPublishRecordScreen(back: () -> Unit) {
 
                         items(state.records) {
                             Box {
-                                val actionLabel = labelAndDescriptionForFactSelector(
-                                    i18N,
-                                    it.factIns::class
-                                ).first
+                                val actionLabel = mutableListOf<String>().apply {
+                                    addAll(
+                                        labelForFact(
+                                            i18N,
+                                            it.factIns
+                                        )
+                                    )
+                                    add(it.formattedTimeStr)
+                                }
 
                                 ListItem(
                                     modifier = Modifier.padding(end = 16.dp),
-                                    titleLines = listOf(actionLabel, it.formattedTimeStr),
+                                    titleLines = actionLabel,
                                     icon = {
                                         FactIcon(it.factIns)
                                     },

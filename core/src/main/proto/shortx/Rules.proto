@@ -57,6 +57,6 @@ message ConditionEvaluateRecord {
 }
 
 message FactPublishRecord {
-  string factClassName = 1;
+  google.protobuf.Any fact = 1;
   int64 timeStamp = 2;
 }
