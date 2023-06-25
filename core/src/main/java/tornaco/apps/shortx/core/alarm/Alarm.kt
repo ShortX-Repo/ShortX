@@ -19,8 +19,10 @@ package tornaco.apps.shortx.core.alarm
 
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
+import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import java.time.Duration
+import java.time.LocalTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -121,3 +123,5 @@ fun formatDuration(duration: Duration): String {
     )
     return if (seconds < 0) "-$positive" else positive
 }
+
+fun TimeOfADay.toLocalTime(): LocalTime = LocalTime.of(hour, minutes, seconds)

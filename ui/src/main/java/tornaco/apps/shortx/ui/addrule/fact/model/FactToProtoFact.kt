@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
+import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
@@ -84,6 +85,14 @@ fun Fact.toProtoFact(): ProtoMessage {
             Alarm.newBuilder()
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.RandomInPeriod -> {
+            RandomInPeriod.newBuilder()
+                .setRepeat(repeatDays)
+                .setStart(start)
+                .setEnd(end)
                 .setId(id).setNote(note).build()
         }
 

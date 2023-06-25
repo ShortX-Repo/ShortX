@@ -55,6 +55,16 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.RandomInPeriod::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.RandomInPeriod::class.java
+            Fact.RandomInPeriod(
+                start = data.start,
+                end = data.end,
+                repeatDays = data.repeat,
+                id = data.id, note = data.note
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.AppBecomeFg::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppBecomeFg::class.java
             val models = (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()

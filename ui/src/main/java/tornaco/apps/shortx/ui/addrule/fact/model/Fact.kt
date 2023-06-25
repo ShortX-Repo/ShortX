@@ -112,6 +112,18 @@ sealed interface Fact {
         }
     }
 
+    data class RandomInPeriod(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val start: TimeOfADay,
+        val end: TimeOfADay,
+        val repeatDays: RepeatDays
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
     data class AppBecomeBackground(
         override val note: String = "",
         override val id: String = defaultNewFactId(),

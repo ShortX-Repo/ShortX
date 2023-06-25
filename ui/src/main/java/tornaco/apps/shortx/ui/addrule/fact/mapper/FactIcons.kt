@@ -16,6 +16,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.UserPresent::class -> Remix.Device.phone_lock_fill
         Fact.SystemReady::class -> Remix.System.login_circle_fill
         Fact.Alarm::class -> Remix.System.alarm_fill
+        Fact.RandomInPeriod::class -> Remix.System.alarm_fill
         Fact.AppBecomeBackground::class -> Remix.System.refresh_fill
         Fact.AppBecomeForeground::class -> Remix.System.star_fill
         Fact.WifiStatusChanged::class -> Remix.Device.wifi_fill

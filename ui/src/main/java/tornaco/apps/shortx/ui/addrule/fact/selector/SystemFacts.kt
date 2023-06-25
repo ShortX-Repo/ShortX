@@ -24,6 +24,7 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.SystemReady::class,
 
         Fact.Alarm::class,
+        Fact.RandomInPeriod::class,
 
         Fact.WifiStatusChanged::class,
         Fact.WifiConnectedTo::class,

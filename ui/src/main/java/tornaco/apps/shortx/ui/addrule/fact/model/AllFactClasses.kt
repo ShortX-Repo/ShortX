@@ -12,6 +12,7 @@ val allFactClasses = listOf(
     Fact.SystemReady::class,
 
     Fact.Alarm::class,
+    Fact.RandomInPeriod::class,
     Fact.AppBecomeBackground::class,
     Fact.AppBecomeForeground::class,
 

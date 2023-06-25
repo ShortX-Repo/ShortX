@@ -10,10 +10,12 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberPeriodSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -43,6 +45,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
     }
     AlarmSelector(timeOfADaySelector)
+
+    val randomInPeriodSelectorState = rememberPeriodSelectorState(selected = {
+        addFact(it)
+    })
+    PeriodSelector(state = randomInPeriodSelectorState)
 
     val wifiSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
@@ -183,6 +190,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.Alarm::class -> {
                 timeOfADaySelector.show()
+                true
+            }
+
+            Fact.RandomInPeriod::class -> {
+                randomInPeriodSelectorState.show(source.getFactAs())
                 true
             }
 

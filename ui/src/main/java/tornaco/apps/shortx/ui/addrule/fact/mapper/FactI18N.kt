@@ -30,6 +30,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.UserPresent::class -> i18n["ui.fact.screen.user.present"] to null
         Fact.SystemReady::class -> i18n["ui.fact.system.ready"] to null
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
+        Fact.RandomInPeriod::class -> i18n["ui.fact.time.of.a.day.random"] to null
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
 
@@ -201,6 +202,29 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.Alarm -> {
             listOf(
                 i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.timeOfADay.toDisplayTime())],
+                if (fact.repeatDays.isNo) {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.no"]
+                    )]
+                } else if (fact.repeatDays.isEveryDay) {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.everyday"]
+                    )]
+                } else {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to fact.repeatDays.daysList.joinToString(
+                            " "
+                        ) {
+                            getLongLabelForWeekDay(weekDay = it, i18n = i18N)
+                        })]
+                }
+            )
+        }
+
+        is Fact.RandomInPeriod -> {
+            listOf(
+                i18N["ui.fact.time.of.a.day.random"],
+                i18N["ui.fact.time.of.a.day.random.at", mapOf("time" to fact.start.toDisplayTime() + " - " + fact.end.toDisplayTime())],
                 if (fact.repeatDays.isNo) {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
                         "days" to i18N["ui.fact.time.of.a.day.repeat.no"]
