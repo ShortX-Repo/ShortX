@@ -303,6 +303,12 @@ public interface IShortX extends android.os.IInterface
     @Override public void setGestureAreaSize(int dp) throws android.os.RemoteException
     {
     }
+    @Override public void registerPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1150,6 +1156,24 @@ public interface IShortX extends android.os.IInterface
           int _arg0;
           _arg0 = data.readInt();
           this.setGestureAreaSize(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerPkgSetObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IPkgSetObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IPkgSetObserver.Stub.asInterface(data.readStrongBinder());
+          this.registerPkgSetObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterPkgSetObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.IPkgSetObserver _arg0;
+          _arg0 = tornaco.apps.shortx.core.rule.IPkgSetObserver.Stub.asInterface(data.readStrongBinder());
+          this.unregisterPkgSetObs(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -2815,6 +2839,44 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void registerPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerPkgSetObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerPkgSetObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterPkgSetObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterPkgSetObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -2891,6 +2953,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_isFactPublishRecordEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 71);
     static final int TRANSACTION_getGestureAreaSize = (android.os.IBinder.FIRST_CALL_TRANSACTION + 72);
     static final int TRANSACTION_setGestureAreaSize = (android.os.IBinder.FIRST_CALL_TRANSACTION + 73);
+    static final int TRANSACTION_registerPkgSetObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 74);
+    static final int TRANSACTION_unregisterPkgSetObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 75);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3016,4 +3080,6 @@ public interface IShortX extends android.os.IInterface
   public boolean isFactPublishRecordEnabled() throws android.os.RemoteException;
   public int getGestureAreaSize() throws android.os.RemoteException;
   public void setGestureAreaSize(int dp) throws android.os.RemoteException;
+  public void registerPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException;
+  public void unregisterPkgSetObs(tornaco.apps.shortx.core.rule.IPkgSetObserver obs) throws android.os.RemoteException;
 }

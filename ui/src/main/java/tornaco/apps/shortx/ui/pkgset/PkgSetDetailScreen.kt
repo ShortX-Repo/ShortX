@@ -1,7 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.pkgset
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,12 +23,37 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@AndroidEntryPoint
+class PkgSetDetailActivity : BaseActivity() {
+    companion object {
+        private const val KEY_ID = "ID"
+
+        @JvmStatic
+        fun start(context: Context, id: String) {
+            val starter = Intent(context, PkgSetDetailActivity::class.java)
+                .putExtra(KEY_ID, id)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        intent.getStringExtra(KEY_ID)?.let {
+            PkgSetDetailScreen(id = it) {
+                finish()
+            }
+        }
+    }
+}
+
 
 @Composable
 fun PkgSetDetailScreen(id: String, back: () -> Unit) {

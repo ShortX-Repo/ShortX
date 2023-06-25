@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
+import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -72,7 +73,7 @@ fun HomeScreen() {
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
                             goToPkgSetList = {
-                                appNavController.navigate(AppRoute.PkgSetList.name)
+                                PkgSetListActivity.start(context)
                             },
                             goToGV = {
                                 GlobalVarListActivity.start(context)

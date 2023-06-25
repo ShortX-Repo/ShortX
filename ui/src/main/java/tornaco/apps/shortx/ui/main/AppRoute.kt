@@ -4,8 +4,6 @@ enum class AppRoute {
     Home,
     AddDA,
     AddRule,
-    PkgSetList,
-    PkgSetDetails,
     ActionEvaRecord,
     ConditionEvaRecord,
     FactPublishRecord,

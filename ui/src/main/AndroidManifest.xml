@@ -47,6 +47,12 @@
         <activity
             android:name="tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.pkgset.PkgSetListActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.pkgset.PkgSetDetailActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.app
 
+import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.PrebuiltPkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.PkgSetsStore
@@ -12,6 +14,7 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
     private val pkgSetsStore: PkgSetsStore by lazy {
         PkgSetsStore(systemServiceScope)
     }
+    private val pkgSetObs = RemoteCallbackList<IPkgSetObserver>()
 
     private val prebuiltPkgSets = listOf(
         PrebuiltPkgSet.User,
@@ -32,11 +35,22 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
             return false
         }
         pkgSetsStore.addPkgSet(set)
+
+        pkgSetObs.broadcast {
+            kotlin.runCatching { it.onAddOrUpdate(set.label) }
+                .onFailure { logger.e(it, "Call onAddOrUpdate") }
+        }
+
         return true
     }
 
     fun deletePkgSet(label: String) {
         pkgSetsStore.deletePkgSet(label)
+
+        pkgSetObs.broadcast {
+            kotlin.runCatching { it.onDelete(label) }
+                .onFailure { logger.e(it, "Call onDelete") }
+        }
     }
 
     fun getPkgSetByLabel(label: String): PkgSet? {
@@ -52,6 +66,14 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext)
                 add(it.getPkgSet(shortXContext))
             }
         }
+    }
+
+    fun registerPkgSetObs(obs: IPkgSetObserver) {
+        pkgSetObs.register(obs)
+    }
+
+    fun unregisterPkgSetObs(obs: IPkgSetObserver) {
+        pkgSetObs.unregister(obs)
     }
 }
 

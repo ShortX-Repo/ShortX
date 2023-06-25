@@ -4,6 +4,8 @@
 
 package tornaco.apps.shortx.ui.pkgset
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -24,10 +26,29 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+@AndroidEntryPoint
+class PkgSetListActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, PkgSetListActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        PkgSetListScreen(back = { finish() }, goToDetail = {
+            PkgSetDetailActivity.start(this, it)
+        })
+    }
+}
 
 @Composable
 fun PkgSetListScreenDialog(state: CommonDialogState) {

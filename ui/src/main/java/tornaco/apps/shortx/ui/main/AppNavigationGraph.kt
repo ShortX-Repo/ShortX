@@ -13,8 +13,6 @@ import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
-import tornaco.apps.shortx.ui.pkgset.PkgSetDetailScreen
-import tornaco.apps.shortx.ui.pkgset.PkgSetListScreen
 import tornaco.apps.shortx.ui.record.ActionEvaRecordScreen
 import tornaco.apps.shortx.ui.record.ConditionEvaRecordScreen
 import tornaco.apps.shortx.ui.record.FactPublishRecordScreen
@@ -68,30 +66,6 @@ fun AppNavigationGraph(
             }
             AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
                 appNavController.popBackStack()
-            }
-        }
-
-        animateComposable(AppRoute.PkgSetList.name) {
-            PkgSetListScreen(back = {
-                appNavController.popBackStack()
-            }, goToDetail = {
-                appNavController.navigate("${AppRoute.PkgSetDetails.name}?id=$it")
-            })
-        }
-
-        animateComposable(
-            "${AppRoute.PkgSetDetails.name}?id={id}",
-            arguments = listOf(navArgument("id") {
-                type = NavType.StringType
-                defaultValue = null
-                nullable = true
-            })
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")
-            id?.let {
-                PkgSetDetailScreen(id = id) {
-                    appNavController.popBackStack()
-                }
             }
         }
 

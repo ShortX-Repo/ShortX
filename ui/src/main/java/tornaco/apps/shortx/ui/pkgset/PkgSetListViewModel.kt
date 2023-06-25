@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.StateViewModel
@@ -15,6 +16,19 @@ data class PkgSetListState(
 )
 
 class PkgSetListViewModel : StateViewModel<PkgSetListState>({ PkgSetListState() }) {
+    private val obs = object : IPkgSetObserver.Stub() {
+        override fun onAddOrUpdate(id: String?) {
+            loadState()
+        }
+
+        override fun onDelete(id: String?) {
+            loadState()
+        }
+    }
+
+    init {
+        shortXManager.registerPkgSetObs(obs)
+    }
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -44,5 +58,10 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState>({ PkgSetListState() 
     fun delete(label: String) {
         shortXManager.deletePkgSet(label)
         loadState()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterPkgSetObs(obs)
     }
 }

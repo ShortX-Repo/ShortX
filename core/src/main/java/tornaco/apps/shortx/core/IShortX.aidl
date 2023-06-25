@@ -3,6 +3,7 @@ package tornaco.apps.shortx.core;
 import tornaco.apps.shortx.core.IJobStatusListener;
 import tornaco.apps.shortx.core.ICallback;
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
+import tornaco.apps.shortx.core.rule.IPkgSetObserver;
 
 interface IShortX {
     Version version();
@@ -130,4 +131,7 @@ interface IShortX {
 
     int getGestureAreaSize();
     void setGestureAreaSize(int dp);
+
+    void registerPkgSetObs(in IPkgSetObserver obs);
+    void unregisterPkgSetObs(in IPkgSetObserver obs);
 }

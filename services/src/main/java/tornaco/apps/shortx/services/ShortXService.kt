@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
+import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.ApkUtils
@@ -258,6 +259,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun setGestureAreaSize(dp: Int) {
             shortXContext.gesture.setGestureAreaSize(dp)
+        }
+
+        override fun registerPkgSetObs(obs: IPkgSetObserver) {
+            shortXContext.pkgSet.registerPkgSetObs(obs)
+        }
+
+        override fun unregisterPkgSetObs(obs: IPkgSetObserver) {
+            shortXContext.pkgSet.unregisterPkgSetObs(obs)
         }
 
         override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
