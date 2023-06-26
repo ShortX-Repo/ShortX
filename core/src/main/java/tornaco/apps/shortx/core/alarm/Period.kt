@@ -60,10 +60,42 @@ val RandomInPeriod.triggerDateToday: Date
     }
 
 
+val RandomInPeriod.triggerDateForRepeat: Date
+    get() {
+        val start = JCalendar.getInstance().apply {
+            time = Date()
+            set(JCalendar.HOUR_OF_DAY, start.hour)
+            set(JCalendar.MINUTE, start.minutes)
+            set(JCalendar.SECOND, start.seconds)
+        }.time
+
+        val end = JCalendar.getInstance().apply {
+            time = Date()
+            set(JCalendar.HOUR_OF_DAY, end.hour)
+            set(JCalendar.MINUTE, end.minutes)
+            set(JCalendar.SECOND, end.seconds)
+        }.time
+
+        val randomTime = (start.time..end.time).random()
+        return Date(randomTime).also {
+            logger.d("triggerDateForRepeat, start: $start")
+            logger.d("triggerDateForRepeat, end: $end")
+            logger.d("triggerDateForRepeat, rand: $it")
+        }
+    }
+
+
 fun RandomInPeriod.getTriggerTimeOffset(): Long {
     val dateToday = triggerDateToday
     val timeMillisOffset = (dateToday.time - System.currentTimeMillis())
     val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset(dateToday)
+    return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
+}
+
+fun RandomInPeriod.getTriggerTimeOffsetForRepeat(): Long {
+    val repeatDate = triggerDateForRepeat
+    val timeMillisOffset = (repeatDate.time - System.currentTimeMillis())
+    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffsetForRepeat()
     return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
 }
 
@@ -83,6 +115,27 @@ fun RandomInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
     if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
         return 0
     }
+
+    // Today will not, find next day
+    val nextRepeatDay = repeat.daysList.firstOrNull { it.toCalendarInt() > todayWeekToday }
+    return if (nextRepeatDay != null) {
+        // nextDayOffsetFromToday
+        nextRepeatDay.toCalendarInt() - todayWeekToday
+    } else {
+        // This is last day of repeat, just find the min one.
+        // 1 2 3 4 5 6 7
+        // 5 -> 1 = 3 = 7 - 5 + 1
+        // 3 -> 2 = 6 = 7 - 3 + 2
+        val minRepeatDay = repeat.daysList.minBy { it.toCalendarInt() }.toCalendarInt()
+        // nextWeekDayOffset
+        7 - todayWeekToday + minRepeatDay
+    }
+}
+
+
+fun RandomInPeriod.getNextTriggerDayOfWeekOffsetForRepeat(): Int {
+    val todayWeekToday =
+        Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
 
     // Today will not, find next day
     val nextRepeatDay = repeat.daysList.firstOrNull { it.toCalendarInt() > todayWeekToday }

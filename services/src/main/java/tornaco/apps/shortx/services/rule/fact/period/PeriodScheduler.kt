@@ -27,6 +27,7 @@ import android.os.Handler
 import android.os.SystemClock
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
+import tornaco.apps.shortx.core.alarm.getTriggerTimeOffsetForRepeat
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -79,39 +80,44 @@ class RandomInPeriodScheduler(
         }
     }
 
-    fun schedule(rule: Rule, period: RandomInPeriod, reason: String) = kotlin.runCatching {
-        val pi = PendingIntent.getBroadcast(
-            context,
-            requestCode(period),
-            Intent(BROADCAST_ACTION)
-                .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_RULE_ID, rule.id)
-                .putExtra(BROADCAST_EXTRA_RULE_TITLE, rule.title)
-                .putExtra(BROADCAST_EXTRA_FACT_ID, period.id)
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val triggerOffset = period.getTriggerTimeOffset()
-
-        if (triggerOffset <= 0) {
-            logger.i("skip this period since offset < 0, maybe we have missed this alarm")
-        } else {
-            logger.i(
-                "schedule for rule: ${rule.title}, reason: $reason, pi: $pi, trigger offset: ${
-                    formatDuration(Duration.ofMillis(triggerOffset))
-                }"
+    fun schedule(rule: Rule, period: RandomInPeriod, isForRepeat: Boolean, reason: String) =
+        kotlin.runCatching {
+            val pi = PendingIntent.getBroadcast(
+                context,
+                requestCode(period),
+                Intent(BROADCAST_ACTION)
+                    .setPackage("android")
+                    .putExtra(BROADCAST_EXTRA_RULE_ID, rule.id)
+                    .putExtra(BROADCAST_EXTRA_RULE_TITLE, rule.title)
+                    .putExtra(BROADCAST_EXTRA_FACT_ID, period.id)
+                    .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            AlarmManagerCompat.setExactAndAllowWhileIdle(
-                alarmManager,
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + triggerOffset,
-                pi
-            )
+
+            val triggerOffset = if (isForRepeat) {
+                period.getTriggerTimeOffsetForRepeat()
+            } else {
+                period.getTriggerTimeOffset()
+            }
+
+            if (triggerOffset <= 0) {
+                logger.i("skip this period since offset < 0, maybe we have missed this alarm")
+            } else {
+                logger.i(
+                    "schedule for rule: ${rule.title}, reason: $reason, isRepeat: $isForRepeat, pi: $pi, trigger offset: ${
+                        formatDuration(Duration.ofMillis(triggerOffset))
+                    }"
+                )
+                AlarmManagerCompat.setExactAndAllowWhileIdle(
+                    alarmManager,
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + triggerOffset,
+                    pi
+                )
+            }
+        }.onFailure {
+            logger.e(it, "schedule error")
         }
-    }.onFailure {
-        logger.e(it, "schedule error")
-    }
 
     fun cancel(rule: Rule, period: RandomInPeriod, reason: String) = kotlin.runCatching {
         // Get pending intent used to create alarm, use FLAG_NO_CREATE if PendingIntent

@@ -53,7 +53,7 @@ class RandomInPeriodTrigger(
             // Repeat
             if (!targetFact.repeat.isNo) {
                 logger.i("Repeat period")
-                schedule(ruleOrNull, targetFact, "PeriodTrigger.repeat")
+                schedule(ruleOrNull, targetFact, true, "PeriodTrigger.repeat")
             }
         }
     }
@@ -74,9 +74,10 @@ class RandomInPeriodTrigger(
             if (periods.isNotEmpty()) {
                 periods.forEach { period ->
                     scheduler.schedule(
-                        rule,
-                        period,
-                        reason()
+                        rule = rule,
+                        period = period,
+                        isForRepeat = false,
+                        reason = reason()
                     )
                 }
             }
