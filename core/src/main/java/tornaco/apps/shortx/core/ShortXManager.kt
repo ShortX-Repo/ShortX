@@ -600,6 +600,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun setKeyEventPromptEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isKeyEventPromptEnabled = enable
+        }
+    }
+
+    fun isKeyEventPromptEnabled(): Boolean {
+        return invokeService(false) {
+            isKeyEventPromptEnabled
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

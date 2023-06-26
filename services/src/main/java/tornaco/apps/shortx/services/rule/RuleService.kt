@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule
 import android.annotation.TestApi
 import android.content.Context
 import android.os.RemoteCallbackList
+import android.widget.Toast
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
@@ -145,6 +146,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     private fun installListeners() {
         shortXContext.gesture.onKeyEvent {
             logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
+
+            if (isKeyEventPromptEnabled()) {
+                handler.postSafety {
+                    Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
             if (engine.shouldFire(enabledRules, fact)) {
@@ -461,5 +469,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun unregisterDAObs(obs: IDAObserver) {
         daObs.unregister(obs)
+    }
+
+    fun setKeyEventPromptEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableKeyEventPrompt, enable)
+    }
+
+    fun isKeyEventPromptEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableKeyEventPrompt)
     }
 }

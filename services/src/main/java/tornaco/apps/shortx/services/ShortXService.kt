@@ -287,6 +287,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.unregisterDAObs(obs)
         }
 
+        override fun setKeyEventPromptEnabled(enable: Boolean) {
+            shortXContext.rule.setKeyEventPromptEnabled(enable)
+        }
+
+        override fun isKeyEventPromptEnabled(): Boolean {
+            return shortXContext.rule.isKeyEventPromptEnabled()
+        }
+
         override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
             shortXContext.rule.setConditionEvaluateRecorderEnabled(enable)
         }

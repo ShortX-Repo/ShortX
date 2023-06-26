@@ -142,4 +142,7 @@ interface IShortX {
 
     void registerDAObs(in IDAObserver obs);
     void unregisterDAObs(in IDAObserver obs);
+
+    void setKeyEventPromptEnabled(boolean enable);
+    boolean isKeyEventPromptEnabled();
 }

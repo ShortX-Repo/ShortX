@@ -25,6 +25,9 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         object EnableFactPublishRecorder :
             BoolSettings(key = "EnableFactPublishRecorder", defaultValue = BuildProp.APP_IS_DEBUG)
+
+        object EnableKeyEventPrompt :
+            BoolSettings(key = "EnableKeyEventPrompt", defaultValue = BuildProp.APP_IS_DEBUG)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :

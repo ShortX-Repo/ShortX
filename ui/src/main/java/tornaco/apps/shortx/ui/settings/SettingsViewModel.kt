@@ -28,6 +28,7 @@ data class SettingsState(
     val installFakeService: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
     val hasFatalError: Boolean = false,
+    val isKeyEventPromptEnabled: Boolean = false,
     val gestureAreaSize: Int = 0
 )
 
@@ -71,7 +72,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isDebugLogEnabled = shortXManager.isLogDebugEnable(),
                 logDir = shortXManager.getLogDir(),
                 hasFatalError = shortXManager.hasFatalError(),
-                gestureAreaSize = shortXManager.getGestureAreaSize()
+                gestureAreaSize = shortXManager.getGestureAreaSize(),
+                isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
             )
         }
 
@@ -179,6 +181,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             updateState { copy(gestureAreaSize = shortXManager.getGestureAreaSize()) }
 
             shortXManager.showEdgeHint(Edge.RightCenter)
+        }
+    }
+
+    fun toggleKeyEventPromptEnabled() {
+        viewModelScope.launch {
+            shortXManager.setKeyEventPromptEnabled(!state.value.isKeyEventPromptEnabled)
+            updateState { copy(isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled()) }
         }
     }
 }

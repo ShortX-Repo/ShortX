@@ -414,6 +414,17 @@ private fun devSettings(
         }
     ),
 
+    Preference.SwitchPreference(
+        icon = Remix.Device.keyboard_box_fill,
+        title = LocalI18N.current["ui.settings.key.event.prompt"],
+        summary = LocalI18N.current["ui.settings.key.event.prompt.description"],
+        value = state.isKeyEventPromptEnabled,
+        onCheckChanged = { enable ->
+            vm.toggleKeyEventPromptEnabled()
+        }
+    ),
+
+
     ).apply {
     if (BuildProp.APP_IS_DEBUG) {
         add(Preference.TextPreference(
