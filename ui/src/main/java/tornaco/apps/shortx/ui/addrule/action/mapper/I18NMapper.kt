@@ -25,6 +25,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.show.toast"] to null
         }
 
+        Action.StartLastApp::class -> {
+            i18N["ui.action.start.last.app"] to null
+        }
+
         Action.WakeupScreen::class -> {
             i18N["ui.action.screen.on"] to null
         }
@@ -167,6 +171,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)
+        }
+
+        is Action.StartLastApp -> {
+            listOf(i18N["ui.action.start.last.app"])
         }
 
         is Action.SleepScreen -> {

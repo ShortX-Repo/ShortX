@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
+import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
@@ -566,6 +567,13 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.WakeupScreen -> {
             WakeupScreen.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.StartLastApp -> {
+            StartLastApp.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .build()

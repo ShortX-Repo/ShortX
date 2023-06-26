@@ -63,6 +63,9 @@ val Context.accountManager: AccountManager
 val Context.activityManager: ActivityManager
     get() = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
+val Context.activityTaskManager: ActivityTaskManager
+    get() = getSystemService(Context.ACTIVITY_TASK_SERVICE) as ActivityTaskManager
+
 
 /** Returns the AlarmManager instance. **/
 val Context.alarmManager: AlarmManager

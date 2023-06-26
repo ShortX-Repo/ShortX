@@ -646,6 +646,15 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartLastApp::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartLastApp::class.java
+            Action.StartLastApp(
+                id = data.id,
+                note = data.note,
+            )
+        }
+
         else -> null
     }
 }

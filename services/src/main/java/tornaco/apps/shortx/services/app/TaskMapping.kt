@@ -15,6 +15,20 @@ object TaskMapping {
 
     private const val TASK_QUERY_SIZE = 200
 
+    fun getLastTaskId(context: Context): Int {
+        val am = context.activityManager
+        // Assume calling pkg has this permission.
+        val tasks = am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
+        tasks.forEach {
+            logger.d("${it.baseIntent.component} focused: ${it.isFocused}, visible: ${it.isVisible}, windowingMode: ${it.windowingMode}")
+        }
+        return if (tasks.size < 2) {
+            -1
+        } else {
+            getTaskId(tasks[1])
+        }
+    }
+
     fun getPackageNameForTaskId(context: Context, taskId: Int): String? {
         val am = context.activityManager
         // Assume calling pkg has this permission.

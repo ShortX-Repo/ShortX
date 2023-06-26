@@ -305,6 +305,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Weather.sun_line
         }
 
+        Action.StartLastApp::class -> {
+            Remix.Arrows.arrow_left_circle_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

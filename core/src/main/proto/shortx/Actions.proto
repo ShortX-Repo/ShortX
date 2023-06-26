@@ -520,3 +520,21 @@ message SleepScreen {
   string note = 99;
   string id = 100;
 }
+
+// Backwards stack.
+message StartPreviousApp {
+  string note = 99;
+  string id = 100;
+}
+
+// Forwards stack.
+message StartNextApp {
+  string note = 99;
+  string id = 100;
+}
+
+// Two app loop.
+message StartLastApp {
+  string note = 99;
+  string id = 100;
+}
