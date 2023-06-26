@@ -119,3 +119,5 @@
 -dontwarn android.net.wifi.WifiNetworkScoreCache
 -dontwarn android.app.INotificationManager$Stub
 -dontwarn android.app.INotificationManager
+-dontwarn android.app.ActivityTaskManager
+-dontwarn android.app.IActivityTaskManager

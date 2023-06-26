@@ -34,7 +34,7 @@ object EntryPoint {
             val token = getLVLToken(context)
             if (!token.isGPToken()) {
                 val deviceId = getDeviceId(context)
-                logger.d("check CB, $token $deviceId")
+                logger.p("check CB, $token $deviceId")
                 shortXManager.vb(token, deviceId) {
                     logger.d("check CB res: $it")
                     if (it.isSuccess) {

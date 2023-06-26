@@ -40,7 +40,7 @@ fun getLVLToken(context: Context): String {
             BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
             Nothing::class.java.name
         )
-        val token = data.split("-")[1]
+        val token = data.split("--------")[1]
         token
     } catch (e: Throwable) {
         ""
@@ -54,7 +54,7 @@ fun setLVLChecked(context: Context, checked: Boolean, token: String = "") {
         .build()
     try {
         pref.edit()
-            .putString(BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon", "$checked-$token")
+            .putString(BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon", "$checked--------$token")
             .apply()
     } catch (e: Throwable) {
         logger.e(e)
