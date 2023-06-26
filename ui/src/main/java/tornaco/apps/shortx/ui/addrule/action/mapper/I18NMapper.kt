@@ -25,6 +25,14 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.show.toast"] to null
         }
 
+        Action.WakeupScreen::class -> {
+            i18N["ui.action.screen.on"] to null
+        }
+
+        Action.SleepScreen::class -> {
+            i18N["ui.action.screen.off"] to null
+        }
+
         Action.ReadClipboard::class -> {
             i18N["ui.action.read.clipboard"] to null
         }
@@ -159,6 +167,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
     return when (action) {
         is Action.ShowToast -> {
             listOf(i18N["ui.action.show.toast"], action.message)
+        }
+
+        is Action.SleepScreen -> {
+            listOf(i18N["ui.action.screen.off"])
+        }
+
+        is Action.WakeupScreen -> {
+            listOf(i18N["ui.action.screen.on"])
         }
 
         is Action.ReadClipboard -> {

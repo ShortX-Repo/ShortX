@@ -210,6 +210,8 @@
   "ui.keycode.label.home": "Home",
   "ui.keycode.label.back": "Back",
   "ui.action.show.toast": "Show toast",
+  "ui.action.screen.off": "Turn screen off",
+  "ui.action.screen.on": "Turn screen on",
   "ui.action.inject.keycode": "Press key",
   "ui.action.custom.keycode": "Custom keycode",
   "ui.action.read.clipboard": "Read clipboard",

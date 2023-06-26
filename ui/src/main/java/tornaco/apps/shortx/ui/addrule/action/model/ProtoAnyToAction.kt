@@ -628,6 +628,24 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.WakeupScreen::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.WakeupScreen::class.java
+            Action.WakeupScreen(
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.SleepScreen::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SleepScreen::class.java
+            Action.SleepScreen(
+                id = data.id,
+                note = data.note,
+            )
+        }
+
         else -> null
     }
 }

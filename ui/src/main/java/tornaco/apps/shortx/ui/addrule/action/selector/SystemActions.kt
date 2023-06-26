@@ -60,6 +60,16 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     return { source ->
         when (source.clazz) {
+            Action.WakeupScreen::class -> {
+                addAction(Action.WakeupScreen())
+                true
+            }
+
+            Action.SleepScreen::class -> {
+                addAction(Action.SleepScreen())
+                true
+            }
+
             Action.ReadClipboard::class -> {
                 addAction(Action.ReadClipboard())
                 true
@@ -121,6 +131,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 fun SystemActions(addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
+        Action.WakeupScreen::class,
+        Action.SleepScreen::class,
         Action.InjectKeyCode::class,
         Action.SetRingerMode::class,
         Action.ReadClipboard::class,

@@ -212,6 +212,8 @@
   "ui.action.read.clipboard": "讀取剪貼板",
   "ui.action.write.clipboard": "寫入剪貼板",
   "ui.action.show.toast": "顯示吐司",
+  "ui.action.screen.off": "息屏",
+  "ui.action.screen.on": "亮屏",
   "ui.action.inject.keycode": "按鍵",
   "ui.action.custom.keycode": "自訂keycode",
   "ui.action.show.danmu": "顯示彈幕",

@@ -510,3 +510,13 @@ message InjectKeyCode {
   string note = 99;
   string id = 100;
 }
+
+message WakeupScreen {
+  string note = 99;
+  string id = 100;
+}
+
+message SleepScreen {
+  string note = 99;
+  string id = 100;
+}

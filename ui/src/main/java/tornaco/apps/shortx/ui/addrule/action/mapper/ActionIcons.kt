@@ -297,6 +297,14 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.keyboard_fill
         }
 
+        Action.SleepScreen::class -> {
+            Remix.Device.shut_down_line
+        }
+
+        Action.WakeupScreen::class -> {
+            Remix.Weather.sun_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

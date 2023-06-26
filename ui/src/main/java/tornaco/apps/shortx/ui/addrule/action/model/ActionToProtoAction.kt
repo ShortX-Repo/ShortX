@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowToast
+import tornaco.apps.shortx.core.proto.action.SleepScreen
 import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
@@ -55,6 +56,7 @@ import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
+import tornaco.apps.shortx.core.proto.action.WakeupScreen
 import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.action.WriteClipboard
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
@@ -552,6 +554,20 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setKeyCode(code)
+                .build()
+        }
+
+        is Action.SleepScreen -> {
+            SleepScreen.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.WakeupScreen -> {
+            WakeupScreen.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
