@@ -120,14 +120,25 @@ object TaskMapping {
         ).isNotEmpty()
     }
 
-    private fun getTaskId(rc: ActivityManager.RecentTaskInfo): Int {
+    fun getTaskId(rc: ActivityManager.RecentTaskInfo): Int {
         return try {
             if (OsUtils.isQOrAbove()) rc.taskId else rc.persistentId
         } catch (e: Throwable) {
-            XLog.e("RecentTaskInfoCompat getTaskId error", e)
+            XLog.e(e, "RecentTaskInfoCompat getTaskId error")
             0
         }
     }
+
+
+    fun getTaskId(rc: ActivityManager.RunningTaskInfo): Int {
+        return try {
+            if (OsUtils.isQOrAbove()) rc.taskId else rc.id
+        } catch (e: Throwable) {
+            XLog.e(e, "RecentTaskInfoCompat getTaskId error")
+            0
+        }
+    }
+
 
     private fun isRunning(rc: ActivityManager.RecentTaskInfo): Boolean {
         return try {

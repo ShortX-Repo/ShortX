@@ -1,8 +1,6 @@
 package tornaco.apps.shortx.services.app
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.app.ActivityTaskManager
 import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
@@ -24,7 +22,6 @@ import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
-import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.appPkgToString
@@ -470,16 +467,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun startLastApp() {
         systemServiceScope.launchSafety {
-            TaskMapping.getLastTaskIdExcludeLauncher(context).apply {
-                logger.d("startLastApp, taskId: $this")
-                if (this > 0) {
-                    if (OsUtils.isQOrAbove()) {
-                        ActivityTaskManager.getService().startActivityFromRecents(this@apply, null)
-                    } else {
-                        ActivityManager.getService().startActivityFromRecents(this@apply, null)
-                    }
-                }
-            }
+            ActionUtils.switchToLastApp(context)
         }
     }
 }
