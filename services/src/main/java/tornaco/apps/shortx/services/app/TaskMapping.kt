@@ -18,9 +18,15 @@ object TaskMapping {
     fun getLastTaskId(context: Context): Int {
         val am = context.activityManager
         // Assume calling pkg has this permission.
-        val tasks = am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
+        val tasks =
+            am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
+                .filter { it.baseIntent != null }
+                .filter {
+                    val pkgOfThisTask: String = PkgUtils.packageNameOf(it.baseIntent)
+                    "com.android.systemui" != pkgOfThisTask
+                }
         tasks.forEach {
-            logger.d("${it.baseIntent.component} focused: ${it.isFocused}, visible: ${it.isVisible}, windowingMode: ${it.windowingMode}")
+            logger.d("${it.baseIntent.component}")
         }
         return if (tasks.size < 2) {
             -1
