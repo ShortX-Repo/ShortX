@@ -11,7 +11,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageParser;
 import android.content.pm.ProviderInfo;
-import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Environment;
@@ -164,24 +163,6 @@ public class PkgUtils {
             return null;
         }
         return intent.getComponent().getPackageName();
-    }
-
-    public static boolean isLauncherApp(Context context, String packageName) {
-        PackageManager pkgManager = context.getPackageManager();
-        Intent mainIntent = new Intent("android.intent.action.MAIN", null);
-        mainIntent.addCategory("android.intent.category.LAUNCHER");
-        mainIntent.setPackage(packageName);
-        ResolveInfo ri = pkgManager.resolveActivity(mainIntent, 0);
-        return !(ri == null || ri.activityInfo == null);
-    }
-
-    public static boolean isHomeApp(Context context, String packageName) {
-        PackageManager pkgManager = context.getPackageManager();
-        Intent homeIntent = new Intent("android.intent.action.MAIN");
-        homeIntent.addCategory("android.intent.category.HOME");
-        homeIntent.setPackage(packageName);
-        ResolveInfo ri = pkgManager.resolveActivity(homeIntent, 0);
-        return !(ri == null || ri.activityInfo == null);
     }
 
     public static boolean isInputMethodApp(Context context, String pkgName) {

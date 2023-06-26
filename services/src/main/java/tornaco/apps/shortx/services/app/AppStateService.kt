@@ -470,7 +470,7 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun startLastApp() {
         systemServiceScope.launchSafety {
-            TaskMapping.getLastTaskId(context).apply {
+            TaskMapping.getLastTaskIdExcludeLauncher(context).apply {
                 logger.d("startLastApp, taskId: $this")
                 if (this > 0) {
                     if (OsUtils.isQOrAbove()) {
