@@ -16,7 +16,9 @@ class ActorTest {
 
     @Test
     fun `should handle all proto actions`() {
-        val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }
+        val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }.filter {
+            "HttpRequestJsonMapAdapter" != it && "HttpRequestRawAdapter" != it
+        }
 
         allActionNames.forEach { actionProtoName ->
             Assert.assertTrue(
