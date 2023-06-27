@@ -538,3 +538,8 @@ message StartLastApp {
   string note = 99;
   string id = 100;
 }
+
+message StopCurrentApp {
+  string note = 99;
+  string id = 100;
+}

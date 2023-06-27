@@ -278,6 +278,18 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StartLastApp
     },
+    StartPreviousApp {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartPreviousApp
+    },
+    StartNextApp {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartNextApp
+    },
+    StopCurrentApp {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StopCurrentApp
+    },
 
 
     ;

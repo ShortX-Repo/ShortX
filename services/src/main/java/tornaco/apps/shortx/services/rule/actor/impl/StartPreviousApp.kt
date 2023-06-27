@@ -5,15 +5,14 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 
-object StartLastApp : Actor {
+object StartPreviousApp : Actor {
     override fun actionsCanHandle(): Class<out Message> {
-        return tornaco.apps.shortx.core.proto.action.StartLastApp::class.java
+        return tornaco.apps.shortx.core.proto.action.StartPreviousApp::class.java
     }
 
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        shortXContext.appState.startLastApp()
     }
 
 }
