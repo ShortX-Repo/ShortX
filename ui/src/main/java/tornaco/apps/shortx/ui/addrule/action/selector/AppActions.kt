@@ -298,7 +298,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun AppActions(addAction: (Action) -> Unit) {
+fun AppActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
         Action.StartActivity::class,
@@ -324,6 +324,12 @@ fun AppActions(addAction: (Action) -> Unit) {
             icon = imageVectorForAction(it),
             iconColor = colorForAction(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (actionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Apps)
     }
 
     val selectHandler = appActionSelectHandler(addAction = addAction)

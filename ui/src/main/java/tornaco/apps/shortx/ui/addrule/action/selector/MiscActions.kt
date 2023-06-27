@@ -34,9 +34,8 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun MiscActions(addAction: (Action) -> Unit) {
+fun MiscActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
-
 
     val actionItems = listOf(
         SelectorItem(
@@ -48,7 +47,13 @@ fun MiscActions(addAction: (Action) -> Unit) {
             icon = imageVectorForAction(Action.NoAction::class),
             iconColor = colorForAction(Action.NoAction::class)
         ),
-    )
+    ).filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (actionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Misc)
+    }
 
     val selectHandler = miscActionSelectHandler(addAction = addAction)
     SelectorList(

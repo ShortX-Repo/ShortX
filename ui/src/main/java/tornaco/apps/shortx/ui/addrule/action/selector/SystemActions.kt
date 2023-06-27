@@ -128,7 +128,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 }
 
 @Composable
-fun SystemActions(addAction: (Action) -> Unit) {
+fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.WakeupScreen::class,
@@ -167,6 +167,12 @@ fun SystemActions(addAction: (Action) -> Unit) {
             imageVectorForAction(it),
             iconColor = colorForAction(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (actionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Settings)
     }
 
     val selectHandler = systemActionSelectHandler(addAction = addAction)

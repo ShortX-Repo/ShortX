@@ -6,8 +6,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
@@ -92,7 +92,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 }
 
 @Composable
-fun UiActions(addAction: (Action) -> Unit) {
+fun UiActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
 
     val uiActionItems = listOf(
@@ -116,6 +116,12 @@ fun UiActions(addAction: (Action) -> Unit) {
             imageVectorForAction(it),
             iconColor = colorForAction(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (uiActionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Ui)
     }
 
     val handler = uiActionSelectHandler(addAction = addAction)

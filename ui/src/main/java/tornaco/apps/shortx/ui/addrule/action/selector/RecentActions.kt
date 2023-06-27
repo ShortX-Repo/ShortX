@@ -2,9 +2,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -15,10 +12,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 
 @Composable
-fun RecentActions(addAction: (Action) -> Unit) {
-    val selectorVM = hiltViewModel<ActionSelectorViewModel>()
-    val actions by selectorVM.state.collectAsState()
-
+fun RecentActions(actions: SelectorState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = actions.recentActions.map {
         SelectorItem(

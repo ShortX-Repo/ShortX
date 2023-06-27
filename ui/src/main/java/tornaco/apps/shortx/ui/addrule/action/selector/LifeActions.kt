@@ -6,8 +6,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
 
 
@@ -33,9 +33,8 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun LifeActions(addAction: (Action) -> Unit) {
+fun LifeActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
-
 
     val actionItems = listOf(
         SelectorItem(
@@ -44,7 +43,13 @@ fun LifeActions(addAction: (Action) -> Unit) {
             icon = imageVectorForAction(Action.MapNav::class),
             iconColor = colorForAction(Action.MapNav::class)
         ),
-    )
+    ).filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (actionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Life)
+    }
 
     val selectHandler = lifeActionSelectHandler(addAction = addAction)
     SelectorList(

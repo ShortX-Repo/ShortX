@@ -168,7 +168,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun ExtActions(addAction: (Action) -> Unit) {
+fun ExtActions(keyword: String, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.FromDA::class,
@@ -190,6 +190,12 @@ fun ExtActions(addAction: (Action) -> Unit) {
             icon = imageVectorForAction(it),
             iconColor = colorForAction(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+    }
+
+    if (actionItems.isNotEmpty()) {
+        ActionCategoryTitle(ActionCategory.Advanced)
     }
 
     val itemSelected = extActionSelectHandler(addAction = addAction)

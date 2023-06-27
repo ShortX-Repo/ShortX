@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +35,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
@@ -141,6 +146,7 @@ private fun <ARGS> ActionSelector(
                                 .weight(1f, fill = false)
                         ) {
                             val selectorVM = hiltViewModel<ActionSelectorViewModel>()
+                            val selectorState by selectorVM.state.collectAsState()
 
                             HorizontalPager(
                                 state = pagerState,
@@ -164,41 +170,7 @@ private fun <ARGS> ActionSelector(
                                     }
 
                                     TabItems.All.ordinal -> {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(16.dp)
-                                                .verticalScroll(rememberScrollState())
-                                        ) {
-
-
-                                            ActionCategoryTitle(ActionCategory.Recent)
-                                            RecentActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Ui)
-                                            UiActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Apps)
-                                            AppActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Settings)
-                                            SystemActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Advanced)
-                                            ExtActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Life)
-                                            LifeActions(addAction = addAction)
-                                            StandardSpacer()
-
-                                            ActionCategoryTitle(ActionCategory.Misc)
-                                            MiscActions(addAction = addAction)
-                                            StandardSpacer()
-                                        }
+                                        AllActions(selectorState, addAction)
                                     }
 
                                     else -> {}
@@ -231,7 +203,53 @@ private fun <ARGS> ActionSelector(
 }
 
 @Composable
-private fun ActionCategoryTitle(category: ActionCategory) {
+private fun AllActions(
+    selectorState: SelectorState,
+    addAction: (Action) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        val searchBarState = rememberSearchBarState(
+            itemCount = allActionClasses.size,
+            keywordChanged = { })
+        SearchBar(searchBarState = searchBarState)
+
+        AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
+            Column {
+                ActionCategoryTitle(ActionCategory.Recent)
+                RecentActions(
+                    actions = selectorState,
+                    addAction = addAction
+                )
+                StandardSpacer()
+            }
+        }
+
+        UiActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+
+        AppActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+
+        SystemActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+
+        ExtActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+
+        LifeActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+
+        MiscActions(searchBarState.keyword, addAction = addAction)
+        StandardSpacer()
+    }
+}
+
+@Composable
+fun ActionCategoryTitle(category: ActionCategory) {
     SmallTitle(
         modifier = Modifier.padding(vertical = 12.dp),
         text = LocalI18N.current[category.i18NKey]
