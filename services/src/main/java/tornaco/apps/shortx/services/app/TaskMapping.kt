@@ -30,7 +30,7 @@ object TaskMapping {
         val am = context.activityManager
         // Assume calling pkg has this permission.
         val tasks =
-            am.getRecentTasks(TASK_QUERY_SIZE, ActivityManager.RECENT_WITH_EXCLUDED)
+            am.getRecentTasks(5, ActivityManager.RECENT_IGNORE_UNAVAILABLE)
                 .filter { it.baseIntent != null }
                 .filter {
                     val pkgOfThisTask: String = PkgUtils.packageNameOf(it.baseIntent)
