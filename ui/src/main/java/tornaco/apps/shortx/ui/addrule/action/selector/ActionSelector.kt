@@ -2,8 +2,6 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,17 +22,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -169,30 +164,40 @@ private fun <ARGS> ActionSelector(
                                     }
 
                                     TabItems.All.ordinal -> {
-                                        var visible by remember {
-                                            mutableStateOf(false)
-                                        }
-                                        if (!visible) {
-                                            Box(
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "⌛️",
-                                                    style = MaterialTheme.typography.headlineLarge
-                                                )
-                                            }
-                                        }
-                                        androidx.compose.animation.AnimatedVisibility(
-                                            visible = visible,
-                                            enter = fadeIn(),
-                                            exit = fadeOut()
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(16.dp)
+                                                .verticalScroll(rememberScrollState())
                                         ) {
-                                            AllActions(addAction)
-                                        }
-                                        LaunchedEffect(Unit) {
-                                            delay(20)
-                                            visible = true
+
+
+                                            ActionCategoryTitle(ActionCategory.Recent)
+                                            RecentActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Ui)
+                                            UiActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Apps)
+                                            AppActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Settings)
+                                            SystemActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Advanced)
+                                            ExtActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Life)
+                                            LifeActions(addAction = addAction)
+                                            StandardSpacer()
+
+                                            ActionCategoryTitle(ActionCategory.Misc)
+                                            MiscActions(addAction = addAction)
+                                            StandardSpacer()
                                         }
                                     }
 
@@ -222,43 +227,6 @@ private fun <ARGS> ActionSelector(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun AllActions(addAction: (Action) -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        ActionCategoryTitle(ActionCategory.Recent)
-        RecentActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Ui)
-        UiActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Apps)
-        AppActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Settings)
-        SystemActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Advanced)
-        ExtActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Life)
-        LifeActions(addAction = addAction)
-        StandardSpacer()
-
-        ActionCategoryTitle(ActionCategory.Misc)
-        MiscActions(addAction = addAction)
-        StandardSpacer()
     }
 }
 
