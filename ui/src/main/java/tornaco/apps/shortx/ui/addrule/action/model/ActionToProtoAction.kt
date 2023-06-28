@@ -54,6 +54,7 @@ import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
+import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
@@ -574,6 +575,13 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.StartLastApp -> {
             StartLastApp.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.StopCurrentApp -> {
+            StopCurrentApp.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .build()

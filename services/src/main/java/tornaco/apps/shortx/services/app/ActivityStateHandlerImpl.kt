@@ -24,6 +24,11 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         emptyList()
     )
 
+    val currentFrontAppPkgs
+        get() = _currentResumedActivities.value.map {
+            it.pkg
+        }.distinct()
+
     private val func: Funs by lazy {
         if (OsUtils.isQOrAbove()) {
             // Android10

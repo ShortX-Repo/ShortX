@@ -309,6 +309,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Arrows.arrow_left_circle_fill
         }
 
+        Action.StopCurrentApp::class -> {
+            Remix.Media.stop_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

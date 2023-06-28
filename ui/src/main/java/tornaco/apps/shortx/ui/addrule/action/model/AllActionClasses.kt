@@ -75,5 +75,6 @@ val allActionClasses = listOf(
     Action.WakeupScreen::class,
     Action.SleepScreen::class,
     Action.StartLastApp::class,
+    Action.StopCurrentApp::class,
     Action.NoAction::class,
 )

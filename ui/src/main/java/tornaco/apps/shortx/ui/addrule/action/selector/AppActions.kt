@@ -284,6 +284,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.StopCurrentApp::class -> {
+                addAction(Action.StopCurrentApp())
+                true
+            }
+
             Action.RemoveNotificationForPackage::class -> {
                 removeNotificationDialogState.show(
                     source.getActionAs<Action.RemoveNotificationForPackage>()?.apps,
@@ -307,6 +312,7 @@ fun AppActions(keyword: String, addAction: (Action) -> Unit) {
         Action.LaunchApp::class,
         Action.StartLastApp::class,
         Action.StopApp::class,
+        Action.StopCurrentApp::class,
         Action.StartAppProcess::class,
         Action.SetAppInactive::class,
         Action.EnableApp::class,

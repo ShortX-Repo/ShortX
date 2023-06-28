@@ -7,6 +7,7 @@ import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.ResolveInfo
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
@@ -56,6 +57,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
     private val activityState by lazy {
         ActivityStateHandlerImpl(context, shortXContext)
     }
+
+    private val homePkgs = mutableListOf<String>()
 
     override fun systemReady() {
         super.systemReady()
@@ -470,7 +473,8 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
 
     fun startLastApp() {
         systemServiceScope.launchSafety {
-            TaskMapping.getLastTaskIdExcludeLauncher(context).apply {
+            loadHomeAppPkgs()
+            TaskMapping.getLastTaskIdExcludeLauncher(context, homePkgs).apply {
                 logger.d("startLastApp, taskId: $this")
                 if (this > 0) {
                     if (OsUtils.isQOrAbove()) {
@@ -480,6 +484,26 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
                     }
                 }
             }
+        }
+    }
+
+    private fun loadHomeAppPkgs() {
+        if (homePkgs.isEmpty()) {
+            val homeActivities = mutableListOf<ResolveInfo>()
+            context.packageManager.getHomeActivities(homeActivities)
+            logger.d("homeActivities: $homeActivities: ${homeActivities.map { it.activityInfo }}")
+            homePkgs.addAll(homeActivities.map { it.activityInfo.packageName }
+                // Remove Fallback home.
+                .filterNot { "com.android.settings" == it }.distinct())
+            logger.d("homePkgs: $homePkgs")
+        }
+    }
+
+    fun stopForegroundApp() {
+        loadHomeAppPkgs()
+        activityState.currentFrontAppPkgs.filterNot { homePkgs.contains(it.pkgName) }.forEach {
+            logger.i("stopForegroundApp: ${it.appPkgToString()}")
+            forceStopApp(it, "stopForegroundApp")
         }
     }
 }

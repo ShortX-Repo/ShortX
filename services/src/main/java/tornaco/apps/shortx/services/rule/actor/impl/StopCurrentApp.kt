@@ -13,6 +13,8 @@ object StopCurrentApp : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        logger.d("stopForegroundApp")
+        shortXContext.appState.stopForegroundApp()
     }
 
 }

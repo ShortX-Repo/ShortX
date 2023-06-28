@@ -219,6 +219,7 @@
   "ui.action.start.last.app": "Launch last app",
   "ui.action.screen.off": "Turn screen off",
   "ui.action.screen.on": "Turn screen on",
+  "ui.action.stop.current.foreground.app": "Stop foreground app",
   "ui.action.inject.keycode": "Press key",
   "ui.action.custom.keycode": "Custom keycode",
   "ui.action.read.clipboard": "Read clipboard",

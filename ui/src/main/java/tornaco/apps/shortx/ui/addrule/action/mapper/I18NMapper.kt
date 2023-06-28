@@ -153,6 +153,7 @@ fun labelAndDescriptionForActionSelector(
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
         Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
+        Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -527,6 +528,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.inject.keycode"],
                 getLabelForKeyCode(i18N, action.code)
+            )
+        }
+
+        is Action.StopCurrentApp -> {
+            listOf(
+                i18N["ui.action.stop.current.foreground.app"],
             )
         }
     }

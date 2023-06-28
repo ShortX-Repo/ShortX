@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.app
 
 import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.ResolveInfo
 import android.text.TextUtils
 import com.elvishew.xlog.XLog
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -16,17 +15,8 @@ object TaskMapping {
 
     private const val TASK_QUERY_SIZE = 200
 
-    private val homePkgs = mutableListOf<String>()
 
-    fun getLastTaskIdExcludeLauncher(context: Context): Int {
-        if (homePkgs.isEmpty()) {
-            val homeActivities = mutableListOf<ResolveInfo>()
-            context.packageManager.getHomeActivities(homeActivities)
-            logger.d("homeActivities: $homeActivities: ${homeActivities.map { it.activityInfo }}")
-            homePkgs.addAll(homeActivities.map { it.activityInfo.packageName }.distinct())
-            logger.d("homePkgs: $homePkgs")
-        }
-
+    fun getLastTaskIdExcludeLauncher(context: Context, homePkgs: List<String>): Int {
         val am = context.activityManager
         // Assume calling pkg has this permission.
         val tasks =
