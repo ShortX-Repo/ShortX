@@ -41,7 +41,6 @@ class ConditionEvaRecordViewModel @Inject constructor(@ApplicationContext contex
                     isEnabled = shortXManager.isConditionEvaluateRecorderEnabled()
                 )
             }
-            delay(1000)
             val records = withContext(Dispatchers.IO) {
                 shortXManager.getConditionEvaluateRecords()
                     .reversed()
