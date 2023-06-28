@@ -331,6 +331,12 @@ public interface IShortX extends android.os.IInterface
     @Override public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
     {
     }
+    @Override public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException
+    {
+    }
+    @Override public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1263,6 +1269,34 @@ public interface IShortX extends android.os.IInterface
             _arg0 = null;
           }
           this.executeDirectionAction(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_onMediaStoreInsert:
+        {
+          data.enforceInterface(descriptor);
+          android.net.Uri _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = android.net.Uri.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.onMediaStoreInsert(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_onMediaStoreDelete:
+        {
+          data.enforceInterface(descriptor);
+          android.net.Uri _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = android.net.Uri.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.onMediaStoreDelete(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -3106,6 +3140,56 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((uri!=null)) {
+            _data.writeInt(1);
+            uri.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreInsert, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onMediaStoreInsert(uri);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((uri!=null)) {
+            _data.writeInt(1);
+            uri.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreDelete, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onMediaStoreDelete(uri);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3191,6 +3275,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_setKeyEventPromptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 80);
     static final int TRANSACTION_isKeyEventPromptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 81);
     static final int TRANSACTION_executeDirectionAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 82);
+    static final int TRANSACTION_onMediaStoreInsert = (android.os.IBinder.FIRST_CALL_TRANSACTION + 83);
+    static final int TRANSACTION_onMediaStoreDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 84);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3325,4 +3411,6 @@ public interface IShortX extends android.os.IInterface
   public void setKeyEventPromptEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isKeyEventPromptEnabled() throws android.os.RemoteException;
   public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
+  public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException;
+  public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException;
 }

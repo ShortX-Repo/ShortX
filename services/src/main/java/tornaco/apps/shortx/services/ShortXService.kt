@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Binder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
@@ -191,6 +192,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun executeDirectionAction(da: ByteArrayWrapper) {
             shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byte))
+        }
+
+        override fun onMediaStoreInsert(uri: Uri) {
+            shortXContext.media.onMediaStoreInsert(uri)
+        }
+
+        override fun onMediaStoreDelete(uri: Uri) {
+            shortXContext.media.onMediaStoreDelete(uri)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

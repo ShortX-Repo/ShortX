@@ -24,6 +24,8 @@ object Methods {
     const val activityStopped = "activityStopped"
     const val activityStoppedLocked = "activityStoppedLocked"
     const val updateState = "updateState"
+    const val onMediaStoreInsert = "onMediaStoreInsert"
+    const val onMediaStoreDelete = "onMediaStoreDelete"
 }
 
 object ClassNames {
@@ -37,6 +39,7 @@ object ClassNames {
     const val ACTIVITY_RECORD_WM = "com.android.server.wm.ActivityRecord"
     const val ACTIVITY_RECORD_AM = "com.android.server.am.ActivityRecord"
     const val VPN = "com.android.server.connectivity.Vpn"
+    const val MEDIA_DOCUMENTS_PROVIDER = "com.android.providers.media.MediaDocumentsProvider"
 }
 
 object Fields {

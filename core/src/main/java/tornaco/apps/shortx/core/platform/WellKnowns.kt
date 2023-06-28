@@ -4,11 +4,11 @@ import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_AM
 import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_WM
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.ATMS
+import tornaco.apps.shortx.core.platform.ClassNames.MEDIA_DOCUMENTS_PROVIDER
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_LIST
 import tornaco.apps.shortx.core.platform.ClassNames.PROCESS_RECORD
 import tornaco.apps.shortx.core.platform.ClassNames.VPN
-import tornaco.apps.shortx.core.platform.Classes.processListClass
 import util.Reflections
 import util.ReflectionsExt
 import java.lang.reflect.Method
@@ -108,6 +108,13 @@ object Classes {
     fun ClassLoader.vpnClass(): Class<*> =
         Reflections.findClass(
             VPN,
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.mediaDocumentProviderClass(): Class<*> =
+        Reflections.findClass(
+            MEDIA_DOCUMENTS_PROVIDER,
             this
         )
 

@@ -23,6 +23,8 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             ActivityRecordHook.hook(lpparam)
             VPNHook.hook(lpparam)
         }
+
+        MediaProviderHook.hook(lpparam)
     }
 
     override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam?) {
