@@ -9,6 +9,10 @@ import android.graphics.drawable.Icon
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -22,7 +26,13 @@ import tornaco.apps.shortx.ui.base.remixResId
 import java.util.*
 
 @SuppressLint("MissingPermission")
-fun mockNotification(context: Context, title: String?, content: String?, `when`: Long) {
+fun mockNotification(
+    context: Context,
+    title: String?,
+    content: String?,
+    `when`: Long,
+    id: Int = 22
+) {
     createNotificationChannelIfNeed(context)
     val n = NotificationCompat.Builder(context, "ShortX-Mock")
         .setContentTitle(title)
@@ -50,7 +60,7 @@ fun mockNotification(context: Context, title: String?, content: String?, `when`:
         .setAutoCancel(true)
         .build()
     NotificationManagerCompat.from(context)
-        .notify(21, n)
+        .notify(id, n)
 }
 
 private fun createNotificationChannelIfNeed(context: Context) {
@@ -79,6 +89,22 @@ fun NotificationDemo() {
         )
     }) {
         Text(text = "Notification & Update")
+    }
+
+    var id by remember {
+        mutableStateOf(100)
+    }
+    FilledTonalButton(onClick = {
+        mockNotification(
+            context,
+            "Demo title",
+            "Demo content",
+            System.currentTimeMillis(),
+            id = id
+        )
+        id += 1
+    }) {
+        Text(text = "Notification Post(diff ID.)")
     }
 
     FilledTonalButton(onClick = {

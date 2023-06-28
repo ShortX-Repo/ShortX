@@ -20,6 +20,8 @@ import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
 class NotificationService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+    private var lastPostedN: Pair<Notification, Long>? = null
+
     private val appRes by lazy {
         AppResources(
             context,
@@ -48,13 +50,32 @@ class NotificationService(shortXContext: ShortXContext) : SystemService(shortXCo
 
     fun registerPostedByApp(n: Notification) {
         logger.p("registerPostedByApp: $n")
-        systemServiceScope.launchSafety {
-            shortXContext.rule.publishFact(
-                "registerPostedByApp",
-                NotificationPosted.newBuilder().setRecord(n).build(),
-                n.contextMap()
-            )
+        if (checkIfShouldSkip(n)) {
+            logger.i("shouldSkipFact is true")
+        } else {
+            systemServiceScope.launchSafety {
+                shortXContext.rule.publishFact(
+                    "registerPostedByApp",
+                    NotificationPosted.newBuilder().setRecord(n).build(),
+                    n.contextMap()
+                )
+            }
         }
+    }
+
+    private fun checkIfShouldSkip(n: Notification): Boolean {
+        val lastNROrNull = lastPostedN
+        var shouldSkipFact = false
+        if (lastNROrNull != null && System.currentTimeMillis() - lastNROrNull.second < 300) {
+            val lastN = lastNROrNull.first
+            if (lastN.appsList.first() == n.appsList.first() && lastN.title == n.title && lastN.contentText == n.contentText) {
+                shouldSkipFact = true
+            }
+        }
+
+        lastPostedN = n to System.currentTimeMillis()
+        logger.d("shouldSkipFact: $shouldSkipFact")
+        return shouldSkipFact
     }
 
     fun registerUpdatedByApp(n: Notification) {
