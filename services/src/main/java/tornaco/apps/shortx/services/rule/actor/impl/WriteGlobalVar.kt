@@ -18,10 +18,11 @@ object WriteGlobalVar : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val d = action unpack_ WriteGlobalVar::class.java
-        shortXContext.rule.getGlobalVarByName(d.varName)?.let { globalVar ->
-            val newValue =
-                d.valueAsString.inflateContextMap(contextData)
-            globalVar.addOrUpdateValue(listOf(newValue))
+        val globalVar = requireNotNull(shortXContext.rule.getGlobalVarByName(d.varName)) {
+            "Global var: ${d.varName} not exists. pls create first."
         }
+        val newValue =
+            d.valueAsString.inflateContextMap(contextData)
+        globalVar.addOrUpdateValue(listOf(newValue))
     }
 }
