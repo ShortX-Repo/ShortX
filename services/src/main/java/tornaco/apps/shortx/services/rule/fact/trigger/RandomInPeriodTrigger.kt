@@ -47,7 +47,11 @@ class RandomInPeriodTrigger(
             logger.i("Good, will publish fact.")
             shortXContext.rule.publishFact(
                 "Period#onAlarm",
-                RandomInPeriod.newBuilder().setId(factId).build()
+                RandomInPeriod.newBuilder()
+                    .setId(factId)
+                    .setStart(targetFact.start)
+                    .setEnd(targetFact.end)
+                    .setRepeat(targetFact.repeat).build()
             )
 
             // Repeat

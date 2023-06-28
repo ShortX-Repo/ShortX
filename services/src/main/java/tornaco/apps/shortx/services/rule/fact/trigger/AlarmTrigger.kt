@@ -44,7 +44,10 @@ class AlarmTrigger(
             }
 
             logger.i("Good, will publish fact.")
-            shortXContext.rule.publishFact("onAlarm", Alarm.newBuilder().setId(factId).build())
+            shortXContext.rule.publishFact("onAlarm",
+                Alarm.newBuilder().setTriggerAt(targetFact.triggerAt).setRepeat(targetFact.repeat)
+                    .setId(factId).build()
+            )
 
             // Repeat
             if (!targetFact.repeat.isNo) {
