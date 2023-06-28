@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.mvel2.MVEL
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -26,7 +27,7 @@ object HttpRequest : Actor {
     ): Unit = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
-        val url = data.url
+        val url = data.url.inflateContextMap(contextData)
         logger.d("url: $url")
         handleUrl(url, data.adapter).apply {
             forEachIndexed { index, value ->
