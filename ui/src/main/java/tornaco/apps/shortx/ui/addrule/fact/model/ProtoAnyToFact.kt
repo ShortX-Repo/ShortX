@@ -335,6 +335,15 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged::class.java
+            Fact.BatteryTemperatureChanged(
+                id = data.id, note = data.note,
+                temp = data.temp
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java

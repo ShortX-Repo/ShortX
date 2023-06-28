@@ -138,6 +138,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.battery.level.changed"] to null
         }
 
+        Fact.BatteryTemperatureChanged::class -> {
+            i18n["ui.fact.battery.temp.changed"] to null
+        }
+
         Fact.ChargerPlug::class -> {
             i18n["ui.fact.battery.charge.plug"] to null
         }
@@ -420,7 +424,17 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.BatteryLevelChanged -> {
-            listOf(i18N["ui.fact.battery.level.changed"], "${fact.level}%")
+            listOfNotNull(
+                i18N["ui.fact.battery.level.changed"],
+                if (fact.level > 0) "${fact.level}%" else null
+            )
+        }
+
+        is Fact.BatteryTemperatureChanged -> {
+            listOfNotNull(
+                i18N["ui.fact.battery.temp.changed"],
+                if (fact.temp > 0f) "${fact.temp}°C" else null
+            )
         }
 
         is Fact.ChargerPlug -> {

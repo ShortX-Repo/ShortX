@@ -126,3 +126,13 @@ message ShellRes {
   repeated string err = 2;
   int32 code = 3;
 }
+
+message FloatRange {
+  float from = 1;
+  float to = 2;
+}
+
+message IntRange {
+  int32 from = 1;
+  int32 to = 2;
+}

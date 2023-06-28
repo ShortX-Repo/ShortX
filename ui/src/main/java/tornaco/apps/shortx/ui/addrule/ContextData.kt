@@ -95,6 +95,14 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.WifiDisconnectedFrom>()
         }
 
+        Fact.BatteryTemperatureChanged::class -> {
+            dats<ContextDataMapping.BatteryTemperatureChanged>()
+        }
+
+        Fact.BatteryLevelChanged::class -> {
+            dats<ContextDataMapping.BatteryLevelChanged>()
+        }
+
         else -> {
             emptyList()
         }

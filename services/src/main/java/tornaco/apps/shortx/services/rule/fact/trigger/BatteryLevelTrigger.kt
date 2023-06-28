@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
@@ -33,7 +34,7 @@ class BatteryLevelTrigger(
                         reason = "BatteryState changed",
                         fact = BatteryLevelChanged.newBuilder().setLevel(newState.batteryLevel)
                             .build(),
-                        initialContextData = emptyMap()
+                        initialContextData = mapOf(ContextDataMapping.BatteryLevelChanged.batteryLevel.name to newState.batteryLevel)
                     )
                 }
             }

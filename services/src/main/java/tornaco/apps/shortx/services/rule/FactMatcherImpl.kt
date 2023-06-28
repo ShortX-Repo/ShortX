@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
+import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.Broadcast
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
@@ -264,10 +265,22 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(BatteryLevelChanged::class.java) { actual, rule ->
             val actualN = (actual as BatteryLevelChanged)
             val ruleN = (rule as BatteryLevelChanged)
-            if (ruleN.level < 0) {
+            if (ruleN.level <= 0) {
                 true
             } else {
                 ruleN.level == actualN.level
+            }
+        }
+
+        register(BatteryTemperatureChanged::class.java) { actual, rule ->
+            val actualN = (actual as BatteryTemperatureChanged)
+            val ruleN = (rule as BatteryTemperatureChanged)
+            if (ruleN.temp > 0) {
+                logger.d("BatteryTemperatureChanged Check temp: rule.temp: ${ruleN.temp}")
+                ruleN.temp == actualN.temp
+            } else {
+                logger.w("BatteryTemperatureChanged no temp and range, assume true.")
+                true
             }
         }
 

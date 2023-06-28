@@ -128,4 +128,14 @@ object ContextDataMapping {
         isWifiEnabled("True of wifi is in Enable state"),
         wifiStatusLabel("Status label of current wifi connection"),
     }
+
+    @DoNotStrip
+    enum class BatteryTemperatureChanged(val description: String) {
+        batteryTemperature("Temperature value as Float. e.g. 36.2"),
+    }
+
+    @DoNotStrip
+    enum class BatteryLevelChanged(val description: String) {
+        batteryLevel("Level value as Int. e.g. 86"),
+    }
 }

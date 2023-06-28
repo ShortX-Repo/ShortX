@@ -29,11 +29,21 @@ message UserPresent {
 }
 
 message BatteryLevelChanged {
+  // 0 means any
   int32 level = 1;
 
   string note = 99;
   string id = 100;
 }
+
+message BatteryTemperatureChanged {
+  // 0 means any
+  float temp = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
 
 message ChargerPlug {
   string note = 99;

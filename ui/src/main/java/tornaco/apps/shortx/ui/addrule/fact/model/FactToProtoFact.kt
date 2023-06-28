@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
+import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.Broadcast
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
@@ -299,6 +300,10 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         is Fact.BatteryLevelChanged -> {
             BatteryLevelChanged.newBuilder().setId(id).setNote(note).setLevel(level).build()
+        }
+
+        is Fact.BatteryTemperatureChanged -> {
+            BatteryTemperatureChanged.newBuilder().setId(id).setNote(note).setTemp(temp).build()
         }
 
         is Fact.ChargerPlug -> {

@@ -40,6 +40,7 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.DarkModeStatusChanged::class,
 
         Fact.BatteryLevelChanged::class,
+        Fact.BatteryTemperatureChanged::class,
         Fact.ChargerPlug::class,
         Fact.ChargerUnplug::class,
 

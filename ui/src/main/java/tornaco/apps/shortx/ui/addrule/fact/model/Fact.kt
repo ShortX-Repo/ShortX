@@ -436,6 +436,16 @@ sealed interface Fact {
         }
     }
 
+    data class BatteryTemperatureChanged(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val temp: Float,
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
     data class ChargerPlug(
         override val note: String = "",
         override val id: String = defaultNewFactId(),

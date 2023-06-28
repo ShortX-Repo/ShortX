@@ -142,6 +142,23 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = batteryLevelSelectorState)
 
+    val batteryTempSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.battery.temp.changed"],
+        message = LocalI18N.current["ui.fact.battery.temp.changed.temp"],
+        inputValidator = {
+            (it.isNotEmpty() && ((it.toFloatOrNull() ?: 0f) <= 100f)) to ""
+        },
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        onSelected = { levelString ->
+            val level = levelString.toFloatOrNull()
+            level?.let {
+                addFact(Fact.BatteryTemperatureChanged(temp = it))
+            }
+        }
+    )
+    TextInputDialog(state = batteryTempSelectorState)
+
     val broadcastSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.fact.broadcast"],
         message = LocalI18N.current["ui.common.action"],
@@ -259,6 +276,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.BatteryLevelChanged::class -> {
                 batteryLevelSelectorState.show(source.getFactAs<Fact.BatteryLevelChanged>()?.level?.toString())
+                true
+            }
+
+            Fact.BatteryTemperatureChanged::class -> {
+                batteryTempSelectorState.show(source.getFactAs<Fact.BatteryTemperatureChanged>()?.temp?.toString())
                 true
             }
 
