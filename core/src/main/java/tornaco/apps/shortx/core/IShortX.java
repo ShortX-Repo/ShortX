@@ -328,6 +328,9 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    @Override public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1247,6 +1250,20 @@ public interface IShortX extends android.os.IInterface
           boolean _result = this.isKeyEventPromptEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_executeDirectionAction:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.executeDirectionAction(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -3064,6 +3081,31 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((da!=null)) {
+            _data.writeInt(1);
+            da.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_executeDirectionAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().executeDirectionAction(da);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3148,6 +3190,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_unregisterDAObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 79);
     static final int TRANSACTION_setKeyEventPromptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 80);
     static final int TRANSACTION_isKeyEventPromptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 81);
+    static final int TRANSACTION_executeDirectionAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 82);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3281,4 +3324,5 @@ public interface IShortX extends android.os.IInterface
   public void unregisterDAObs(tornaco.apps.shortx.core.rule.IDAObserver obs) throws android.os.RemoteException;
   public void setKeyEventPromptEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isKeyEventPromptEnabled() throws android.os.RemoteException;
+  public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
 }

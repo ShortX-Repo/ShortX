@@ -1,5 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.action
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -9,6 +12,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
 import tornaco.apps.shortx.ui.base.i18NIns
+import java.util.Date
 
 data class ActionContentState(
     val actions: List<Action> = emptyList(),
@@ -50,6 +54,9 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         },
         execute = {
             this.executeAction(it)
+        },
+        executeAll = {
+            this.executeAllAction()
         }
     )
 }
@@ -197,8 +204,27 @@ class ActionContentStateHandler(
         }
     }
 
-    fun executeAction(action: Action) {
-        logger.d("executeAction: $action")
-        tornaco.apps.shortx.core.shortXManager.executeAction(action.toProtoAction().pack_())
+    suspend fun executeAction(action: Action) {
+        withContext(Dispatchers.IO) {
+            logger.d("executeAction: $action")
+            shortXManager.executeAction(action.toProtoAction().pack_())
+        }
+    }
+
+    suspend fun executeAllAction() {
+        withContext(Dispatchers.IO) {
+            logger.d("executeAllAction")
+            val protoActions = actions.map {
+                it.toProtoAction().pack_()
+            }
+            val da = DirectAction.newBuilder()
+                .setId("Tmp-${Date()}")
+                .setLastUpdateTime(System.currentTimeMillis())
+                .setTitle("Tmp")
+                .addAllActions(protoActions)
+                .build()
+
+            shortXManager.executeDirectionAction(da)
+        }
     }
 }

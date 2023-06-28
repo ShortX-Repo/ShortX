@@ -345,6 +345,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         }
     }
 
+    fun executeDirectionAction(directAction: DirectAction) {
+        executeActions(
+            directAction.id,
+            "executeDirectionAction#${directAction.title}",
+            directAction.actionsList
+        )
+    }
+
     fun directExecuteRuleActions(ruleId: String) {
         val rule = getRuleById(ruleId)
         logger.d("directExecuteRuleActions: $ruleId ${rule?.title}")

@@ -11,11 +11,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
@@ -31,6 +34,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
 import kotlin.reflect.KClass
 
 @Composable
@@ -76,12 +80,42 @@ private fun Actions(
                 header()
             }
 
-            // Sort
-            AnimatedVisibility(visible = !readOnly && actions.size > 1) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Sort
+                AnimatedVisibility(visible = !readOnly && actions.size > 1) {
+                    IconButton(onClick = {
+                        actionSortDialogState.show()
+                    }) {
+                        RemixIcon(Remix.Editor.sort_asc)
+                    }
+                }
+
+                val i18N = LocalI18N.current
+                val context = LocalContext.current
+                val moreDropdownState = rememberDropdownSelectorState()
+                val scope = rememberCoroutineScope()
+                DropdownSelector(state = moreDropdownState, items = listOf(
+                    DropdownItem(
+                        labelLines = listOf(i18N["ui.common.execute.actions"]),
+                        data = "exe",
+                    ),
+                    DropdownItem(
+                        labelLines = listOf(i18N["ui.settings.action.record"]),
+                        data = "history",
+                    )
+                ), onSelect = {
+                    if (it.data == "exe") {
+                        scope.launch { handler.executeAll() }
+                    } else if (it.data == "history") {
+                        ActionEvaRecordActivity.start(context)
+                    }
+                })
+
+
                 IconButton(onClick = {
-                    actionSortDialogState.show()
+                    moreDropdownState.open()
                 }) {
-                    RemixIcon(Remix.Editor.sort_asc)
+                    RemixIcon(Remix.System.more_2_fill)
                 }
             }
         }
@@ -219,6 +253,7 @@ private fun Actions(
                     }
 
 
+                    val scope = rememberCoroutineScope()
                     DropdownSelector(
                         state = clickDropdownState,
                         items = listOf(
@@ -334,7 +369,7 @@ private fun Actions(
                                 }
 
                                 "execute" -> {
-                                    handler.execute(action)
+                                    scope.launch { handler.execute(action) }
                                 }
                             }
                         })
@@ -402,7 +437,8 @@ class ActionHandler(
     val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
     val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
-    val execute: (action: Action) -> Unit = { },
+    val execute: suspend (action: Action) -> Unit = { },
+    val executeAll: suspend () -> Unit = { },
 )
 
 sealed interface ActionSelectorDialogArgs {

@@ -145,4 +145,6 @@ interface IShortX {
 
     void setKeyEventPromptEnabled(boolean enable);
     boolean isKeyEventPromptEnabled();
+
+    void executeDirectionAction(in ByteArrayWrapper da);
 }

@@ -189,6 +189,10 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.executeDirectionActionById(id)
         }
 
+        override fun executeDirectionAction(da: ByteArrayWrapper) {
+            shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byte))
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }

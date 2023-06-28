@@ -222,6 +222,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun executeDirectionAction(da: DirectAction) {
+        invokeService(Unit) {
+            executeDirectionAction(ByteArrayWrapper(da.toByteArray()))
+        }
+    }
+
     fun directExecuteRuleActions(ruleId: String) {
         invokeService(Unit) {
             directExecuteRuleActions(ruleId)
