@@ -30,8 +30,18 @@ object HttpRequest : Actor {
         val url = data.url.inflateContextMap(contextData)
         logger.d("url: $url")
         handleUrl(url, data.adapter).apply {
-            forEachIndexed { index, value ->
-                val key = "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}"
+            if (data.adapter is_ HttpRequestJsonMapAdapter::class.java) {
+                forEachIndexed { index, value ->
+                    val key = "${ContextDataMapping.HttpRequest.httpRequestRet.name}${index + 1}"
+                    logger.d("Add context data: $key $value")
+                    params.contextData.add(
+                        key = key,
+                        value = value
+                    )
+                }
+            } else {
+                val key = ContextDataMapping.HttpRequest.httpRequestRet.name
+                val value = this[0]
                 logger.d("Add context data: $key $value")
                 params.contextData.add(
                     key = key,

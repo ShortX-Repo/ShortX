@@ -267,6 +267,30 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
 
                     StandardSpacer()
 
+                    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Raw) {
+                        val context = LocalContext.current
+                        val i18N = LocalI18N.current
+                        val contextDataKey =
+                            "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
+                        ListItem(
+                            title = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf(
+                                "key" to contextDataKey
+                            )],
+                            onClick = {
+                                ClipboardUtils.copyToClipboard(
+                                    context,
+                                    "key",
+                                    contextDataKey
+                                )
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.copied.to.clipboard"],
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        )
+                    }
+
                     AnimatedVisibility(visible = dialogState.adapter == AdapterType.Json) {
                         Column {
                             TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
