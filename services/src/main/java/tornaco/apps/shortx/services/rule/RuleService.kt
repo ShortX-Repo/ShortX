@@ -195,13 +195,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         initialContextData: Map<String, Any> = emptyMap()
     ) {
         logger.i("publishFact, ${fact::class.java}: $reason")
-        engine.fire(
+        val anyMatch = engine.fire(
             fact = fact,
             rules = getAllRules().filter { rule -> rule.isEnabled },
             initialContextData = initialContextData
         )
 
-        if (isFactPublishRecordEnabled()) {
+        if (anyMatch && isFactPublishRecordEnabled()) {
             factPublishRecorder.add(fact.toFactPublishRecord())
         }
     }

@@ -70,7 +70,7 @@ interface Engine {
         fact: ProtoMessage,
         rules: List<Rule>,
         initialContextData: Map<String, Any> = emptyMap()
-    )
+    ): Boolean
 
     fun evaluate(
         id: String,
@@ -116,11 +116,17 @@ class DefaultRuleEngine(
         } != null
     }
 
-    override fun fire(fact: ProtoMessage, rules: List<Rule>, initialContextData: Map<String, Any>) {
+    override fun fire(
+        fact: ProtoMessage,
+        rules: List<Rule>,
+        initialContextData: Map<String, Any>
+    ): Boolean {
         logger.d("fire: ${fact.javaClass}")
+        var anyMatch = false
         rules.filterInvalid().forEach { rule ->
             if (factMatcher.match(fact, rule.factsList)) {
                 logger.d("fire, matched: ${fact.javaClass} ${rule.title}")
+                anyMatch = true
                 val contextData = ContextData.obtain(initialContextData)
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
@@ -171,6 +177,7 @@ class DefaultRuleEngine(
                 logger.d("fire, not match: ${fact.javaClass} ${rule.title}")
             }
         }
+        return anyMatch
     }
 
     override fun evaluate(
