@@ -6,7 +6,7 @@ import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.proto.common.OnOffAny
-import tornaco.apps.shortx.core.proto.fact.TimeOfADay
+import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils

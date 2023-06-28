@@ -17,6 +17,7 @@ fun SystemConditions(setCondition: (Condition) -> Unit) {
         Condition.ScreenIsOn::class,
         Condition.VPNIsConnected::class,
         Condition.BatteryPercent::class,
+        Condition.TimeInRange::class,
     ).map {
         SelectorItem(
             type = it,

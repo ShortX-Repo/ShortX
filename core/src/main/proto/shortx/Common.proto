@@ -136,3 +136,14 @@ message IntRange {
   int32 from = 1;
   int32 to = 2;
 }
+
+message TimeOfADay {
+  int32 hour = 1;
+  int32 minutes = 2;
+  int32 seconds = 3;
+}
+
+message TimeOfADayRange {
+    TimeOfADay start = 1;
+    TimeOfADay end = 2;
+}

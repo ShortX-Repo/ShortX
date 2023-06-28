@@ -5,9 +5,9 @@ import org.junit.Test
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffsetForRepeat
+import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
-import tornaco.apps.shortx.core.proto.fact.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.util.logAdapter
 import java.time.Duration
@@ -43,7 +43,9 @@ class PeriodTest {
         val rp = RandomInPeriod.newBuilder()
             .setStart(TimeOfADay.newBuilder().setHour(10).setMinutes(20).setSeconds(30).build())
             .setEnd(TimeOfADay.newBuilder().setHour(10).setMinutes(33).setSeconds(44).build())
-            .setRepeat(RepeatDays.newBuilder().addAllDays(listOf(WeekDay.MONDAY, WeekDay.TUESDAY)).build())
+            .setRepeat(
+                RepeatDays.newBuilder().addAllDays(listOf(WeekDay.MONDAY, WeekDay.TUESDAY)).build()
+            )
             .build()
 
         rp.getTriggerTimeOffset().apply {

@@ -30,6 +30,11 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
     }
     BatteryPercentSelectorDialog(state = batteryPercentDialog)
 
+    val timeInRangeSelectorState = rememberTimeOfADayRangeSelectorState(selected = {
+        addCondition(Condition.TimeInRange(range = it))
+    })
+    TimeOfADayRangeSelector(state = timeInRangeSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.MVEL::class -> {
@@ -59,6 +64,11 @@ fun conditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectS
 
             Condition.BatteryPercent::class -> {
                 batteryPercentDialog.show()
+                true
+            }
+
+            Condition.TimeInRange::class -> {
+                timeInRangeSelectorState.show(source.getConditionAs<Condition.TimeInRange>()?.range)
                 true
             }
 

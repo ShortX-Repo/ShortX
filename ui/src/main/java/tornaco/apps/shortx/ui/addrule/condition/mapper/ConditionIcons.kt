@@ -52,6 +52,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Others.key_2_fill
         }
 
+        Condition.TimeInRange::class -> {
+            Remix.System.time_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

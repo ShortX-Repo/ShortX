@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.mapper
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -69,6 +70,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.VPNIsConnected::class -> {
             listOf(
                 i18N["ui.conditions.vpn.is.connected"]
+            )
+        }
+
+        Condition.TimeInRange::class -> {
+            listOf(
+                i18N["ui.conditions.time.in.range"]
             )
         }
 
@@ -150,6 +157,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.battery.percent"],
                 "${condition.op} ${condition.value}%"
+            )
+        }
+
+        is Condition.TimeInRange -> {
+            listOf(
+                i18N["ui.conditions.time.in.range"],
+                condition.range.timeOfADayRangeToString()
             )
         }
     }

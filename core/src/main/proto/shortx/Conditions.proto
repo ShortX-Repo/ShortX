@@ -161,3 +161,11 @@ message VPNIsConnected {
   string note = 99;
   string id = 100;
 }
+
+message TimeInRange {
+  TimeOfADayRange range = 1;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

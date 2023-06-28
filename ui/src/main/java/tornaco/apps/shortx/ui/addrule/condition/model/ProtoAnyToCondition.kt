@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
+import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -129,6 +130,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 op = data.op,
                 value = data.value
+            )
+        }
+
+        this is_ TimeInRange::class.java -> {
+            val data = this unpack_ TimeInRange::class.java
+            Condition.TimeInRange(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                range = data.range
             )
         }
 

@@ -12,4 +12,5 @@ val allConditionClasses = listOf(
     Condition.ServiceIsRunning::class,
     Condition.ScreenIsOn::class,
     Condition.VPNIsConnected::class,
+    Condition.TimeInRange::class,
 )

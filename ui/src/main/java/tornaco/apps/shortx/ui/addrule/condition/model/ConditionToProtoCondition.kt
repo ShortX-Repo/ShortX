@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
+import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -157,6 +158,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .setId(id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .build()
+        }
+
+        is Condition.TimeInRange -> {
+            TimeInRange.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setRange(range)
                 .build()
         }
     }

@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.IntOp
+import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -156,6 +157,19 @@ sealed interface Condition : Parcelable {
     data class BatteryPercent(
         val value: Int,
         val op: IntOp,
+
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
+    data class TimeInRange(
+        val range: TimeOfADayRange,
 
         override val isInvert: Boolean = false,
         override val note: String = "",
