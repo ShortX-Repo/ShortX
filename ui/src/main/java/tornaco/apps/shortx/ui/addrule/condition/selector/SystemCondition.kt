@@ -19,6 +19,8 @@ fun SystemConditions(setCondition: (Condition) -> Unit) {
         Condition.BatteryPercent::class,
         Condition.ChargeState::class,
         Condition.TimeInRange::class,
+        Condition.RequireWifiConnected::class,
+        Condition.RequireWifiDisconnected::class,
     ).map {
         SelectorItem(
             type = it,

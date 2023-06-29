@@ -60,6 +60,14 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.time_fill
         }
 
+        Condition.RequireWifiConnected::class -> {
+            Remix.Device.wifi_fill
+        }
+
+        Condition.RequireWifiDisconnected::class -> {
+            Remix.Device.signal_wifi_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

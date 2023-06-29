@@ -9,6 +9,8 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
+import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
@@ -177,6 +179,23 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setRange(range)
+                .build()
+        }
+
+        is Condition.RequireWifiConnected -> {
+            RequireWifiConnected.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setRequiredSSID(requiredSSID)
+                .build()
+        }
+
+        is Condition.RequireWifiDisconnected -> {
+            RequireWifiDisconnected.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
                 .build()
         }
     }

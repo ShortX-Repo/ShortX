@@ -84,6 +84,14 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.TimeInRange
     },
+    RequireWifiConnected {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireWifiConnected
+    },
+    RequireWifiDisconnectedConnected {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireWifiDisconnected
+    },
 
 }
 

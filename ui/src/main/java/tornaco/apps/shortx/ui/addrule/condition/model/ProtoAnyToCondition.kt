@@ -9,6 +9,8 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
+import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
@@ -151,6 +153,25 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 range = data.range
+            )
+        }
+
+        this is_ RequireWifiConnected::class.java -> {
+            val data = this unpack_ RequireWifiConnected::class.java
+            Condition.RequireWifiConnected(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                requiredSSID = data.requiredSSID
+            )
+        }
+
+        this is_ RequireWifiDisconnected::class.java -> {
+            val data = this unpack_ RequireWifiDisconnected::class.java
+            Condition.RequireWifiDisconnected(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
             )
         }
 

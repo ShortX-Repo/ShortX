@@ -86,6 +86,18 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireWifiConnected::class -> {
+            listOf(
+                i18N["ui.conditions.wifi.connected"]
+            )
+        }
+
+        Condition.RequireWifiDisconnected::class -> {
+            listOf(
+                i18N["ui.conditions.wifi.not.connected"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -181,6 +193,19 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.time.in.range"],
                 condition.range.timeOfADayRangeToString()
+            )
+        }
+
+        is Condition.RequireWifiConnected -> {
+            listOf(
+                i18N["ui.conditions.wifi.connected"],
+                condition.requiredSSID
+            )
+        }
+
+        is Condition.RequireWifiDisconnected -> {
+            listOf(
+                i18N["ui.conditions.wifi.not.connected"],
             )
         }
     }

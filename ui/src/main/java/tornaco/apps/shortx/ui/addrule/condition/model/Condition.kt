@@ -192,4 +192,28 @@ sealed interface Condition : Parcelable {
             return copy(id = id, note = note, isInvert = isInvert)
         }
     }
+
+    @Parcelize
+    data class RequireWifiConnected(
+        val requiredSSID: String = "*",
+
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
+    data class RequireWifiDisconnected(
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 }
