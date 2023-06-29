@@ -103,6 +103,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.BatteryLevelChanged>()
         }
 
+        Fact.MediaStoreInsert::class -> {
+            dats<ContextDataMapping.MediaStoreInsert>()
+        }
+
         else -> {
             emptyList()
         }

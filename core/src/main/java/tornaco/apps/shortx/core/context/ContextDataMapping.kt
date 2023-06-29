@@ -138,4 +138,10 @@ object ContextDataMapping {
     enum class BatteryLevelChanged(val description: String) {
         batteryLevel("Level value as Int. e.g. 86"),
     }
+
+    @DoNotStrip
+    enum class MediaStoreInsert(val description: String) {
+        mediaUri("Uri of the inserted media file"),
+        mediaFilePath("Resolved file path of the inserted media"),
+    }
 }

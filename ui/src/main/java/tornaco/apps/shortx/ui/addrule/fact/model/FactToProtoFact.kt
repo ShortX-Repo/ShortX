@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
+import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Notification
@@ -324,6 +325,11 @@ fun Fact.toProtoFact(): ProtoMessage {
 
         is Fact.VPNDisconnected -> {
             VPNDisconnected.newBuilder().setId(id).setNote(note).build()
+        }
+
+        is Fact.MediaStoreInsert -> {
+            MediaStoreInsert.newBuilder().setId(id).setNote(note).setFilterPath(filterPathRegex)
+                .build()
         }
 
     }

@@ -194,12 +194,12 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byte))
         }
 
-        override fun onMediaStoreInsert(uri: Uri) {
-            shortXContext.media.onMediaStoreInsert(uri)
+        override fun onMediaStoreInsert(uri: Uri, path: String) {
+            shortXContext.media.onMediaStoreInsert(uri, path)
         }
 
-        override fun onMediaStoreDelete(uri: Uri) {
-            shortXContext.media.onMediaStoreDelete(uri)
+        override fun onMediaStoreDelete(uri: Uri, path: String) {
+            shortXContext.media.onMediaStoreDelete(uri, path)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

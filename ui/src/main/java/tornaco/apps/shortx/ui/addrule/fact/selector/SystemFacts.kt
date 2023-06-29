@@ -47,6 +47,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
         Fact.Broadcast::class,
         Fact.VPNConnected::class,
         Fact.VPNDisconnected::class,
+
+        Fact.MediaStoreInsert::class,
     ).map {
         SelectorItem(
             type = it,

@@ -10,26 +10,26 @@ import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.platform.Classes.mediaDocumentProviderClass
 import tornaco.apps.shortx.core.platform.Methods.onMediaStoreDelete
 import tornaco.apps.shortx.core.platform.Methods.onMediaStoreInsert
+import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.util.FileHelper
 
 // Happen on Media provider process
 object MediaProviderHook {
     private val logger = Logger("XposedEntry.MediaProviderHook")
-    private const val MEDIA_PROVIDER_PACKAGE_NAME = "com.android.providers.media"
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
-        if (lpparam.packageName.contains(MEDIA_PROVIDER_PACKAGE_NAME)) {
+        if (lpparam.packageName == mediaProvider) {
             // static void onMediaStoreInsert(Context context, String volumeName, int type, long id)
             afterMethod(
                 lpparam.classLoader.mediaDocumentProviderClass(), onMediaStoreInsert
             ) { param ->
                 val mediaUri = getUriFromParams(param)
                 val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.d("onMediaStoreInsert: $mediaUri --- $path")
+                logger.p("onMediaStoreInsert: $mediaUri --- $path")
                 mediaUri?.let {
                     logger.d("onMediaStoreInsert, shortx: ${ShortXManagerNative.shortX}")
-                    ShortXManagerNative.shortX?.onMediaStoreInsert(mediaUri)
+                    ShortXManagerNative.shortX?.onMediaStoreInsert(mediaUri, path)
                 }
             }
 
@@ -38,9 +38,9 @@ object MediaProviderHook {
             ) { param ->
                 val mediaUri = getUriFromParams(param)
                 val path = FileHelper.getRealPathFromURI(param.args[0] as Context, mediaUri)
-                logger.d("onMediaStoreDelete: $mediaUri --- $path")
+                logger.p("onMediaStoreDelete: $mediaUri --- $path")
                 mediaUri?.let {
-                    ShortXManagerNative.shortX?.onMediaStoreDelete(mediaUri)
+                    ShortXManagerNative.shortX?.onMediaStoreDelete(mediaUri, path)
                 }
             }
         }

@@ -148,6 +148,6 @@ interface IShortX {
 
     void executeDirectionAction(in ByteArrayWrapper da);
 
-    void onMediaStoreInsert(in Uri uri);
-    void onMediaStoreDelete(in Uri uri);
+    void onMediaStoreInsert(in Uri uri, String path);
+    void onMediaStoreDelete(in Uri uri, String path);
 }

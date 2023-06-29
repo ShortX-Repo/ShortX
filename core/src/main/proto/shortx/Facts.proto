@@ -352,3 +352,13 @@ message VPNDisconnected {
   string note = 99;
   string id = 100;
 }
+
+message MediaStoreInsert {
+  string path = 1;
+  string uriString = 2;
+
+  string filterPath = 3;
+
+  string note = 99;
+  string id = 100;
+}

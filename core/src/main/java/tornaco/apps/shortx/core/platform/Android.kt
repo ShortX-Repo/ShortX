@@ -1,7 +1,15 @@
 package tornaco.apps.shortx.core.platform
 
+import tornaco.apps.shortx.core.util.OsUtils
+
 object PackageNames {
     const val android = "android"
+
+    val mediaProvider = if (OsUtils.isROrAbove()) {
+        "com.android.providers.media.module"
+    } else {
+        "com.android.providers.media"
+    }
 }
 
 object Methods {

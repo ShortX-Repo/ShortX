@@ -4,7 +4,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
+import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
@@ -173,6 +175,22 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = broadcastSelectorState)
 
+
+    val mediaInsertSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.media.insert"],
+        message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
+        inputValidator = {
+            it.isNotEmpty() to ""
+        },
+        showSymbolButton = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSelected = { pathString ->
+            addFact(Fact.MediaStoreInsert(filterPathRegex = pathString.fallbackOnEmpty(".*")))
+        }
+    )
+    TextInputDialog(state = mediaInsertSelectorState)
+
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -308,6 +326,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.VPNDisconnected::class -> {
                 addFact(Fact.VPNDisconnected())
+                true
+            }
+
+            Fact.MediaStoreInsert::class -> {
+                mediaInsertSelectorState.show(source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex)
                 true
             }
 

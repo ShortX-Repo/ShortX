@@ -384,6 +384,15 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.MediaStoreInsert::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.MediaStoreInsert::class.java
+            Fact.MediaStoreInsert(
+                id = data.id, note = data.note,
+                filterPathRegex = data.filterPath
+            )
+        }
+
 
         else -> {
             null

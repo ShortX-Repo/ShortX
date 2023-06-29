@@ -331,10 +331,10 @@ public interface IShortX extends android.os.IInterface
     @Override public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
     {
     }
-    @Override public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException
+    @Override public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
     {
     }
-    @Override public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException
+    @Override public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
     {
     }
     @Override
@@ -1282,7 +1282,9 @@ public interface IShortX extends android.os.IInterface
           else {
             _arg0 = null;
           }
-          this.onMediaStoreInsert(_arg0);
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          this.onMediaStoreInsert(_arg0, _arg1);
           reply.writeNoException();
           return true;
         }
@@ -1296,7 +1298,9 @@ public interface IShortX extends android.os.IInterface
           else {
             _arg0 = null;
           }
-          this.onMediaStoreDelete(_arg0);
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          this.onMediaStoreDelete(_arg0, _arg1);
           reply.writeNoException();
           return true;
         }
@@ -3140,7 +3144,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException
+      @Override public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -3153,9 +3157,10 @@ public interface IShortX extends android.os.IInterface
           else {
             _data.writeInt(0);
           }
+          _data.writeString(path);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreInsert, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().onMediaStoreInsert(uri);
+            getDefaultImpl().onMediaStoreInsert(uri, path);
             return;
           }
           _reply.readException();
@@ -3165,7 +3170,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException
+      @Override public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -3178,9 +3183,10 @@ public interface IShortX extends android.os.IInterface
           else {
             _data.writeInt(0);
           }
+          _data.writeString(path);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreDelete, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().onMediaStoreDelete(uri);
+            getDefaultImpl().onMediaStoreDelete(uri, path);
             return;
           }
           _reply.readException();
@@ -3411,6 +3417,6 @@ public interface IShortX extends android.os.IInterface
   public void setKeyEventPromptEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isKeyEventPromptEnabled() throws android.os.RemoteException;
   public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
-  public void onMediaStoreInsert(android.net.Uri uri) throws android.os.RemoteException;
-  public void onMediaStoreDelete(android.net.Uri uri) throws android.os.RemoteException;
+  public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
+  public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
 }

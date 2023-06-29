@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.alarm.toLocalTime
+import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
@@ -160,6 +161,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.VPNDisconnected::class -> {
             i18n["ui.fact.vpn.disconnected"] to null
+        }
+
+        Fact.MediaStoreInsert::class -> {
+            i18n["ui.fact.media.insert"] to i18n["ui.fact.media.insert.summary", mapOf("mediaPkgName" to mediaProvider)]
         }
 
         else -> "N/A" to null
@@ -461,6 +466,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.VPNDisconnected -> {
             listOf(
                 i18N["ui.fact.vpn.disconnected"]
+            )
+        }
+
+        is Fact.MediaStoreInsert -> {
+            listOf(
+                i18N["ui.fact.media.insert"],
+                fact.filterPathRegex
             )
         }
     }

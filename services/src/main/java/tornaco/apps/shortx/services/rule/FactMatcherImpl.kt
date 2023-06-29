@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
+import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Notification
@@ -318,6 +319,18 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         }
         register(VPNDisconnected::class.java) { actual, rule ->
             true
+        }
+
+        register(MediaStoreInsert::class.java) { actual, rule ->
+            val actualN = (actual as MediaStoreInsert)
+            val ruleN = (rule as MediaStoreInsert)
+
+            val filter = ruleN.filterPath
+            val path = actualN.path
+            logger.p("filter: $filter")
+            logger.p("path: $path")
+
+            filter.toRegex().matches(path)
         }
 
         logger.i("Init complete.")

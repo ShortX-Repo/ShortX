@@ -60,4 +60,6 @@ val allFactClasses = listOf(
 
     Fact.VPNConnected::class,
     Fact.VPNDisconnected::class,
+
+    Fact.MediaStoreInsert::class,
 )
