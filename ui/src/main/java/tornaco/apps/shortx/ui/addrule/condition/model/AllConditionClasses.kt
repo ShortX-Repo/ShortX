@@ -13,4 +13,5 @@ val allConditionClasses = listOf(
     Condition.ScreenIsOn::class,
     Condition.VPNIsConnected::class,
     Condition.TimeInRange::class,
+    Condition.ChargeState::class,
 )

@@ -12,7 +12,9 @@ object BatteryPercent : Cond {
 
     override fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
-            val state = BatteryImpl(context).batteryState ?: return false
+            val state =
+                requireNotNull(BatteryImpl(context).batteryState) { "Fail get battery state" }
+
             val batteryPercent = condition unpack_ BatteryPercent::class.java
             val value = batteryPercent.value
             val res = when (batteryPercent.op ?: IntOp.UNRECOGNIZED) {

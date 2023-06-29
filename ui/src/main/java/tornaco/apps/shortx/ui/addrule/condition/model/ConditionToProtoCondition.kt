@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
+import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -142,6 +143,15 @@ fun Condition.toProtoCondition(): ProtoMessage {
                 .setIsInvert(isInvert)
                 .setValue(value)
                 .setOp(op)
+                .build()
+        }
+
+        is Condition.ChargeState -> {
+            ChargeState.newBuilder()
+                .setId(id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setRequireIsCharge(requireIsCharge)
                 .build()
         }
 

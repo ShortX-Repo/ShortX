@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
+import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -130,6 +131,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 op = data.op,
                 value = data.value
+            )
+        }
+
+        this is_ ChargeState::class.java -> {
+            val data = this unpack_ ChargeState::class.java
+            Condition.ChargeState(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                requireIsCharge = data.requireIsCharge
             )
         }
 

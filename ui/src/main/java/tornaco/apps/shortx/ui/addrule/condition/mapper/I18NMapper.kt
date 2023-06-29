@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
@@ -58,6 +59,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.BatteryPercent::class -> {
             listOf(
                 i18N["ui.conditions.battery.percent"]
+            )
+        }
+
+        Condition.ChargeState::class -> {
+            listOf(
+                i18N["ui.conditions.charge.state"]
             )
         }
 
@@ -157,6 +164,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.battery.percent"],
                 "${condition.op} ${condition.value}%"
+            )
+        }
+
+        is Condition.ChargeState -> {
+            listOf(
+                i18N["ui.conditions.charge.state"],
+                condition.requireIsCharge.select(
+                    i18N["ui.conditions.charge.state.charge"],
+                    i18N["ui.conditions.charge.state.not.charge"]
+                )
             )
         }
 

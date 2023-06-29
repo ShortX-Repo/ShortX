@@ -26,7 +26,7 @@ fun OtherConditions(setCondition: (Condition) -> Unit) {
         )
     }
 
-    val selectHandler: (ConditionSelectSource) -> Boolean = conditionSelectHandler {
+    val selectHandler: (ConditionSelectSource) -> Boolean = otherConditionSelectHandler {
         setCondition(it)
     }
 

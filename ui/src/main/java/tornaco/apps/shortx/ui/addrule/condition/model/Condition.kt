@@ -168,6 +168,19 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class ChargeState(
+        val requireIsCharge: Boolean,
+
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
     data class TimeInRange(
         val range: TimeOfADayRange,
 

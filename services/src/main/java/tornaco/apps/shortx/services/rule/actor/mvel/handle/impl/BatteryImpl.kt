@@ -31,26 +31,24 @@ class BatteryImpl(private val context: Context) : IBattery {
             context.registerReceiver(null, filter)
         }
         return batteryStatus?.let {
-            val res = retrieveBatteryState(it)
+            val res = retrieveBatteryState(context, it)
             res
         }
     }
 
     companion object {
-        fun retrieveBatteryState(intent: Intent): BatteryState {
+        fun retrieveBatteryState(context: Context, intent: Intent): BatteryState {
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
-            val status: Int = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-            val charging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
-                    || status == BatteryManager.BATTERY_STATUS_FULL
-
             // How are we charging?
             val chargePlug: Int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
             val usbCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_USB
             val acCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_AC
 
+            val isCharging = usbCharge || acCharge
+
             return BatteryState(
                 batteryLevel = level,
-                isCharging = charging,
+                isCharging = isCharging,
                 isUsbCharge = usbCharge,
                 isAcCharge = acCharge
             )

@@ -17,6 +17,7 @@ fun SystemConditions(setCondition: (Condition) -> Unit) {
         Condition.ScreenIsOn::class,
         Condition.VPNIsConnected::class,
         Condition.BatteryPercent::class,
+        Condition.ChargeState::class,
         Condition.TimeInRange::class,
     ).map {
         SelectorItem(
@@ -27,7 +28,7 @@ fun SystemConditions(setCondition: (Condition) -> Unit) {
         )
     }
 
-    val selectHandler: (ConditionSelectSource) -> Boolean = conditionSelectHandler {
+    val selectHandler: (ConditionSelectSource) -> Boolean = systemConditionSelectHandler {
         setCondition(it)
     }
 
