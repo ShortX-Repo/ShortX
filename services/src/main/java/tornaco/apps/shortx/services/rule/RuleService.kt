@@ -147,7 +147,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         shortXContext.gesture.onKeyEvent {
             logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
 
-            if (isKeyEventPromptEnabled()) {
+            if (it.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
                 handler.postSafety {
                     Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
                 }
