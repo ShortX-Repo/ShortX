@@ -313,6 +313,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.stop_fill
         }
 
+        Action.AdjustVolume::class -> {
+            Remix.Media.volume_up_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

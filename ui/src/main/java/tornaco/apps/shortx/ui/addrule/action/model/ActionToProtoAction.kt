@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
+import tornaco.apps.shortx.core.proto.action.AdjustVolume
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
@@ -584,6 +585,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StopCurrentApp.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.AdjustVolume -> {
+            AdjustVolume.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setDirection(direction)
+                .setShowUI(true)
                 .build()
         }
 

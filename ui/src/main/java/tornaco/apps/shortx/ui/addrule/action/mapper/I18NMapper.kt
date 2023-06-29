@@ -4,6 +4,7 @@ import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -154,6 +155,7 @@ fun labelAndDescriptionForActionSelector(
         Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
+        Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -536,6 +538,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.stop.current.foreground.app"],
             )
         }
+
+        is Action.AdjustVolume -> {
+            listOf(
+                i18N["ui.action.adjust.volume"],
+                i18N[action.direction.labelKey()]
+            )
+        }
     }
 }
 
@@ -544,4 +553,34 @@ fun RingerMode.labelKey() = when (this) {
     RingerMode.vibrate -> "ui.action.set.ringer.mode.vibrate"
     RingerMode.normal -> "ui.action.set.ringer.mode.normal"
     RingerMode.UNRECOGNIZED -> "N/A"
+}
+
+fun VolumeDirection.labelKey() = when (this) {
+    VolumeDirection.ADJUST_SAME -> {
+        "ui.action.adjust.volume.same"
+    }
+
+    VolumeDirection.ADJUST_RAISE -> {
+        "ui.action.adjust.volume.raise"
+    }
+
+    VolumeDirection.ADJUST_LOWER -> {
+        "ui.action.adjust.volume.lower"
+    }
+
+    VolumeDirection.ADJUST_MUTE -> {
+        "ui.action.adjust.volume.mute"
+    }
+
+    VolumeDirection.ADJUST_UNMUTE -> {
+        "ui.action.adjust.volume.unmute"
+    }
+
+    VolumeDirection.ADJUST_TOGGLE_MUTE -> {
+        "ui.action.adjust.volume.toggle.mute"
+    }
+
+    VolumeDirection.UNRECOGNIZED -> {
+        "N/A"
+    }
 }

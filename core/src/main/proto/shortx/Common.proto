@@ -144,6 +144,22 @@ message TimeOfADay {
 }
 
 message TimeOfADayRange {
-    TimeOfADay start = 1;
-    TimeOfADay end = 2;
+  TimeOfADay start = 1;
+  TimeOfADay end = 2;
+}
+
+enum VolumeDirection {
+  // public static final int ADJUST_RAISE = 1;
+  //    public static final int ADJUST_LOWER = -1;
+  //    public static final int ADJUST_SAME = 0;
+  //    public static final int ADJUST_MUTE = -100;
+  //    public static final int ADJUST_UNMUTE = 100;
+  //    public static final int ADJUST_TOGGLE_MUTE = 101;
+
+  ADJUST_SAME = 0;
+  ADJUST_RAISE = 1;
+  ADJUST_LOWER = -1;
+  ADJUST_MUTE = -100;
+  ADJUST_UNMUTE = 100;
+  ADJUST_TOGGLE_MUTE = 101;
 }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -15,8 +16,11 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import kotlin.reflect.full.createInstance
@@ -58,6 +62,26 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     KeyEventSelector(injectKeyCodeSelectorState)
 
+    val adjustVolumeSelectorState = rememberMenuDialogState<String>(
+        title = i18N["ui.action.adjust.volume"],
+        menuItems = listOf(
+            VolumeDirection.ADJUST_LOWER,
+            VolumeDirection.ADJUST_RAISE,
+            VolumeDirection.ADJUST_MUTE,
+            VolumeDirection.ADJUST_UNMUTE,
+            VolumeDirection.ADJUST_TOGGLE_MUTE
+        ).map {
+            MenuDialogItem(id = it.name, title = i18N[it.labelKey()])
+        },
+        onItemSelected = { _, id ->
+            val direction = VolumeDirection.valueOf(id)
+            addAction(
+                Action.AdjustVolume(direction = direction)
+            )
+        }
+    )
+    MenuDialog(state = adjustVolumeSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -92,6 +116,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.InjectKeyCode::class -> {
                 injectKeyCodeSelectorState.show()
+                true
+            }
+
+            Action.AdjustVolume::class -> {
+                adjustVolumeSelectorState.show()
                 true
             }
 
@@ -160,6 +189,7 @@ fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
         Action.SetBrightness::class,
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
+        Action.AdjustVolume::class,
     ).map {
         SelectorItem(
             it,

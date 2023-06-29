@@ -543,3 +543,11 @@ message StopCurrentApp {
   string note = 99;
   string id = 100;
 }
+
+message AdjustVolume {
+  VolumeDirection direction = 1;
+  bool showUI = 2;
+
+  string note = 99;
+  string id = 100;
+}

@@ -664,6 +664,16 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.AdjustVolume::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.AdjustVolume::class.java
+            Action.AdjustVolume(
+                id = data.id,
+                note = data.note,
+                direction = data.direction
+            )
+        }
+
         else -> null
     }
 }
