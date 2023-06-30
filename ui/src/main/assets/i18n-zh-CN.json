@@ -245,7 +245,7 @@
   "ui.action.adjust.volume.unmute": "取消静音",
   "ui.action.adjust.volume.toggle.mute": "切换 静音/取消静音",
   "ui.action.adjust.volume.show.ui": "显示音量调节UI",
-  "ui.action.inject.keycode": "按键",
+  "ui.action.inject.keycode": "模拟按键",
   "ui.action.custom.keycode": "自定义keycode",
   "ui.action.show.danmu": "显示弹幕",
   "ui.action.danmu.text": "文本",

@@ -1,9 +1,8 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.view.KeyEvent
 import com.google.protobuf.Message
-import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.ctrl.Device.INJECT_MODE_ASYNC
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -19,18 +18,9 @@ object InjectKeyCode : Actor {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
         val keyCode = data.keyCode
-        ctrl.injectKeycode(
-            KeyEvent.ACTION_DOWN,
+        device.pressReleaseKeycode(
             keyCode,
-            0,
-            0,
-        )
-        delay(100)
-        ctrl.injectKeycode(
-            KeyEvent.ACTION_UP,
-            keyCode,
-            0,
-            0,
+            INJECT_MODE_ASYNC
         )
     }
 

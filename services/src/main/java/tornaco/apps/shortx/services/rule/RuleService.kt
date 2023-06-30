@@ -159,6 +159,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                 }
             }
 
+            // Check if it accessibility service.
+            if ((it.flags and android.view.KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT) != 0) {
+                return@onKeyEvent null
+            }
+
             // Check ADV rules.
             singleKeyGestureDetector.interceptKey(it, false)
             if (singleKeyGestureDetector.isKeyIntercepted(it.keyCode)) {

@@ -22,6 +22,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
             hookProcessList(lpparam)
             ActivityRecordHook.hook(lpparam)
             VPNHook.hook(lpparam)
+            PhoneWindowManagerHook.hook(lpparam)
         }
 
         MediaProviderHook.hook(lpparam)

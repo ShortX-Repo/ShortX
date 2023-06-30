@@ -83,7 +83,6 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
         if (input is MotionEvent) {
             return filterMotionEvent(input)
         }
-        if (input is KeyEvent) return handleKeyEvent(input)
         return null
     }
 
@@ -99,7 +98,7 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
         }
     }
 
-    private fun handleKeyEvent(event: KeyEvent): Boolean? {
+    fun handleKeyEvent(event: KeyEvent): Boolean? {
         return onKeyEvent?.invoke(event)
     }
 

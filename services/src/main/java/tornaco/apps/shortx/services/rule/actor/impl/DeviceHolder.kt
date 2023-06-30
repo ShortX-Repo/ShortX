@@ -5,8 +5,11 @@ import tornaco.apps.shortx.services.ctrl.Controller
 import tornaco.apps.shortx.services.ctrl.Device
 import tornaco.apps.shortx.services.ctrl.Options
 
+val device by lazy {
+    Device(Options())
+}
+
 val ctrl by lazy {
-    val device = Device(Options())
     val ctrl = Controller(device)
     Logger().w("Init ctrl: $ctrl")
     ctrl

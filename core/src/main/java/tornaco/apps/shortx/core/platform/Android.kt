@@ -34,6 +34,7 @@ object Methods {
     const val updateState = "updateState"
     const val onMediaStoreInsert = "onMediaStoreInsert"
     const val onMediaStoreDelete = "onMediaStoreDelete"
+    const val interceptKeyBeforeQueueing = "interceptKeyBeforeQueueing"
 }
 
 object ClassNames {
@@ -48,6 +49,7 @@ object ClassNames {
     const val ACTIVITY_RECORD_AM = "com.android.server.am.ActivityRecord"
     const val VPN = "com.android.server.connectivity.Vpn"
     const val MEDIA_DOCUMENTS_PROVIDER = "com.android.providers.media.MediaDocumentsProvider"
+    const val PHONE_WINDOW_MANAGER = "com.android.server.policy.PhoneWindowManager"
 }
 
 object Fields {
