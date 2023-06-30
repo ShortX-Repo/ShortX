@@ -8,11 +8,13 @@ import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
@@ -30,10 +32,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     })
     KeyEventSelector(keyEventSelectorState)
 
-    val advKeyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
-        addFact(Fact.AdvancedKeyEvent(code))
+    val advKeyEventSelectorState = rememberAdvancedKeyEventSelectorState(selected = { event ->
+        addFact(event)
     })
-    KeyEventSelector(advKeyEventSelectorState)
+    AdvancedKeyEventSelector(advKeyEventSelectorState)
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->

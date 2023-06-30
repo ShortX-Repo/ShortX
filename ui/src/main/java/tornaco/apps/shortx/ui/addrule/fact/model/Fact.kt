@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
+import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -32,6 +33,7 @@ sealed interface Fact {
 
     data class AdvancedKeyEvent(
         val keyCode: Int,
+        val gesture: KeyGesture,
         override val note: String = "",
         override val id: String = defaultNewFactId()
     ) : Fact {

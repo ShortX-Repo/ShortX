@@ -15,7 +15,7 @@ message KeyEvent {
 
 message AdvancedKeyEvent {
   int32 keyCode = 1;
-
+  KeyGesture gesture = 2;
 
   string note = 99;
   string id = 100;

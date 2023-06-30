@@ -206,7 +206,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.AdvancedKeyEvent -> listOf(
             i18N["ui.fact.key.event.adv"],
-            getLabelForKeyCode(i18N, keyCode = fact.keyCode)
+            getLabelForKeyCode(
+                i18N,
+                keyCode = fact.keyCode
+            ) + " " + i18N[fact.gesture.displayNameKey()]
         )
 
         is Fact.ScreenOff -> listOf(i18N["ui.fact.screen.off"])

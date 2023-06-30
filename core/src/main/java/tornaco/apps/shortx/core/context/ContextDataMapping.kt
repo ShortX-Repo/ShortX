@@ -144,4 +144,10 @@ object ContextDataMapping {
         mediaUri("Uri of the inserted media file"),
         mediaFilePath("Resolved file path of the inserted media"),
     }
+
+    @DoNotStrip
+    enum class AdvancedKeyEvent(val description: String) {
+        keyCode("Key code"),
+        pressTimes("Press times of the Key"),
+    }
 }

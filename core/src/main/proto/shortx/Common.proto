@@ -164,6 +164,9 @@ enum VolumeDirection {
   ADJUST_TOGGLE_MUTE = 101;
 }
 
-message KeyGesture {
-  
+enum KeyGesture {
+  KeyPress = 0;
+  KeyMultiplePress = 1;
+  KeyTriplePress = 2;
+  KeyLongPress = 3;
 }

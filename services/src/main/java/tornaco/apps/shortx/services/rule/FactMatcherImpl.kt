@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.PrebuiltPkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
@@ -68,6 +69,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val lk = actual as KeyEvent
             val rk = rule as KeyEvent
             lk.keyCode == rk.keyCode
+        }
+        register(AdvancedKeyEvent::class.java) { actual, rule ->
+            val lk = actual as AdvancedKeyEvent
+            val rk = rule as AdvancedKeyEvent
+            lk.keyCode == rk.keyCode && lk.gesture == rk.gesture
         }
         register(Alarm::class.java) { l, f ->
             val la = l as Alarm

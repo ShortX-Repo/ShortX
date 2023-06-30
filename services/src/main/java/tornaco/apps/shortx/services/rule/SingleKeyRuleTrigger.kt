@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
@@ -36,7 +38,7 @@ class SingleKeyRuleTrigger(
 
         enabledKeycodes.forEach {
             if (!singleKeyGestureDetector.hasRule(it)) {
-                singleKeyGestureDetector.addRule(SingleKeyRuleImpl(it))
+                singleKeyGestureDetector.addRule(SingleKeyRuleImpl(it, shortXContext.rule))
                 logger.d("Add SingleKeyRule: $it")
             }
         }
@@ -98,7 +100,7 @@ class SingleKeyRuleTrigger(
 }
 
 
-private class SingleKeyRuleImpl(val keycode: Int) : SingleKeyRule(
+private class SingleKeyRuleImpl(val keycode: Int, val ruleService: RuleService) : SingleKeyRule(
     keycode,
     SingleKeyGestureDetector.KEY_LONGPRESS or SingleKeyGestureDetector.KEY_VERYLONGPRESS
 ) {
@@ -106,12 +108,29 @@ private class SingleKeyRuleImpl(val keycode: Int) : SingleKeyRule(
 
     override fun onPress(downTime: Long) {
         logger.d("singleKeyHandler onPress")
-
+        ruleService.publishFact(
+            "onPress-$keycode",
+            AdvancedKeyEvent.newBuilder()
+                .setKeyCode(keycode)
+                .setGesture(KeyGesture.KeyPress)
+                .build(),
+            mapOf(
+                ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
+            )
+        )
     }
 
     override fun onLongPress(eventTime: Long) {
         super.onLongPress(eventTime)
         logger.d("singleKeyHandler onLongPress")
+        ruleService.publishFact(
+            "onLongPress-$keycode",
+            AdvancedKeyEvent.newBuilder()
+                .setKeyCode(keycode)
+                .setGesture(KeyGesture.KeyLongPress)
+                .build()
+        )
     }
 
     override fun onVeryLongPress(eventTime: Long) {
@@ -121,10 +140,36 @@ private class SingleKeyRuleImpl(val keycode: Int) : SingleKeyRule(
 
     override fun onMultiPress(downTime: Long, count: Int) {
         super.onMultiPress(downTime, count)
-        logger.d("singleKeyHandler onMultiPress")
+        logger.d("singleKeyHandler onMultiPress: $count")
+
+        if (count == 2) {
+            ruleService.publishFact(
+                "onMultiPress-2-$keycode",
+                AdvancedKeyEvent.newBuilder()
+                    .setKeyCode(keycode)
+                    .setGesture(KeyGesture.KeyMultiplePress)
+                    .build(),
+                mapOf(
+                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 2
+                )
+            )
+        } else if (count == 3) {
+            ruleService.publishFact(
+                "onMultiPress-3-$keycode",
+                AdvancedKeyEvent.newBuilder()
+                    .setKeyCode(keycode)
+                    .setGesture(KeyGesture.KeyTriplePress)
+                    .build(),
+                mapOf(
+                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 3
+                )
+            )
+        }
     }
 
     override fun getMaxMultiPressCount(): Int {
-        return 2
+        return 3
     }
 }

@@ -107,6 +107,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.MediaStoreInsert>()
         }
 
+        Fact.AdvancedKeyEvent::class -> {
+            dats<ContextDataMapping.AdvancedKeyEvent>()
+        }
+
         else -> {
             emptyList()
         }
