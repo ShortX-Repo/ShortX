@@ -7,6 +7,7 @@ import android.os.IBinder
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.rule.action.su.ISu
@@ -26,7 +27,9 @@ object ShellCommand : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val sc = action unpack_ ShellCommand::class.java
-        val res = ShellServiceProxy.exe(context, sc.command)
+        val command = sc.command.inflateContextMap(contextData)
+        val res = ShellServiceProxy.exe(context, command)
+        logger.d("Shell command: $command")
         logger.d("Shell res: $res")
 
         contextData.add(ContextDataMapping.ShellCommand.shellCode.name, res?.code ?: -1)
