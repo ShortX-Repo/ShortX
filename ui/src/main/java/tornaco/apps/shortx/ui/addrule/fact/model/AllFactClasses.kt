@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 
 val allFactClasses = listOf(
     Fact.KeyEvent::class,
+    Fact.AdvancedKeyEvent::class,
+
     Fact.AnyActivityStarted::class,
     Fact.ActivityStarted::class,
     Fact.EdgeGesture::class,

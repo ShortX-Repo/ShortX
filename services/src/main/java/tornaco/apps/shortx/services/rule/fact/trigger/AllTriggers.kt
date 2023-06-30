@@ -4,7 +4,7 @@ import android.content.Context
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStateTrigger
 
-internal fun allTriggers(context: Context, shortXContext: ShortXContext) = listOf(
+internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutableListOf(
     RuleHooksTrigger(context, shortXContext),
     ScreenStateTrigger(context, shortXContext),
     AlarmTrigger(context, shortXContext),

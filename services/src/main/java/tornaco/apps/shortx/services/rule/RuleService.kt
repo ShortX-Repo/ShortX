@@ -35,8 +35,6 @@ import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
-import tornaco.apps.shortx.services.util.SingleKeyGestureDetector.KEY_LONGPRESS
-import tornaco.apps.shortx.services.util.SingleKeyGestureDetector.KEY_VERYLONGPRESS
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -66,38 +64,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             })
     }
 
-    private val singleKeyHandler = SingleKeyGestureDetector.get().apply {
-        addRule(object : SingleKeyGestureDetector.SingleKeyRule(
-            android.view.KeyEvent.KEYCODE_VOLUME_UP,
-            KEY_LONGPRESS or KEY_VERYLONGPRESS
-        ) {
-            override fun onPress(downTime: Long) {
-                logger.d("singleKeyHandler onPress")
-            }
-
-            override fun onLongPress(eventTime: Long) {
-                super.onLongPress(eventTime)
-                logger.d("singleKeyHandler onLongPress")
-            }
-
-            override fun onVeryLongPress(eventTime: Long) {
-                super.onVeryLongPress(eventTime)
-                logger.d("singleKeyHandler onVeryLongPress")
-            }
-
-            override fun onMultiPress(downTime: Long, count: Int) {
-                super.onMultiPress(downTime, count)
-                logger.d("singleKeyHandler onMultiPress")
-            }
-
-            override fun getMaxMultiPressCount(): Int {
-                return 2
-            }
-        })
-    }
+    private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy { SingleKeyGestureDetector.get() }
 
     private val allTriggers by lazy {
-        allTriggers(context, shortXContext)
+        allTriggers(context, shortXContext).apply {
+            // These are internal Triggers.
+            add(SingleKeyRuleTrigger(context, shortXContext, singleKeyGestureDetector))
+        }
     }
 
     private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
@@ -180,14 +153,19 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         shortXContext.gesture.onKeyEvent {
             logger.d("onKeyEvent up for keyCode: ${it.keyCode}")
 
-            singleKeyHandler.interceptKey(it, true)
-
             if (it.action == android.view.KeyEvent.ACTION_UP && isKeyEventPromptEnabled()) {
                 handler.postSafety {
                     Toast.makeText(context, "Key code: ${it.keyCode}", Toast.LENGTH_SHORT).show()
                 }
             }
 
+            // Check ADV rules.
+            singleKeyGestureDetector.interceptKey(it, false)
+            if (singleKeyGestureDetector.isKeyIntercepted(it.keyCode)) {
+                return@onKeyEvent false
+            }
+
+            // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
             if (engine.shouldFire(enabledRules, fact)) {

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
+import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
@@ -50,6 +51,10 @@ fun Fact.toProtoFact(): ProtoMessage {
     return when (this) {
         is Fact.KeyEvent -> {
             KeyEvent.newBuilder().setKeyCode(keyCode).setId(id).setNote(note).build()
+        }
+
+        is Fact.AdvancedKeyEvent -> {
+            AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setId(id).setNote(note).build()
         }
 
         is Fact.ActivityStarted -> {

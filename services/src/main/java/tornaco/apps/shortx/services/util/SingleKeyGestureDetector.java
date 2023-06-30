@@ -18,7 +18,6 @@ package tornaco.apps.shortx.services.util;
  */
 
 import android.annotation.IntDef;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -29,6 +28,8 @@ import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import tornaco.apps.shortx.core.BuildProp;
 
@@ -46,6 +47,7 @@ public final class SingleKeyGestureDetector {
     private int mKeyPressCounter;
     private boolean mBeganFromNonInteractive = false;
     private final ArrayList<SingleKeyRule> mRules = new ArrayList<>();
+    private final Set<Integer> mRuleCodes = new HashSet<>();
     private SingleKeyRule mActiveRule = null;
     // Key code of current key down event, reset when key up.
     private int mDownKeyCode = KeyEvent.KEYCODE_UNKNOWN;
@@ -195,6 +197,16 @@ public final class SingleKeyGestureDetector {
 
     public void addRule(SingleKeyRule rule) {
         mRules.add(rule);
+        mRuleCodes.add(rule.mKeyCode);
+    }
+
+    public boolean hasRule(int keycode) {
+        return mRuleCodes.contains(keycode);
+    }
+
+    public void clearRules() {
+        mRules.clear();
+        mRuleCodes.clear();
     }
 
     public void interceptKey(KeyEvent event, boolean interactive) {

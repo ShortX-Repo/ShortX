@@ -13,6 +13,14 @@ message KeyEvent {
   string id = 100;
 }
 
+message AdvancedKeyEvent {
+  int32 keyCode = 1;
+
+
+  string note = 99;
+  string id = 100;
+}
+
 message ScreenOn {
   string note = 99;
   string id = 100;

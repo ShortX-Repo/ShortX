@@ -16,6 +16,11 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.KeyEvent(keyCode = data.keyCode, id = data.id, note = data.note)
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent::class.java
+            Fact.AdvancedKeyEvent(keyCode = data.keyCode, id = data.id, note = data.note)
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.EdgeGesture::class.java
             Fact.EdgeGesture(

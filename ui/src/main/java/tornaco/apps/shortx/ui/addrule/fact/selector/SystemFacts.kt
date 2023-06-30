@@ -16,6 +16,8 @@ fun SystemFacts(setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
     val items = listOf(
         Fact.KeyEvent::class,
+        Fact.AdvancedKeyEvent::class,
+
         Fact.EdgeGesture::class,
 
         Fact.ScreenOn::class,

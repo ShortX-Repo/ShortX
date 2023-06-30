@@ -26,6 +26,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.AnyActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.any"]
         Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
         Fact.KeyEvent::class -> i18n["ui.fact.key.event"] to null
+        Fact.AdvancedKeyEvent::class -> i18n["ui.fact.key.event.adv"] to null
         Fact.ScreenOff::class -> i18n["ui.fact.screen.off"] to null
         Fact.ScreenOn::class -> i18n["ui.fact.screen.on"] to null
         Fact.UserPresent::class -> i18n["ui.fact.screen.user.present"] to null
@@ -200,6 +201,11 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.KeyEvent -> listOf(
             i18N["ui.fact.key.event"],
+            getLabelForKeyCode(i18N, keyCode = fact.keyCode)
+        )
+
+        is Fact.AdvancedKeyEvent -> listOf(
+            i18N["ui.fact.key.event.adv"],
             getLabelForKeyCode(i18N, keyCode = fact.keyCode)
         )
 

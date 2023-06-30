@@ -163,3 +163,7 @@ enum VolumeDirection {
   ADJUST_UNMUTE = 100;
   ADJUST_TOGGLE_MUTE = 101;
 }
+
+message KeyGesture {
+  
+}

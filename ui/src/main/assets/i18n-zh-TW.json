@@ -52,6 +52,7 @@
   "ui.fact.activity.started.any": "任意活動",
   "ui.fact.activity.started.specific": "指定的活動",
   "ui.fact.key.event": "按鍵",
+  "ui.fact.key.event.adv": "按键（高级）",
   "ui.fact.edge.gesture": "邊緣手勢",
   "ui.fact.edge.gesture.position": "手勢位置",
   "ui.fact.edge.gesture.gesture": "手勢",

@@ -25,11 +25,15 @@ import java.time.LocalTime
 
 @Composable
 fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
-    // Fact selectors
     val keyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
         addFact(Fact.KeyEvent(code))
     })
     KeyEventSelector(keyEventSelectorState)
+
+    val advKeyEventSelectorState = rememberKeyEventSelectorState(selected = { code ->
+        addFact(Fact.AdvancedKeyEvent(code))
+    })
+    KeyEventSelector(advKeyEventSelectorState)
 
     val edgeGestureSelectorState = rememberEdgeGestureSelectorState(
         selected = { eg ->
@@ -195,6 +199,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         when (source.clazz) {
             Fact.KeyEvent::class -> {
                 keyEventSelectorState.show()
+                true
+            }
+
+            Fact.AdvancedKeyEvent::class -> {
+                advKeyEventSelectorState.show()
                 true
             }
 

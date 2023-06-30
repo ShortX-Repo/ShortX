@@ -30,6 +30,16 @@ sealed interface Fact {
         }
     }
 
+    data class AdvancedKeyEvent(
+        val keyCode: Int,
+        override val note: String = "",
+        override val id: String = defaultNewFactId()
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
     data class AnyActivityStarted(
         override val note: String = "",
         override val id: String = defaultNewFactId()
