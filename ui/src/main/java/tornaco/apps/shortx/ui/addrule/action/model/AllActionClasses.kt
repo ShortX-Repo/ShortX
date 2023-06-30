@@ -77,5 +77,6 @@ val allActionClasses = listOf(
     Action.StartLastApp::class,
     Action.StopCurrentApp::class,
     Action.AdjustVolume::class,
+    Action.Vibrate::class,
     Action.NoAction::class,
 )

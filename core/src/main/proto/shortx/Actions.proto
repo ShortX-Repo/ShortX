@@ -551,3 +551,12 @@ message AdjustVolume {
   string note = 99;
   string id = 100;
 }
+
+message Vibrate {
+  string note = 99;
+  string id = 100;
+
+  int32 vib1 = 1;
+  int32 vib2 = 2;
+  int32 vib3 = 3;
+}

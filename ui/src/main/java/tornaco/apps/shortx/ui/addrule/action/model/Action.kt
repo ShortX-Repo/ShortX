@@ -886,6 +886,20 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class Vibrate(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+        val vib1: Int,
+        val vib2: Int,
+        val vib3
+        : Int,
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val note: String = "",

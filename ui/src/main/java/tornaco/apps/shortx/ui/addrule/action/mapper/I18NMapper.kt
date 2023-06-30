@@ -156,6 +156,7 @@ fun labelAndDescriptionForActionSelector(
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
+        Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -543,6 +544,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.adjust.volume"],
                 i18N[action.direction.labelKey()]
+            )
+        }
+
+        is Action.Vibrate -> {
+            listOf(
+                i18N["ui.action.vibrate"],
             )
         }
     }

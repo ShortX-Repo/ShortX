@@ -674,6 +674,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java
+            Action.Vibrate(
+                id = data.id,
+                note = data.note,
+                vib1 = data.vib1,
+                vib2 = data.vib2,
+                vib3 = data.vib3,
+            )
+        }
+
         else -> null
     }
 }

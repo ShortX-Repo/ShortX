@@ -58,6 +58,7 @@ import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.action.Vibrate
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WakeupScreen
 import tornaco.apps.shortx.core.proto.action.WhileLoop
@@ -594,6 +595,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setDirection(direction)
                 .setShowUI(true)
+                .build()
+        }
+
+        is Action.Vibrate -> {
+            Vibrate.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setVib1(vib1)
+                .setVib2(vib2)
+                .setVib3(vib3)
                 .build()
         }
 

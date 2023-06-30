@@ -13,8 +13,10 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -82,6 +84,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = adjustVolumeSelectorState)
 
+    val vibratePatternDialogState = rememberVibratePatternSelectorState(selected = {
+        addAction(it)
+    })
+    VibratePatternSelector(state = vibratePatternDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -121,6 +128,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.AdjustVolume::class -> {
                 adjustVolumeSelectorState.show()
+                true
+            }
+
+            Action.Vibrate::class -> {
+                vibratePatternDialogState.show(source.getActionAs())
                 true
             }
 
@@ -190,6 +202,7 @@ fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
         Action.AdjustVolume::class,
+        Action.Vibrate::class,
     ).map {
         SelectorItem(
             it,
