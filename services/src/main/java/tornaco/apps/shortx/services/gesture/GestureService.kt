@@ -83,6 +83,17 @@ class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext
         if (input is MotionEvent) {
             return filterMotionEvent(input)
         }
+        if (input is KeyEvent) {
+            // Below code is handle by PhoneWindowManager.
+            if (!arrayOf(
+                    KeyEvent.KEYCODE_HOME,
+                    KeyEvent.KEYCODE_BACK,
+                    KeyEvent.KEYCODE_POWER,
+                ).contains(input.keyCode)
+            ) {
+                return handleKeyEvent(input)
+            }
+        }
         return null
     }
 

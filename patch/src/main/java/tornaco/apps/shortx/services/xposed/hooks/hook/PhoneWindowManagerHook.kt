@@ -9,6 +9,11 @@ import tornaco.apps.shortx.services.ShortXService
 
 object PhoneWindowManagerHook {
     private val logger = Logger("XposedEntry.PhoneWindowManagerHook")
+    private val keyCodesToHandle = arrayOf(
+        KeyEvent.KEYCODE_HOME,
+        KeyEvent.KEYCODE_BACK,
+        KeyEvent.KEYCODE_POWER,
+    )
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         logger.d("hook")
@@ -18,9 +23,14 @@ object PhoneWindowManagerHook {
             Methods.interceptKeyBeforeQueueing
         ) { param ->
             logger.d("interceptKeyBeforeQueueing: ${param.args.map { it }}")
-            val res = ShortXService.shortXContext.gesture.handleKeyEvent(param.args[0] as KeyEvent)
-            if (res == false) {
-                param.result = 0
+            // Only handle HOME/BACK/RECENT/POWER
+            val keyEvent = param.args[0] as KeyEvent
+
+            if (keyCodesToHandle.contains(keyEvent.keyCode)) {
+                val res = ShortXService.shortXContext.gesture.handleKeyEvent(keyEvent)
+                if (res == false) {
+                    param.result = 0
+                }
             }
         }
     }
