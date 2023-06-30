@@ -34,6 +34,7 @@ sealed interface Fact {
     data class AdvancedKeyEvent(
         val keyCode: Int,
         val gesture: KeyGesture,
+        val isInterceptMode: Boolean,
         override val note: String = "",
         override val id: String = defaultNewFactId()
     ) : Fact {

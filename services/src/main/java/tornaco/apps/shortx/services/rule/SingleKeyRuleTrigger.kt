@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
@@ -20,6 +21,11 @@ class SingleKeyRuleTrigger(
     private val singleKeyGestureDetector: SingleKeyGestureDetector
 ) : Trigger {
     private val logger = Logger("SingleKeyRuleTrigger")
+    private val keycodes: MutableList<Int> = mutableListOf()
+    private val interceptModeKeyCodes: MutableList<Int> = mutableListOf()
+
+    fun hasAnyWithInterceptMode(keyCode: Int) = interceptModeKeyCodes.contains(keyCode)
+    fun hasAny(keyCode: Int) = keycodes.contains(keyCode)
 
     private fun installKeyRules() {
         val keyEventRules =
@@ -33,12 +39,26 @@ class SingleKeyRuleTrigger(
         val enabledKeycodes = keyEventRules.map { rule ->
             rule.keyCodeList
         }.flatten().distinct()
+        this.keycodes.clear()
+        this.keycodes.addAll(enabledKeycodes)
 
-        logger.d("enabledKeycodes: $enabledKeycodes")
+        val enabledInterceptModeKeyCodes = keyEventRules.map { rule ->
+            rule.interceptModeKeyCodeList
+        }.flatten().distinct()
+        this.interceptModeKeyCodes.clear()
+        this.interceptModeKeyCodes.addAll(enabledInterceptModeKeyCodes)
+
+        logger.d("enabledKeycodes: ${this.keycodes}")
+        logger.d("enabledInterceptModeKeyCodes: ${this.interceptModeKeyCodes}")
 
         enabledKeycodes.forEach {
             if (!singleKeyGestureDetector.hasRule(it)) {
-                singleKeyGestureDetector.addRule(SingleKeyRuleImpl(it, shortXContext.rule))
+                singleKeyGestureDetector.addRule(
+                    SingleKeyRuleImpl(
+                        it,
+                        shortXContext.rule
+                    )
+                )
                 logger.d("Add SingleKeyRule: $it")
             }
         }
@@ -58,6 +78,13 @@ class SingleKeyRuleTrigger(
     private val Rule.keyCodeList
         get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
             .map { (it unpack_ AdvancedKeyEvent::class.java).keyCode }.distinct()
+
+    private val Rule.interceptModeKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                data.isInterceptMode.select(data.keyCode, null)
+            }.distinct()
 
 
     override fun register() {
@@ -100,7 +127,10 @@ class SingleKeyRuleTrigger(
 }
 
 
-private class SingleKeyRuleImpl(val keycode: Int, val ruleService: RuleService) : SingleKeyRule(
+private class SingleKeyRuleImpl(
+    val keycode: Int,
+    val ruleService: RuleService
+) : SingleKeyRule(
     keycode,
     SingleKeyGestureDetector.KEY_LONGPRESS or SingleKeyGestureDetector.KEY_VERYLONGPRESS
 ) {

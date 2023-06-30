@@ -205,7 +205,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.AdvancedKeyEvent::class -> {
-                advKeyEventSelectorState.show()
+                advKeyEventSelectorState.show(source.getFactAs())
                 true
             }
 

@@ -65,11 +65,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
     }
 
     private val singleKeyGestureDetector: SingleKeyGestureDetector by lazy { SingleKeyGestureDetector.get() }
+    private val singleKeyRuleTrigger by lazy {
+        SingleKeyRuleTrigger(
+            context,
+            shortXContext,
+            singleKeyGestureDetector
+        )
+    }
 
     private val allTriggers by lazy {
         allTriggers(context, shortXContext).apply {
             // These are internal Triggers.
-            add(SingleKeyRuleTrigger(context, shortXContext, singleKeyGestureDetector))
+            add(singleKeyRuleTrigger)
         }
     }
 
@@ -165,9 +172,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             }
 
             // Check ADV rules.
-            singleKeyGestureDetector.interceptKey(it, false)
-            if (singleKeyGestureDetector.isKeyIntercepted(it.keyCode)) {
-                return@onKeyEvent false
+            if (singleKeyRuleTrigger.hasAny(it.keyCode)) {
+                singleKeyGestureDetector.interceptKey(it, false)
+                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(it.keyCode) && singleKeyGestureDetector.isKeyIntercepted(
+                        it.keyCode
+                    )
+                ) {
+                    return@onKeyEvent false
+                }
             }
 
             // Check Normal Rules.

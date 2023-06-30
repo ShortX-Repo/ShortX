@@ -83,6 +83,23 @@ fun SmallTitle(
 }
 
 @Composable
+fun FieldTitle(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.bodySmall.copy(
+            fontWeight = FontWeight.W400,
+            fontSize = 14.sp
+        ),
+        color = color
+    )
+}
+
+@Composable
 fun DialogTitle(text: String) {
     Text(
         modifier = Modifier.padding(8.dp),

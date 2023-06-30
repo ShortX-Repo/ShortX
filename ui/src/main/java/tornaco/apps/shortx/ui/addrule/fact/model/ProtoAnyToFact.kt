@@ -21,6 +21,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AdvancedKeyEvent(
                 keyCode = data.keyCode,
                 gesture = data.gesture,
+                isInterceptMode = data.isInterceptMode,
                 id = data.id,
                 note = data.note
             )

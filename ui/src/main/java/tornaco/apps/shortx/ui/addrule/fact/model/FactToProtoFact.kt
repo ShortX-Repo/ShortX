@@ -54,7 +54,7 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
 
         is Fact.AdvancedKeyEvent -> {
-            AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture).setId(id).setNote(note).build()
+            AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture).setIsInterceptMode(isInterceptMode).setId(id).setNote(note).build()
         }
 
         is Fact.ActivityStarted -> {
