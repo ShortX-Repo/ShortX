@@ -168,11 +168,22 @@ private fun CodeEditor(
                                 ).show()
                             }
                         ) {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = state.output,
-                                style = MaterialTheme.typography.bodySmall
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(16.dp),
+                                    text = state.output,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+
+                                IconButton(onClick = {
+                                    state.setOutput("")
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            }
                         }
                         StandardSpacer()
                     }
@@ -181,8 +192,8 @@ private fun CodeEditor(
                         .fillMaxSize()
                         .systemBarsPadding()
                         .imePadding(),
-                        factory = { context ->
-                            return@AndroidView CodeView(context).apply {
+                        factory = { ctx ->
+                            return@AndroidView CodeView(ctx).apply {
                                 initView(this)
                                 setText(state.currentText)
                                 doAfterTextChanged {
