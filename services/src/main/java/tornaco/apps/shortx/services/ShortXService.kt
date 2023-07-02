@@ -12,6 +12,7 @@ import android.os.ServiceManager
 import android.os.UserHandle
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -29,6 +30,7 @@ import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.rule.actor.impl.ShellServiceProxy
 import tornaco.apps.shortx.services.v.v
 import java.util.UUID
 
@@ -200,6 +202,12 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun onMediaStoreDelete(uri: Uri, path: String) {
             shortXContext.media.onMediaStoreDelete(uri, path)
+        }
+
+        override fun executeShellCommand(command: String): ByteArrayWrapper {
+            logger.d("executeShellCommand: $command")
+            val res = ShellServiceProxy.exe(context, command) ?: ShellRes.newBuilder().build()
+            return ByteArrayWrapper(res.toByteArray())
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

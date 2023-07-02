@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
@@ -274,6 +275,9 @@ private fun OpSelector(
             val mvelSelectorState = rememberCodeEditorState(
                 title = LocalI18N.current["ui.title.mvel"],
                 message = LocalI18N.current["ui.condition.op.mvel"],
+                execute = {
+                    shortXManager.executeMVEL(it)
+                },
                 onSelected = {
                     setConditionOp(Op.MVEL(it.src))
                 })

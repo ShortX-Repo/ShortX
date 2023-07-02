@@ -337,6 +337,12 @@ public interface IShortX extends android.os.IInterface
     @Override public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
     {
     }
+    // ShellRes
+
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1302,6 +1308,22 @@ public interface IShortX extends android.os.IInterface
           _arg1 = data.readString();
           this.onMediaStoreDelete(_arg0, _arg1);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_executeShellCommand:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.executeShellCommand(_arg0);
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
           return true;
         }
         default:
@@ -3196,6 +3218,34 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // ShellRes
+
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(command);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_executeShellCommand, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeShellCommand(command);
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3283,6 +3333,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_executeDirectionAction = (android.os.IBinder.FIRST_CALL_TRANSACTION + 82);
     static final int TRANSACTION_onMediaStoreInsert = (android.os.IBinder.FIRST_CALL_TRANSACTION + 83);
     static final int TRANSACTION_onMediaStoreDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 84);
+    static final int TRANSACTION_executeShellCommand = (android.os.IBinder.FIRST_CALL_TRANSACTION + 85);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3419,4 +3470,7 @@ public interface IShortX extends android.os.IInterface
   public void executeDirectionAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
   public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
   public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
+  // ShellRes
+
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException;
 }

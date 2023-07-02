@@ -150,4 +150,7 @@ interface IShortX {
 
     void onMediaStoreInsert(in Uri uri, String path);
     void onMediaStoreDelete(in Uri uri, String path);
+
+    // ShellRes
+    ByteArrayWrapper executeShellCommand(String command);
 }

@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
+import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -615,6 +616,14 @@ class ShortXManager(private val service: IShortX) {
     fun isKeyEventPromptEnabled(): Boolean {
         return invokeService(false) {
             isKeyEventPromptEnabled
+        }
+    }
+
+    fun executeShellCommand(command: String): ShellRes {
+        return invokeService(ShellRes.getDefaultInstance()) {
+            executeShellCommand(command).let {
+                ShellRes.parseFrom(it.byte)
+            }
         }
     }
 

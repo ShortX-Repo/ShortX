@@ -3,6 +3,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.rule.action.su.shellResToString
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -21,10 +23,14 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
-    val shellCommandSelectorState = rememberShellCommandSelectorState { cmd ->
-        addAction(cmd)
-    }
-    ShellCommandSelector(state = shellCommandSelectorState)
+    val shellCommandSelectorState = rememberCodeEditorState(title = "Shell",
+        execute = {
+            shortXManager.executeShellCommand(it).shellResToString()
+        },
+        onSelected = {
+            addAction(Action.ShellCommand(command = it.src, note = it.note))
+        })
+    CodeEditorDialog(state = shellCommandSelectorState)
 
     val inputTextSelectorState = rememberTextSelectorState(onSelected = {
         addAction(Action.InputText(text = it))
@@ -41,7 +47,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     TextInputDialog(state = delaySelectionState)
 
     val mvelSelectorState = rememberCodeEditorState(
-        title = LocalI18N.current["ui.title.mvel"]
+        title = LocalI18N.current["ui.title.mvel"],
+        execute = {
+            shortXManager.executeMVEL(it)
+        }
     ) { expression ->
         addAction(Action.MVEL(expression = expression.src))
     }

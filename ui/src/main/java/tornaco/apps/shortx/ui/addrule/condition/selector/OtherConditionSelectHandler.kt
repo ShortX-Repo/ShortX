@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
@@ -13,7 +14,10 @@ import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 @Composable
 fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
     val mvelConditionSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"]) { expression ->
+        rememberCodeEditorState(title = LocalI18N.current["ui.title.mvel"],
+            execute = {
+                shortXManager.executeMVEL(it)
+            }) { expression ->
             addCondition(Condition.MVEL(expression.src))
         }
     CodeEditorDialog(state = mvelConditionSelectorState)

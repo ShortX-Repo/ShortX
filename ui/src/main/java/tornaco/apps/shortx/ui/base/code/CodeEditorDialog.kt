@@ -22,8 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import com.amrdeveloper.codeview.CodeView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util._sp
 import tornaco.apps.shortx.ui.addrule.action.selector.*
 import tornaco.apps.shortx.ui.base.*
@@ -39,36 +42,31 @@ data class Code(val src: String, val note: String)
 class CodeEditorState(
     val title: String,
     val message: String?,
+    val scope: CoroutineScope,
+    val execute: suspend (String) -> String,
     val onSelected: (Code) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
-
-    private var _output by mutableStateOf("")
-    val output get() = _output
-
+) : CommonDialogState() {
     private var _note by mutableStateOf("")
     val note get() = _note
+
+    private var _isExecuting by mutableStateOf(false)
+    val isExecuting get() = _isExecuting
 
     var currentText: String = ""
 
     fun show(initialText: String? = "") {
         this.currentText = initialText ?: ""
-        this._output = ""
         this._note = ""
-        _isShow = true
-    }
 
-    fun dismiss() {
-        _isShow = false
-    }
-
-    fun setOutput(output: String) {
-        _output = output
+        show()
     }
 
     fun setNote(note: String) {
         _note = note
+    }
+
+    fun setIsExecuting(executing: Boolean) {
+        _isExecuting = executing
     }
 }
 
@@ -76,16 +74,18 @@ class CodeEditorState(
 fun rememberCodeEditorState(
     title: String,
     message: String? = null,
+    execute: suspend (String) -> String,
     onSelected: (Code) -> Unit
 ): CodeEditorState {
+    val scope = rememberCoroutineScope()
     return remember {
-        CodeEditorState(title, message, onSelected)
+        CodeEditorState(title, message, scope, execute, onSelected)
     }
 }
 
 @Composable
 fun CodeEditorDialog(state: CodeEditorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             CodeEditor(state)
         }
@@ -100,6 +100,9 @@ private fun CodeEditor(
         state.setNote(it)
     }
     InputTextSelector(state = noteDialogState)
+
+    val outputDialogState = rememberOutputDialogState(title = state.title)
+    OutputDialog(state = outputDialogState)
 
     ShortXTheme {
         Surface(
@@ -117,13 +120,27 @@ private fun CodeEditor(
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-                            state.setOutput(shortXManager.executeMVEL(state.currentText))
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.PlayArrow,
-                                contentDescription = "Evaluate"
-                            )
+                        AnimatedVisibility(visible = !state.isExecuting) {
+                            IconButton(
+                                onClick = {
+                                    state.scope.launch {
+                                        state.setIsExecuting(true)
+                                        val output = withContext(Dispatchers.IO) {
+                                            state.execute(state.currentText)
+                                        }
+                                        state.setIsExecuting(false)
+                                        outputDialogState.show(output)
+                                    }
+                                }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.PlayArrow,
+                                    contentDescription = "Evaluate"
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(visible = state.isExecuting) {
+                            Loading(modifier = Modifier.size(24.dp))
                         }
 
                         IconButton(onClick = {
@@ -147,47 +164,6 @@ private fun CodeEditor(
                         Text(text = it, style = MaterialTheme.typography.titleSmall)
                         StandardSpacer()
                     }
-
-                    val i18N = LocalI18N.current
-                    val context = LocalContext.current
-                    AnimatedVisibility(visible = state.output.isNotEmpty()) {
-                        ShortXCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 72.dp, max = 300.dp),
-                            onClick = {
-                                ClipboardUtils.copyToClipboard(
-                                    context,
-                                    "output",
-                                    state.output
-                                )
-                                Toast.makeText(
-                                    context,
-                                    i18N["ui.common.copied.to.clipboard"],
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = state.output,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-
-                                IconButton(onClick = {
-                                    state.setOutput("")
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
-                                }
-                            }
-                        }
-                        StandardSpacer()
-                    }
-
                     AndroidView(modifier = Modifier
                         .fillMaxSize()
                         .systemBarsPadding()
@@ -199,7 +175,6 @@ private fun CodeEditor(
                                 doAfterTextChanged {
                                     it?.toString()?.let { text ->
                                         state.currentText = text
-                                        state.setOutput("")
                                     }
                                 }
                             }
@@ -264,4 +239,66 @@ private fun setupLanguageAutoComplete(codeView: CodeView) {
     val adapter = ArrayAdapter(codeView.context, layoutId, viewId, languageKeywords)
 
     codeView.setAdapter(adapter)
+}
+
+
+class OutputDialogState(val title: String) : CommonDialogState() {
+    var output: String by mutableStateOf("")
+
+    fun show(out: String) {
+        this.output = out
+        show()
+    }
+}
+
+
+@Composable
+fun rememberOutputDialogState(
+    title: String,
+): OutputDialogState {
+    return remember {
+        OutputDialogState(title)
+    }
+}
+
+@Composable
+fun OutputDialog(state: OutputDialogState) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
+    if (state.isShowing) {
+        ShortXAlertDialog(
+            onDismissRequest = {
+                state.dismiss()
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    ClipboardUtils.copyToClipboard(
+                        context,
+                        "output",
+                        state.output
+                    )
+                    Toast.makeText(
+                        context,
+                        i18N["ui.common.copied.to.clipboard"],
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    state.dismiss()
+                }) {
+                    Text(text = LocalI18N.current["ui.common.copy"])
+                }
+            },
+            title = {
+                Text(text = state.title)
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(text = state.output)
+                }
+            })
+    }
 }
