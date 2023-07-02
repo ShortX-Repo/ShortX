@@ -174,7 +174,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             // Check ADV rules.
             if (singleKeyRuleTrigger.hasAny(it.keyCode)) {
                 singleKeyGestureDetector.interceptKey(it, false)
-                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(it.keyCode) && singleKeyGestureDetector.isKeyIntercepted(
+                if (singleKeyRuleTrigger.hasAnyWithInterceptMode(it.keyCode)
+                    && singleKeyGestureDetector.isKeyIntercepted(
                         it.keyCode
                     )
                 ) {
@@ -203,7 +204,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
-            if (engine.shouldFire(enabledRules, fact)) {
+            if (shouldFire(enabledRules, fact)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
                 engine.fire(fact = fact, rules = enabledRules)
                 return@onGestureEvent true
@@ -217,6 +218,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                 it.register()
             }.onFailure { logger.e("Fail register trigger $it") }
         }
+    }
+
+    // Quick check.
+    fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
+        return engine.shouldFire(rules, fact)
     }
 
     fun publishFact(

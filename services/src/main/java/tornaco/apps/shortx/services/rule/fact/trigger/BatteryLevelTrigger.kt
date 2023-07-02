@@ -23,7 +23,7 @@ class BatteryLevelTrigger(
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
         override fun handleReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
-                val newState = BatteryImpl.retrieveBatteryState(context, intent)
+                val newState = BatteryImpl.retrieveBatteryState(intent)
                 logger.d("newState: $newState")
                 val stateChanged = (newState.batteryLevel != _level.value)
                 if (stateChanged) {

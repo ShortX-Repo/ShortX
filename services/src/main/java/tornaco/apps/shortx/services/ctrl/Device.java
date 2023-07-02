@@ -198,7 +198,11 @@ public final class Device {
 
     public static boolean injectKeyEvent(int action, int keyCode, int repeat, int metaState, int displayId, int injectMode) {
         long now = SystemClock.uptimeMillis();
-        KeyEvent event = new KeyEvent(now, now, action, keyCode, repeat, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT,
+        KeyEvent event = new KeyEvent(now, now,
+                action, keyCode, repeat, metaState,
+                KeyCharacterMap.ALPHA,
+                0,
+                KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT,
                 InputDevice.SOURCE_KEYBOARD);
         return injectEvent(event, displayId, injectMode);
     }
@@ -214,6 +218,10 @@ public final class Device {
 
     public boolean pressReleaseKeycode(int keyCode, int injectMode) {
         return pressReleaseKeycode(keyCode, displayId, injectMode);
+    }
+
+    public boolean pressKeycode(int keyCode, int injectMode) {
+        return injectKeyEvent(KeyEvent.ACTION_DOWN, keyCode, 0, 0, displayId, injectMode);
     }
 
     public static boolean isScreenOn() {

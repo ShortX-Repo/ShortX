@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Fields
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.services.ShortXService
+import util.field
 
 fun XposedEntry.hookAMS(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
     afterMethod(lpparam.classLoader.amsClass(), Methods.start) { param ->

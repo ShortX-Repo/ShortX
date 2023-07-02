@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule
 
 import android.content.Context
+import android.view.KeyEvent
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
@@ -10,6 +11,9 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.ctrl.Device
+import tornaco.apps.shortx.services.input.IMSFunc
+import tornaco.apps.shortx.services.rule.actor.impl.device
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector.SingleKeyRule
@@ -48,18 +52,24 @@ class SingleKeyRuleTrigger(
         this.interceptModeKeyCodes.clear()
         this.interceptModeKeyCodes.addAll(enabledInterceptModeKeyCodes)
 
+        val longPressKeyCodes = keyEventRules.map { rule ->
+            rule.longPressKeyCodeList
+        }.flatten().distinct()
+
         logger.d("enabledKeycodes: ${this.keycodes}")
         logger.d("enabledInterceptModeKeyCodes: ${this.interceptModeKeyCodes}")
+        logger.d("longPressKeyCodes: $longPressKeyCodes")
 
-        enabledKeycodes.forEach {
-            if (!singleKeyGestureDetector.hasRule(it)) {
+        enabledKeycodes.forEach { keyCode ->
+            if (!singleKeyGestureDetector.hasRule(keyCode)) {
                 singleKeyGestureDetector.addRule(
                     SingleKeyRuleImpl(
-                        it,
-                        shortXContext.rule
+                        keycode = keyCode,
+                        ruleService = shortXContext.rule,
+                        enableLongPress = longPressKeyCodes.contains(keyCode)
                     )
                 )
-                logger.d("Add SingleKeyRule: $it")
+                logger.d("Add SingleKeyRule: $keyCode")
             }
         }
     }
@@ -84,6 +94,13 @@ class SingleKeyRuleTrigger(
             .mapNotNull {
                 val data = (it unpack_ AdvancedKeyEvent::class.java)
                 data.isInterceptMode.select(data.keyCode, null)
+            }.distinct()
+
+    private val Rule.longPressKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                (data.gesture == KeyGesture.KeyLongPress).select(data.keyCode, null)
             }.distinct()
 
 
@@ -129,26 +146,37 @@ class SingleKeyRuleTrigger(
 
 private class SingleKeyRuleImpl(
     val keycode: Int,
-    val ruleService: RuleService
+    val ruleService: RuleService,
+    val enableLongPress: Boolean
 ) : SingleKeyRule(
     keycode,
-    SingleKeyGestureDetector.KEY_LONGPRESS or SingleKeyGestureDetector.KEY_VERYLONGPRESS
+    if (enableLongPress) SingleKeyGestureDetector.KEY_LONGPRESS else 0
 ) {
     private val logger = Logger("SingleKeyRuleImpl")
 
     override fun onPress(downTime: Long) {
         logger.d("singleKeyHandler onPress")
-        ruleService.publishFact(
-            "onPress-$keycode",
-            AdvancedKeyEvent.newBuilder()
-                .setKeyCode(keycode)
-                .setGesture(KeyGesture.KeyPress)
-                .build(),
-            mapOf(
-                ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
-                ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
+
+        val fact = AdvancedKeyEvent.newBuilder()
+            .setKeyCode(keycode)
+            .setGesture(KeyGesture.KeyPress)
+            .build()
+        val enabledRules = ruleService.getAllRules().filter { rule -> rule.isEnabled }
+        if (ruleService.shouldFire(enabledRules, fact)) {
+            ruleService.publishFact(
+                "onPress-$keycode",
+                fact,
+                mapOf(
+                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
+                )
             )
-        )
+        } else {
+            device.pressReleaseKeycode(
+                keycode,
+                Device.INJECT_MODE_ASYNC
+            )
+        }
     }
 
     override fun onLongPress(eventTime: Long) {
@@ -161,11 +189,6 @@ private class SingleKeyRuleImpl(
                 .setGesture(KeyGesture.KeyLongPress)
                 .build()
         )
-    }
-
-    override fun onVeryLongPress(eventTime: Long) {
-        super.onVeryLongPress(eventTime)
-        logger.d("singleKeyHandler onVeryLongPress")
     }
 
     override fun onMultiPress(downTime: Long, count: Int) {
@@ -197,6 +220,12 @@ private class SingleKeyRuleImpl(
                 )
             )
         }
+    }
+
+    override fun unHandledDown(event: KeyEvent) {
+        super.unHandledDown(event)
+        logger.d("unHandledDown: $event")
+        IMSFunc.injectInputEvent(event)
     }
 
     override fun getMaxMultiPressCount(): Int {
