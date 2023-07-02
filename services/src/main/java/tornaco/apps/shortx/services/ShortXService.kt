@@ -115,7 +115,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun addRule(rule: ByteArrayWrapper) {
-            shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byte))
+            v(context) {
+                shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byte))
+            }
         }
 
         override fun deleteRule(ruleId: String) {
@@ -166,7 +168,9 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun addDirectAction(da: ByteArrayWrapper) {
             enforceCallingPermissions()
-            shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byte))
+            v(context) {
+                shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byte))
+            }
         }
 
         override fun deleteDirectAction(id: String) {
@@ -180,9 +184,11 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun getAllDirectAction(): List<ByteArrayWrapper> {
-            return shortXContext.rule.getAllDirectAction().map {
-                ByteArrayWrapper(it.toByteArray())
-            }
+            return v(context) {
+                shortXContext.rule.getAllDirectAction().map {
+                    ByteArrayWrapper(it.toByteArray())
+                }
+            } ?: emptyList()
         }
 
         override fun getDirectActionCount(): Int {
