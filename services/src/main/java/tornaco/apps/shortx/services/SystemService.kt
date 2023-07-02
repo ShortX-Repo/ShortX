@@ -3,11 +3,14 @@ package tornaco.apps.shortx.services
 import android.annotation.CallSuper
 import android.content.Context
 import android.os.Binder
+import android.os.Process
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
 
@@ -100,3 +103,22 @@ val SystemService.systemServiceScope: CoroutineScope
             CoroutineScope(SupervisorJob() + handler.asCoroutineDispatcher("HD#Scope"))
         )
     }
+
+
+fun SystemService.enforceCallingPermissions() {
+    // Be careful
+    if (Process.myPid() == Binder.getCallingPid()) {
+        return
+    }
+    val callingUid = Binder.getCallingUid()
+    if (PkgUtils.isSystemOrPhoneOrShell(callingUid)) {
+        return
+    }
+    if (shortXContext.appState.isShortXAppUid(callingUid)) {
+        if (BuildProp.APP_IS_DEBUG) {
+            logger.d("enforceCallingPermissions, allow shortx of UID: $callingUid")
+        }
+        return
+    }
+    throw SecurityException("Uid of $callingUid it not allowed to interact with ShortX server!!!")
+}

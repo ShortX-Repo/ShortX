@@ -165,6 +165,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun addDirectAction(da: ByteArrayWrapper) {
+            enforceCallingPermissions()
             shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byte))
         }
 
@@ -189,10 +190,12 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun executeDirectionActionById(id: String) {
+            enforceCallingPermissions()
             shortXContext.rule.executeDirectionActionById(id)
         }
 
         override fun executeDirectionAction(da: ByteArrayWrapper) {
+            enforceCallingPermissions()
             shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byte))
         }
 
@@ -205,6 +208,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun executeShellCommand(command: String): ByteArrayWrapper {
+            enforceCallingPermissions()
             logger.d("executeShellCommand: $command")
             val res = ShellServiceProxy.exe(context, command) ?: ShellRes.newBuilder().build()
             return ByteArrayWrapper(res.toByteArray())
@@ -215,6 +219,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun executeAction(action: ByteArrayWrapper) {
+            enforceCallingPermissions()
             shortXContext.rule.executeActions(
                 "EA-${UUID.randomUUID()}",
                 "IShortX executeAction",
@@ -223,6 +228,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun executeActionBlocking(action: ByteArrayWrapper) {
+            enforceCallingPermissions()
             shortXContext.rule.executeActionsBlocking(
                 "EAB-${UUID.randomUUID()}",
                 "IShortX executeAction",

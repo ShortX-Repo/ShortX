@@ -506,4 +506,6 @@ class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContex
             forceStopApp(it, "stopForegroundApp")
         }
     }
+
+    fun isShortXAppUid(uid: Int) = pkgPools.any { it.isShortXAppUid(uid) }
 }

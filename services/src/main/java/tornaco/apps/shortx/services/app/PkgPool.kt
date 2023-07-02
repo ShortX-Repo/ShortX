@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.UserHandle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
@@ -52,6 +53,8 @@ class PkgPool(
 
     private val _allApps: MutableMap<String, App> = mutableMapOf()
     val allApps: Map<String, App> get() = _allApps.toMap()
+
+    private val shortXAppUids = mutableListOf<Int>()
 
     fun init() {
         logger.d("init")
@@ -100,6 +103,10 @@ class PkgPool(
         return _allApps.remove(pkgName)
     }
 
+    fun isShortXAppUid(uid: Int): Boolean {
+        return shortXAppUids.contains(uid)
+    }
+
     private fun ApplicationInfo.toApp(): App {
         val isXposedMod =
             kotlin.runCatching { this.metaData.get("xposedmodule").toString().toBoolean() }
@@ -107,6 +114,14 @@ class PkgPool(
         val isGame =
             (this.flags and ApplicationInfo.FLAG_IS_GAME) != 0 || kotlin.runCatching { this.category == ApplicationInfo.CATEGORY_GAME }
                 .getOrElse { false }
+
+
+        // Check if it is ShortX
+        if (BuildProp.APP_PACKAGE_NAME == packageName) {
+            logger.i("ShortX app uid: $uid")
+            shortXAppUids.add(uid)
+        }
+
         return tornaco.apps.shortx.core.App(
             pkg = Pkg(packageName, userId),
             category = getCategory(),
