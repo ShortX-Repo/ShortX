@@ -66,7 +66,8 @@ class SingleKeyRuleTrigger(
                     SingleKeyRuleImpl(
                         keycode = keyCode,
                         ruleService = shortXContext.rule,
-                        enableLongPress = longPressKeyCodes.contains(keyCode)
+                        enableLongPress = longPressKeyCodes.contains(keyCode),
+                        interceptMode = interceptModeKeyCodes.contains(keyCode)
                     )
                 )
                 logger.d("Add SingleKeyRule: $keyCode")
@@ -147,7 +148,8 @@ class SingleKeyRuleTrigger(
 private class SingleKeyRuleImpl(
     val keycode: Int,
     val ruleService: RuleService,
-    val enableLongPress: Boolean
+    val enableLongPress: Boolean,
+    val interceptMode: Boolean
 ) : SingleKeyRule(
     keycode,
     if (enableLongPress) SingleKeyGestureDetector.KEY_LONGPRESS else 0
@@ -171,7 +173,7 @@ private class SingleKeyRuleImpl(
                     ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 1
                 )
             )
-        } else {
+        } else if (interceptMode) {
             device.pressReleaseKeycode(
                 keycode,
                 Device.INJECT_MODE_ASYNC
@@ -225,7 +227,9 @@ private class SingleKeyRuleImpl(
     override fun unHandledDown(event: KeyEvent) {
         super.unHandledDown(event)
         logger.d("unHandledDown: $event")
-        IMSFunc.injectInputEvent(event)
+        if (interceptMode) {
+            IMSFunc.injectInputEvent(event)
+        }
     }
 
     override fun getMaxMultiPressCount(): Int {
