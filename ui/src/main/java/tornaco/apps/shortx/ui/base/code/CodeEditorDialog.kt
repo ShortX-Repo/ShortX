@@ -158,11 +158,14 @@ private fun CodeEditor(
                         .padding(paddingValues)
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     state.message?.let {
-                        Text(text = it, style = MaterialTheme.typography.titleSmall)
-                        StandardSpacer()
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)) {
+                            Text(text = it, style = MaterialTheme.typography.titleSmall)
+                            StandardSpacer()
+                        }
                     }
                     AndroidView(modifier = Modifier
                         .fillMaxSize()

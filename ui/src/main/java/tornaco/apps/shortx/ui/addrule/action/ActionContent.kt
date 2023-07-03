@@ -244,7 +244,7 @@ private fun Actions(
                         val actionWarning: List<String>? = warnings[action.id]
                         AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
                             actionWarning?.let {
-                                WarningCard(
+                                ErrorCard(
                                     LocalI18N.current["ui.action.warning.message"],
                                     it
                                 )

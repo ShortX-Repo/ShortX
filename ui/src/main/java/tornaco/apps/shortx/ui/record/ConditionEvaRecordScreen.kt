@@ -7,7 +7,9 @@ package tornaco.apps.shortx.ui.record
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,11 +42,15 @@ import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.SuccessGreen
 
@@ -73,6 +79,7 @@ fun ConditionEvaRecordScreenDialog(state: CommonDialogState) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConditionEvaRecordScreen(back: () -> Unit) {
     val vm = hiltViewModel<ConditionEvaRecordViewModel>()
@@ -124,9 +131,47 @@ fun ConditionEvaRecordScreen(back: () -> Unit) {
                             SwitchBar(
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)
-                                    .padding(bottom = 24.dp),
+                                    .padding(bottom = 24.dp, top = 8.dp),
                                 isChecked = state.isEnabled,
                                 onCheckChange = { vm.toggleRecorder() })
+                        }
+
+                        stickyHeader {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RemixIcon(
+                                        remixName = Remix.System.checkbox_circle_fill,
+                                        tint = SuccessGreen
+                                    )
+                                    SmallSpacer()
+                                    TipBody(text = "Matched")
+                                }
+
+                                SectionSpacer()
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RemixIcon(
+                                        remixName = Remix.System.indeterminate_circle_fill,
+                                        tint = NoteTextColor
+                                    )
+                                    SmallSpacer()
+                                    TipBody(text = "Not Match")
+                                }
+
+                                SectionSpacer()
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RemixIcon(
+                                        remixName = Remix.System.error_warning_fill,
+                                        tint = ErrorRed
+                                    )
+                                    SmallSpacer()
+                                    TipBody(text = "Error")
+                                }
+                            }
                         }
 
                         items(state.records) {
@@ -157,7 +202,7 @@ fun ConditionEvaRecordScreen(back: () -> Unit) {
                                             } else {
                                                 RemixIcon(
                                                     remixName = Remix.System.indeterminate_circle_fill,
-                                                    tint = SuccessGreen
+                                                    tint = NoteTextColor
                                                 )
                                             }
                                         } else {

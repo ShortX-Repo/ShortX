@@ -159,7 +159,7 @@ fun ConditionList(
                         val actionWarning: List<String>? = warnings[conditionItem.id]
                         AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
                             actionWarning?.let {
-                                WarningCard(
+                                ErrorCard(
                                     LocalI18N.current["ui.condition.warning.message"],
                                     it
                                 )

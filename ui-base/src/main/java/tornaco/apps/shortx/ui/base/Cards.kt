@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.theme.WarningYellow
 
 @Composable
 fun ShortXCard(
@@ -37,8 +38,26 @@ fun ShortXCard(
     )
 }
 
+
 @Composable
-fun WarningCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
+fun WarningCard(
+    modifier: Modifier = Modifier,
+    shape: Shape = ShortXCardRoundedCornerShape,
+    onClick: () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier.animateContentSize(),
+        backgroundColor = WarningYellow,
+        shape = shape,
+        elevation = 0.dp,
+        onClick = onClick,
+        content = content
+    )
+}
+
+@Composable
+fun ErrorCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
     androidx.compose.material3.Card(
         modifier = Modifier
             .padding(16.dp),

@@ -6,6 +6,7 @@ package tornaco.apps.shortx.ui.record
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -68,6 +69,7 @@ fun FactPublishRecordScreenDialog(state: CommonDialogState) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FactPublishRecordScreen(back: () -> Unit) {
     val vm = hiltViewModel<FactPublishRecordViewModel>()
@@ -119,7 +121,7 @@ fun FactPublishRecordScreen(back: () -> Unit) {
                             SwitchBar(
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)
-                                    .padding(bottom = 24.dp),
+                                    .padding(bottom = 24.dp, top = 8.dp),
                                 isChecked = state.isEnabled,
                                 onCheckChange = { vm.toggleRecorder() })
                         }
