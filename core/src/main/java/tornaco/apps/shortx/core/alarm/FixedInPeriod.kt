@@ -80,7 +80,7 @@ fun getTriggerTimeSegments(
 }
 
 fun getNextTriggerTimeFromSegments(currentDate: Date, segments: List<Date>): Date {
-    return segments.firstOrNull { it.time >= currentDate.time }
+    return segments.firstOrNull { it.time > currentDate.time }
         ?: segments.first()
 }
 

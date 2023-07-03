@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -8,7 +9,9 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.rule.fact.fixed.FixedInPeriodScheduler
+import tornaco.apps.shortx.services.systemServiceScope
 
 class FixedInPeriodTrigger(
     override val context: Context,
@@ -53,8 +56,12 @@ class FixedInPeriodTrigger(
                     .setId(factId).build()
             )
 
-            logger.i("Schedule Next FixedInPeriod")
-            schedule(ruleOrNull, targetFact, "FixedInPeriodTrigger.Next")
+            shortXContext.rule.systemServiceScope.launchSafety {
+                // Schedule after 3s
+                logger.i("Schedule Next FixedInPeriod")
+                delay(3000)
+                schedule(ruleOrNull, targetFact, "FixedInPeriodTrigger.Next")
+            }
         }
     }
 
