@@ -8,7 +8,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 
 object VPNHook {
-    private val logger = Logger("XposedEntry.VPNHook")
+    private val logger = Logger("ShortXHook.VPNHook")
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         logger.d("hook")

@@ -7,9 +7,6 @@
 # is used.
  -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 
-
--keep class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
-
 # Proto
 -keep class tornaco.apps.shortx.core.proto** {*;}
 # Exclude protobuf classes
@@ -18,6 +15,8 @@
 -keep class ** implements android.os.Parcelable { *; }
 -keep class ** implements android.os.IInterface { *; }
 
+-keep class de.robv.android.xposed.**{*;}
+-keep class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
 
 -keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
 

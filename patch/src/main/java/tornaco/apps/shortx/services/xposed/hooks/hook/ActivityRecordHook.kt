@@ -15,7 +15,7 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 
 object ActivityRecordHook {
-    private val logger = Logger("XposedEntry.ActivityRecordHook")
+    private val logger = Logger("ShortXHook.ActivityRecordHook")
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         logger.d("hook")

@@ -8,45 +8,50 @@ import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.RecentTask
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.services.ShortXService
 import util.Reflections
 import util.ReflectionsExt
 
-fun XposedEntry.hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) =
-    kotlin.runCatching {
-        if (OsUtils.isOOrAbove()) {
-            afterMethod(
-                lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTaskLocked),
-                Methods.cleanUpRemovedTaskLocked
-            ) {
-                handleTaskRemoved(it)
+object ActivityTaskSupervisorHook {
+    private val logger = Logger("ShortXHook.ActivityTaskSupervisorHook")
+
+    fun hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            if (OsUtils.isOOrAbove()) {
+                afterMethod(
+                    lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTaskLocked),
+                    Methods.cleanUpRemovedTaskLocked
+                ) {
+                    handleTaskRemoved(it)
+                }
+            } else {
+                afterMethod(lpparam.classLoader.amsClass(), Methods.cleanUpRemovedTaskLocked) {
+                    handleTaskRemoved(it)
+                }
             }
-        } else {
-            afterMethod(lpparam.classLoader.amsClass(), Methods.cleanUpRemovedTaskLocked) {
-                handleTaskRemoved(it)
-            }
+        }.onFailure {
+            logger.e(it, "hookActivityTaskSupervisor")
         }
-    }.onFailure {
-        logger.e(it, "hookActivityTaskSupervisor")
+
+    private fun handleTaskRemoved(param: XC_MethodHook.MethodHookParam) {
+        // void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents)
+        logger.d("cleanUpRemovedTaskLocked: ${param.args}")
+        val recentTask = param.args[0].RecentTask()
+        ShortXService.shortXContext.appState.onTaskRemoved(recentTask)
     }
 
-private fun XposedEntry.handleTaskRemoved(param: XC_MethodHook.MethodHookParam) {
-    // void cleanUpRemovedTaskLocked(TaskRecord tr, boolean killProcess, boolean removeFromRecents)
-    logger.d("cleanUpRemovedTaskLocked: ${param.args}")
-    val recentTask = param.args[0].RecentTask()
-    ShortXService.shortXContext.appState.onTaskRemoved(recentTask)
-}
+    private fun Any.RecentTask(): RecentTask {
+        val intent = Reflections.getObjectField(this, "intent") as Intent
+        // TaskRecord class has merge with Task class since R.
+        val userId = ReflectionsExt.getIntFieldWithPotentialNames(this, "mUserId", "userId")
+        val taskId = ReflectionsExt.getIntFieldWithPotentialNames(this, "mTaskId", "taskId")
 
-private fun Any.RecentTask(): RecentTask {
-    val intent = Reflections.getObjectField(this, "intent") as Intent
-    // TaskRecord class has merge with Task class since R.
-    val userId = ReflectionsExt.getIntFieldWithPotentialNames(this, "mUserId", "userId")
-    val taskId = ReflectionsExt.getIntFieldWithPotentialNames(this, "mTaskId", "taskId")
+        val pkgName = PkgUtils.packageNameOf(intent)
+        val owner = AppPkg.newBuilder().setPkgName(pkgName).setUserId(userId)
 
-    val pkgName = PkgUtils.packageNameOf(intent)
-    val owner = AppPkg.newBuilder().setPkgName(pkgName).setUserId(userId)
-
-    return RecentTask.newBuilder().setTaskId(taskId).setOwner(owner).build()
+        return RecentTask.newBuilder().setTaskId(taskId).setOwner(owner).build()
+    }
 }

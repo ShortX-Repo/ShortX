@@ -8,7 +8,8 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 
 object PhoneWindowManagerHook {
-    private val logger = Logger("XposedEntry.PhoneWindowManagerHook")
+    private val logger = Logger("ShortXHook.PhoneWindowManagerHook")
+
     private val keyCodesToHandle = arrayOf(
         KeyEvent.KEYCODE_HOME,
         KeyEvent.KEYCODE_BACK,

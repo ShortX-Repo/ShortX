@@ -16,7 +16,7 @@ import tornaco.apps.shortx.services.util.FileHelper
 
 // Happen on Media provider process
 object MediaProviderHook {
-    private val logger = Logger("XposedEntry.MediaProviderHook")
+    private val logger = Logger("ShortXHook.MediaProviderHook")
 
     fun hook(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName == mediaProvider) {
