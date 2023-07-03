@@ -17,6 +17,7 @@
 
 package tornaco.apps.shortx.core.alarm
 
+import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.proto.fact.FixedByInterval
 import tornaco.apps.shortx.core.proto.fact.FixedByTimes
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
@@ -119,12 +120,13 @@ fun getTriggerTimeSegmentsByTimes(
 
 
 fun FixedInPeriod.getTriggerTimeOffset(): Long {
+    val triggerDateToday = triggerDateToday
     val timeMillisOffset = (triggerDateToday.time - System.currentTimeMillis())
-    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset()
+    val nextTriggerDayOfWeekOffset = getNextTriggerDayOfWeekOffset(triggerDateToday)
     return timeMillisOffset + (nextTriggerDayOfWeekOffset * 24 * 60 * 60 * 1000)
 }
 
-fun FixedInPeriod.getNextTriggerDayOfWeekOffset(): Int {
+fun FixedInPeriod.getNextTriggerDayOfWeekOffset(triggerDateToday: Date): Int {
     // No repeat
     if (repeat.isNo) {
         return 0
@@ -132,17 +134,21 @@ fun FixedInPeriod.getNextTriggerDayOfWeekOffset(): Int {
 
     val todayWeekToday =
         Calendar.getInstance().apply { time = Date() }.get(Calendar.DAY_OF_WEEK)
+    logger.d("todayWeekToday: $todayWeekToday")
+    logger.d("repeat.sortedDays: ${repeat.sortedDays}")
 
     // Today will trigger
     val hasRepeatToday =
-        repeat.daysList.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
+        repeat.sortedDays.firstOrNull { it.toCalendarInt() == todayWeekToday } != null
     val isCurrentBeforeTodayTriggerTime = System.currentTimeMillis() < triggerDateToday.time
     if (hasRepeatToday && isCurrentBeforeTodayTriggerTime) {
         return 0
     }
 
     // Today will not, find next day
-    val nextRepeatDay = repeat.daysList.firstOrNull { it.toCalendarInt() > todayWeekToday }
+    val nextRepeatDay =
+        repeat.sortedDays.firstOrNull { it.toCalendarInt() > todayWeekToday }
+    logger.d("nextRepeatDay: $nextRepeatDay")
     return if (nextRepeatDay != null) {
         // nextDayOffsetFromToday
         nextRepeatDay.toCalendarInt() - todayWeekToday
@@ -151,7 +157,7 @@ fun FixedInPeriod.getNextTriggerDayOfWeekOffset(): Int {
         // 1 2 3 4 5 6 7
         // 5 -> 1 = 3 = 7 - 5 + 1
         // 3 -> 2 = 6 = 7 - 3 + 2
-        val minRepeatDay = repeat.daysList.minBy { it.toCalendarInt() }.toCalendarInt()
+        val minRepeatDay = repeat.sortedDays.minBy { it.toCalendarInt() }.toCalendarInt()
         // nextWeekDayOffset
         7 - todayWeekToday + minRepeatDay
     }
@@ -159,7 +165,7 @@ fun FixedInPeriod.getNextTriggerDayOfWeekOffset(): Int {
 
 sealed interface FixedSetting {
     data class Interval(val interval: Long) : FixedSetting {
-        val displayDuration
+        val displayDuration: String
             get() = DateUtils.formatDuration(
                 this.interval.milliseconds.toJavaDuration()
             )

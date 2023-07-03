@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.alarm.toLocalTime
+import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
@@ -232,7 +233,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     )]
                 } else {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
-                        "days" to fact.repeatDays.daysList.joinToString(
+                        "days" to fact.repeatDays.sortedDays.joinToString(
                             " "
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)
@@ -255,7 +256,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     )]
                 } else {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
-                        "days" to fact.repeatDays.daysList.joinToString(
+                        "days" to fact.repeatDays.sortedDays.joinToString(
                             " "
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)
@@ -279,7 +280,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                     )]
                 } else {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
-                        "days" to fact.repeatDays.daysList.joinToString(
+                        "days" to fact.repeatDays.sortedDays.joinToString(
                             " "
                         ) {
                             getLongLabelForWeekDay(weekDay = it, i18n = i18N)

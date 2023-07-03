@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.alarm.getTriggerTimeSegments
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.common.ofTodayDate
+import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.common.toTimeOfADay
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
@@ -89,7 +90,7 @@ class FixedInPeriodSelectorState(
     fun show(current: Fact.FixedInPeriod? = null) {
         this.start = current?.start?.toLocalTime()
         this.end = current?.end?.toLocalTime()
-        this.repeat = current?.repeatDays?.daysList ?: emptyList()
+        this.repeat = current?.repeatDays?.sortedDays ?: emptyList()
         this.fixedSetting = current?.fixedBy
         show()
     }

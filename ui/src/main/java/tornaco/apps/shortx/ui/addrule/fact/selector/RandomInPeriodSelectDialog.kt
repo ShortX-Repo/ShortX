@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.alarm.toLocalTime
+import tornaco.apps.shortx.core.common.sortedDays
 import tornaco.apps.shortx.core.common.toTimeOfADay
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
@@ -70,7 +71,7 @@ class RandomInPeriodSelectorState(
     fun show(current: Fact.RandomInPeriod? = null) {
         this.start = current?.start?.toLocalTime()
         this.end = current?.end?.toLocalTime()
-        this.repeat = current?.repeatDays?.daysList ?: emptyList()
+        this.repeat = current?.repeatDays?.sortedDays ?: emptyList()
         show()
     }
 }
