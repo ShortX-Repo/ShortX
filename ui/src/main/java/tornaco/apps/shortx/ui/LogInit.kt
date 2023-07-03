@@ -5,6 +5,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.elvishew.xlog.XLog
+import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ fun initLogger(context: Context) {
         val filePrinter: com.elvishew.xlog.printer.Printer =
             com.elvishew.xlog.printer.file.FilePrinter.Builder(logFolderPath)
                 .fileNameGenerator(DateFileNameGenerator())
+                .flattener(ClassicFlattener())
                 .build()
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()

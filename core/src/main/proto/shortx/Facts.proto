@@ -5,6 +5,7 @@ option java_outer_classname = "OuterFacts";
 option java_multiple_files = true;
 
 import "shortx/Common.proto";
+import "google/protobuf/any.proto";
 
 message KeyEvent {
   int32 keyCode = 1;
@@ -144,6 +145,25 @@ message RandomInPeriod {
 
   string note = 99;
   string id = 100;
+}
+
+message FixedInPeriod {
+  TimeOfADay start = 1;
+  TimeOfADay end = 2;
+
+  RepeatDays repeat = 3;
+  google.protobuf.Any fixedBy = 4;
+
+  string note = 99;
+  string id = 100;
+}
+
+message FixedByTimes {
+  int32 times = 1;
+}
+
+message FixedByInterval {
+  int64 interval = 1;
 }
 
 message AppBecomeFg {

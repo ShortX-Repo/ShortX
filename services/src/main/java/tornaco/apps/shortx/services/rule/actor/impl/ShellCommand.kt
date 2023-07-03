@@ -31,10 +31,12 @@ object ShellCommand : Actor {
         val res = ShellServiceProxy.exe(context, command)
         logger.d("Shell command: $command")
         logger.d("Shell res: $res")
-
-        contextData.add(ContextDataMapping.ShellCommand.shellCode.name, res?.code ?: -1)
-        contextData.add(ContextDataMapping.ShellCommand.shellErr.name, res?.errList?.joinToString())
-        contextData.add(ContextDataMapping.ShellCommand.shellOut.name, res?.outList?.joinToString())
+        requireNotNull(res) {
+            "Fail execute shell: Can not connect to ShortX App. Pls allow ShortX start from background!!!"
+        }
+        contextData.add(ContextDataMapping.ShellCommand.shellCode.name, res.code)
+        contextData.add(ContextDataMapping.ShellCommand.shellErr.name, res.errList?.joinToString())
+        contextData.add(ContextDataMapping.ShellCommand.shellOut.name, res.outList?.joinToString())
     }
 }
 
@@ -50,7 +52,7 @@ internal class ShellServiceProxy(context: Context, intent: Intent?) :
         val res: AtomicReference<ShellRes> = AtomicReference()
         setTask(object : ProxyTask() {
             override fun run() {
-                impl?.exe(command)?.let {
+                requireNotNull(impl) { "Impl is null." }.exe(command)?.let {
                     res.set(ShellRes.parseFrom(it.byte))
                 }
             }
