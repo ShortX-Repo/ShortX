@@ -64,32 +64,34 @@ class RuleProtoTest {
     }
 
     @Test
-    fun should_call_engine() = runBlocking {
-        val fact = KeyEvent.newBuilder().setKeyCode(20).build().pack_()
-        val conditions = listOf(
-            True.newBuilder().build().pack_(),
-        )
-        val actions = listOf(
-            StartActivity.newBuilder().setComponentNameAsString("name").build().pack_()
-        )
-        val rule = Rule.newBuilder()
-            .addFacts(fact)
-            .addAllConditions(conditions)
-            .addAllActions(actions)
-            .build()
+    fun should_call_engine() {
+        return runBlocking {
+            val fact = KeyEvent.newBuilder().setKeyCode(20).build().pack_()
+            val conditions = listOf(
+                True.newBuilder().build().pack_(),
+            )
+            val actions = listOf(
+                StartActivity.newBuilder().setComponentNameAsString("name").build().pack_()
+            )
+            val rule = Rule.newBuilder()
+                .addFacts(fact)
+                .addAllConditions(conditions)
+                .addAllActions(actions)
+                .build()
 
-        RuleEngineFactory.newRuleEngine(
-            shortXContext = mockk(),
-            androidContext = mockk(),
-            handler = mockk(),
-            onJobCancelled = {},
-            onJobCompleted = {},
-            onJobStarted = {},
-            actionEvaluateResultListener = {},
-            conditionEvaluateResultListener = {}
-        ).fire(
-            KeyEvent.newBuilder().setKeyCode(20).build(),
-            listOf(rule)
-        )
+            RuleEngineFactory.newRuleEngine(
+                shortXContext = mockk(),
+                androidContext = mockk(),
+                handler = mockk(),
+                onJobCancelled = {},
+                onJobCompleted = {},
+                onJobStarted = {},
+                actionEvaluateResultListener = {},
+                conditionEvaluateResultListener = {}
+            ).fire(
+                KeyEvent.newBuilder().setKeyCode(20).build(),
+                listOf(rule)
+            )
+        }
     }
 }
