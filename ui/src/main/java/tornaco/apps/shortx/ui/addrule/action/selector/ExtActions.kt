@@ -23,13 +23,15 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
-    val shellCommandSelectorState = rememberCodeEditorState(title = "Shell",
-        execute = {
-            shortXManager.executeShellCommand(it).shellResToString()
-        },
-        onSelected = {
-            addAction(Action.ShellCommand(command = it.src, note = it.note))
-        })
+    val shellCommandSelectorState =
+        rememberCodeEditorState(title = LocalI18N.current["ui.action.shell"],
+            message = LocalI18N.current["ui.action.shell.summary"],
+            execute = {
+                shortXManager.executeShellCommand(it).shellResToString()
+            },
+            onSelected = {
+                addAction(Action.ShellCommand(command = it.src, note = it.note))
+            })
     CodeEditorDialog(state = shellCommandSelectorState)
 
     val inputTextSelectorState = rememberTextSelectorState(onSelected = {

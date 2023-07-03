@@ -252,6 +252,7 @@
   "ui.action.danmu.text": "文本",
   "ui.action.danmu.icon": "图标（可选）",
   "ui.action.shell": "Shell 命令",
+  "ui.action.shell.summary": "将会使用su执行你的命令。\n\n请确保允许ShortX的自启动，否则指令无法执行",
   "ui.action.input.text": "输入文本",
   "ui.action.delay": "延迟",
   "ui.action.delay.input.message": "输入延迟的毫秒数",
