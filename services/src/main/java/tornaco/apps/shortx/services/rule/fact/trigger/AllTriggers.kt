@@ -8,6 +8,7 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     RuleHooksTrigger(context, shortXContext),
     ScreenStateTrigger(context, shortXContext),
     AlarmTrigger(context, shortXContext),
+    FixedInPeriodTrigger(context, shortXContext),
     RandomInPeriodTrigger(context, shortXContext),
     WifiStateTrigger(context, shortXContext),
     BTStateTrigger(context, shortXContext),

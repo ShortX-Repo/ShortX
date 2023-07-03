@@ -75,6 +75,7 @@ class RandomInPeriodTrigger(
         if (rule.isEnabled) {
             val periods = rule.factsList.filter { it.isPeriod() }
                 .map { it unpack_ RandomInPeriod::class.java }
+                .filter { it.hasStart() && it.hasEnd() }
             if (periods.isNotEmpty()) {
                 periods.forEach { period ->
                     scheduler.schedule(

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.fact.model
 
+import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.KeyGesture
@@ -130,6 +131,19 @@ sealed interface Fact {
         override val id: String = defaultNewFactId(),
         val start: TimeOfADay,
         val end: TimeOfADay,
+        val repeatDays: RepeatDays
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class FixedInPeriod(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val start: TimeOfADay,
+        val end: TimeOfADay,
+        val fixedBy: FixedSetting,
         val repeatDays: RepeatDays
     ) : Fact {
         override fun clone(id: String, note: String): Fact {

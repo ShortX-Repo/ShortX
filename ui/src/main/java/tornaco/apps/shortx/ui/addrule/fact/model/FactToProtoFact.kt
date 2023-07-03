@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.fact.model
 
+import tornaco.apps.shortx.core.alarm.toProto
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
@@ -21,6 +22,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -54,7 +56,8 @@ fun Fact.toProtoFact(): ProtoMessage {
         }
 
         is Fact.AdvancedKeyEvent -> {
-            AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture).setIsInterceptMode(isInterceptMode).setId(id).setNote(note).build()
+            AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture)
+                .setIsInterceptMode(isInterceptMode).setId(id).setNote(note).build()
         }
 
         is Fact.ActivityStarted -> {
@@ -100,6 +103,15 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRepeat(repeatDays)
                 .setStart(start)
                 .setEnd(end)
+                .setId(id).setNote(note).build()
+        }
+
+        is Fact.FixedInPeriod -> {
+            FixedInPeriod.newBuilder()
+                .setRepeat(repeatDays)
+                .setStart(start)
+                .setEnd(end)
+                .setFixedBy(fixedBy.toProto())
                 .setId(id).setNote(note).build()
         }
 

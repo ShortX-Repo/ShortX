@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.alarm.toLocalTime
-import tornaco.apps.shortx.core.proto.common.TimeOfADay
+import tornaco.apps.shortx.core.common.toTimeOfADay
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.util.DateUtils
@@ -35,15 +36,15 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXDialog
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import java.time.LocalTime
 
-class PeriodSelectorState(
+class RandomInPeriodSelectorState(
     val selected: (Fact.RandomInPeriod) -> Unit
 ) : CommonDialogState() {
     var start: LocalTime? by mutableStateOf(null)
@@ -75,16 +76,16 @@ class PeriodSelectorState(
 }
 
 @Composable
-fun rememberPeriodSelectorState(
+fun rememberRandomInPeriodSelectorState(
     selected: (Fact.RandomInPeriod) -> Unit
-): PeriodSelectorState {
+): RandomInPeriodSelectorState {
     return remember {
-        PeriodSelectorState(selected)
+        RandomInPeriodSelectorState(selected)
     }
 }
 
 @Composable
-fun PeriodSelector(state: PeriodSelectorState) {
+fun PeriodSelector(state: RandomInPeriodSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random"])
@@ -93,17 +94,8 @@ fun PeriodSelector(state: PeriodSelectorState) {
                 if (state.isValid) {
                     state.selected(
                         Fact.RandomInPeriod(
-                            start = TimeOfADay
-                                .newBuilder()
-                                .setHour(state.start!!.hour)
-                                .setMinutes(state.start!!.minute)
-                                .setSeconds(state.start!!.second)
-                                .build(), end = TimeOfADay
-                                .newBuilder()
-                                .setHour(state.end!!.hour)
-                                .setMinutes(state.end!!.minute)
-                                .setSeconds(state.end!!.second)
-                                .build(),
+                            start = state.start!!.toTimeOfADay(),
+                            end = state.end!!.toTimeOfADay(),
                             repeatDays = RepeatDays
                                 .newBuilder()
                                 .addAllDays(state.repeat)
@@ -122,45 +114,58 @@ fun PeriodSelector(state: PeriodSelectorState) {
 }
 
 @Composable
-fun PeriodContent(state: PeriodSelectorState) {
+private fun PeriodContent(state: RandomInPeriodSelectorState) {
     Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start
     ) {
-        TimeContent(state)
+        TipRow(text = LocalI18N.current["ui.fact.time.of.a.day.random.summary"])
+        StandardSpacer()
+
+        TimeContent(
+            start = state.start,
+            end = state.end,
+            setStart = { state.start = it },
+            setEnd = { state.end = it })
         SectionSpacer()
-        RepeatSelector(state)
+        RepeatSelector(
+            repeat = state.repeat,
+            addRepeat = { state.addRepeat(it) },
+            removeRepeat = { state.removeRepeat(it) })
     }
 }
 
 @Composable
-private fun TimeContent(state: PeriodSelectorState) {
+fun TimeContent(
+    start: LocalTime?,
+    end: LocalTime?,
+    setStart: (LocalTime) -> Unit,
+    setEnd: (LocalTime) -> Unit
+) {
     val startSelectState = rememberTimePickerDialogState(onSelected = {
-        state.start = it
+        setStart(it)
     })
     TimePickerDialog(dialogState = startSelectState)
     val endSelectState = rememberTimePickerDialogState(onSelected = {
-        state.end = it
+        setEnd(it)
     })
     TimePickerDialog(dialogState = endSelectState)
 
-    TipRow(text = LocalI18N.current["ui.fact.time.of.a.day.random.summary"])
-    StandardSpacer()
-    StandardSpacer()
-
-    SmallTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.start"])
+    FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.start"])
     FilledTonalButton(onClick = { startSelectState.show() }) {
         Text(
-            text = state.start?.let { DateUtils.formatLocalTime(it) }
+            text = start?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]
         )
     }
 
     StandardSpacer()
 
-    SmallTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.end"])
+    FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.end"])
     FilledTonalButton(onClick = { endSelectState.show() }) {
         Text(
-            text = state.end?.let { DateUtils.formatLocalTime(it) }
+            text = end?.let { DateUtils.formatLocalTime(it) }
                 ?: LocalI18N.current["ui.common.unselected"]
         )
     }
@@ -168,12 +173,16 @@ private fun TimeContent(state: PeriodSelectorState) {
 
 
 @Composable
-private fun RepeatSelector(state: PeriodSelectorState) {
+fun RepeatSelector(
+    repeat: List<WeekDay>,
+    addRepeat: (WeekDay) -> Unit,
+    removeRepeat: (WeekDay) -> Unit,
+) {
     Column(
         modifier = Modifier.padding(top = 24.dp, bottom = 32.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        SmallTitle(
+        FieldTitle(
             text = LocalI18N.current["ui.fact.time.of.a.day.repeat"],
         )
         StandardSpacer()
@@ -192,7 +201,7 @@ private fun RepeatSelector(state: PeriodSelectorState) {
                 WeekDay.FRIDAY,
                 WeekDay.SATURDAY
             ).forEach { weekDay ->
-                val isSelected = state.repeat.contains(weekDay)
+                val isSelected = repeat.contains(weekDay)
                 Column(
                     modifier = Modifier
                         .width(36.dp)
@@ -202,9 +211,9 @@ private fun RepeatSelector(state: PeriodSelectorState) {
                         .background(color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else ColorDefaults.backgroundSurfaceColor())
                         .clickable {
                             if (isSelected) {
-                                state.removeRepeat(weekDay)
+                                removeRepeat(weekDay)
                             } else {
-                                state.addRepeat(weekDay)
+                                addRepeat(weekDay)
                             }
                         }
                         .padding(4.dp),

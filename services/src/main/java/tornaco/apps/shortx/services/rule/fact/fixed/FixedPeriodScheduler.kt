@@ -26,6 +26,7 @@ import android.content.IntentFilter
 import android.os.Handler
 import android.os.SystemClock
 import tornaco.apps.shortx.core.alarm.formatDuration
+import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.AlarmManagerCompat
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
@@ -36,13 +37,13 @@ import tornaco.apps.shortx.services.postSafety
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
 
-private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.alarm.action"
+private const val BROADCAST_ACTION = "tornaco.apps.shortx.services.rule.fact.fixed.period.action"
 private const val BROADCAST_EXTRA_RULE_ID =
-    "tornaco.apps.shortx.services.rule.fact.alarm.extra.rule.id"
+    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.rule.id"
 private const val BROADCAST_EXTRA_RULE_TITLE =
-    "tornaco.apps.shortx.services.rule.fact.alarm.extra.rule.title"
+    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.rule.title"
 private const val BROADCAST_EXTRA_FACT_ID =
-    "tornaco.apps.shortx.services.rule.fact.alarm.extra.fact.id"
+    "tornaco.apps.shortx.services.rule.fact.fixed.period.extra.fact.id"
 
 class FixedInPeriodScheduler(
     private val context: Context,
@@ -91,10 +92,10 @@ class FixedInPeriodScheduler(
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerOffset = 0L
+        val triggerOffset = alarm.getTriggerTimeOffset()
 
         if (triggerOffset <= 0) {
-            logger.i("FixedInPeriodScheduler, skip this alarm since offset < 0, maybe we have missed this alarm")
+            logger.i("FixedInPeriodScheduler, skip this alarm since offset < 0, maybe we have missed this alarm and it has no repeat")
         } else {
             logger.i(
                 "FixedInPeriodScheduler schedule for rule: ${rule.title}, reason: $reason, pi: $pi, trigger offset: ${

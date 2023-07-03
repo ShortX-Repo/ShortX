@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.mapper
 
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.alarm.toLocalTime
@@ -33,6 +34,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         Fact.SystemReady::class -> i18n["ui.fact.system.ready"] to null
         Fact.Alarm::class -> i18n["ui.fact.time.of.a.day"] to null
         Fact.RandomInPeriod::class -> i18n["ui.fact.time.of.a.day.random"] to null
+        Fact.FixedInPeriod::class -> i18n["ui.fact.time.of.a.day.fixed"] to null
         Fact.AppBecomeBackground::class -> i18n["ui.fact.app.become.bg"] to null
         Fact.AppBecomeForeground::class -> i18n["ui.fact.app.become.fg"] to null
 
@@ -243,6 +245,30 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.time.of.a.day.random"],
                 i18N["ui.fact.time.of.a.day.random.at", mapOf("time" to fact.start.toDisplayTime() + " - " + fact.end.toDisplayTime())],
+                if (fact.repeatDays.isNo) {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.no"]
+                    )]
+                } else if (fact.repeatDays.isEveryDay) {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to i18N["ui.fact.time.of.a.day.repeat.everyday"]
+                    )]
+                } else {
+                    i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
+                        "days" to fact.repeatDays.daysList.joinToString(
+                            " "
+                        ) {
+                            getLongLabelForWeekDay(weekDay = it, i18n = i18N)
+                        })]
+                }
+            )
+        }
+
+        is Fact.FixedInPeriod -> {
+            listOf(
+                i18N["ui.fact.time.of.a.day.fixed"],
+                i18N["ui.fact.time.of.a.day.at", mapOf("time" to fact.start.toDisplayTime() + " - " + fact.end.toDisplayTime())],
+                fact.fixedBy.label(i18N),
                 if (fact.repeatDays.isNo) {
                     i18N["ui.fact.time.of.a.day.repeat.at", mapOf(
                         "days" to i18N["ui.fact.time.of.a.day.repeat.no"]
@@ -556,5 +582,13 @@ fun OnOffAny.label(i18n: I18N): String {
         OnOffAny.UNRECOGNIZED -> {
             "UNRECOGNIZED"
         }
+    }
+}
+
+fun FixedSetting.label(i18n: I18N): String {
+    return when (this) {
+        is FixedSetting.Interval -> i18n["ui.fact.time.of.a.day.fixed.by.interval"] + " " + displayDuration
+
+        is FixedSetting.Times -> i18n["ui.fact.time.of.a.day.fixed.by.times"] + " " + this.times
     }
 }

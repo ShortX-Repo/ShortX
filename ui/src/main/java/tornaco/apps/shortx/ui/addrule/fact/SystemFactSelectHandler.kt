@@ -11,15 +11,17 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberPeriodSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -54,10 +56,15 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     }
     AlarmSelector(timeOfADaySelector)
 
-    val randomInPeriodSelectorState = rememberPeriodSelectorState(selected = {
+    val randomInPeriodSelectorState = rememberRandomInPeriodSelectorState(selected = {
         addFact(it)
     })
     PeriodSelector(state = randomInPeriodSelectorState)
+
+    val fixedPeriodSelectorState = rememberFixedInPeriodSelectorState {
+        addFact(it)
+    }
+    FixedPeriodSelector(fixedPeriodSelectorState)
 
     val wifiSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
@@ -241,6 +248,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.RandomInPeriod::class -> {
                 randomInPeriodSelectorState.show(source.getFactAs())
+                true
+            }
+
+            Fact.FixedInPeriod::class -> {
+                fixedPeriodSelectorState.show(source.getFactAs())
                 true
             }
 

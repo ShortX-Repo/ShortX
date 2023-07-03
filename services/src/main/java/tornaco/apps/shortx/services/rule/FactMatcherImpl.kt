@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
+import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -83,6 +84,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         register(RandomInPeriod::class.java) { l, f ->
             val la = l as RandomInPeriod
             val ra = f as RandomInPeriod
+            la.id == ra.id
+        }
+        register(FixedInPeriod::class.java) { l, f ->
+            val la = l as FixedInPeriod
+            val ra = f as FixedInPeriod
             la.id == ra.id
         }
         register(AppBecomeFg::class.java) { actual, rule ->

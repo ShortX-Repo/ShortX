@@ -142,7 +142,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .addAllFacts(protoFacts)
                 .setTitle(
                     state.value.title.fallbackOnEmpty(
-                        DateUtils.formatShortForMessageTime(
+                        DateUtils.formatHHMMSS(
                             System.currentTimeMillis()
                         )
                     )

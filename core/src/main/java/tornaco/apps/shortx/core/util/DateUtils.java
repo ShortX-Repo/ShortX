@@ -38,7 +38,7 @@ public class DateUtils {
         return format.format(d1);
     }
 
-    public static String formatShortForMessageTime(long l) {
+    public static String formatHHMMSS(long l) {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN_MESSAGE_TIME_SHORT, Locale.ENGLISH);
         Date d1 = new Date(l);
         return format.format(d1);
