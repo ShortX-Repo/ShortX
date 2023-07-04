@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -187,7 +188,7 @@ private fun DAListContent(
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
+        columns = StaggeredGridCells.Adaptive(minSize = adaptiveCardSizeMin),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
         items(items = das, key = { it.id }) { da ->
@@ -318,6 +319,7 @@ private fun DirectActionItem(
             icon = da.icon,
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
+            edit = { onEdit(da) },
             onClick = onClick,
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
             stopAllJobs = {
@@ -413,6 +415,7 @@ private fun DAListItem(
     runningInsCount: Int = 0,
     icon: String,
     iconColor: Color,
+    edit: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
@@ -432,7 +435,7 @@ private fun DAListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(
-                size = 32.dp,
+                size = 42.dp,
                 padding = 0.dp,
                 color = iconColor.copy(alpha = ActionColorBgAlpha)
             ) {
@@ -443,12 +446,11 @@ private fun DAListItem(
                 )
             }
 
-            Text(
-                text = updateTime,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                maxLines = 8
-            )
-
+            IconButton(onClick = {
+                edit()
+            }) {
+                RemixIcon(remixName = Remix.Document.file_edit_line, tint = NoteTextColor)
+            }
         }
 
         MediumSpacer()
@@ -619,6 +621,7 @@ private fun DAListItemPreview() {
             runningInsCount = 2,
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,
+            edit = {},
             onClick = {},
             onLongClick = {},
             stopAllJobs = {}

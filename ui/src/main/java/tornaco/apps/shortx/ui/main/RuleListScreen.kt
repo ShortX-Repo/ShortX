@@ -90,7 +90,7 @@ fun RuleScreen() {
                 }
             },
             onRuleClick = { rule ->
-                vm.setRuleEnabled(rule.id, !rule.isEnabled)
+                AddRuleActivity.start(context, rule.id)
             },
             setRuleEnabled = { id, enable ->
                 vm.setRuleEnabled(id, enable)
@@ -154,7 +154,7 @@ private fun RuleListContent(
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
+        columns = StaggeredGridCells.Adaptive(minSize = adaptiveCardSizeMin),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
         items(
