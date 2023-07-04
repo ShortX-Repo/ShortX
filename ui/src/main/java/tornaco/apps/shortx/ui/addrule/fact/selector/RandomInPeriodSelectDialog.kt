@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.addrule.fact.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -37,6 +38,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.ErrorTipRow
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -54,7 +56,31 @@ class RandomInPeriodSelectorState(
     var repeat by mutableStateOf(emptyList<WeekDay>())
 
     val isValid
-        get() = run { start != null && end != null && end!!.isAfter(start!!) }
+        get() = run {
+            checkError()
+            start != null && end != null && end!!.isAfter(start!!)
+        }
+
+    var errorMessages by mutableStateOf(emptyList<String>())
+
+    private fun checkError() {
+        val isStartEndError = (end != null && start != null && !end!!.isAfter(start))
+        errorMessages = if (isStartEndError) {
+            listOf("ui.fact.time.of.a.day.error.end.before.start")
+        } else {
+            emptyList()
+        }
+    }
+
+    fun setStartTime(localTime: LocalTime) {
+        this.start = localTime
+        checkError()
+    }
+
+    fun setEndTime(localTime: LocalTime) {
+        this.end = localTime
+        checkError()
+    }
 
     fun addRepeat(weekDay: WeekDay) {
         repeat = repeat.toMutableList().apply {
@@ -127,13 +153,23 @@ private fun PeriodContent(state: RandomInPeriodSelectorState) {
         TimeContent(
             start = state.start,
             end = state.end,
-            setStart = { state.start = it },
-            setEnd = { state.end = it })
+            setStart = { state.setStartTime(it) },
+            setEnd = { state.setEndTime(it) }
+        )
         SectionSpacer()
         RepeatSelector(
             repeat = state.repeat,
             addRepeat = { state.addRepeat(it) },
             removeRepeat = { state.removeRepeat(it) })
+
+        AnimatedVisibility(state.errorMessages.isNotEmpty()) {
+            Column {
+                StandardSpacer()
+                state.errorMessages.forEach {
+                    ErrorTipRow(text = LocalI18N.current[it])
+                }
+            }
+        }
     }
 }
 

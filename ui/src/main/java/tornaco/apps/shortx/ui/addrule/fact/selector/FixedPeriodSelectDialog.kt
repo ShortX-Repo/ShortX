@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ErrorTipRow
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -69,7 +70,31 @@ class FixedInPeriodSelectorState(
     var fixedSetting: FixedSetting? by mutableStateOf(null)
 
     val isValid
-        get() = run { start != null && end != null && end!!.isAfter(start!!) && fixedSetting != null }
+        get() = run {
+            checkError()
+            start != null && end != null && end!!.isAfter(start!!) && fixedSetting != null
+        }
+
+    var errorMessages by mutableStateOf(emptyList<String>())
+
+    fun setStartTime(localTime: LocalTime) {
+        this.start = localTime
+        checkError()
+    }
+
+    fun setEndTime(localTime: LocalTime) {
+        this.end = localTime
+        checkError()
+    }
+
+    private fun checkError() {
+        val isStartEndError = (end != null && start != null && !end!!.isAfter(start))
+        errorMessages = if (isStartEndError) {
+            listOf("ui.fact.time.of.a.day.error.end.before.start")
+        } else {
+            emptyList()
+        }
+    }
 
     fun addRepeat(weekDay: WeekDay) {
         this.repeat = repeat.toMutableList().apply {
@@ -176,8 +201,9 @@ private fun PeriodContent(state: FixedInPeriodSelectorState) {
         TimeContent(
             start = state.start,
             end = state.end,
-            setStart = { state.start = it },
-            setEnd = { state.end = it })
+            setStart = { state.setStartTime(it) },
+            setEnd = { state.setEndTime(it) }
+        )
         SectionSpacer()
 
         FixedBySelector(state.fixedSetting) { state.setFixedBy(it) }
@@ -189,6 +215,15 @@ private fun PeriodContent(state: FixedInPeriodSelectorState) {
             repeat = state.repeat,
             addRepeat = { state.addRepeat(it) },
             removeRepeat = { state.removeRepeat(it) })
+
+        AnimatedVisibility(state.errorMessages.isNotEmpty()) {
+            Column {
+                StandardSpacer()
+                state.errorMessages.forEach {
+                    ErrorTipRow(text = LocalI18N.current[it])
+                }
+            }
+        }
     }
 }
 

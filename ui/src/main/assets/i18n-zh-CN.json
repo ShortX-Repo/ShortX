@@ -96,6 +96,7 @@
   "ui.fact.time.of.a.day.random": "随机时间",
   "ui.fact.time.of.a.day.random.start": "起始",
   "ui.fact.time.of.a.day.random.end": "结束",
+  "ui.fact.time.of.a.day.error.end.before.start": "结束时间应该晚于起始时间",
   "ui.fact.time.of.a.day.random.summary": "将在时间段内随机选择一个时间触发",
   "ui.fact.time.of.a.day.at": "时间：{time}",
   "ui.fact.time.of.a.day.random.at": "随机时间：{time}",

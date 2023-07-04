@@ -96,6 +96,7 @@
   "ui.fact.time.of.a.day.random": "Random time in period",
   "ui.fact.time.of.a.day.random.start": "Start",
   "ui.fact.time.of.a.day.random.end": "End",
+  "ui.fact.time.of.a.day.error.end.before.start": "End should be after Start!!!",
   "ui.fact.time.of.a.day.random.summary": "A random time trigger is selected within the time period",
   "ui.fact.time.of.a.day.at": "Time Of: {time}",
   "ui.fact.time.of.a.day.random.at": "Random time in period {time}",
