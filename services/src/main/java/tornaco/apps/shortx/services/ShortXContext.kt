@@ -11,6 +11,7 @@ import tornaco.apps.shortx.services.notification.NotificationService
 import tornaco.apps.shortx.services.os.SystemSettingsService
 import tornaco.apps.shortx.services.os.UserService
 import tornaco.apps.shortx.services.overlay.OverlayService
+import tornaco.apps.shortx.services.phone.PhoneService
 import tornaco.apps.shortx.services.rule.RuleService
 import tornaco.apps.shortx.services.ui.UIService
 import tornaco.apps.shortx.services.wm.WindowManagerService
@@ -31,6 +32,7 @@ interface ShortXContext {
     val audio: AudioService
     val network: NetworkService
     val media: MediaService
+    val phone: PhoneService
 
     val allServices
         get() = listOf(
@@ -49,6 +51,7 @@ interface ShortXContext {
             audio,
             network,
             media,
+            phone,
         )
 }
 
@@ -68,4 +71,5 @@ class ShortXContextImpl : ShortXContext {
     override val audio = AudioService(this)
     override val network = NetworkService(this)
     override val media = MediaService(this)
+    override val phone = PhoneService(this)
 }

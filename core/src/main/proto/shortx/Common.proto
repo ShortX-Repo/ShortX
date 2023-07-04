@@ -170,3 +170,11 @@ enum KeyGesture {
   KeyTriplePress = 2;
   KeyLongPress = 3;
 }
+
+message PhoneCellInfo {
+  string mcc = 1;
+  string mnc = 2;
+  string clazz = 3;
+  string operatorAlphaLong = 4;
+  string id = 5;
+}
