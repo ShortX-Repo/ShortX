@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.ShellServiceProxy
 import tornaco.apps.shortx.services.v.v
@@ -218,6 +219,15 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             logger.d("executeShellCommand: $command")
             val res = ShellServiceProxy.exe(context, command) ?: ShellRes.newBuilder().build()
             return ByteArrayWrapper(res.toByteArray())
+        }
+
+        override fun getWifiScanResults(): List<String> {
+            enforceCallingPermissions()
+            return v(context) {
+                runClearCallingIdentity {
+                    context.wifiManager.scanResults.mapNotNull { it.SSID }
+                }
+            } ?: emptyList()
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

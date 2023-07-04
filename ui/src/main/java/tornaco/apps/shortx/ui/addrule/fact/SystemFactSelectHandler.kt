@@ -15,6 +15,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
@@ -22,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelecto
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -72,7 +74,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
 
-    val wifiConnectedToSelectorState = rememberTextInputState(
+    val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.connect.to"],
         message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
         showSymbolButton = false,
@@ -80,9 +82,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             addFact(Fact.WifiConnectedTo(ssidList = listOf(it)))
         }
     )
-    TextInputDialog(state = wifiConnectedToSelectorState)
+    WifiSSIDSelectorDialog(state = wifiConnectedToSelectorState)
 
-    val wifiDisconnectedFromSelectorState = rememberTextInputState(
+    val wifiDisconnectedFromSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.disconnected.from"],
         message = LocalI18N.current["ui.fact.wifi.disconnected.from.input.ssid"],
         showSymbolButton = false,
@@ -90,7 +92,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             addFact(Fact.WifiDisconnectedFrom(ssidList = listOf(it)))
         }
     )
-    TextInputDialog(state = wifiDisconnectedFromSelectorState)
+    WifiSSIDSelectorDialog(state = wifiDisconnectedFromSelectorState)
 
     val btSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {

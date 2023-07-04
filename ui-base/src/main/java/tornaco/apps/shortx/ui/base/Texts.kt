@@ -86,7 +86,7 @@ fun SmallTitle(
 fun FieldTitle(
     modifier: Modifier = Modifier,
     text: String,
-    color: Color = Color.Unspecified
+    color: Color = MaterialTheme.colorScheme.secondary
 ) {
     Text(
         modifier = modifier,

@@ -8,12 +8,12 @@ import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
-import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
-import tornaco.apps.shortx.ui.base.rememberTextInputState
 
 @Composable
 fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -50,7 +50,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     MenuDialog(state = chargeStateSelectorState)
 
-    val wifiConnectedToSelectorState = rememberTextInputState(
+    val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.conditions.wifi.connected"],
         message = LocalI18N.current["ui.conditions.wifi.connected.target"],
         showSymbolButton = false,
@@ -58,7 +58,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             addCondition(Condition.RequireWifiConnected(requiredSSID = it))
         }
     )
-    TextInputDialog(state = wifiConnectedToSelectorState)
+    WifiSSIDSelectorDialog(state = wifiConnectedToSelectorState)
 
     return { source ->
         when (source.clazz) {

@@ -184,6 +184,7 @@
   "ui.fact.app.become.fg": "App Become Foreground",
   "ui.fact.app.bg.state": "App task",
   "ui.fact.wifi.state.changed": "Wifi setting",
+  "ui.fact.wifi.choose.ssid": "Or choose from scan results",
   "ui.fact.wifi.connect.to": "Wifi connected to",
   "ui.fact.wifi.connect.to.input.ssid": "Input ssid, will trigger fact when wifi connected to this ssid, input * means any ssid",
   "ui.fact.wifi.disconnected.from": "Wifi disconnect from",

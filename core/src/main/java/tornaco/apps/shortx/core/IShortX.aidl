@@ -153,4 +153,6 @@ interface IShortX {
 
     // ShellRes
     ByteArrayWrapper executeShellCommand(String command);
+
+    List<String> getWifiScanResults();
 }

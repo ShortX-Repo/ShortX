@@ -184,6 +184,7 @@
   "ui.fact.app.become.fg": "應用進入前臺",
   "ui.fact.app.bg.state": "用前後臺",
   "ui.fact.wifi.state.changed": "Wifi設定",
+  "ui.fact.wifi.choose.ssid": "或者从扫描结果中选择",
   "ui.fact.wifi.connect.to": "Wifi连接到",
   "ui.fact.wifi.connect.to.input.ssid": "输入ssid，当wifi连接到该ssid时，触发器会触发；用*可以表示任意的ssid",
   "ui.fact.wifi.disconnected.from": "Wifi断开连接",
