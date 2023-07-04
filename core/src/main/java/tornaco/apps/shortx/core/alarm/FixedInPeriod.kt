@@ -77,6 +77,8 @@ fun getTriggerTimeSegments(
     getTriggerTimeSegmentsByTimes(times, start, end, true)
 } else {
     throw IllegalArgumentException("Bad fixedBy: ${fixedBy.typeUrl}")
+}.apply {
+    logger.d("getTriggerTimeSegments, res: ${this.joinToString(System.lineSeparator())}")
 }
 
 fun getNextTriggerTimeFromSegments(currentDate: Date, segments: List<Date>): Date {

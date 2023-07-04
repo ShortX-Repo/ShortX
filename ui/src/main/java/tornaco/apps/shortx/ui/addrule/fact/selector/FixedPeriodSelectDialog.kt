@@ -259,13 +259,14 @@ private fun FixedBySummary(fixedBy: FixedSetting?, start: LocalTime?, end: Local
     AnimatedVisibility(visible = fixedBy != null) {
         if (fixedBy != null && start != null && end != null) {
             val seg =
-                getTriggerTimeSegments(
-                    fixedBy.toProto(),
-                    start.ofTodayDate(),
-                    end.ofTodayDate()
-                )
-            val segDisplay = seg.joinToString { DateUtils.formatHHMMSS(it.time) }
-            TipBody(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.summary", mapOf("seg" to segDisplay)])
+                remember(fixedBy, start, end) {
+                    getTriggerTimeSegments(
+                        fixedBy.toProto(),
+                        start.ofTodayDate(),
+                        end.ofTodayDate()
+                    ).joinToString { DateUtils.formatHHMMSS(it.time) }
+                }
+            TipBody(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.summary", mapOf("seg" to seg)])
         }
     }
 }
