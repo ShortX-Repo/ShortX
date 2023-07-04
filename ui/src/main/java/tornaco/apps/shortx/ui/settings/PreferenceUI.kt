@@ -35,6 +35,7 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.theme.PrefIcon
 
 @Composable
 fun PreferenceUi(preferences: List<Preference>) {
@@ -144,7 +145,7 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
 private fun PreferenceIcon(icon: String?) {
     icon?.let {
         ColoredIcon(size = 28.dp) {
-            RemixIcon(modifier = Modifier.size(14.dp), remixName = it)
+            RemixIcon(modifier = Modifier.size(14.dp), remixName = it, tint = PrefIcon)
         }
     }
 }

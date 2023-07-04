@@ -31,6 +31,7 @@ data class SettingsState(
     val isKeyEventPromptEnabled: Boolean = false,
     val gestureAreaSize: Int = 0,
     val isInjectedShellEnabled: Boolean = false,
+    val isPointerLocationEnabled: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -75,7 +76,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 hasFatalError = shortXManager.hasFatalError(),
                 gestureAreaSize = shortXManager.getGestureAreaSize(),
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
-                isInjectedShellEnabled = shortXManager.isInjectedShellEnabled()
+                isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
+                isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
             )
         }
 
@@ -197,6 +199,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setInjectedShellEnabled(!state.value.isInjectedShellEnabled)
             updateState { copy(isInjectedShellEnabled = shortXManager.isInjectedShellEnabled()) }
+        }
+    }
+
+    fun togglePointerLocation() {
+        viewModelScope.launch {
+            shortXManager.setPointerLocationEnabled(!state.value.isPointerLocationEnabled)
+            updateState { copy(isPointerLocationEnabled = shortXManager.isPointerLocationEnabled()) }
         }
     }
 }

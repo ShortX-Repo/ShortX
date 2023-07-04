@@ -425,6 +425,16 @@ private fun devSettings(
     ),
 
     Preference.SwitchPreference(
+        icon = Remix.Development.cursor_line,
+        title = LocalI18N.current["ui.common.show.pointer.location"],
+        summary = LocalI18N.current["ui.common.show.pointer.location.description"],
+        value = state.isPointerLocationEnabled,
+        onCheckChanged = { enable ->
+            vm.togglePointerLocation()
+        }
+    ),
+
+    Preference.SwitchPreference(
         icon = Remix.Editor.hashtag,
         title = LocalI18N.current["ui.settings.injected.shell"],
         summary = LocalI18N.current["ui.settings.injected.shell.description"],

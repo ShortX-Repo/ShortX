@@ -78,6 +78,7 @@ val ErrorRed = Color(0xFFB91D1B)
 val WarningYellow = Color(0xFFfdd835)
 
 val ThanoxBlue = Color(0xFF2962ff)
+val PrefIcon = Color(0xFF777777)
 
 
 @Stable

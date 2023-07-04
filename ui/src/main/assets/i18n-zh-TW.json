@@ -162,6 +162,7 @@
   "ui.common.extras.v": "值",
   "ui.common.optional": "可選",
   "ui.common.show.pointer.location": "顯示指針位置",
+  "ui.common.show.pointer.location.description": "开启后可查看触摸操作坐标",
   "ui.common.execute.actions": "執行動作",
   "ui.common.select": "選擇",
   "ui.common.from.component": "從組件",
