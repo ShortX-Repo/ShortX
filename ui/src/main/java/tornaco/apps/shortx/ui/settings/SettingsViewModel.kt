@@ -29,7 +29,8 @@ data class SettingsState(
     val isIgnoreFrameworkUpdate: Boolean = false,
     val hasFatalError: Boolean = false,
     val isKeyEventPromptEnabled: Boolean = false,
-    val gestureAreaSize: Int = 0
+    val gestureAreaSize: Int = 0,
+    val isInjectedShellEnabled: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -74,6 +75,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 hasFatalError = shortXManager.hasFatalError(),
                 gestureAreaSize = shortXManager.getGestureAreaSize(),
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
+                isInjectedShellEnabled = shortXManager.isInjectedShellEnabled()
             )
         }
 
@@ -188,6 +190,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setKeyEventPromptEnabled(!state.value.isKeyEventPromptEnabled)
             updateState { copy(isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled()) }
+        }
+    }
+
+    fun toggleInjectedShell() {
+        viewModelScope.launch {
+            shortXManager.setInjectedShellEnabled(!state.value.isInjectedShellEnabled)
+            updateState { copy(isInjectedShellEnabled = shortXManager.isInjectedShellEnabled()) }
         }
     }
 }

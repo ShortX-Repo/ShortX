@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 import tornaco.apps.shortx.core.rule.IPkgSetObserver;
 import tornaco.apps.shortx.core.rule.IRuleObserver;
 import tornaco.apps.shortx.core.rule.IDAObserver;
+import  tornaco.apps.shortx.core.rule.action.su.ISu;
 
 interface IShortX {
     Version version();
@@ -155,4 +156,9 @@ interface IShortX {
     ByteArrayWrapper executeShellCommand(String command);
 
     List<String> getWifiScanResults();
+
+    // Called by SystemUI
+    void attachSUImpl(String from, in ISu su);
+    boolean isInjectedShellEnabled();
+    void setInjectedShellEnabled(boolean enable);
 }

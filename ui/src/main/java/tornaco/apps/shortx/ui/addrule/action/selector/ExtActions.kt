@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.rule.action.su.shellResToString
 import tornaco.apps.shortx.core.shortXManager
@@ -23,9 +24,10 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
     val shellCommandSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.action.shell"],
-            message = LocalI18N.current["ui.action.shell.summary"],
+            message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
             execute = {
                 shortXManager.executeShellCommand(it).shellResToString()
             },

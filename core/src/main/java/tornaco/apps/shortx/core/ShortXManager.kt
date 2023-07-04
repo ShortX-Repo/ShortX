@@ -627,6 +627,17 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun isInjectedShellEnabled(): Boolean {
+        return invokeService(false) { isInjectedShellEnabled }
+    }
+
+    fun setInjectedShellEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isInjectedShellEnabled = enable
+        }
+    }
+
+
     fun getWifiScanResults(): List<String> = invokeService(emptyList()) {
         wifiScanResults
     }

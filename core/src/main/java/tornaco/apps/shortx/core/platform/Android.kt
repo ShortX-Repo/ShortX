@@ -4,12 +4,15 @@ import tornaco.apps.shortx.core.util.OsUtils
 
 object PackageNames {
     const val android = "android"
+    const val systemUI = "com.android.systemui"
 
     val mediaProvider = if (OsUtils.isROrAbove()) {
         "com.android.providers.media.module"
     } else {
         "com.android.providers.media"
     }
+
+
 }
 
 object Methods {
@@ -35,6 +38,7 @@ object Methods {
     const val onMediaStoreInsert = "onMediaStoreInsert"
     const val onMediaStoreDelete = "onMediaStoreDelete"
     const val interceptKeyBeforeQueueing = "interceptKeyBeforeQueueing"
+    const val onCreate = "onCreate"
 }
 
 object ClassNames {
@@ -50,6 +54,7 @@ object ClassNames {
     const val VPN = "com.android.server.connectivity.Vpn"
     const val MEDIA_DOCUMENTS_PROVIDER = "com.android.providers.media.MediaDocumentsProvider"
     const val PHONE_WINDOW_MANAGER = "com.android.server.policy.PhoneWindowManager"
+    const val SYSTEM_UI_APP = "com.android.systemui.SystemUIApplication"
 }
 
 object Fields {

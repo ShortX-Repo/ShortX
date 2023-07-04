@@ -28,6 +28,9 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         object EnableKeyEventPrompt :
             BoolSettings(key = "EnableKeyEventPrompt", defaultValue = BuildProp.APP_IS_DEBUG)
+
+        object EnableInjectedShell :
+            BoolSettings(key = "EnableInjectedShell", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String) :

@@ -25,13 +25,13 @@ import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
-import tornaco.apps.shortx.services.rule.actor.impl.ShellServiceProxy
 import tornaco.apps.shortx.services.v.v
 import java.util.UUID
 
@@ -217,7 +217,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun executeShellCommand(command: String): ByteArrayWrapper {
             enforceCallingPermissions()
             logger.d("executeShellCommand: $command")
-            val res = ShellServiceProxy.exe(context, command) ?: ShellRes.newBuilder().build()
+            val res = shortXContext.shell.executeCommand(command) ?: ShellRes.newBuilder().build()
             return ByteArrayWrapper(res.toByteArray())
         }
 
@@ -228,6 +228,18 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                     context.wifiManager.scanResults.mapNotNull { it.SSID }
                 }
             } ?: emptyList()
+        }
+
+        override fun attachSUImpl(from: String?, su: ISu?) {
+            shortXContext.shell.attachSUImpl(from, su)
+        }
+
+        override fun isInjectedShellEnabled(): Boolean {
+            return shortXContext.shell.isInjectedShellEnabled()
+        }
+
+        override fun setInjectedShellEnabled(enable: Boolean) {
+            shortXContext.shell.setInjectedShellEnabled(enable)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

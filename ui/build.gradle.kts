@@ -97,13 +97,6 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
 
-    // The core module that provides APIs to a shell
-    implementation(libs.libsu.core)
-    // Optional: APIs for creating root services. Depends on ":core"
-    implementation(libs.libsu.service)
-    // Optional: Provides remote file system support
-    implementation(libs.libsu.nio)
-
     implementation(project(":binder-retriever"))
     implementation(project(":ui-base"))
     implementation(project(":core"))

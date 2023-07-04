@@ -13,6 +13,7 @@ object HookStub {
             logger.i("Loading android.")
             androidHooks(lpparam)
         } else {
+            SystemUIHook.hookApp(lpparam)
             MediaProviderHook.hook(lpparam)
         }
     }

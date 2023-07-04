@@ -424,6 +424,15 @@ private fun devSettings(
         }
     ),
 
+    Preference.SwitchPreference(
+        icon = Remix.Editor.hashtag,
+        title = LocalI18N.current["ui.settings.injected.shell"],
+        summary = LocalI18N.current["ui.settings.injected.shell.description"],
+        value = state.isInjectedShellEnabled,
+        onCheckChanged = { enable ->
+            vm.toggleInjectedShell()
+        }
+    ),
 
     ).apply {
     if (BuildProp.APP_IS_DEBUG) {
