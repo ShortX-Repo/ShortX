@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -13,6 +14,7 @@ object WaitForIdle : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        if (!context.powerManager.isInteractive) return@with
         shortXContext.wm.withUiAutomation("WaitForIdle") {
             it.waitForIdle()
         }
