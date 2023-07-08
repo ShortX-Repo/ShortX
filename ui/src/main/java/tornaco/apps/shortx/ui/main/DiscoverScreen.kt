@@ -100,7 +100,7 @@ private fun DiscoverRule() {
     } else {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
             contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
         ) {
             items(
@@ -156,7 +156,7 @@ private fun DiscoverDA() {
     } else {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
             contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
         ) {
             items(items = discoverState.das, key = { it.id }) {

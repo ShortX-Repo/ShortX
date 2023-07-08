@@ -120,7 +120,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Fixed(2),
+                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
                         contentPadding = paddingValues
                     ) {
                         items(state.pkgSets) {
