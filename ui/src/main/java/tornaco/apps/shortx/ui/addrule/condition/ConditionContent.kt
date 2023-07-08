@@ -15,6 +15,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.ConditionHandler
@@ -130,7 +131,10 @@ fun ConditionList(
                             )
                     ) {
                         ListItem(
-                            titleLines = labelForCondition(condition = conditionItem),
+                            titleLines = mutableListOf<String>().apply {
+                                addAll(labelForCondition(condition = conditionItem))
+                                onDebugBuild { add(conditionItem.id) }
+                            },
                             icon = {
                                 ConditionIcon(conditionItem)
                             },

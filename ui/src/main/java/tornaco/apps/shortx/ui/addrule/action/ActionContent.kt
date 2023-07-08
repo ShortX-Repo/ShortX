@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
@@ -198,9 +198,7 @@ private fun Actions(
                             modifier = Modifier,
                             titleLines = mutableListOf<String>().apply {
                                 addAll(labelLinesForAction(action = action))
-                                if (BuildProp.APP_IS_DEBUG) {
-                                    add(action.id)
-                                }
+                                onDebugBuild { add(action.id) }
                             },
                             icon = {
                                 ActionIcon(action)

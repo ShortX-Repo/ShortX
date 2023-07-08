@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.*
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
@@ -97,7 +98,10 @@ private fun FactItem(
 
     ListItem(
         modifier = Modifier,
-        titleLines = labelForFact(fact = fact),
+        titleLines = mutableListOf<String>().apply {
+            addAll(labelForFact(fact = fact))
+            onDebugBuild { add(currentFact.id) }
+        },
         onClick = {
             factHandlers.any {
                 it(FactSelectSource.FromFact(currentFact))
