@@ -24,8 +24,10 @@ import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -138,6 +140,9 @@ fun AddDirectActionScreen(
                         warnings = actionContentState.actionWarningMessages
                     )
                     Spacer(modifier = Modifier.size(24.dp))
+
+                    SectionSpacer()
+                    SuggestedNavEntry()
                 }
             }
         }

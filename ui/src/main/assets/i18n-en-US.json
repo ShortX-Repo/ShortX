@@ -503,5 +503,5 @@
   "ui.subscription.code.verify.message": "Verifying your activation code...",
   "ui.subscription.code.verify.fail.network": "Verification failed, please check the network or try again later",
   "ui.subscription.code.verify.fail": "Verification failed",
-  "ui.suggest.nav.entry.title": "Trying go to?"
+  "ui.suggest.nav.entry.title": "Feature shortcuts"
 }

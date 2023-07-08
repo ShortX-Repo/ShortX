@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -242,6 +243,9 @@ fun AddRuleScreen(
                             SectionSpacer()
                         }
                     }
+
+                    SectionSpacer()
+                    SuggestedNavEntry()
                 }
             }
         }

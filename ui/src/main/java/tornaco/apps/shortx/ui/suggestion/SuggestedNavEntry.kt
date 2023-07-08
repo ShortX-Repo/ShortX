@@ -36,6 +36,9 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
+import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
@@ -45,6 +48,9 @@ enum class SuggestedNav(val labelKey: String) {
     PkgSet("ui.pkg.set.title"),
     DanmuSettings("ui.settings.danmu"),
     ShowPointerLocation("ui.common.show.pointer.location"),
+    FactRecord("ui.settings.fact.record"),
+    ConditionRecord("ui.settings.condition.record"),
+    ActionRecord("ui.settings.action.record"),
 }
 
 @Composable
@@ -92,6 +98,18 @@ fun SuggestedNavEntry() {
                             SuggestedNav.DanmuSettings -> DanmuUISettingsActivity.start(context)
                             SuggestedNav.ShowPointerLocation -> {
                                 shortXManager.setPointerLocationEnabled(!shortXManager.isPointerLocationEnabled())
+                            }
+
+                            SuggestedNav.FactRecord -> {
+                                FactPublishRecordActivity.start(context)
+                            }
+
+                            SuggestedNav.ConditionRecord -> {
+                                ConditionEvaRecordActivity.start(context)
+                            }
+
+                            SuggestedNav.ActionRecord -> {
+                                ActionEvaRecordActivity.start(context)
                             }
                         }
                     }, label = {
