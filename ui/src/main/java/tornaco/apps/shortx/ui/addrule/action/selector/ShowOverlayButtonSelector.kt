@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -11,7 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -90,7 +93,8 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                                     id = selectorState.id,
                                     autoCollapse = selectorState.autoCollapse,
                                     tag = selectorState.tag,
-                                    settings = selectorState.buttons.map { it.toOverlayButtonSetting() }
+                                    settings = selectorState.buttons.map { it.toOverlayButtonSetting() },
+                                    orientation = selectorState.orientation
                                 )
 
                                 dialogState.onSelected(action)
@@ -127,43 +131,65 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             MDIconSelectorDialog(state = iconSelector)
 
             ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
-                    StandardSpacer()
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        MediumTitle(
+                            text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                                "index" to "${index + 1}"
+                            )]
+                        )
+                        StandardSpacer()
 
-                    Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.text"])
-                        ShortXTextField(value = button.label, onValueChange = {
-                            vm.updateLabel(index, it)
-                        })
-                    }
-                    StandardSpacer()
-
-                    Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.icon"])
-                        TextButton(onClick = {
-                            iconSelector.show()
-                        }) {
-                            RemixIcon(button.icon)
+                        Column(verticalArrangement = Arrangement.Center) {
+                            SmallTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                LocalI18N.current["ui.action.show.overlay.text"]
+                            )
+                            ShortXTextField(value = button.label, onValueChange = {
+                                vm.updateLabel(index, it)
+                            })
                         }
+                        StandardSpacer()
+
+                        Column(verticalArrangement = Arrangement.Center) {
+                            SmallTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                LocalI18N.current["ui.action.show.overlay.icon"]
+                            )
+                            TextButton(onClick = {
+                                iconSelector.show()
+                            }) {
+                                RemixIcon(button.icon)
+                            }
+                        }
+
+                        val actionStateHandle = remember(button) { button.actionHandle }
+                        val actionState by actionStateHandle.state.collectAsState()
+
+                        ActionContent(
+                            header = {
+                                SmallTitle(
+                                    modifier = Modifier.padding(vertical = 12.dp),
+                                    text = LocalI18N.current["ui.actions.title"]
+                                )
+                            },
+                            actions = actionState.actions,
+                            warnings = actionState.actionWarningMessages,
+                            handler = actionStateHandle.asActionHandler()
+                        )
                     }
 
-                    val actionStateHandle = remember(button) { button.actionHandle }
-                    val actionState by actionStateHandle.state.collectAsState()
-
-                    ActionContent(
-                        header = {
-                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.actions.title"])
-                        },
-                        actions = actionState.actions,
-                        warnings = actionState.actionWarningMessages,
-                        handler = actionStateHandle.asActionHandler()
-                    )
+                    IconButton(onClick = {
+                        vm.removeButton(index)
+                    }) {
+                        RemixIcon(remixName = Remix.System.close_line)
+                    }
                 }
+
             }
         }
         StandardSpacer()
@@ -177,8 +203,12 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
         LargeSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.show.overlay.tag"])
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.show.overlay.tag"]
+            )
             TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
+            SmallSpacer()
             ShortXTextField(value = state.tag, onValueChange = {
                 vm.updateTag(it)
             })
@@ -186,13 +216,29 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.show.auto.collapse"])
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.show.auto.collapse"]
+            )
             SmallSpacer()
             ShortXSwitch(checked = state.autoCollapse, onCheckedChange = {
                 vm.setAutoCollapse(it)
             })
         }
 
+        StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.show.orientation.land"]
+            )
+            SmallSpacer()
+            ShortXSwitch(checked = state.orientation == OverlayOrientation.Land, onCheckedChange = {
+                vm.setOrientation(it.select(OverlayOrientation.Land, OverlayOrientation.Port))
+            })
+        }
+
+        SectionSpacer()
         SuggestedNavEntry()
     }
 }

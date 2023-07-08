@@ -25,7 +25,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -64,27 +66,24 @@ private class ExpandState(private val scope: CoroutineScope) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OverlayContent(
-    autoCollapse: Boolean,
-    icons: List<String>,
-    labels: List<String>,
-    onButtonClick: (Int) -> Unit,
+    action: ShowOverlayButton,
+    onButtonClick: (OverlayButtonSetting) -> Unit,
     motionEventSpy: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
-    LaunchedEffect(labels) {
-        vm.init(labels)
+    LaunchedEffect(action) {
+        vm.init(action)
     }
     val state by vm.state.collectAsState()
-    val formattedValues = state.formattedValues
 
     val scope = rememberCoroutineScope()
 
-    val expandState by remember(icons) {
+    val expandState by remember(action) {
         mutableStateOf(ExpandState(scope))
     }
 
-    if (autoCollapse) {
-        LaunchedEffect(icons) {
+    if (action.autoCollapse) {
+        LaunchedEffect(action) {
             expandState.scheduleCollapse()
         }
     }
@@ -92,7 +91,7 @@ fun OverlayContent(
     Box(modifier = Modifier.motionEventSpy {
         motionEventSpy(it)
 
-        if (autoCollapse) {
+        if (action.autoCollapse) {
             if (it.action == MotionEvent.ACTION_UP) {
                 expandState.scheduleCollapse()
             } else {
@@ -140,47 +139,73 @@ fun OverlayContent(
 
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
-                    Column(
-                        modifier = Modifier
-                            .widthIn(min = minWidth)
-                            .padding(vertical = 8.dp)
-                            .onSizeChanged {
-                                expandSizeDp.value = with(density) { it.width.toDp() }
-                            },
-                        horizontalAlignment = CenterHorizontally
-                    ) {
-                        formattedValues.forEachIndexed { index, label ->
-                            Column(
-                                modifier = Modifier.clickableWithRipple {
-                                    onButtonClick(index)
+                    if (action.orientation == OverlayOrientation.Land) {
+                        Row(
+                            modifier = Modifier
+                                .widthIn(min = minWidth)
+                                .padding(horizontal = 8.dp)
+                                .onSizeChanged {
+                                    expandSizeDp.value = with(density) { it.width.toDp() }
                                 },
-                                horizontalAlignment = CenterHorizontally,
-                                verticalArrangement = Arrangement.Top
-                            ) {
-                                val icon = icons[index]
-
-                                if (icon.isNotBlank()) {
-                                    IconButtonContainer(onClick = {
-                                        onButtonClick(index)
-                                    }) {
-                                        IconForButton(icon = icon)
-                                    }
-                                }
-
-                                if (label.isNotEmpty()) {
-                                    Text(
-                                        modifier = Modifier
-                                            .offset(y = (-4).dp)
-                                            .padding(horizontal = 4.dp),
-                                        text = label,
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
-                                    )
-                                }
-                            }
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OverlayButtons(state, onButtonClick)
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .widthIn(min = minWidth)
+                                .padding(vertical = 8.dp)
+                                .onSizeChanged {
+                                    expandSizeDp.value = with(density) { it.width.toDp() }
+                                },
+                            horizontalAlignment = CenterHorizontally
+                        ) {
+                            OverlayButtons(state, onButtonClick)
                         }
                     }
+
+
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun OverlayButtons(
+    state: OverlayState,
+    onButtonClick: (OverlayButtonSetting) -> Unit,
+) {
+    state.buttons.forEachIndexed { _, button ->
+        val updateButton by rememberUpdatedState(newValue = button)
+        Column(
+            modifier = Modifier.clickableWithRipple {
+                onButtonClick(updateButton.setting)
+            },
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            val icon = updateButton.setting.icon
+
+            if (icon.isNotBlank()) {
+                IconButtonContainer(onClick = {
+                    onButtonClick(updateButton.setting)
+                }) {
+                    IconForButton(icon = icon)
+                }
+            }
+
+            val label = updateButton.formattedLabel
+            if (label.isNotEmpty()) {
+                Text(
+                    modifier = Modifier
+                        .offset(y = (-4).dp)
+                        .padding(horizontal = 4.dp),
+                    text = label,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+                )
             }
         }
     }
@@ -202,8 +227,4 @@ private fun IconButtonContainer(onClick: () -> Unit, icon: @Composable () -> Uni
     ) {
         icon()
     }
-}
-
-val LocalAppResources = staticCompositionLocalOf<AppResources> {
-    error("CompositionLocal LocalAppResources not present")
 }

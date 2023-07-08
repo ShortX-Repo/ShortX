@@ -107,7 +107,7 @@ message ShowOverlayButton {
   repeated OverlayButtonSetting buttonSettings = 1;
   bool autoCollapse = 2;
   string tag = 3;
-
+  OverlayOrientation orientation = 4;
 
   string note = 99;
   string id = 100;

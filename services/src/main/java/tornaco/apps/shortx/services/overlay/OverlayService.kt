@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
@@ -32,14 +33,12 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
     }
 
     fun postShowOverlay(
-        autoCollapse: Boolean,
-        settings: List<OverlayButtonSetting>,
-        tag: String
+        action: ShowOverlayButton
     ) = mainHandler.postSafety {
-        logger.d("showOverlay: $tag, current showing: $showingOverlays, settings: $settings")
+        logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
 
         if (showingOverlays.any {
-                it.tag == tag
+                it.tag == action.tag
             }) {
             logger.d("showOverlay skip since has showing for same owner.")
             return@postSafety
@@ -50,24 +49,22 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
 
         val overlayIns = ComposeOverlay(
             context = context,
-            autoCollapse = autoCollapse,
-            initialPos = android.util.Pair.create(posX, posY),
-            onPosChange = { pos ->
+            action = action,
+            initialPos = posX to posY,
+            onPosChange = { x, y ->
                 handler.postSafety {
-                    logger.d("onPosChange, write settings: $pos")
-                    store.write(Settings.IntSettings.OverlayButtonPosX, pos.first)
-                    store.write(Settings.IntSettings.OverlayButtonPosY, pos.second)
+                    logger.d("onPosChange, write settings: $x-$y")
+                    store.write(Settings.IntSettings.OverlayButtonPosX, x)
+                    store.write(Settings.IntSettings.OverlayButtonPosY, y)
                 }
             },
-            icons = settings.map { it.icon },
-            labels = settings.map { it.label ?: "Label" },
-        ) {
+        ) { button: OverlayButtonSetting ->
             shortXContext.rule.executeActions(
                 id = "Overlay//NO_ID",
-                reason = "Overlay Button #$it click",
-                actions = settings[it].actionsList,
+                reason = "Overlay Button #${button.label} click",
+                actions = button.actionsList,
                 initialContextData = mapOf(
-                    ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${tag}",
+                    ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${action.tag}",
                     ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnOverlay,
                 )
             )
@@ -76,8 +73,8 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
         showingOverlays.add(
             ShowingOverlay(
                 token = overlayIns,
-                settings = settings,
-                tag = tag
+                settings = action.buttonSettingsList,
+                tag = action.tag
             ).apply {
                 token.show()
             })

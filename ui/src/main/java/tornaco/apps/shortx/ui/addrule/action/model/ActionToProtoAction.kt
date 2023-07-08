@@ -69,6 +69,8 @@ import tornaco.apps.shortx.core.proto.common.Location
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
@@ -135,8 +137,9 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             ShowOverlayButton.newBuilder()
                 .setId(overrideId ?: id)
                 .setAutoCollapse(autoCollapse)
-                .setTag(tag)
+                .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
+                .setOrientation(orientation)
                 .setNote(overrideNote ?: note).build()
         }
 

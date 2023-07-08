@@ -102,7 +102,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 autoCollapse = data.autoCollapse,
                 settings = data.buttonSettingsList,
-                tag = data.tag
+                tag = data.tag,
+                orientation = data.orientation
             )
         }
 

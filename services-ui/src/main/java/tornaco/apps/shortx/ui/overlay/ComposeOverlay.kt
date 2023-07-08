@@ -21,23 +21,22 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
-import java.util.function.Consumer
 
 @SuppressLint("ViewConstructor")
 @Keep
 class ComposeOverlay(
     context: Context,
-    private val initialPos: android.util.Pair<Int, Int>,
-    private val onPosChange: Consumer<android.util.Pair<Int, Int>>,
-    private val icons: List<String>,
-    private val labels: List<String>,
-    private val autoCollapse: Boolean,
-    private val onButtonClick: Consumer<Int>
-) : FrameLayout(context), java.util.function.Function<String, Boolean> {
+    private val action: ShowOverlayButton,
+    private val initialPos: Pair<Int, Int>,
+    private val onPosChange: (Int, Int) -> Unit,
+    private val onButtonClick: (OverlayButtonSetting) -> Unit
+) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
 
@@ -52,7 +51,7 @@ class ComposeOverlay(
         Runnable {
             val out = IntArray(2)
             getLocationOnScreen(out)
-            onPosChange.accept(android.util.Pair.create(out[0], out[1]))
+            onPosChange(out[0], out[1])
         }
 
     private val touchListener: OnTouchListener = object : OnTouchListener {
@@ -116,15 +115,13 @@ class ComposeOverlay(
             setContent {
                 CompositionLocalProvider(LocalContext provides appResources.appContext) {
                     OverlayContent(
-                        autoCollapse = autoCollapse,
-                        icons = icons,
-                        labels = labels,
+                        action = action,
                         motionEventSpy = {
                             touchListener.onTouch(
                                 this@ComposeOverlay, it
                             )
                         },
-                        onButtonClick = { onButtonClick.accept(it) })
+                        onButtonClick = { onButtonClick(it) })
                 }
             }
             isFocusable = false
@@ -141,7 +138,7 @@ class ComposeOverlay(
     }
 
     fun show() {
-        logger.d("show: $icons, initialPos: $initialPos")
+        logger.d("show: $action, initialPos: $initialPos")
         if (!isAttachedToWindow) {
             overlayLP.title = "ShortX-ComposeOverlay"
             val windowManager = context.windowManager
@@ -155,13 +152,13 @@ class ComposeOverlay(
     fun isShow() = isAttachedToWindow
 
     fun dismiss() {
-        logger.d("dismiss")
+        logger.d("dismiss: ${action.tag}")
         kotlin.runCatching {
             if (isAttachedToWindow) {
                 context.windowManager.removeViewImmediate(this)
             }
         }.onFailure {
-            logger.e(it, "dismiss")
+            logger.e(it, "dismiss: ${action.tag}")
         }
     }
 
@@ -217,29 +214,6 @@ class ComposeOverlay(
         overlayLP.x = x
         overlayLP.y = y
         context.windowManager.updateViewLayout(this, overlayLP)
-    }
-
-    override fun apply(t: String): Boolean {
-        logger.d("apply: $t")
-        return when (t) {
-            "show" -> {
-                show()
-                true
-            }
-
-            "dismiss" -> {
-                dismiss()
-                true
-            }
-
-            "isShow" -> {
-                isShow()
-            }
-
-            else -> {
-                false
-            }
-        }
     }
 }
 

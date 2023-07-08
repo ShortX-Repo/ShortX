@@ -2,15 +2,18 @@ package tornaco.apps.shortx.ui.overlay
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
 
+data class ButtonState(val formattedLabel: String, val setting: OverlayButtonSetting)
+
 data class OverlayState(
-    val values: List<String> = emptyList(),
-    val formattedValues: List<String> = emptyList()
+    val buttons: List<ButtonState> = emptyList(),
 )
 
 class OverlayViewModel : StateViewModel<OverlayState>({ OverlayState() }) {
@@ -32,21 +35,23 @@ class OverlayViewModel : StateViewModel<OverlayState>({ OverlayState() }) {
         shortXManager.registerGlobalVarObs(globalVarObs)
     }
 
-    fun init(labels: List<String>) {
-        updateState { copy(values = labels) }
+    fun init(action: ShowOverlayButton) {
+        updateState {
+            copy(buttons = action.buttonSettingsList.map {
+                ButtonState(it.label, it)
+            })
+        }
         formatValues()
     }
 
     fun formatValues() {
         viewModelScope.launch {
-            val values = state.value.values.map { str ->
-                str.replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
-            }
-            logger.d("values: $values")
             updateState {
-                copy(
-                    formattedValues = values
-                )
+                copy(buttons = buttons.map { button ->
+                    val formattedLabel =
+                        button.setting.label.replaceGlobalVarValues { shortXManager.getAllGlobalVars() }
+                    ButtonState(formattedLabel, button.setting)
+                })
             }
         }
     }

@@ -270,7 +270,7 @@ private fun DAListContentCompat(
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = state.das, key = { it.id }) { da ->

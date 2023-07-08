@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -22,6 +23,7 @@ data class OverlayButtonSelectorState(
     val autoCollapse: Boolean = false,
 
     val tag: String = "",
+    val orientation: OverlayOrientation = OverlayOrientation.Port,
     val id: String = defaultNewActionId()
 )
 
@@ -63,7 +65,8 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 id = settings.id,
                 buttons = settings.settings.map { it.toButton() },
                 autoCollapse = settings.autoCollapse,
-                tag = settings.tag
+                tag = settings.tag,
+                orientation = settings.orientation
             )
         }
     }
@@ -106,10 +109,23 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         }
     }
 
+    fun setOrientation(orientation: OverlayOrientation) {
+        updateState {
+            copy(orientation = orientation)
+        }
+    }
+
     fun addButton() {
         updateState {
             copy(buttons = buttons.toMutableList().apply { add(Button()) })
         }
         logger.d("addButton after, items size: ${state.value.buttons.size}")
+    }
+
+    fun removeButton(index: Int) {
+        updateState {
+            copy(buttons = buttons.toMutableList().apply { removeAt(index) })
+        }
+        logger.d("removeButton after, items size: ${state.value.buttons.size}")
     }
 }

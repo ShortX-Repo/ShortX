@@ -19,9 +19,14 @@ object ShowOverlayButton : Actor {
     ) = with(params) {
         withContext(Dispatchers.Main) {
             val d = action unpack_ ShowOverlayButton::class.java
-            val buttonSettingsList = d.buttonSettingsList
-            val autoCollapse = d.autoCollapse
-            shortXContext.overlay.postShowOverlay(autoCollapse, buttonSettingsList, d.tag)
+            shortXContext.overlay.postShowOverlay(
+                ShowOverlayButton.newBuilder(d).apply {
+                    if (d.tag.isBlank()) {
+                        logger.i("Use action id as overlay tag: ${d.id}")
+                        tag = d.id
+                    }
+                }.build()
+            )
         }
     }
 }

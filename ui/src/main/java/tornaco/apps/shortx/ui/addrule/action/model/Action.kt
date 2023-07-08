@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
+import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -117,7 +118,8 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val autoCollapse: Boolean,
         val settings: List<OverlayButtonSetting>,
-        val tag: String
+        val tag: String,
+        val orientation: OverlayOrientation
     ) : Action {
         override fun clone(id: String, note: String): Action {
             return this.copy(id = id, note = note)

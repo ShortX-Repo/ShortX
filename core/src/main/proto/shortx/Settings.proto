@@ -24,3 +24,8 @@ message OverlayButtonSetting {
   string note = 99;
   string id = 100;
 }
+
+enum OverlayOrientation {
+  Port = 0;
+  Land = 1;
+}
