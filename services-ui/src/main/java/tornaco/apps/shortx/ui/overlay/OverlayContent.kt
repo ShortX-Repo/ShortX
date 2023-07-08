@@ -145,7 +145,7 @@ fun OverlayContent(
                                 .widthIn(min = minWidth)
                                 .padding(horizontal = 8.dp)
                                 .onSizeChanged {
-                                    expandSizeDp.value = with(density) { it.width.toDp() }
+                                    expandSizeDp.value = with(density) { it.height.toDp() }
                                 },
                             verticalAlignment = Alignment.CenterVertically
                         ) {

@@ -20,11 +20,11 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 
 
-fun Condition.toProtoCondition(): ProtoMessage {
+fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
     return when (this) {
         is Condition.CurrentForegroundApp -> {
             CurrentPkgList.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .addAllPkgs(
@@ -44,7 +44,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.AppIsRunning -> {
             AppIsRunning.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .addAllPkgs(
@@ -64,7 +64,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.ServiceIsRunning -> {
             ServiceIsRunning.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setOp(op.toConditionOperator())
                 .setIsInvert(isInvert)
@@ -74,7 +74,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.AppIsNotRunning -> {
             AppIsNotRunning.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .addAllPkgs(
@@ -94,7 +94,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.AppHasAudioFocus -> {
             AppHasAudioFocus.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .addAllPkgs(
@@ -114,14 +114,14 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.MVEL -> {
             MatchMVEL.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert).setExpression(expression).build()
         }
 
         is Condition.TRUE -> {
             True.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .build()
@@ -129,7 +129,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.EvaluateGlobalVar -> {
             EvaluateGlobalVar.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setVarName(varName)
@@ -140,7 +140,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.BatteryPercent -> {
             BatteryPercent.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setValue(value)
@@ -150,7 +150,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.ChargeState -> {
             ChargeState.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setRequireIsCharge(requireIsCharge)
@@ -159,7 +159,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.ScreenIsOn -> {
             ScreenIsOn.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .build()
@@ -167,7 +167,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.VPNIsConnected -> {
             VPNIsConnected.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .build()
@@ -175,7 +175,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.TimeInRange -> {
             TimeInRange.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setRange(range)
@@ -184,7 +184,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.RequireWifiConnected -> {
             RequireWifiConnected.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setRequiredSSID(requiredSSID)
@@ -193,7 +193,7 @@ fun Condition.toProtoCondition(): ProtoMessage {
 
         is Condition.RequireWifiDisconnected -> {
             RequireWifiDisconnected.newBuilder()
-                .setId(id)
+                .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .build()

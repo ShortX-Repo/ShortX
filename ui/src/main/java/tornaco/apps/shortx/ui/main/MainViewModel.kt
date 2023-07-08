@@ -19,22 +19,28 @@ import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
-import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
+import tornaco.apps.shortx.ui.addrule.condition.model.defaultNewConditionId
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
+import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
@@ -463,13 +469,29 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         logger.d("importRule: $rule")
         val ruleWithSameNameExists =
             state.value.rules.firstOrNull { it.title == rule.title } != null
-        val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
+        val copyInd = " (Copy)"
 
         viewModelScope.launch {
+            val refinedActions = rule.actionsList.mapNotNull {
+                it.toAction(shortXManager)?.toProtoAction(defaultNewActionId())?.pack_()
+            }
+            val refinedFacts = rule.factsList.mapNotNull {
+                it.toFact(shortXManager)?.toProtoFact(defaultNewFactId())?.pack_()
+            }
+            val refinedConds = rule.conditionsList.mapNotNull {
+                it.toCondition(shortXManager)?.toProtoCondition(defaultNewConditionId())?.pack_()
+            }
+
             val refined =
                 Rule.newBuilder(rule)
                     .setTitle(if (ruleWithSameNameExists) "${rule.title} $copyInd" else rule.title)
                     .setId(defaultNewRuleId())
+                    .clearActions()
+                    .addAllActions(refinedActions)
+                    .clearFacts()
+                    .addAllFacts(refinedFacts)
+                    .clearConditions()
+                    .addAllConditions(refinedConds)
                     .setCreateTime(System.currentTimeMillis())
                     .setLastUpdateTime(System.currentTimeMillis())
                     .setIsEnabled(false)
@@ -483,13 +505,19 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun importDA(da: DirectAction) {
         val daWithSameNameExists =
             state.value.das.firstOrNull { it.title == da.title } != null
-        val copyInd = DateUtils.formatForFileName(System.currentTimeMillis())
+        val copyInd = " (Copy)"
 
         viewModelScope.launch {
+            val refinedActions = da.actionsList.mapNotNull {
+                it.toAction(shortXManager)?.toProtoAction(defaultNewActionId())?.pack_()
+            }
+
             val refined =
                 DirectAction.newBuilder(da)
                     .setTitle(if (daWithSameNameExists) "${da.title} $copyInd" else da.title)
                     .setId(defaultNewDAId())
+                    .clearActions()
+                    .addAllActions(refinedActions)
                     .setCreateTime(System.currentTimeMillis())
                     .setLastUpdateTime(System.currentTimeMillis())
                     .build()

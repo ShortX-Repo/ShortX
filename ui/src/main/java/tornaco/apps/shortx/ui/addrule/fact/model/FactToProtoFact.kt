@@ -49,53 +49,54 @@ import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoMessage
 
 
-fun Fact.toProtoFact(): ProtoMessage {
+fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
     return when (this) {
         is Fact.KeyEvent -> {
-            KeyEvent.newBuilder().setKeyCode(keyCode).setId(id).setNote(note).build()
+            KeyEvent.newBuilder().setKeyCode(keyCode).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AdvancedKeyEvent -> {
             AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture)
-                .setIsInterceptMode(isInterceptMode).setId(id).setNote(note).build()
+                .setIsInterceptMode(isInterceptMode).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.ActivityStarted -> {
             ActivityStarted.newBuilder()
                 .addAllComponents(components)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AnyActivityStarted -> {
-            ActivityStarted.newBuilder().setId(id).setNote(note).build()
+            ActivityStarted.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.EdgeGesture -> {
-            EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).setId(id).setNote(note)
+            EdgeGesture.newBuilder().setEdge(edge).setGesture(gesture).setId(overrideId ?: id)
+                .setNote(note)
                 .build()
         }
 
         is Fact.ScreenOff -> {
-            ScreenOff.newBuilder().setId(id).setNote(note).build()
+            ScreenOff.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.ScreenOn -> {
-            ScreenOn.newBuilder().setId(id).setNote(note).build()
+            ScreenOn.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.UserPresent -> {
-            UserPresent.newBuilder().setId(id).setNote(note).build()
+            UserPresent.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.SystemReady -> {
-            SystemReady.newBuilder().setId(id).setNote(note).build()
+            SystemReady.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.Alarm -> {
             Alarm.newBuilder()
                 .setRepeat(repeatDays)
                 .setTriggerAt(timeOfADay)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.RandomInPeriod -> {
@@ -103,7 +104,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRepeat(repeatDays)
                 .setStart(start)
                 .setEnd(end)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.FixedInPeriod -> {
@@ -112,85 +113,85 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setStart(start)
                 .setEnd(end)
                 .setFixedBy(fixedBy.toProto())
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AppBecomeBackground -> {
             AppBecomeBg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AppBecomeForeground -> {
             AppBecomeFg.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.WifiStatusChanged -> {
             WifiStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.WifiConnectedTo -> {
             WifiConnectedTo.newBuilder()
                 .addAllSsidList(ssidList)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.WifiDisconnectedFrom -> {
             WifiDisconnectedFrom.newBuilder()
                 .addAllSsidList(ssidList)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.BTStatusChanged -> {
             BTStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.DNDStatusChanged -> {
             DNDStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.FlashLightStatusChanged -> {
             FlashLightStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.HotSpotStatusChanged -> {
             HotSpotStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.LocationStatusChanged -> {
             LocationStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.MobileDataStatusChanged -> {
             MobileDataStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NFCStatusChanged -> {
             NFCStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.DarkModeStatusChanged -> {
             DarkModeStatusChanged.newBuilder()
                 .setOoa(state)
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationPosted -> {
@@ -205,7 +206,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationRemoved -> {
@@ -220,7 +221,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationUpdated -> {
@@ -235,7 +236,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                         }
                         .build()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationPostedAny -> {
@@ -243,7 +244,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRecord(
                     Notification.getDefaultInstance()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationRemovedAny -> {
@@ -251,7 +252,7 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setRecord(
                     Notification.getDefaultInstance()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.NotificationUpdatedAny -> {
@@ -259,93 +260,97 @@ fun Fact.toProtoFact(): ProtoMessage {
                 .setNew(
                     Notification.getDefaultInstance()
                 )
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.TaskRemoved -> {
             TaskRemoved.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.TaskRemovedAny -> {
-            TaskRemoved.newBuilder().setId(id).setNote(note).build()
+            TaskRemoved.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.PkgStopRunning -> {
             PkgStopRunning.newBuilder()
                 .addAllApps(apps.map { it.pkg })
                 .addAllPkgSets(pkgSets.map { it.label })
-                .setId(id).setNote(note).build()
+                .setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.PkgStopRunningAny -> {
-            PkgStopRunning.newBuilder().setId(id).setNote(note).build()
+            PkgStopRunning.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AppAdded -> {
-            AppAdded.newBuilder().setId(id).setNote(note).build()
+            AppAdded.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AppRemoved -> {
             AppRemoved.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AppUpdated -> {
             AppUpdated.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AudioFocusGain -> {
             AudioFocusGain.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AudioFocusLost -> {
             AudioFocusLost.newBuilder().addAllApps(apps.map {
                 AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
-            }).addAllPkgSets(pkgSets.map { it.label }).setId(id).setNote(note).build()
+            }).addAllPkgSets(pkgSets.map { it.label }).setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.AudioFocusChanged -> {
-            AudioFocusChanged.newBuilder().setId(id).setNote(note).build()
+            AudioFocusChanged.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.BatteryLevelChanged -> {
-            BatteryLevelChanged.newBuilder().setId(id).setNote(note).setLevel(level).build()
+            BatteryLevelChanged.newBuilder().setId(overrideId ?: id).setNote(note).setLevel(level)
+                .build()
         }
 
         is Fact.BatteryTemperatureChanged -> {
-            BatteryTemperatureChanged.newBuilder().setId(id).setNote(note).setTemp(temp).build()
+            BatteryTemperatureChanged.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setTemp(temp).build()
         }
 
         is Fact.ChargerPlug -> {
-            ChargerPlug.newBuilder().setId(id).setNote(note).build()
+            ChargerPlug.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.ChargerUnplug -> {
-            ChargerUnplug.newBuilder().setId(id).setNote(note).build()
+            ChargerUnplug.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.Broadcast -> {
-            Broadcast.newBuilder().setId(id).setNote(note).addAllActions(actions).build()
+            Broadcast.newBuilder().setId(overrideId ?: id).setNote(note).addAllActions(actions)
+                .build()
         }
 
         is Fact.VPNConnected -> {
-            VPNConnected.newBuilder().setId(id).setNote(note).build()
+            VPNConnected.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.VPNDisconnected -> {
-            VPNDisconnected.newBuilder().setId(id).setNote(note).build()
+            VPNDisconnected.newBuilder().setId(overrideId ?: id).setNote(note).build()
         }
 
         is Fact.MediaStoreInsert -> {
-            MediaStoreInsert.newBuilder().setId(id).setNote(note).setFilterPath(filterPathRegex)
+            MediaStoreInsert.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setFilterPath(filterPathRegex)
                 .build()
         }
 
