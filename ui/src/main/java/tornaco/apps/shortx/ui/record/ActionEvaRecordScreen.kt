@@ -8,6 +8,7 @@ package tornaco.apps.shortx.ui.record
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,12 +44,10 @@ import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
-import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -137,28 +137,40 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
 
                         stickyHeader {
                             Row(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(6.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    RemixIcon(
-                                        remixName = Remix.System.checkbox_circle_fill,
-                                        tint = SuccessGreen
-                                    )
-                                    SmallSpacer()
-                                    TipBody(text = "Success")
-                                }
+                                FilterChip(
+                                    selected = state.showSuccess,
+                                    onClick = {
+                                        vm.toggleShowSuccess()
+                                    },
+                                    leadingIcon = {
+                                        RemixIcon(
+                                            remixName = Remix.System.checkbox_circle_fill,
+                                            tint = SuccessGreen
+                                        )
+                                    },
+                                    label = { Text(text = "Success") }
+                                )
 
-                                SectionSpacer()
+                                StandardSpacer()
 
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    RemixIcon(
-                                        remixName = Remix.System.error_warning_fill,
-                                        tint = ErrorRed
-                                    )
-                                    SmallSpacer()
-                                    TipBody(text = "Fail")
-                                }
+                                FilterChip(
+                                    selected = state.showFail,
+                                    onClick = {
+                                        vm.toggleShowFail()
+                                    },
+                                    leadingIcon = {
+                                        RemixIcon(
+                                            remixName = Remix.System.error_warning_fill,
+                                            tint = ErrorRed
+                                        )
+                                    },
+                                    label = { Text(text = "Failure") }
+                                )
                             }
                         }
 

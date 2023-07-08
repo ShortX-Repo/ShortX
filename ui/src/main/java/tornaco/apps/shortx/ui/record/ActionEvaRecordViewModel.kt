@@ -19,6 +19,8 @@ import javax.inject.Inject
 data class ActionEvaRecordState(
     val isLoading: Boolean = false,
     val isEnabled: Boolean = false,
+    val showSuccess: Boolean = true,
+    val showFail: Boolean = true,
     val records: List<ActionEvaluateRecordUM> = emptyList()
 )
 
@@ -44,6 +46,9 @@ class ActionEvaRecordViewModel @Inject constructor(@ApplicationContext context: 
             val records = withContext(Dispatchers.IO) {
                 shortXManager.getActionEvaluateRecords()
                     .reversed()
+                    .filter {
+                        (state.value.showSuccess && it.isSuccess) || (state.value.showFail && !it.isSuccess)
+                    }
                     .mapNotNull { record ->
                         val actionIns = kotlin.runCatching {
                             record.action.toAction(shortXManager)
@@ -71,6 +76,16 @@ class ActionEvaRecordViewModel @Inject constructor(@ApplicationContext context: 
                 isEnabled = shortXManager.isActionEvaluateRecorderEnabled()
             )
         }
+    }
+
+    fun toggleShowSuccess() {
+        updateState { copy(showSuccess = !showSuccess) }
+        loadState()
+    }
+
+    fun toggleShowFail() {
+        updateState { copy(showFail = !showFail) }
+        loadState()
     }
 
     fun clear() {

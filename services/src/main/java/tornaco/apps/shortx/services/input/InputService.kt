@@ -16,7 +16,8 @@ class InputService(shortXContext: ShortXContext) : SystemService(shortXContext) 
         @Suppress("UNCHECKED_CAST") val mCurInputContext =
             Reflections.getObjectField(imeService, "mCurInputContext")
         logger.d("submitText, mCurInputContext: $mCurInputContext")
-        val inputContext: IInputContext = mCurInputContext as IInputContext
+        val inputContext: IInputContext =
+            requireNotNull(mCurInputContext) { "No Input context." } as IInputContext
         logger.d("submitText, inputContext: $inputContext")
         InputContextCompat.commitText(inputContext, text)
     }
