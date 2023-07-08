@@ -1,15 +1,26 @@
 package tornaco.apps.shortx.services.rule
 
 import android.util.Log
+import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 
 
-fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecord {
+fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(contextData: ContextData): ActionEvaluateRecord {
+    val srcTitle = contextData.get(ContextDataMapping.Context.contextSrcTitle.name)
+    val srcEvent: ContextSrcEvent =
+        (contextData.get(ContextDataMapping.Context.contextSrcEvent.name) as ContextSrcEvent?)
+            ?: ContextSrcEvent.UNRECOGNIZED
     return when (this) {
-        ActionEvaluator.EvaluateResult.Break -> {
+        is ActionEvaluator.EvaluateResult.Break -> {
             ActionEvaluateRecord.newBuilder()
-                .setIsSuccess(false)
-                .setMessage("Break")
+                .setIsSuccess(true)
+                .setMessage("[break!!!]")
+                .setSrcTitle(srcTitle?.toString().fallbackOnEmpty(""))
+                .setSrcEvent(srcEvent)
+                .setAction(action)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
 
@@ -17,6 +28,8 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
             ActionEvaluateRecord.newBuilder()
                 .setIsSuccess(false)
                 .setMessage(Log.getStackTraceString(this.error))
+                .setSrcTitle(srcTitle?.toString().fallbackOnEmpty(""))
+                .setSrcEvent(srcEvent)
                 .setAction(action)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }
@@ -25,6 +38,8 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
             ActionEvaluateRecord.newBuilder()
                 .setIsSuccess(true)
                 .setMessage("Success")
+                .setSrcTitle(srcTitle?.toString().fallbackOnEmpty(""))
+                .setSrcEvent(srcEvent)
                 .setAction(action)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }

@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
@@ -26,10 +28,13 @@ class RuleHooksTrigger(
                 hook.actionsOnEnabledList.apply {
                     if (isNotEmpty()) {
                         shortXContext.rule.executeActions(
-                            it.id,
-                            "Hook: actionsOnEnabled",
-                            this,
-                            emptyMap()
+                            id = it.id,
+                            reason = "Hook: actionsOnEnabled",
+                            actions = this,
+                            initialContextData = mapOf(
+                                ContextDataMapping.Context.contextSrcTitle.name to "On rule enabled: ${it.title}",
+                                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
+                            )
                         )
                     }
                 }
@@ -45,10 +50,13 @@ class RuleHooksTrigger(
                 hook.actionsOnDisabledList.apply {
                     if (isNotEmpty()) {
                         shortXContext.rule.executeActions(
-                            it.id,
-                            "Hook: actionsOnDisabled",
-                            this,
-                            emptyMap()
+                            id = it.id,
+                            reason = "Hook: actionsOnDisabled",
+                            actions = this,
+                            initialContextData = mapOf(
+                                ContextDataMapping.Context.contextSrcTitle.name to "On rule disabled: ${it.title}",
+                                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
+                            )
                         )
                     }
                 }
@@ -64,10 +72,13 @@ class RuleHooksTrigger(
             hook.actionsOnDeletedList.apply {
                 if (isNotEmpty()) {
                     shortXContext.rule.executeActions(
-                        rule.id,
-                        "Hook: actionsOnDeleted",
-                        this,
-                        emptyMap()
+                        id = rule.id,
+                        reason = "Hook: actionsOnDeleted",
+                        actions = this,
+                        initialContextData = mapOf(
+                            ContextDataMapping.Context.contextSrcTitle.name to "On rule deleted: ${rule.title}",
+                            ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
+                        )
                     )
                 }
             }

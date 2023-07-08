@@ -167,7 +167,12 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                                 val actionLabel = labelLinesForAction(
                                     i18N,
                                     it.actionIns
-                                ).toMutableList().apply { add(it.formattedTimeStr) }
+                                ).toMutableList().apply {
+                                    if (it.record.srcTitle.isNotBlank()) {
+                                        add("${it.record.srcEvent.displayLabel(i18N)}   ${it.record.srcTitle}")
+                                    }
+                                    add(it.formattedTimeStr)
+                                }
                                 val messageDialogState = rememberErrorMessageDialogState(
                                     title = actionLabel[0],
                                     message = it.record.message

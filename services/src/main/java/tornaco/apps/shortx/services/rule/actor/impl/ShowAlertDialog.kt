@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -43,7 +44,7 @@ object ShowAlertDialog : Actor {
         shortXContext: ShortXContext,
         d: ShowAlertDialog,
         contextData: ContextData,
-        recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> Unit
+        recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowAlertDialog, showing")
         val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
@@ -74,19 +75,40 @@ object ShowAlertDialog : Actor {
             when (result) {
                 DialogAction.Positive -> {
                     if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
-                        recursiveExecute("ShowAlertDialog", it, contextData)
+                        val evaRes = recursiveExecute("ShowAlertDialog", it, contextData)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            return@forEach
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@forEach
+                        }
                     }
                 }
 
                 DialogAction.Negative -> {
                     if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
-                        recursiveExecute("ShowAlertDialog", it, contextData)
+                        val evaRes = recursiveExecute("ShowAlertDialog", it, contextData)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            return@forEach
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@forEach
+                        }
                     }
                 }
 
                 DialogAction.Neutral -> {
                     if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
-                        recursiveExecute("ShowAlertDialog", it, contextData)
+                        val evaRes = recursiveExecute("ShowAlertDialog", it, contextData)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            return@forEach
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@forEach
+                        }
                     }
                 }
 

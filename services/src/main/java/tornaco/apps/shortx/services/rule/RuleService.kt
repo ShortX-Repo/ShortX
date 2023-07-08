@@ -6,6 +6,7 @@ import android.os.RemoteCallbackList
 import android.widget.Toast
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -14,6 +15,7 @@ import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IDAObserver
@@ -119,10 +121,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
                     }
                 }
             },
-            actionEvaluateResultListener = {
-                logger.d("actionEvaluateResultListener: $it")
+            actionEvaluateResultListener = { result, context ->
+                logger.d("actionEvaluateResultListener: $result")
                 if (isActionEvaluateRecorderEnabled()) {
-                    actionEvaluateRecorder.add(it.toActionEvaluateRecord())
+                    actionEvaluateRecorder.add(result.toActionEvaluateRecord(context))
                 }
             },
             conditionEvaluateResultListener = {
@@ -377,15 +379,28 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
 
     fun executeDirectionActionById(id: String) {
         getDirectActionById(id)?.let {
-            executeActions(id, "executeDirectionActionById#${it.title}", it.actionsList)
+            executeActions(
+                id = id,
+                reason = "executeDirectionActionById#${it.title}",
+                actions = it.actionsList,
+                initialContextData = mapOf(
+                    ContextDataMapping.Context.contextSrcTitle.name to it.title,
+                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_DirectAction,
+                )
+            )
         }
     }
 
     fun executeDirectionAction(directAction: DirectAction) {
         executeActions(
-            directAction.id,
-            "executeDirectionAction#${directAction.title}",
-            directAction.actionsList
+            id = directAction.id,
+            reason = "executeDirectionAction#${directAction.title}",
+            actions = directAction.actionsList,
+            initialContextData = mapOf(
+                ContextDataMapping.Context.contextSrcTitle.name to directAction.title,
+                ContextDataMapping.Context.contextSrcId.name to directAction.id,
+                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
+            )
         )
     }
 
@@ -394,7 +409,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
         logger.d("directExecuteRuleActions: $ruleId ${rule?.title}")
         rule?.let {
             val actions = it.actionsList
-            executeActions(ruleId, "directExecuteRuleActions", actions)
+            executeActions(
+                id = ruleId,
+                reason = "directExecuteRuleActions",
+                actions = actions, initialContextData = mapOf(
+                    ContextDataMapping.Context.contextSrcTitle.name to "Direct execute: ${rule.title}",
+                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteRuleActions,
+                )
+            )
         }
     }
 

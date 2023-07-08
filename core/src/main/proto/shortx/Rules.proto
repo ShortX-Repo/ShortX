@@ -46,6 +46,9 @@ message ActionEvaluateRecord {
   bool isSuccess = 2;
   string message = 3;
   int64 timeStamp = 4;
+
+  string srcTitle = 5;
+  ContextSrcEvent srcEvent = 6;
 }
 
 message ConditionEvaluateRecord {
@@ -59,4 +62,13 @@ message ConditionEvaluateRecord {
 message FactPublishRecord {
   google.protobuf.Any fact = 1;
   int64 timeStamp = 2;
+}
+
+enum ContextSrcEvent {
+  ContextSrc_DirectAction = 0;
+  ContextSrc_ExecuteOnDAEditor = 1;
+  ContextSrc_ExecuteOnOverlay = 2;
+  ContextSrc_ExecuteRuleActions = 3;
+  ContextSrc_Rule = 4;
+  ContextSrc_RuleHook = 5;
 }

@@ -3,6 +3,8 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -61,9 +63,13 @@ class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext
             labels = settings.map { it.label ?: "Label" },
         ) {
             shortXContext.rule.executeActions(
-                "Overlay//NO_ID",
-                "Overlay Button #$it click",
-                settings[it].actionsList
+                id = "Overlay//NO_ID",
+                reason = "Overlay Button #$it click",
+                actions = settings[it].actionsList,
+                initialContextData = mapOf(
+                    ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${tag}",
+                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnOverlay,
+                )
             )
         }
 

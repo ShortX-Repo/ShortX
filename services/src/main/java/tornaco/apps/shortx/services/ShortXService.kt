@@ -11,12 +11,14 @@ import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IDAObserver
@@ -249,9 +251,13 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         override fun executeAction(action: ByteArrayWrapper) {
             enforceCallingPermissions()
             shortXContext.rule.executeActions(
-                "EA-${UUID.randomUUID()}",
-                "IShortX executeAction",
-                listOf(ProtoAny.parseFrom(action.byte))
+                id = "EA-${UUID.randomUUID()}",
+                reason = "IShortX executeAction",
+                actions = listOf(ProtoAny.parseFrom(action.byte)),
+                initialContextData = mapOf(
+                    ContextDataMapping.Context.contextSrcTitle.name to "Direct execute",
+                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
+                )
             )
         }
 

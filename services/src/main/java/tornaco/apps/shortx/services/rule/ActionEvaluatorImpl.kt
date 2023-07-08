@@ -14,11 +14,11 @@ class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler,
-    private val evaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
+    private val evaluateResultListener: (ActionEvaluator.EvaluateResult, ContextData) -> Unit,
     private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
-    private val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> Unit =
+    private val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult =
         { logTagR, actionR, contextDataR ->
             evaluate(logTagR, actionR, contextDataR)
         }
@@ -32,7 +32,7 @@ class ActionEvaluatorImpl(
         val actor = prebuiltActorFor(action)
         logger.d("evaluate: $logTag - ${action.typeUrl}, actor: $actor")
         if (actor == null) {
-            return ActionEvaluator.EvaluateResult.Break
+            return ActionEvaluator.EvaluateResult.Break(action)
         }
         return kotlin.runCatching {
             actor.handle(
@@ -47,9 +47,13 @@ class ActionEvaluatorImpl(
             )
             ActionEvaluator.EvaluateResult.Success(action)
         }.getOrElse {
-            ActionEvaluator.EvaluateResult.Fail(action, it)
+            if (it is StopExecuteException) {
+                ActionEvaluator.EvaluateResult.Break(action)
+            } else {
+                ActionEvaluator.EvaluateResult.Fail(action, it)
+            }
         }.apply {
-            evaluateResultListener(this)
+            evaluateResultListener(this, contextData)
         }
     }
 }

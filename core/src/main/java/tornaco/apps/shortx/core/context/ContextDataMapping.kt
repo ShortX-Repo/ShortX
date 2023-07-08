@@ -9,6 +9,13 @@ object ContextDataMapping {
     inline fun <reified T : Enum<T>> T.accessExample() = "{${name}}"
 
     @DoNotStrip
+    enum class Context(val description: String) {
+        contextSrcId("Source id of the context, maybe id of a Rule or DA"),
+        contextSrcTitle("Source title of the context, maybe Title of a Rule or DA"),
+        contextSrcEvent("User event, why this action/condition is executing?")
+    }
+
+    @DoNotStrip
     enum class NotificationUpdated(val description: String) {
         userId("The user id"),
         pkgName("App package name of the Notification owner"),

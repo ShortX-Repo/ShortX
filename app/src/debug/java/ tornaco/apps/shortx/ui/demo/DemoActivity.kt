@@ -40,6 +40,7 @@ class DemoActivity : BaseActivity() {
                     ) {
                         NotificationDemo()
                         MapDemo()
+                        VibrateDemo()
 
                         Button(onClick = {
                             val intent = Intent(

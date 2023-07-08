@@ -29,6 +29,8 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
         map[key] = value
     }
 
+    fun get(key: String): Any? = map[key]
+
     fun forEach(action: (Pair<String, Any?>) -> Unit) = map.forEach {
         action(it.key to it.value)
     }

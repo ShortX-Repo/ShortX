@@ -3,8 +3,10 @@ package tornaco.apps.shortx.services.rule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -53,7 +55,7 @@ interface ActionEvaluator {
         data class Fail(val action: ProtoAny, val error: Throwable) :
             EvaluateResult
 
-        object Break : EvaluateResult
+        data class Break(val action: ProtoAny) : EvaluateResult
     }
 }
 
@@ -128,6 +130,13 @@ class DefaultRuleEngine(
                 logger.d("fire, matched: ${fact.javaClass} ${rule.title}")
                 anyMatch = true
                 val contextData = ContextData.obtain(initialContextData)
+                contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
+                contextData.add(ContextDataMapping.Context.contextSrcTitle.name, rule.title)
+                contextData.add(
+                    ContextDataMapping.Context.contextSrcEvent.name,
+                    ContextSrcEvent.ContextSrc_Rule
+                )
+
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
                     val conditionRes = if (rule.conditionsList.isEmpty()) {

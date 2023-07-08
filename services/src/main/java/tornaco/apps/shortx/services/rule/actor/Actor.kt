@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.ActionEvaluator
 import tornaco.apps.shortx.services.rule.ConditionEvaluator
 
 data class HandleParams(
@@ -14,7 +15,7 @@ data class HandleParams(
     val shortXContext: ShortXContext,
     val action: ProtoAny,
     val contextData: ContextData,
-    val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> Unit,
+    val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult,
     val conditionEvaluator: ConditionEvaluator
 )
 

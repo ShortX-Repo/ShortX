@@ -86,7 +86,7 @@ class RuleProtoTest {
                 onJobCancelled = {},
                 onJobCompleted = {},
                 onJobStarted = {},
-                actionEvaluateResultListener = {},
+                actionEvaluateResultListener = { a, b -> },
                 conditionEvaluateResultListener = {}
             ).fire(
                 KeyEvent.newBuilder().setKeyCode(20).build(),
