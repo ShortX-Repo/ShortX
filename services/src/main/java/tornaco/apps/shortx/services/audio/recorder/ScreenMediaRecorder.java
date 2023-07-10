@@ -86,6 +86,7 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         if (mAudioSource == INTERNAL ||
                 mAudioSource == MIC_AND_INTERNAL) {
             mTempAudioFile = new File(Dirs.INSTANCE.baseServerRecordingDir(), fileName);
+            mTempAudioFile.getParentFile().mkdirs();
             mAudio = new ScreenInternalAudioRecorder(mTempAudioFile.getAbsolutePath(),
                     mMediaProjection, mAudioSource == MIC_AND_INTERNAL);
         }

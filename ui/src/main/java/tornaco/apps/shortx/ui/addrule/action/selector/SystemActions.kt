@@ -6,6 +6,8 @@ import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -197,7 +199,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 @Composable
 fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
-    val actionItems = listOf(
+    val actionItems = listOfNotNull(
         Action.WakeupScreen::class,
         Action.SleepScreen::class,
         Action.InjectKeyCode::class,
@@ -229,7 +231,7 @@ fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (A
         Action.DisableSensorsOff::class,
         Action.AdjustVolume::class,
         Action.Vibrate::class,
-        Action.AudioRecording::class,
+        OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
     ).map {
         SelectorItem(
             type = it,

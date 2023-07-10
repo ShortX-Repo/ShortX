@@ -7,7 +7,6 @@ package tornaco.apps.shortx.ui.record
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +31,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -77,13 +81,14 @@ fun AudioRecordScreen(back: () -> Unit) {
     LaunchedEffect(vm) {
         vm.loadState()
     }
-
+    val snackbarHostState = remember { SnackbarHostState() }
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val i18N = LocalI18N.current
             Scaffold(modifier = Modifier,
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
@@ -103,6 +108,29 @@ fun AudioRecordScreen(back: () -> Unit) {
                 val pullRefreshState = rememberPullRefreshState(state.isLoading, { vm.loadState() })
 
                 val context = LocalContext.current
+                val scope = rememberCoroutineScope()
+
+                LaunchedEffect(vm) {
+                    vm.exportPerformed.collectLatest {
+                        when (it) {
+                            is ExportResult.Success -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        i18N["ui.settings.audio.record.export.success", mapOf("dir" to it.path)]
+                                    )
+                                }
+                            }
+
+                            is ExportResult.Failed -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        it.error
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Box(
                     modifier = Modifier
@@ -110,17 +138,6 @@ fun AudioRecordScreen(back: () -> Unit) {
                         .padding(paddingValues)
                         .pullRefresh(pullRefreshState),
                 ) {
-                    val showExportSuccessToast: (String) -> Unit = {
-                        Toast.makeText(
-                            context,
-                            i18N["ui.settings.audio.record.export.success", mapOf("dir" to it)],
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    val showExportFailToast: (String) -> Unit = {
-                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                    }
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -161,11 +178,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            runCatching { vm.export(recordFile) }.onSuccess {
-                                                showExportSuccessToast(it)
-                                            }.onFailure {
-                                                showExportFailToast(it.message ?: it.toString())
-                                            }
+                                            vm.export(recordFile)
                                         }) {
                                             RemixIcon(
                                                 remixName = Remix.System.download_2_fill,
