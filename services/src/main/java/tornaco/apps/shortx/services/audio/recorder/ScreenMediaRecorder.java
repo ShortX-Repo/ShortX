@@ -18,83 +18,45 @@ package tornaco.apps.shortx.services.audio.recorder;
 
 import static android.content.Context.MEDIA_PROJECTION_SERVICE;
 import static tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource.INTERNAL;
-import static tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource.MIC;
 import static tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource.MIC_AND_INTERNAL;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.hardware.display.DisplayManager;
-import android.hardware.display.VirtualDisplay;
-import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
-import android.media.MediaFormat;
-import android.media.MediaMuxer;
-import android.media.MediaRecorder;
 import android.media.projection.IMediaProjection;
 import android.media.projection.IMediaProjectionManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Size;
-import android.view.Surface;
-import android.view.WindowManager;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import tornaco.apps.shortx.core.util.DateUtils;
 import tornaco.apps.shortx.services.data.Dirs;
 
 /**
  * Recording screen and mic/internal audio
  */
 public class ScreenMediaRecorder extends MediaProjection.Callback {
-    private static final int TOTAL_NUM_TRACKS = 1;
-    private static final int VIDEO_FRAME_RATE = 30;
-    private static final int VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO = 6;
-    private static final int LOW_VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO = 2;
-    private static final int LOW_FRAME_RATE = 25;
-    private static final int AUDIO_BIT_RATE = 196000;
-    private static final int AUDIO_SAMPLE_RATE = 44100;
-    private static final int MAX_DURATION_MS = 60 * 60 * 1000;
-    private static final long MAX_FILESIZE_BYTES = 5000000000L;
-    private static final long MAX_FILESIZE_BYTES_LONGER = 16106100000L; // 15 GiB
     private static final String TAG = "ScreenMediaRecorder";
 
-
-    private File mTempVideoFile;
     private File mTempAudioFile;
     private MediaProjection mMediaProjection;
-    private Surface mInputSurface;
-    private VirtualDisplay mVirtualDisplay;
-    private MediaRecorder mMediaRecorder;
     private int mUser;
-    private ScreenRecordingMuxer mMuxer;
     private ScreenInternalAudioRecorder mAudio;
     private ScreenRecordingAudioSource mAudioSource;
     private final Handler mHandler;
-    private int mMaxRefreshRate;
-    private String mAvcProfileLevel;
-
-    private boolean mLowQuality;
-    private boolean mLongerDuration;
-    private boolean mHEVC;
 
     private Context mContext;
     ScreenMediaRecorderListener mListener;
@@ -107,25 +69,9 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         mUser = user;
         mListener = listener;
         mAudioSource = audioSource;
-        mMaxRefreshRate = 60;
-        //   <!-- If not empty, sets the AVC codec profile level used for the internal screen recorder.
-        //        Possible values: 3, 3.1, 3.2, 4, 4.1, 4.2 -->
-        mAvcProfileLevel = "3";
     }
 
-    public void setLowQuality(boolean low) {
-        mLowQuality = low;
-    }
-
-    public void setLongerDuration(boolean longer) {
-        mLongerDuration = longer;
-    }
-
-    public void setHEVC(boolean hevc) {
-        mHEVC = hevc;
-    }
-
-    private void prepare() throws IOException, RemoteException, RuntimeException {
+    private void prepare(String fileName) throws IOException, RemoteException, RuntimeException {
         //Setup media projection
         IBinder b = ServiceManager.getService(MEDIA_PROJECTION_SERVICE);
         IMediaProjectionManager mediaService =
@@ -137,90 +83,9 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         mMediaProjection = new MediaProjection(mContext, projection);
         mMediaProjection.registerCallback(this, mHandler);
 
-        File cacheDir = Dirs.INSTANCE.baseServerCacheDir();
-        cacheDir.mkdirs();
-        mTempVideoFile = new File(cacheDir, ("tmp_" + DateUtils.formatForFileName(System.currentTimeMillis())));
-
-        // Set up media recorder
-        mMediaRecorder = new MediaRecorder();
-
-        // Set up audio source
-        if (mAudioSource == MIC) {
-            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        }
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-
-
-        // Set up video
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getRealMetrics(metrics);
-        int refreshRate = mLowQuality ? LOW_FRAME_RATE
-                : (int) wm.getDefaultDisplay().getRefreshRate();
-        if (mMaxRefreshRate != 0 && refreshRate > mMaxRefreshRate) refreshRate = mMaxRefreshRate;
-        int[] dimens = getSupportedSize(metrics.widthPixels, metrics.heightPixels, refreshRate);
-        int width = dimens[0];
-        int height = dimens[1];
-        refreshRate = dimens[2];
-        int resRatio = mLowQuality ? LOW_VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO
-                : VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO;
-        int vidBitRate = width * height * refreshRate / VIDEO_FRAME_RATE * resRatio;
-        long maxFilesize = mLongerDuration ? MAX_FILESIZE_BYTES_LONGER : MAX_FILESIZE_BYTES;
-        /* PS: HEVC can be set too, to reduce file size without quality loss (h265 is more efficient than h264),
-        but at the same time the cpu load is 8-10 times higher and some devices don't support it yet */
-        if (!mHEVC) {
-            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mMediaRecorder.setVideoEncodingProfileLevel(
-                    MediaCodecInfo.CodecProfileLevel.AVCProfileMain,
-                    mLowQuality ? MediaCodecInfo.CodecProfileLevel.AVCLevel32/*level 3.2*/
-                            : getAvcProfileLevelCodeByName(mAvcProfileLevel));
-        } else {
-            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.HEVC);
-            mMediaRecorder.setVideoEncodingProfileLevel(
-                    MediaCodecInfo.CodecProfileLevel.HEVCProfileMain,
-                    mLowQuality ? MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel31/*level 3.1*/
-                            : MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel41/*level 4.1*/);
-        }
-        mMediaRecorder.setVideoSize(width, height);
-        mMediaRecorder.setVideoFrameRate(refreshRate);
-        mMediaRecorder.setVideoEncodingBitRate(vidBitRate);
-        mMediaRecorder.setMaxDuration(mLongerDuration ? 0 : MAX_DURATION_MS);
-        mMediaRecorder.setMaxFileSize(maxFilesize);
-
-        // Set up audio
-        if (mAudioSource == MIC) {
-            mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
-            mMediaRecorder.setAudioChannels(TOTAL_NUM_TRACKS);
-            mMediaRecorder.setAudioEncodingBitRate(AUDIO_BIT_RATE);
-            mMediaRecorder.setAudioSamplingRate(AUDIO_SAMPLE_RATE);
-        }
-
-        mMediaRecorder.setOutputFile(mTempVideoFile);
-        mMediaRecorder.prepare();
-        // Create surface
-        mInputSurface = mMediaRecorder.getSurface();
-        mVirtualDisplay = mMediaProjection.createVirtualDisplay(
-                "Recording Display",
-                width,
-                height,
-                metrics.densityDpi,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                mInputSurface,
-                new VirtualDisplay.Callback() {
-                    @Override
-                    public void onStopped() {
-                        onStop();
-                    }
-                },
-                mHandler);
-
-        mMediaRecorder.setOnInfoListener((mr, what, extra) -> mListener.onInfo(mr, what, extra));
         if (mAudioSource == INTERNAL ||
                 mAudioSource == MIC_AND_INTERNAL) {
-            mTempAudioFile = File.createTempFile("temp", ".aac",
-                    Dirs.INSTANCE.baseServerCacheDir());
+            mTempAudioFile = new File(Dirs.INSTANCE.baseServerRecordingDir(), fileName);
             mAudio = new ScreenInternalAudioRecorder(mTempAudioFile.getAbsolutePath(),
                     mMediaProjection, mAudioSource == MIC_AND_INTERNAL);
         }
@@ -228,105 +93,11 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     }
 
     /**
-     * Match human-readable AVC level name to its constant value.
-     */
-    private int getAvcProfileLevelCodeByName(final String levelName) {
-        switch (levelName) {
-            case "3":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel3;
-            case "3.1":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel31;
-            case "3.2":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel32;
-            case "4":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel4;
-            case "4.1":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel41;
-            default:
-            case "4.2":
-                return MediaCodecInfo.CodecProfileLevel.AVCLevel42;
-        }
-    }
-
-    /**
-     * Find the highest supported screen resolution and refresh rate for the given dimensions on
-     * this device, up to actual size and given rate.
-     * If possible this will return the same values as given, but values may be smaller on some
-     * devices.
-     *
-     * @param screenWidth  Actual pixel width of screen
-     * @param screenHeight Actual pixel height of screen
-     * @param refreshRate  Desired refresh rate
-     * @return array with supported width, height, and refresh rate
-     */
-    private int[] getSupportedSize(final int screenWidth, final int screenHeight, int refreshRate)
-            throws IOException {
-        String videoType = MediaFormat.MIMETYPE_VIDEO_AVC;
-
-        // Get max size from the decoder, to ensure recordings will be playable on device
-        MediaCodec decoder = MediaCodec.createDecoderByType(videoType);
-        MediaCodecInfo.VideoCapabilities vc = decoder.getCodecInfo()
-                .getCapabilitiesForType(videoType).getVideoCapabilities();
-        decoder.release();
-
-        // Check if we can support screen size as-is
-        int width = vc.getSupportedWidths().getUpper();
-        int height = vc.getSupportedHeights().getUpper();
-
-        int screenWidthAligned = screenWidth;
-        if (screenWidthAligned % vc.getWidthAlignment() != 0) {
-            screenWidthAligned -= (screenWidthAligned % vc.getWidthAlignment());
-        }
-        int screenHeightAligned = screenHeight;
-        if (screenHeightAligned % vc.getHeightAlignment() != 0) {
-            screenHeightAligned -= (screenHeightAligned % vc.getHeightAlignment());
-        }
-
-        if (width >= screenWidthAligned && height >= screenHeightAligned
-                && vc.isSizeSupported(screenWidthAligned, screenHeightAligned)) {
-            // Desired size is supported, now get the rate
-            int maxRate = vc.getSupportedFrameRatesFor(screenWidthAligned,
-                    screenHeightAligned).getUpper().intValue();
-
-            if (maxRate < refreshRate) {
-                refreshRate = maxRate;
-            }
-            Log.d(TAG, "Screen size supported at rate " + refreshRate);
-            return new int[]{screenWidthAligned, screenHeightAligned, refreshRate};
-        }
-
-        // Otherwise, resize for max supported size
-        double scale = Math.min(((double) width / screenWidth),
-                ((double) height / screenHeight));
-
-        int scaledWidth = (int) (screenWidth * scale);
-        int scaledHeight = (int) (screenHeight * scale);
-        if (scaledWidth % vc.getWidthAlignment() != 0) {
-            scaledWidth -= (scaledWidth % vc.getWidthAlignment());
-        }
-        if (scaledHeight % vc.getHeightAlignment() != 0) {
-            scaledHeight -= (scaledHeight % vc.getHeightAlignment());
-        }
-
-        // Find max supported rate for size
-        int maxRate = vc.getSupportedFrameRatesFor(scaledWidth, scaledHeight)
-                .getUpper().intValue();
-        if (maxRate < refreshRate) {
-            refreshRate = maxRate;
-        }
-
-        Log.d(TAG, "Resized by " + scale + ": " + scaledWidth + ", " + scaledHeight
-                + ", " + refreshRate);
-        return new int[]{scaledWidth, scaledHeight, refreshRate};
-    }
-
-    /**
      * Start screen recording
      */
-    public void start() throws IOException, RemoteException, RuntimeException {
+    public void start(String fileName) throws IOException, RemoteException, RuntimeException {
         Log.d(TAG, "start recording");
-        prepare();
-        mMediaRecorder.start();
+        prepare(fileName);
         recordInternalAudio();
     }
 
@@ -338,16 +109,11 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
 
         // MediaRecorder might throw RuntimeException if stopped immediately after starting
         // We should remove the recording in this case as it will be invalid
-        closer.register(mMediaRecorder::stop);
-        closer.register(mMediaRecorder::release);
-        closer.register(mInputSurface::release);
-        closer.register(mVirtualDisplay::release);
         closer.register(mMediaProjection::stop);
         closer.register(this::stopInternalAudioRecording);
 
         closer.close();
 
-        mMediaRecorder = null;
         mMediaProjection = null;
 
         Log.d(TAG, "end recording");
@@ -373,62 +139,33 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     }
 
     /**
-     * Store recorded video
+     * Store recorded audio
      */
     public SavedRecording save() throws IOException {
-        String fileName = new SimpleDateFormat("'screen-'yyyyMMdd-HHmmss'.mp4'")
-                .format(new Date());
-
+        String fileName = mTempAudioFile.getName();
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
-        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-        values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis());
-        values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
-        values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + "ScreenRecords");
+        values.put(MediaStore.Audio.Media.DISPLAY_NAME, fileName);
+        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/aac");
+        values.put(MediaStore.Audio.Media.DATE_ADDED, System.currentTimeMillis());
+        values.put(MediaStore.Audio.Media.DATE_TAKEN, System.currentTimeMillis());
 
         ContentResolver resolver = mContext.getContentResolver();
-        Uri collectionUri = MediaStore.Video.Media.getContentUri(
-                MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        Uri collectionUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         Uri itemUri = resolver.insert(collectionUri, values);
 
         Log.d(TAG, itemUri.toString());
-        if (mAudioSource == MIC_AND_INTERNAL || mAudioSource == INTERNAL) {
-            try {
-                Log.d(TAG, "muxing recording");
-                File file = File.createTempFile("temp", ".mp4",
-                        mContext.getCacheDir());
-                mMuxer = new ScreenRecordingMuxer(MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4,
-                        file.getAbsolutePath(),
-                        mTempVideoFile.getAbsolutePath(),
-                        mTempAudioFile.getAbsolutePath());
-                mMuxer.mux();
-                mTempVideoFile.delete();
-                mTempVideoFile = file;
-            } catch (IOException e) {
-                Log.e(TAG, "muxing recording " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
 
-        // Add to the mediastore
         OutputStream os = resolver.openOutputStream(itemUri, "w");
-        Files.copy(mTempVideoFile.toPath(), os);
+        Files.copy(mTempAudioFile.toPath(), os);
         os.close();
         if (mTempAudioFile != null) mTempAudioFile.delete();
-        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-        Size size = new Size(metrics.widthPixels, metrics.heightPixels);
-        SavedRecording recording = new SavedRecording(itemUri, mTempVideoFile, size);
-        mTempVideoFile.delete();
-        return recording;
+        return new SavedRecording(itemUri);
     }
 
     /**
      * Release the resources without saving the data
      */
     protected void release() {
-        if (mTempVideoFile != null) {
-            mTempVideoFile.delete();
-        }
         if (mTempAudioFile != null) {
             mTempAudioFile.delete();
         }
@@ -437,11 +174,11 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     /**
      * Object representing the recording
      */
-    public class SavedRecording {
+    public static class SavedRecording {
 
-        private Uri mUri;
+        private final Uri mUri;
 
-        protected SavedRecording(Uri uri, File file, Size thumbnailSize) {
+        protected SavedRecording(Uri uri) {
             mUri = uri;
         }
 
@@ -451,12 +188,6 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     }
 
     public interface ScreenMediaRecorderListener {
-        /**
-         * Called to indicate an info or a warning during recording.
-         * See {@link MediaRecorder.OnInfoListener} for the full description.
-         */
-        void onInfo(MediaRecorder mr, int what, int extra);
-
         /**
          * Called when the recording stopped by the system.
          * For example, this might happen when doing partial screen sharing of an app

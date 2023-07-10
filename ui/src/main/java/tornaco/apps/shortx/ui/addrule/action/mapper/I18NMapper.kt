@@ -603,7 +603,7 @@ fun VolumeDirection.labelKey() = when (this) {
 
 fun AudioSource.labelKey() = when (this) {
     AudioSource.Mic -> "ui.action.audio.src.mic"
-    AudioSource.R_Submix -> "ui.action.audio.src.r.submix"
-    AudioSource.VoiceCall -> "ui.action.audio.src.voice.call"
+    AudioSource.Internal -> "ui.action.audio.src.internal"
+    AudioSource.MicAndInternal -> "ui.action.audio.src.mic.internal"
     AudioSource.UNRECOGNIZED -> "UNRECOGNIZED"
 }

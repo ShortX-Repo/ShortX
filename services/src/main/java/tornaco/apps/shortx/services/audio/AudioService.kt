@@ -1,10 +1,8 @@
 package tornaco.apps.shortx.services.audio
 
-import android.app.ActivityThread
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
-import android.media.MediaRecorder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,8 +11,11 @@ import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
+import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder
@@ -53,35 +54,45 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
     }
 
     fun startRecording(
-        source: Int = MediaRecorder.AudioSource.REMOTE_SUBMIX,
-        outputFile: File
+        src: AudioSource,
+        fileNamePrefix: String
     ) {
         synchronized(recorderSync) {
             require(currentRecorder == null) {
                 "Already recording!"
             }
+            val source = when (src) {
+                AudioSource.Mic -> {
+                    ScreenRecordingAudioSource.MIC
+                }
 
-            logger.d("ActivityThread.currentPackageName: ${ActivityThread.currentPackageName()}")
-            logger.d("ActivityThread: ${ActivityThread.currentActivityThread()}")
-            requireNotNull(ActivityThread.currentPackageName()) { "ActivityThread.currentPackageName() is null." }
+                AudioSource.Internal -> {
+                    ScreenRecordingAudioSource.INTERNAL
+                }
 
-            val mediaRecorder = ScreenMediaRecorder(context,
+                AudioSource.MicAndInternal -> {
+                    ScreenRecordingAudioSource.MIC_AND_INTERNAL
+                }
+
+                else -> {
+                    throw IllegalArgumentException("Unsupported source: $src")
+                }
+            }
+
+            val mediaRecorder = ScreenMediaRecorder(
+                context,
                 handler,
                 myUserId,
-                ScreenRecordingAudioSource.INTERNAL,
-                object : ScreenMediaRecorder.ScreenMediaRecorderListener {
-                    override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
-
-                    }
-
-                    override fun onStopped() {
-                    }
-                }
-            )
+                source
+            ) {
+                logger.i("ScreenMediaRecorder stop.")
+            }
             runCatching {
-                mediaRecorder.start()
+                val fileName =
+                    "${fileNamePrefix.fallbackOnEmpty("")}-${DateUtils.formatForFileName(System.currentTimeMillis())}.aac"
+                mediaRecorder.start(fileName)
                 currentRecorder = mediaRecorder
-                logger.d("Recording started: $currentRecorder")
+                logger.d("Recording started: $currentRecorder, fileName: $fileName")
                 recordListeners.broadcast {
                     runCatching { it.onStartRecording() }.onFailure {
                         logger.e(
@@ -94,16 +105,34 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
                 logger.e(it, "Fail start recording.")
                 currentRecorder = null
             }
-
         }
     }
 
-    fun stopRecording() {
+    fun stopRecording() = systemServiceScope.launchSafety {
         synchronized(recorderSync) {
             currentRecorder?.let {
-                it.end()
-                it.save().apply {
-                    logger.d("Saved: ${this.uri}")
+                runCatching {
+                    it.end()
+                    // ---------------------
+                    // content provider: content://media/external_primary/audio/media/1000000242
+                    // at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1901)
+                    // at android.content.ContentResolver.openOutputStream(ContentResolver.java:1562)
+                    // at tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder.save(ScreenMediaRecorder.java:158)
+                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invokeSuspend(AudioService.kt:116)
+                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invoke(Unknown Source:8)
+                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invoke(Unknown Source:4)
+                    // at tornaco.apps.shortx.services.WatchDogKt$launchSafety$1.invokeSuspend(WatchDog.kt:49)
+                    // at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+                    // at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+                    // at android.os.Handler.handleCallback(Handler.java:942)
+                    // at android.os.Handler.dispatchMessage(Handler.java:99)
+                    // at android.os.Looper.loopOnce(Looper.java:201)
+                    // at android.os.Looper.loop(Looper.java:288)
+                    // at android.os.HandlerThread.run(HandlerThread.java:67)
+                    // -----------------------
+                    // it.save()
+                }.onFailure {
+                    logger.e(it, "stopRecording")
                 }
             }
             currentRecorder = null

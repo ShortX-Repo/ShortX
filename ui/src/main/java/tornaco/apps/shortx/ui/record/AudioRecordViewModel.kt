@@ -67,7 +67,7 @@ class AudioRecordViewModel @Inject constructor(@ApplicationContext context: Cont
             )
 
         val songDetails = ContentValues().apply {
-            put(MediaStore.Audio.Media.MIME_TYPE, "audio/x-wav")
+            put(MediaStore.Audio.Media.MIME_TYPE, "audio/aac")
             put(MediaStore.Audio.Media.DISPLAY_NAME, file.name)
             put(MediaStore.Audio.Media.IS_PENDING, 1)
         }

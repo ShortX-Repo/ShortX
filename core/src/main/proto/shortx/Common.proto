@@ -181,8 +181,8 @@ message PhoneCellInfo {
 
 enum AudioSource {
   Mic = 0;
-  R_Submix = 1;
-  VoiceCall = 2;
+  Internal = 1;
+  MicAndInternal = 2;
 }
 
 message AudioRecordFile {
