@@ -24,7 +24,6 @@ import tornaco.apps.shortx.services.audio.omrecorder.Recorder
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import java.io.File
 import java.io.FileOutputStream
@@ -141,13 +140,11 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     fun exportAudioRecordFile(file: AudioRecordFile, pfd: ParcelFileDescriptor) {
         logger.i("exportAudioRecordFile: $file")
-        runClearCallingIdentity {
-            pfd.use {
-                val output = FileOutputStream(pfd.fileDescriptor)
-                output.use { out ->
-                    File(file.path).inputStream().use {
-                        it.copyTo(out)
-                    }
+        pfd.use {
+            val output = FileOutputStream(pfd.fileDescriptor)
+            output.use { out ->
+                File(file.path).inputStream().use {
+                    it.copyTo(out)
                 }
             }
         }

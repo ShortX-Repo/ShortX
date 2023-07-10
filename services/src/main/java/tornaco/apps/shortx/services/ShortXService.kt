@@ -271,7 +271,7 @@ object ShortXService : SystemService(ShortXContextImpl()) {
         }
 
         override fun exportAudioRecordFile(file: ByteArrayWrapper, pfd: ParcelFileDescriptor?) {
-            logger.d("exportAudioRecordFile: $file $pfd")
+            logger.w("exportAudioRecordFile: $file $pfd")
             shortXContext.audio.exportAudioRecordFile(
                 AudioRecordFile.parseFrom(file.byte),
                 requireNotNull(pfd)

@@ -11,8 +11,8 @@ import tornaco.apps.shortx.core.platform.Classes.mediaDocumentProviderClass
 import tornaco.apps.shortx.core.platform.Methods.onMediaStoreDelete
 import tornaco.apps.shortx.core.platform.Methods.onMediaStoreInsert
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
+import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.util.FileHelper
 
 // Happen on Media provider process
 object MediaProviderHook {

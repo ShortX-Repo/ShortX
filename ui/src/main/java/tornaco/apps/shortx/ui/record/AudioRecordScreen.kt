@@ -10,6 +10,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,7 +44,6 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.PrefIcon
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -102,17 +102,23 @@ fun AudioRecordScreen(back: () -> Unit) {
                 }) { paddingValues ->
                 val pullRefreshState = rememberPullRefreshState(state.isLoading, { vm.loadState() })
 
+                val context = LocalContext.current
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
                         .pullRefresh(pullRefreshState),
                 ) {
-                    val context = LocalContext.current
-                    val exportSuccessMessage =
-                        LocalI18N.current["ui.settings.audio.record.export.success", mapOf("dir" to exportDirType)]
-                    val showExportSuccessToast = {
-                        Toast.makeText(context, exportSuccessMessage, Toast.LENGTH_LONG).show()
+                    val showExportSuccessToast: (String) -> Unit = {
+                        Toast.makeText(
+                            context,
+                            i18N["ui.settings.audio.record.export.success", mapOf("dir" to it)],
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    val showExportFailToast: (String) -> Unit = {
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                     }
 
                     LazyColumn(
@@ -120,24 +126,26 @@ fun AudioRecordScreen(back: () -> Unit) {
                             .fillMaxSize()
                     ) {
                         item {
-                            TipRow(
-                                text = LocalI18N.current["ui.settings.audio.record.export.summary", mapOf(
-                                    "dir" to exportDirType
-                                )]
-                            )
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                TipRow(
+                                    text = LocalI18N.current["ui.settings.audio.record.export.summary"]
+                                )
+                            }
                         }
 
-                        item { StandardSpacer() }
-
-                        items(state.records) {
-                            val dateString = remember(it.date) {
-                                FuzzyDateTimeFormatter.getTimeAgo(context, Date(it.date))
+                        items(state.records) { recordFile ->
+                            val dateString = remember(recordFile.date) {
+                                FuzzyDateTimeFormatter.getTimeAgo(context, Date(recordFile.date))
                             }
-                            val fileSizeString = readableFileSize(it.fileSize)
+                            val fileSizeString = readableFileSize(recordFile.fileSize)
                             Box {
                                 ListItem(
                                     modifier = Modifier.padding(end = 16.dp),
-                                    titleLines = listOf(it.name, dateString, fileSizeString),
+                                    titleLines = listOf(
+                                        recordFile.name,
+                                        dateString,
+                                        fileSizeString
+                                    ),
                                     icon = {
                                         ColoredIcon {
                                             RemixIcon(remixName = Remix.Document.file_2_line)
@@ -145,7 +153,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                                     },
                                     action1 = {
                                         IconButton(onClick = {
-                                            vm.delete(it)
+                                            vm.delete(recordFile)
                                         }) {
                                             RemixIcon(
                                                 remixName = Remix.System.delete_bin_5_fill,
@@ -153,8 +161,11 @@ fun AudioRecordScreen(back: () -> Unit) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            vm.export(it)
-                                            showExportSuccessToast()
+                                            runCatching { vm.export(recordFile) }.onSuccess {
+                                                showExportSuccessToast(it)
+                                            }.onFailure {
+                                                showExportFailToast(it.message ?: it.toString())
+                                            }
                                         }) {
                                             RemixIcon(
                                                 remixName = Remix.System.download_2_fill,

@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.util;
+package tornaco.apps.shortx.core.util;
 
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
