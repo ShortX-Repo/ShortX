@@ -40,7 +40,9 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -86,7 +88,7 @@ private fun AudioRecordingSelector(dialogState: AudioRecordingDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.while.loop"]) },
+                        title = { Text(LocalI18N.current["ui.action.audio.recording"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -118,7 +120,11 @@ private fun AudioRecordingSelector(dialogState: AudioRecordingDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
+                    TipRow(text = LocalI18N.current["ui.action.audio.recording.summary"])
+                    StandardSpacer()
+
                     FieldTitle(text = LocalI18N.current["ui.action.audio.src"])
+                    SmallSpacer()
                     val srcDropdownState = rememberDropdownSelectorState()
                     Box {
                         FilledTonalButton(

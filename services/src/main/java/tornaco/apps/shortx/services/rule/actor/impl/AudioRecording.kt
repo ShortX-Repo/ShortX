@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.media.MediaRecorder
 import com.google.protobuf.Message
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.rule.unpack_
@@ -20,37 +21,47 @@ object AudioRecording : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        val d = action unpack_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java
-        val source = when (val src = d.src) {
-            AudioSource.Mic -> {
-                MediaRecorder.AudioSource.MIC
+        runCatching {
+            val d = action unpack_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java
+            val source = when (val src = d.src) {
+                AudioSource.Mic -> {
+                    MediaRecorder.AudioSource.MIC
+                }
+
+                AudioSource.R_Submix -> {
+                    MediaRecorder.AudioSource.REMOTE_SUBMIX
+                }
+
+                AudioSource.VoiceCall -> {
+                    MediaRecorder.AudioSource.VOICE_CALL
+                }
+
+                else -> {
+                    throw IllegalArgumentException("Bad src: $src")
+                }
             }
 
-            AudioSource.R_Submix -> {
-                MediaRecorder.AudioSource.REMOTE_SUBMIX
+            val outputFile = File(
+                Dirs.baseServerRecordingDir(),
+                "${d.fileNamePrefix}-${DateUtils.formatForFileName(System.currentTimeMillis())}.wav"
+            )
+            outputFile.parentFile.mkdirs()
+
+            shortXContext.audio.startRecording(source, outputFile)
+
+            while (shortXContext.audio.isRecording) {
+                delay(500)
             }
 
-            AudioSource.VoiceCall -> {
-                MediaRecorder.AudioSource.VOICE_CALL
-            }
-
-            else -> {
-                throw IllegalArgumentException("Bad src: $src")
+            logger.i("DONE")
+        }.onFailure {
+            logger.d("onFailure: $it")
+            if (it is CancellationException) {
+                logger.i("Stop recording since this action is canceled.")
+                shortXContext.audio.stopRecording()
+            } else {
+                throw it
             }
         }
-
-        val outputFile = File(
-            Dirs.baseServerRecordingDir(),
-            "${d.fileNamePrefix}-${DateUtils.formatForFileName(System.currentTimeMillis())}.wav"
-        )
-        outputFile.parentFile.mkdirs()
-
-        shortXContext.audio.startRecording(source, outputFile)
-
-        while (shortXContext.audio.isRecording) {
-            delay(500)
-        }
-
-        logger.i("DONE")
     }
 }
