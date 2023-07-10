@@ -18,6 +18,10 @@ object HookStub {
         }
     }
 
+    fun onPackageLoaded() {
+        ContextImplHook.onPackageLoaded()
+    }
+
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {
         ShortXService.main()
         AMSHook.hookAMS(lpparam)

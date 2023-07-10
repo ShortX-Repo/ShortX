@@ -1,6 +1,6 @@
 package tornaco.apps.shortx.services.audio
 
-import android.media.AudioFormat
+import android.app.ActivityThread
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
@@ -10,17 +10,15 @@ import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.IAudioRecordingListener
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.audio.omrecorder.AudioRecordConfig
-import tornaco.apps.shortx.services.audio.omrecorder.OmRecorder
-import tornaco.apps.shortx.services.audio.omrecorder.PullTransport
-import tornaco.apps.shortx.services.audio.omrecorder.PullableSource
-import tornaco.apps.shortx.services.audio.omrecorder.Recorder
+import tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder
+import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
@@ -44,7 +42,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
     fun AppPkg.hasFocus() = currentPlayingAppPkgs.contains(this)
 
     private val recorderSync = "SYNC.RECORDER"
-    private var currentRecorder: Recorder? = null
+    private var currentRecorder: ScreenMediaRecorder? = null
     private val recordListeners = RemoteCallbackList<IAudioRecordingListener>()
 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
@@ -63,42 +61,51 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
                 "Already recording!"
             }
 
-            val src = PullableSource.Default(
-                AudioRecordConfig.Default(
-                    source, AudioFormat.ENCODING_PCM_16BIT,
-                    AudioFormat.CHANNEL_IN_MONO, 44100
-                )
-            )
+            logger.d("ActivityThread.currentPackageName: ${ActivityThread.currentPackageName()}")
+            logger.d("ActivityThread: ${ActivityThread.currentActivityThread()}")
+            requireNotNull(ActivityThread.currentPackageName()) { "ActivityThread.currentPackageName() is null." }
 
-            val checkedFile = if (outputFile.exists()) {
-                File(outputFile.absolutePath + "-2")
-            } else {
-                outputFile
-            }
-            logger.p("startRecording, checkedFile: $checkedFile")
+            val mediaRecorder = ScreenMediaRecorder(context,
+                handler,
+                myUserId,
+                ScreenRecordingAudioSource.INTERNAL,
+                object : ScreenMediaRecorder.ScreenMediaRecorderListener {
+                    override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
 
-            val recorder = OmRecorder.wav(
-                PullTransport.Default(src),
-                checkedFile
-            )
-            recorder.startRecording()
+                    }
 
-            currentRecorder = recorder
-
-            recordListeners.broadcast {
-                runCatching { it.onStartRecording() }.onFailure {
-                    logger.e(
-                        it,
-                        "Call onStartRecording"
-                    )
+                    override fun onStopped() {
+                    }
                 }
+            )
+            runCatching {
+                mediaRecorder.start()
+                currentRecorder = mediaRecorder
+                logger.d("Recording started: $currentRecorder")
+                recordListeners.broadcast {
+                    runCatching { it.onStartRecording() }.onFailure {
+                        logger.e(
+                            it,
+                            "Call onStartRecording"
+                        )
+                    }
+                }
+            }.onFailure {
+                logger.e(it, "Fail start recording.")
+                currentRecorder = null
             }
+
         }
     }
 
     fun stopRecording() {
         synchronized(recorderSync) {
-            currentRecorder?.stopRecording()
+            currentRecorder?.let {
+                it.end()
+                it.save().apply {
+                    logger.d("Saved: ${this.uri}")
+                }
+            }
             currentRecorder = null
 
             recordListeners.broadcast {
