@@ -372,6 +372,16 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException
     {
     }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllAudioRecordFiles() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void deleteAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file) throws android.os.RemoteException
+    {
+    }
+    @Override public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1421,6 +1431,49 @@ public interface IShortX extends android.os.IInterface
           tornaco.apps.shortx.core.IAudioRecordingListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IAudioRecordingListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterAudioRecordingObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getAllAudioRecordFiles:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllAudioRecordFiles();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_deleteAudioRecordFile:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.deleteAudioRecordFile(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_exportAudioRecordFile:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          android.os.ParcelFileDescriptor _arg1;
+          if ((0!=data.readInt())) {
+            _arg1 = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
+          this.exportAudioRecordFile(_arg0, _arg1);
           reply.writeNoException();
           return true;
         }
@@ -3501,6 +3554,83 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllAudioRecordFiles() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllAudioRecordFiles, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllAudioRecordFiles();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void deleteAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((file!=null)) {
+            _data.writeInt(1);
+            file.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_deleteAudioRecordFile, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteAudioRecordFile(file);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((file!=null)) {
+            _data.writeInt(1);
+            file.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((pfd!=null)) {
+            _data.writeInt(1);
+            pfd.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_exportAudioRecordFile, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().exportAudioRecordFile(file, pfd);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3597,6 +3727,9 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_stopAudioRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 91);
     static final int TRANSACTION_registerAudioRecordingObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 92);
     static final int TRANSACTION_unregisterAudioRecordingObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 93);
+    static final int TRANSACTION_getAllAudioRecordFiles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 94);
+    static final int TRANSACTION_deleteAudioRecordFile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 95);
+    static final int TRANSACTION_exportAudioRecordFile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 96);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3746,4 +3879,7 @@ public interface IShortX extends android.os.IInterface
   public void stopAudioRecording() throws android.os.RemoteException;
   public void registerAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException;
   public void unregisterAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllAudioRecordFiles() throws android.os.RemoteException;
+  public void deleteAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file) throws android.os.RemoteException;
+  public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException;
 }

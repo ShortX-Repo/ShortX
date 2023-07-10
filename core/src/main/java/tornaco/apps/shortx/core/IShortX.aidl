@@ -167,4 +167,7 @@ interface IShortX {
     void stopAudioRecording();
     void registerAudioRecordingObs(in IAudioRecordingListener obs);
     void unregisterAudioRecordingObs(in IAudioRecordingListener obs);
+    List<ByteArrayWrapper> getAllAudioRecordFiles();
+    void deleteAudioRecordFile(in ByteArrayWrapper file);
+    void exportAudioRecordFile(in ByteArrayWrapper file, in ParcelFileDescriptor pfd);
 }

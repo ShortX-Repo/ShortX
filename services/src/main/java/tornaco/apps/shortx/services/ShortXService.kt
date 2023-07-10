@@ -13,6 +13,7 @@ import android.os.UserHandle
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -258,6 +259,23 @@ object ShortXService : SystemService(ShortXContextImpl()) {
 
         override fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
             shortXContext.audio.unregisterAudioRecordingObs(obs)
+        }
+
+        override fun getAllAudioRecordFiles(): List<ByteArrayWrapper> {
+            return shortXContext.audio.getAllAudioRecordFiles()
+                .map { ByteArrayWrapper(it.toByteArray()) }
+        }
+
+        override fun deleteAudioRecordFile(file: ByteArrayWrapper) {
+            shortXContext.audio.deleteAudioRecordFile(AudioRecordFile.parseFrom(file.byte))
+        }
+
+        override fun exportAudioRecordFile(file: ByteArrayWrapper, pfd: ParcelFileDescriptor?) {
+            logger.d("exportAudioRecordFile: $file $pfd")
+            shortXContext.audio.exportAudioRecordFile(
+                AudioRecordFile.parseFrom(file.byte),
+                requireNotNull(pfd)
+            )
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

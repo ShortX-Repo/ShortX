@@ -5,11 +5,13 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
 import android.media.MediaRecorder
+import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -19,9 +21,14 @@ import tornaco.apps.shortx.services.audio.omrecorder.OmRecorder
 import tornaco.apps.shortx.services.audio.omrecorder.PullTransport
 import tornaco.apps.shortx.services.audio.omrecorder.PullableSource
 import tornaco.apps.shortx.services.audio.omrecorder.Recorder
+import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
 
 
 sealed class FocusEvent(val target: AppPkg) {
@@ -112,6 +119,39 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
         recordListeners.unregister(obs)
+    }
+
+    fun getAllAudioRecordFiles(): List<AudioRecordFile> {
+        return Dirs.baseServerRecordingDir()
+            .walk(FileWalkDirection.TOP_DOWN)
+            .filter { it.isFile }
+            .map {
+                AudioRecordFile.newBuilder().setName(it.nameWithoutExtension)
+                    .setPath(it.absolutePath).setDate(it.lastModified())
+                    .setFileSize(Files.size(it.toPath()))
+                    .build()
+            }.toList()
+    }
+
+    fun deleteAudioRecordFile(file: AudioRecordFile) {
+        enforceCallingPermissions()
+        logger.i("deleteAudioRecordFile: $file")
+        File(file.path).delete()
+    }
+
+    fun exportAudioRecordFile(file: AudioRecordFile, pfd: ParcelFileDescriptor) {
+        logger.i("exportAudioRecordFile: $file")
+        runClearCallingIdentity {
+            pfd.use {
+                val output = FileOutputStream(pfd.fileDescriptor)
+                output.use { out ->
+                    File(file.path).inputStream().use {
+                        it.copyTo(out)
+                    }
+                }
+            }
+        }
+        logger.i("exportAudioRecordFile success")
     }
 
     private fun registerListener() {

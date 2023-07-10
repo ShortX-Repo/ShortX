@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -659,6 +660,24 @@ class ShortXManager(private val service: IShortX) {
     fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
         invokeService(Unit) {
             unregisterAudioRecordingObs(obs)
+        }
+    }
+
+    fun getAllAudioRecordFiles(): List<AudioRecordFile> {
+        return invokeService(emptyList()) {
+            allAudioRecordFiles.map { AudioRecordFile.parseFrom(it.byte) }
+        }
+    }
+
+    fun deleteAudioRecordFile(file: AudioRecordFile) {
+        invokeService(Unit) {
+            deleteAudioRecordFile(ByteArrayWrapper(file.toByteArray()))
+        }
+    }
+
+    fun exportAudioRecordFile(file: AudioRecordFile, pfd: ParcelFileDescriptor) {
+        invokeService(Unit) {
+            exportAudioRecordFile(ByteArrayWrapper(file.toByteArray()), pfd)
         }
     }
 

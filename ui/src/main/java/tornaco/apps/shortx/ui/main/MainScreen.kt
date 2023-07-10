@@ -3,9 +3,25 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -17,10 +33,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.LocalDrawerState
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.AudioRecordActivity
 import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
 import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
@@ -92,6 +113,9 @@ fun HomeScreen() {
                             },
                             goToFactPublishRecord = {
                                 FactPublishRecordActivity.start(context)
+                            },
+                            goToAudioRecord = {
+                                AudioRecordActivity.start(context)
                             },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)

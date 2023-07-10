@@ -79,6 +79,7 @@ fun SettingsScreen(
     goToActionRecord: () -> Unit,
     goToConditionRecord: () -> Unit,
     goToFactPublishRecord: () -> Unit,
+    goToAudioRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -249,9 +250,17 @@ fun SettingsScreen(
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
                                 goToDanmuUISettings = goToDanmuUISettings,
+                            )
+                        )
+                        addAll(
+                            recordSettings(
+                                state = state,
+                                mainState = subscribeState,
+                                vm = vm,
                                 goToActionRecord = goToActionRecord,
                                 goToConditionRecord = goToConditionRecord,
                                 goToFactPublishRecord = goToFactPublishRecord,
+                                goToAudioRecord = goToAudioRecord
                             )
                         )
                         addAll(dataSettings(
@@ -305,9 +314,6 @@ private fun generalSettings(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
-    goToActionRecord: () -> Unit,
-    goToConditionRecord: () -> Unit,
-    goToFactPublishRecord: () -> Unit,
 ): List<Preference> {
     val edgeGestureSizeSelectorState = rememberEdgeGestureSizeValueSelectorState(selected = {
         vm.setGestureAreaSize(it)
@@ -358,6 +364,29 @@ private fun generalSettings(
                 edgeGestureSizeSelectorState.show(state.gestureAreaSize)
             }
         ),
+    )
+}
+
+
+@Composable
+private fun recordSettings(
+    state: SettingsState,
+    mainState: SubscribeState,
+    vm: SettingsViewModel,
+    goToActionRecord: () -> Unit,
+    goToConditionRecord: () -> Unit,
+    goToFactPublishRecord: () -> Unit,
+    goToAudioRecord: () -> Unit,
+): List<Preference> {
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
+    return listOf(
+        Preference.Category(LocalI18N.current["ui.settings.record"]),
 
         Preference.TextPreference(icon = Remix.Media.notification_3_line,
             title = LocalI18N.current["ui.settings.fact.record"],
@@ -385,6 +414,16 @@ private fun generalSettings(
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select({ goToActionRecord() },
+                    { subscribeDialogState.show() })
+            }
+        ),
+
+        Preference.TextPreference(icon = Remix.Media.mic_2_fill,
+            title = LocalI18N.current["ui.settings.audio.record"],
+            summary = LocalI18N.current["ui.settings.audio.record.summary"],
+            badge = badge,
+            onClick = {
+                mainState.isSubscribed.select({ goToAudioRecord() },
                     { subscribeDialogState.show() })
             }
         ),

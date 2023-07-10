@@ -184,3 +184,10 @@ enum AudioSource {
   R_Submix = 1;
   VoiceCall = 2;
 }
+
+message AudioRecordFile {
+  string name = 1;
+  string path = 2;
+  int64 date = 3;
+  int64 fileSize = 4;
+}
