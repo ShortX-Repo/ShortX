@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.audio
 
+import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
+import android.media.MediaRecorder
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -10,8 +12,15 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.audio.omrecorder.AudioRecordConfig
+import tornaco.apps.shortx.services.audio.omrecorder.OmRecorder
+import tornaco.apps.shortx.services.audio.omrecorder.PullTransport
+import tornaco.apps.shortx.services.audio.omrecorder.PullableSource
+import tornaco.apps.shortx.services.audio.omrecorder.Recorder
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import java.io.File
+
 
 sealed class FocusEvent(val target: AppPkg) {
     class Gain(target: AppPkg) : FocusEvent(target)
@@ -26,9 +35,54 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     fun AppPkg.hasFocus() = currentPlayingAppPkgs.contains(this)
 
+    private val recorderSync = "SYNC.RECORDER"
+    private var currentRecorder: Recorder? = null
+
+    val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
+
     override fun systemReady() {
         super.systemReady()
         registerListener()
+    }
+
+    fun startRecording(
+        source: Int = MediaRecorder.AudioSource.REMOTE_SUBMIX,
+        outputFile: File
+    ) {
+        synchronized(recorderSync) {
+            require(currentRecorder == null) {
+                "Already recording!"
+            }
+
+            val src = PullableSource.Default(
+                AudioRecordConfig.Default(
+                    source, AudioFormat.ENCODING_PCM_16BIT,
+                    AudioFormat.CHANNEL_IN_MONO, 44100
+                )
+            )
+
+            val checkedFile = if (outputFile.exists()) {
+                File(outputFile.absolutePath + "-2")
+            } else {
+                outputFile
+            }
+            logger.p("startRecording, checkedFile: $checkedFile")
+
+            val recorder = OmRecorder.wav(
+                PullTransport.Default(src),
+                checkedFile
+            )
+            recorder.startRecording()
+
+            currentRecorder = recorder
+        }
+    }
+
+    fun stopRecording() {
+        synchronized(recorderSync) {
+            currentRecorder?.stopRecording()
+            currentRecorder = null
+        }
     }
 
     private fun registerListener() {

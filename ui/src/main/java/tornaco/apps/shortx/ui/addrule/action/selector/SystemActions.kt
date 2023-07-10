@@ -89,6 +89,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     VibratePatternSelector(state = vibratePatternDialogState)
 
+    val audioRecordingState = rememberAudioRecordingDialogState(onSelected = {
+        addAction(it)
+    })
+    AudioRecordingDialog(state = audioRecordingState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -133,6 +138,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.Vibrate::class -> {
                 vibratePatternDialogState.show(source.getActionAs())
+                true
+            }
+
+            Action.AudioRecording::class -> {
+                audioRecordingState.show(source.getActionAs())
                 true
             }
 
@@ -203,6 +213,7 @@ fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
         Action.DisableSensorsOff::class,
         Action.AdjustVolume::class,
         Action.Vibrate::class,
+        Action.AudioRecording::class,
     ).map {
         SelectorItem(
             it,

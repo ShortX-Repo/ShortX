@@ -178,3 +178,9 @@ message PhoneCellInfo {
   string operatorAlphaLong = 4;
   string id = 5;
 }
+
+enum AudioSource {
+  Mic = 0;
+  R_Submix = 1;
+  VoiceCall = 2;
+}

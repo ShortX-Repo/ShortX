@@ -4,6 +4,7 @@ import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
@@ -157,6 +158,7 @@ fun labelAndDescriptionForActionSelector(
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
+        Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -552,6 +554,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.vibrate"],
             )
         }
+
+        is Action.AudioRecording -> {
+            listOf(
+                i18N["ui.action.audio.recording"],
+                i18N[action.src.labelKey()]
+            )
+        }
     }
 }
 
@@ -590,4 +599,11 @@ fun VolumeDirection.labelKey() = when (this) {
     VolumeDirection.UNRECOGNIZED -> {
         "N/A"
     }
+}
+
+fun AudioSource.labelKey() = when (this) {
+    AudioSource.Mic -> "ui.action.audio.src.mic"
+    AudioSource.R_Submix -> "ui.action.audio.src.r.submix"
+    AudioSource.VoiceCall -> "ui.action.audio.src.voice.call"
+    AudioSource.UNRECOGNIZED -> "UNRECOGNIZED"
 }

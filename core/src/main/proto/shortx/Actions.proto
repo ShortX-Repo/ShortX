@@ -560,3 +560,12 @@ message Vibrate {
   int32 vib2 = 2;
   int32 vib3 = 3;
 }
+
+
+message AudioRecording {
+  string note = 99;
+  string id = 100;
+
+  AudioSource src = 1;
+  string fileNamePrefix = 2;
+}

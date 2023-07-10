@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
+import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -893,8 +894,19 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val vib1: Int,
         val vib2: Int,
-        val vib3
-        : Int,
+        val vib3: Int,
+    ) : Action {
+        override fun clone(id: String, note: String): Action {
+            return this.copy(id = id, note = note)
+        }
+    }
+
+    @Parcelize
+    data class AudioRecording(
+        override val id: String = defaultNewActionId(),
+        override val note: String = "",
+        val src: AudioSource,
+        val fileNamePrefix: String
     ) : Action {
         override fun clone(id: String, note: String): Action {
             return this.copy(id = id, note = note)

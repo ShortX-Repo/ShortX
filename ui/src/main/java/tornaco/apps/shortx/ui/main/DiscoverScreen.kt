@@ -2,18 +2,26 @@
 
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -25,7 +33,18 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXTabRow
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {

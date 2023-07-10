@@ -6,14 +6,37 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -25,7 +48,29 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ClickableBadge
+import tornaco.apps.shortx.ui.base.FabState
+import tornaco.apps.shortx.ui.base.Icon
+import tornaco.apps.shortx.ui.base.LocalActivity
+import tornaco.apps.shortx.ui.base.LocalAppName
+import tornaco.apps.shortx.ui.base.LocalDrawerState
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalNavHostController
+import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MultiFabItem
+import tornaco.apps.shortx.ui.base.MultiFloatingActionButton
+import tornaco.apps.shortx.ui.base.RebootConfirmDialog
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShareDialog
+import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberFabState
+import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.util.AssetUtils
 
 @Composable
@@ -41,7 +86,6 @@ fun MainScaffold(
     var enableFabMask by remember {
         mutableStateOf(false)
     }
-
     val fabState = rememberFabState(onCollapsed = {
         enableFabMask = false
     },
@@ -226,10 +270,15 @@ fun MainScaffold(
                     })
                 }
 
+                val activity = LocalActivity.current
                 if (!state.isPrivacyStatementAccepted && !isShowActiveDialog) {
-                    PrivacyStatementDialog {
-                        acceptPrivacyStatement()
-                    }
+                    PrivacyStatementDialog(
+                        onDismissRequest = {
+                            activity.finishAffinity()
+                        },
+                        onAccept = {
+                            acceptPrivacyStatement()
+                        })
                 }
             }
 
@@ -281,31 +330,43 @@ private fun ActiveDialog(
 @Composable
 private fun PrivacyStatementDialog(
     onDismissRequest: () -> Unit,
+    onAccept: () -> Unit
 ) {
     val context = LocalContext.current
     val privacyAgreement = remember {
         AssetUtils.readFileToString(context, "privacy/privacy_agreement.html")
     }
-    ShortXAlertDialog(title = {
-        Text(text = LocalI18N.current["ui.privacy.statement.title"])
-    }, text = {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(fraction = 0.64f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                text = HtmlCompat.fromHtml(privacyAgreement, HtmlCompat.FROM_HTML_MODE_COMPACT)
-                    .toAnnotatedString()
-            )
-        }
-    }, onDismissRequest = onDismissRequest, confirmButton = {
-        TextButton(onClick = {
-            onDismissRequest()
-        }) {
-            Text(text = stringResource(android.R.string.ok))
-        }
-    })
+    ShortXAlertDialog(
+        title = {
+            Text(text = LocalI18N.current["ui.privacy.statement.title"])
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(fraction = 0.64f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = HtmlCompat.fromHtml(privacyAgreement, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                        .toAnnotatedString()
+                )
+            }
+        },
+        onDismissRequest = onDismissRequest,
+        dismissButton = {
+            TextButton(onClick = {
+                onDismissRequest()
+            }) {
+                Text(text = stringResource(android.R.string.cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onAccept()
+            }) {
+                Text(text = stringResource(android.R.string.ok))
+            }
+        })
 }
 
 

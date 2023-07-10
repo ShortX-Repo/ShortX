@@ -687,6 +687,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java
+            Action.AudioRecording(
+                id = data.id,
+                note = data.note,
+                src = data.src,
+                fileNamePrefix = data.fileNamePrefix
+            )
+        }
+
         else -> null
     }
 }

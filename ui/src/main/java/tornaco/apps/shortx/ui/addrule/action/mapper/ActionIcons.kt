@@ -321,6 +321,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.volume_vibrate_line
         }
 
+        Action.AudioRecording::class -> {
+            Remix.Media.mic_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

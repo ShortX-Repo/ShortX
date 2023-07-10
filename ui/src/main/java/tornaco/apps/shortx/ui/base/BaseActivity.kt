@@ -22,6 +22,7 @@ abstract class BaseActivity : AppCompatActivity() {
         setContent {
             CompositionLocalProvider(
                 LocalI18N provides i18NIns,
+                LocalActivity provides this,
                 LocalAppName provides appName.toString()
             ) {
                 Content()

@@ -10,11 +10,13 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import tornaco.apps.shortx.core.BuildProp
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 
 private val INSTALL_FAKE_SERVICE_KEY = booleanPreferencesKey("install_fake_service")
-private val PRIVACY_STATEMENT_ACCEPTED_KEY = booleanPreferencesKey("privacy_statement_accepted")
+private val PRIVACY_STATEMENT_ACCEPTED_KEY =
+    booleanPreferencesKey("privacy_statement_accepted${BuildProp.APP_VERSION_CODE}")
 private val IGNORE_FRAMEWORK_UPDATE = booleanPreferencesKey("ignore_framework_update")
 
 private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_actions")

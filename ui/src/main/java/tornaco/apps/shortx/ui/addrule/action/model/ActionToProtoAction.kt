@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
 import tornaco.apps.shortx.core.proto.action.AdjustVolume
+import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
@@ -608,6 +609,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVib1(vib1)
                 .setVib2(vib2)
                 .setVib3(vib3)
+                .build()
+        }
+
+        is Action.AudioRecording -> {
+            AudioRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(overrideNote ?: note)
+                .setSrc(src)
+                .setFileNamePrefix(fileNamePrefix)
                 .build()
         }
 
