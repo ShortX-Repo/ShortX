@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -12,6 +13,8 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -92,7 +95,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 }
 
 @Composable
-fun UiActions(keyword: String, addAction: (Action) -> Unit) {
+fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
 
     val uiActionItems = listOf(
@@ -114,6 +117,9 @@ fun UiActions(keyword: String, addAction: (Action) -> Unit) {
             it,
             labelAndDescriptionForActionSelector(i18N, it),
             imageVectorForAction(it),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
+            },
             iconColor = colorForAction(it)
         )
     }.filter {

@@ -37,11 +37,14 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeLarge
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import kotlin.reflect.KClass
 
 data class SelectorItem<out T : Any>(
@@ -49,6 +52,7 @@ data class SelectorItem<out T : Any>(
     val labelAndDescription: Pair<String, String?>,
     val icon: String,
     val iconColor: Color,
+    val isForSubscribedOnly: Boolean,
     val data: Any? = null
 )
 
@@ -82,6 +86,9 @@ fun <T : Any> SelectorList(
     actionItems: List<SelectorItem<T>>,
     itemSelected: (KClass<out T>, data: Any?) -> Unit
 ) {
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
@@ -92,9 +99,14 @@ fun <T : Any> SelectorList(
                 icon = it.icon,
                 iconColor = it.iconColor,
                 title = it.labelAndDescription.first,
-                text1 = it.labelAndDescription.second
+                text1 = it.labelAndDescription.second,
+                isForSubscribedOnly = it.isForSubscribedOnly
             ) {
-                itemSelected(it.type, it.data)
+                if (it.isForSubscribedOnly) {
+                    subscribeDialogState.show()
+                } else {
+                    itemSelected(it.type, it.data)
+                }
             }
         }
     }
@@ -108,6 +120,7 @@ private fun SelectorListItem(
     iconColor: Color,
     title: String,
     text1: String? = null,
+    isForSubscribedOnly: Boolean,
     onClick: () -> Unit,
 ) {
     val tooltipState = remember { PlainTooltipState() }
@@ -168,6 +181,11 @@ private fun SelectorListItem(
                 }
 
                 TinySpacer()
+
+                if (isForSubscribedOnly) {
+                    OutlineBadge(text = LocalI18N.current["ui.subscription.subscribed.only"])
+                    TinySpacer()
+                }
             }
         }
     }
@@ -187,6 +205,7 @@ private fun SelectorListItemPreview() {
                 iconColor = Color.Yellow,
                 title = "Just do it",
                 text1 = null,
+                isForSubscribedOnly = true,
                 onClick = {}
             )
 
@@ -197,6 +216,7 @@ private fun SelectorListItemPreview() {
                 iconColor = Color.Yellow,
                 title = "Just do it",
                 text1 = "This is a good question",
+                isForSubscribedOnly = false,
                 onClick = {}
             )
         }

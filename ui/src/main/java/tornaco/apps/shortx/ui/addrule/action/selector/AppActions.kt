@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -19,6 +20,8 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -303,7 +306,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun AppActions(keyword: String, addAction: (Action) -> Unit) {
+fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
         Action.StartActivity::class,
@@ -328,6 +331,9 @@ fun AppActions(keyword: String, addAction: (Action) -> Unit) {
             type = it,
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
             icon = imageVectorForAction(it),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
+            },
             iconColor = colorForAction(it)
         )
     }.filter {

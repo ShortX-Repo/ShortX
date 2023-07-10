@@ -6,12 +6,29 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,16 +39,32 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
-import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValueSelectorState
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
-import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.main.AppRoute
-import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
+import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.LocalAppName
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
-import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
+import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
@@ -54,6 +87,15 @@ fun SettingsScreen(
     LaunchedEffect(vm) {
         vm.loadState()
     }
+
+    val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
+    LaunchedEffect(subscribeStateViewModel) {
+        subscribeStateViewModel.refreshStates()
+    }
+    DisposableEffectWithLifeCycle(onResume = {
+        subscribeStateViewModel.refreshStates()
+    })
+    val subscribeState by subscribeStateViewModel.state.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -202,6 +244,7 @@ fun SettingsScreen(
                         addAll(
                             generalSettings(
                                 state = state,
+                                mainState = subscribeState,
                                 vm = vm,
                                 goToPkgSetList = goToPkgSetList,
                                 goToGV = goToGV,
@@ -213,6 +256,7 @@ fun SettingsScreen(
                         )
                         addAll(dataSettings(
                             state = state,
+                            mainState = subscribeState,
                             vm = vm,
                             pickRestoreFile = {
                                 pickFileLauncher.launch("application/zip")
@@ -225,7 +269,7 @@ fun SettingsScreen(
                     })
 
                     StandardSpacer()
-                    SubscriptionStatus()
+                    SubscriptionStatus(subscribeState)
                 }
             }
         }
@@ -233,19 +277,14 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SubscriptionStatus() {
+private fun SubscriptionStatus(mainState: SubscribeState) {
     Box(modifier = Modifier) {
-        val navHost = LocalNavHostController.current
-        val mainViewModel = hiltViewModel<MainViewModel>()
-        LaunchedEffect(mainViewModel) {
-            mainViewModel.refreshStates()
-        }
-        val mainState by mainViewModel.state.collectAsState()
+        val context = LocalContext.current
         if (mainState.isSubscribed) {
             TextButton(
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 onClick = {
-                    navHost.navigate(AppRoute.SubscriptionIntro.name)
+                    SubscribeActivity.start(context)
                 }) {
                 LottieLoadingView(
                     file = "47603-twinkle-crown.json",
@@ -261,6 +300,7 @@ private fun SubscriptionStatus() {
 @Composable
 private fun generalSettings(
     state: SettingsState,
+    mainState: SubscribeState,
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
@@ -273,6 +313,12 @@ private fun generalSettings(
         vm.setGestureAreaSize(it)
     })
     EdgeGestureSizeValueSelector(state = edgeGestureSizeSelectorState)
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
 
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.general"]),
@@ -280,8 +326,9 @@ private fun generalSettings(
         Preference.TextPreference(icon = Remix.System.apps_fill,
             title = LocalI18N.current["ui.pkg.set.title"],
             summary = LocalI18N.current["ui.pkg.set.desc"],
+            badge = badge,
             onClick = {
-                goToPkgSetList()
+                mainState.isSubscribed.select({ goToPkgSetList() }, { subscribeDialogState.show() })
             }
         ),
 
@@ -296,8 +343,10 @@ private fun generalSettings(
         Preference.TextPreference(icon = Remix.Communication.message_fill,
             title = LocalI18N.current["ui.settings.danmu"],
             summary = LocalI18N.current["ui.settings.danmu.summary"],
+            badge = badge,
             onClick = {
-                goToDanmuUISettings()
+                mainState.isSubscribed.select({ goToDanmuUISettings() },
+                    { subscribeDialogState.show() })
             }
         ),
 
@@ -313,24 +362,30 @@ private fun generalSettings(
         Preference.TextPreference(icon = Remix.Media.notification_3_line,
             title = LocalI18N.current["ui.settings.fact.record"],
             summary = LocalI18N.current["ui.settings.fact.record.summary"],
+            badge = badge,
             onClick = {
-                goToFactPublishRecord()
+                mainState.isSubscribed.select({ goToFactPublishRecord() },
+                    { subscribeDialogState.show() })
             }
         ),
 
         Preference.TextPreference(icon = Remix.System.history_fill,
             title = LocalI18N.current["ui.settings.condition.record"],
             summary = LocalI18N.current["ui.settings.condition.record.summary"],
+            badge = badge,
             onClick = {
-                goToConditionRecord()
+                mainState.isSubscribed.select({ goToConditionRecord() },
+                    { subscribeDialogState.show() })
             }
         ),
 
         Preference.TextPreference(icon = Remix.Document.task_fill,
             title = LocalI18N.current["ui.settings.action.record"],
             summary = LocalI18N.current["ui.settings.action.record.summary"],
+            badge = badge,
             onClick = {
-                goToActionRecord()
+                mainState.isSubscribed.select({ goToActionRecord() },
+                    { subscribeDialogState.show() })
             }
         ),
     )
@@ -339,11 +394,11 @@ private fun generalSettings(
 @Composable
 private fun dataSettings(
     state: SettingsState,
+    mainState: SubscribeState,
     vm: SettingsViewModel,
     pickRestoreFile: () -> Unit,
     resetData: () -> Unit,
 ): List<Preference> {
-    val featureAccess = featureAccessCheckUi()
     val backUpFileNameDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.settings.data.backup.title"],
         message = LocalI18N.current["ui.settings.data.backup.input.file.name"],
@@ -353,6 +408,12 @@ private fun dataSettings(
         })
     TextInputDialog(state = backUpFileNameDialogState)
 
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
 
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.data"]),
@@ -360,10 +421,11 @@ private fun dataSettings(
             icon = Remix.Device.save_3_fill,
             title = LocalI18N.current["ui.settings.data.backup.title"],
             summary = LocalI18N.current["ui.settings.data.backup.summary"],
+            badge = badge,
             onClick = {
-                featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
-                    backUpFileNameDialogState.show(autoGenBackupFileName())
-                }
+                mainState.isSubscribed.select(
+                    { backUpFileNameDialogState.show(autoGenBackupFileName()) },
+                    { subscribeDialogState.show() })
             }
         ),
 
@@ -371,10 +433,11 @@ private fun dataSettings(
             icon = Remix.System.download_2_fill,
             title = LocalI18N.current["ui.settings.data.restore.title"],
             summary = LocalI18N.current["ui.settings.data.restore.summary"],
+            badge = badge,
             onClick = {
-                featureAccess.accessOrShowDialog(AppFeature.AppFeature_BackupRestore) {
-                    pickRestoreFile()
-                }
+                mainState.isSubscribed.select(
+                    { pickRestoreFile() },
+                    { subscribeDialogState.show() })
             },
             preferences = listOf(
                 Preference.TextPreference(

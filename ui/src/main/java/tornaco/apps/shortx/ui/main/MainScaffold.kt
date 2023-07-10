@@ -59,7 +59,6 @@ import tornaco.apps.shortx.ui.base.LocalActivity
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MultiFabItem
@@ -75,6 +74,7 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
+import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.util.AssetUtils
 
 @Composable
@@ -204,7 +204,7 @@ fun MainScaffold(
                         } else it
                     },
             ) {
-                val navHost = LocalNavHostController.current
+                val context = LocalContext.current
 
                 AnimatedVisibility(visible = state.isSubscribed.not()) {
                     Card(
@@ -215,7 +215,7 @@ fun MainScaffold(
                         Column(
                             modifier = Modifier
                                 .clickable {
-                                    navHost.navigate(AppRoute.SubscriptionIntro.name)
+                                    SubscribeActivity.start(context)
                                 }
                                 .padding(16.dp)
                         ) {

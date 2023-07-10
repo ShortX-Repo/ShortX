@@ -8,14 +8,17 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
+import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 
@@ -67,6 +70,7 @@ private fun ActionContent(
                     labelAndDescription = it.title to it.description,
                     icon = it.icon,
                     data = it,
+                    isForSubscribedOnly = true,
                     iconColor = colorForAction(Action.RemoteMVEL::class)
                 )
             }

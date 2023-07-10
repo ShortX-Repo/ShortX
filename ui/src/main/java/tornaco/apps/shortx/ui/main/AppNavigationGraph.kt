@@ -9,7 +9,6 @@ import tornaco.apps.shortx.ui.base.animateComposable
 import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
-import tornaco.apps.shortx.ui.subscribe.SubscribeScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -28,12 +27,6 @@ fun AppNavigationGraph(
                     BuildProp.OPEN_SOURCE_LICENSE_URL
                 )
             ) {
-                appNavController.popBackStack()
-            }
-        }
-
-        animateComposable(AppRoute.SubscriptionIntro.name) {
-            SubscribeScreen {
                 appNavController.popBackStack()
             }
         }

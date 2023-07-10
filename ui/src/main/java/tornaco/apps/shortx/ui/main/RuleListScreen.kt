@@ -6,14 +6,29 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,13 +38,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShareDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
@@ -44,7 +74,6 @@ fun RuleScreen() {
     }
 
     val context = LocalContext.current
-    val featureAccess = featureAccessCheckUi()
 
     MainScaffold(
         state = state,
@@ -52,19 +81,15 @@ fun RuleScreen() {
         appBarActions = {
         },
         onClipboardClick = {
-            featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
-                ClipboardUtils.readClipboard(context)?.let { clip ->
-                    vm.parseShareContentRule(clip)
-                        ?.let {
-                            vm.importRule(it)
-                        }
-                }
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                vm.parseShareContentRule(clip)
+                    ?.let {
+                        vm.importRule(it)
+                    }
             }
         },
         onAddClick = {
-            featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddRule) {
-                AddRuleActivity.start(context)
-            }
+            AddRuleActivity.start(context)
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()

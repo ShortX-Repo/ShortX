@@ -1,45 +1,21 @@
 package tornaco.apps.shortx.ui.subscribe
 
-import android.content.Context
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import tornaco.apps.shortx.core.proto.feature.AppFeature
-import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
-import tornaco.apps.shortx.ui.main.AppRoute
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
-
-const val FREE_USER_MAX_PKG_SET_COUNT = 3
-const val FREE_USER_MAX_RULE_COUNT = 3
-const val FREE_USER_MAX_DA_COUNT = 3
-
-class FeatureAccessChecker(private val appFeatureManager: AppFeatureManager) : CommonDialogState() {
-    fun canAccess(feature: AppFeature): Boolean = appFeatureManager.canAccess(feature)
-
-    fun accessOrShowDialog(feature: AppFeature, access: () -> Unit) {
-        if (canAccess(feature)) access() else show()
-    }
-}
+import kotlin.reflect.KClass
 
 @Composable
-fun rememberFeatureAccessDialogState(
-    appFeatureManager: AppFeatureManager
-): FeatureAccessChecker {
-    return remember {
-        FeatureAccessChecker(appFeatureManager)
-    }
-}
-
-@Composable
-fun FeatureAccessDialog(state: FeatureAccessChecker) {
+fun FeatureAccessDialog(state: CommonDialogState) {
     if (state.isShowing) {
-        val navController = LocalNavHostController.current
+        val context = LocalContext.current
         ShortXAlertDialog(
             onDismissRequest = {
                 state.dismiss()
@@ -47,7 +23,7 @@ fun FeatureAccessDialog(state: FeatureAccessChecker) {
             confirmButton = {
                 TextButton(onClick = {
                     state.dismiss()
-                    navController.navigate(AppRoute.SubscriptionIntro.name)
+                    SubscribeActivity.start(context)
                 }) {
                     Text(text = LocalI18N.current["ui.subscription.intro.yes"])
                 }
@@ -68,48 +44,15 @@ fun FeatureAccessDialog(state: FeatureAccessChecker) {
     }
 }
 
-@Composable
-fun featureAccessCheckUi(): FeatureAccessChecker {
-    val dialogState = rememberFeatureAccessDialogState(AppFeatureManager(LocalContext.current))
-    FeatureAccessDialog(dialogState)
-    return dialogState
-}
+private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
+    Fact.FixedInPeriod::class,
+    Fact.VPNConnected::class,
+    Fact.VPNDisconnected::class,
 
-class AppFeatureManager(private val context: Context) {
+    Condition.AppHasAudioFocus::class,
 
-    fun canAccess(feature: AppFeature): Boolean {
-        return when (feature) {
-            AppFeature.AppFeature_AddPkgSet -> {
-                return shortXManager.getAllPkgSets(false).size <= FREE_USER_MAX_PKG_SET_COUNT || isLVLChecked(
-                    context
-                )
-            }
+    Action.AudioRecording::class,
+    Action.ShowOverlay::class
+)
 
-            AppFeature.AppFeature_DanmuSettings -> {
-                isLVLChecked(context)
-            }
-
-            AppFeature.AppFeature_AddRule -> {
-                return shortXManager.getRuleCount() <= FREE_USER_MAX_RULE_COUNT || isLVLChecked(
-                    context
-                )
-            }
-
-            AppFeature.AppFeature_AddDirectAction -> {
-                return shortXManager.getDirectActionCount() <= FREE_USER_MAX_DA_COUNT || isLVLChecked(
-                    context
-                )
-            }
-
-            AppFeature.AppFeature_ShareClipboard -> isLVLChecked(context)
-            AppFeature.AppFeature_ShareFile -> isLVLChecked(context)
-            AppFeature.AppFeature_ShareIntent -> isLVLChecked(context)
-            AppFeature.AppFeature_ImportClipboard -> isLVLChecked(context)
-            AppFeature.AppFeature_ImportFile -> isLVLChecked(context)
-            AppFeature.AppFeature_CreateShortcut -> isLVLChecked(context)
-            else -> {
-                isLVLChecked(context)
-            }
-        }
-    }
-}
+fun isForSubscribedOnly(clazz: KClass<*>): Boolean = subscribedOnlyActions.contains(clazz)

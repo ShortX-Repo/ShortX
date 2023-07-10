@@ -11,6 +11,7 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
+import tornaco.apps.shortx.ui.main.SubscribeState
 
 
 @Composable
@@ -34,7 +35,7 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun MiscActions(keyword: String, addAction: (Action) -> Unit) {
+fun MiscActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
 
     val actionItems = listOf(
@@ -45,6 +46,7 @@ fun MiscActions(keyword: String, addAction: (Action) -> Unit) {
                 Action.NoAction::class
             ),
             icon = imageVectorForAction(Action.NoAction::class),
+            isForSubscribedOnly = false,
             iconColor = colorForAction(Action.NoAction::class)
         ),
     ).filter {

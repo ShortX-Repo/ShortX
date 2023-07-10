@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -9,6 +10,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 
 @Composable
@@ -33,7 +36,7 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun LifeActions(keyword: String, addAction: (Action) -> Unit) {
+fun LifeActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
 
     val actionItems = listOf(
@@ -41,6 +44,9 @@ fun LifeActions(keyword: String, addAction: (Action) -> Unit) {
             type = Action.MapNav::class,
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, Action.MapNav::class),
             icon = imageVectorForAction(Action.MapNav::class),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(Action.MapNav::class)
+            },
             iconColor = colorForAction(Action.MapNav::class)
         ),
     ).filter {

@@ -20,7 +20,9 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
+import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -181,7 +183,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun ExtActions(keyword: String, addAction: (Action) -> Unit) {
+fun ExtActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.FromDA::class,
@@ -201,6 +203,9 @@ fun ExtActions(keyword: String, addAction: (Action) -> Unit) {
             type = it,
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
             icon = imageVectorForAction(it),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
+            },
             iconColor = colorForAction(it)
         )
     }.filter {

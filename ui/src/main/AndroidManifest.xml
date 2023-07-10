@@ -68,6 +68,12 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addda.AddDirectActionActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.subscribe.SubscribeActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.subscribe.LVLCheckActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

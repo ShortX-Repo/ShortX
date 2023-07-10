@@ -25,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +35,6 @@ import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -45,7 +43,6 @@ import tornaco.apps.shortx.ui.base.ShortXTabRow
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
-import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -60,11 +57,6 @@ fun DiscoverScreen() {
     LaunchedEffect(vm) {
         vm.refreshStates()
     }
-
-    val appNavController = LocalNavHostController.current
-    val context = LocalContext.current
-
-    val featureAccess = featureAccessCheckUi()
 
     MainScaffold(
         state = state,

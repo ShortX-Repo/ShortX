@@ -57,9 +57,9 @@ private fun OutlineBadgePreview() {
 }
 
 @Composable
-fun OutlineBadge(text: String) {
+fun OutlineBadge(modifier: Modifier = Modifier, text: String) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary,
@@ -72,7 +72,8 @@ fun OutlineBadge(text: String) {
             modifier = Modifier.padding(4.dp),
             text = text,
             fontSize = 10.sp,
-            fontFamily = fontFamilyProductSansRegular()
+            fontFamily = fontFamilyProductSansRegular(),
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

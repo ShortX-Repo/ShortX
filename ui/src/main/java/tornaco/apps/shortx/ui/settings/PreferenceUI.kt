@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CategoryTitle
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
@@ -112,7 +113,9 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
                     delay(128)
                     preference.onClick?.invoke()
                 }
-            }, verticalAlignment = Alignment.CenterVertically
+            },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             modifier = Modifier
@@ -137,6 +140,10 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
                     )
                 }
             }
+        }
+
+        preference.badge?.let {
+            OutlineBadge(modifier = Modifier.padding(end = 16.dp), text = it)
         }
     }
 }

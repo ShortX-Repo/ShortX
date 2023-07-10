@@ -2,6 +2,8 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -22,9 +24,13 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
+import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 import kotlin.reflect.full.createInstance
 
 
@@ -94,6 +100,12 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     AudioRecordingDialog(state = audioRecordingState)
 
+    val comingSoonDialogState = rememberTipDialogState(
+        title = LocalI18N.current["ui.common.coming.soon"],
+        tip = LocalI18N.current["ui.common.coming.soon"]
+    )
+    TipDialog(state = comingSoonDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -142,7 +154,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.AudioRecording::class -> {
-                audioRecordingState.show(source.getActionAs())
+                if (BuildProp.APP_IS_DEBUG) {
+                    audioRecordingState.show(source.getActionAs())
+                } else {
+                    comingSoonDialogState.show()
+                }
                 true
             }
 
@@ -179,7 +195,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 }
 
 @Composable
-fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
+fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.WakeupScreen::class,
@@ -216,9 +232,12 @@ fun SystemActions(keyword: String, addAction: (Action) -> Unit) {
         Action.AudioRecording::class,
     ).map {
         SelectorItem(
-            it,
-            labelAndDescriptionForActionSelector(i18N, it),
-            imageVectorForAction(it),
+            type = it,
+            labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
+            icon = imageVectorForAction(it),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
+            },
             iconColor = colorForAction(it)
         )
     }.filter {

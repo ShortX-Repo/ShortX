@@ -19,6 +19,7 @@
 
 package tornaco.apps.shortx.ui.subscribe
 
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -48,17 +49,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
+import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ImageDialog
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.MarkdownText
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -73,7 +74,6 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
-import tornaco.apps.shortx.ui.main.AppRoute
 import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.theme.AliBlue
 import tornaco.apps.shortx.ui.theme.PayPalBlue
@@ -81,6 +81,24 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.theme.WeChatGreen
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+
+@AndroidEntryPoint
+class SubscribeActivity : BaseActivity() {
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, SubscribeActivity::class.java)
+            context.startActivity(starter)
+        }
+    }
+
+    @Composable
+    override fun Content() {
+        SubscribeScreen {
+            finish()
+        }
+    }
+}
 
 @Composable
 fun SubscribeScreen(back: () -> Unit) {
@@ -224,9 +242,6 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
             }
         }
 
-        val navHost = LocalNavHostController.current
-
-
         val inputDialogState = rememberTextInputState(
             title = i18N["Input code"],
             message = null,
@@ -279,14 +294,13 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
         LargeSpacer()
 
 
-        Fabs(inputDialogState, navHost)
+        Fabs(inputDialogState)
     }
 }
 
 @Composable
 private fun Fabs(
     inputDialogState: TextInputState,
-    navHost: NavHostController
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
@@ -372,7 +386,7 @@ private fun Fabs(
 
         ExtendedFloatingActionButton(
             containerColor = VipColorGold,
-            onClick = { navHost.navigate(AppRoute.LVLCheck.name) },
+            onClick = { LVLCheckActivity.start(context) },
             text = {
                 Text(
                     text = LocalI18N.current["ui.subscription.subscribe.verify.play"],

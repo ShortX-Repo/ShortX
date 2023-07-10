@@ -4,20 +4,45 @@ package tornaco.apps.shortx.ui.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,14 +58,32 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.proto.feature.AppFeature
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.I18N
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShareDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
+import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
-import tornaco.apps.shortx.ui.subscribe.featureAccessCheckUi
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -57,10 +100,7 @@ fun DirectActionListScreen() {
         vm.refreshStates()
     }
 
-    val appNavController = LocalNavHostController.current
     val context = LocalContext.current
-
-    val featureAccess = featureAccessCheckUi()
 
     MainScaffold(
         state = state,
@@ -77,19 +117,15 @@ fun DirectActionListScreen() {
             }
         },
         onClipboardClick = {
-            featureAccess.accessOrShowDialog(AppFeature.AppFeature_ImportClipboard) {
-                ClipboardUtils.readClipboard(context)?.let { clip ->
-                    vm.parseShareContentDA(clip)
-                        ?.let {
-                            vm.importDA(it)
-                        }
-                }
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                vm.parseShareContentDA(clip)
+                    ?.let {
+                        vm.importDA(it)
+                    }
             }
         },
         onAddClick = {
-            featureAccess.accessOrShowDialog(AppFeature.AppFeature_AddDirectAction) {
-                AddDirectActionActivity.start(context)
-            }
+            AddDirectActionActivity.start(context)
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
@@ -528,8 +564,6 @@ private fun listItemOverflowMenu(
         onDelete = onDelete
     )
 
-    val featureAccess = featureAccessCheckUi()
-
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
@@ -561,22 +595,19 @@ private fun listItemOverflowMenu(
     ), onSelect = {
         when (it.data) {
             "shortcut" -> {
-                featureAccess.accessOrShowDialog(AppFeature.AppFeature_CreateShortcut) {
-                    ActionShortcutActivity.addShortcut(context, da)
-
-                    scope.launch {
-                        val res = snackbar.showSnackbar(
-                            i18N["ui.common.create.shortcut.snackbar.message"],
-                            i18N["ui.common.settings"],
-                            true,
-                        )
-                        if (res == SnackbarResult.ActionPerformed) {
-                            kotlin.runCatching {
-                                PkgUtils.launchPkgSettings(
-                                    context,
-                                    BuildProp.APP_PACKAGE_NAME
-                                )
-                            }
+                ActionShortcutActivity.addShortcut(context, da)
+                scope.launch {
+                    val res = snackbar.showSnackbar(
+                        i18N["ui.common.create.shortcut.snackbar.message"],
+                        i18N["ui.common.settings"],
+                        true,
+                    )
+                    if (res == SnackbarResult.ActionPerformed) {
+                        kotlin.runCatching {
+                            PkgUtils.launchPkgSettings(
+                                context,
+                                BuildProp.APP_PACKAGE_NAME
+                            )
                         }
                     }
                 }

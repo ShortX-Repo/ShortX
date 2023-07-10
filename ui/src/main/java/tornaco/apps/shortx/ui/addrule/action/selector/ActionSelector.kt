@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -44,6 +46,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
+import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
@@ -217,33 +220,43 @@ private fun AllActions(
             keywordChanged = { })
         SearchBar(searchBarState = searchBarState)
 
+        val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
+        LaunchedEffect(subscribeStateViewModel) {
+            subscribeStateViewModel.refreshStates()
+        }
+        DisposableEffectWithLifeCycle(onResume = {
+            subscribeStateViewModel.refreshStates()
+        })
+
+        val subscribeState by subscribeStateViewModel.state.collectAsState()
+
         AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
             Column {
                 ActionCategoryTitle(ActionCategory.Recent)
                 RecentActions(
                     actions = selectorState,
+                    subscribeState,
                     addAction = addAction
                 )
                 StandardSpacer()
             }
         }
-
-        UiActions(searchBarState.keyword, addAction = addAction)
+        UiActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
-        AppActions(searchBarState.keyword, addAction = addAction)
+        AppActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
-        SystemActions(searchBarState.keyword, addAction = addAction)
+        SystemActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
-        ExtActions(searchBarState.keyword, addAction = addAction)
+        ExtActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
-        LifeActions(searchBarState.keyword, addAction = addAction)
+        LifeActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
-        MiscActions(searchBarState.keyword, addAction = addAction)
+        MiscActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
     }
 }
