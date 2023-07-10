@@ -11,6 +11,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -91,7 +92,8 @@ data class MainState(
     val das: List<DirectActionUM> = emptyList(),
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isAudioRecording: Boolean = false
 )
 
 fun <T> ContextViewModel<T>.daToDirectActionUM(
@@ -255,18 +257,32 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
+    private val audioRecordingObs = object : IAudioRecordingListener.Stub() {
+        override fun onStartRecording() {
+            logger.d("audioRecordingObs, onStartRecording")
+            updateState { copy(isAudioRecording = shortXManager.isAudioRecording()) }
+        }
+
+        override fun onStopRecording() {
+            logger.d("audioRecordingObs, onStopRecording")
+            updateState { copy(isAudioRecording = shortXManager.isAudioRecording()) }
+        }
+    }
+
     init {
         updateState {
             copy(
                 isActivated = shortXManager.isInstalled,
                 isFrameworkUpdated = shortXManager.isFrameworkUpdated,
-                isSubscribed = isLVLChecked(context)
+                isSubscribed = isLVLChecked(context),
+                isAudioRecording = shortXManager.isAudioRecording()
             )
         }
 
         shortXManager.registerJobStatusListener(jobStatusListener)
         shortXManager.registerRuleObs(ruleObs)
         shortXManager.registerDAObs(daObs)
+        shortXManager.registerAudioRecordingObs(audioRecordingObs)
 
         viewModelScope.launch {
             pref.privacyStatementAcceptedFlow.collectLatest {
@@ -319,6 +335,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         shortXManager.unregisterJobStatusListener(jobStatusListener)
         shortXManager.unregisterRuleObs(ruleObs)
         shortXManager.unregisterDAObs(daObs)
+        shortXManager.unregisterAudioRecordingObs(audioRecordingObs)
     }
 
     fun loadRules(delay: Boolean = false) {

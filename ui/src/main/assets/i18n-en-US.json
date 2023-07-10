@@ -1,5 +1,5 @@
 {
-  "ui.privacy.statement.title": "Privacy agreement",
+  "ui.privacy.statement.title": "Privacy agreement & User statement",
   "ui.framework.updated": "The core of {app_name} has been updated, please reboot your device",
   "ui.dialog.title.select.app": "Select app",
   "ui.dialog.title.current.app": "App in Foreground",
@@ -248,6 +248,7 @@
   "ui.action.stop.current.foreground.app": "Stop foreground app",
   "ui.action.vibrate": "Vibrate",
   "ui.action.audio.recording": "Audio record",
+  "ui.action.audio.recording.card.text": "Audio record Action is running, click to stop",
   "ui.action.audio.src": "Source",
   "ui.action.audio.src.mic": "Mic",
   "ui.action.audio.src.r.submix": "System",

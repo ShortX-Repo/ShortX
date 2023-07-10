@@ -43,6 +43,7 @@ object AudioRecording : Actor {
             Dirs.baseServerRecordingDir(),
             "${d.fileNamePrefix}-${DateUtils.formatForFileName(System.currentTimeMillis())}.wav"
         )
+        outputFile.parentFile.mkdirs()
 
         shortXContext.audio.startRecording(source, outputFile)
 

@@ -642,6 +642,26 @@ class ShortXManager(private val service: IShortX) {
         wifiScanResults
     }
 
+    fun isAudioRecording(): Boolean {
+        return invokeService(false) { isAudioRecording }
+    }
+
+    fun stopAudioRecording() {
+        invokeService(Unit) { stopAudioRecording() }
+    }
+
+    fun registerAudioRecordingObs(obs: IAudioRecordingListener) {
+        invokeService(Unit) {
+            registerAudioRecordingObs(obs)
+        }
+    }
+
+    fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
+        invokeService(Unit) {
+            unregisterAudioRecordingObs(obs)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

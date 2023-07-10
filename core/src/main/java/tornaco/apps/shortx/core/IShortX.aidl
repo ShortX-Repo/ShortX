@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
 import tornaco.apps.shortx.core.rule.IPkgSetObserver;
 import tornaco.apps.shortx.core.rule.IRuleObserver;
 import tornaco.apps.shortx.core.rule.IDAObserver;
+import tornaco.apps.shortx.core.IAudioRecordingListener;
 import  tornaco.apps.shortx.core.rule.action.su.ISu;
 
 interface IShortX {
@@ -161,4 +162,9 @@ interface IShortX {
     void attachSUImpl(String from, in ISu su);
     boolean isInjectedShellEnabled();
     void setInjectedShellEnabled(boolean enable);
+
+    boolean isAudioRecording();
+    void stopAudioRecording();
+    void registerAudioRecordingObs(in IAudioRecordingListener obs);
+    void unregisterAudioRecordingObs(in IAudioRecordingListener obs);
 }

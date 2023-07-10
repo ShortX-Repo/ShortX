@@ -1,5 +1,5 @@
 {
-  "ui.privacy.statement.title": "隱私協定",
+  "ui.privacy.statement.title": "隐私与使用协议",
   "ui.framework.updated": "{app_name} 的覈心已經更新，請及時重啓設備； 當然你也可以繼續體驗，但是如果你遇到一些故障，建議你立刻重啓",
   "ui.dialog.title.current.app": "應用在前臺",
   "ui.dialog.title.select.app": "選擇應用",
@@ -250,6 +250,7 @@
   "ui.action.stop.current.foreground.app": "结束前台应用",
   "ui.action.vibrate": "振动",
   "ui.action.audio.recording": "录音",
+  "ui.action.audio.recording.card.text": "正在进行录音动作，点击停止",
   "ui.action.audio.src": "音频源",
   "ui.action.audio.src.mic": "麦克风",
   "ui.action.audio.src.r.submix": "系统",

@@ -5,8 +5,10 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
 import android.media.MediaRecorder
+import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.audioManager
@@ -37,6 +39,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
 
     private val recorderSync = "SYNC.RECORDER"
     private var currentRecorder: Recorder? = null
+    private val recordListeners = RemoteCallbackList<IAudioRecordingListener>()
 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
 
@@ -75,6 +78,15 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
             recorder.startRecording()
 
             currentRecorder = recorder
+
+            recordListeners.broadcast {
+                runCatching { it.onStartRecording() }.onFailure {
+                    logger.e(
+                        it,
+                        "Call onStartRecording"
+                    )
+                }
+            }
         }
     }
 
@@ -82,7 +94,24 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) 
         synchronized(recorderSync) {
             currentRecorder?.stopRecording()
             currentRecorder = null
+
+            recordListeners.broadcast {
+                runCatching { it.onStopRecording() }.onFailure {
+                    logger.e(
+                        it,
+                        "Call onStopRecording"
+                    )
+                }
+            }
         }
+    }
+
+    fun registerAudioRecordingObs(obs: IAudioRecordingListener) {
+        recordListeners.register(obs)
+    }
+
+    fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
+        recordListeners.unregister(obs)
     }
 
     private fun registerListener() {

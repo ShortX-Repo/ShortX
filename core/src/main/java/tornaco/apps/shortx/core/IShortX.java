@@ -359,6 +359,19 @@ public interface IShortX extends android.os.IInterface
     @Override public void setInjectedShellEnabled(boolean enable) throws android.os.RemoteException
     {
     }
+    @Override public boolean isAudioRecording() throws android.os.RemoteException
+    {
+      return false;
+    }
+    @Override public void stopAudioRecording() throws android.os.RemoteException
+    {
+    }
+    @Override public void registerAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1375,6 +1388,39 @@ public interface IShortX extends android.os.IInterface
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setInjectedShellEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isAudioRecording:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isAudioRecording();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_stopAudioRecording:
+        {
+          data.enforceInterface(descriptor);
+          this.stopAudioRecording();
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerAudioRecordingObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IAudioRecordingListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IAudioRecordingListener.Stub.asInterface(data.readStrongBinder());
+          this.registerAudioRecordingObs(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterAudioRecordingObs:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IAudioRecordingListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IAudioRecordingListener.Stub.asInterface(data.readStrongBinder());
+          this.unregisterAudioRecordingObs(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -3379,6 +3425,82 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public boolean isAudioRecording() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isAudioRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isAudioRecording();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void stopAudioRecording() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_stopAudioRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().stopAudioRecording();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void registerAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerAudioRecordingObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerAudioRecordingObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterAudioRecordingObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterAudioRecordingObs(obs);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3471,6 +3593,10 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_attachSUImpl = (android.os.IBinder.FIRST_CALL_TRANSACTION + 87);
     static final int TRANSACTION_isInjectedShellEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 88);
     static final int TRANSACTION_setInjectedShellEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 89);
+    static final int TRANSACTION_isAudioRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 90);
+    static final int TRANSACTION_stopAudioRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 91);
+    static final int TRANSACTION_registerAudioRecordingObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 92);
+    static final int TRANSACTION_unregisterAudioRecordingObs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 93);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3616,4 +3742,8 @@ public interface IShortX extends android.os.IInterface
   public void attachSUImpl(java.lang.String from, tornaco.apps.shortx.core.rule.action.su.ISu su) throws android.os.RemoteException;
   public boolean isInjectedShellEnabled() throws android.os.RemoteException;
   public void setInjectedShellEnabled(boolean enable) throws android.os.RemoteException;
+  public boolean isAudioRecording() throws android.os.RemoteException;
+  public void stopAudioRecording() throws android.os.RemoteException;
+  public void registerAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException;
+  public void unregisterAudioRecordingObs(tornaco.apps.shortx.core.IAudioRecordingListener obs) throws android.os.RemoteException;
 }

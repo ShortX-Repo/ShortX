@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -48,7 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.ClickableBadge
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FabState
 import tornaco.apps.shortx.ui.base.Icon
 import tornaco.apps.shortx.ui.base.LocalActivity
@@ -225,6 +229,37 @@ fun MainScaffold(
                                     LocalI18N.current["ui.subscription.intro.message"],
                                 )
                             }
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = state.isAudioRecording
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    shortXManager.stopAudioRecording()
+                                }
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            ColoredIcon(size = 24.dp, color = Color.Red) {
+                                RemixIcon(
+                                    modifier = Modifier.size(16.dp),
+                                    remixName = Remix.Media.mic_2_fill,
+                                    tint = Color.White
+                                )
+                            }
+                            MediumSpacer()
+                            Text(
+                                LocalI18N.current["ui.action.audio.recording.card.text"],
+                            )
                         }
                     }
                 }

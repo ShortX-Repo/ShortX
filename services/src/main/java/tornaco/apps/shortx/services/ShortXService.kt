@@ -244,6 +244,22 @@ object ShortXService : SystemService(ShortXContextImpl()) {
             shortXContext.shell.setInjectedShellEnabled(enable)
         }
 
+        override fun isAudioRecording(): Boolean {
+            return shortXContext.audio.isRecording
+        }
+
+        override fun stopAudioRecording() {
+            shortXContext.audio.stopRecording()
+        }
+
+        override fun registerAudioRecordingObs(obs: IAudioRecordingListener) {
+            shortXContext.audio.registerAudioRecordingObs(obs)
+        }
+
+        override fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
+            shortXContext.audio.unregisterAudioRecordingObs(obs)
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }
