@@ -19,7 +19,8 @@ class ConditionEvaluatorImpl(
 ) : ConditionEvaluator {
     private val logger = Logger("ConditionEvaluatorImpl")
 
-    override fun evaluate(
+    // For single
+    override suspend fun evaluate(
         condition: ProtoAny,
         contextData: ContextData
     ): ConditionEvaluator.EvaluateResult {
@@ -40,7 +41,8 @@ class ConditionEvaluatorImpl(
         }
     }
 
-    override fun evaluate(
+    // For List
+    override suspend fun evaluate(
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,

@@ -2,6 +2,8 @@ package tornaco.apps.shortx.services.rule
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
@@ -13,17 +15,19 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
 
+const val CONDITION_WAIT_TIMEOUT = 100L
+
 interface FactMatcher {
     fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean
 }
 
 interface ConditionEvaluator {
-    fun evaluate(
+    suspend fun evaluate(
         condition: ProtoAny,
         contextData: ContextData
     ): EvaluateResult
 
-    fun evaluate(
+    suspend fun evaluate(
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
@@ -106,16 +110,28 @@ class DefaultRuleEngine(
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
 
+    private val defaultCondRes: (Rule) -> Boolean = {
+        logger.w("shouldFire, check condition timeout, return false. rule is: ${it.title}")
+        false
+    }
+
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
-        return rules.filterInvalid().firstOrNull {
-            factMatcher.match(fact, it.factsList) && conditionEvaluator.evaluate(
-                logTag = it.title,
-                condOp = it.condOp,
-                condOpPayload = it.condOpPayload,
-                conditions = it.conditionsList,
-                contextData = ContextData.obtain()
-            )
-        } != null
+        val startTimeMillis = System.currentTimeMillis()
+        return rules.filterInvalid().any {
+            factMatcher.match(fact, it.factsList) && runBlocking {
+                withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+                    conditionEvaluator.evaluate(
+                        logTag = it.title,
+                        condOp = it.condOp,
+                        condOpPayload = it.condOpPayload,
+                        conditions = it.conditionsList,
+                        contextData = ContextData.obtain()
+                    )
+                }
+            } ?: defaultCondRes(it)
+        }.also {
+            logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
+        }
     }
 
     override fun fire(
@@ -197,7 +213,7 @@ class DefaultRuleEngine(
     ) {
         val contextData = ContextData.obtain(initialContextData)
         val job = scope.launchSafety {
-            logger.d("job for id: $id start.")
+            logger.d("Evaluate actions, job for id: $id start.")
             kotlin.run loop@{
                 actions.forEach {
                     val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
@@ -221,6 +237,8 @@ class DefaultRuleEngine(
         }
     }
 
+    // This API is exposed for App check condition on Edit.
+    // So let is run blocking.
     override fun evaluate(
         logTag: String,
         condOp: ConditionOperator,
@@ -228,7 +246,9 @@ class DefaultRuleEngine(
         conditions: List<ProtoAny>,
         contextData: ContextData
     ): Boolean {
-        return conditionEvaluator.evaluate(logTag, condOp, condOpPayload, conditions, contextData)
+        return runBlocking {
+            conditionEvaluator.evaluate(logTag, condOp, condOpPayload, conditions, contextData)
+        }
     }
 
     override fun cancelJobs(filter: (JobRecord) -> Boolean) {

@@ -15,7 +15,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object EvaluateGlobalVar : Cond {
     override fun condClass(): Class<out Message> = EvaluateGlobalVar::class.java
 
-    override fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
 
             val data = condition unpack_ EvaluateGlobalVar::class.java

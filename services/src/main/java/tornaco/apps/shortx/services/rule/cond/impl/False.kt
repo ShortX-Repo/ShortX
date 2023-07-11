@@ -8,7 +8,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object False : Cond {
     override fun condClass(): Class<out Message> = False::class.java
 
-    override fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
         val f = param.condition unpack_ False::class.java
         return f.isInvert
     }

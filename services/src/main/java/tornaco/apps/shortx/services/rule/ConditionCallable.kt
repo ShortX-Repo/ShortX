@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule
 
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -14,7 +15,7 @@ class ConditionCallable(
     private val contextData: ContextData
 ) {
     fun call(): Boolean {
-        val evaluateResult = eva.evaluate(condition, contextData)
+        val evaluateResult = runBlocking { eva.evaluate(condition, contextData) }
         logger.d("call condition class: ${condition.javaClass}, evaluateResult: $evaluateResult")
         return evaluateResult.isMatch()
     }

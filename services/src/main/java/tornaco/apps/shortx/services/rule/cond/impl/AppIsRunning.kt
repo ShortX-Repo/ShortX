@@ -9,7 +9,7 @@ object AppIsRunning : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.AppIsRunning::class.java
 
-    override fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.AppIsRunning::class.java

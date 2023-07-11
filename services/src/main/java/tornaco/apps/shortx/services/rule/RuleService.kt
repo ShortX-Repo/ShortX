@@ -188,7 +188,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
             val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
-            if (engine.shouldFire(enabledRules, fact)) {
+            if (shouldFire(enabledRules, fact)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     engine.fire(

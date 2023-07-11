@@ -9,7 +9,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object CurrentPkgList : Cond {
     override fun condClass(): Class<out Message> = CurrentPkgList::class.java
 
-    override fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val currentPkg = condition unpack_ CurrentPkgList::class.java
             val requiredPkgList = if (currentPkg.pkgSetsList.isNotEmpty()) {

@@ -10,7 +10,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object BatteryPercent : Cond {
     override fun condClass(): Class<out Message> = BatteryPercent::class.java
 
-    override fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
             val state =
                 requireNotNull(BatteryImpl(context).batteryState) { "Fail get battery state" }

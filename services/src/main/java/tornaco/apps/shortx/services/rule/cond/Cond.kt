@@ -13,7 +13,7 @@ interface Cond {
 
     fun condClass(): Class<out Message>
 
-    fun evaluate(param: CondParam): Boolean
+    suspend fun evaluate(param: CondParam): Boolean
 
     data class CondParam(
         val context: Context,
