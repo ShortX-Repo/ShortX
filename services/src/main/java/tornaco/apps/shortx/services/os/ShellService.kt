@@ -18,7 +18,7 @@ import tornaco.apps.shortx.services.util.AppServiceProxy
 import java.util.concurrent.atomic.AtomicReference
 
 
-class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, "ShellService") {
     private val shellStubs = RemoteCallbackList<ISu>()
 
     override fun systemReady() {

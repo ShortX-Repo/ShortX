@@ -9,7 +9,8 @@ import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 
 
-class SystemSettingsService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class SystemSettingsService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "SystemSettingsService") {
 
     fun setPointerLocationEnabled(enable: Boolean) {
         runBlocking {

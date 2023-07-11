@@ -14,8 +14,8 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
 
-open class SystemService(val shortXContext: ShortXContext) {
-    open val logTag: String = this.javaClass.simpleName
+abstract class SystemService(val shortXContext: ShortXContext, private val serviceName: String) {
+    private val logTag: String = serviceName
 
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
     val handler by lazy {
@@ -36,7 +36,7 @@ open class SystemService(val shortXContext: ShortXContext) {
         private set
 
     val store: SettingsStore by lazy {
-        SettingsStore(this.javaClass.simpleName, systemServiceScope)
+        SettingsStore(serviceName, systemServiceScope)
     }
 
     @CallSuper

@@ -19,7 +19,8 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
-class NotificationService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class NotificationService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "NotificationService") {
     private val appRes by lazy {
         AppResources(
             context,

@@ -9,7 +9,7 @@ import tornaco.apps.shortx.services.ShortXService.shortXContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class WatchDogService(shortXContext: ShortXContext) : SystemService(shortXContext, "WatchDogService") {
     private val fatalErrors = mutableListOf<Throwable>()
 
     override fun systemReady() {

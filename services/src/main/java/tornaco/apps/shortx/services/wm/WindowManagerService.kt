@@ -13,7 +13,8 @@ import kotlinx.coroutines.delay
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 
-class WindowManagerService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class WindowManagerService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "WindowManagerService") {
 
     private val automationManager = UiAutomationManager()
     private var screenSize: Pair<Int, Int>? = null

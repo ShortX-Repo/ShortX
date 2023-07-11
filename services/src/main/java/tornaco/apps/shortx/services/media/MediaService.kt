@@ -8,7 +8,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.postSafety
 
 
-class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, "MediaService") {
     override fun systemReady() {
         super.systemReady()
     }

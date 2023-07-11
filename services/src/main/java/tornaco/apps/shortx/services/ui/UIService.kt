@@ -11,7 +11,7 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.postSafety
 
-class UIService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UIService") {
     private val uiHandler by lazy {
         require(isSystemReady) { "Pls access uiHandler after systemReady" }
         Handler(Looper.getMainLooper())

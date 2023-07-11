@@ -23,7 +23,7 @@ sealed interface UserEvent {
     data class Removed(val userId: Int) : UserEvent
 }
 
-class UserService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "UserService") {
     private val _userEvent = MutableSharedFlow<UserEvent>()
     val userEvent = _userEvent.asSharedFlow()
 

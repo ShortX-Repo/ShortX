@@ -20,7 +20,8 @@ import tornaco.apps.shortx.services.ui.GuideLineView
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
-class GestureService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class GestureService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "GestureService") {
     private var gestureDetector: Detector? = null
 
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null

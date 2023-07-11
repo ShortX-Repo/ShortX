@@ -21,7 +21,8 @@ internal data class ShowingOverlay(
     val tag: String
 )
 
-class OverlayService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class OverlayService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "OverlayService") {
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
     }

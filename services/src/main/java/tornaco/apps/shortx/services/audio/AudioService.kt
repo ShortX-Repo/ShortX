@@ -34,7 +34,7 @@ sealed class FocusEvent(val target: AppPkg) {
     class Lost(target: AppPkg) : FocusEvent(target)
 }
 
-class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, "AudioService") {
     private val currentPlayingAppPkgs = mutableListOf<AppPkg>()
 
     private val _focusEvent = MutableSharedFlow<FocusEvent>()

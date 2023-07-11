@@ -41,7 +41,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 
-class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "RuleService") {
     private val ruleSettingsStore: RuleSettingsStore by lazy {
         RuleSettingsStore(systemServiceScope)
     }

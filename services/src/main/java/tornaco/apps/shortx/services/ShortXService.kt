@@ -40,7 +40,7 @@ import tornaco.apps.shortx.services.v.v
 import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
-object ShortXService : SystemService(ShortXContextImpl()) {
+object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
 
     fun main() {

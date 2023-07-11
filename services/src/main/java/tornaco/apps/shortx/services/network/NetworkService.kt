@@ -20,9 +20,8 @@ import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiState
 import tornaco.apps.shortx.services.rule.fact.trigger.wifi.WifiStatusTracker
 import java.util.concurrent.atomic.AtomicReference
 
-class NetworkService(shortXContext: ShortXContext) : SystemService(shortXContext) {
-    override val logTag: String get() = "NetworkService"
-
+class NetworkService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "NetworkService") {
     private val _currentVpnState: MutableStateFlow<DetailedState?> = MutableStateFlow(null)
 
     private lateinit var wifiStatusTracker: WifiStatusTracker

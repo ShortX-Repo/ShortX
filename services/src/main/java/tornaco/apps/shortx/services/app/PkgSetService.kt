@@ -10,7 +10,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.PkgSetsStore
 import tornaco.apps.shortx.services.systemServiceScope
 
-class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext, "PkgSetService") {
     private val pkgSetsStore: PkgSetsStore by lazy {
         PkgSetsStore(systemServiceScope)
     }

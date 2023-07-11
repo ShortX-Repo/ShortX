@@ -11,7 +11,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.runClearCallingIdentity
 
 
-class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class PhoneService(shortXContext: ShortXContext) : SystemService(shortXContext, "PhoneService") {
 
     override fun systemReady() {
         super.systemReady()

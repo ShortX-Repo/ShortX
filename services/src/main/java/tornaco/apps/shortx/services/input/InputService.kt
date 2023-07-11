@@ -6,7 +6,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import util.Reflections
 
-class InputService(shortXContext: ShortXContext) : SystemService(shortXContext) {
+class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, "InputService") {
     private val imeService by lazy {
         ServiceRetriever(context.classLoader).getInputMethodManagerService()
     }
