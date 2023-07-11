@@ -2,10 +2,13 @@ package tornaco.apps.shortx.services.notification
 
 import android.app.INotificationManager
 import android.content.Context
+import android.os.RemoteCallbackList
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
@@ -13,6 +16,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -28,7 +32,9 @@ class NotificationService(shortXContext: ShortXContext) :
         )
     }
 
-    val notificationPoster by lazy {
+    private val attachedPoster = RemoteCallbackList<INotificationPoster>()
+
+    private val notificationPoster by lazy {
         NotificationPoster(
             context,
             "ShortX silence",
@@ -46,6 +52,36 @@ class NotificationService(shortXContext: ShortXContext) :
         )
     }
 
+    fun post(postNotification: PostNotification) {
+        if (!postByAttached(postNotification)) {
+            notificationPoster.invoke(postNotification)
+        }
+    }
+
+    private fun postByAttached(postNotification: PostNotification): Boolean {
+        synchronized(attachedPoster) {
+            val itemCount = attachedPoster.beginBroadcast()
+            if (itemCount == 0) {
+                logger.d("post, no registered poster.")
+                return false
+            }
+            val first = attachedPoster.getBroadcastItem(0)
+            logger.d("Using poster: $first")
+            val shellRes =
+                kotlin.runCatching { first.post(ByteArrayWrapper(postNotification.toByteArray())) }
+                    .getOrElse {
+                        logger.e(it, "Error call post")
+                        null
+                    }
+            attachedPoster.finishBroadcast()
+            return true
+        }
+    }
+
+    fun attachNotificationPoster(from: String, poster: INotificationPoster) {
+        logger.d("attachNotificationPoster: $from $poster")
+        attachedPoster.register(poster)
+    }
 
     fun registerPostedByApp(n: Notification) {
         logger.p("registerPostedByApp: $n")

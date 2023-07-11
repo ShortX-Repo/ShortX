@@ -1,13 +1,21 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.app.Application
+import android.content.Context
 import com.topjohnwu.superuser.Shell
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.notification.INotificationPoster
+import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP
 import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
+import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.util.Logger
@@ -23,32 +31,76 @@ object SystemUIHook {
                 onCreate
             ) { param ->
                 val app: Application = param.thisObject as Application
-                logger.d("After onCreate: ${app.applicationContext}")
+                logger.d("After onCreate: $app")
                 val shortx = ShortXManagerNative.shortX
                 logger.i("ShortX: $shortx")
-
-                val shell = object : ISu.Stub() {
-                    override fun exe(command: Array<String>): ByteArrayWrapper {
-                        logger.i("execute: ${command.joinToString()}")
-                        return Shell.cmd(*command)
-                            .exec().apply {
-                                logger.i("Shell res: out: ${this.out} err: ${this.err}")
-                            }.let {
-                                ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                                    .addAllErr(it.err)
-                                    .build()
-                            }.let {
-                                ByteArrayWrapper(it.toByteArray())
-                            }
-                    }
+                shortx?.let {
+                    installShellImpl(it)
+                    installNotificationPoster(it, app.applicationContext)
                 }
-
-                shortx?.attachSUImpl("SystemUI", shell)
-                logger.i("Attached.")
             }
         }
     }.onFailure {
         logger.e(it, "hookApp")
+    }
+
+    private fun installShellImpl(shortx: IShortX) {
+        logger.d("installShellImpl")
+        val shell = object : ISu.Stub() {
+            override fun exe(command: Array<String>): ByteArrayWrapper {
+                logger.i("execute: ${command.joinToString()}")
+                return Shell.cmd(*command)
+                    .exec().apply {
+                        logger.i("Shell res: out: ${this.out} err: ${this.err}")
+                    }.let {
+                        ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                            .addAllErr(it.err)
+                            .build()
+                    }.let {
+                        ByteArrayWrapper(it.toByteArray())
+                    }
+            }
+        }
+
+        shortx.attachSUImpl("SystemUI", shell)
+        logger.i("installShellImpl success.")
+    }
+
+    private fun installNotificationPoster(shortx: IShortX, context: Context) {
+        logger.d("installNotificationPoster")
+        val appRes = AppResources(
+            context,
+            BuildProp.APP_PACKAGE_NAME
+        )
+        val notificationPoster by lazy {
+            NotificationPoster(
+                context,
+                "ShortX silence",
+                "ShortX alert",
+                "ShortX",
+                getIcon = { remixNam ->
+                    val resName = Remix.allFlat[remixNam]
+                    resName?.let {
+                        appRes.getIcon(it)
+                    }
+                },
+                getBitmap = {
+                    appRes.getBitmap(it)
+                }
+            )
+        }
+
+        val stub = object : INotificationPoster.Stub() {
+            override fun post(data: ByteArrayWrapper) {
+                runCatching {
+                    val n = PostNotification.parseFrom(data.byte)
+                    notificationPoster.invoke(n)
+                }
+            }
+        }
+
+        shortx.attachNotificationPoster("SystemUI", stub)
+        logger.i("installNotificationPoster success.")
     }
 }
 

@@ -10,11 +10,7 @@ import android.media.RingtoneManager
 import tornaco.apps.shortx.core.compat.NotificationCompat
 import tornaco.apps.shortx.core.compat.NotificationCompat.VISIBILITY_PUBLIC
 import tornaco.apps.shortx.core.compat.NotificationManagerCompat
-import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.PostNotification
-import tornaco.apps.shortx.core.proto.gv.GlobalVar
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import java.util.Objects
@@ -30,17 +26,10 @@ class NotificationPoster(
     private val logger = Logger("NotificationPoster")
 
     operator fun invoke(
-        notification: PostNotification,
-        contextData: ContextData,
-        globalVarsLazy: () -> List<GlobalVar>
+        notification: PostNotification
     ) {
         logger.d("post: ${notification.tag} ${notification.smallIcon}")
         with(notification) {
-            val inflatedTitle =
-                title.inflateContextMap(contextData).replaceGlobalVarValues { globalVarsLazy() }
-            val inflatedMessage =
-                message.inflateContextMap(contextData).replaceGlobalVarValues { globalVarsLazy() }
-
             val importantChannel = createImportantNotificationChannel(context)
             val silenceChannel = createSilenceNotificationChannel(context)
 
@@ -78,13 +67,13 @@ class NotificationPoster(
             )
 
             val style = NotificationCompat.BigTextStyle()
-            style.bigText(inflatedMessage)
-            style.setBigContentTitle(inflatedTitle)
+            style.bigText(notification.message)
+            style.setBigContentTitle(notification.title)
 
             val curSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-            builder.setContentTitle(inflatedTitle)
-                .setContentText(inflatedMessage)
+            builder.setContentTitle(notification.title)
+                .setContentText(notification.message)
                 .setSmallIcon(android.R.drawable.stat_sys_warning)
                 .setVisibility(VISIBILITY_PUBLIC)
                 .setPriority(if (isImportant) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_LOW)

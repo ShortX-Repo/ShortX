@@ -386,6 +386,9 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1487,6 +1490,17 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getBTBondedDevices();
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_attachNotificationPoster:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          tornaco.apps.shortx.core.notification.INotificationPoster _arg1;
+          _arg1 = tornaco.apps.shortx.core.notification.INotificationPoster.Stub.asInterface(data.readStrongBinder());
+          this.attachNotificationPoster(_arg0, _arg1);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -3663,6 +3677,26 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(from);
+          _data.writeStrongBinder((((poster!=null))?(poster.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_attachNotificationPoster, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().attachNotificationPoster(from, poster);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3763,6 +3797,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_deleteAudioRecordFile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 95);
     static final int TRANSACTION_exportAudioRecordFile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 96);
     static final int TRANSACTION_getBTBondedDevices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 97);
+    static final int TRANSACTION_attachNotificationPoster = (android.os.IBinder.FIRST_CALL_TRANSACTION + 98);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3916,4 +3951,5 @@ public interface IShortX extends android.os.IInterface
   public void deleteAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file) throws android.os.RemoteException;
   public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getBTBondedDevices() throws android.os.RemoteException;
+  public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException;
 }

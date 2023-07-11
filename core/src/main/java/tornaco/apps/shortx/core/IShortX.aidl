@@ -7,7 +7,8 @@ import tornaco.apps.shortx.core.rule.IPkgSetObserver;
 import tornaco.apps.shortx.core.rule.IRuleObserver;
 import tornaco.apps.shortx.core.rule.IDAObserver;
 import tornaco.apps.shortx.core.IAudioRecordingListener;
-import  tornaco.apps.shortx.core.rule.action.su.ISu;
+import tornaco.apps.shortx.core.rule.action.su.ISu;
+import tornaco.apps.shortx.core.notification.INotificationPoster;
 
 interface IShortX {
     Version version();
@@ -172,4 +173,6 @@ interface IShortX {
     void exportAudioRecordFile(in ByteArrayWrapper file, in ParcelFileDescriptor pfd);
 
     List<ByteArrayWrapper> getBTBondedDevices();
+
+    void attachNotificationPoster(String from, in INotificationPoster poster);
 }

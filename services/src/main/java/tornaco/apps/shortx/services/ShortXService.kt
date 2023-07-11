@@ -12,6 +12,7 @@ import android.os.ServiceManager
 import android.os.UserHandle
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ShellRes
@@ -285,6 +286,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     BTHelper.getBTBondedDevices().map { ByteArrayWrapper(it.toByteArray()) }
                 }
             } ?: emptyList()
+        }
+
+        override fun attachNotificationPoster(from: String, poster: INotificationPoster) {
+            shortXContext.notification.attachNotificationPoster(from, poster)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

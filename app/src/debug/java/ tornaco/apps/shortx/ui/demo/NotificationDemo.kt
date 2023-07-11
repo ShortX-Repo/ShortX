@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.notification.NotificationPoster
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.res.Remix
@@ -127,8 +126,7 @@ fun NotificationDemo() {
                 .setTitle("This is title")
                 .setMessage("This is message")
                 .build(),
-            contextData = ContextData.obtain()
-        ) { emptyList() }
+        )
     }) {
         Text(text = "Poster")
     }
