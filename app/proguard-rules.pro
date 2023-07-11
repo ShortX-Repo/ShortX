@@ -120,3 +120,8 @@
 -dontwarn android.app.INotificationManager
 -dontwarn android.app.ActivityTaskManager
 -dontwarn android.app.IActivityTaskManager
+-dontwarn android.media.projection.IMediaProjection$Stub
+-dontwarn android.media.projection.IMediaProjection
+-dontwarn android.media.projection.IMediaProjectionManager$Stub
+-dontwarn android.media.projection.IMediaProjectionManager
+-dontwarn android.util.MathUtils
