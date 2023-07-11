@@ -8,7 +8,7 @@ import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 
 
-fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(contextData: ContextData): ActionEvaluateRecord {
+fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(contextData: ContextData): ActionEvaluateRecord? {
     val srcTitle = contextData.get(ContextDataMapping.Context.contextSrcTitle.name)
     val srcEvent: ContextSrcEvent =
         (contextData.get(ContextDataMapping.Context.contextSrcEvent.name) as ContextSrcEvent?)
@@ -42,6 +42,10 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(contextData: ContextDa
                 .setSrcEvent(srcEvent)
                 .setAction(action)
                 .setTimeStamp(System.currentTimeMillis()).build()
+        }
+
+        else -> {
+            null
         }
     }
 }

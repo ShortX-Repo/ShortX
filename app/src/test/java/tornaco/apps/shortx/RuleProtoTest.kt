@@ -1,10 +1,12 @@
 package tornaco.apps.shortx
 
+import com.google.protobuf.Descriptors
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import tornaco.apps.shortx.core.proto.action.InjectKeyCode
 import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
@@ -16,6 +18,7 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.RuleEngineFactory
+
 
 class RuleProtoTest {
     @Before
@@ -93,5 +96,26 @@ class RuleProtoTest {
                 listOf(rule)
             )
         }
+    }
+
+    @Test
+    fun test_unpack_diff_type() {
+        val action1 = InjectKeyCode.newBuilder().setId("123").setIsDisabled(true).build()
+
+        // ERROR: val cast = action1.pack_().unpack_(NoAction::class.java)
+
+        val idDescriptor: Descriptors.FieldDescriptor =
+            action1.descriptorForType.findFieldByName("id")
+        val id: String = action1.getField(idDescriptor) as String
+
+        val isDisabledDescriptor: Descriptors.FieldDescriptor =
+            action1.descriptorForType.findFieldByName("isDisabled")
+        val isDisabled: Boolean = action1.getField(isDisabledDescriptor) as Boolean
+
+        println(id)
+        println(isDisabled)
+
+        Assert.assertEquals("123", id)
+        Assert.assertTrue(isDisabled)
     }
 }

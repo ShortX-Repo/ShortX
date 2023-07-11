@@ -124,7 +124,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext) {
             actionEvaluateResultListener = { result, context ->
                 logger.d("actionEvaluateResultListener: $result")
                 if (isActionEvaluateRecorderEnabled()) {
-                    actionEvaluateRecorder.add(result.toActionEvaluateRecord(context))
+                    result.toActionEvaluateRecord(context)?.let { actionEvaluateRecorder.add(it) }
                 }
             },
             conditionEvaluateResultListener = {

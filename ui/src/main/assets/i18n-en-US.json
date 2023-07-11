@@ -125,6 +125,8 @@
   "ui.common.coming.soon": "Coming soon~",
   "ui.common.note": "Note",
   "ui.common.sort": "Sort",
+  "ui.common.toggle.enable.disable": "Enable/Disable",
+  "ui.common.toggle.enable.disable.summary": "Disable Action will not be execute",
   "ui.common.execute": "Execute",
   "ui.common.unselected": "Please select",
   "ui.common.insert.above": "Insert above",

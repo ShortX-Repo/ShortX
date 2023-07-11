@@ -3,12 +3,21 @@ package tornaco.apps.shortx.services.rule
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
+import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.prebuiltActorFor
+
+data class ActionAttrs(
+    val id: String,
+    val isDisabled: Boolean
+)
+
 
 class ActionEvaluatorImpl(
     private val context: Context,
@@ -34,6 +43,14 @@ class ActionEvaluatorImpl(
         if (actor == null) {
             return ActionEvaluator.EvaluateResult.Break(action)
         }
+
+        // Do not worry about unpack cost, protobuf has cache.
+        val unPacked = action unpack_ actor.actionsCanHandle()
+        val attrs = extractActionAttrs(unPacked)
+        if (attrs != null && attrs.isDisabled) {
+            return ActionEvaluator.EvaluateResult.Disabled(action)
+        }
+
         return kotlin.runCatching {
             actor.handle(
                 HandleParams(
@@ -54,6 +71,23 @@ class ActionEvaluatorImpl(
             }
         }.apply {
             evaluateResultListener(this, contextData)
+        }
+    }
+
+    private fun extractActionAttrs(action: ProtoMessage): ActionAttrs? {
+        return runCatching {
+            val idDescriptor: Descriptors.FieldDescriptor =
+                action.descriptorForType.findFieldByName("id")
+            val id: String = action.getField(idDescriptor) as String
+
+            val isDisabledDescriptor: Descriptors.FieldDescriptor =
+                action.descriptorForType.findFieldByName("isDisabled")
+            val isDisabled: Boolean = action.getField(isDisabledDescriptor) as Boolean
+
+            ActionAttrs(id, isDisabled)
+        }.getOrElse {
+            logger.e(it, "extractActionAttrs: $action")
+            null
         }
     }
 }

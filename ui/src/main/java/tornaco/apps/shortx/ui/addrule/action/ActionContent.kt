@@ -5,7 +5,15 @@ package tornaco.apps.shortx.ui.addrule.action
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.onDebugBuild
@@ -30,9 +39,31 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.contextData
-import tornaco.apps.shortx.ui.addrule.action.selector.*
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectSource
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.InputTextSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.appActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.extActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.lifeActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberActionSelectorDialogState
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
+import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.NoteRow
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.VerticalDivider
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
 import kotlin.reflect.KClass
@@ -156,7 +187,8 @@ private fun Actions(
                     handler.addAction(
                         newAction.clone(
                             id = currentAction.id,
-                            note = currentAction.note
+                            note = currentAction.note,
+                            isEnabled = currentAction.isEnabled
                         )
                     )
                 }
@@ -200,8 +232,11 @@ private fun Actions(
                                 addAll(labelLinesForAction(action = action))
                                 onDebugBuild { add(action.id) }
                             },
+                            textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
                             icon = {
-                                ActionIcon(action)
+                                ActionIcon(action) {
+                                    clickDropdownState.open()
+                                }
                             },
                             action1 = {
                                 if (action.contextData.isNotEmpty()) {
@@ -335,6 +370,19 @@ private fun Actions(
                                     )
                                 }
                             ),
+                            DropdownItem(
+                                labelLines = listOf(
+                                    LocalI18N.current["ui.common.toggle.enable.disable"],
+                                    LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                                ),
+                                data = action to "enableDisable",
+                                icon = {
+                                    RemixIcon(
+                                        remixName = Remix.System.toggle_line,
+                                        tint = colorForAction(action::class)
+                                    )
+                                }
+                            ),
 
                             ), onSelect = {
                             when (it.data.second) {
@@ -356,6 +404,10 @@ private fun Actions(
 
                                 "cp" -> {
                                     handler.copy(action)
+                                }
+
+                                "enableDisable" -> {
+                                    handler.enableDisable(action)
                                 }
 
                                 "note" -> {
@@ -397,10 +449,11 @@ private fun Actions(
 }
 
 @Composable
-fun ActionIcon(action: Action) {
+fun ActionIcon(action: Action, onClick: (() -> Unit)? = null) {
     ColoredIcon(
         size = 36.dp,
-        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha)
+        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
+        onClick = onClick
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
@@ -434,6 +487,7 @@ class ActionHandler(
     val pasteAbove: (anchor: Action) -> Unit = { },
     val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
+    val enableDisable: (action: Action) -> Unit = {},
     val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
     val execute: suspend (action: Action) -> Unit = { },
     val executeAll: suspend () -> Unit = { },

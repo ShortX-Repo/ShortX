@@ -37,6 +37,15 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         copy = { action ->
             this.copy(action)
         },
+        enableDisable = { action ->
+            addAction(
+                action.clone(
+                    id = action.id,
+                    note = action.note,
+                    isEnabled = !action.isEnabled
+                )
+            )
+        },
         pasteAbove = { anchor ->
             this.pasteActionAbove(anchor)
         },

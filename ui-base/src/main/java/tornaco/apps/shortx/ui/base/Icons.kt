@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.base
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -32,12 +33,16 @@ fun ColoredIcon(
     size: Dp = 42.dp,
     padding: Dp = 4.dp,
     color: Color = MaterialTheme.colorScheme.surfaceVariant,
+    onClick: (() -> Unit)? = null,
     icon: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
+            .thenIf(Modifier.clickable {
+                onClick?.invoke()
+            }, onClick != null)
             .background(color = color)
             .padding(padding),
         verticalArrangement = Arrangement.Center,

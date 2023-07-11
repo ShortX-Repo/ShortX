@@ -13,16 +13,19 @@ import "shortx/Settings.proto";
 message NoAction {
   string icon = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 message TakeScreenshot {
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 message ExpandNotification {
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -30,6 +33,7 @@ message ExpandNotification {
 message StartActivity {
   string componentNameAsString = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -38,6 +42,7 @@ message StartActivityIntent {
   AndroidIntent intent = 1;
   int32 userId = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -46,6 +51,7 @@ message StartActivityUrlSchema {
   string urlSchema = 1;
   int32 userId = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -53,6 +59,7 @@ message StartActivityUrlSchema {
 message ShellCommand {
   string command = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -60,6 +67,7 @@ message ShellCommand {
 message InputText {
   string text = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -67,6 +75,7 @@ message InputText {
 message ShowToast {
   string message = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -74,6 +83,7 @@ message ShowToast {
 message Delay {
   int64 time = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -81,6 +91,7 @@ message Delay {
 message ExecuteMVEL {
   string expression = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -91,12 +102,14 @@ message RemoteExecuteMVEL {
   string icon = 3;
   string expression = 4;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message HideOverlayButton {
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 
@@ -109,6 +122,7 @@ message ShowOverlayButton {
   string tag = 3;
   OverlayOrientation orientation = 4;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -116,6 +130,7 @@ message ShowOverlayButton {
 message LaunchApp {
   AppPkg appPkg = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -124,6 +139,7 @@ message StopApp {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -133,6 +149,7 @@ message SetAppEnabled {
   repeated string pkgSets = 2;
   bool enable = 3;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -142,6 +159,7 @@ message SetAppSuspend {
   repeated string pkgSets = 2;
   bool suspend = 3;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -150,6 +168,7 @@ message StartAppProcess {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -158,6 +177,7 @@ message SetAppInactive {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -165,6 +185,7 @@ message SetAppInactive {
 message SetWifiEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -172,6 +193,7 @@ message SetWifiEnabled {
 message SetBTEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -179,6 +201,7 @@ message SetBTEnabled {
 message SetHotSpotEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -188,6 +211,7 @@ message SetDataEnabled {
   bool hasSpecificSlotId = 2;
   int32 slotId = 3;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -195,6 +219,7 @@ message SetDataEnabled {
 message SetNFCEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -202,6 +227,7 @@ message SetNFCEnabled {
 message SetDNDEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -209,6 +235,7 @@ message SetDNDEnabled {
 message SetDarkModeEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -216,6 +243,7 @@ message SetDarkModeEnabled {
 message SetFlashLightEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -223,6 +251,7 @@ message SetFlashLightEnabled {
 message SetLocationEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -230,12 +259,14 @@ message SetLocationEnabled {
 message SetSensorsOffEnabled {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message BreakActionExecute {
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -261,6 +292,7 @@ message ShowAlertDialog {
   string message = 8;
   bool cancelable = 9;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -269,6 +301,7 @@ message ShowDanmu {
   string text = 1;
   string icon = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -282,6 +315,7 @@ message WhileLoop {
   int32 delay = 5;
   int32 repeatTimes = 6;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -290,6 +324,7 @@ message CreatePkgSet {
   string label = 1;
   string description = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -299,6 +334,7 @@ message WriteGlobalVar {
   string valueAsString = 2;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -306,6 +342,7 @@ message WriteGlobalVar {
 message CreateGlobalVar {
   GlobalVar globalVar = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -313,6 +350,7 @@ message CreateGlobalVar {
 message DeleteGlobalVar {
   string varName = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -323,6 +361,7 @@ message AddToGlobalVar {
   string valueAsString = 2;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -333,6 +372,7 @@ message MapNav {
   MapApp app = 3;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -357,6 +397,7 @@ message PostNotification {
   AppPkg pkgToLaunchOnClick = 9;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -365,6 +406,7 @@ message FromDA {
   string daId = 1;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -375,6 +417,7 @@ message FindAndClickViewByText {
   int64 timeout = 3;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -383,6 +426,7 @@ message InputTap {
   int32 x = 1;
   int32 y = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -394,12 +438,14 @@ message InputSwipe {
   int32 endY = 4;
   int64 swipeTime = 5;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message WaitForIdle {
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -413,11 +459,13 @@ message IfThenElse {
   repeated google.protobuf.Any _elseActions = 5;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message ReadClipboard {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -425,6 +473,7 @@ message ReadClipboard {
 message WriteClipboard {
   string text = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -432,6 +481,7 @@ message WriteClipboard {
 message SetRingerMode {
   RingerMode mode = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -448,6 +498,7 @@ enum RingerMode {
 message SetBrightness {
   int32 value = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -455,6 +506,7 @@ message SetBrightness {
 message SetAutoBrightness {
   bool enable = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -462,6 +514,7 @@ message SetAutoBrightness {
 message StopService {
   repeated AppComponent services = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -470,6 +523,7 @@ message RemoveTasks {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -477,6 +531,7 @@ message RemoveTasks {
 message KillProcessByName {
   repeated ProcessName processes = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -485,6 +540,7 @@ message RemoveNotificationForPackage {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -494,6 +550,7 @@ message HttpRequest {
   google.protobuf.Any adapter = 2;
 
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -507,39 +564,46 @@ message HttpRequestRawAdapter {}
 message InjectKeyCode {
   int32 keyCode = 1;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message WakeupScreen {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message SleepScreen {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 // Backwards stack.
 message StartPreviousApp {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 // Forwards stack.
 message StartNextApp {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 // Two app loop.
 message StartLastApp {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message StopCurrentApp {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
@@ -548,11 +612,13 @@ message AdjustVolume {
   VolumeDirection direction = 1;
   bool showUI = 2;
 
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 }
 
 message Vibrate {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 
@@ -563,6 +629,7 @@ message Vibrate {
 
 
 message AudioRecording {
+  bool isDisabled = 98;
   string note = 99;
   string id = 100;
 

@@ -5,7 +5,16 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +39,7 @@ fun ListItem(
     modifier: Modifier = Modifier,
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
+    textDecoration: TextDecoration = TextDecoration.None,
     action1: @Composable RowScope.() -> Unit = {},
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
@@ -56,7 +67,10 @@ fun ListItem(
             icon()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
-                Text(text = titleLines[0], style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = titleLines[0],
+                    style = MaterialTheme.typography.titleMedium.copy(textDecoration = textDecoration)
+                )
                 if (titleLines.size > 1) {
                     titleLines.subList(1, titleLines.size).forEach {
                         if (it.contains(PREFIX_APP_ICON)) {
@@ -66,7 +80,7 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_APP_ICON),
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
                                 )
                             }
                         } else if (it.contains(PREFIX_MD_ICON)) {
@@ -79,11 +93,14 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_MD_ICON),
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
                                 )
                             }
                         } else {
-                            Text(text = it, style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
+                            )
                         }
                     }
                 }

@@ -60,6 +60,7 @@ interface ActionEvaluator {
             EvaluateResult
 
         data class Break(val action: ProtoAny) : EvaluateResult
+        data class Disabled(val action: ProtoAny) : EvaluateResult
     }
 }
 
@@ -184,6 +185,8 @@ class DefaultRuleEngine(
                                 } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                                     logger.w("evaluate break!")
                                     return@loop
+                                } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                                    logger.d("action is disabled: ${evaRes.action.typeUrl}")
                                 }
                             }
                         }
@@ -223,6 +226,8 @@ class DefaultRuleEngine(
                     } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                         logger.w("evaluate break!")
                         return@loop
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
                     }
                 }
             }
