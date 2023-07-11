@@ -9,13 +9,25 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,7 +44,22 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.valueString
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -108,40 +135,52 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
                 }) { paddingValues ->
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-                    contentPadding = paddingValues
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
                 ) {
-                    items(state.globalVars) {
-                        androidx.compose.material.Card(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                            shape = ShortXCardRoundedCornerShape,
-                            elevation = 0.dp
-                        ) {
-                            Box {
-                                val menuState = listItemOverflowMenu(
-                                    globalVar = it,
-                                    onDelete = {
-                                        vm.delete(it.name)
-                                    },
-                                    onEdit = { goToDetail(it.name) }
-                                )
+                    val searchBarState = rememberSearchBarState(state.globalVars.size)
+                    SearchBar(searchBarState = searchBarState, modifier = Modifier.padding(16.dp))
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                    ) {
+                        items(state.globalVars.filter {
+                            searchBarState.keyword.isBlank() || it.name.contains(
+                                searchBarState.keyword,
+                                ignoreCase = true
+                            )
+                        }) {
+                            androidx.compose.material.Card(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                                shape = ShortXCardRoundedCornerShape,
+                                elevation = 0.dp
+                            ) {
+                                Box {
+                                    val menuState = listItemOverflowMenu(
+                                        globalVar = it,
+                                        onDelete = {
+                                            vm.delete(it.name)
+                                        },
+                                        onEdit = { goToDetail(it.name) }
+                                    )
 
-                                GlobalVarListItem(modifier = Modifier,
-                                    name = it.name,
-                                    value = it.valueString(),
-                                    type = it.type.toType()?.label() ?: "?",
-                                    onClick = {
-                                        goToDetail(it.name)
-                                    },
-                                    onLongClick = {
-                                        menuState.open()
-                                    })
+                                    GlobalVarListItem(modifier = Modifier,
+                                        name = it.name,
+                                        value = it.valueString(),
+                                        type = it.type.toType()?.label() ?: "?",
+                                        onClick = {
+                                            goToDetail(it.name)
+                                        },
+                                        onLongClick = {
+                                            menuState.open()
+                                        })
+                                }
+
                             }
-
                         }
                     }
                 }
