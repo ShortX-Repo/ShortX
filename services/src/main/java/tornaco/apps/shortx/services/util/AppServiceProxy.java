@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Debug;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -36,7 +35,7 @@ public abstract class AppServiceProxy {
     private ProxyTask mTask;
     private String mName = " unnamed";
     // Service call timeout (in seconds)
-    private int mTimeout = 3;
+    private int mTimeout = 60;
     private long mStartTime;
     private boolean mTaskSet = false;
     private boolean mTaskCompleted = false;
@@ -47,9 +46,6 @@ public abstract class AppServiceProxy {
         mContext = context;
         mIntent = intent;
         mTag = getClass().getSimpleName();
-        if (Debug.isDebuggerConnected()) {
-            mTimeout <<= 2;
-        }
     }
 
     /**

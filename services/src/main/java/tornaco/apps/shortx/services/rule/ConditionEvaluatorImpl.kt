@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.cond.Cond
 import tornaco.apps.shortx.services.rule.cond.prebuiltCondFor
 
@@ -81,14 +82,32 @@ class ConditionEvaluatorImpl(
                     logger.d("replace codeName: $codeName, after replace: $expressionTranslation")
                 }
 
-                val matchMVEL = evaluate(
-                    MatchMVEL.newBuilder()
-                        .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
-                        .setExpression(expressionTranslation).build().pack_(),
-                    contextData
-                )
-                logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $matchMVEL")
-                return matchMVEL.isMatch()
+                runCatching {
+                    val res =
+                        MVELExecutor(context, shortXContext, expressionTranslation).invoke(varMap)
+                    logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $res")
+                    val matchRes = res.toString().toBooleanStrictOrNull() ?: false
+                    evaluateResultListener(
+                        ConditionEvaluator.EvaluateResult.Success(
+                            MatchMVEL.newBuilder()
+                                .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
+                                .setExpression(expressionTranslation).build().pack_(),
+                            matchRes
+                        )
+                    )
+                    matchRes
+                }.getOrElse {
+                    logger.e(it, "Match MVEL error")
+                    evaluateResultListener(
+                        ConditionEvaluator.EvaluateResult.Fail(
+                            MatchMVEL.newBuilder()
+                                .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
+                                .setExpression(expressionTranslation).build().pack_(),
+                            it
+                        )
+                    )
+                    false
+                }
             }
 
             else -> {
