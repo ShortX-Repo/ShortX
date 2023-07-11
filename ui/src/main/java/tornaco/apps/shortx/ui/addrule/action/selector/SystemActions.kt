@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.util.OsUtils
@@ -156,11 +155,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.AudioRecording::class -> {
-                if (BuildProp.APP_IS_DEBUG) {
-                    audioRecordingState.show(source.getActionAs())
-                } else {
-                    comingSoonDialogState.show()
-                }
+                audioRecordingState.show(source.getActionAs())
                 true
             }
 
