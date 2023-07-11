@@ -192,3 +192,17 @@ message RequireWifiDisconnected {
   string note = 99;
   string id = 100;
 }
+
+message RequireBTConnected {
+  string device = 1;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message RequireBTDisconnected {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

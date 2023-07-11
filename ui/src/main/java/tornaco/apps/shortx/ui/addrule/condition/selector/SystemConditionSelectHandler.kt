@@ -8,7 +8,9 @@ import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -60,6 +62,16 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     WifiSSIDSelectorDialog(state = wifiConnectedToSelectorState)
 
+    val btConnectedSelectorState = rememberBTDeviceSelectorState(
+        title = LocalI18N.current["ui.conditions.bt.connected"],
+        message = LocalI18N.current["ui.conditions.bt.connected.target"],
+        showSymbolButton = false,
+        onSelected = {
+            addCondition(Condition.RequireBTConnected(requiredDevice = it))
+        }
+    )
+    BTDeviceSelectorDialog(state = btConnectedSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.ScreenIsOn::class -> {
@@ -83,12 +95,22 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.RequireWifiConnected::class -> {
-                wifiConnectedToSelectorState.show()
+                wifiConnectedToSelectorState.show(source.getConditionAs<Condition.RequireWifiConnected>()?.requiredSSID)
                 true
             }
 
             Condition.RequireWifiDisconnected::class -> {
                 addCondition(Condition.RequireWifiDisconnected())
+                true
+            }
+
+            Condition.RequireBTConnected::class -> {
+                btConnectedSelectorState.show(source.getConditionAs<Condition.RequireBTConnected>()?.requiredDevice)
+                true
+            }
+
+            Condition.RequireBTDisconnected::class -> {
+                addCondition(Condition.RequireBTDisconnected())
                 true
             }
 

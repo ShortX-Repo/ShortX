@@ -24,6 +24,8 @@ fun SystemConditions(subscribeState: SubscribeState, setCondition: (Condition) -
         Condition.TimeInRange::class,
         Condition.RequireWifiConnected::class,
         Condition.RequireWifiDisconnected::class,
+        Condition.RequireBTConnected::class,
+        Condition.RequireBTDisconnected::class,
     ).map {
         SelectorItem(
             type = it,

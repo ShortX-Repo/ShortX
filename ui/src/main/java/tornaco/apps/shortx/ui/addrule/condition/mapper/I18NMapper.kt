@@ -98,6 +98,18 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireBTConnected::class -> {
+            listOf(
+                i18N["ui.conditions.bt.connected"]
+            )
+        }
+
+        Condition.RequireBTDisconnected::class -> {
+            listOf(
+                i18N["ui.conditions.bt.not.connected"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -206,6 +218,19 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireWifiDisconnected -> {
             listOf(
                 i18N["ui.conditions.wifi.not.connected"],
+            )
+        }
+
+        is Condition.RequireBTConnected -> {
+            listOf(
+                i18N["ui.conditions.bt.connected"],
+                condition.requiredDevice
+            )
+        }
+
+        is Condition.RequireBTDisconnected -> {
+            listOf(
+                i18N["ui.conditions.bt.not.connected"],
             )
         }
     }

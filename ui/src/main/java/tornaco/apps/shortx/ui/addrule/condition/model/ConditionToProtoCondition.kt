@@ -9,6 +9,8 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
+import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
@@ -193,6 +195,23 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.RequireWifiDisconnected -> {
             RequireWifiDisconnected.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .build()
+        }
+
+        is Condition.RequireBTConnected -> {
+            RequireBTConnected.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setDevice(requiredDevice)
+                .build()
+        }
+
+        is Condition.RequireBTDisconnected -> {
+            RequireBTDisconnected.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

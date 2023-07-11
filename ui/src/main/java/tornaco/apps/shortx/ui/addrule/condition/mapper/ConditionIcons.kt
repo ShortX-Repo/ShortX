@@ -68,6 +68,14 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.signal_wifi_line
         }
 
+        Condition.RequireBTConnected::class -> {
+            Remix.Device.bluetooth_fill
+        }
+
+        Condition.RequireBTDisconnected::class -> {
+            Remix.Device.bluetooth_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

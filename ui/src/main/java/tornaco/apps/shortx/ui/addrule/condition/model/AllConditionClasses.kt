@@ -16,4 +16,6 @@ val allConditionClasses = listOf(
     Condition.ChargeState::class,
     Condition.RequireWifiConnected::class,
     Condition.RequireWifiDisconnected::class,
+    Condition.RequireBTConnected::class,
+    Condition.RequireBTDisconnected::class,
 )

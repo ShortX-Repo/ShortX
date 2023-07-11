@@ -92,7 +92,14 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireWifiDisconnected
     },
-
+    RequireBTConnected {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireBTConnected
+    },
+    RequireBTDisconnected {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireBTDisconnected
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {
