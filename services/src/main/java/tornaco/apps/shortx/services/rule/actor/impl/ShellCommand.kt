@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.ShellCommand
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -18,7 +19,9 @@ object ShellCommand : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val sc = action unpack_ ShellCommand::class.java
-        val command = sc.command.inflateContextMap(contextData)
+        val command = sc.command.inflateContextMap(contextData).replaceGlobalVarValues {
+            shortXContext.rule.getAllGlobalVars()
+        }
         val res =
             shortXContext.shell.executeCommand(command)
         logger.d("Shell command: $command")

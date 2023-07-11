@@ -6,58 +6,67 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 
-fun AndroidIntent.toIntent(contextData: ContextData) = Intent().apply {
-    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    this@toIntent.action.ifEmpty { Intent.ACTION_VIEW }.let { action = it }
+fun AndroidIntent.toIntent(contextData: ContextData, globalVarsLazy: () -> List<GlobalVar>) =
+    Intent().apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        this@toIntent.action.ifEmpty { Intent.ACTION_VIEW }.let { action = it }
 
-    val pkgName = this@toIntent.pkgName.inflateContextMap(contextData)
-    val className = this@toIntent.className.inflateContextMap(contextData)
-    if (pkgName.isNotBlank()) {
-        setPackage(pkgName)
-        if (className.isNotBlank()) {
-            setClassName(pkgName, className)
+        val pkgName = this@toIntent.pkgName.inflateContextMap(contextData)
+            .replaceGlobalVarValues(globalVarsLazy)
+        val className = this@toIntent.className.inflateContextMap(contextData)
+            .replaceGlobalVarValues(globalVarsLazy)
+        if (pkgName.isNotBlank()) {
+            setPackage(pkgName)
+            if (className.isNotBlank()) {
+                setClassName(pkgName, className)
+            }
         }
-    }
-    val data = this@toIntent.data
-    if (data.isNotBlank()) {
-        setData(Uri.parse(data.inflateContextMap(contextData)))
-    }
+        val data = this@toIntent.data
+        if (data.isNotBlank()) {
+            setData(
+                Uri.parse(
+                    data.inflateContextMap(contextData).replaceGlobalVarValues(globalVarsLazy)
+                )
+            )
+        }
 
-    this@toIntent.extrasList?.let { extras ->
-        extras.forEach {
-            @Suppress("MoveVariableDeclarationIntoWhen")
-            val type: AndroidIntentExtraType = it.type
-            when (type) {
-                AndroidIntentExtraType.Int -> {
-                    putExtra(it.key, it.value.toInt())
-                }
+        this@toIntent.extrasList?.let { extras ->
+            extras.forEach {
+                @Suppress("MoveVariableDeclarationIntoWhen")
+                val type: AndroidIntentExtraType = it.type
+                when (type) {
+                    AndroidIntentExtraType.Int -> {
+                        putExtra(it.key, it.value.toInt())
+                    }
 
-                AndroidIntentExtraType.Long -> {
-                    putExtra(it.key, it.value.toLong())
-                }
+                    AndroidIntentExtraType.Long -> {
+                        putExtra(it.key, it.value.toLong())
+                    }
 
-                AndroidIntentExtraType.String -> {
-                    putExtra(it.key, it.value)
-                }
+                    AndroidIntentExtraType.String -> {
+                        putExtra(it.key, it.value)
+                    }
 
-                AndroidIntentExtraType.Bool -> {
-                    putExtra(it.key, it.value.toBoolean())
-                }
+                    AndroidIntentExtraType.Bool -> {
+                        putExtra(it.key, it.value.toBoolean())
+                    }
 
-                AndroidIntentExtraType.Float -> {
-                    putExtra(it.key, it.value.toFloat())
-                }
+                    AndroidIntentExtraType.Float -> {
+                        putExtra(it.key, it.value.toFloat())
+                    }
 
-                AndroidIntentExtraType.Double -> {
-                    putExtra(it.key, it.value.toDouble())
-                }
+                    AndroidIntentExtraType.Double -> {
+                        putExtra(it.key, it.value.toDouble())
+                    }
 
-                AndroidIntentExtraType.UNRECOGNIZED -> {
-                    putExtra(it.key, it.value)
+                    AndroidIntentExtraType.UNRECOGNIZED -> {
+                        putExtra(it.key, it.value)
+                    }
                 }
             }
         }
-    }
 
-}
+    }

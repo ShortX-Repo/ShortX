@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -26,9 +27,13 @@ object ExecuteMVEL : Actor {
                 entry.value?.let {
                     "\"$it\""
                 }
-            }).apply {
-                logger.d("inflated expression: $this")
-            }
+            })
+                .replaceGlobalVarValues {
+                    params.shortXContext.rule.getAllGlobalVars()
+                }
+                .apply {
+                    logger.d("inflated expression: $this")
+                }
         ).invoke(params.contextData.map).apply {
             params.contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
         }

@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -27,7 +28,9 @@ object HttpRequest : Actor {
     ): Unit = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
-        val url = data.url.inflateContextMap(contextData)
+        val url = data.url.inflateContextMap(contextData).replaceGlobalVarValues {
+            shortXContext.rule.getAllGlobalVars()
+        }
         logger.d("url: $url")
         handleUrl(url, data.adapter).apply {
             if (data.adapter is_ HttpRequestJsonMapAdapter::class.java) {

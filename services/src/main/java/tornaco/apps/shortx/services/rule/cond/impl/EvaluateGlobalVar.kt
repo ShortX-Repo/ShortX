@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.isList
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.splitAsGlobalVarOpPayloadStringList
 import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.unpack_
@@ -43,6 +44,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.first()
                                 .toLong() > data.payload.value.inflateContextMap(contextData)
+                                .replaceGlobalVarValues {
+                                    shortXContext.rule.getAllGlobalVars()
+                                }
                                 .toLong()
                         }.getOrElse {
                             logger.e(it, "GreaterThan err")
@@ -60,6 +64,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.first()
                                 .toLong() >= data.payload.value.inflateContextMap(contextData)
+                                .replaceGlobalVarValues {
+                                    shortXContext.rule.getAllGlobalVars()
+                                }
                                 .toLong()
                         }.getOrElse {
                             logger.e(it, "GreaterThanOrEQ err")
@@ -77,6 +84,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.first()
                                 .toLong() <= data.payload.value.inflateContextMap(contextData)
+                                .replaceGlobalVarValues {
+                                    shortXContext.rule.getAllGlobalVars()
+                                }
                                 .toLong()
                         }.getOrElse {
                             logger.e(it, "LessThanOrEQ err")
@@ -92,6 +102,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.first()
                                 .toLong() < data.payload.value.inflateContextMap(contextData)
+                                .replaceGlobalVarValues {
+                                    shortXContext.rule.getAllGlobalVars()
+                                }
                                 .toLong()
                         }.getOrElse {
                             logger.e(it, "LessThan err")
@@ -107,7 +120,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.first() == data.payload.value.inflateContextMap(
                                 contextData
-                            )
+                            ).replaceGlobalVarValues {
+                                shortXContext.rule.getAllGlobalVars()
+                            }
                         }.getOrElse {
                             logger.e(it, "EqualTo err")
                             false
@@ -116,7 +131,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue == data.payload.value.splitAsGlobalVarOpPayloadStringList()
                                 .map {
-                                    it.inflateContextMap(contextData)
+                                    it.inflateContextMap(contextData).replaceGlobalVarValues {
+                                        shortXContext.rule.getAllGlobalVars()
+                                    }
                                 }
                         }.getOrElse {
                             logger.e(it, "EqualTo-List err")
@@ -131,7 +148,10 @@ object EvaluateGlobalVar : Cond {
                     } else if (type == GlobalVarType.String) {
                         kotlin.runCatching {
                             currentValue.first().contains(
-                                data.payload.value.inflateContextMap(contextData),
+                                data.payload.value.inflateContextMap(contextData)
+                                    .replaceGlobalVarValues {
+                                        shortXContext.rule.getAllGlobalVars()
+                                    },
                                 ignoreCase = true
                             )
                         }.getOrElse {
@@ -142,7 +162,9 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             currentValue.containsAll(
                                 data.payload.value.splitAsGlobalVarOpPayloadStringList().map {
-                                    it.inflateContextMap(contextData)
+                                    it.inflateContextMap(contextData).replaceGlobalVarValues {
+                                        shortXContext.rule.getAllGlobalVars()
+                                    }
                                 })
                         }.getOrElse {
                             logger.e(it, "Contains-List err")
@@ -158,7 +180,10 @@ object EvaluateGlobalVar : Cond {
                         kotlin.runCatching {
                             !currentValue.first()
                                 .contains(
-                                    data.payload.value.inflateContextMap(contextData),
+                                    data.payload.value.inflateContextMap(contextData)
+                                        .replaceGlobalVarValues {
+                                            shortXContext.rule.getAllGlobalVars()
+                                        },
                                     ignoreCase = true
                                 )
                         }.getOrElse {
@@ -168,7 +193,9 @@ object EvaluateGlobalVar : Cond {
                     } else if (globalVar.isList()) {
                         kotlin.runCatching {
                             data.payload.value.splitAsGlobalVarOpPayloadStringList().map {
-                                it.inflateContextMap(contextData)
+                                it.inflateContextMap(contextData).replaceGlobalVarValues {
+                                    shortXContext.rule.getAllGlobalVars()
+                                }
                             }.none {
                                 currentValue.contains(it)
                             }
