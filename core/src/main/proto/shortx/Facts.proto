@@ -65,20 +65,6 @@ message ChargerUnplug {
   string id = 100;
 }
 
-message WifiConnected {
-  string requiredSSID = 1;
-
-  string note = 99;
-  string id = 100;
-}
-
-message WifiDisconnectedConnected {
-  string requiredDisconnectedFromSSID = 1;
-
-  string note = 99;
-  string id = 100;
-}
-
 message EdgeGesture {
   Edge edge = 1;
   Gesture gesture = 2;
@@ -184,6 +170,20 @@ message AppBecomeBg {
 
 message BTStatusChanged {
   OnOffAny ooa = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message BTConnectedTo {
+  repeated string device = 1;
+
+  string note = 99;
+  string id = 100;
+}
+
+message BTDisconnectedFrom {
+  repeated string device = 1;
 
   string note = 99;
   string id = 100;

@@ -13,6 +13,8 @@ import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
 import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
+import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
+import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
@@ -149,6 +151,18 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.BTStatusChanged -> {
             BTStatusChanged.newBuilder()
                 .setOoa(state)
+                .setId(overrideId ?: id).setNote(note).build()
+        }
+
+        is Fact.BTConnectedTo -> {
+            BTConnectedTo.newBuilder()
+                .addAllDevice(devices)
+                .setId(overrideId ?: id).setNote(note).build()
+        }
+
+        is Fact.BTDisconnectedFrom -> {
+            BTDisconnectedFrom.newBuilder()
+                .addAllDevice(devices)
                 .setId(overrideId ?: id).setNote(note).build()
         }
 

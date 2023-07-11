@@ -167,6 +167,18 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.BTStatusChanged(data.ooa, id = data.id, note = data.note)
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.BTConnectedTo::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.BTConnectedTo::class.java
+            Fact.BTConnectedTo(devices = data.deviceList, id = data.id, note = data.note)
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom::class.java
+            Fact.BTDisconnectedFrom(devices = data.deviceList, id = data.id, note = data.note)
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java

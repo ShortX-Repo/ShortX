@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
@@ -18,6 +19,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
@@ -99,6 +101,24 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             addFact(Fact.BTStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(btSelectorState)
+
+    val btConnectedToState = rememberBTDeviceSelectorState(
+        title = LocalI18N.current["ui.fact.bt.device.alias"],
+        message = LocalI18N.current["ui.fact.bt.device.alias.summary"],
+        onSelected = {
+            addFact(Fact.BTConnectedTo(devices = listOf(it)))
+        }
+    )
+    BTDeviceSelectorDialog(state = btConnectedToState)
+
+    val btDisConnectedFromState = rememberBTDeviceSelectorState(
+        title = LocalI18N.current["ui.fact.bt.device.alias"],
+        message = LocalI18N.current["ui.fact.bt.device.alias.summary"],
+        onSelected = {
+            addFact(Fact.BTDisconnectedFrom(devices = listOf(it)))
+        }
+    )
+    BTDeviceSelectorDialog(state = btDisConnectedFromState)
 
     val dndSelectorState =
         rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dnd.state.changed"]) {
@@ -279,6 +299,20 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.BTStatusChanged::class -> {
                 btSelectorState.show()
+                true
+            }
+
+            Fact.BTConnectedTo::class -> {
+                btConnectedToState.show(source.getFactAs<Fact.BTConnectedTo>()?.devices?.let {
+                    if (it.isEmpty()) null else it[0]
+                })
+                true
+            }
+
+            Fact.BTDisconnectedFrom::class -> {
+                btDisConnectedFromState.show(source.getFactAs<Fact.BTDisconnectedFrom>()?.devices?.let {
+                    if (it.isEmpty()) null else it[0]
+                })
                 true
             }
 

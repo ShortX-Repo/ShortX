@@ -14,6 +14,8 @@ import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
 import tornaco.apps.shortx.core.proto.fact.AudioFocusGain
 import tornaco.apps.shortx.core.proto.fact.AudioFocusLost
+import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
+import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
@@ -325,6 +327,22 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             )
         }
 
+
+        register(BTConnectedTo::class.java) { actual, rule ->
+            val actualN = (actual as BTConnectedTo)
+            val ruleN = (rule as BTConnectedTo)
+            ruleN.deviceList.isEmpty() || ruleN.deviceList.any { it == "*" } || ruleN.deviceList.containsAll(
+                actualN.deviceList
+            )
+        }
+
+        register(BTDisconnectedFrom::class.java) { actual, rule ->
+            val actualN = (actual as BTDisconnectedFrom)
+            val ruleN = (rule as BTDisconnectedFrom)
+            ruleN.deviceList.isEmpty() || ruleN.deviceList.any { it == "*" } || ruleN.deviceList.containsAll(
+                actualN.deviceList
+            )
+        }
 
         register(VPNConnected::class.java) { actual, rule ->
             true

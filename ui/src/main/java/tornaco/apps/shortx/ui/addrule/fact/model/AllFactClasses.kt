@@ -25,6 +25,9 @@ val allFactClasses = listOf(
     Fact.WifiDisconnectedFrom::class,
 
     Fact.BTStatusChanged::class,
+    Fact.BTConnectedTo::class,
+    Fact.BTDisconnectedFrom::class,
+
     Fact.MobileDataStatusChanged::class,
     Fact.LocationStatusChanged::class,
     Fact.NFCStatusChanged::class,

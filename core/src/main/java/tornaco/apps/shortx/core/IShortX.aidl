@@ -170,4 +170,6 @@ interface IShortX {
     List<ByteArrayWrapper> getAllAudioRecordFiles();
     void deleteAudioRecordFile(in ByteArrayWrapper file);
     void exportAudioRecordFile(in ByteArrayWrapper file, in ParcelFileDescriptor pfd);
+
+    List<ByteArrayWrapper> getBTBondedDevices();
 }

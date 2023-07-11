@@ -246,6 +246,28 @@ sealed interface Fact {
         }
     }
 
+    data class BTConnectedTo(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val devices: List<String>
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class BTDisconnectedFrom(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val devices: List<String>
+    ) : Fact {
+
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
     data class MobileDataStatusChanged(
         val state: OnOffAny, override val note: String = "",
         override val id: String = defaultNewFactId(),

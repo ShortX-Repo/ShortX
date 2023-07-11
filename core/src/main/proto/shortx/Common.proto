@@ -191,3 +191,10 @@ message AudioRecordFile {
   int64 date = 3;
   int64 fileSize = 4;
 }
+
+message BTBondedDevice {
+  string alias = 1;
+  string address = 2;
+  int32 batteryLevel = 3;
+  bool isConnected = 4;
+}

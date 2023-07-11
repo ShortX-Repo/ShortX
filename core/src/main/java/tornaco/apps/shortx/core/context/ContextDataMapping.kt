@@ -157,4 +157,17 @@ object ContextDataMapping {
         keyCode("Key code"),
         pressTimes("Press times of the Key"),
     }
+
+    @DoNotStrip
+    enum class BTDeviceConnected(val description: String) {
+        btDeviceAlias("Alias of the connected device"),
+        btDeviceAddress("Address of the connected device"),
+        btDeviceBatteryLevel("Battery level(int) of the connected device"),
+    }
+
+    @DoNotStrip
+    enum class BTDeviceDisConnected(val description: String) {
+        btDeviceAlias("Alias of the disconnected device"),
+        btDeviceAddress("Address of the disconnected device"),
+    }
 }

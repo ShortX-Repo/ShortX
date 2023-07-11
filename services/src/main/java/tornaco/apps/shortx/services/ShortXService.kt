@@ -35,6 +35,7 @@ import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.v.v
 import java.util.UUID
 
@@ -276,6 +277,14 @@ object ShortXService : SystemService(ShortXContextImpl()) {
                 AudioRecordFile.parseFrom(file.byte),
                 requireNotNull(pfd)
             )
+        }
+
+        override fun getBTBondedDevices(): List<ByteArrayWrapper> {
+            return v(context) {
+                runClearCallingIdentity {
+                    BTHelper.getBTBondedDevices().map { ByteArrayWrapper(it.toByteArray()) }
+                }
+            } ?: emptyList()
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

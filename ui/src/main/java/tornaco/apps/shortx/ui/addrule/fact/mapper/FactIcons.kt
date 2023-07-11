@@ -25,6 +25,8 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.WifiConnectedTo::class -> Remix.Device.signal_wifi_fill
         Fact.WifiDisconnectedFrom::class -> Remix.Device.signal_wifi_line
         Fact.BTStatusChanged::class -> Remix.Device.bluetooth_fill
+        Fact.BTConnectedTo::class -> Remix.Device.bluetooth_fill
+        Fact.BTDisconnectedFrom::class -> Remix.Device.bluetooth_fill
         Fact.LocationStatusChanged::class -> Remix.Device.gps_fill
         Fact.NFCStatusChanged::class -> Remix.Device.nfc_fill
         Fact.MobileDataStatusChanged::class -> Remix.Arrows.arrow_up_down_fill

@@ -47,6 +47,14 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.bt.state.changed"] to null
         }
 
+        Fact.BTConnectedTo::class -> {
+            i18n["ui.fact.bt.connected.to"] to null
+        }
+
+        Fact.BTDisconnectedFrom::class -> {
+            i18n["ui.fact.bt.disconnected.from"] to null
+        }
+
         Fact.DNDStatusChanged::class -> {
             i18n["ui.fact.dnd.state.changed"] to null
         }
@@ -322,6 +330,20 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.bt.state.changed"],
                 fact.state.label(i18N)
+            )
+        }
+
+        is Fact.BTConnectedTo -> {
+            listOf(
+                i18N["ui.fact.bt.connected.to"],
+                fact.devices.joinToString()
+            )
+        }
+
+        is Fact.BTDisconnectedFrom -> {
+            listOf(
+                i18N["ui.fact.bt.disconnected.from"],
+                fact.devices.joinToString()
             )
         }
 

@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
+import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -641,6 +642,10 @@ class ShortXManager(private val service: IShortX) {
 
     fun getWifiScanResults(): List<String> = invokeService(emptyList()) {
         wifiScanResults
+    }
+
+    fun getBTBondedDevices(): List<BTBondedDevice> = invokeService(emptyList()) {
+        btBondedDevices.map { BTBondedDevice.parseFrom(it.byte) }
     }
 
     fun isAudioRecording(): Boolean {

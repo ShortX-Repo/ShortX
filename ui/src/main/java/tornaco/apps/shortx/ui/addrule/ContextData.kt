@@ -95,6 +95,14 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.WifiDisconnectedFrom>()
         }
 
+        Fact.BTConnectedTo::class -> {
+            dats<ContextDataMapping.BTDeviceConnected>()
+        }
+
+        Fact.BTDisconnectedFrom::class -> {
+            dats<ContextDataMapping.BTDeviceDisConnected>()
+        }
+
         Fact.BatteryTemperatureChanged::class -> {
             dats<ContextDataMapping.BatteryTemperatureChanged>()
         }
