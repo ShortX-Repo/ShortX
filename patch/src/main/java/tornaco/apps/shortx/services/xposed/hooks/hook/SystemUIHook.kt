@@ -46,22 +46,7 @@ object SystemUIHook {
 
     private fun installShellImpl(shortx: IShortX) {
         logger.d("installShellImpl")
-        val shell = object : ISu.Stub() {
-            override fun exe(command: Array<String>): ByteArrayWrapper {
-                logger.i("execute: ${command.joinToString()}")
-                return Shell.cmd(*command)
-                    .exec().apply {
-                        logger.i("Shell res: out: ${this.out} err: ${this.err}")
-                    }.let {
-                        ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                            .addAllErr(it.err)
-                            .build()
-                    }.let {
-                        ByteArrayWrapper(it.toByteArray())
-                    }
-            }
-        }
-
+        val shell = SystemUIShellImpl
         shortx.attachSUImpl("SystemUI", shell)
         logger.i("installShellImpl success.")
     }
@@ -101,6 +86,34 @@ object SystemUIHook {
 
         shortx.attachNotificationPoster("SystemUI", stub)
         logger.i("installNotificationPoster success.")
+    }
+}
+
+object SystemUIShellImpl : ISu.Stub() {
+    private val logger = Logger("SystemUIShellImpl")
+
+    init {
+        logger.d("Init shell")
+        Shell.enableVerboseLogging = true
+        Shell.setDefaultBuilder(
+            Shell.Builder.create()
+                .setFlags(Shell.FLAG_REDIRECT_STDERR or Shell.FLAG_MOUNT_MASTER)
+                .setTimeout(10)
+        )
+    }
+
+    override fun exe(command: Array<String>): ByteArrayWrapper {
+        logger.i("execute: ${command.joinToString()}")
+        return Shell.cmd(*command)
+            .exec().apply {
+                logger.i("Shell res: out: ${this.out} err: ${this.err}")
+            }.let {
+                ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                    .addAllErr(it.err)
+                    .build()
+            }.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
     }
 }
 
