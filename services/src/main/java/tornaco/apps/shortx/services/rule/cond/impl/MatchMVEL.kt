@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.cond.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
-import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
 import tornaco.apps.shortx.services.rule.cond.Cond
@@ -22,9 +21,7 @@ object MatchMVEL : Cond {
                     entry.value?.let {
                         if (it is String) "\"$it\"" else it
                     }
-                }).replaceGlobalVarValues {
-                    shortXContext.rule.getAllGlobalVars()
-                }.apply {
+                }).apply {
                     logger.d("inflated expression: $this")
                 }).invoke()
             val retValue = res as Boolean
