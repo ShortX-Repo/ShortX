@@ -27,7 +27,7 @@ fun RecentActions(
             labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
             icon = imageVectorForAction(it),
             isForSubscribedOnly = remember(subscribeState) {
-                isForSubscribedOnly(it)
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
             },
             iconColor = colorForAction(it)
         )

@@ -58,7 +58,7 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.show.overlay"]) },
+                        title = { Text(text = LocalI18N.current["ui.action.hide.overlay"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
