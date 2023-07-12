@@ -337,7 +337,7 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
             iconColor = colorForAction(it)
         )
     }.filter {
-        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
     if (actionItems.isNotEmpty()) {

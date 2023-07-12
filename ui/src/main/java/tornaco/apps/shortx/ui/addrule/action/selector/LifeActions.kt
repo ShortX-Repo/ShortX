@@ -50,7 +50,7 @@ fun LifeActions(keyword: String, subscribeState: SubscribeState, addAction: (Act
             iconColor = colorForAction(Action.MapNav::class)
         ),
     ).filter {
-        keyword.isBlank() || it.labelAndDescription.first.contains(keyword)
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
     if (actionItems.isNotEmpty()) {
