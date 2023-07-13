@@ -83,6 +83,7 @@ fun MainScaffold(
     appBarTitleKey: String,
     appBarActions: @Composable () -> Unit = {},
     onClipboardClick: () -> Unit,
+    onFileClick: () -> Unit,
     onAddClick: () -> Unit,
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
@@ -103,6 +104,7 @@ fun MainScaffold(
                 }
 
                 "file" -> {
+                    onFileClick()
                 }
 
                 "new" -> {

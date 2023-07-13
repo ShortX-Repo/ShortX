@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
@@ -49,6 +50,7 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
 
@@ -459,6 +461,18 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun ruleToShareString(rule: RuleUM): String? =
         shortXManager.getRuleById(rule.id)?.toJson()?.addShareContentHeader(mapOf("type" to "rule"))
 
+    fun parseShareContentRuleFromUri(uri: Uri): Rule? {
+        val text = runCatching {
+            context.contentResolver.openInputStream(uri)?.use {
+                it.bufferedReader(Charset.defaultCharset()).readText()
+            }
+        }.getOrElse {
+            logger.e(it, "parseShareContentRuleFromUri")
+            null
+        }
+        return text?.let { parseShareContentRule(it) }
+    }
+
     fun parseShareContentRule(content: String): Rule? {
         return kotlin.runCatching {
             Rule.newBuilder(
@@ -468,6 +482,18 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 }).setId(defaultNewRuleId()).setCreateTime(System.currentTimeMillis())
                 .setLastUpdateTime(System.currentTimeMillis()).build()
         }.getOrNull()
+    }
+
+    fun parseShareContentDAFromUri(uri: Uri): DirectAction? {
+        val text = runCatching {
+            context.contentResolver.openInputStream(uri)?.use {
+                it.bufferedReader(Charset.defaultCharset()).readText()
+            }
+        }.getOrElse {
+            logger.e(it, "parseShareContentDAFromUri")
+            null
+        }
+        return text?.let { parseShareContentDA(it) }
     }
 
     fun parseShareContentDA(content: String): DirectAction? {

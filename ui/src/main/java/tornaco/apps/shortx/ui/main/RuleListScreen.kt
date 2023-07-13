@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -75,6 +77,17 @@ fun RuleScreen() {
 
     val context = LocalContext.current
 
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { fileUri ->
+        if (fileUri != null) {
+            vm.parseShareContentRuleFromUri(fileUri)
+                ?.let {
+                    vm.importRule(it)
+                }
+        }
+    }
+
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.rule",
@@ -87,6 +100,9 @@ fun RuleScreen() {
                         vm.importRule(it)
                     }
             }
+        },
+        onFileClick = {
+            pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
             AddRuleActivity.start(context)

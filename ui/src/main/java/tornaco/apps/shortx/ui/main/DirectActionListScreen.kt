@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.main
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -102,6 +104,17 @@ fun DirectActionListScreen() {
 
     val context = LocalContext.current
 
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { fileUri ->
+        if (fileUri != null) {
+            vm.parseShareContentDAFromUri(fileUri)
+                ?.let {
+                    vm.importDA(it)
+                }
+        }
+    }
+
     MainScaffold(
         state = state,
         appBarTitleKey = "ui.feat.label.da",
@@ -123,6 +136,9 @@ fun DirectActionListScreen() {
                         vm.importDA(it)
                     }
             }
+        },
+        onFileClick = {
+            pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
             AddDirectActionActivity.start(context)

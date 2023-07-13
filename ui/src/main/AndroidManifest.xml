@@ -34,7 +34,7 @@
 
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:mimeType="*/*" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
 
         </activity>
