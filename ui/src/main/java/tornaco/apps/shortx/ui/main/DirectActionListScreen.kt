@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -58,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.res.Remix
@@ -88,7 +90,6 @@ import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
-import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 const val EXECUTE_ANIM_DURATION = 600
 
@@ -108,10 +109,28 @@ fun DirectActionListScreen() {
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            vm.parseShareContentDAFromUri(fileUri)
-                ?.let {
-                    vm.importDA(it)
+            vm.importDAFromUri(fileUri)
+        }
+    }
+
+    val i18N = LocalI18N.current
+    LaunchedEffect(vm) {
+        vm.importComplete.collectLatest {
+            when (it) {
+                is ImportResult.Success -> {
+                    Toast.makeText(context, i18N["ui.common.import.success"], Toast.LENGTH_SHORT)
+                        .show()
                 }
+
+                is ImportResult.Fail -> {
+                    Toast.makeText(
+                        context,
+                        i18N["ui.common.import.fail", mapOf("why" to it.reason.description)],
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
         }
     }
 
@@ -130,12 +149,7 @@ fun DirectActionListScreen() {
             }
         },
         onClipboardClick = {
-            ClipboardUtils.readClipboard(context)?.let { clip ->
-                vm.parseShareContentDA(clip)
-                    ?.let {
-                        vm.importDA(it)
-                    }
-            }
+            vm.importDAFromClipboard()
         },
         onFileClick = {
             pickFileLauncher.launch("text/plain")

@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.parcelize.Parcelize
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
@@ -50,6 +52,7 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
@@ -212,12 +215,24 @@ fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
     )]
 }
 
+sealed interface ImportResult {
+    object Success : ImportResult
+    data class Fail(val reason: FailReason) : ImportResult
+
+    enum class FailReason(val description: String) {
+        ParseFail("Unable to parse content")
+    }
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<MainState>(context, { MainState() }) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
+
+    private val _importComplete = MutableSharedFlow<ImportResult>()
+    val importComplete = _importComplete.asSharedFlow()
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {
@@ -461,7 +476,33 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun ruleToShareString(rule: RuleUM): String? =
         shortXManager.getRuleById(rule.id)?.toJson()?.addShareContentHeader(mapOf("type" to "rule"))
 
-    fun parseShareContentRuleFromUri(uri: Uri): Rule? {
+    fun importRuleFromClipboard() {
+        viewModelScope.launch {
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                val rule = parseShareContentRule(clip)
+                if (rule != null) {
+                    importRule(rule)
+                    _importComplete.emit(ImportResult.Success)
+                } else {
+                    _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
+                }
+            }
+        }
+    }
+
+    fun importRuleFromUri(uri: Uri) {
+        viewModelScope.launch {
+            val rule = parseShareContentRuleFromUri(uri)
+            if (rule != null) {
+                importRule(rule)
+                _importComplete.emit(ImportResult.Success)
+            } else {
+                _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
+            }
+        }
+    }
+
+    private fun parseShareContentRuleFromUri(uri: Uri): Rule? {
         val text = runCatching {
             context.contentResolver.openInputStream(uri)?.use {
                 it.bufferedReader(Charset.defaultCharset()).readText()
@@ -484,7 +525,33 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }.getOrNull()
     }
 
-    fun parseShareContentDAFromUri(uri: Uri): DirectAction? {
+    fun importDAFromClipboard() {
+        viewModelScope.launch {
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                val da = parseShareContentDA(clip)
+                if (da != null) {
+                    importDA(da)
+                    _importComplete.emit(ImportResult.Success)
+                } else {
+                    _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
+                }
+            }
+        }
+    }
+
+    fun importDAFromUri(uri: Uri) {
+        viewModelScope.launch {
+            val da = parseShareContentDAFromUri(uri)
+            if (da != null) {
+                importDA(da)
+                _importComplete.emit(ImportResult.Success)
+            } else {
+                _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
+            }
+        }
+    }
+
+    private fun parseShareContentDAFromUri(uri: Uri): DirectAction? {
         val text = runCatching {
             context.contentResolver.openInputStream(uri)?.use {
                 it.bufferedReader(Charset.defaultCharset()).readText()

@@ -41,27 +41,30 @@ class ViewerActivity : BaseActivity() {
                 when (sharedData.type) {
                     "da" -> {
                         val da = vm.parseShareContentDA(sharedData.data)
-
-                        AddDirectActionScreen(
-                            da = da,
-                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                            canSaveWithoutChanges = true
-                        ) {
-                            finish()
+                        da?.let {
+                            AddDirectActionScreen(
+                                da = da,
+                                screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
+                                canSaveWithoutChanges = true
+                            ) {
+                                finish()
+                            }
                         }
-
                     }
+
                     "rule" -> {
                         val rule = vm.parseShareContentRule(sharedData.data)
-
-                        AddRuleScreen(
-                            rule = rule,
-                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                            canSaveWithoutChanges = true
-                        ) {
-                            finish()
+                        rule?.let {
+                            AddRuleScreen(
+                                rule = rule,
+                                screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
+                                canSaveWithoutChanges = true
+                            ) {
+                                finish()
+                            }
                         }
                     }
+
                     else -> {
                         ToastUnknownContentAndFinish(context)
                     }

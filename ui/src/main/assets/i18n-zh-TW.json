@@ -152,6 +152,8 @@
   "ui.common.share.save.file": "保存到檔案",
   "ui.common.share.unknown.content": "檔案內容無法識別",
   "ui.common.share.viewer.title": "來自分享",
+  "ui.common.import.success": "导入成功",
+  "ui.common.import.fail": "导入失败 {why}",
   "ui.common.on": "開啟",
   "ui.common.off": "關閉",
   "ui.common.any": "任意",

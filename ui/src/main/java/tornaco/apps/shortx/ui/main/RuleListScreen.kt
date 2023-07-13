@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.main
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
@@ -62,7 +64,6 @@ import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
-import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
 @Composable
@@ -81,10 +82,28 @@ fun RuleScreen() {
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            vm.parseShareContentRuleFromUri(fileUri)
-                ?.let {
-                    vm.importRule(it)
+            vm.importRuleFromUri(fileUri)
+        }
+    }
+
+    val i18N = LocalI18N.current
+    LaunchedEffect(vm) {
+        vm.importComplete.collectLatest {
+            when (it) {
+                is ImportResult.Success -> {
+                    Toast.makeText(context, i18N["ui.common.import.success"], Toast.LENGTH_SHORT)
+                        .show()
                 }
+
+                is ImportResult.Fail -> {
+                    Toast.makeText(
+                        context,
+                        i18N["ui.common.import.fail", mapOf("why" to it.reason.description)],
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
         }
     }
 
@@ -94,12 +113,7 @@ fun RuleScreen() {
         appBarActions = {
         },
         onClipboardClick = {
-            ClipboardUtils.readClipboard(context)?.let { clip ->
-                vm.parseShareContentRule(clip)
-                    ?.let {
-                        vm.importRule(it)
-                    }
-            }
+            vm.importRuleFromClipboard()
         },
         onFileClick = {
             pickFileLauncher.launch("text/plain")

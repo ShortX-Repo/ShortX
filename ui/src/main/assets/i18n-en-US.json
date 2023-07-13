@@ -152,6 +152,8 @@
   "ui.common.share.save.file": "Save as file",
   "ui.common.share.unknown.content": "File content unrecognized",
   "ui.common.share.viewer.title": "Shared content",
+  "ui.common.import.success": "Import success",
+  "ui.common.import.fail": "Import fail: {why}",
   "ui.common.on": "On",
   "ui.common.off": "Off",
   "ui.common.any": "Any",
