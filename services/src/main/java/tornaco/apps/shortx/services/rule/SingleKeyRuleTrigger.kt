@@ -33,7 +33,7 @@ class SingleKeyRuleTrigger(
 
     private fun installKeyRules() {
         val keyEventRules =
-            shortXContext.rule.getAllRules().filter { it.isEnabled }.filter { rule ->
+            shortXContext.rule.getAllEnabledRules().filter { rule ->
                 rule.factsList.any {
                     it is_ AdvancedKeyEvent::class.java
                 }
@@ -163,7 +163,7 @@ private class SingleKeyRuleImpl(
             .setKeyCode(keycode)
             .setGesture(KeyGesture.KeyPress)
             .build()
-        val enabledRules = ruleService.getAllRules().filter { rule -> rule.isEnabled }
+        val enabledRules = ruleService.getAllEnabledRules()
         if (ruleService.shouldFire(enabledRules, fact)) {
             ruleService.publishFact(
                 "onPress-$keycode",

@@ -11,7 +11,7 @@ import tornaco.apps.shortx.ui.base.WithStateImpl
 import tornaco.apps.shortx.ui.base.i18NIns
 
 data class ConditionContentState(
-    val conditions: List<Condition> = listOf(Condition.TRUE()),
+    val conditions: List<Condition> = emptyList(),
     val conditionOp: Op = Op.All,
     val isChanged: Boolean = false,
     val conditionWarningMessages: Map<String, List<String>> = emptyMap(),

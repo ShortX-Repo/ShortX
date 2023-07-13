@@ -67,9 +67,7 @@ class FixedInPeriodTrigger(
 
     override fun register() {
         fixedInPeriodScheduler.systemReady()
-        shortXContext.rule.getAllRules().filter { rule ->
-            rule.isEnabled
-        }.forEach { rule ->
+        shortXContext.rule.getAllEnabledRules().forEach { rule ->
             checkAndScheduleFixedInPeriodForRule(rule) { "FixedInPeriodTrigger.register for rule: ${rule.title}" }
         }
     }

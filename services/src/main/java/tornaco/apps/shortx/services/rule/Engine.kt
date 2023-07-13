@@ -17,6 +17,8 @@ import tornaco.apps.shortx.services.launchSafety
 
 const val CONDITION_WAIT_TIMEOUT = 100L
 
+const val LOG_TAG_RULE_QUIT = "Rule-Quit"
+
 interface FactMatcher {
     fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean
 }
@@ -94,7 +96,7 @@ interface Engine {
         contextData: ContextData,
     ): Boolean
 
-    fun cancelJobs(filter: (JobRecord) -> Boolean)
+    fun cancelJobs(reason: String, filter: (JobRecord) -> Boolean)
 
     fun activeJobs(): List<JobRecord>
 }
@@ -119,22 +121,43 @@ class DefaultRuleEngine(
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         val startTimeMillis = System.currentTimeMillis()
         return rules.filterInvalid().any {
-            factMatcher.match(fact, it.factsList) && runBlocking {
-                withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
-                    conditionEvaluator.evaluate(
-                        logTag = it.title,
-                        condOp = it.condOp,
-                        condOpPayload = it.condOpPayload,
-                        conditions = it.conditionsList,
-                        contextData = ContextData.obtain()
-                    )
-                }
-            } ?: defaultCondRes(it)
+            shouldFireRuleForFact(fact, it) || shouldFireRuleZQuitForFact(fact, it)
         }.also {
             logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
         }
     }
 
+    private fun shouldFireRuleForFact(
+        fact: ProtoMessage,
+        rule: Rule
+    ) = factMatcher.match(fact, rule.factsList) && runBlocking {
+        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+            conditionEvaluator.evaluate(
+                logTag = rule.title,
+                condOp = rule.condOp,
+                condOpPayload = rule.condOpPayload,
+                conditions = rule.conditionsList,
+                contextData = ContextData.obtain()
+            )
+        }
+    } ?: defaultCondRes(rule)
+
+    private fun shouldFireRuleZQuitForFact(
+        fact: ProtoMessage,
+        rule: Rule
+    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList) && runBlocking {
+        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+            conditionEvaluator.evaluate(
+                logTag = "${rule.title}-$LOG_TAG_RULE_QUIT",
+                condOp = rule.quit.condOp,
+                condOpPayload = rule.quit.condOpPayload,
+                conditions = rule.quit.conditionsList,
+                contextData = ContextData.obtain()
+            )
+        }
+    } ?: defaultCondRes(rule)
+
+    // Should call in Handler to make it Thread safe.
     override fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
@@ -143,8 +166,10 @@ class DefaultRuleEngine(
         logger.d("fire: ${fact.javaClass}")
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->
+
+            // Try fire for Rule.
             if (factMatcher.match(fact, rule.factsList)) {
-                logger.d("fire, matched: ${fact.javaClass} ${rule.title}")
+                logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
                 anyMatch = true
                 val contextData = ContextData.obtain(initialContextData)
                 contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
@@ -202,7 +227,41 @@ class DefaultRuleEngine(
                     onJobCompleted(rule.id)
                 }
             } else {
-                logger.d("fire, not match: ${fact.javaClass} ${rule.title}")
+                logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
+
+                val quit = rule.quit
+                if (factMatcher.match(fact, quit.factsList)) {
+                    logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
+                    anyMatch = true
+
+                    val contextData = ContextData.obtain(initialContextData)
+                    contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
+                    contextData.add(ContextDataMapping.Context.contextSrcTitle.name, rule.title)
+                    contextData.add(
+                        ContextDataMapping.Context.contextSrcEvent.name,
+                        ContextSrcEvent.ContextSrc_RuleQuit
+                    )
+
+                    scope.launchSafety {
+                        val conditionRes = if (quit.conditionsList.isEmpty()) {
+                            logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
+                            true
+                        } else {
+                            conditionEvaluator.evaluate(
+                                logTag = "${rule.title}-$LOG_TAG_RULE_QUIT",
+                                condOp = quit.condOp,
+                                condOpPayload = quit.condOpPayload,
+                                conditions = quit.conditionsList,
+                                contextData = contextData
+                            )
+                        }
+                        logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                        if (conditionRes) {
+                            logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
+                            cancelJobs("Rule quit") { it.id == rule.id }
+                        }
+                    }
+                }
             }
         }
         return anyMatch
@@ -256,9 +315,9 @@ class DefaultRuleEngine(
         }
     }
 
-    override fun cancelJobs(filter: (JobRecord) -> Boolean) {
+    override fun cancelJobs(reason: String, filter: (JobRecord) -> Boolean) {
         val canceled = jobs.filter(filter).onEach {
-            logger.d("cancel job: $it")
+            logger.d("cancel job: $it, reason: $reason")
             it.job.cancel()
             onJobCancelled(it.id)
         }
@@ -270,8 +329,6 @@ class DefaultRuleEngine(
     }
 }
 
-private fun List<Rule>.filterInvalid() = filter {
-    it.conditionsList.isNotEmpty() && it.actionsList.isNotEmpty()
-}
+private fun List<Rule>.filterInvalid() = filter { it.actionsList.isNotEmpty() }
 
 data class JobRecord(val id: String, val job: Job)

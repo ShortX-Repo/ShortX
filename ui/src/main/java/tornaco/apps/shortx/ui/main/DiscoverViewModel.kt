@@ -37,7 +37,7 @@ class DiscoverModel @Inject constructor(@ApplicationContext context: Context) :
             val content = BackupAgent(context).readBackupPackageContent(assetName)
             val ruleUMs = withContext(Dispatchers.IO) {
                 content.rules.map {
-                    ruleToRuleUM(it)
+                    ruleToRuleUM(it, emptyList())
                 }
             }
             updateState { copy(rules = ruleUMs, isLoading = false) }

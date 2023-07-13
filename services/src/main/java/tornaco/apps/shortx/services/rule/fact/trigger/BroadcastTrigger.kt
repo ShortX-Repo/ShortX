@@ -22,8 +22,7 @@ class BroadcastTrigger(
     private val receivers = mutableMapOf<String, SafeBroadcastReceiver>()
 
     override fun register() {
-        shortXContext.rule.getAllRules()
-            .filter { it.isEnabled }
+        shortXContext.rule.getAllEnabledRules()
             .filter { rule -> rule.factsList.any { it.isBroadcast() } }
             .forEach {
                 checkAndRegisterForRule(it, "Trigger#register")

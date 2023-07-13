@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.main
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -152,6 +153,9 @@ fun RuleScreen() {
             },
             onExecute = {
                 vm.directExecuteRuleActions(it.id)
+            },
+            stopAllJobs = {
+                vm.stopJobs(it)
             }
         )
     }
@@ -167,6 +171,7 @@ private fun RuleContent(
     onShare: (RuleUM) -> Unit,
     onRuleClick: (RuleUM) -> Unit,
     onExecute: (RuleUM) -> Unit,
+    stopAllJobs: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
 ) {
     Box(
@@ -190,7 +195,8 @@ private fun RuleContent(
             onDelete = onDelete,
             onEdit = onEdit,
             onShare = onShare,
-            onExecute = onExecute
+            onExecute = onExecute,
+            stopAllJobs = stopAllJobs
         )
     }
 
@@ -206,6 +212,7 @@ private fun RuleListContent(
     onEdit: (RuleUM) -> Unit = {},
     onShare: (RuleUM) -> Unit = {},
     onExecute: (RuleUM) -> Unit = {},
+    stopAllJobs: (RuleUM) -> Unit
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
@@ -244,6 +251,7 @@ private fun RuleListContent(
                     onEdit = onEdit,
                     onShare = onShare,
                     onExecute = onExecute,
+                    stopAllJobs = stopAllJobs
                 )
             }
 
@@ -261,6 +269,7 @@ private fun RuleItem2(
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
     onExecute: (RuleUM) -> Unit,
+    stopAllJobs: (RuleUM) -> Unit
 ) {
     Box {
         val popMenuState = listItemOverflowMenu(
@@ -330,6 +339,16 @@ private fun RuleItem2(
                 MediumSpacer()
             }
 
+            AnimatedVisibility(visible = rule.runningInsCount > 0) {
+                RunningIndicator(
+                    modifier = Modifier.padding(start = 12.dp),
+                    runningInsCount = rule.runningInsCount,
+                    stopAllJobs = {
+                        stopAllJobs(rule)
+                    }
+                )
+            }
+            MediumSpacer()
         }
     }
 }

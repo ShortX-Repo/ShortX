@@ -538,37 +538,46 @@ private fun DAListItem(
         }
 
         AnimatedVisibility(visible = runningInsCount > 0) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(12.dp),
-                        strokeWidth = 1.dp
-                    )
-                    SmallSpacer()
-                    Text(
-                        text = LocalI18N.current["ui.title.jobs.count", mapOf("count" to "$runningInsCount")],
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        maxLines = 1
-                    )
-                }
+            RunningIndicator(
+                modifier = Modifier,
+                runningInsCount = runningInsCount,
+                stopAllJobs = stopAllJobs
+            )
+        }
+    }
+}
 
-                IconButton(onClick = {
-                    stopAllJobs()
-                }) {
-                    RemixIcon(
-                        remixName = Remix.Media.stop_circle_line,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
+@Composable
+fun RunningIndicator(modifier: Modifier = Modifier, runningInsCount: Int, stopAllJobs: () -> Unit) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(12.dp),
+                strokeWidth = 1.dp
+            )
+            SmallSpacer()
+            Text(
+                text = LocalI18N.current["ui.title.jobs.count", mapOf("count" to "$runningInsCount")],
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                maxLines = 1
+            )
+        }
+
+        IconButton(onClick = {
+            stopAllJobs()
+        }) {
+            RemixIcon(
+                remixName = Remix.Media.stop_circle_line,
+                tint = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

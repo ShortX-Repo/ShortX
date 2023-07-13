@@ -59,9 +59,7 @@ class AlarmTrigger(
 
     override fun register() {
         alarmScheduler.systemReady()
-        shortXContext.rule.getAllRules().filter { rule ->
-            rule.isEnabled
-        }.forEach { rule ->
+        shortXContext.rule.getAllEnabledRules().forEach { rule ->
             checkAndScheduleAlarmForRule(rule) { "AlarmTrigger.register for rule: ${rule.title}" }
         }
     }

@@ -187,14 +187,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
-            val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
+            val enabledRules = getAllEnabledRules()
             if (shouldFire(enabledRules, fact)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
-                    engine.fire(
-                        fact = fact,
-                        rules = enabledRules
-                    )
+                    handler.postSafety {
+                        engine.fire(
+                            fact = fact,
+                            rules = enabledRules
+                        )
+                    }
                 }
                 // False means consume.
                 return@onKeyEvent false
@@ -205,10 +207,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         shortXContext.gesture.onGestureEvent {
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
-            val enabledRules = getAllRules().filter { rule -> rule.isEnabled }
+            val enabledRules = getAllEnabledRules()
             if (shouldFire(enabledRules, fact)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
-                engine.fire(fact = fact, rules = enabledRules)
+                handler.postSafety {
+                    engine.fire(fact = fact, rules = enabledRules)
+                }
                 return@onGestureEvent true
             }
             false
@@ -232,15 +236,17 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
-        logger.i("publishFact, ${fact::class.java}: $reason")
-        val anyMatch = engine.fire(
-            fact = fact,
-            rules = getAllRules().filter { rule -> rule.isEnabled },
-            initialContextData = initialContextData
-        )
+        handler.postSafety {
+            logger.i("publishFact, ${fact::class.java}: $reason")
+            val anyMatch = engine.fire(
+                fact = fact,
+                rules = getAllEnabledRules(),
+                initialContextData = initialContextData
+            )
 
-        if (anyMatch && isFactPublishRecordEnabled()) {
-            factPublishRecorder.add(fact.toFactPublishRecord())
+            if (anyMatch && isFactPublishRecordEnabled()) {
+                factPublishRecorder.add(fact.toFactPublishRecord())
+            }
         }
     }
 
@@ -339,7 +345,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
 
     fun cancelJobs(jobs: List<String>) {
-        engine.cancelJobs {
+        engine.cancelJobs("User requested.") {
             jobs.contains(it.id)
         }
     }
@@ -347,6 +353,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getAllRules(): List<Rule> {
         return ruleSettingsStore.getAllRules()
     }
+
+    fun getAllEnabledRules() = getAllRules().filter { it.isEnabled }
 
     fun getRuleCount() = ruleSettingsStore.getRuleCount()
 

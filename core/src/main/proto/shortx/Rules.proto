@@ -29,12 +29,21 @@ message Rule {
   ConditionOperatorPayload condOpPayload = 13;
 
   RuleHook hook = 14;
+  RuleQuit quit = 15;
 }
 
 message RuleHook {
   repeated google.protobuf.Any actionsOnEnabled = 1;
   repeated google.protobuf.Any actionsOnDisabled = 2;
   repeated google.protobuf.Any actionsOnDeleted = 3;
+}
+
+message RuleQuit {
+  repeated google.protobuf.Any facts = 1;
+  repeated google.protobuf.Any conditions = 2;
+  bool isEnabled = 3;
+  ConditionOperator condOp = 4;
+  ConditionOperatorPayload condOpPayload = 5;
 }
 
 message RuleList {
@@ -71,4 +80,5 @@ enum ContextSrcEvent {
   ContextSrc_ExecuteRuleActions = 3;
   ContextSrc_Rule = 4;
   ContextSrc_RuleHook = 5;
+  ContextSrc_RuleQuit = 6;
 }

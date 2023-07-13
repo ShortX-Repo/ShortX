@@ -69,6 +69,7 @@ data class RuleUM(
     val factIconColor: ULong,
     val actionIcon: String,
     val actionIconColor: ULong,
+    val runningInsCount: Int,
     val rule: Rule
 )
 
@@ -145,7 +146,7 @@ private fun <T> ContextViewModel<T>.translateDA(da: DirectAction) =
         labelAndDescriptionForActionSelector(i18N, it::class).first
     })
 
-fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
+fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule, activeJobs: List<String>): RuleUM {
     val firstFact: Fact? =
         if (rule.factsList.isEmpty()) null else rule.factsList[0]?.toFact(shortXManager)
     val firstAction: Action? = rule.actionsList?.let {
@@ -185,6 +186,9 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule): RuleUM {
             colorForAction(it::class).value
         } ?: Color.Unspecified.value,
         rule = rule,
+        runningInsCount = activeJobs.count {
+            it == rule.id
+        },
     )
 }
 
@@ -230,6 +234,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<MainState>(context, { MainState() }) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
+    private var loadRuleJob: Job? = null
 
     private val _importComplete = MutableSharedFlow<ImportResult>()
     val importComplete = _importComplete.asSharedFlow()
@@ -238,16 +243,19 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         override fun onJobStarted(id: String?) {
             logger.d("onJobStarted: $id")
             delayLoadDA()
+            delayLoadRule()
         }
 
         override fun onJobCompleted(id: String?) {
             logger.d("onJobCompleted: $id")
             delayLoadDA()
+            delayLoadRule()
         }
 
         override fun onJobCancelled(id: String?) {
             logger.d("onJobCancelled: $id")
             delayLoadDA()
+            delayLoadRule()
         }
     }
 
@@ -361,10 +369,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             updateState { copy(isLoading = true) }
             if (delay) afterNavLongDelay()
             withContext(Dispatchers.IO) {
+                val activeJobs = shortXManager.getActiveJobs().apply {
+                    logger.d("activeJobs: $this")
+                }
                 val rules = shortXManager.getAllRules()
                     .let(sort(state.value.ruleSortBy))
                     .map { rule ->
-                        ruleToRuleUM(rule)
+                        ruleToRuleUM(rule, activeJobs)
                     }
                 updateState {
                     copy(rules = rules, isLoading = false)
@@ -413,6 +424,14 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         loadDAJob = viewModelScope.launch {
             delay(delay)
             loadDA()
+        }
+    }
+
+    private fun delayLoadRule(delay: Long = 200L) {
+        loadRuleJob?.cancel()
+        loadRuleJob = viewModelScope.launch {
+            delay(delay)
+            loadRules()
         }
     }
 
@@ -466,6 +485,12 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun stopJobs(da: DirectActionUM) {
         viewModelScope.launch {
             shortXManager.cancelJobs(listOf(da.id))
+        }
+    }
+
+    fun stopJobs(rule: RuleUM) {
+        viewModelScope.launch {
+            shortXManager.cancelJobs(listOf(rule.id))
         }
     }
 

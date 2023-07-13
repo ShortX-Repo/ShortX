@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
-import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.rule.pack_
@@ -130,10 +129,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val protoFacts = state.value.facts.map { it.toProtoFact().pack_() }
             val protoConditions = conditions.map {
                 it.toProtoCondition().pack_()
-            }.ifEmpty {
-                listOf(
-                    True.newBuilder().build().pack_()
-                )
             }
             val rule = Rule.newBuilder()
                 .setId(state.value.id)

@@ -64,9 +64,7 @@ class RandomInPeriodTrigger(
 
     override fun register() {
         scheduler.systemReady()
-        shortXContext.rule.getAllRules().filter { rule ->
-            rule.isEnabled
-        }.forEach { rule ->
+        shortXContext.rule.getAllEnabledRules().forEach { rule ->
             checkAndSchedulePeriodForRule(rule) { "PeriodTrigger.register for rule: ${rule.title}" }
         }
     }
