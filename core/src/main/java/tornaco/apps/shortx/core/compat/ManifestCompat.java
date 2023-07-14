@@ -445,6 +445,7 @@ public class ManifestCompat {
         public static final String ACCESS_NETWORK_CONDITIONS = "android.permission.ACCESS_NETWORK_CONDITIONS";
         public static final String ACCESS_DRM_CERTIFICATES = "android.permission.ACCESS_DRM_CERTIFICATES";
         public static final String MANAGE_MEDIA_PROJECTION = "android.permission.MANAGE_MEDIA_PROJECTION";
+        public static final String CAPTURE_VOICE_COMMUNICATION_OUTPUT = "android.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT";
         public static final String READ_INSTALL_SESSIONS = "android.permission.READ_INSTALL_SESSIONS";
         public static final String REMOVE_DRM_CERTIFICATES = "android.permission.REMOVE_DRM_CERTIFICATES";
         /**
