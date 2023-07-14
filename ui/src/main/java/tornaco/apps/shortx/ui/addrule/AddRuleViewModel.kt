@@ -261,6 +261,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     actionOnEnabledStateHandler.actions.isNotEmpty()
                             || actionOnDisabledStateHandler.actions.isNotEmpty()
                             || actionOnDeletedStateHandler.actions.isNotEmpty()
+                            || quitFactContentStateHandler.facts.isNotEmpty()
+                            || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
 
                 updateState {

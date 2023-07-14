@@ -224,55 +224,6 @@ fun AddRuleScreen(
                     SectionSpacer()
 
 
-                    SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        MediumTitleWithTip(
-                            LocalI18N.current["ui.rule.quit.title"],
-                            LocalI18N.current["ui.rule.quit.description"]
-                        )
-                        Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
-                            vm.toggleQuitEnable()
-                        })
-                    }
-                    AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
-                        Column {
-                            StandardSpacer()
-                            FactSelectors(
-                                header = {
-                                    FieldTitle(
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                        text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
-                                    )
-                                },
-                                state = quitFactContentState,
-                                handler = quitFactHandler.asFactHandler(),
-                                readOnly = readOnly
-                            )
-
-                            SectionSpacer()
-
-                            ConditionContent(
-                                header = {
-                                    FieldTitle(
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                        text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
-                                    )
-                                },
-                                state = quitConditionContentState,
-                                readOnly = readOnly,
-                                handler = quitConditionHandler.asConditionHandler()
-                            )
-
-                            SectionSpacer()
-                        }
-                    }
-
-                    SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
                     val scope = rememberCoroutineScope()
                     TextButton(onClick = {
                         vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
@@ -289,6 +240,54 @@ fun AddRuleScreen(
                     StandardSpacer()
                     AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
                         Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                MediumTitleWithTip(
+                                    LocalI18N.current["ui.rule.quit.title"],
+                                    LocalI18N.current["ui.rule.quit.description"]
+                                )
+                                Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
+                                    vm.toggleQuitEnable()
+                                })
+                            }
+                            AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
+                                Column {
+                                    StandardSpacer()
+                                    FactSelectors(
+                                        header = {
+                                            FieldTitle(
+                                                modifier = Modifier.padding(bottom = 12.dp),
+                                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                                            )
+                                        },
+                                        state = quitFactContentState,
+                                        handler = quitFactHandler.asFactHandler(),
+                                        readOnly = readOnly
+                                    )
+
+                                    SectionSpacer()
+
+                                    ConditionContent(
+                                        header = {
+                                            FieldTitle(
+                                                modifier = Modifier.padding(bottom = 12.dp),
+                                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                                            )
+                                        },
+                                        state = quitConditionContentState,
+                                        readOnly = readOnly,
+                                        handler = quitConditionHandler.asConditionHandler()
+                                    )
+
+                                    SectionSpacer()
+                                }
+                            }
+
+                            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
                             ActionContent(
                                 header = {
                                     MediumTitleWithTip(

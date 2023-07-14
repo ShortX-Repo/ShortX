@@ -139,7 +139,7 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                             Row(
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.surface)
-                                    .padding(6.dp),
+                                    .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 FilterChip(
