@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.addrule.condition
 
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.I18N
@@ -31,6 +30,9 @@ class ConditionContentStateHandler(
     private val shortXManager = tornaco.apps.shortx.core.shortXManager
     private val logger = Logger("ConditionContentStateHandler")
     private val i18N = i18NIns
+
+    val conditions get() = state.value.conditions
+    val conditionOp get() = state.value.conditionOp
 
     fun addCondition(condition: Condition) {
         updateState {

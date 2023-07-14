@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.addrule.ConditionHandler
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
@@ -37,18 +36,24 @@ import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 
+class ConditionHandler(
+    val addCondition: (Condition) -> Unit,
+    val removeCondition: (Condition) -> Unit,
+    val setConditionOp: (Op) -> Unit,
+)
 
 @Composable
 fun ConditionContent(
     header: @Composable ColumnScope.() -> Unit = {
         MediumTitle(LocalI18N.current["ui.conditions.title"])
     },
-    conditions: List<Condition>,
-    warnings: Map<String, List<String>>,
-    conditionOp: Op,
+    state: ConditionContentState,
     readOnly: Boolean = false,
     handler: ConditionHandler
 ) {
+    val conditions = state.conditions
+    val conditionOp = state.conditionOp
+    val warnings = state.conditionWarningMessages
 
     ConditionList(
         readOnly = readOnly,

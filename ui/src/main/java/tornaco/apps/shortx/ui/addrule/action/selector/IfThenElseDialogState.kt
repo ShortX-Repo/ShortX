@@ -15,8 +15,8 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
-import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.*
@@ -124,16 +124,11 @@ private fun IfThenElseSelectorDialogSelector(dialogState: IfThenElseSelectorDial
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    val conditions = conditionState.conditions
-                    val conditionOp = conditionState.conditionOp
-                    val warning = conditionState.conditionWarningMessages
                     ConditionContent(
                         header = {
                             MediumTitle(LocalI18N.current["ui.action.if"])
                         },
-                        conditions = conditions,
-                        warnings = warning,
-                        conditionOp = conditionOp,
+                        state = conditionState,
                         handler = dialogState.conditionHandler.asConditionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))

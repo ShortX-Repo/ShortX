@@ -24,8 +24,6 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.condition.*
-import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.fact.*
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
@@ -102,6 +100,9 @@ fun AddRuleScreen(
     val conditionHandler = remember(vm) { vm.conditionContentStateHandler }
     val conditionContentState by conditionHandler.state.collectAsState()
 
+    val factHandler = remember(vm) { vm.factContentStateHandler }
+    val factContentState by factHandler.state.collectAsState()
+
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
@@ -132,6 +133,7 @@ fun AddRuleScreen(
                             IconButton(
                                 enabled = canSaveWithoutChanges
                                         || addRuleState.ruleChanged
+                                        || factContentState.isChanged
                                         || actionContentState.isChanged
                                         || conditionContentState.isChanged
                                         || actionOnEnabledState.isChanged
@@ -159,16 +161,16 @@ fun AddRuleScreen(
                     TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
                     SectionSpacer()
 
-                    FactSelectors(vm = vm, state = addRuleState, readOnly = readOnly)
+                    FactSelectors(
+                        state = factContentState,
+                        handler = factHandler.asFactHandler(),
+                        readOnly = readOnly
+                    )
                     SectionSpacer()
 
                     AnimatedVisibility(visible = addRuleState.showConditionSection) {
-                        val conditions = conditionContentState.conditions
-                        val conditionOp = conditionContentState.conditionOp
                         ConditionContent(
-                            conditions = conditions,
-                            warnings = conditionContentState.conditionWarningMessages,
-                            conditionOp = conditionOp,
+                            state = conditionContentState,
                             readOnly = readOnly,
                             handler = conditionHandler.asConditionHandler()
                         )
@@ -281,9 +283,3 @@ private fun TitleAndDescription(
             vm.setDescription(description)
         })
 }
-
-class ConditionHandler(
-    val addCondition: (Condition) -> Unit,
-    val removeCondition: (Condition) -> Unit,
-    val setConditionOp: (Op) -> Unit,
-)

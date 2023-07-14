@@ -33,8 +33,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -143,7 +143,10 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.while.loop.repeat"])
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.action.while.loop.repeat"]
+                    )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.repeat.toString(),
@@ -157,7 +160,10 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         })
                     StandardSpacer()
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.while.loop.delay"])
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.action.while.loop.delay"]
+                    )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.delay.toString(),
@@ -171,25 +177,26 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                         })
                     StandardSpacer()
 
-                    val conditions = conditionState.conditions
-                    val conditionOp = conditionState.conditionOp
-                    val warning = conditionState.conditionWarningMessages
                     ConditionContent(
                         header = {
-                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.condition.title"])
+                            SmallTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                LocalI18N.current["ui.action.while.loop.condition.title"]
+                            )
                             TipRow(text = LocalI18N.current["ui.action.while.loop.condition.message"])
                             MediumSpacer()
                         },
-                        conditions = conditions,
-                        warnings = warning,
-                        conditionOp = conditionOp,
+                        state = conditionState,
                         handler = dialogState.conditionHandler.asConditionHandler()
                     )
                     Spacer(modifier = Modifier.size(24.dp))
 
                     tornaco.apps.shortx.ui.addrule.action.ActionContent(
                         header = {
-                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.while.loop.action.message"])
+                            SmallTitle(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                LocalI18N.current["ui.action.while.loop.action.message"]
+                            )
                         },
                         actions = actionState.actions,
                         handler = dialogState.actionHandler.asActionHandler(),

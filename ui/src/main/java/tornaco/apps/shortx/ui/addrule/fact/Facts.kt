@@ -25,15 +25,19 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFactSelectorDialogSt
 import tornaco.apps.shortx.ui.base.*
 import tornaco.apps.shortx.ui.composeLogger
 
+class FactHandler(
+    val addFact: (Fact) -> Unit,
+    val removeFact: (Fact) -> Unit,
+)
 
 @Composable
 fun FactSelectors(
-    vm: AddRuleViewModel,
-    state: AddRuleState,
+    state: FactContentState,
+    handler: FactHandler,
     readOnly: Boolean = false,
 ) {
     val factSelectorState = rememberFactSelectorDialogState<String>(onSelected = { fact, _ ->
-        vm.addFact(fact)
+        handler.addFact(fact)
     })
     FactSelectorDialog(state = factSelectorState)
 
@@ -46,10 +50,10 @@ fun FactSelectors(
                     fact = fact,
                     readOnly = readOnly,
                     removeFact = {
-                        vm.removeFact(fact)
+                        handler.removeFact(fact)
                     },
                     updateFact = {
-                        vm.addFact(it)
+                        handler.addFact(it)
                     }
                 )
             }

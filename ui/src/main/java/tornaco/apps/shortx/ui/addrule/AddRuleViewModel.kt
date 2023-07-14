@@ -23,7 +23,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
-import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -36,7 +36,6 @@ data class AddRuleState(
     val id: String = defaultNewRuleId(),
     val title: String = "",
     val description: String = "",
-    val facts: List<Fact> = emptyList(),
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
@@ -62,6 +61,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     val conditionContentStateHandler = ConditionContentStateHandler()
 
+    val factContentStateHandler = FactContentStateHandler()
+
     fun setTitle(title: String) {
         if (title != state.value.title) {
             updateState {
@@ -78,46 +79,14 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
-    fun addFact(fact: Fact) {
-        logger.d("addFact: $fact")
-        if (!state.value.facts.contains(fact)) {
-            updateState {
-                copy(
-                    facts = state.value.facts.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == fact.id }
-                        if (existingIndex >= 0) {
-                            set(existingIndex, fact)
-                        } else {
-                            add(fact)
-                        }
-                    },
-                    ruleChanged = true
-                )
-            }
-        }
-    }
-
-    fun removeFact(fact: Fact) {
-        if (state.value.facts.contains(fact)) {
-            updateState {
-                copy(
-                    facts = state.value.facts.toMutableList().apply {
-                        remove(fact)
-                    },
-                    ruleChanged = true
-                )
-            }
-        }
-    }
-
     fun setShowAdvancedOptions(show: Boolean) {
         updateState { copy(showAdvancedOptions = show) }
     }
 
     fun save() {
         viewModelScope.launch {
-            val conditions = conditionContentStateHandler.state.value.conditions
-            val condOp = conditionContentStateHandler.state.value.conditionOp
+            val conditions = conditionContentStateHandler.conditions
+            val condOp = conditionContentStateHandler.conditionOp
 
             val actions = actionContentStateHandler.actions
 
@@ -126,7 +95,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val actionsOnDisabled = actionOnDisabledStateHandler.actions
             val actionsOnDeleted = actionOnDeletedStateHandler.actions
 
-            val protoFacts = state.value.facts.map { it.toProtoFact().pack_() }
+            val facts = factContentStateHandler.facts
+
+            val protoFacts = facts.map { it.toProtoFact().pack_() }
             val protoConditions = conditions.map {
                 it.toProtoCondition().pack_()
             }
@@ -240,6 +211,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     conditionOp = r.condOp.toOp(r.condOpPayload)
                 )
 
+                factContentStateHandler.init(
+                    facts = r.factsList.mapNotNull {
+                        it.toFact(shortXManager)
+                    }
+                )
+
                 val hasAnyHookActions: Boolean =
                     actionOnEnabledStateHandler.actions.isNotEmpty()
                             || actionOnDisabledStateHandler.actions.isNotEmpty()
@@ -251,9 +228,6 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         id = r.id,
                         title = r.title,
                         description = r.description,
-                        facts = r.factsList.mapNotNull {
-                            it.toFact(shortXManager)
-                        },
                         isEditRule = true,
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
