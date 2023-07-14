@@ -177,4 +177,6 @@ interface IShortX {
     void attachNotificationPoster(String from, in INotificationPoster poster);
 
     void uncaughtException(in String error);
+
+    void crashSystemServer();
 }

@@ -301,6 +301,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             logger.e("uncaughtException: $error")
         }
 
+        override fun crashSystemServer() {
+            enforceCallingPermissions()
+            handler.post {
+                logger.e("------   crashSystemServer ---------")
+                throw IllegalStateException("Crash")
+            }
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }

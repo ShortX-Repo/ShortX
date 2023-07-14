@@ -4,14 +4,25 @@ package tornaco.apps.shortx.ui.demo
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class DemoActivity : BaseActivity() {
@@ -41,6 +52,19 @@ class DemoActivity : BaseActivity() {
                         NotificationDemo()
                         MapDemo()
                         VibrateDemo()
+
+                        FilledTonalButton(onClick = {
+                            throw IllegalArgumentException()
+                        }) {
+                            Text(text = "Crash")
+                        }
+
+                        FilledTonalButton(onClick = {
+                            ShortXManagerNative.shortX?.crashSystemServer()
+                        }) {
+                            Text(text = "Crash System")
+                        }
+
 
                         Button(onClick = {
                             val intent = Intent(

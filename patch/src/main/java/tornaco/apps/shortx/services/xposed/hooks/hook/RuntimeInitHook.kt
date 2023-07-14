@@ -9,6 +9,7 @@ object RuntimeInitHook {
     private val logger = Logger("ShortXHook.RuntimeInitHook")
 
     fun hookUncaughtException() = kotlin.runCatching {
+        logger.d("hookUncaughtException")
         beforeMethod(
             Reflections.findClass(
                 "com.android.internal.os.RuntimeInit\$LoggingHandler",

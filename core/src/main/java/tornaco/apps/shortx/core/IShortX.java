@@ -392,6 +392,9 @@ public interface IShortX extends android.os.IInterface
     @Override public void uncaughtException(java.lang.String error) throws android.os.RemoteException
     {
     }
+    @Override public void crashSystemServer() throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1512,6 +1515,13 @@ public interface IShortX extends android.os.IInterface
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.uncaughtException(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_crashSystemServer:
+        {
+          data.enforceInterface(descriptor);
+          this.crashSystemServer();
           reply.writeNoException();
           return true;
         }
@@ -3728,6 +3738,24 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void crashSystemServer() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_crashSystemServer, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().crashSystemServer();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -3830,6 +3858,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getBTBondedDevices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 97);
     static final int TRANSACTION_attachNotificationPoster = (android.os.IBinder.FIRST_CALL_TRANSACTION + 98);
     static final int TRANSACTION_uncaughtException = (android.os.IBinder.FIRST_CALL_TRANSACTION + 99);
+    static final int TRANSACTION_crashSystemServer = (android.os.IBinder.FIRST_CALL_TRANSACTION + 100);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -3985,4 +4014,5 @@ public interface IShortX extends android.os.IInterface
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getBTBondedDevices() throws android.os.RemoteException;
   public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException;
   public void uncaughtException(java.lang.String error) throws android.os.RemoteException;
+  public void crashSystemServer() throws android.os.RemoteException;
 }
