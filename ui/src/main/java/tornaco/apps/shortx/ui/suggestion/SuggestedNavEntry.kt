@@ -2,12 +2,10 @@
 
 package tornaco.apps.shortx.ui.suggestion
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,8 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +28,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
@@ -41,7 +38,6 @@ import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
 import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
-import tornaco.apps.shortx.ui.theme.NoteTextColor
 
 enum class SuggestedNav(val labelKey: String) {
     GlobalVar("ui.global.var.title"),
@@ -56,18 +52,7 @@ enum class SuggestedNav(val labelKey: String) {
 @Composable
 fun SuggestedNavEntry() {
     Column {
-        SectionSpacer()
-
-        Canvas(modifier = Modifier.fillMaxWidth(), onDraw = {
-            drawLine(
-                color = NoteTextColor,
-                start = Offset.Zero,
-                end = Offset(size.width, 0f),
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f))
-            )
-        })
-
-        StandardSpacer()
+        SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
             RemixIcon(

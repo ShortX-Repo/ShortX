@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -103,6 +104,12 @@ fun AddRuleScreen(
     val factHandler = remember(vm) { vm.factContentStateHandler }
     val factContentState by factHandler.state.collectAsState()
 
+    val quitFactHandler = remember(vm) { vm.quitFactContentStateHandler }
+    val quitFactContentState by quitFactHandler.state.collectAsState()
+    val quitConditionHandler = remember(vm) { vm.quitConditionContentStateHandler }
+    val quitConditionContentState by quitConditionHandler.state.collectAsState()
+
+
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
@@ -138,7 +145,9 @@ fun AddRuleScreen(
                                         || conditionContentState.isChanged
                                         || actionOnEnabledState.isChanged
                                         || actionOnDisabledState.isChanged
-                                        || actionOnDeletedState.isChanged,
+                                        || actionOnDeletedState.isChanged
+                                        || quitFactContentState.isChanged
+                                        || quitConditionContentState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back(true)
@@ -168,14 +177,12 @@ fun AddRuleScreen(
                     )
                     SectionSpacer()
 
-                    AnimatedVisibility(visible = addRuleState.showConditionSection) {
-                        ConditionContent(
-                            state = conditionContentState,
-                            readOnly = readOnly,
-                            handler = conditionHandler.asConditionHandler()
-                        )
-                        SectionSpacer()
-                    }
+                    ConditionContent(
+                        state = conditionContentState,
+                        readOnly = readOnly,
+                        handler = conditionHandler.asConditionHandler()
+                    )
+                    SectionSpacer()
 
                     ActionContent(
                         actions = actionContentState.actions,
@@ -184,6 +191,50 @@ fun AddRuleScreen(
                         warnings = actionContentState.actionWarningMessages
                     )
                     SectionSpacer()
+
+
+                    SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        MediumTitleWithTip(
+                            LocalI18N.current["ui.rule.quit.title"],
+                            LocalI18N.current["ui.rule.quit.description"]
+                        )
+                        Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
+                            vm.toggleQuitEnable()
+                        })
+                    }
+                    AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
+                        Column {
+                            StandardSpacer()
+                            FactSelectors(
+                                header = {
+                                    FieldTitle(text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}")
+                                },
+                                state = quitFactContentState,
+                                handler = quitFactHandler.asFactHandler(),
+                                readOnly = readOnly
+                            )
+
+                            SectionSpacer()
+
+                            ConditionContent(
+                                header = {
+                                    FieldTitle(text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}")
+                                },
+                                state = quitConditionContentState,
+                                readOnly = readOnly,
+                                handler = quitConditionHandler.asConditionHandler()
+                            )
+
+                            SectionSpacer()
+                        }
+                    }
+
+                    SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
                     val scope = rememberCoroutineScope()
                     TextButton(onClick = {
@@ -199,7 +250,6 @@ fun AddRuleScreen(
                         Text(text = LocalI18N.current["ui.advanced.options"])
                     }
                     StandardSpacer()
-
                     AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
                         Column {
                             ActionContent(

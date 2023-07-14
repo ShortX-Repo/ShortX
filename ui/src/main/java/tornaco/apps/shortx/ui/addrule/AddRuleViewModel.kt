@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
+import tornaco.apps.shortx.core.proto.rule.RuleQuit
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -40,8 +41,8 @@ data class AddRuleState(
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
     val isEnabled: Boolean = false,
-    val showConditionSection: Boolean = true,
     val showAdvancedOptions: Boolean = false,
+    val isQuitEnabled: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -62,6 +63,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     val conditionContentStateHandler = ConditionContentStateHandler()
 
     val factContentStateHandler = FactContentStateHandler()
+
+    val quitFactContentStateHandler = FactContentStateHandler()
+    val quitConditionContentStateHandler = ConditionContentStateHandler()
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -97,15 +101,16 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
             val facts = factContentStateHandler.facts
 
-            val protoFacts = facts.map { it.toProtoFact().pack_() }
-            val protoConditions = conditions.map {
-                it.toProtoCondition().pack_()
-            }
+            // Quits
+            val quitFacts = quitFactContentStateHandler.facts
+            val quitConditions = quitConditionContentStateHandler.conditions
+            val quitCondOp = quitConditionContentStateHandler.conditionOp
+
             val rule = Rule.newBuilder()
                 .setId(state.value.id)
                 .setCreateTime(state.value.createTime)
                 .setLastUpdateTime(System.currentTimeMillis())
-                .addAllFacts(protoFacts)
+                .addAllFacts(facts.map { it.toProtoFact().pack_() })
                 .setTitle(
                     state.value.title.fallbackOnEmpty(
                         DateUtils.formatHHMMSS(
@@ -114,7 +119,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     )
                 )
                 .setDescription(state.value.description.fallbackOnEmpty(""))
-                .addAllConditions(protoConditions)
+                .addAllConditions(conditions.map {
+                    it.toProtoCondition().pack_()
+                })
                 .setCondOp(condOp.toConditionOperator())
                 .apply {
                     if (condOp is Op.MVEL) {
@@ -139,6 +146,25 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         .addAllActionsOnDeleted(actionsOnDeleted.map {
                             it.toProtoAction().pack_()
                         })
+                        .build()
+                )
+                .setQuit(
+                    RuleQuit.newBuilder()
+                        .addAllFacts(quitFacts.map { it.toProtoFact().pack_() })
+                        .addAllConditions(quitConditions.map {
+                            it.toProtoCondition().pack_()
+                        })
+                        .setCondOp(quitCondOp.toConditionOperator())
+                        .apply {
+                            if (quitCondOp is Op.MVEL) {
+                                condOpPayload =
+                                    ConditionOperatorPayload
+                                        .newBuilder()
+                                        .setExpression(quitCondOp.expression)
+                                        .build()
+                            }
+                        }
+                        .setIsEnabled(state.value.isQuitEnabled)
                         .build()
                 )
                 .setIsEnabled(state.value.isEnabled)
@@ -217,6 +243,20 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     }
                 )
 
+                quitFactContentStateHandler.init(
+                    facts = r.quit.factsList.mapNotNull {
+                        it.toFact(shortXManager)
+                    }
+                )
+                quitConditionContentStateHandler.init(
+                    conditions = r.quit.conditionsList.mapNotNull {
+                        it.toCondition(
+                            shortXManager
+                        )
+                    },
+                    conditionOp = r.quit.condOp.toOp(r.condOpPayload)
+                )
+
                 val hasAnyHookActions: Boolean =
                     actionOnEnabledStateHandler.actions.isNotEmpty()
                             || actionOnDisabledStateHandler.actions.isNotEmpty()
@@ -231,10 +271,15 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isEditRule = true,
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
-                        showAdvancedOptions = hasAnyHookActions
+                        showAdvancedOptions = hasAnyHookActions,
+                        isQuitEnabled = r.quit.isEnabled
                     )
                 }
             }
         }
+    }
+
+    fun toggleQuitEnable() {
+        updateState { copy(isQuitEnabled = !isQuitEnabled, ruleChanged = true) }
     }
 }

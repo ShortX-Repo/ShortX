@@ -230,7 +230,7 @@ class DefaultRuleEngine(
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
 
                 val quit = rule.quit
-                if (factMatcher.match(fact, quit.factsList)) {
+                if (quit.isEnabled && factMatcher.match(fact, quit.factsList)) {
                     logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
                     anyMatch = true
 

@@ -32,6 +32,9 @@ class FactHandler(
 
 @Composable
 fun FactSelectors(
+    header: @Composable ColumnScope.() -> Unit = {
+        MediumTitle(LocalI18N.current["ui.fact.title"])
+    },
     state: FactContentState,
     handler: FactHandler,
     readOnly: Boolean = false,
@@ -42,7 +45,7 @@ fun FactSelectors(
     FactSelectorDialog(state = factSelectorState)
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        MediumTitle(LocalI18N.current["ui.fact.title"])
+        header()
 
         Column {
             state.facts.forEach { fact ->

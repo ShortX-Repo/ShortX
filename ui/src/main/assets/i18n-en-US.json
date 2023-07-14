@@ -37,6 +37,8 @@
   "ui.actions.hook.on.disabled.description": "Actions called when this Rule is disabled",
   "ui.actions.hook.on.deleted.title": "On deleted",
   "ui.actions.hook.on.deleted.description": "Actions called when this Rule is deleted",
+  "ui.rule.quit.title": "Quit Rule",
+  "ui.rule.quit.description": "When below fact trigger and conditions matched, Rule will quit, all the actions will be stopped",
   "ui.advanced.options": "Advanced options",
   "ui.actions.add": "Add Action",
   "ui.title.edit.rule": "Edit Rule",
