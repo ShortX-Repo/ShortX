@@ -5,11 +5,31 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -24,9 +44,20 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
-import tornaco.apps.shortx.ui.addrule.condition.*
-import tornaco.apps.shortx.ui.addrule.fact.*
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
+import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitleWithTip
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SplitLines
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -212,7 +243,10 @@ fun AddRuleScreen(
                             StandardSpacer()
                             FactSelectors(
                                 header = {
-                                    FieldTitle(text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}")
+                                    FieldTitle(
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                        text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                                    )
                                 },
                                 state = quitFactContentState,
                                 handler = quitFactHandler.asFactHandler(),
@@ -223,7 +257,10 @@ fun AddRuleScreen(
 
                             ConditionContent(
                                 header = {
-                                    FieldTitle(text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}")
+                                    FieldTitle(
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                        text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                                    )
                                 },
                                 state = quitConditionContentState,
                                 readOnly = readOnly,
