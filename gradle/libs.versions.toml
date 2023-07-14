@@ -57,7 +57,7 @@ kotlin-scripting = { id = "org.jetbrains.kotlin.plugin.scripting", version.ref =
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
-protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.3" }
+protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.4" }
 # https://github.com/gmazzo/gradle-buildconfig-plugin
 gmazzo-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "4.1.1" }
 gladed-androidgitversion = { id = "com.gladed.androidgitversion", version = "0.4.14" }
