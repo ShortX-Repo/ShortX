@@ -19,6 +19,7 @@ object HookStub {
     }
 
     fun onPackageLoaded() {
+        RuntimeInitHook.hookUncaughtException()
         ContextImplHook.onPackageLoaded()
     }
 

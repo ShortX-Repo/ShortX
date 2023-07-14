@@ -175,4 +175,6 @@ interface IShortX {
     List<ByteArrayWrapper> getBTBondedDevices();
 
     void attachNotificationPoster(String from, in INotificationPoster poster);
+
+    void uncaughtException(in String error);
 }

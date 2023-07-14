@@ -292,6 +292,15 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.notification.attachNotificationPoster(from, poster)
         }
 
+        override fun uncaughtException(error: String) {
+            logger.e("PROCESS ERROR")
+            val uid = Binder.getCallingUid()
+            val pkg = shortXContext.appState.uidToApp(uid)
+            logger.e("UID: $uid")
+            logger.e("pkg: $pkg")
+            logger.e("uncaughtException: $error")
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }
