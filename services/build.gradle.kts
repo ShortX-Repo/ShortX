@@ -8,6 +8,8 @@ dependencies {
     compileOnly(files("lib/service-ui-stubs.jar"))
 
     implementation(project(":core"))
+    implementation(project(":services-29"))
+    implementation(project(":services-30"))
     implementation(project(":services-33"))
     implementation(project(":external:utils"))
     implementation(project(":external:picasso"))
