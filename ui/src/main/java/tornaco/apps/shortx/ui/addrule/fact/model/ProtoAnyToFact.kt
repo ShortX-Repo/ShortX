@@ -429,6 +429,20 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.OnStartOp::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.OnStartOp::class.java
+            val models =
+                (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+
+            Fact.OnStartOp(
+                id = data.id, note = data.note,
+                codes = data.opCodesList,
+                apps = models.first,
+                pkgSets = models.second,
+            )
+        }
+
 
         else -> {
             null

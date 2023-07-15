@@ -179,6 +179,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.media.insert"] to i18n["ui.fact.media.insert.summary", mapOf("mediaPkgName" to mediaProvider)]
         }
 
+        Fact.OnStartOp::class -> {
+            i18n["ui.fact.op.start"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -531,6 +535,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.media.insert"],
                 fact.filterPathRegex
+            )
+        }
+
+        is Fact.OnStartOp -> {
+            listOf(
+                i18N["ui.fact.op.start"],
             )
         }
     }

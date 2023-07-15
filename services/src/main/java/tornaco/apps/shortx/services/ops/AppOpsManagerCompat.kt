@@ -8,12 +8,12 @@ import tornaco.apps.shortx.services29.AppOpsManagerV29
 import tornaco.apps.shortx.services30.AppOpsManagerV30
 
 @DoNotStrip
-class AppOpsManagerCompat {
+object AppOpsManagerCompat {
     private val logger = Logger("AppOpsManagerCompat")
 
     @DoNotStrip
     interface OnOpActiveChangedListenerCompat {
-        fun onOpActiveChanged(opCode: Int, uid: Int, packageName: String?, active: Boolean)
+        fun onOpActiveChanged(opCode: Int, uid: Int, packageName: String, active: Boolean)
     }
 
     fun startWatchingActive(
@@ -25,7 +25,7 @@ class AppOpsManagerCompat {
         if (OsUtils.isQ()) {
             AppOpsManagerV29.startWatchingActive(
                 context, ops
-            ) { opCode: Int, uid: Int, packageName: String?, active: Boolean ->
+            ) { opCode: Int, uid: Int, packageName: String, active: Boolean ->
                 listenerCompat.onOpActiveChanged(
                     opCode,
                     uid,
@@ -36,7 +36,7 @@ class AppOpsManagerCompat {
         } else if (OsUtils.isROrAbove()) {
             AppOpsManagerV30.startWatchingActive(
                 context, ops
-            ) { opCode: Int, uid: Int, packageName: String?, active: Boolean ->
+            ) { opCode: Int, uid: Int, packageName: String, active: Boolean ->
                 listenerCompat.onOpActiveChanged(
                     opCode,
                     uid,

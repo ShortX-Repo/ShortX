@@ -69,4 +69,6 @@ val allFactClasses = listOf(
     Fact.VPNDisconnected::class,
 
     Fact.MediaStoreInsert::class,
+
+    Fact.OnStartOp::class,
 )

@@ -170,4 +170,14 @@ object ContextDataMapping {
         btDeviceAlias("Alias of the disconnected device"),
         btDeviceAddress("Address of the disconnected device"),
     }
+
+    @DoNotStrip
+    enum class OnStartOp(val description: String) {
+        opLabel("Label of the op"),
+        opCode("App ops code of the op, see AppOpsManager for details."),
+        opAppLabel("App label"),
+        opAppPkgName("App package name"),
+        opAppUid("The uid of the App"),
+        opAppUserId("The userId of the App"),
+    }
 }

@@ -551,6 +551,19 @@ sealed interface Fact {
             return copy(id = id, note = note)
         }
     }
+
+    data class OnStartOp(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+
+        val apps: List<App> = emptyList(),
+        val pkgSets: List<PkgSet> = emptyList(),
+        val codes: List<Int>
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()

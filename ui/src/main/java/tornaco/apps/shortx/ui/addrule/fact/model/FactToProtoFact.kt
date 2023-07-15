@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
@@ -365,6 +366,16 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.MediaStoreInsert -> {
             MediaStoreInsert.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setFilterPath(filterPathRegex)
+                .build()
+        }
+
+        is Fact.OnStartOp -> {
+            OnStartOp.newBuilder().setId(overrideId ?: id).setNote(note)
+                .addAllOpCodes(codes)
+                .addAllApps(apps.map {
+                    AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
+                })
+                .addAllPkgSets(pkgSets.map { it.label })
                 .build()
         }
 

@@ -391,3 +391,13 @@ message MediaStoreInsert {
   string note = 99;
   string id = 100;
 }
+
+message OnStartOp {
+  repeated int32 opCodes = 1;
+
+  repeated AppPkg apps = 2;
+  repeated string pkgSets = 3;
+
+  string note = 99;
+  string id = 100;
+}
