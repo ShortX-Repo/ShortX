@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import tornaco.apps.shortx.core.annotations.DoNotStrip;
 import tornaco.apps.shortx.services.ctrl.wrappers.ClipboardManager;
 import tornaco.apps.shortx.services.ctrl.wrappers.InputManager;
 import tornaco.apps.shortx.services.ctrl.wrappers.ServiceManager;
@@ -79,41 +80,13 @@ public final class Device {
         screenInfo = ScreenInfo.computeScreenInfo(displayInfo.getRotation(), deviceSize, crop, maxSize, lockVideoOrientation);
         layerStack = displayInfo.getLayerStack();
 
-        ServiceManager.getWindowManager().registerRotationWatcher(new IRotationWatcher.Stub() {
-            @Override
-            public void onRotationChanged(int rotation) {
-                synchronized (Device.this) {
-                    screenInfo = screenInfo.withDeviceRotation(rotation);
-
-                    // notify
-                    if (rotationListener != null) {
-                        rotationListener.onRotationChanged(rotation);
-                    }
-                }
-            }
-        }, displayId);
+        ServiceManager.getWindowManager().registerRotationWatcher(new RotationWatcherImpl(), displayId);
 
         if (options.getControl() && options.getClipboardAutosync()) {
             // If control and autosync are enabled, synchronize Android clipboard to the computer automatically
             ClipboardManager clipboardManager = ServiceManager.getClipboardManager();
             if (clipboardManager != null) {
-                clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
-                    @Override
-                    public void dispatchPrimaryClipChanged() {
-                        if (isSettingClipboard.get()) {
-                            // This is a notification for the change we are currently applying, ignore it
-                            return;
-                        }
-                        synchronized (Device.this) {
-                            if (clipboardListener != null) {
-                                String text = getClipboardText();
-                                if (text != null) {
-                                    clipboardListener.onClipboardTextChanged(text);
-                                }
-                            }
-                        }
-                    }
-                });
+                clipboardManager.addPrimaryClipChangedListener(new OnPrimaryClipChangedListenerImpl());
             } else {
                 Ln.w("No clipboard manager, copy-paste between device and computer will not work");
             }
@@ -318,6 +291,41 @@ public final class Device {
         // restore auto-rotate if necessary
         if (accelerometerRotation) {
             wm.thawRotation();
+        }
+    }
+
+    // uncaughtException: java.lang.AbstractMethodError: abstract method "void android.view.IRotationWatcher.onRotationChanged(int)"
+    @DoNotStrip
+    private class RotationWatcherImpl extends IRotationWatcher.Stub {
+        @Override
+        public void onRotationChanged(int rotation) {
+            synchronized (Device.this) {
+                screenInfo = screenInfo.withDeviceRotation(rotation);
+
+                // notify
+                if (rotationListener != null) {
+                    rotationListener.onRotationChanged(rotation);
+                }
+            }
+        }
+    }
+
+    @DoNotStrip
+    private class OnPrimaryClipChangedListenerImpl extends IOnPrimaryClipChangedListener.Stub {
+        @Override
+        public void dispatchPrimaryClipChanged() {
+            if (isSettingClipboard.get()) {
+                // This is a notification for the change we are currently applying, ignore it
+                return;
+            }
+            synchronized (Device.this) {
+                if (clipboardListener != null) {
+                    String text = getClipboardText();
+                    if (text != null) {
+                        clipboardListener.onClipboardTextChanged(text);
+                    }
+                }
+            }
         }
     }
 }
