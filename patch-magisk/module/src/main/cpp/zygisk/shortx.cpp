@@ -11,8 +11,14 @@ using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
+
+void isVirtualSource(void *args) {
+
+}
+
 class ShortXModule : public zygisk::ModuleBase {
 public:
+
     void onLoad(Api *api, JNIEnv *env) override {
         this->zApi = api;
         this->zEnv = env;
@@ -23,10 +29,23 @@ public:
         const char *process = zEnv->GetStringUTFChars(args->nice_name, nullptr);
         preSpecialize(process);
         zEnv->ReleaseStringUTFChars(args->nice_name, process);
+
+        zApi->pltHookRegister(".*", "isVirtualSource",
+                              reinterpret_cast<void *>(isVirtualSource), nullptr);
+        zApi->pltHookCommit();
     }
+
+    static bool isVirtualSource(void *mode) {
+        LOGW("isVirtualSource CALLED.");
+        return 1 > 0;
+    };
 
     void preServerSpecialize(ServerSpecializeArgs *args) override {
         preSpecialize("system_server");
+
+        zApi->pltHookRegister("libaudiopolicyservice.so", "isVirtualSource",
+                              reinterpret_cast<void *>(isVirtualSource), nullptr);
+        zApi->pltHookCommit();
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
@@ -50,12 +69,10 @@ private:
 
     void postSpecializeApp(const char *process) {
         LOGD("postSpecializeApp, process=[%s]", process);
-        startShortX(zEnv, "postSpecializeApp", process);
     }
 
     void postSpecializeSystemServer() {
         LOGD("postSpecializeSystemServer");
-        startShortX(zEnv, "postSpecializeSystemServer", ":-");
     }
 };
 

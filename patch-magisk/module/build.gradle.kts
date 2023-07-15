@@ -109,7 +109,7 @@ afterEvaluate {
                 file("$magiskDir/module.prop").writeText(modulePropText)
             }
 
-            val nativeOutDir = file("$buildDir/intermediates/cmake/${variant.name}/obj")
+            val nativeOutDir = file("$buildDir/intermediates/merged_native_libs/${variant.name}/out/lib")
             log("nativeOutDir: $nativeOutDir")
             log("nativeOutDir list: ${nativeOutDir.list()?.map { it }}")
 
