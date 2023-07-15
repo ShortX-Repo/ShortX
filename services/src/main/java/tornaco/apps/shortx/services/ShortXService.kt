@@ -32,12 +32,14 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.v.v
+import java.io.File
 import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
@@ -295,10 +297,22 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun uncaughtException(error: String) {
             logger.e("PROCESS ERROR")
             val uid = Binder.getCallingUid()
-            val pkg = shortXContext.appState.uidToApp(uid)
+            val pkgName = if (uid == 1000) {
+                "android"
+            } else {
+                shortXContext.appState.uidToApp(uid)
+            }
             logger.e("UID: $uid")
-            logger.e("pkg: $pkg")
+            logger.e("pkg: $pkgName")
             logger.e("uncaughtException: $error")
+
+            // Write to file
+            val logFile = File(
+                File(Dirs.baseServerLogDir(), "crash"),
+                "$pkgName-$uid-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
+            )
+            logFile.parentFile.mkdirs()
+            logFile.writeText(error)
         }
 
         override fun crashSystemServer() {
