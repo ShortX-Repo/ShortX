@@ -46,6 +46,7 @@
   "ui.rule.title": "Title",
   "ui.rule.description": "Description",
   "ui.rule.description.auto.template": "On {fact} \nif {condition} \nthen {action}",
+  "ui.rule.description.auto.no.condition.template": "On {fact} \nthen {action}",
   "ui.toast.rule.saved": "Rule saved",
   "ui.toast.da.saved": "Direct action saved",
   "ui.fact.screen.off": "Screen Off",

@@ -16,6 +16,7 @@ import kotlinx.parcelize.Parcelize
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
+import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
@@ -200,11 +202,13 @@ fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
             }
         }.joinToString(" / ")
 
-    val condition = rule.conditionsList.mapNotNull {
-        it.toCondition(shortXManager)
-    }.joinToString {
-        labelForConditionSelector(i18N, it::class).joinToString()
-    }
+    val condition = rule.conditionsList
+        .filterNot { it is_ True::class.java }
+        .mapNotNull {
+            it.toCondition(shortXManager)
+        }.joinToString {
+            labelForConditionSelector(i18N, it::class).joinToString()
+        }
 
     val action = rule.actionsList.mapNotNull {
         it.toAction(shortXManager)
@@ -212,11 +216,19 @@ fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
         labelAndDescriptionForActionSelector(i18N, it::class).first
     }
 
-    return i18N["ui.rule.description.auto.template", mapOf(
-        "fact" to fact,
-        "condition" to condition,
-        "action" to action
-    )]
+    return if (condition.isNotBlank()) {
+        i18N["ui.rule.description.auto.template", mapOf(
+            "fact" to fact,
+            "condition" to condition,
+            "action" to action
+        )]
+    } else {
+        i18N["ui.rule.description.auto.no.condition.template", mapOf(
+            "fact" to fact,
+            "condition" to condition,
+            "action" to action
+        )]
+    }
 }
 
 sealed interface ImportResult {

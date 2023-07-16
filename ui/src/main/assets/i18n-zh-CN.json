@@ -46,6 +46,7 @@
   "ui.rule.title": "标题",
   "ui.rule.description": "描述",
   "ui.rule.description.auto.template": "当{fact} \n如果{condition} \n就{action}",
+  "ui.rule.description.auto.no.condition.template": "当{fact} \n就{action}",
   "ui.toast.rule.saved": "自动指令已保存",
   "ui.toast.da.saved": "一键指令已保存",
   "ui.fact.screen.off": "息屏",
