@@ -643,7 +643,7 @@ fun FixedSetting.label(i18n: I18N): String {
 
 fun Int.opsIconName(): String {
     return when (this) {
-        AppOpsManagerCompat.OP_COARSE_LOCATION, AppOpsManagerCompat.OP_FINE_LOCATION -> Remix.Map.map_pin_2_fill
+        AppOpsManagerCompat.OP_GPS -> Remix.Map.map_pin_2_fill
         AppOpsManagerCompat.OP_CAMERA -> Remix.Media.camera_2_fill
         AppOpsManagerCompat.OP_RECORD_AUDIO -> Remix.Media.record_circle_fill
         else -> ""

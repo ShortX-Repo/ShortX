@@ -15,6 +15,7 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ops.AppOpsManagerCompat
 import tornaco.apps.shortx.services.ui.i18NIns
 
+
 class StartOpTrigger(
     override val context: Context,
     override val shortXContext: ShortXContext
@@ -63,9 +64,7 @@ class StartOpTrigger(
                 intArrayOf(
                     AppOpsManager.OP_CAMERA,
                     AppOpsManager.OP_RECORD_AUDIO,
-                    AppOpsManager.OP_COARSE_LOCATION,
-                    AppOpsManager.OP_FINE_LOCATION,
-                ),
+                ) + MERGED_LOCATION_OPS,
                 object : AppOpsManagerCompat.OnOpActiveChangedListenerCompat {
                     override fun onOpActiveChanged(
                         opCode: Int,
@@ -74,6 +73,14 @@ class StartOpTrigger(
                         active: Boolean
                     ) {
                         logger.i("onOpActiveChanged: $opCode $uid $packageName $active")
+
+                        val mergedOpCode =
+                            if (MERGED_LOCATION_OPS.contains(opCode)) {
+                                AppOpsManager.OP_GPS
+                            } else {
+                                opCode
+                            }
+
                         val app = shortXContext.appState.pkgToApp(
                             Pkg(
                                 packageName,
@@ -81,17 +88,16 @@ class StartOpTrigger(
                             )
                         )
                         app?.let {
-
                             if (active) {
                                 shortXContext.rule.publishFact(
                                     "onOpActiveChanged",
                                     OnStartOp.newBuilder()
                                         .addAllApps(listOf(app.pkg))
-                                        .addAllOpCodes(listOf(opCode))
+                                        .addAllOpCodes(listOf(mergedOpCode))
                                         .build(),
                                     mapOf(
-                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[opCode.opsLabelKey()],
-                                        ContextDataMapping.OnStartOp.opCode.name to opCode,
+                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[mergedOpCode.opsLabelKey()],
+                                        ContextDataMapping.OnStartOp.opCode.name to mergedOpCode,
                                         ContextDataMapping.OnStartOp.opAppLabel.name to app.label,
                                         ContextDataMapping.OnStartOp.opAppPkgName.name to app.pkg.pkgName,
                                         ContextDataMapping.OnStartOp.opAppUid.name to app.uid,
@@ -103,11 +109,11 @@ class StartOpTrigger(
                                     "onOpActiveChanged",
                                     OnFinishOp.newBuilder()
                                         .addAllApps(listOf(app.pkg))
-                                        .addAllOpCodes(listOf(opCode))
+                                        .addAllOpCodes(listOf(mergedOpCode))
                                         .build(),
                                     mapOf(
-                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[opCode.opsLabelKey()],
-                                        ContextDataMapping.OnStartOp.opCode.name to opCode,
+                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[mergedOpCode.opsLabelKey()],
+                                        ContextDataMapping.OnStartOp.opCode.name to mergedOpCode,
                                         ContextDataMapping.OnStartOp.opAppLabel.name to app.label,
                                         ContextDataMapping.OnStartOp.opAppPkgName.name to app.pkg.pkgName,
                                         ContextDataMapping.OnStartOp.opAppUid.name to app.uid,
@@ -124,5 +130,17 @@ class StartOpTrigger(
                 })
             isRegistered = true
         }
+    }
+
+    companion object {
+        val MERGED_LOCATION_OPS = intArrayOf(
+            AppOpsManager.OP_COARSE_LOCATION,
+            AppOpsManager.OP_FINE_LOCATION,
+            AppOpsManager.OP_GPS,
+            AppOpsManager.OP_WIFI_SCAN,
+            AppOpsManager.OP_NEIGHBORING_CELLS,
+            AppOpsManager.OP_MONITOR_LOCATION,
+            AppOpsManager.OP_MONITOR_HIGH_POWER_LOCATION
+        )
     }
 }

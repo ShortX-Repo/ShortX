@@ -62,6 +62,7 @@ public final class AppOpsManagerCompat {
 
     public static final int OP_CAMERA = AppOpsManager.OP_CAMERA;
     public static final int OP_RECORD_AUDIO = AppOpsManager.OP_RECORD_AUDIO;
+    public static final int OP_GPS = AppOpsManager.OP_GPS;
     public static final int OP_COARSE_LOCATION = AppOpsManager.OP_COARSE_LOCATION;
     public static final int OP_FINE_LOCATION = AppOpsManager.OP_FINE_LOCATION;
 

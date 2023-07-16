@@ -194,7 +194,7 @@ fun AppOpSelectorDialog(state: AppOpSelectorState) {
 
                             FieldTitle(text = i18N["ui.fact.op.start.op"])
                             arrayOf(
-                                AppOpsManagerCompat.OP_COARSE_LOCATION,
+                                AppOpsManagerCompat.OP_GPS,
                                 AppOpsManagerCompat.OP_CAMERA,
                                 AppOpsManagerCompat.OP_RECORD_AUDIO
                             ).forEach { code ->
