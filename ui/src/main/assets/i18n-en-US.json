@@ -233,6 +233,7 @@
   "ui.fact.vpn.connected": "VPN connected",
   "ui.fact.vpn.disconnected": "VPN disconnected",
   "ui.fact.op.start": "Start op",
+  "ui.fact.op.finish": "Finish op",
   "ui.fact.op.start.app": "Select watching apps",
   "ui.fact.op.start.op": "Select watching op",
   "ui.fact.op.start.camera": "Camera",

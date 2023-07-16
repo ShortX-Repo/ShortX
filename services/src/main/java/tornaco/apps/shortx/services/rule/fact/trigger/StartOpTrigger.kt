@@ -6,6 +6,7 @@ import android.os.UserHandle
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.ops.opsLabelKey
+import tornaco.apps.shortx.core.proto.fact.OnFinishOp
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
@@ -85,6 +86,22 @@ class StartOpTrigger(
                                 shortXContext.rule.publishFact(
                                     "onOpActiveChanged",
                                     OnStartOp.newBuilder()
+                                        .addAllApps(listOf(app.pkg))
+                                        .addAllOpCodes(listOf(opCode))
+                                        .build(),
+                                    mapOf(
+                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[opCode.opsLabelKey()],
+                                        ContextDataMapping.OnStartOp.opCode.name to opCode,
+                                        ContextDataMapping.OnStartOp.opAppLabel.name to app.label,
+                                        ContextDataMapping.OnStartOp.opAppPkgName.name to app.pkg.pkgName,
+                                        ContextDataMapping.OnStartOp.opAppUid.name to app.uid,
+                                        ContextDataMapping.OnStartOp.opAppUserId.name to app.pkg.userId,
+                                    )
+                                )
+                            } else {
+                                shortXContext.rule.publishFact(
+                                    "onOpActiveChanged",
+                                    OnFinishOp.newBuilder()
                                         .addAllApps(listOf(app.pkg))
                                         .addAllOpCodes(listOf(opCode))
                                         .build(),

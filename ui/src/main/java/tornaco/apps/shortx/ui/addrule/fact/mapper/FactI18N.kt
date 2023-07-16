@@ -186,6 +186,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.op.start"] to null
         }
 
+        Fact.OnFinishOp::class -> {
+            i18n["ui.fact.op.finish"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -544,6 +548,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.OnStartOp -> {
             mutableListOf(
                 i18N["ui.fact.op.start"],
+                fact.codes.map { i18N[it.opsLabelKey()] }.distinct().joinToString()
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.OnFinishOp -> {
+            mutableListOf(
+                i18N["ui.fact.op.finish"],
                 fact.codes.map { i18N[it.opsLabelKey()] }.distinct().joinToString()
             ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
         }

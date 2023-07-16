@@ -71,4 +71,5 @@ val allFactClasses = listOf(
     Fact.MediaStoreInsert::class,
 
     Fact.OnStartOp::class,
+    Fact.OnFinishOp::class,
 )

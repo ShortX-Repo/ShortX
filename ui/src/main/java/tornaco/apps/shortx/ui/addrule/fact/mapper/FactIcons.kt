@@ -58,6 +58,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.VPNDisconnected::class -> Remix.Others.key_line
         Fact.MediaStoreInsert::class -> Remix.Media.landscape_line
         Fact.OnStartOp::class -> Remix.System.alarm_warning_line
+        Fact.OnFinishOp::class -> Remix.System.check_line
 
         else -> {
             Remix.Document.file_unknow_fill

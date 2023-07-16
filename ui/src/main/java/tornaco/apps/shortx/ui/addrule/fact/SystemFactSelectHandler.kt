@@ -236,6 +236,14 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         })
     AppOpSelectorDialog(state = onStartOpSelectorState)
 
+    val onFinishOpSelectorState = rememberAppOpSelectorState(
+        title = LocalI18N.current["ui.fact.op.finish"],
+        message = null,
+        onSelected = {
+            addFact(Fact.OnFinishOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
+        })
+    AppOpSelectorDialog(state = onFinishOpSelectorState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -405,6 +413,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.OnStartOp::class -> {
                 onStartOpSelectorState.show(
+                    AppOpSelectorData(
+                        source.getFactAs<Fact.OnStartOp>()?.apps ?: emptyList(),
+                        source.getFactAs<Fact.OnStartOp>()?.pkgSets ?: emptyList(),
+                        source.getFactAs<Fact.OnStartOp>()?.codes ?: emptyList(),
+                    )
+                )
+                true
+            }
+
+            Fact.OnFinishOp::class -> {
+                onFinishOpSelectorState.show(
                     AppOpSelectorData(
                         source.getFactAs<Fact.OnStartOp>()?.apps ?: emptyList(),
                         source.getFactAs<Fact.OnStartOp>()?.pkgSets ?: emptyList(),

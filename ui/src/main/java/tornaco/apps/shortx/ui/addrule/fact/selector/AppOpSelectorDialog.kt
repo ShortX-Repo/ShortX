@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.compat.AppOpsManagerCompat
+import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
@@ -27,7 +28,6 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.mapper.opsIconName
-import tornaco.apps.shortx.ui.addrule.fact.mapper.opsLabelKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage

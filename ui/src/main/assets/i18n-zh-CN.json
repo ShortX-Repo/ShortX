@@ -233,6 +233,7 @@
   "ui.fact.vpn.connected": "VPN连接了",
   "ui.fact.vpn.disconnected": "VPN断开连接了",
   "ui.fact.op.start": "开始操作",
+  "ui.fact.op.finish": "结束操作",
   "ui.fact.op.start.app": "选择监视的应用",
   "ui.fact.op.start.op": "选择监视的操作",
   "ui.fact.op.start.camera": "相机",

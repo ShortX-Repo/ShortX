@@ -123,6 +123,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.OnStartOp>()
         }
 
+        Fact.OnFinishOp::class -> {
+            dats<ContextDataMapping.OnFinishOp>()
+        }
+
         else -> {
             emptyList()
         }

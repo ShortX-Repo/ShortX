@@ -401,3 +401,13 @@ message OnStartOp {
   string note = 99;
   string id = 100;
 }
+
+message OnFinishOp {
+  repeated int32 opCodes = 1;
+
+  repeated AppPkg apps = 2;
+  repeated string pkgSets = 3;
+
+  string note = 99;
+  string id = 100;
+}

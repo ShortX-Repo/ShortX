@@ -180,4 +180,14 @@ object ContextDataMapping {
         opAppUid("The uid of the App"),
         opAppUserId("The userId of the App"),
     }
+
+    @DoNotStrip
+    enum class OnFinishOp(val description: String) {
+        opLabel("Label of the op"),
+        opCode("App ops code of the op, see AppOpsManager for details."),
+        opAppLabel("App label"),
+        opAppPkgName("App package name"),
+        opAppUid("The uid of the App"),
+        opAppUserId("The userId of the App"),
+    }
 }
