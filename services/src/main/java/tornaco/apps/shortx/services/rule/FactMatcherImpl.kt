@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
@@ -363,6 +364,16 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             filter.toRegex().matches(path)
         }
 
+        register(OnStartOp::class.java) { actual, rule ->
+            val actualN = (actual as OnStartOp)
+            val ruleN = (rule as OnStartOp)
+
+            ruleN.opCodesList.containsAll(actual.opCodesList) && matchWithAppOrPkgSetListFact(
+                actual = OnStartOpWrapper(actualN),
+                rule = OnStartOpWrapper(ruleN)
+            )
+        }
+
         logger.i("Init complete.")
     }
 
@@ -501,6 +512,14 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             get() = n.pkgSetsList ?: emptyList()
         override val appList: List<AppPkg>
             get() = n.appsList ?: emptyList()
+
+    }
+
+    class OnStartOpWrapper(private val onStartOp: OnStartOp) : WithAppOrPkgSetListFact {
+        override val pkgSetList: List<String>
+            get() = onStartOp.pkgSetsList ?: emptyList()
+        override val appList: List<AppPkg>
+            get() = onStartOp.appsList ?: emptyList()
 
     }
 }

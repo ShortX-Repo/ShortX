@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.base
 import android.content.Context
 import android.icu.text.MessageFormat
 import kotlinx.serialization.json.Json
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
 

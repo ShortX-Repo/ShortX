@@ -5,7 +5,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.getGlobalVarRefs
-import tornaco.apps.shortx.ui.base.I18N
+import tornaco.apps.shortx.core.I18N
 
 class ActionErrorChecker {
     private val logger = Logger("ActionErrorChecker")

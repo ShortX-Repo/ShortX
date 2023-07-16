@@ -190,17 +190,18 @@ fun ListItem(
                         )
                     )
                 }
-                TinySpacer()
                 text1?.let {
+                    TinySpacer()
                     Text(
                         text = text1,
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                         maxLines = 12
                     )
+                    TinySpacer()
+                    TinySpacer()
+                    TinySpacer()
                 }
-                TinySpacer()
-                TinySpacer()
-                TinySpacer()
+
                 text2?.let {
                     Text(
                         text = text2,

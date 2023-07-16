@@ -2,21 +2,24 @@ package tornaco.apps.shortx.ui.addrule.fact.mapper
 
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.common.sortedDays
+import tornaco.apps.shortx.core.compat.AppOpsManagerCompat
+import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
-import tornaco.apps.shortx.ui.base.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import kotlin.reflect.KClass
@@ -539,9 +542,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.OnStartOp -> {
-            listOf(
+            mutableListOf(
                 i18N["ui.fact.op.start"],
-            )
+                fact.codes.map { i18N[it.opsLabelKey()] }.distinct().joinToString()
+            ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
         }
     }
 }
@@ -623,5 +627,14 @@ fun FixedSetting.label(i18n: I18N): String {
         is FixedSetting.Interval -> i18n["ui.fact.time.of.a.day.fixed.by.interval"] + " " + displayDuration
 
         is FixedSetting.Times -> i18n["ui.fact.time.of.a.day.fixed.by.times"] + " " + this.times
+    }
+}
+
+fun Int.opsIconName(): String {
+    return when (this) {
+        AppOpsManagerCompat.OP_COARSE_LOCATION, AppOpsManagerCompat.OP_FINE_LOCATION -> Remix.Map.map_pin_2_fill
+        AppOpsManagerCompat.OP_CAMERA -> Remix.Media.camera_2_fill
+        AppOpsManagerCompat.OP_RECORD_AUDIO -> Remix.Media.record_circle_fill
+        else -> ""
     }
 }

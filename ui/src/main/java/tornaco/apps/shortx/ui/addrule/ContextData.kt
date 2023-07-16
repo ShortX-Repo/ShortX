@@ -119,6 +119,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.AdvancedKeyEvent>()
         }
 
+        Fact.OnStartOp::class -> {
+            dats<ContextDataMapping.OnStartOp>()
+        }
+
         else -> {
             emptyList()
         }

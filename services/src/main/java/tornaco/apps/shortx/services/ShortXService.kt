@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
@@ -38,6 +39,8 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
+import tornaco.apps.shortx.services.ui.I18NCache
+import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.v.v
 import java.io.File
 import java.util.UUID
@@ -59,6 +62,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     override fun systemReady() {
         super.systemReady()
         //  publishBinderService()
+        // Init i18N
+        val appRes = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val localeName = appRes.getString("ui_i18n_name")
+        I18NCache.init(appRes.appContext, localeName)
+        val testRes = i18NIns["ui.common.delete"]
+        logger.d("testRes: $testRes")
         serviceLifecycle.systemReady()
     }
 

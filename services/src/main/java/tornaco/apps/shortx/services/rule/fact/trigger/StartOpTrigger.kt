@@ -5,12 +5,14 @@ import android.content.Context
 import android.os.UserHandle
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ops.AppOpsManagerCompat
+import tornaco.apps.shortx.services.ui.i18NIns
 
 class StartOpTrigger(
     override val context: Context,
@@ -78,20 +80,26 @@ class StartOpTrigger(
                             )
                         )
                         app?.let {
-                            shortXContext.rule.publishFact(
-                                "onOpActiveChanged",
-                                OnStartOp.newBuilder()
-                                    .addAllApps(listOf(app.pkg))
-                                    .addAllOpCodes(listOf(opCode))
-                                    .build(),
-                                mapOf(
-                                    ContextDataMapping.OnStartOp.opCode.name to opCode,
-                                    ContextDataMapping.OnStartOp.opAppLabel.name to app.label,
-                                    ContextDataMapping.OnStartOp.opAppPkgName.name to app.pkg.pkgName,
-                                    ContextDataMapping.OnStartOp.opAppUid.name to app.uid,
-                                    ContextDataMapping.OnStartOp.opAppUserId.name to app.pkg.userId,
+
+                            if (active) {
+                                shortXContext.rule.publishFact(
+                                    "onOpActiveChanged",
+                                    OnStartOp.newBuilder()
+                                        .addAllApps(listOf(app.pkg))
+                                        .addAllOpCodes(listOf(opCode))
+                                        .build(),
+                                    mapOf(
+                                        ContextDataMapping.OnStartOp.opLabel.name to i18NIns[opCode.opsLabelKey()],
+                                        ContextDataMapping.OnStartOp.opCode.name to opCode,
+                                        ContextDataMapping.OnStartOp.opAppLabel.name to app.label,
+                                        ContextDataMapping.OnStartOp.opAppPkgName.name to app.pkg.pkgName,
+                                        ContextDataMapping.OnStartOp.opAppUid.name to app.uid,
+                                        ContextDataMapping.OnStartOp.opAppUserId.name to app.pkg.userId,
+                                    )
                                 )
-                            )
+                            }
+
+
                         }
 
 

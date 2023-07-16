@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.ui.base.I18N
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.afterNavDelay
 

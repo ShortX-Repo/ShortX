@@ -12,7 +12,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
-import tornaco.apps.shortx.ui.base.I18N
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON

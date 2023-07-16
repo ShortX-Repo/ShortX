@@ -10,6 +10,8 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorData
+import tornaco.apps.shortx.ui.addrule.fact.selector.AppOpSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
@@ -19,6 +21,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppOpSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelectorState
@@ -225,6 +228,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = mediaInsertSelectorState)
 
+    val onStartOpSelectorState = rememberAppOpSelectorState(
+        title = LocalI18N.current["ui.fact.op.start"],
+        message = null,
+        onSelected = {
+            addFact(Fact.OnStartOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
+        })
+    AppOpSelectorDialog(state = onStartOpSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -390,6 +400,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.MediaStoreInsert::class -> {
                 mediaInsertSelectorState.show(source.getFactAs<Fact.MediaStoreInsert>()?.filterPathRegex)
+                true
+            }
+
+            Fact.OnStartOp::class -> {
+                onStartOpSelectorState.show(
+                    AppOpSelectorData(
+                        source.getFactAs<Fact.OnStartOp>()?.apps ?: emptyList(),
+                        source.getFactAs<Fact.OnStartOp>()?.pkgSets ?: emptyList(),
+                        source.getFactAs<Fact.OnStartOp>()?.codes ?: emptyList(),
+                    )
+                )
                 true
             }
 

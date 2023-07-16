@@ -9,7 +9,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
-import tornaco.apps.shortx.ui.base.I18N
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 

@@ -58,6 +58,7 @@ fun SystemFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
         Fact.VPNDisconnected::class,
 
         Fact.MediaStoreInsert::class,
+        Fact.OnStartOp::class,
     ).map {
         SelectorItem(
             type = it,

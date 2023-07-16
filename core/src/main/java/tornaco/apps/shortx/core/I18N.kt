@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.base
+package tornaco.apps.shortx.core
 
 typealias I18NKey = String
 

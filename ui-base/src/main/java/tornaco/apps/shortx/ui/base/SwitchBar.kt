@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.I18N
 
 @Composable
 fun SwitchBar(modifier: Modifier = Modifier, isChecked: Boolean, onCheckChange: (Boolean) -> Unit) {

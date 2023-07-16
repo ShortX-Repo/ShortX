@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.I18NKey
 
 const val DROPDOWN_WIDTH_FRACTION = 0.6f
 
