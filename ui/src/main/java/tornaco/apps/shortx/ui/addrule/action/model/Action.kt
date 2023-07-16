@@ -9,6 +9,8 @@ import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
+import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -888,6 +890,9 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val url: String,
+        val method: HttpRequestMethod,
+        val headers: List<HttpRequestHeader>,
+
         val adapter: HttpRequestAdapter
     ) : Action {
         override fun clone(id: String, note: String, isEnabled: Boolean): Action {

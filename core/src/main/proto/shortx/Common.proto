@@ -198,3 +198,30 @@ message BTBondedDevice {
   int32 batteryLevel = 3;
   bool isConnected = 4;
 }
+
+enum HttpRequestMethod {
+  GET = 0;
+  POST = 1;
+  PUT = 2;
+  PATCH = 3;
+  DELETE = 4;
+  HEAD = 5;
+}
+
+message HttpRequestHeader {
+  string key = 1;
+  string value = 2;
+}
+
+message HttpRequestBodyJson {
+  string json = 1;
+}
+
+message HttpRequestBodyForm {
+  repeated HttpRequestBodyFormItem items = 1;
+}
+
+message HttpRequestBodyFormItem {
+  string key = 1;
+  string value = 2;
+}

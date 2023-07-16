@@ -5,11 +5,29 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,10 +37,33 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
+import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.MenuDialogState
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipRow
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.net.URL
@@ -35,6 +76,9 @@ class HttpRequestDialogState(
     val onSelected: (Action.HttpRequest) -> Unit
 ) : CommonDialogState() {
     internal var url by mutableStateOf("")
+    internal var method by mutableStateOf(HttpRequestMethod.GET)
+    internal var headers by mutableStateOf<List<HttpRequestHeader>>(emptyList())
+
     internal var expressionInput by mutableStateOf("")
     internal var expressions by mutableStateOf(listOf<String>())
     internal var output by mutableStateOf("")
@@ -42,6 +86,9 @@ class HttpRequestDialogState(
 
     fun show(currentAction: Action.HttpRequest? = null) {
         this.url = currentAction?.url ?: ""
+        this.method = currentAction?.method ?: HttpRequestMethod.GET
+        this.headers = currentAction?.headers ?: emptyList()
+
         this.output = ""
         this.expressionInput = ""
         this.expressions = currentAction?.let {
@@ -56,6 +103,22 @@ class HttpRequestDialogState(
         } ?: AdapterType.Raw
 
         show()
+    }
+
+    fun setMethod(method: HttpRequestMethod) {
+        this.method = method
+    }
+
+    fun addHeader(header: HttpRequestHeader) {
+        this.headers = this.headers.toMutableList().apply {
+            add(header)
+        }
+    }
+
+    fun removeHeader(index: Int) {
+        this.headers = this.headers.toMutableList().apply {
+            removeAt(index)
+        }
     }
 
     fun addExpression(expression: String) {
@@ -127,6 +190,8 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                     dialogState.onSelected(
                                         Action.HttpRequest(
                                             url = dialogState.url,
+                                            method = dialogState.method,
+                                            headers = dialogState.headers,
                                             adapter = if (dialogState.adapter == AdapterType.Json) {
                                                 HttpRequestAdapter.JsonMap(expressions = dialogState.expressions)
                                             } else {
@@ -221,7 +286,78 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         }
                     }
 
+                    StandardSpacer()
+                    FieldTitle(text = "Method")
+                    val methodDropdownState = rememberDropdownSelectorState()
+                    DropdownSelector(
+                        state = methodDropdownState,
+                        items = HttpRequestMethod.values()
+                            .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
+                                DropdownItem(
+                                    labelLines = listOf(it.name),
+                                    data = it
+                                )
+                            },
+                        onSelect = {
+                            dialogState.setMethod(it.data)
+                        })
 
+                    StandardSpacer()
+                    FieldTitle(text = "Headers")
+                    dialogState.headers.forEach {
+                        ListItem(titleLines = listOf(it.key, it.value))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        var keyInput by remember {
+                            mutableStateOf("")
+                        }
+                        var valueInput by remember {
+                            mutableStateOf("")
+                        }
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = keyInput,
+                            onValueChange = {
+                                keyInput = it
+                            },
+                            label = {
+                                Text(text = "Key")
+                            },
+                            showSymbolButton = false
+                        )
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = valueInput,
+                            onValueChange = {
+                                valueInput = it
+                            },
+                            label = {
+                                Text(text = "Value")
+                            },
+                            trailingIcon = {
+                                FilledTonalIconButton(
+                                    onClick = {
+                                        if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
+                                            dialogState.addHeader(
+                                                HttpRequestHeader.newBuilder()
+                                                    .setKey(keyInput)
+                                                    .setValue(valueInput)
+                                                    .build()
+                                            )
+                                        }
+                                    }) {
+                                    RemixIcon(remixName = Remix.System.add_fill)
+                                }
+                            },
+                            showSymbolButton = false
+                        )
+                    }
+
+                    StandardSpacer()
                     Column(modifier = Modifier) {
                         MediumTitle(
                             text = LocalI18N.current["ui.action.http.request.adapter"]
@@ -268,8 +404,6 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     StandardSpacer()
 
                     AnimatedVisibility(visible = dialogState.adapter == AdapterType.Raw) {
-                        val context = LocalContext.current
-                        val i18N = LocalI18N.current
                         val contextDataKey =
                             "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
                         ListItem(

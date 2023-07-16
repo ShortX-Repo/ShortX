@@ -549,6 +549,9 @@ message HttpRequest {
   string url = 1;
   google.protobuf.Any adapter = 2;
 
+  HttpRequestMethod method = 3;
+  repeated HttpRequestHeader headers = 4;
+  google.protobuf.Any requestBody = 5;
 
   bool isDisabled = 98;
   string note = 99;
