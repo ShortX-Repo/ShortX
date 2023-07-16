@@ -425,9 +425,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             Fact.OnFinishOp::class -> {
                 onFinishOpSelectorState.show(
                     AppOpSelectorData(
-                        source.getFactAs<Fact.OnStartOp>()?.apps ?: emptyList(),
-                        source.getFactAs<Fact.OnStartOp>()?.pkgSets ?: emptyList(),
-                        source.getFactAs<Fact.OnStartOp>()?.codes ?: emptyList(),
+                        source.getFactAs<Fact.OnFinishOp>()?.apps ?: emptyList(),
+                        source.getFactAs<Fact.OnFinishOp>()?.pkgSets ?: emptyList(),
+                        source.getFactAs<Fact.OnFinishOp>()?.codes ?: emptyList(),
                     )
                 )
                 true

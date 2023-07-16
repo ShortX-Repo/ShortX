@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.util.Log;
 
@@ -74,6 +75,38 @@ public class AppResources {
             }
         } catch (Throwable e) {
             LOGGER.e("Fail getBitmap: " + Log.getStackTraceString(e));
+        }
+        return null;
+    }
+
+    public Drawable getDrawable(String resName) {
+        if (!PkgUtils.isPkgInstalled(this.context, appPackageName)) {
+            return null;
+        }
+        if (DEBUG) {
+            LOGGER.d("getDrawable, resName: " + resName);
+        }
+        try {
+            Context appContext = getAppContext();
+            if (appContext != null) {
+                Resources res = appContext.getResources();
+                if (DEBUG) {
+                    LOGGER.d("getDrawable, res: " + res);
+                }
+                if (res != null) {
+                    int id = res.getIdentifier(resName, "drawable", appPackageName);
+                    if (DEBUG) {
+                        LOGGER.d("getDrawable, id: " + id);
+                    }
+                    if (id > 0) {
+                        Drawable drawable = appContext.getDrawable(id);
+                        LOGGER.d("getDrawable, drawable: " + drawable);
+                        return drawable;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            LOGGER.e("Fail getDrawable: " + Log.getStackTraceString(e));
         }
         return null;
     }
