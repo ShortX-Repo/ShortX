@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,7 +51,6 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
-import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.MenuDialogState
@@ -217,6 +217,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     val scope = rememberCoroutineScope()
+                    FieldTitle(text = "Url")
                     ShortXTextField(
                         value = dialogState.url,
                         onValueChange = {
@@ -274,6 +275,14 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                             rememberScrollState()
                                         )
                                 ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.TopEnd
+                                    ) {
+                                        IconButton(onClick = { dialogState.setOutput("") }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
+                                    }
                                     Text(
                                         modifier = Modifier.padding(16.dp),
                                         text = dialogState.output,
@@ -282,35 +291,53 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                 }
                             }
                             StandardSpacer()
-
                         }
                     }
 
                     StandardSpacer()
                     FieldTitle(text = "Method")
                     val methodDropdownState = rememberDropdownSelectorState()
-                    DropdownSelector(
-                        state = methodDropdownState,
-                        items = HttpRequestMethod.values()
-                            .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
-                                DropdownItem(
-                                    labelLines = listOf(it.name),
-                                    data = it
-                                )
-                            },
-                        onSelect = {
-                            dialogState.setMethod(it.data)
-                        })
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        FilledTonalButton(onClick = {
+                            methodDropdownState.open()
+                        }) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = dialogState.method.name)
+                                StandardSpacer()
+                                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                            }
+                        }
+                        DropdownSelector(
+                            state = methodDropdownState,
+                            items = HttpRequestMethod.values()
+                                .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
+                                    DropdownItem(
+                                        labelLines = listOf(it.name),
+                                        data = it
+                                    )
+                                },
+                            onSelect = {
+                                dialogState.setMethod(it.data)
+                            })
+                    }
 
                     StandardSpacer()
-                    FieldTitle(text = "Headers")
-                    dialogState.headers.forEach {
-                        ListItem(titleLines = listOf(it.key, it.value))
+                    FieldTitle(text = "Headers (Optional)")
+                    dialogState.headers.forEachIndexed { index, it ->
+                        ListItem(titleLines = listOf(it.key, it.value),
+                            icon = {
+                                RemixIcon(remixName = Remix.Logos.flickr_line)
+                            },
+                            action1 = {
+                                IconButton(onClick = {
+                                    dialogState.removeHeader(index)
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            })
                     }
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         var keyInput by remember {
                             mutableStateOf("")
@@ -338,28 +365,28 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             label = {
                                 Text(text = "Value")
                             },
-                            trailingIcon = {
-                                FilledTonalIconButton(
-                                    onClick = {
-                                        if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
-                                            dialogState.addHeader(
-                                                HttpRequestHeader.newBuilder()
-                                                    .setKey(keyInput)
-                                                    .setValue(valueInput)
-                                                    .build()
-                                            )
-                                        }
-                                    }) {
-                                    RemixIcon(remixName = Remix.System.add_fill)
-                                }
-                            },
                             showSymbolButton = false
                         )
+                        FilledTonalButton(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
+                                    dialogState.addHeader(
+                                        HttpRequestHeader.newBuilder()
+                                            .setKey(keyInput)
+                                            .setValue(valueInput)
+                                            .build()
+                                    )
+                                }
+                            }) {
+                            Text(text = "Add header")
+                        }
                     }
 
                     StandardSpacer()
                     Column(modifier = Modifier) {
-                        MediumTitle(
+                        FieldTitle(
                             text = LocalI18N.current["ui.action.http.request.adapter"]
                         )
                         MediumSpacer()

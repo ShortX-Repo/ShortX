@@ -738,6 +738,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 url = data.url,
+                method = data.method,
+                headers = data.headersList,
                 adapter = data.adapter.let {
                     if (it is_ HttpRequestJsonMapAdapter::class.java) {
                         val ja = it unpack_ HttpRequestJsonMapAdapter::class.java
