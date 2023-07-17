@@ -40,6 +40,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -55,6 +56,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -328,7 +330,10 @@ fun TipDialog(state: TipDialogState) {
                 Text(text = state.title)
             },
             text = {
-                Text(text = state.tip)
+                val textColor = LocalContentColor.current.takeOrElse {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                }
+                MarkdownText(markdown = state.tip, color = textColor)
             })
     }
 }

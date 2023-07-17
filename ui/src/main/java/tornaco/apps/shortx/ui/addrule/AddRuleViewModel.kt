@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.proto.rule.RuleQuit
@@ -43,6 +44,7 @@ data class AddRuleState(
     val isEnabled: Boolean = false,
     val showAdvancedOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
+    val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -85,6 +87,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun setShowAdvancedOptions(show: Boolean) {
         updateState { copy(showAdvancedOptions = show) }
+    }
+
+    fun setAsyncMode(asyncMode: AsyncMode) {
+        updateState { copy(asyncMode = asyncMode, ruleChanged = true) }
     }
 
     fun save() {
@@ -168,6 +174,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         .build()
                 )
                 .setIsEnabled(state.value.isEnabled)
+                .setAsyncMode(state.value.asyncMode)
                 .build()
 
             shortXManager.addRule(rule)
@@ -274,7 +281,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
                         showAdvancedOptions = hasAnyHookActions,
-                        isQuitEnabled = r.quit.isEnabled
+                        isQuitEnabled = r.quit.isEnabled,
+                        asyncMode = r.asyncMode
                     )
                 }
             }

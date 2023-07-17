@@ -30,6 +30,8 @@ message Rule {
 
   RuleHook hook = 14;
   RuleQuit quit = 15;
+
+  AsyncMode asyncMode = 16;
 }
 
 message RuleHook {
@@ -81,4 +83,10 @@ enum ContextSrcEvent {
   ContextSrc_Rule = 4;
   ContextSrc_RuleHook = 5;
   ContextSrc_RuleQuit = 6;
+}
+
+enum AsyncMode {
+  AsyncMode_Async = 0;
+  AsyncMode_Sync = 1;
+  AsyncMode_Sync_InRule = 2;
 }

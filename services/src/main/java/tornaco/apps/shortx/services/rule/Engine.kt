@@ -3,17 +3,21 @@ package tornaco.apps.shortx.services.rule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
+import java.util.concurrent.ConcurrentHashMap
 
 const val CONDITION_WAIT_TIMEOUT = 100L
 
@@ -113,10 +117,15 @@ class DefaultRuleEngine(
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
 
+    private val globalMuteX = Mutex()
+    private val muteXMap = ConcurrentHashMap<String, Mutex>()
+
     private val defaultCondRes: (Rule) -> Boolean = {
         logger.w("shouldFire, check condition timeout, return false. rule is: ${it.title}")
         false
     }
+
+    private val Rule.muteX get() = muteXMap.computeIfAbsent(this.id) { Mutex() }
 
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         val startTimeMillis = System.currentTimeMillis()
@@ -195,23 +204,47 @@ class DefaultRuleEngine(
                     }
                     logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
                     if (conditionRes) {
-                        kotlin.run loop@{
-                            logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
-                            rule.actionsList.forEach {
-                                val evaRes = actionEvaluator.evaluate(
-                                    rule.title,
-                                    it,
-                                    contextData
-                                )
-                                logger.d("action evaluate res: $evaRes")
-                                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                    logger.e(evaRes.error, "evaluate fail")
-                                    return@loop
-                                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                    logger.w("evaluate break!")
-                                    return@loop
-                                } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                                    logger.d("action is disabled: ${evaRes.action.typeUrl}")
+                        val runActions: suspend () -> Unit = {
+                            kotlin.run loop@{
+                                logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
+                                rule.actionsList.forEach {
+                                    val evaRes = actionEvaluator.evaluate(
+                                        rule.title,
+                                        it,
+                                        contextData
+                                    )
+                                    logger.d("action evaluate res: $evaRes")
+                                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                        logger.e(evaRes.error, "evaluate fail")
+                                        return@loop
+                                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                        logger.w("evaluate break!")
+                                        return@loop
+                                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
+                                    }
+                                }
+                            }
+                        }
+
+                        when (rule.asyncMode) {
+                            AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
+                                logger.d("Run actions with Async")
+                                runActions()
+                            }
+
+                            AsyncMode.AsyncMode_Sync_InRule -> {
+                                val muteX = rule.muteX
+                                logger.d("Run actions with Sync_InRule: $muteX")
+                                muteX.withLock {
+                                    runActions()
+                                }
+                            }
+
+                            else -> {
+                                logger.d("Run actions with globalMuteX")
+                                globalMuteX.withLock {
+                                    runActions()
                                 }
                             }
                         }

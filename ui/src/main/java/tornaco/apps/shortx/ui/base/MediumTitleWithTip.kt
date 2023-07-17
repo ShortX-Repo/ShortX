@@ -46,3 +46,28 @@ fun MediumTitleWithTip(text: String, tipText: String) {
 
     TipDialog(tipDialogState)
 }
+
+@Composable
+fun FieldTitleWithTip(text: String, tipText: String) {
+    val tipDialogState = rememberTipDialogState(title = text, tip = tipText)
+
+    Row(
+        modifier = Modifier
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FieldTitle(text = text)
+
+        IconButton(onClick = {
+            tipDialogState.show()
+        }) {
+            RemixIcon(
+                remixName = Remix.System.question_line,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+
+    TipDialog(tipDialogState)
+}

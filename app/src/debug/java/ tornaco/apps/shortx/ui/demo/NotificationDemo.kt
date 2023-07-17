@@ -107,6 +107,25 @@ fun NotificationDemo() {
     }
 
     FilledTonalButton(onClick = {
+        mockNotification(
+            context,
+            "Demo title",
+            "Demo content",
+            System.currentTimeMillis(),
+            id = 11
+        )
+        mockNotification(
+            context,
+            "Demo title",
+            "Demo content",
+            System.currentTimeMillis(),
+            id = 12
+        )
+    }) {
+        Text(text = "Notification Dup")
+    }
+
+    FilledTonalButton(onClick = {
         NotificationPoster(
             context,
             "silence",

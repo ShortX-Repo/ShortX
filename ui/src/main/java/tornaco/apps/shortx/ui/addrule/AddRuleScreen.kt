@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
@@ -49,15 +52,21 @@ import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
 import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.FieldTitleWithTip
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -188,12 +197,12 @@ fun AddRuleScreen(
                         },
                         scrollBehavior = scrollBehavior
                     )
-                }) {
+                }) { paddingValues ->
                 val scrollState = rememberScrollState()
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)
-                        .padding(it)
+                        .padding(paddingValues)
                         .padding(horizontal = 16.dp)
                         .animateContentSize()
                 ) {
@@ -240,6 +249,42 @@ fun AddRuleScreen(
                     StandardSpacer()
                     AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
                         Column {
+                            // Async Mode
+                            MediumTitleWithTip(
+                                text = LocalI18N.current["ui.rule.async.mode"],
+                                tipText = LocalI18N.current["ui.rule.async.mode.description"]
+                            )
+                            SmallSpacer()
+
+                            val typeDropdownState = rememberDropdownSelectorState()
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                FilledTonalButton(onClick = {
+                                    typeDropdownState.open()
+                                }) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
+                                        StandardSpacer()
+                                        RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                                    }
+                                }
+                                DropdownSelector(
+                                    state = typeDropdownState,
+                                    items = AsyncMode.values()
+                                        .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
+                                            DropdownItem(
+                                                labelLines = listOf(
+                                                    LocalI18N.current[it.labelKey()]
+                                                ),
+                                                data = it
+                                            )
+                                        },
+                                    onSelect = {
+                                        vm.setAsyncMode(it.data)
+                                    })
+                            }
+                            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -288,9 +333,11 @@ fun AddRuleScreen(
 
                             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
+                            MediumTitle(text = "Hooks")
+                            SmallSpacer()
                             ActionContent(
                                 header = {
-                                    MediumTitleWithTip(
+                                    FieldTitleWithTip(
                                         LocalI18N.current["ui.actions.hook.on.enabled.title"],
                                         LocalI18N.current["ui.actions.hook.on.enabled.description"]
                                     )
@@ -304,7 +351,7 @@ fun AddRuleScreen(
 
                             ActionContent(
                                 header = {
-                                    MediumTitleWithTip(
+                                    FieldTitleWithTip(
                                         LocalI18N.current["ui.actions.hook.on.disabled.title"],
                                         LocalI18N.current["ui.actions.hook.on.disabled.description"]
                                     )
@@ -318,7 +365,7 @@ fun AddRuleScreen(
 
                             ActionContent(
                                 header = {
-                                    MediumTitleWithTip(
+                                    FieldTitleWithTip(
                                         LocalI18N.current["ui.actions.hook.on.deleted.title"],
                                         LocalI18N.current["ui.actions.hook.on.deleted.description"]
                                     )
@@ -368,4 +415,13 @@ private fun TitleAndDescription(
         onValueChange = { description ->
             vm.setDescription(description)
         })
+}
+
+fun AsyncMode.labelKey(): String {
+    return when (this) {
+        AsyncMode.AsyncMode_Async -> "ui.rule.async.mode.async"
+        AsyncMode.AsyncMode_Sync -> "ui.rule.async.mode.sync"
+        AsyncMode.AsyncMode_Sync_InRule -> "ui.rule.async.mode.sync_in_rule"
+        AsyncMode.UNRECOGNIZED -> ""
+    }
 }
