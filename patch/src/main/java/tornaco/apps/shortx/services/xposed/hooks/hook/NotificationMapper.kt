@@ -43,7 +43,8 @@ private fun getTitle(notification: android.app.Notification): String? {
     val extras = notification.extras
     if (extras != null) {
         // android.text.SpannableString cannot be cast to java.lang.String
-        val title: Any? = extras.getString(android.app.Notification.EXTRA_TITLE, null)
+        val title: Any? = extras.get(android.app.Notification.EXTRA_TITLE)
+        logger.p("title: $title")
         return title?.toString()
     }
     return null
@@ -52,7 +53,9 @@ private fun getTitle(notification: android.app.Notification): String? {
 fun getContent(notification: android.app.Notification): String? {
     val extras = notification.extras
     if (extras != null) {
-        val ext: Any? = extras.getString(android.app.Notification.EXTRA_TEXT, null)
+        // java.lang.ClassCastException: android.text.SpannableString cannot be cast to java.lang.String
+        val ext: Any? = extras.get(android.app.Notification.EXTRA_TEXT)
+        logger.p("ext: $ext")
         return ext?.toString()
     }
     return null
