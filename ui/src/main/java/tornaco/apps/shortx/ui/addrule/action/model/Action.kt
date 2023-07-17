@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
+import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -892,6 +893,7 @@ sealed interface Action : Parcelable {
         val url: String,
         val method: HttpRequestMethod,
         val headers: List<HttpRequestHeader>,
+        val requestBody: ProtoAny,
 
         val adapter: HttpRequestAdapter
     ) : Action {

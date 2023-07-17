@@ -39,9 +39,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.HttpRequest
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyFormItem
+import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.ProtoAny
+import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
@@ -74,12 +81,27 @@ internal enum class AdapterType {
     Raw, Json
 }
 
+enum class HttpRequestBodyType(val label: String) {
+    Json("Json"),
+    Form("Form"),
+    None("None")
+}
+
+
 class HttpRequestDialogState(
     val onSelected: (Action.HttpRequest) -> Unit
 ) : CommonDialogState() {
     internal var url by mutableStateOf("")
     internal var method by mutableStateOf(HttpRequestMethod.GET)
     internal var headers by mutableStateOf<List<HttpRequestHeader>>(emptyList())
+
+    internal var requestBody by mutableStateOf(HttpRequestBodyType.None)
+    internal var requestBodyJson by mutableStateOf<String>(
+        "{}"
+    )
+    internal var requestBodyForm by mutableStateOf<List<HttpRequestBodyFormItem>>(
+        emptyList()
+    )
 
     internal var expressionInput by mutableStateOf("")
     internal var expressions by mutableStateOf(listOf<String>())
@@ -91,6 +113,13 @@ class HttpRequestDialogState(
             url = this.url,
             method = this.method,
             headers = this.headers,
+            requestBody = if (this.requestBody == HttpRequestBodyType.Json) {
+                HttpRequestBodyJson.newBuilder().setJson(requestBodyJson).build().pack_()
+            } else if (this.requestBody == HttpRequestBodyType.Form) {
+                HttpRequestBodyForm.newBuilder().addAllItems(this.requestBodyForm).build().pack_()
+            } else {
+                ProtoAny.getDefaultInstance()
+            },
             adapter = if (this.adapter == AdapterType.Json) {
                 HttpRequestAdapter.JsonMap(expressions = this.expressions)
             } else {
@@ -102,6 +131,21 @@ class HttpRequestDialogState(
         this.url = currentAction?.url ?: ""
         this.method = currentAction?.method ?: HttpRequestMethod.GET
         this.headers = currentAction?.headers ?: emptyList()
+        currentAction?.requestBody?.let {
+            if (it is_ HttpRequestBodyJson::class.java) {
+                val bodyJson = it unpack_ HttpRequestBodyJson::class.java
+                this.requestBody = HttpRequestBodyType.Json
+                this.requestBodyJson = bodyJson.json
+            } else if (it is_ HttpRequestBodyForm::class.java) {
+                val bodyForm = it unpack_ HttpRequestBodyForm::class.java
+                this.requestBody = HttpRequestBodyType.Form
+                this.requestBodyForm = bodyForm.itemsList
+            } else {
+                this.requestBody = HttpRequestBodyType.None
+                this.requestBodyForm = emptyList()
+                this.requestBodyJson = "{}"
+            }
+        } ?: HttpRequestBodyType.None
 
         this.output = ""
         this.expressionInput = ""
@@ -159,6 +203,22 @@ class HttpRequestDialogState(
 
     fun setOutput(output: String) {
         this.output = output
+    }
+
+    fun setRequestBodyType(bodyType: HttpRequestBodyType) {
+        this.requestBody = bodyType
+    }
+
+    fun addForm(item: HttpRequestBodyFormItem) {
+        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
+            add(item)
+        }
+    }
+
+    fun removeForm(index: Int) {
+        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
+            removeAt(index)
+        }
     }
 }
 
@@ -238,14 +298,17 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     StandardSpacer()
 
                     Output(dialogState)
-
                     StandardSpacer()
+
                     Method(dialogState)
-
                     StandardSpacer()
+
                     Headers(dialogState)
-
                     StandardSpacer()
+
+                    RequestBody(dialogState)
+                    StandardSpacer()
+
                     ResponseAdapter(dialogState)
                 }
             }
@@ -579,6 +642,120 @@ private fun ExpressionItem(
                 remove()
             }) {
                 RemixIcon(remixName = Remix.System.close_line)
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun RequestBody(dialogState: HttpRequestDialogState) {
+    FieldTitle(text = "Request body")
+    SmallSpacer()
+
+    val typeDropdownState = rememberDropdownSelectorState()
+    Box(modifier = Modifier.fillMaxWidth()) {
+        FilledTonalButton(onClick = {
+            typeDropdownState.open()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = dialogState.requestBody.label)
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        DropdownSelector(
+            state = typeDropdownState,
+            items = HttpRequestBodyType.values().map {
+                DropdownItem(
+                    labelLines = listOf(it.label),
+                    data = it
+                )
+            },
+            onSelect = {
+                dialogState.setRequestBodyType(it.data)
+            })
+    }
+
+    StandardSpacer()
+
+    AnimatedVisibility(visible = dialogState.requestBody == HttpRequestBodyType.Json) {
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = dialogState.requestBodyJson,
+            onValueChange = {
+                dialogState.requestBodyJson = it
+            },
+            label = {
+                Text(text = "Json")
+            },
+            showSymbolButton = true
+        )
+    }
+
+    AnimatedVisibility(visible = dialogState.requestBody == HttpRequestBodyType.Form) {
+        Column {
+            dialogState.requestBodyForm.forEachIndexed { index, it ->
+                ListItem(titleLines = listOf(it.key, it.value),
+                    icon = {
+                        RemixIcon(remixName = Remix.Logos.flickr_line)
+                    },
+                    action1 = {
+                        IconButton(onClick = {
+                            dialogState.removeForm(index)
+                        }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    })
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                var keyInput by remember {
+                    mutableStateOf("")
+                }
+                var valueInput by remember {
+                    mutableStateOf("")
+                }
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = keyInput,
+                    onValueChange = {
+                        keyInput = it
+                    },
+                    label = {
+                        Text(text = "Key")
+                    },
+                    showSymbolButton = false
+                )
+                SmallSpacer()
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = valueInput,
+                    onValueChange = {
+                        valueInput = it
+                    },
+                    label = {
+                        Text(text = "Value")
+                    },
+                    showSymbolButton = false
+                )
+                SmallSpacer()
+                FilledTonalButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                        if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
+                            dialogState.addForm(
+                                HttpRequestBodyFormItem.newBuilder()
+                                    .setKey(keyInput)
+                                    .setValue(valueInput)
+                                    .build()
+                            )
+                        }
+                    }) {
+                    Text(text = "Add form item")
+                }
             }
         }
     }

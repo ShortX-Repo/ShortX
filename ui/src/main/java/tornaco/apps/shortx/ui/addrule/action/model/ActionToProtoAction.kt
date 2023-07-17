@@ -624,6 +624,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setUrl(url)
                 .setMethod(method)
                 .addAllHeaders(headers)
+                .setRequestBody(requestBody)
                 .build()
         }
 
