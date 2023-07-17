@@ -10,6 +10,7 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
+import android.util.Log
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -341,15 +342,19 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 shortXContext.rule.getAllGlobalVars()
             }
             val requestBody = data.requestBody.toHttpRequestBody()
-            return tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleUrl(
-                url = url,
-                method = data.method.name,
-                headers = data.headersList.associate {
-                    it.key to (it.value).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
-                },
-                requestBody = requestBody,
-                adapter = data.adapter
-            )
+            return kotlin.runCatching {
+                tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleUrl(
+                    url = url,
+                    method = data.method.name,
+                    headers = data.headersList.associate {
+                        it.key to (it.value).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+                    },
+                    requestBody = requestBody,
+                    adapter = data.adapter
+                )
+            }.getOrElse {
+                listOf(Log.getStackTraceString(it))
+            }
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

@@ -53,6 +53,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -72,6 +73,8 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
+import tornaco.apps.shortx.ui.base.code.OutputDialog
+import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -105,7 +108,6 @@ class HttpRequestDialogState(
 
     internal var expressionInput by mutableStateOf("")
     internal var expressions by mutableStateOf(listOf<String>())
-    internal var output by mutableStateOf("")
     internal var adapter by mutableStateOf(AdapterType.Raw)
 
     val httpRequest
@@ -147,7 +149,6 @@ class HttpRequestDialogState(
             }
         } ?: HttpRequestBodyType.None
 
-        this.output = ""
         this.expressionInput = ""
         this.expressions = currentAction?.let {
             if (it.adapter is HttpRequestAdapter.JsonMap) {
@@ -191,22 +192,15 @@ class HttpRequestDialogState(
         }
     }
 
-    fun updateExpression(expression: String, index: Int) {
-        this.expressions = this.expressions.toMutableList().apply {
-            set(index, expression)
-        }
-    }
-
     fun inputExpression(expression: String) {
         this.expressionInput = expression
     }
 
-    fun setOutput(output: String) {
-        this.output = output
-    }
-
     fun setRequestBodyType(bodyType: HttpRequestBodyType) {
         this.requestBody = bodyType
+        if (bodyType != HttpRequestBodyType.None && this.method == HttpRequestMethod.GET) {
+            this.method = HttpRequestMethod.POST
+        }
     }
 
     fun addForm(item: HttpRequestBodyFormItem) {
@@ -242,6 +236,10 @@ fun HttpRequestDialog(state: HttpRequestDialogState) {
 
 @Composable
 private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
+    val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
+    OutputDialog(state = outputDialogState)
+
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -267,7 +265,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                         val out = withContext(Dispatchers.IO) {
                                             shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
                                         }
-                                        dialogState.setOutput(out.joinToString(System.lineSeparator()))
+                                        outputDialogState.show(out.joinToString(System.lineSeparator()))
                                     }
                                 }
                             }) {
@@ -287,29 +285,28 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     )
                 }) { paddingValues ->
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Url(dialogState)
-                    StandardSpacer()
+                ClickOutsideClearFocusBox {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Url(dialogState)
+                        StandardSpacer()
 
-                    Output(dialogState)
-                    StandardSpacer()
+                        Method(dialogState)
+                        StandardSpacer()
 
-                    Method(dialogState)
-                    StandardSpacer()
+                        Headers(dialogState)
+                        StandardSpacer()
 
-                    Headers(dialogState)
-                    StandardSpacer()
+                        RequestBody(dialogState)
+                        StandardSpacer()
 
-                    RequestBody(dialogState)
-                    StandardSpacer()
-
-                    ResponseAdapter(dialogState)
+                        ResponseAdapter(dialogState)
+                    }
                 }
             }
         }
@@ -328,58 +325,6 @@ private fun Url(dialogState: HttpRequestDialogState) {
         },
         showSymbolButton = true
     )
-}
-
-@Composable
-private fun Output(
-    dialogState: HttpRequestDialogState,
-) {
-    val i18N = LocalI18N.current
-    val context = LocalContext.current
-    AnimatedVisibility(visible = dialogState.output.isNotBlank()) {
-        Column {
-            ShortXCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 72.dp, max = 300.dp),
-                onClick = {
-                    ClipboardUtils.copyToClipboard(
-                        context,
-                        "output",
-                        dialogState.output
-                    )
-                    Toast.makeText(
-                        context,
-                        i18N["ui.common.copied.to.clipboard"],
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(
-                            rememberScrollState()
-                        )
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.TopEnd
-                    ) {
-                        IconButton(onClick = { dialogState.setOutput("") }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    }
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = dialogState.output,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-            StandardSpacer()
-        }
-    }
 }
 
 @Composable
