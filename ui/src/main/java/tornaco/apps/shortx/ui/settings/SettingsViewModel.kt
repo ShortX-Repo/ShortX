@@ -32,6 +32,7 @@ data class SettingsState(
     val gestureAreaSize: Int = 0,
     val isInjectedShellEnabled: Boolean = false,
     val isPointerLocationEnabled: Boolean = false,
+    val hasAudioRecord: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -78,6 +79,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
                 isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
+                hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty()
             )
         }
 

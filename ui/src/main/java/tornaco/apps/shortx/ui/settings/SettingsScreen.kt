@@ -385,7 +385,7 @@ private fun recordSettings(
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
-    return listOf(
+    return listOfNotNull(
         Preference.Category(LocalI18N.current["ui.settings.record"]),
 
         Preference.TextPreference(icon = Remix.Media.notification_3_line,
@@ -418,15 +418,18 @@ private fun recordSettings(
             }
         ),
 
-        Preference.TextPreference(icon = Remix.Media.mic_2_fill,
-            title = LocalI18N.current["ui.settings.audio.record"],
-            summary = LocalI18N.current["ui.settings.audio.record.summary"],
-            badge = badge,
-            onClick = {
-                mainState.isSubscribed.select({ goToAudioRecord() },
-                    { subscribeDialogState.show() })
-            }
-        ),
+        if (state.hasAudioRecord) {
+            Preference.TextPreference(
+                icon = Remix.Media.mic_2_fill,
+                title = LocalI18N.current["ui.settings.audio.record"],
+                summary = LocalI18N.current["ui.settings.audio.record.summary"],
+                badge = badge,
+                onClick = {
+                    mainState.isSubscribed.select({ goToAudioRecord() },
+                        { subscribeDialogState.show() })
+                }
+            )
+        } else null
     )
 }
 
