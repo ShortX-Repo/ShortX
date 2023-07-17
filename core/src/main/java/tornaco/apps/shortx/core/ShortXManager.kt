@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import com.android.internal.appwidget.IAppWidgetService
+import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AppComponentInfo
@@ -683,6 +684,12 @@ class ShortXManager(private val service: IShortX) {
     fun exportAudioRecordFile(file: AudioRecordFile, pfd: ParcelFileDescriptor) {
         invokeService(Unit) {
             exportAudioRecordFile(ByteArrayWrapper(file.toByteArray()), pfd)
+        }
+    }
+
+    fun executeHttpRequest(request: HttpRequest): List<String> {
+        return invokeService(emptyList()) {
+            executeHttpRequest(ByteArrayWrapper(request.toByteArray()))
         }
     }
 

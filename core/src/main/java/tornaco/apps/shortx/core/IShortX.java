@@ -386,14 +386,24 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    // Called by SystemUI
+
     @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
     {
     }
+    // Error report
+
     @Override public void uncaughtException(java.lang.String error) throws android.os.RemoteException
     {
     }
     @Override public void crashSystemServer() throws android.os.RemoteException
     {
+    }
+    //
+
+    @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
+    {
+      return null;
     }
     @Override
     public android.os.IBinder asBinder() {
@@ -1523,6 +1533,21 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           this.crashSystemServer();
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_executeHttpRequest:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          java.util.List<java.lang.String> _result = this.executeHttpRequest(_arg0);
+          reply.writeNoException();
+          reply.writeStringList(_result);
           return true;
         }
         default:
@@ -3699,6 +3724,8 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Called by SystemUI
+
       @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3719,6 +3746,8 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Error report
+
       @Override public void uncaughtException(java.lang.String error) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3755,6 +3784,35 @@ public interface IShortX extends android.os.IInterface
           _reply.recycle();
           _data.recycle();
         }
+      }
+      //
+
+      @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<java.lang.String> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((request!=null)) {
+            _data.writeInt(1);
+            request.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_executeHttpRequest, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeHttpRequest(request);
+          }
+          _reply.readException();
+          _result = _reply.createStringArrayList();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
       }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
@@ -3859,6 +3917,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_attachNotificationPoster = (android.os.IBinder.FIRST_CALL_TRANSACTION + 98);
     static final int TRANSACTION_uncaughtException = (android.os.IBinder.FIRST_CALL_TRANSACTION + 99);
     static final int TRANSACTION_crashSystemServer = (android.os.IBinder.FIRST_CALL_TRANSACTION + 100);
+    static final int TRANSACTION_executeHttpRequest = (android.os.IBinder.FIRST_CALL_TRANSACTION + 101);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4012,7 +4071,14 @@ public interface IShortX extends android.os.IInterface
   public void deleteAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file) throws android.os.RemoteException;
   public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getBTBondedDevices() throws android.os.RemoteException;
+  // Called by SystemUI
+
   public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException;
+  // Error report
+
   public void uncaughtException(java.lang.String error) throws android.os.RemoteException;
   public void crashSystemServer() throws android.os.RemoteException;
+  //
+
+  public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException;
 }

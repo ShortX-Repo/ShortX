@@ -2,12 +2,12 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,11 +38,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -66,7 +69,6 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
-import java.net.URL
 
 internal enum class AdapterType {
     Raw, Json
@@ -83,6 +85,18 @@ class HttpRequestDialogState(
     internal var expressions by mutableStateOf(listOf<String>())
     internal var output by mutableStateOf("")
     internal var adapter by mutableStateOf(AdapterType.Raw)
+
+    val httpRequest
+        get() = Action.HttpRequest(
+            url = this.url,
+            method = this.method,
+            headers = this.headers,
+            adapter = if (this.adapter == AdapterType.Json) {
+                HttpRequestAdapter.JsonMap(expressions = this.expressions)
+            } else {
+                HttpRequestAdapter.Raw
+            }
+        )
 
     fun show(currentAction: Action.HttpRequest? = null) {
         this.url = currentAction?.url ?: ""
@@ -185,20 +199,24 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             }
                         },
                         actions = {
+                            val scope = rememberCoroutineScope()
                             IconButton(onClick = {
                                 if (dialogState.url.isNotBlank()) {
-                                    dialogState.onSelected(
-                                        Action.HttpRequest(
-                                            url = dialogState.url,
-                                            method = dialogState.method,
-                                            headers = dialogState.headers,
-                                            adapter = if (dialogState.adapter == AdapterType.Json) {
-                                                HttpRequestAdapter.JsonMap(expressions = dialogState.expressions)
-                                            } else {
-                                                HttpRequestAdapter.Raw
-                                            }
-                                        )
-                                    )
+                                    val request = dialogState.httpRequest
+                                    scope.launch {
+                                        val out = withContext(Dispatchers.IO) {
+                                            shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
+                                        }
+                                        dialogState.setOutput(out.joinToString(System.lineSeparator()))
+                                    }
+                                }
+                            }) {
+                                RemixIcon(remixName = Remix.Media.play_line)
+                            }
+
+                            IconButton(onClick = {
+                                if (dialogState.url.isNotBlank()) {
+                                    dialogState.onSelected(dialogState.httpRequest)
                                     dialogState.dismiss()
                                 }
                             }) {
@@ -216,281 +234,296 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    val scope = rememberCoroutineScope()
-                    FieldTitle(text = "Url")
-                    ShortXTextField(
-                        value = dialogState.url,
-                        onValueChange = {
-                            dialogState.url = it
-                        },
-                        label = {
-                            Text(text = "Url")
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        val output = kotlin.runCatching {
-                                            URL(dialogState.url).readText()
-                                        }.getOrElse {
-                                            Log.getStackTraceString(it)
-                                        }
-                                        dialogState.setOutput(output)
-                                    }
-                                }
-
-                            }) {
-                                RemixIcon(remixName = Remix.Media.play_fill)
-                            }
-                        },
-                        showSymbolButton = false
-                    )
+                    Url(dialogState)
                     StandardSpacer()
 
-                    val i18N = LocalI18N.current
-                    val context = LocalContext.current
-                    AnimatedVisibility(visible = dialogState.output.isNotBlank()) {
-                        Column {
-                            ShortXCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 72.dp, max = 300.dp),
-                                onClick = {
-                                    ClipboardUtils.copyToClipboard(
-                                        context,
-                                        "output",
-                                        dialogState.output
-                                    )
-                                    Toast.makeText(
-                                        context,
-                                        i18N["ui.common.copied.to.clipboard"],
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(
-                                            rememberScrollState()
-                                        )
-                                ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.TopEnd
-                                    ) {
-                                        IconButton(onClick = { dialogState.setOutput("") }) {
-                                            RemixIcon(remixName = Remix.System.close_line)
-                                        }
-                                    }
-                                    Text(
-                                        modifier = Modifier.padding(16.dp),
-                                        text = dialogState.output,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                            }
-                            StandardSpacer()
-                        }
-                    }
+                    Output(dialogState)
 
                     StandardSpacer()
-                    FieldTitle(text = "Method")
-                    val methodDropdownState = rememberDropdownSelectorState()
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        FilledTonalButton(onClick = {
-                            methodDropdownState.open()
-                        }) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = dialogState.method.name)
-                                StandardSpacer()
-                                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                            }
-                        }
-                        DropdownSelector(
-                            state = methodDropdownState,
-                            items = HttpRequestMethod.values()
-                                .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
-                                    DropdownItem(
-                                        labelLines = listOf(it.name),
-                                        data = it
-                                    )
-                                },
-                            onSelect = {
-                                dialogState.setMethod(it.data)
-                            })
-                    }
+                    Method(dialogState)
 
                     StandardSpacer()
-                    FieldTitle(text = "Headers (Optional)")
-                    dialogState.headers.forEachIndexed { index, it ->
-                        ListItem(titleLines = listOf(it.key, it.value),
-                            icon = {
-                                RemixIcon(remixName = Remix.Logos.flickr_line)
-                            },
-                            action1 = {
-                                IconButton(onClick = {
-                                    dialogState.removeHeader(index)
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
-                                }
-                            })
-                    }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        var keyInput by remember {
-                            mutableStateOf("")
-                        }
-                        var valueInput by remember {
-                            mutableStateOf("")
-                        }
-                        ShortXTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = keyInput,
-                            onValueChange = {
-                                keyInput = it
-                            },
-                            label = {
-                                Text(text = "Key")
-                            },
-                            showSymbolButton = false
-                        )
-                        ShortXTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = valueInput,
-                            onValueChange = {
-                                valueInput = it
-                            },
-                            label = {
-                                Text(text = "Value")
-                            },
-                            showSymbolButton = false
-                        )
-                        FilledTonalButton(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onClick = {
-                                if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
-                                    dialogState.addHeader(
-                                        HttpRequestHeader.newBuilder()
-                                            .setKey(keyInput)
-                                            .setValue(valueInput)
-                                            .build()
-                                    )
-                                }
-                            }) {
-                            Text(text = "Add header")
-                        }
-                    }
+                    Headers(dialogState)
 
                     StandardSpacer()
-                    Column(modifier = Modifier) {
-                        FieldTitle(
-                            text = LocalI18N.current["ui.action.http.request.adapter"]
-                        )
-                        MediumSpacer()
-                        val adapterSelectorState: MenuDialogState<String> =
-                            rememberMenuDialogState(title = LocalI18N.current["ui.action.http.request.adapter"],
-                                message = null,
-                                menuItems = listOf(
-                                    MenuDialogItem(
-                                        id = AdapterType.Raw.name,
-                                        title = LocalI18N.current["ui.action.http.request.raw"],
-                                        summary = LocalI18N.current["ui.action.http.request.raw.summary"]
-                                    ),
-                                    MenuDialogItem(
-                                        id = AdapterType.Json.name,
-                                        title = LocalI18N.current["ui.action.http.request.json"],
-                                        summary = LocalI18N.current["ui.action.http.request.json.summary"],
-                                    ),
-                                ),
-                                onItemSelected = { data, id ->
-                                    dialogState.adapter = AdapterType.valueOf(id)
-                                }
-                            )
-                        MenuDialog(state = adapterSelectorState)
-                        FilledTonalButton(onClick = {
-                            adapterSelectorState.show()
-                        }) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = dialogState.adapter.let {
-                                    if (it == AdapterType.Raw) {
-                                        LocalI18N.current["ui.action.http.request.raw"]
-                                    } else {
-                                        LocalI18N.current["ui.action.http.request.json"]
-                                    }
-                                })
-                                StandardSpacer()
-                                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                            }
-                        }
-                        LargeSpacer()
-                    }
-
-                    StandardSpacer()
-
-                    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Raw) {
-                        val contextDataKey =
-                            "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
-                        ListItem(
-                            title = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf(
-                                "key" to contextDataKey
-                            )],
-                            onClick = {
-                                ClipboardUtils.copyToClipboard(
-                                    context,
-                                    "key",
-                                    contextDataKey
-                                )
-                                Toast.makeText(
-                                    context,
-                                    i18N["ui.common.copied.to.clipboard"],
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        )
-                    }
-
-                    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Json) {
-                        Column {
-                            TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
-                            StandardSpacer()
-                            dialogState.expressions.forEachIndexed { index, s ->
-                                ExpressionItem(expression = s, index = index) {
-                                    dialogState.removeExpression(index)
-                                }
-                            }
-                            StandardSpacer()
-                            ShortXTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = dialogState.expressionInput,
-                                onValueChange = {
-                                    dialogState.inputExpression(it)
-                                },
-                                label = {
-                                    Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
-                                },
-                                trailingIcon = {
-                                    FilledTonalIconButton(
-                                        onClick = {
-                                            if (dialogState.expressionInput.isNotBlank()) {
-                                                dialogState.addExpression(dialogState.expressionInput)
-                                            }
-                                        }) {
-                                        RemixIcon(remixName = Remix.System.add_fill)
-                                    }
-                                },
-                                showSymbolButton = false
-                            )
-
-                        }
-                    }
+                    ResponseAdapter(dialogState)
                 }
             }
         }
     }
 
+}
+
+@Composable
+private fun Url(dialogState: HttpRequestDialogState) {
+    FieldTitle(text = "Url")
+    SmallSpacer()
+    ShortXTextField(
+        value = dialogState.url,
+        onValueChange = {
+            dialogState.url = it
+        },
+        showSymbolButton = true
+    )
+}
+
+@Composable
+private fun Output(
+    dialogState: HttpRequestDialogState,
+) {
+    val i18N = LocalI18N.current
+    val context = LocalContext.current
+    AnimatedVisibility(visible = dialogState.output.isNotBlank()) {
+        Column {
+            ShortXCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 72.dp, max = 300.dp),
+                onClick = {
+                    ClipboardUtils.copyToClipboard(
+                        context,
+                        "output",
+                        dialogState.output
+                    )
+                    Toast.makeText(
+                        context,
+                        i18N["ui.common.copied.to.clipboard"],
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(
+                            rememberScrollState()
+                        )
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        IconButton(onClick = { dialogState.setOutput("") }) {
+                            RemixIcon(remixName = Remix.System.close_line)
+                        }
+                    }
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = dialogState.output,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+            StandardSpacer()
+        }
+    }
+}
+
+@Composable
+private fun Method(dialogState: HttpRequestDialogState) {
+    FieldTitle(text = "Method")
+    val methodDropdownState = rememberDropdownSelectorState()
+    SmallSpacer()
+    Box(modifier = Modifier.fillMaxWidth()) {
+        FilledTonalButton(onClick = {
+            methodDropdownState.open()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = dialogState.method.name)
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        DropdownSelector(
+            state = methodDropdownState,
+            items = HttpRequestMethod.values()
+                .filterNot { it == HttpRequestMethod.UNRECOGNIZED }.map {
+                    DropdownItem(
+                        labelLines = listOf(it.name),
+                        data = it
+                    )
+                },
+            onSelect = {
+                dialogState.setMethod(it.data)
+            })
+    }
+}
+
+@Composable
+private fun ColumnScope.ResponseAdapter(
+    dialogState: HttpRequestDialogState,
+) {
+    val i18N = LocalI18N.current
+    val context = LocalContext.current
+    Column(modifier = Modifier) {
+        FieldTitle(
+            text = LocalI18N.current["ui.action.http.request.adapter"]
+        )
+        MediumSpacer()
+        val adapterSelectorState: MenuDialogState<String> =
+            rememberMenuDialogState(title = LocalI18N.current["ui.action.http.request.adapter"],
+                message = null,
+                menuItems = listOf(
+                    MenuDialogItem(
+                        id = AdapterType.Raw.name,
+                        title = LocalI18N.current["ui.action.http.request.raw"],
+                        summary = LocalI18N.current["ui.action.http.request.raw.summary"]
+                    ),
+                    MenuDialogItem(
+                        id = AdapterType.Json.name,
+                        title = LocalI18N.current["ui.action.http.request.json"],
+                        summary = LocalI18N.current["ui.action.http.request.json.summary"],
+                    ),
+                ),
+                onItemSelected = { data, id ->
+                    dialogState.adapter = AdapterType.valueOf(id)
+                }
+            )
+        MenuDialog(state = adapterSelectorState)
+        FilledTonalButton(onClick = {
+            adapterSelectorState.show()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = dialogState.adapter.let {
+                    if (it == AdapterType.Raw) {
+                        LocalI18N.current["ui.action.http.request.raw"]
+                    } else {
+                        LocalI18N.current["ui.action.http.request.json"]
+                    }
+                })
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        LargeSpacer()
+    }
+
+    StandardSpacer()
+
+    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Raw) {
+        val contextDataKey =
+            "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
+        ListItem(
+            title = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf(
+                "key" to contextDataKey
+            )],
+            onClick = {
+                ClipboardUtils.copyToClipboard(
+                    context,
+                    "key",
+                    contextDataKey
+                )
+                Toast.makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        )
+    }
+
+    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Json) {
+        Column {
+            TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
+            StandardSpacer()
+            dialogState.expressions.forEachIndexed { index, s ->
+                ExpressionItem(expression = s, index = index) {
+                    dialogState.removeExpression(index)
+                }
+            }
+            StandardSpacer()
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = dialogState.expressionInput,
+                onValueChange = {
+                    dialogState.inputExpression(it)
+                },
+                label = {
+                    Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
+                },
+                trailingIcon = {
+                    FilledTonalIconButton(
+                        onClick = {
+                            if (dialogState.expressionInput.isNotBlank()) {
+                                dialogState.addExpression(dialogState.expressionInput)
+                            }
+                        }) {
+                        RemixIcon(remixName = Remix.System.add_fill)
+                    }
+                },
+                showSymbolButton = false
+            )
+
+        }
+    }
+}
+
+@Composable
+private fun Headers(dialogState: HttpRequestDialogState) {
+    FieldTitle(text = "Headers (Optional)")
+    SmallSpacer()
+    dialogState.headers.forEachIndexed { index, it ->
+        ListItem(titleLines = listOf(it.key, it.value),
+            icon = {
+                RemixIcon(remixName = Remix.Logos.flickr_line)
+            },
+            action1 = {
+                IconButton(onClick = {
+                    dialogState.removeHeader(index)
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
+                }
+            })
+    }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        var keyInput by remember {
+            mutableStateOf("")
+        }
+        var valueInput by remember {
+            mutableStateOf("")
+        }
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = keyInput,
+            onValueChange = {
+                keyInput = it
+            },
+            label = {
+                Text(text = "Key")
+            },
+            showSymbolButton = false
+        )
+        SmallSpacer()
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = valueInput,
+            onValueChange = {
+                valueInput = it
+            },
+            label = {
+                Text(text = "Value")
+            },
+            showSymbolButton = false
+        )
+        SmallSpacer()
+        FilledTonalButton(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = {
+                if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
+                    dialogState.addHeader(
+                        HttpRequestHeader.newBuilder()
+                            .setKey(keyInput)
+                            .setValue(valueInput)
+                            .build()
+                    )
+                }
+            }) {
+            Text(text = "Add header")
+        }
+    }
 }
 
 

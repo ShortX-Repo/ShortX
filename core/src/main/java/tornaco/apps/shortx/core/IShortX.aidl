@@ -174,9 +174,13 @@ interface IShortX {
 
     List<ByteArrayWrapper> getBTBondedDevices();
 
+    // Called by SystemUI
     void attachNotificationPoster(String from, in INotificationPoster poster);
 
+    // Error report
     void uncaughtException(in String error);
-
     void crashSystemServer();
+
+    //
+    List<String> executeHttpRequest(in ByteArrayWrapper request);
 }

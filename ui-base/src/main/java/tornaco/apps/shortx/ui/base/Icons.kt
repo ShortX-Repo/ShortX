@@ -73,7 +73,7 @@ fun Icon(
 fun RemixIcon(
     remixName: String,
     modifier: Modifier = Modifier,
-    tint: Color = PrefIcon
+    tint: Color = Color.Unspecified
 ) {
     val context = LocalContext.current
     val resId = remember(remixName) {
