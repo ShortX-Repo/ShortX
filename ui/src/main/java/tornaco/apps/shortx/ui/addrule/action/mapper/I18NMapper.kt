@@ -568,7 +568,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.SwitchMobileDataSlot -> {
             listOf(
                 i18N["ui.action.switch.mobile.data.slot"],
-                (action.slotId > 0).select(
+                (action.slotId >= 0).select(
                     i18N["ui.common.mobile.data.enabled.slot", mapOf(
                         "slotId" to action.slotId.toString(),
                         "label" to (shortXManager.getSlotLabel(action.slotId) ?: "")

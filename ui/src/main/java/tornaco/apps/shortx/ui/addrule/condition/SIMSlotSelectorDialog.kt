@@ -2,10 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ListItem
@@ -16,13 +13,6 @@ class SIMSlotSelectorDialogState(
     val canSelectAny: Boolean,
     val onSelected: (Int) -> Unit
 ) : CommonDialogState() {
-
-    private var _slot by mutableStateOf(-1)
-    val slot get() = _slot
-
-    private fun setSlot(slot: Int) {
-        _slot = slot
-    }
 }
 
 @Composable
