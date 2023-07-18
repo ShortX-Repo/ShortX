@@ -4,10 +4,12 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
@@ -90,6 +92,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     BTDeviceSelectorDialog(state = btConnectedSelectorState)
 
+    val mobileDataEnableSelectorState = rememberSIMSlotSelectorState(onSelected = {
+        addCondition(Condition.RequireMobileDataEnabled(slot = it))
+    })
+    SIMSlotSelectorDialog(state = mobileDataEnableSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.ScreenIsOn::class -> {
@@ -139,6 +146,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.TimeInRange::class -> {
                 timeInRangeSelectorState.show(source.getConditionAs<Condition.TimeInRange>()?.range)
+                true
+            }
+
+            Condition.RequireMobileDataEnabled::class -> {
+                mobileDataEnableSelectorState.show()
                 true
             }
 

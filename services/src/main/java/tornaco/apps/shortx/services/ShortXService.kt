@@ -10,7 +10,10 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.os.UserHandle
+import android.telephony.SubscriptionInfo
+import android.telephony.SubscriptionManager
 import android.util.Log
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
@@ -355,6 +358,19 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }.getOrElse {
                 listOf(Log.getStackTraceString(it))
             }
+        }
+
+        override fun getActiveSubscriptionInfoList(): List<SubscriptionInfo> {
+            enforceCallingPermissions()
+            val res = mutableListOf<SubscriptionInfo>()
+            runBlocking {
+                systemServiceScope.launchSafety {
+                    SubscriptionManager.from(context).activeSubscriptionInfoList.apply {
+                        res.addAll(this)
+                    }
+                }.join()
+            }
+            return res
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

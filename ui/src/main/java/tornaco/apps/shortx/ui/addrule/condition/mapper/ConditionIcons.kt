@@ -80,6 +80,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.bluetooth_fill
         }
 
+        Condition.RequireMobileDataEnabled::class -> {
+            Remix.Arrows.arrow_up_down_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

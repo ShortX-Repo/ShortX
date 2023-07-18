@@ -116,6 +116,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireMobileDataEnabled::class -> {
+            listOf(
+                i18N["ui.conditions.mobile.data.enabled"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -247,6 +253,19 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireBTDisconnected -> {
             listOf(
                 i18N["ui.conditions.bt.not.connected"],
+            )
+        }
+
+        is Condition.RequireMobileDataEnabled -> {
+            listOf(
+                i18N["ui.conditions.mobile.data.enabled"],
+                (condition.slot > 0).select(
+                    i18N["ui.conditions.mobile.data.enabled.slot", mapOf(
+                        "slotId" to condition.slot.toString(),
+                        "label" to ""
+                    )],
+                    i18N["ui.conditions.mobile.data.enabled.any"]
+                )
             )
         }
     }

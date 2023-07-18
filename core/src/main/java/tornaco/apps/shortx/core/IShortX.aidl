@@ -181,6 +181,9 @@ interface IShortX {
     void uncaughtException(in String error);
     void crashSystemServer();
 
-    //
+    // Http test
     List<String> executeHttpRequest(in ByteArrayWrapper request);
+
+    // Phone
+    List<SubscriptionInfo> getActiveSubscriptionInfoList();
 }

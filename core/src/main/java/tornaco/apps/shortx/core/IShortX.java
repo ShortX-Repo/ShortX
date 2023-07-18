@@ -399,9 +399,15 @@ public interface IShortX extends android.os.IInterface
     @Override public void crashSystemServer() throws android.os.RemoteException
     {
     }
-    //
+    // Http test
 
     @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
+    {
+      return null;
+    }
+    // Phone
+
+    @Override public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException
     {
       return null;
     }
@@ -1548,6 +1554,14 @@ public interface IShortX extends android.os.IInterface
           java.util.List<java.lang.String> _result = this.executeHttpRequest(_arg0);
           reply.writeNoException();
           reply.writeStringList(_result);
+          return true;
+        }
+        case TRANSACTION_getActiveSubscriptionInfoList:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<android.telephony.SubscriptionInfo> _result = this.getActiveSubscriptionInfoList();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
           return true;
         }
         default:
@@ -3785,7 +3799,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      //
+      // Http test
 
       @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
       {
@@ -3807,6 +3821,28 @@ public interface IShortX extends android.os.IInterface
           }
           _reply.readException();
           _result = _reply.createStringArrayList();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      // Phone
+
+      @Override public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<android.telephony.SubscriptionInfo> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getActiveSubscriptionInfoList, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActiveSubscriptionInfoList();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(android.telephony.SubscriptionInfo.CREATOR);
         }
         finally {
           _reply.recycle();
@@ -3918,6 +3954,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_uncaughtException = (android.os.IBinder.FIRST_CALL_TRANSACTION + 99);
     static final int TRANSACTION_crashSystemServer = (android.os.IBinder.FIRST_CALL_TRANSACTION + 100);
     static final int TRANSACTION_executeHttpRequest = (android.os.IBinder.FIRST_CALL_TRANSACTION + 101);
+    static final int TRANSACTION_getActiveSubscriptionInfoList = (android.os.IBinder.FIRST_CALL_TRANSACTION + 102);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4078,7 +4115,10 @@ public interface IShortX extends android.os.IInterface
 
   public void uncaughtException(java.lang.String error) throws android.os.RemoteException;
   public void crashSystemServer() throws android.os.RemoteException;
-  //
+  // Http test
 
   public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException;
+  // Phone
+
+  public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException;
 }

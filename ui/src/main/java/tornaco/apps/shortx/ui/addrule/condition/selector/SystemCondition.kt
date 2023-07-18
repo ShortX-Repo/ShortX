@@ -27,6 +27,7 @@ fun SystemConditions(subscribeState: SubscribeState, setCondition: (Condition) -
         Condition.RequireWifiDisconnected::class,
         Condition.RequireBTConnected::class,
         Condition.RequireBTDisconnected::class,
+        Condition.RequireMobileDataEnabled::class,
     ).map {
         SelectorItem(
             type = it,

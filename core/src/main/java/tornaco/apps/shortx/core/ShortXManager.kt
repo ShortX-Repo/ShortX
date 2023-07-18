@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
+import android.telephony.SubscriptionInfo
 import com.android.internal.appwidget.IAppWidgetService
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.App
@@ -690,6 +691,12 @@ class ShortXManager(private val service: IShortX) {
     fun executeHttpRequest(request: HttpRequest): List<String> {
         return invokeService(emptyList()) {
             executeHttpRequest(ByteArrayWrapper(request.toByteArray()))
+        }
+    }
+
+    fun getActiveSubscriptionInfoList(): List<SubscriptionInfo> {
+        return invokeService(emptyList()) {
+            activeSubscriptionInfoList
         }
     }
 
