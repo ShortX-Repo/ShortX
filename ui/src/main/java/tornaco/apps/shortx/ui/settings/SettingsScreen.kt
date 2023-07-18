@@ -418,18 +418,16 @@ private fun recordSettings(
             }
         ),
 
-        if (state.hasAudioRecord) {
-            Preference.TextPreference(
-                icon = Remix.Media.mic_2_fill,
-                title = LocalI18N.current["ui.settings.audio.record"],
-                summary = LocalI18N.current["ui.settings.audio.record.summary"],
-                badge = badge,
-                onClick = {
-                    mainState.isSubscribed.select({ goToAudioRecord() },
-                        { subscribeDialogState.show() })
-                }
-            )
-        } else null
+        Preference.TextPreference(
+            icon = Remix.Media.mic_2_fill,
+            title = LocalI18N.current["ui.settings.audio.record"],
+            summary = LocalI18N.current["ui.settings.audio.record.summary"],
+            badge = badge,
+            onClick = {
+                mainState.isSubscribed.select({ goToAudioRecord() },
+                    { subscribeDialogState.show() })
+            }
+        )
     )
 }
 

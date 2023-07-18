@@ -109,8 +109,6 @@ public class ScreenInternalAudioRecorder {
                         .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
                         .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
                         .addMatchingUsage(AudioAttributes.USAGE_GAME)
-                        .addMatchingUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                        .addMatchingUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING)
                         .build();
 
         mAudioRecord = new AudioRecord.Builder()
