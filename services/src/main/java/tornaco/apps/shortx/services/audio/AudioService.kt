@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.audio
 
+import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.media.AudioPlaybackConfiguration.PLAYER_STATE_STARTED
+import android.media.MediaRecorder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,9 +20,14 @@ import tornaco.apps.shortx.core.util.audioManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.audio.omrecorder.AudioRecordConfig
+import tornaco.apps.shortx.services.audio.omrecorder.OmRecorder
+import tornaco.apps.shortx.services.audio.omrecorder.PullTransport
+import tornaco.apps.shortx.services.audio.omrecorder.PullableSource
 import tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder
 import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
@@ -43,7 +50,9 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     fun AppPkg.hasFocus() = currentPlayingAppPkgs.contains(this)
 
     private val recorderSync = "SYNC.RECORDER"
-    private var currentRecorder: ScreenMediaRecorder? = null
+
+    private var currentRecorder: IRecorder? = null
+
     private val recordListeners = RemoteCallbackList<IAudioRecordingListener>()
 
     val isRecording: Boolean get() = synchronized(recorderSync) { currentRecorder != null }
@@ -61,50 +70,85 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             require(currentRecorder == null) {
                 "Already recording!"
             }
-            val source = when (src) {
-                AudioSource.Mic -> {
-                    ScreenRecordingAudioSource.MIC
-                }
+            if (src == AudioSource.Mic) {
+                startRecordingMic(fileNamePrefix)
+            } else {
+                startRecordingInternalOrBoth(src, fileNamePrefix)
+            }
+        }
+    }
 
-                AudioSource.Internal -> {
-                    ScreenRecordingAudioSource.INTERNAL
-                }
+    private fun startRecordingMic(fileNamePrefix: String) {
+        val ps = PullableSource.Default(
+            AudioRecordConfig.Default(
+                MediaRecorder.AudioSource.MIC,
+                AudioFormat.ENCODING_PCM_16BIT,
+                AudioFormat.CHANNEL_IN_MONO, 44100
+            )
+        )
+        val fileName =
+            "${fileNamePrefix.fallbackOnEmpty("")}-${DateUtils.formatForFileName(System.currentTimeMillis())}.aac"
+        val outputFile = File(baseServerRecordingDir(), fileName)
 
-                AudioSource.MicAndInternal -> {
-                    ScreenRecordingAudioSource.MIC_AND_INTERNAL
-                }
+        val checkedFile = if (outputFile.exists()) {
+            File(outputFile.absolutePath + "-2")
+        } else {
+            outputFile
+        }
+        logger.p("startRecordingMic, checkedFile: $checkedFile")
 
-                else -> {
-                    throw IllegalArgumentException("Unsupported source: $src")
-                }
+        val recorder = OmRecorder.wav(
+            PullTransport.Default(ps),
+            checkedFile
+        )
+        recorder.startRecording()
+        currentRecorder = OmRecorderWrapper(recorder)
+    }
+
+    private fun startRecordingInternalOrBoth(src: AudioSource, fileNamePrefix: String) {
+        val source = when (src) {
+            AudioSource.Mic -> {
+                ScreenRecordingAudioSource.MIC
             }
 
-            val mediaRecorder = ScreenMediaRecorder(
-                context,
-                handler,
-                myUserId,
-                source
-            ) {
-                logger.i("ScreenMediaRecorder stop.")
+            AudioSource.Internal -> {
+                ScreenRecordingAudioSource.INTERNAL
             }
-            runCatching {
-                val fileName =
-                    "${fileNamePrefix.fallbackOnEmpty("")}-${DateUtils.formatForFileName(System.currentTimeMillis())}.aac"
-                mediaRecorder.start(fileName)
-                currentRecorder = mediaRecorder
-                logger.d("Recording started: $currentRecorder, fileName: $fileName")
-                recordListeners.broadcast {
-                    runCatching { it.onStartRecording() }.onFailure {
-                        logger.e(
-                            it,
-                            "Call onStartRecording"
-                        )
-                    }
+
+            AudioSource.MicAndInternal -> {
+                ScreenRecordingAudioSource.MIC_AND_INTERNAL
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unsupported source: $src")
+            }
+        }
+
+        val mediaRecorder = ScreenMediaRecorder(
+            context,
+            handler,
+            myUserId,
+            source
+        ) {
+            logger.i("ScreenMediaRecorder stop.")
+        }
+        runCatching {
+            val fileName =
+                "${fileNamePrefix.fallbackOnEmpty("")}-${DateUtils.formatForFileName(System.currentTimeMillis())}.aac"
+            mediaRecorder.start(fileName)
+            currentRecorder = ScreenMediaRecorderWrapper(mediaRecorder)
+            logger.d("Recording started: $currentRecorder, fileName: $fileName")
+            recordListeners.broadcast {
+                runCatching { it.onStartRecording() }.onFailure {
+                    logger.e(
+                        it,
+                        "Call onStartRecording"
+                    )
                 }
-            }.onFailure {
-                logger.e(it, "Fail start recording.")
-                currentRecorder = null
             }
+        }.onFailure {
+            logger.e(it, "Fail start recording.")
+            currentRecorder = null
         }
     }
 
@@ -112,25 +156,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         synchronized(recorderSync) {
             currentRecorder?.let {
                 runCatching {
-                    it.end()
-                    // ---------------------
-                    // content provider: content://media/external_primary/audio/media/1000000242
-                    // at android.content.ContentResolver.openAssetFileDescriptor(ContentResolver.java:1901)
-                    // at android.content.ContentResolver.openOutputStream(ContentResolver.java:1562)
-                    // at tornaco.apps.shortx.services.audio.recorder.ScreenMediaRecorder.save(ScreenMediaRecorder.java:158)
-                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invokeSuspend(AudioService.kt:116)
-                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invoke(Unknown Source:8)
-                    // at tornaco.apps.shortx.services.audio.AudioService$stopRecording$1.invoke(Unknown Source:4)
-                    // at tornaco.apps.shortx.services.WatchDogKt$launchSafety$1.invokeSuspend(WatchDog.kt:49)
-                    // at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
-                    // at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
-                    // at android.os.Handler.handleCallback(Handler.java:942)
-                    // at android.os.Handler.dispatchMessage(Handler.java:99)
-                    // at android.os.Looper.loopOnce(Looper.java:201)
-                    // at android.os.Looper.loop(Looper.java:288)
-                    // at android.os.HandlerThread.run(HandlerThread.java:67)
-                    // -----------------------
-                    // it.save()
+                    it.stop()
                 }.onFailure {
                     logger.e(it, "stopRecording")
                 }
