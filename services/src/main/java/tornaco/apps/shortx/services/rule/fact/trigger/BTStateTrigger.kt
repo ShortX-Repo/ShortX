@@ -1,7 +1,10 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothHeadset
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -51,18 +54,8 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                 }
 
                 checkConnectionState()
-            }
-
-
-            //    public static final int STATE_DISCONNECTED = 0;
-            //    public static final int STATE_CONNECTING = 1;
-            //    public static final int STATE_CONNECTED = 2;
-            //    public static final int STATE_DISCONNECTING = 3;
-            else if (action == BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) {
-                val state = intent.getIntExtra(
-                    BluetoothAdapter.EXTRA_CONNECTION_STATE, BluetoothAdapter.ERROR
-                )
-                logger.d("ACTION_CONNECTION_STATE_CHANGED: $state")
+            } else {
+                logger.d("BT Action: $action")
                 checkConnectionState()
             }
         }
@@ -125,8 +118,43 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
 
     override fun register() {
+        //    addHandler(BluetoothDevice.ACTION_FOUND, new DeviceFoundHandler());
+        //        addHandler(BluetoothDevice.ACTION_NAME_CHANGED, new NameChangedHandler());
+        //        addHandler(BluetoothDevice.ACTION_ALIAS_CHANGED, new NameChangedHandler());
+        //
+        //        // Pairing broadcasts
+        //        addHandler(BluetoothDevice.ACTION_BOND_STATE_CHANGED, new BondStateChangedHandler());
+        //
+        //        // Fine-grained state broadcasts
+        //        addHandler(BluetoothDevice.ACTION_CLASS_CHANGED, new ClassChangedHandler());
+        //        addHandler(BluetoothDevice.ACTION_UUID, new UuidChangedHandler());
+        //        addHandler(BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED, new BatteryLevelChangedHandler());
+        //
+        //        // Active device broadcasts
+        //        addHandler(BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED, new ActiveDeviceChangedHandler());
+        //        addHandler(BluetoothHeadset.ACTION_ACTIVE_DEVICE_CHANGED, new ActiveDeviceChangedHandler());
+        //        addHandler(BluetoothHearingAid.ACTION_ACTIVE_DEVICE_CHANGED,
+        //                new ActiveDeviceChangedHandler());
+        //        addHandler(BluetoothLeAudio.ACTION_LE_AUDIO_ACTIVE_DEVICE_CHANGED,
+        //                   new ActiveDeviceChangedHandler());
+        //
+        //        // Headset state changed broadcasts
+        //        addHandler(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED,
+        //                new AudioModeChangedHandler());
+        //        addHandler(TelephonyManager.ACTION_PHONE_STATE_CHANGED,
+        //                new AudioModeChangedHandler());
+        //
+        //        // ACL connection changed broadcasts
+        //        addHandler(BluetoothDevice.ACTION_ACL_CONNECTED, new AclStateChangedHandler());
+        //        addHandler(BluetoothDevice.ACTION_ACL_DISCONNECTED, new AclStateChangedHandler());
         val btFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         btFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+        btFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        btFilter.addAction(BluetoothDevice.ACTION_CLASS_CHANGED)
+        btFilter.addAction(BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED)
+        btFilter.addAction(BluetoothDevice.ACTION_UUID)
+        btFilter.addAction(BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED)
+        btFilter.addAction(BluetoothHeadset.ACTION_ACTIVE_DEVICE_CHANGED)
         ContextCompat.registerReceiver(context, receiver, btFilter, ContextCompat.RECEIVER_EXPORTED)
     }
 
