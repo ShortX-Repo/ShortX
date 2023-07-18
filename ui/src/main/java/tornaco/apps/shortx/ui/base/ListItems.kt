@@ -99,7 +99,8 @@ fun ListItem(
                         } else {
                             Text(
                                 text = it,
-                                style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
+                                style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration),
+                                maxLines = 5
                             )
                         }
                     }

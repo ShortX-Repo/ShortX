@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.res.Remix.allFlat
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.theme.PrefIcon
 
 @Composable
 fun ColoredIcon(
@@ -73,7 +72,7 @@ fun Icon(
 fun RemixIcon(
     remixName: String,
     modifier: Modifier = Modifier,
-    tint: Color = Color.Unspecified
+    tint: Color = LocalContentColor.current
 ) {
     val context = LocalContext.current
     val resId = remember(remixName) {
