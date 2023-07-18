@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
@@ -145,6 +146,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 requireIsCharge = data.requireIsCharge
+            )
+        }
+
+        this is_ PlugState::class.java -> {
+            val data = this unpack_ PlugState::class.java
+            Condition.PlugState(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                requireIsPlug = data.requireIsPlug
             )
         }
 

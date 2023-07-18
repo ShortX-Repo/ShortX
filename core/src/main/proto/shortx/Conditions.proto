@@ -178,6 +178,14 @@ message ChargeState {
   string id = 100;
 }
 
+message PlugState {
+  bool requireIsPlug = 1;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 
 message RequireWifiConnected {
   string requiredSSID = 1;
@@ -205,4 +213,8 @@ message RequireBTDisconnected {
   bool isInvert = 98;
   string note = 99;
   string id = 100;
+}
+
+message IsMobileDataEnabled {
+
 }

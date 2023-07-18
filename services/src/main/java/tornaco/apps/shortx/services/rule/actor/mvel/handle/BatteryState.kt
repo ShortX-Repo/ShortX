@@ -5,4 +5,5 @@ data class BatteryState(
     val isCharging: Boolean = false,
     val isAcCharge: Boolean = false,
     val isUsbCharge: Boolean = false,
+    val isPlug: Boolean = false
 )

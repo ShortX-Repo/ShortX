@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.BatteryState
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.IBattery
 
@@ -37,6 +38,8 @@ class BatteryImpl(private val context: Context) : IBattery {
     }
 
     companion object {
+        private val logger = Logger("BatteryImpl")
+
         fun retrieveBatteryState(intent: Intent): BatteryState {
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
             val status: Int = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
@@ -47,12 +50,14 @@ class BatteryImpl(private val context: Context) : IBattery {
             val chargePlug: Int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
             val usbCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_USB
             val acCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_AC
+            val wirelessCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_WIRELESS
 
             return BatteryState(
                 batteryLevel = level,
                 isCharging = charging,
                 isUsbCharge = usbCharge,
-                isAcCharge = acCharge
+                isAcCharge = acCharge,
+                isPlug = usbCharge || acCharge || wirelessCharge
             )
         }
     }

@@ -52,6 +52,24 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     )
     MenuDialog(state = chargeStateSelectorState)
 
+    val plugStateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.conditions.plug.state"],
+        menuItems = listOf(
+            MenuDialogItem(
+                id = "plug",
+                title = LocalI18N.current["ui.conditions.plug.state.plug"],
+            ),
+            MenuDialogItem(
+                id = "notPlug",
+                title = LocalI18N.current["ui.conditions.plug.state.not.plug"],
+            ),
+        ),
+        onItemSelected = { data, id ->
+            addCondition(Condition.PlugState(requireIsPlug = id == "plug"))
+        }
+    )
+    MenuDialog(state = plugStateSelectorState)
+
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.conditions.wifi.connected"],
         message = LocalI18N.current["ui.conditions.wifi.connected.target"],
@@ -91,6 +109,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.ChargeState::class -> {
                 chargeStateSelectorState.show()
+                true
+            }
+
+            Condition.PlugState::class -> {
+                plugStateSelectorState.show()
                 true
             }
 

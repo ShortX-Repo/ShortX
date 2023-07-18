@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.mapper
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -9,7 +10,6 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
-import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import kotlin.reflect.KClass
 
@@ -65,6 +65,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.ChargeState::class -> {
             listOf(
                 i18N["ui.conditions.charge.state"]
+            )
+        }
+
+        Condition.PlugState::class -> {
+            listOf(
+                i18N["ui.conditions.plug.state"]
             )
         }
 
@@ -197,6 +203,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 condition.requireIsCharge.select(
                     i18N["ui.conditions.charge.state.charge"],
                     i18N["ui.conditions.charge.state.not.charge"]
+                )
+            )
+        }
+
+        is Condition.PlugState -> {
+            listOf(
+                i18N["ui.conditions.plug.state"],
+                condition.requireIsPlug.select(
+                    i18N["ui.conditions.plug.state.plug"],
+                    i18N["ui.conditions.plug.state.not.plug"]
                 )
             )
         }

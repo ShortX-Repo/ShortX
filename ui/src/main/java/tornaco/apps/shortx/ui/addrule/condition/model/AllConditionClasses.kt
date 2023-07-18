@@ -14,6 +14,7 @@ val allConditionClasses = listOf(
     Condition.VPNIsConnected::class,
     Condition.TimeInRange::class,
     Condition.ChargeState::class,
+    Condition.PlugState::class,
     Condition.RequireWifiConnected::class,
     Condition.RequireWifiDisconnected::class,
     Condition.RequireBTConnected::class,

@@ -21,6 +21,7 @@ fun SystemConditions(subscribeState: SubscribeState, setCondition: (Condition) -
         Condition.VPNIsConnected::class,
         Condition.BatteryPercent::class,
         Condition.ChargeState::class,
+        Condition.PlugState::class,
         Condition.TimeInRange::class,
         Condition.RequireWifiConnected::class,
         Condition.RequireWifiDisconnected::class,
