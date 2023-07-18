@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 
-package tornaco.apps.shortx.ui.main
+package tornaco.apps.shortx.ui.discover
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +41,10 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -45,6 +52,15 @@ import tornaco.apps.shortx.ui.base.ShortXTabRow
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.main.DAViewerDialog
+import tornaco.apps.shortx.ui.main.MainScaffold
+import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.RuleIcon
+import tornaco.apps.shortx.ui.main.RuleUM
+import tornaco.apps.shortx.ui.main.RuleViewerDialog
+import tornaco.apps.shortx.ui.main.rememberDAViewerState
+import tornaco.apps.shortx.ui.main.rememberRuleViewerState
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -54,18 +70,43 @@ enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
 @Composable
 fun DiscoverScreen() {
     val vm = hiltViewModel<MainViewModel>()
-    val state by vm.state.collectAsState()
+    val mainState by vm.state.collectAsState()
+
+    val discoverModel = hiltViewModel<DiscoverViewModel>()
+    val discoverState by discoverModel.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.refreshStates()
+        discoverModel.loadDiscoverData()
     }
 
+    val repoSelectState = rememberMenuDialogState<String>(
+        title = "",
+        menuItems = listOf(
+            MenuDialogItem(id = "local", title = "Local"),
+            MenuDialogItem(id = "officialOnline", title = "Official online"),
+            MenuDialogItem(id = "custom", title = "Custom online"),
+        ),
+        onItemSelected = { _, id ->
+            val repo = when (id) {
+                "local" -> DiscoverRepo.PrebuiltLocal
+                "custom" -> DiscoverRepo.CustomOnline("", "")
+                else -> DiscoverRepo.OfficialOnline
+            }
+            discoverModel.switchRepo(repo)
+        })
+    MenuDialog(state = repoSelectState)
+
     MainScaffold(
-        state = state,
+        state = mainState,
         appBarTitleKey = "ui.feat.label.discover",
         enableMask = false,
         appBarActions = {
-
+            IconButton(onClick = {
+                repoSelectState.show()
+            }) {
+                RemixIcon(remixName = Remix.Business.global_line)
+            }
         },
         floatingActionButton = {},
         onMaskClickOutside = {},
@@ -91,11 +132,15 @@ fun DiscoverScreen() {
             ) { index ->
                 when (index) {
                     DiscoverTabItem.DA.ordinal -> {
-                        DiscoverDA()
+                        DiscoverDA(discoverState) {
+                            discoverModel.loadDiscoverData()
+                        }
                     }
 
                     DiscoverTabItem.Rule.ordinal -> {
-                        DiscoverRule()
+                        DiscoverRule(discoverState) {
+                            discoverModel.loadDiscoverData()
+                        }
                     }
                 }
             }
@@ -104,13 +149,17 @@ fun DiscoverScreen() {
 }
 
 @Composable
-private fun DiscoverRule() {
-    val discoverModel = hiltViewModel<DiscoverModel>()
-    val discoverState by discoverModel.state.collectAsState()
+private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
+    val refreshing = discoverState.isLoading
+    val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
+        refresh()
+    })
 
-    if (discoverState.isLoading) {
-        Loading(Modifier.fillMaxSize())
-    } else {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)
+    ) {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
             columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
@@ -163,17 +212,29 @@ private fun DiscoverRule() {
                 }
             }
         }
+        PullRefreshIndicator(
+            refreshing,
+            refreshState,
+            Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     }
+
+
 }
 
 @Composable
-private fun DiscoverDA() {
-    val discoverModel = hiltViewModel<DiscoverModel>()
-    val discoverState by discoverModel.state.collectAsState()
+private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
+    val refreshing = discoverState.isLoading
+    val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
+        refresh()
+    })
 
-    if (discoverState.isLoading) {
-        Loading(Modifier.fillMaxSize())
-    } else {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)
+    ) {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
             columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
@@ -226,5 +287,11 @@ private fun DiscoverDA() {
                 }
             }
         }
+        PullRefreshIndicator(
+            refreshing,
+            refreshState,
+            Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     }
 }
