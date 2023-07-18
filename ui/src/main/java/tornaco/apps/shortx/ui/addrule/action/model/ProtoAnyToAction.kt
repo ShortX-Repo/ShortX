@@ -839,6 +839,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot::class.java
+            Action.SwitchMobileDataSlot(
+                isEnabled = !data.isDisabled,
+                id = data.id,
+                note = data.note,
+                slotId = data.slotId
+            )
+        }
+
         else -> null
     }
 }

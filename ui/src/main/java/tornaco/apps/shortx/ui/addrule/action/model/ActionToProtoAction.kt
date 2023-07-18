@@ -58,6 +58,7 @@ import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopService
+import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.Vibrate
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
@@ -697,6 +698,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setSrc(src)
                 .setFileNamePrefix(fileNamePrefix)
+                .build()
+        }
+
+        is Action.SwitchMobileDataSlot -> {
+            SwitchMobileDataSlot.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setNote(overrideNote ?: note)
+                .setSlotId(slotId)
                 .build()
         }
 

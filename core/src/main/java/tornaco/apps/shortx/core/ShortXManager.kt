@@ -700,6 +700,10 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getSlotLabel(slotId: Int): String? {
+        return getActiveSubscriptionInfoList().firstOrNull { it.simSlotIndex == slotId }?.displayName?.toString()
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

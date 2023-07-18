@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package tornaco.apps.shortx.ui.addrule.condition
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +13,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
 
 class SIMSlotSelectorDialogState(
+    val canSelectAny: Boolean,
     val onSelected: (Int) -> Unit
 ) : CommonDialogState() {
 
@@ -29,10 +27,11 @@ class SIMSlotSelectorDialogState(
 
 @Composable
 fun rememberSIMSlotSelectorState(
+    canSelectAny: Boolean = true,
     onSelected: (Int) -> Unit
 ): SIMSlotSelectorDialogState {
     return remember {
-        SIMSlotSelectorDialogState(onSelected)
+        SIMSlotSelectorDialogState(canSelectAny, onSelected)
     }
 }
 
@@ -48,7 +47,7 @@ fun SIMSlotSelectorDialog(state: SIMSlotSelectorDialogState) {
 
             subInfos.forEach {
                 ListItem(
-                    title = LocalI18N.current["ui.conditions.mobile.data.enabled.slot",
+                    title = LocalI18N.current["ui.common.mobile.data.enabled.slot",
                         mapOf(
                             "slotId" to it.first.toString(),
                             "label" to it.second.toString()
@@ -59,10 +58,14 @@ fun SIMSlotSelectorDialog(state: SIMSlotSelectorDialogState) {
                     }
                 )
             }
-            ListItem(title = LocalI18N.current["ui.conditions.mobile.data.enabled.any"], onClick = {
-                state.onSelected(-1)
-                state.dismiss()
-            })
+            if (state.canSelectAny) {
+                ListItem(
+                    title = LocalI18N.current["ui.conditions.mobile.data.enabled.any"],
+                    onClick = {
+                        state.onSelected(-1)
+                        state.dismiss()
+                    })
+            }
         }
     }
 }

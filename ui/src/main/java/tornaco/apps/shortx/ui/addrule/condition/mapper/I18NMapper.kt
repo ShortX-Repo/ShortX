@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.common.timeOfADayRangeToString
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -260,9 +261,9 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.conditions.mobile.data.enabled"],
                 (condition.slot > 0).select(
-                    i18N["ui.conditions.mobile.data.enabled.slot", mapOf(
+                    i18N["ui.common.mobile.data.enabled.slot", mapOf(
                         "slotId" to condition.slot.toString(),
-                        "label" to ""
+                        "label" to (shortXManager.getSlotLabel(condition.slot) ?: "")
                     )],
                     i18N["ui.conditions.mobile.data.enabled.any"]
                 )

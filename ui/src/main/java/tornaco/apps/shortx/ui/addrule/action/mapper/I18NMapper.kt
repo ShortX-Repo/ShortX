@@ -2,17 +2,19 @@ package tornaco.apps.shortx.ui.addrule.action.mapper
 
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.toType
+import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
-import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.PREFIX_APP_ICON
 import tornaco.apps.shortx.ui.base.PREFIX_MD_ICON
@@ -159,6 +161,7 @@ fun labelAndDescriptionForActionSelector(
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
+        Action.SwitchMobileDataSlot::class -> i18N["ui.action.switch.mobile.data.slot"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -559,6 +562,19 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.audio.recording"],
                 i18N[action.src.labelKey()]
+            )
+        }
+
+        is Action.SwitchMobileDataSlot -> {
+            listOf(
+                i18N["ui.action.switch.mobile.data.slot"],
+                (action.slotId > 0).select(
+                    i18N["ui.common.mobile.data.enabled.slot", mapOf(
+                        "slotId" to action.slotId.toString(),
+                        "label" to (shortXManager.getSlotLabel(action.slotId) ?: "")
+                    )],
+                    "N/A"
+                )
             )
         }
     }

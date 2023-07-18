@@ -14,6 +14,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
@@ -107,6 +109,13 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     TipDialog(state = comingSoonDialogState)
 
+    val switchMobileDataSelectorState = rememberSIMSlotSelectorState(
+        canSelectAny = false,
+        onSelected = {
+            addAction(Action.SwitchMobileDataSlot(slotId = it))
+        })
+    SIMSlotSelectorDialog(state = switchMobileDataSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -156,6 +165,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.AudioRecording::class -> {
                 audioRecordingState.show(source.getActionAs())
+                true
+            }
+
+            Action.SwitchMobileDataSlot::class -> {
+                switchMobileDataSelectorState.show()
                 true
             }
 
@@ -227,6 +241,7 @@ fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (A
         Action.AdjustVolume::class,
         Action.Vibrate::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
+        Action.SwitchMobileDataSlot::class,
     ).map {
         SelectorItem(
             type = it,

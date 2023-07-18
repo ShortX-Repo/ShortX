@@ -48,11 +48,16 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Fact.FixedInPeriod::class,
     Fact.VPNConnected::class,
     Fact.VPNDisconnected::class,
+    Fact.BTConnectedTo::class,
+    Fact.BTDisconnectedFrom::class,
 
     Condition.AppHasAudioFocus::class,
+    Condition.RequireMobileDataEnabled::class,
 
     Action.AudioRecording::class,
-    Action.ShowOverlay::class
+    Action.ShowOverlay::class,
+    Action.SwitchMobileDataSlot::class,
+    Action.HttpRequest::class,
 )
 
 fun isForSubscribedOnly(clazz: KClass<*>): Boolean = subscribedOnlyActions.contains(clazz)

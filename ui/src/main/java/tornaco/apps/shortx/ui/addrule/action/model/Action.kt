@@ -999,6 +999,19 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class SwitchMobileDataSlot(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val note: String = "",
+
+        val slotId: Int
+    ) : Action {
+        override fun clone(id: String, note: String, isEnabled: Boolean): Action {
+            return this.copy(id = id, note = note, isEnabled = isEnabled)
+        }
+    }
+
+    @Parcelize
     data class NoAction(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

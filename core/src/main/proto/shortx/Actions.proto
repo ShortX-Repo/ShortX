@@ -639,3 +639,11 @@ message AudioRecording {
   AudioSource src = 1;
   string fileNamePrefix = 2;
 }
+
+message SwitchMobileDataSlot {
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  int32 slotId = 1;
+}

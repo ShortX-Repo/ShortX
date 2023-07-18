@@ -325,6 +325,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.mic_2_fill
         }
 
+        Action.SwitchMobileDataSlot::class -> {
+            Remix.Device.sim_card_2_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

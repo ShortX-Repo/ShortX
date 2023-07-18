@@ -22,6 +22,10 @@ object AppIsNotRunning : Cond {
                 data.pkgsList
             }
 
+            requiredPkgList.forEach {
+                logger.d("requiredPkgList ${it.pkgName} is running? ${with(shortXContext.appState) { it.isRunning() }}")
+            }
+
             val res = if (requiredPkgList.isEmpty()) {
                 logger.w("requiredPkgList is empty, return false.")
                 false
