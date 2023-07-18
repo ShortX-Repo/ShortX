@@ -21,6 +21,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.NoAction::class.java
             Action.NoAction(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 icon = data.icon
@@ -31,6 +32,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ReadClipboard::class.java
             Action.ReadClipboard(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note
             )
@@ -40,6 +42,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WriteClipboard::class.java
             Action.WriteClipboard(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 text = data.text
@@ -50,6 +53,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.TakeScreenshot::class.java
             Action.TakeScreenshot(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note
             )
@@ -59,6 +63,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ShellCommand::class.java
             Action.ShellCommand(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, command = data.command
             )
@@ -68,6 +73,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.InputText::class.java
             Action.InputText(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, text = data.text
             )
@@ -77,6 +83,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ShowToast::class.java
             Action.ShowToast(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, message = data.message
             )
@@ -86,6 +93,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ShowDanmu::class.java
             Action.ShowDanmu(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, text = data.text, icon = data.icon
             )
@@ -95,6 +103,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.Delay::class.java
             Action.Delay(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, time = data.time
             )
@@ -104,6 +113,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ExecuteMVEL::class.java
             Action.MVEL(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, expression = data.expression
             )
@@ -114,6 +124,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL::class.java
             Action.RemoteMVEL(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, action = data.toModel()
             )
@@ -124,6 +135,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.ShowOverlayButton::class.java
             Action.ShowOverlay(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 autoCollapse = data.autoCollapse,
@@ -139,11 +151,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.overlayTagsList.isEmpty()) {
                 Action.HideAllOverlay(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.HideOverlay(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                     tags = data.overlayTagsList
@@ -156,6 +170,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val pkg = Pkg(data.appPkg.pkgName, userId = data.appPkg.userId)
             Action.LaunchApp(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 app = App(
@@ -171,11 +186,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableWifi(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableWifi(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -187,11 +204,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableSensorsOff(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableSensorsOff(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -202,11 +221,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableBT(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableBT(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -217,11 +238,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableNFC(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableNFC(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -232,11 +255,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableDND(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableDND(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -248,11 +273,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableLocation(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableLocation(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -263,11 +290,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableData(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableData(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -279,11 +308,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableDarkMode(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableDarkMode(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -295,11 +326,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableFlashLight(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableFlashLight(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -311,11 +344,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             if (data.enable) {
                 Action.EnableHotSpot(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             } else {
                 Action.DisableHotSpot(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id
                 )
             }
@@ -326,6 +361,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.StopApp(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -339,6 +375,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.StartAppProcess(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -352,6 +389,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.SetAppInactive(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -365,6 +403,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             data.enable.select(
                 Action.EnableApp(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -372,6 +411,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 ),
                 Action.DisableApp(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -386,6 +426,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             data.suspend.select(
                 Action.SuspendApp(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -393,6 +434,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 ),
                 Action.UnSuspendApp(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -406,6 +448,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.BreakActionExecute::class.java
             Action.Brk(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id
             )
         }
@@ -415,6 +458,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.ShowAlertDialog::class.java
             Action.ShowAlertDialog(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 title = data.title,
@@ -433,6 +477,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.StartActivity::class.java
             Action.StartActivity(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 componentNameAsString = data.componentNameAsString
@@ -444,6 +489,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.StartActivityIntent::class.java
             Action.StartActivityIntent(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 userId = data.userId,
@@ -461,6 +507,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema::class.java
             Action.StartActivityUrlSchema(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 userId = data.userId,
@@ -473,6 +520,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.ExpandNotification::class.java
             Action.ExpandNotification(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id
             )
         }
@@ -481,6 +529,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WhileLoop::class.java
             Action.WhileLoop(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 delay = data.delay.toLong(),
@@ -495,6 +544,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WriteGlobalVar::class.java
             Action.WriteGV(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
@@ -507,6 +557,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.CreateGlobalVar::class.java
             Action.CreateGV(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 globalVar = data.globalVar
@@ -518,6 +569,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.DeleteGlobalVar::class.java
             Action.DeleteGV(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
@@ -528,6 +580,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.MapNav::class.java
             Action.MapNav(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 longitude = data.loc.longitude,
@@ -542,6 +595,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.PostNotification::class.java
             Action.PostNotification(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 tag = data.tag,
@@ -560,6 +614,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val da = shortXManager.getDirectActionById(data.daId)
             Action.FromDA(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note, daId = data.daId,
                 title = da?.title,
@@ -572,6 +627,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickViewByText::class.java
             Action.FindAndClickViewByText(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 text = data.text,
@@ -585,6 +641,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java
             Action.InputTap(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 x = data.x,
@@ -597,6 +654,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.InputSwipe::class.java
             Action.InputSwipe(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 startX = data.startX,
@@ -611,6 +669,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.WaitForIdle::class.java
             Action.WaitForIdle(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note
             )
@@ -620,6 +679,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ IfThenElse::class.java
             Action.IfThenElse(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 ifConditions = data.ifList.mapNotNull {
@@ -637,6 +697,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.CreatePkgSet::class.java
             Action.CreatePkgSet(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 label = data.label,
@@ -648,6 +709,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetRingerMode::class.java
             Action.SetRingerMode(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 mode = data.mode
@@ -658,6 +720,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetBrightness::class.java
             Action.SetBrightness(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 value = data.value
@@ -670,11 +733,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             data.enable.select(
                 Action.EnableAutoBrightness(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                 ),
                 Action.DisableAutoBrightness(
                     isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
                     id = data.id,
                     note = data.note,
                 )
@@ -686,6 +751,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.StopService::class.java
             Action.StopService(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 services = data.servicesList.distinct()
@@ -698,6 +764,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.RemoveTasks(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -711,6 +778,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Action.RemoveNotificationForPackage(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -723,6 +791,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.KillProcessByName::class.java
             Action.KillProcessByName(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 processList = data.processesList.distinct()
@@ -735,6 +804,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
             Action.HttpRequest(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 url = data.url,
@@ -757,6 +827,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.InjectKeyCode::class.java
             Action.InjectKeyCode(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 code = data.keyCode
@@ -768,6 +839,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.WakeupScreen::class.java
             Action.WakeupScreen(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
             )
@@ -778,6 +850,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.SleepScreen::class.java
             Action.SleepScreen(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
             )
@@ -788,6 +861,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.StartLastApp::class.java
             Action.StartLastApp(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
             )
@@ -798,6 +872,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.StopCurrentApp::class.java
             Action.StopCurrentApp(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
             )
@@ -808,6 +883,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.AdjustVolume::class.java
             Action.AdjustVolume(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 direction = data.direction
@@ -819,6 +895,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java
             Action.Vibrate(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 vib1 = data.vib1,
@@ -832,6 +909,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.AudioRecording::class.java
             Action.AudioRecording(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 src = data.src,
@@ -844,6 +922,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 this unpack_ tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot::class.java
             Action.SwitchMobileDataSlot(
                 isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
                 slotId = data.slotId

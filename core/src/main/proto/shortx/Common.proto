@@ -225,3 +225,8 @@ message HttpRequestBodyFormItem {
   string key = 1;
   string value = 2;
 }
+
+enum ActionOnError {
+  Continue = 0;
+  Break = 1;
+}

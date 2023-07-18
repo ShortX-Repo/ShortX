@@ -42,7 +42,18 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                 action.clone(
                     id = action.id,
                     note = action.note,
+                    actionOnError = action.actionOnError,
                     isEnabled = !action.isEnabled
+                )
+            )
+        },
+        setOnError = { action, onError ->
+            addAction(
+                action.clone(
+                    id = action.id,
+                    note = action.note,
+                    isEnabled = action.isEnabled,
+                    actionOnError = onError
                 )
             )
         },

@@ -83,38 +83,46 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
     return when (this) {
         is Action.TakeScreenshot -> {
             TakeScreenshot.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.ShellCommand -> {
             ShellCommand.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setCommand(command)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setCommand(command)
                 .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.InputText -> {
             InputText.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setText(text)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setText(text)
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.Delay -> {
             Delay.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setTime(time).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setTime(time)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.ShowToast -> {
             ShowToast.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setMessage(message)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setMessage(message)
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.ShowDanmu -> {
             ShowDanmu.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setText(text).apply {
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setText(text).apply {
                     this@toProtoAction.icon?.let {
                         icon = it
                     }
@@ -123,7 +131,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.MVEL -> {
             ExecuteMVEL.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setExpression(expression)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setExpression(expression)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -134,13 +143,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.HideAllOverlay -> {
             HideOverlayButton.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.HideOverlay -> {
             HideOverlayButton.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).addAllOverlayTags(tags)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).addAllOverlayTags(tags)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -148,6 +160,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             ShowOverlayButton.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setAutoCollapse(autoCollapse)
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
@@ -157,124 +170,147 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.LaunchApp -> {
             LaunchApp.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setAppPkg(app.pkg)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setAppPkg(app.pkg)
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.DisableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(false)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(false)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableLocation -> SetLocationEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
         is Action.DisableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
         is Action.DisableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
         is Action.DisableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
         is Action.DisableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(false)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note).build()
 
         is Action.DisableSensorsOff -> SetSensorsOffEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(false)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableBT -> SetBTEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(true)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableDND -> SetDNDEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(true)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableLocation -> SetLocationEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableDarkMode -> SetDarkModeEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableData -> SetDataEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(true)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableFlashLight -> SetFlashLightEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableHotSpot -> SetHotSpotEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(true)
             .setNote(overrideNote ?: note).build()
 
         is Action.EnableNFC -> SetNFCEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(true)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableWifi -> SetWifiEnabled.newBuilder().setId(overrideId ?: id)
-            .setIsDisabled(!isEnabled).setEnable(true)
+            .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError).setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.EnableSensorsOff -> SetSensorsOffEnabled.newBuilder().setId(overrideId ?: id)
             .setIsDisabled(!isEnabled)
+            .setActionOnError(actionOnError)
             .setEnable(true)
             .setNote(overrideNote ?: note)
             .build()
 
         is Action.DisableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setEnable(false)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setEnable(false)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.EnableApp -> {
             SetAppEnabled.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setEnable(true)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setEnable(true)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
@@ -282,6 +318,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
@@ -289,6 +326,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.SetAppInactive -> {
             SetAppInactive.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
@@ -296,33 +334,39 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.StopApp -> {
             StopApp.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.SuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setSuspend(true)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setSuspend(true)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.UnSuspendApp -> {
             SetAppSuspend.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setSuspend(false)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.Brk -> {
             BreakActionExecute.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.ShowAlertDialog -> {
             ShowAlertDialog.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(cancelable)
@@ -340,6 +384,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.StartActivity -> {
             StartActivity.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setComponentNameAsString(componentNameAsString)
                 .setNote(overrideNote ?: note).build()
         }
@@ -347,6 +392,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.StartActivityIntent -> {
             StartActivityIntent.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setIntent(AndroidIntent.newBuilder()
                     .apply {
                         this@toProtoAction.action?.let { action = it }
@@ -365,6 +411,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.StartActivityUrlSchema -> {
             StartActivityUrlSchema.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setUrlSchema(urlSchema)
                 .setUserId(userId)
                 .setNote(overrideNote ?: note)
@@ -373,13 +420,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.ExpandNotification -> {
             ExpandNotification.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.WhileLoop -> {
             WhileLoop.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setDelay(delay.toInt())
                 .setRepeatTimes(repeat)
                 .addAllActions(actions.map { it.toProtoAction().pack_() })
@@ -401,6 +451,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             WriteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setVarName(varName)
                 .setValueAsString(valueAsString)
                 .setNote(overrideNote ?: note).build()
@@ -410,6 +461,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             CreateGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setGlobalVar(globalVar)
                 .build()
@@ -419,6 +471,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             DeleteGlobalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setVarName(varName)
                 .build()
@@ -428,6 +481,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             MapNav.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setApp(mapApp)
                 .setLoc(
                     Location.newBuilder()
@@ -443,6 +497,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             PostNotification.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setTag(tag)
                 .setMessage(message)
                 .setTitle(title)
@@ -456,26 +511,32 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.FromDA -> {
             FromDA.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setDaId(daId).setNote(overrideNote ?: note)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setDaId(daId)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 
         is Action.FindAndClickViewByText -> {
             FindAndClickViewByText.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setText(text)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setText(text)
                 .setIsRegex(isRegex)
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.InputTap -> {
             InputTap.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setX(x).setY(y)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setX(x).setY(y)
                 .setNote(overrideNote ?: note).build()
         }
 
         is Action.InputSwipe -> {
             InputSwipe.newBuilder().setId(overrideId ?: id)
-                .setIsDisabled(!isEnabled).setStartX(startX).setStartY(startY)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setStartX(startX)
+                .setStartY(startY)
                 .setEndX(endX).setEndY(endY).setSwipeTime(swipeTime)
                 .setNote(overrideNote ?: note).build()
         }
@@ -484,6 +545,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             WaitForIdle.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -492,6 +554,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             IfThenElse.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllIf(ifConditions.map { it.toProtoCondition().pack_() })
                 .setIfCondOp(ifConditionOp.toConditionOperator())
@@ -513,6 +576,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             ReadClipboard.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -521,6 +585,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             WriteClipboard.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setText(text)
                 .build()
@@ -530,6 +595,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             CreatePkgSet.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setLabel(label)
                 .apply { description?.let { description = it } }
@@ -540,6 +606,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SetRingerMode.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setMode(mode)
                 .build()
@@ -549,6 +616,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SetAutoBrightness.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setEnable(true)
                 .build()
@@ -558,6 +626,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SetAutoBrightness.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setEnable(false)
                 .build()
@@ -567,6 +636,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SetBrightness.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setValue(value)
                 .build()
@@ -576,6 +646,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StopService.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllServices(services.distinct())
                 .build()
@@ -585,6 +656,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             RemoveTasks.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .build()
@@ -594,6 +666,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             RemoveNotificationForPackage.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
                 .build()
@@ -603,6 +676,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             KillProcessByName.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllProcesses(processList.distinct())
                 .build()
@@ -612,6 +686,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             HttpRequest.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setAdapter(
                     if (this.adapter is HttpRequestAdapter.JsonMap) {
@@ -633,6 +708,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             InjectKeyCode.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setKeyCode(code)
                 .build()
@@ -642,6 +718,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SleepScreen.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -650,6 +727,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             WakeupScreen.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -658,6 +736,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StartLastApp.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -666,6 +745,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             StopCurrentApp.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .build()
         }
@@ -674,6 +754,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             AdjustVolume.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setDirection(direction)
                 .setShowUI(true)
@@ -684,6 +765,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             Vibrate.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setVib1(vib1)
                 .setVib2(vib2)
@@ -695,6 +777,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             AudioRecording.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setSrc(src)
                 .setFileNamePrefix(fileNamePrefix)
@@ -705,6 +788,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             SwitchMobileDataSlot.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setSlotId(slotId)
                 .build()
@@ -715,6 +799,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             NoAction.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setIcon(icon)
                 .build()

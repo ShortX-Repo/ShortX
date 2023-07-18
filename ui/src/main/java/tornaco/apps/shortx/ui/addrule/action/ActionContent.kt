@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
@@ -38,6 +39,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.contextData
@@ -60,6 +62,8 @@ import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -68,6 +72,7 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
 import tornaco.apps.shortx.ui.theme.ErrorRed
@@ -201,7 +206,8 @@ private fun Actions(
                             newAction.clone(
                                 id = currentAction.id,
                                 note = currentAction.note,
-                                isEnabled = currentAction.isEnabled
+                                isEnabled = currentAction.isEnabled,
+                                actionOnError = currentAction.actionOnError
                             )
                         )
                     }
@@ -225,6 +231,27 @@ private fun Actions(
                             handler.setNote(action, it)
                         }
                     InputTextSelector(state = noteDialogState)
+
+                    val onErrorMenuState = rememberMenuDialogState<String>(
+                        title = LocalI18N.current["ui.actions.on.error"],
+                        menuItems = listOf(
+                            MenuDialogItem(
+                                id = ActionOnError.Break.name,
+                                title = LocalI18N.current[ActionOnError.Break.labelKey()],
+                                iconName = Remix.System.forbid_2_fill
+                            ),
+                            MenuDialogItem(
+                                id = ActionOnError.Continue.name,
+                                title = LocalI18N.current[ActionOnError.Continue.labelKey()],
+                                iconName = Remix.System.checkbox_circle_fill
+                            ),
+                        ),
+                        onItemSelected = { _, id ->
+                            val policy = ActionOnError.valueOf(id)
+                            handler.setOnError(action, policy)
+                        }
+                    )
+                    MenuDialog(state = onErrorMenuState)
 
                     Box(modifier = Modifier) {
                         val clickDropdownState = rememberDropdownSelectorState()
@@ -387,6 +414,19 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(
+                                        LocalI18N.current["ui.actions.on.error"],
+                                        LocalI18N.current[action.actionOnError.labelKey()]
+                                    ),
+                                    data = action to "onError",
+                                    icon = {
+                                        RemixIcon(
+                                            remixName = Remix.System.error_warning_line,
+                                            tint = colorForAction(action::class)
+                                        )
+                                    }
+                                ),
+                                DropdownItem(
+                                    labelLines = listOf(
                                         LocalI18N.current["ui.common.toggle.enable.disable"],
                                         LocalI18N.current["ui.common.toggle.enable.disable.summary"]
                                     ),
@@ -433,6 +473,10 @@ private fun Actions(
                                         handler.enableDisable(action)
                                     }
 
+                                    "onError" -> {
+                                        onErrorMenuState.show()
+                                    }
+
                                     "note" -> {
                                         noteDialogState.show(action.note)
                                     }
@@ -477,16 +521,28 @@ private fun Actions(
 
 @Composable
 fun ActionIcon(action: Action, onClick: (() -> Unit)? = null) {
-    ColoredIcon(
-        size = 36.dp,
-        color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
-        onClick = onClick
-    ) {
-        RemixIcon(
-            modifier = Modifier.size(16.dp),
-            remixName = imageVectorForAction(action = action),
-            tint = colorForAction(action::class)
-        )
+    Box {
+        ColoredIcon(
+            size = 36.dp,
+            color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
+            onClick = onClick
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(16.dp),
+                remixName = imageVectorForAction(action = action),
+                tint = colorForAction(action::class)
+            )
+        }
+
+        if (action.actionOnError == ActionOnError.Break) {
+            RemixIcon(
+                modifier = Modifier
+                    .size(8.dp)
+                    .align(Alignment.TopEnd),
+                remixName = Remix.System.forbid_2_fill,
+                tint = colorForAction(action::class)
+            )
+        }
     }
 }
 
@@ -515,6 +571,7 @@ class ActionHandler(
     val pasteBelow: (anchor: Action) -> Unit = { },
     val copy: (action: Action) -> Unit = {},
     val enableDisable: (action: Action) -> Unit = {},
+    val setOnError: (action: Action, onError: ActionOnError) -> Unit = { _, _ -> run {} },
     val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
     val execute: suspend (action: Action) -> Unit = { },
     val executeAll: suspend () -> Unit = { },

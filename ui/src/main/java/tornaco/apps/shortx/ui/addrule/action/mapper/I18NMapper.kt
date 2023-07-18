@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AudioSource
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.res.Remix
@@ -622,4 +623,18 @@ fun AudioSource.labelKey() = when (this) {
     AudioSource.Internal -> "ui.action.audio.src.internal"
     AudioSource.MicAndInternal -> "ui.action.audio.src.mic.internal"
     AudioSource.UNRECOGNIZED -> "UNRECOGNIZED"
+}
+
+fun ActionOnError.labelKey() = when (this) {
+    ActionOnError.Break -> {
+        "ui.actions.on.error.break"
+    }
+
+    ActionOnError.Continue -> {
+        "ui.actions.on.error.continue"
+    }
+
+    ActionOnError.UNRECOGNIZED -> {
+        ""
+    }
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.unpack_
@@ -15,7 +16,8 @@ import tornaco.apps.shortx.services.rule.actor.prebuiltActorFor
 
 data class ActionAttrs(
     val id: String,
-    val isDisabled: Boolean
+    val isDisabled: Boolean,
+    val onError: ActionOnError
 )
 
 
@@ -50,6 +52,7 @@ class ActionEvaluatorImpl(
         if (attrs != null && attrs.isDisabled) {
             return ActionEvaluator.EvaluateResult.Disabled(action)
         }
+        val shouldContinueOnError = attrs != null && attrs.onError == ActionOnError.Continue
 
         return kotlin.runCatching {
             actor.handle(
@@ -67,7 +70,11 @@ class ActionEvaluatorImpl(
             if (it is StopExecuteException) {
                 ActionEvaluator.EvaluateResult.Break(action)
             } else {
-                ActionEvaluator.EvaluateResult.Fail(action, it)
+                ActionEvaluator.EvaluateResult.Fail(
+                    shouldContinue = shouldContinueOnError,
+                    action = action,
+                    error = it
+                )
             }
         }.apply {
             evaluateResultListener(this, contextData)
@@ -84,7 +91,11 @@ class ActionEvaluatorImpl(
                 action.descriptorForType.findFieldByName("isDisabled")
             val isDisabled: Boolean = action.getField(isDisabledDescriptor) as Boolean
 
-            ActionAttrs(id, isDisabled)
+            val onErrorDescriptor: Descriptors.FieldDescriptor =
+                action.descriptorForType.findFieldByName("actionOnError")
+            val onError: ActionOnError = action.getField(onErrorDescriptor) as ActionOnError
+
+            ActionAttrs(id, isDisabled, onError)
         }.getOrElse {
             logger.e(it, "extractActionAttrs: $action")
             null

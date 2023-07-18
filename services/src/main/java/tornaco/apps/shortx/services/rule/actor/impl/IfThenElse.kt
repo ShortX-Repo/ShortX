@@ -32,7 +32,11 @@ object IfThenElse : Actor {
                     val evaRes = recursiveExecute("IfThenElse-IfAction", it, contextData)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
-                        return@forEach
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
+                            return@forEach
+                        }
                     } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                         logger.w("evaluate break!")
                         return@forEach
@@ -45,7 +49,11 @@ object IfThenElse : Actor {
                     val evaRes = recursiveExecute("IfThenElse-ElseAction", it, contextData)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
-                        return@forEach
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
+                            return@forEach
+                        }
                     } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                         logger.w("evaluate break!")
                         return@forEach

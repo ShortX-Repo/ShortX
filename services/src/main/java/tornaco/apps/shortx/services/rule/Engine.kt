@@ -62,7 +62,7 @@ interface ActionEvaluator {
 
     sealed interface EvaluateResult {
         data class Success(val action: ProtoAny) : EvaluateResult
-        data class Fail(val action: ProtoAny, val error: Throwable) :
+        data class Fail(val shouldContinue: Boolean, val action: ProtoAny, val error: Throwable) :
             EvaluateResult
 
         data class Break(val action: ProtoAny) : EvaluateResult
@@ -216,7 +216,11 @@ class DefaultRuleEngine(
                                     logger.d("action evaluate res: $evaRes")
                                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                                         logger.e(evaRes.error, "evaluate fail")
-                                        return@loop
+                                        if (evaRes.shouldContinue) {
+                                            logger.d("Action on error is continue execute.")
+                                        } else {
+                                            return@loop
+                                        }
                                     } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                                         logger.w("evaluate break!")
                                         return@loop
@@ -314,7 +318,11 @@ class DefaultRuleEngine(
                     val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
-                        return@loop
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
+                            return@loop
+                        }
                     } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
                         logger.w("evaluate break!")
                         return@loop
