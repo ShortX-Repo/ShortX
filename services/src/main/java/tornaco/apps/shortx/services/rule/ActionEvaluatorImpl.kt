@@ -93,7 +93,9 @@ class ActionEvaluatorImpl(
 
             val onErrorDescriptor: Descriptors.FieldDescriptor =
                 action.descriptorForType.findFieldByName("actionOnError")
-            val onError: ActionOnError = action.getField(onErrorDescriptor) as ActionOnError
+            val enumDescription: Descriptors.EnumValueDescriptor =
+                action.getField(onErrorDescriptor) as Descriptors.EnumValueDescriptor
+            val onError: ActionOnError = ActionOnError.forNumber(enumDescription.number)
 
             ActionAttrs(id, isDisabled, onError)
         }.getOrElse {
