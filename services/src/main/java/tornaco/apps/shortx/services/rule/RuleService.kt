@@ -3,7 +3,9 @@ package tornaco.apps.shortx.services.rule
 import android.annotation.TestApi
 import android.content.Context
 import android.os.RemoteCallbackList
+import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
@@ -23,6 +25,7 @@ import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
@@ -33,7 +36,8 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
-import tornaco.apps.shortx.services.rule.actor.impl.MVELExecutor
+import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
+import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
@@ -429,12 +433,26 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun executeMVEL(expression: String): String {
-        return kotlin.runCatching {
-            "${MVELExecutor(context, shortXContext, expression).invoke()}"
-        }.getOrElse {
-            logger.e(it, "executeMVEL fail")
-            it.message ?: it.javaClass.name
+        var res = ""
+        runBlocking {
+            systemServiceScope.launchSafety {
+                val handleParams = dummyHandlerParamsForAction(
+                    context,
+                    shortXContext,
+                    tornaco.apps.shortx.core.proto.action.ExecuteMVEL.newBuilder()
+                        .setExpression(expression).build().pack_()
+                )
+                runCatching {
+                    ExecuteMVEL.handle(handleParams)
+                    res =
+                        handleParams.contextData.get(ContextDataMapping.ExecuteMVEL.mvelRet.name)
+                            .toString()
+                }.onFailure {
+                    res = Log.getStackTraceString(it)
+                }
+            }.join()
         }
+        return res
     }
 
     fun evaluateCondition(
