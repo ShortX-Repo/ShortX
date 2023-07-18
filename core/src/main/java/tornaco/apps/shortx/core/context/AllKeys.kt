@@ -1,0 +1,35 @@
+package tornaco.apps.shortx.core.context
+
+val allKeysWithDefaultValue by lazy {
+    allKeys.associateWith { "" }
+}
+
+val allKeys: List<String> = listOf(
+    enumValues<ContextDataMapping.Context>().map { it.name },
+    enumValues<ContextDataMapping.NotificationUpdated>().map { it.name },
+    enumValues<ContextDataMapping.NotificationPosted>().map { it.name },
+    enumValues<ContextDataMapping.NotificationRemoved>().map { it.name },
+    enumValues<ContextDataMapping.ExecuteMVEL>().map { it.name },
+    enumValues<ContextDataMapping.HttpRequest>().map { it.name },
+    enumValues<ContextDataMapping.ActivityStarted>().map { it.name },
+    enumValues<ContextDataMapping.AppBecomeFg>().map { it.name },
+    enumValues<ContextDataMapping.AppBecomeBg>().map { it.name },
+    enumValues<ContextDataMapping.TaskRemoved>().map { it.name },
+    enumValues<ContextDataMapping.AppAdded>().map { it.name },
+    enumValues<ContextDataMapping.AppRemoved>().map { it.name },
+    enumValues<ContextDataMapping.AppUpdated>().map { it.name },
+    enumValues<ContextDataMapping.PkgStopRunning>().map { it.name },
+    enumValues<ContextDataMapping.AudioFocusChanged>().map { it.name },
+    enumValues<ContextDataMapping.ReadClipboard>().map { it.name },
+    enumValues<ContextDataMapping.ShellCommand>().map { it.name },
+    enumValues<ContextDataMapping.WifiConnectedTo>().map { it.name },
+    enumValues<ContextDataMapping.WifiDisconnectedFrom>().map { it.name },
+    enumValues<ContextDataMapping.BatteryTemperatureChanged>().map { it.name },
+    enumValues<ContextDataMapping.BatteryLevelChanged>().map { it.name },
+    enumValues<ContextDataMapping.MediaStoreInsert>().map { it.name },
+    enumValues<ContextDataMapping.AdvancedKeyEvent>().map { it.name },
+    enumValues<ContextDataMapping.BTDeviceConnected>().map { it.name },
+    enumValues<ContextDataMapping.BTDeviceDisConnected>().map { it.name },
+    enumValues<ContextDataMapping.OnStartOp>().map { it.name },
+    enumValues<ContextDataMapping.OnFinishOp>().map { it.name },
+).flatten().distinct().sorted()

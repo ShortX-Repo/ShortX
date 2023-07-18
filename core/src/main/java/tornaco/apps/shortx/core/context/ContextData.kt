@@ -12,12 +12,15 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
 
         fun obtain(initialData: Map<String, Any> = emptyMap()): ContextData =
             pool.acquire()?.apply {
+                // Put all default value first
+                map.putAll(allKeysWithDefaultValue)
                 map.putAll(initialData)
             } ?: ContextData(initialData)
     }
 
     val map: MutableMap<String, Any?> by lazy {
         mutableMapOf<String, Any?>().apply {
+            putAll(allKeysWithDefaultValue)
             putAll(initialData)
         }
     }

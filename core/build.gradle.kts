@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlin.stdlib.jdk8)
 
+    implementation(libs.kotlin.reflect)
+
     implementation(project(":external:utils"))
 }
 
