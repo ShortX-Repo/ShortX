@@ -7,21 +7,21 @@ package tornaco.apps.shortx.ui.gvar
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toType
@@ -54,12 +56,17 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
+import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.main.AddOptionsFab
+import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -112,6 +119,32 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
             NewGlobalVarDialog(addGlobalVarDialogState)
 
             val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+            val pickFileLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.GetContent()
+            ) { fileUri ->
+                if (fileUri != null) {
+                    vm.importFromUri(fileUri)
+                }
+            }
+
+            val fabState = rememberFabState(
+                onFabItemClicked = {
+                    when (it.id) {
+                        "clipboard" -> {
+                            vm.importFromClipboard()
+                        }
+
+                        "file" -> {
+                            pickFileLauncher.launch("text/plain")
+                        }
+
+                        "new" -> {
+                            addGlobalVarDialogState.show()
+                        }
+                    }
+                })
+
             Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     ShortXMediumTopAppBar(
@@ -129,11 +162,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                     )
                 },
                 floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        addGlobalVarDialogState.show()
-                    }) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
-                    }
+                    AddOptionsFab(fabState = fabState)
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
@@ -151,7 +180,11 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                 searchBarState.keyword,
                                 ignoreCase = true
                             )
-                        }) {
+                        }) { globalVar ->
+                            val globalVarAccessHelpDialogState =
+                                rememberGlobalVarAccessHelpDialogState(globalVar = globalVar)
+                            GlobalVarAccessHelpDialog(state = globalVarAccessHelpDialogState)
+
                             androidx.compose.material.Card(
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -161,7 +194,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                             ) {
                                 Box {
                                     val menuState = listItemOverflowMenu(
-                                        globalVar = it,
+                                        globalVar = globalVar,
                                         onDelete = {
                                             vm.delete(it.name)
                                         },
@@ -169,11 +202,14 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                     )
 
                                     GlobalVarListItem(modifier = Modifier,
-                                        name = it.name,
-                                        value = it.valueString(),
-                                        type = it.type.toType()?.label() ?: "?",
+                                        name = globalVar.name,
+                                        value = globalVar.valueString(),
+                                        type = globalVar.type.toType()?.label() ?: "?",
+                                        onInfoClick = {
+                                            globalVarAccessHelpDialogState.show()
+                                        },
                                         onClick = {
-                                            goToDetail(it.name)
+                                            goToDetail(globalVar.name)
                                         },
                                         onLongClick = {
                                             menuState.open()
@@ -196,6 +232,7 @@ private fun GlobalVarListItem(
     name: String,
     value: String? = null,
     type: String,
+    onInfoClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -206,7 +243,18 @@ private fun GlobalVarListItem(
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(12.dp)
     ) {
-        OutlineBadge(text = type)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            OutlineBadge(text = type)
+            IconButton(onClick = {
+                onInfoClick()
+            }) {
+                RemixIcon(remixName = Remix.System.information_line)
+            }
+        }
         Text(text = name, style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp))
         Text(value ?: "", fontSize = 12.sp, maxLines = 3)
     }
@@ -216,27 +264,25 @@ private fun GlobalVarListItem(
 private fun listItemOverflowMenu(
     globalVar: GlobalVar, onDelete: (GlobalVar) -> Unit, onEdit: (GlobalVar) -> Unit
 ): DropdownSelectorState {
+    val shareDialogState = rememberShareDialogState("share.shortx.global.var")
+    ShareDialog(state = shareDialogState)
+
     val menuState = rememberDropdownSelectorState()
-
-    val globalVarAccessHelpDialogState =
-        rememberGlobalVarAccessHelpDialogState(globalVar = globalVar)
-    GlobalVarAccessHelpDialog(state = globalVarAccessHelpDialogState)
-
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
             icon = {
-                RemixIcon(remixName = Remix.System.delete_bin_fill)
+                RemixIcon(remixName = Remix.System.delete_bin_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
             data = "edit",
             icon = {
-                RemixIcon(remixName = Remix.Design.edit_fill)
+                RemixIcon(remixName = Remix.Design.edit_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.global.var.access.help.title"]),
-            data = "access",
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
+            data = "share",
             icon = {
-                RemixIcon(remixName = Remix.Development.braces_fill)
+                RemixIcon(Remix.System.share_line)
             })
     ), onSelect = {
         when (it.data) {
@@ -248,8 +294,10 @@ private fun listItemOverflowMenu(
                 onEdit(globalVar)
             }
 
-            "access" -> {
-                globalVarAccessHelpDialogState.show()
+            "share" -> {
+                val shareContent =
+                    globalVar.toJson().addShareContentHeader(mapOf("type" to "GlobalVar"))
+                shareDialogState.show("GlobalVar-${globalVar.name}", shareContent)
             }
 
             else -> {}

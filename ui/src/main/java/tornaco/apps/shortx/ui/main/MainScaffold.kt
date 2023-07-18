@@ -120,7 +120,7 @@ fun MainScaffold(
         appBarActions = appBarActions,
         acceptPrivacyStatement = acceptPrivacyStatement,
         floatingActionButton = {
-            Fab(fabState)
+            AddOptionsFab(fabState)
         },
         onMaskClickOutside = { fabState.collapse() },
         content = content
@@ -408,7 +408,7 @@ private fun PrivacyStatementDialog(
 
 
 @Composable
-private fun Fab(
+fun AddOptionsFab(
     fabState: FabState
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
