@@ -41,7 +41,7 @@ import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeLarge
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeL
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -128,10 +128,10 @@ private fun SelectorListItem(
 
     ShortXCard(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = ShortXCardRoundedCornerShapeLarge
+        shape = ShortXCardRoundedCornerShapeL
     ) {
         Box(modifier = modifier
-            .clip(ShortXCardRoundedCornerShapeLarge)
+            .clip(ShortXCardRoundedCornerShapeL)
             .combinedClickable(onLongClick = {
                 scope.launch { tooltipState.show() }
             }) {

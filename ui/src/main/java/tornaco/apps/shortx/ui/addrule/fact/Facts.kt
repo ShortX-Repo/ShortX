@@ -3,16 +3,25 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.*
+import tornaco.apps.shortx.ui.addrule.ContextDataIcon
+import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
@@ -22,7 +31,17 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.contextData
 import tornaco.apps.shortx.ui.addrule.fact.selector.FactSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFactSelectorDialogState
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.composeLogger
 
 class FactHandler(
@@ -47,31 +66,43 @@ fun FactSelectors(
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
 
-        Column {
-            state.facts.forEach { fact ->
-                FactItem(
-                    fact = fact,
-                    readOnly = readOnly,
-                    removeFact = {
-                        handler.removeFact(fact)
-                    },
-                    updateFact = {
-                        handler.addFact(it)
-                    }
-                )
-            }
-
-            TinySpacer()
-            if (!readOnly) {
-                FilledTonalButton(onClick = {
-                    factSelectorState.show()
-                }) {
-                    RemixIcon(
-                        modifier = Modifier.size(16.dp),
-                        remixName = Remix.System.add_line
+        ShortXCard(
+            modifier = Modifier,
+            shape = ShortXCardRoundedCornerShapeXL,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+            ) {
+                state.facts.forEach { fact ->
+                    FactItem(
+                        fact = fact,
+                        readOnly = readOnly,
+                        removeFact = {
+                            handler.removeFact(fact)
+                        },
+                        updateFact = {
+                            handler.addFact(it)
+                        }
                     )
-                    TinySpacer()
-                    Text(text = LocalI18N.current["ui.fact.select"])
+                }
+
+                StandardSpacer()
+                if (!readOnly) {
+                    Button(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onClick = {
+                            factSelectorState.show()
+                        }) {
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.add_line,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        TinySpacer()
+                        Text(text = LocalI18N.current["ui.fact.select"])
+                    }
                 }
             }
         }

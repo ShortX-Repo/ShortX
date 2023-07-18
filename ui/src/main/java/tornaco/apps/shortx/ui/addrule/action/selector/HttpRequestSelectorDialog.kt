@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -66,6 +66,7 @@ import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -77,6 +78,7 @@ import tornaco.apps.shortx.ui.base.code.OutputDialog
 import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -306,6 +308,9 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         StandardSpacer()
 
                         ResponseAdapter(dialogState)
+
+                        SectionSpacer()
+                        SuggestedNavEntry()
                     }
                 }
             }
@@ -450,13 +455,16 @@ private fun ColumnScope.ResponseAdapter(
                     Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
                 },
                 trailingIcon = {
-                    FilledTonalIconButton(
+                    Button(
                         onClick = {
                             if (dialogState.expressionInput.isNotBlank()) {
                                 dialogState.addExpression(dialogState.expressionInput)
                             }
                         }) {
-                        RemixIcon(remixName = Remix.System.add_fill)
+                        RemixIcon(
+                            remixName = Remix.System.add_fill,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 showSymbolButton = false
@@ -516,7 +524,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
             showSymbolButton = false
         )
         SmallSpacer()
-        FilledTonalButton(
+        Button(
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = {

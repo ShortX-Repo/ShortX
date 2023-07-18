@@ -5,9 +5,16 @@ package tornaco.apps.shortx.ui.addrule.condition
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,9 +39,26 @@ import tornaco.apps.shortx.ui.addrule.condition.selector.appConditionSelectHandl
 import tornaco.apps.shortx.ui.addrule.condition.selector.otherConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.condition.selector.systemConditionSelectHandler
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ClickableBadge
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTipDialogState
 
 class ConditionHandler(
     val addCondition: (Condition) -> Unit,
@@ -76,127 +100,138 @@ fun ConditionList(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         header()
-        Box {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                conditions.forEach { conditionItem ->
-                    val currentCondition by rememberUpdatedState(newValue = conditionItem)
-                    val allHandlers = listOf(
-                        appConditionSelectHandler {
-                            handler.addCondition(
-                                it.clone(
-                                    id = currentCondition.id,
-                                    note = currentCondition.note,
-                                    isInvert = currentCondition.isInvert
-                                )
-                            )
-                        },
-                        systemConditionSelectHandler {
-                            handler.addCondition(
-                                it.clone(
-                                    id = currentCondition.id,
-                                    note = currentCondition.note,
-                                    isInvert = currentCondition.isInvert
-                                )
-                            )
-                        },
-                        otherConditionSelectHandler {
-                            handler.addCondition(
-                                it.clone(
-                                    id = currentCondition.id,
-                                    note = currentCondition.note,
-                                    isInvert = currentCondition.isInvert
-                                )
-                            )
-                        },
-                    )
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(ShortXCardRoundedCornerShape)
-                            .combinedClickable(
-                                onClick = {
-                                    allHandlers.any {
-                                        it(
-                                            ConditionSelectSource.FromCondition(
-                                                currentCondition
+        ShortXCard(
+            modifier = Modifier,
+            shape = ShortXCardRoundedCornerShapeXL,
+        ) {
+            Box {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp),
+                ) {
+                    conditions.forEach { conditionItem ->
+                        val currentCondition by rememberUpdatedState(newValue = conditionItem)
+                        val allHandlers = listOf(
+                            appConditionSelectHandler {
+                                handler.addCondition(
+                                    it.clone(
+                                        id = currentCondition.id,
+                                        note = currentCondition.note,
+                                        isInvert = currentCondition.isInvert
+                                    )
+                                )
+                            },
+                            systemConditionSelectHandler {
+                                handler.addCondition(
+                                    it.clone(
+                                        id = currentCondition.id,
+                                        note = currentCondition.note,
+                                        isInvert = currentCondition.isInvert
+                                    )
+                                )
+                            },
+                            otherConditionSelectHandler {
+                                handler.addCondition(
+                                    it.clone(
+                                        id = currentCondition.id,
+                                        note = currentCondition.note,
+                                        isInvert = currentCondition.isInvert
+                                    )
+                                )
+                            },
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(ShortXCardRoundedCornerShape)
+                                .combinedClickable(
+                                    onClick = {
+                                        allHandlers.any {
+                                            it(
+                                                ConditionSelectSource.FromCondition(
+                                                    currentCondition
+                                                )
+                                            )
+                                        }
+                                    },
+                                    onLongClick = {
+                                        handler.addCondition(
+                                            currentCondition.clone(
+                                                id = currentCondition.id,
+                                                note = currentCondition.note,
+                                                isInvert = !currentCondition.isInvert
                                             )
                                         )
                                     }
+                                )
+                        ) {
+                            ListItem(
+                                titleLines = mutableListOf<String>().apply {
+                                    addAll(labelForCondition(condition = conditionItem))
+                                    onDebugBuild { add(conditionItem.id) }
                                 },
-                                onLongClick = {
-                                    handler.addCondition(
-                                        currentCondition.clone(
-                                            id = currentCondition.id,
-                                            note = currentCondition.note,
-                                            isInvert = !currentCondition.isInvert
-                                        )
+                                icon = {
+                                    ConditionIcon(conditionItem)
+                                },
+                                action1 = {
+                                    val invertDialog = rememberTipDialogState(
+                                        title = LocalI18N.current["ui.condition.invert"],
+                                        tip = LocalI18N.current["ui.condition.invert.description"]
+                                    )
+                                    TipDialog(state = invertDialog)
+                                    AnimatedVisibility(visible = conditionItem.isInvert) {
+                                        ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
+                                            invertDialog.show()
+                                        }
+                                    }
+
+                                    if (!readOnly) {
+                                        IconButton(onClick = {
+                                            handler.removeCondition(conditionItem)
+                                        }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
+                                    }
+                                })
+
+                            // Warning.
+                            val actionWarning: List<String>? = warnings[conditionItem.id]
+                            AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
+                                actionWarning?.let {
+                                    ErrorCard(
+                                        LocalI18N.current["ui.condition.warning.message"],
+                                        it
                                     )
                                 }
-                            )
-                    ) {
-                        ListItem(
-                            titleLines = mutableListOf<String>().apply {
-                                addAll(labelForCondition(condition = conditionItem))
-                                onDebugBuild { add(conditionItem.id) }
-                            },
-                            icon = {
-                                ConditionIcon(conditionItem)
-                            },
-                            action1 = {
-                                val invertDialog = rememberTipDialogState(
-                                    title = LocalI18N.current["ui.condition.invert"],
-                                    tip = LocalI18N.current["ui.condition.invert.description"]
-                                )
-                                TipDialog(state = invertDialog)
-                                AnimatedVisibility(visible = conditionItem.isInvert) {
-                                    ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
-                                        invertDialog.show()
-                                    }
-                                }
-
-                                if (!readOnly) {
-                                    IconButton(onClick = {
-                                        handler.removeCondition(conditionItem)
-                                    }) {
-                                        RemixIcon(remixName = Remix.System.close_line)
-                                    }
-                                }
-                            })
-
-                        // Warning.
-                        val actionWarning: List<String>? = warnings[conditionItem.id]
-                        AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
-                            actionWarning?.let {
-                                ErrorCard(
-                                    LocalI18N.current["ui.condition.warning.message"],
-                                    it
-                                )
                             }
                         }
                     }
-                }
 
-                // Add button
-                TinySpacer()
-                ConditionSelector(readOnly) { condition ->
-                    handler.addCondition(condition)
-                }
+                    // Add button
+                    TinySpacer()
+                    ConditionSelector(readOnly) { condition ->
+                        handler.addCondition(condition)
+                    }
 
-
-                StandardSpacer()
-
-                // OP button
-                AnimatedVisibility(visible = conditions.size > 1) {
-                    OpSelector(
-                        conditionOp = conditionOp,
-                        readOnly = readOnly,
-                        setConditionOp = {
-                            handler.setConditionOp(it)
+                    // OP button
+                    AnimatedVisibility(visible = conditions.size > 1) {
+                        Column {
+                            StandardSpacer()
+                            OpSelector(
+                                conditionOp = conditionOp,
+                                readOnly = readOnly,
+                                setConditionOp = {
+                                    handler.setConditionOp(it)
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
+
         }
     }
 }
@@ -214,12 +249,15 @@ private fun ConditionSelector(
         ConditionSelectorDialog(state = conditionSelectorState)
 
         if (!readOnly) {
-            FilledTonalButton(onClick = {
-                conditionSelectorState.show()
-            }) {
+            Button(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onClick = {
+                    conditionSelectorState.show()
+                }) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
-                    remixName = Remix.System.add_line
+                    remixName = Remix.System.add_line,
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
                 TinySpacer()
                 Text(LocalI18N.current["ui.conditions.add"])

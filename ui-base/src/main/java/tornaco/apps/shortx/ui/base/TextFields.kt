@@ -74,7 +74,7 @@ fun ShortXTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = ShortXCardRoundedCornerShapeLarge,
+    shape: Shape = ShortXCardRoundedCornerShapeL,
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
     showSymbolButton: Boolean = true
 ) {

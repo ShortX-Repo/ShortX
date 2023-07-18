@@ -5,7 +5,7 @@
   "ui.dialog.title.select.app": "选择应用",
   "ui.search.title.search.n.items": "搜索 {count} 个项目",
   "ui.fact.title": "触发器",
-  "ui.fact.select": "选择触发器",
+  "ui.fact.select": "添加触发器",
   "ui.conditions.title": "条件",
   "ui.conditions.add": "添加条件",
   "ui.conditions.true": "无条件",
