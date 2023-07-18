@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,8 @@ fun ListItem(
     titleLines: List<String>,
     icon: @Composable () -> Unit = {},
     textDecoration: TextDecoration = TextDecoration.None,
+    titleColor: Color = Color.Unspecified,
+    textColor: Color = Color.Unspecified,
     action1: @Composable RowScope.() -> Unit = {},
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
@@ -69,7 +72,8 @@ fun ListItem(
             Column(modifier = Modifier) {
                 Text(
                     text = titleLines[0],
-                    style = MaterialTheme.typography.titleMedium.copy(textDecoration = textDecoration)
+                    style = MaterialTheme.typography.titleMedium.copy(textDecoration = textDecoration),
+                    color = titleColor
                 )
                 if (titleLines.size > 1) {
                     titleLines.subList(1, titleLines.size).forEach {
@@ -80,7 +84,8 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_APP_ICON),
-                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
+                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration),
+                                    color = textColor
                                 )
                             }
                         } else if (it.contains(PREFIX_MD_ICON)) {
@@ -93,14 +98,16 @@ fun ListItem(
                                 SmallSpacer()
                                 Text(
                                     text = it.substringBefore(PREFIX_MD_ICON),
-                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration)
+                                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration),
+                                    color = textColor
                                 )
                             }
                         } else {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration),
-                                maxLines = 5
+                                maxLines = 5,
+                                color = textColor
                             )
                         }
                     }

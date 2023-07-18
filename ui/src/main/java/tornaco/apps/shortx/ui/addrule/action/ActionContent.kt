@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -69,6 +70,7 @@ import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.theme.ErrorRed
 import kotlin.reflect.KClass
 
 @Composable
@@ -244,6 +246,8 @@ private fun Actions(
                                     onDebugBuild { add(action.id) }
                                 },
                                 textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
+                                titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
+                                textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
                                 icon = {
                                     ActionIcon(action) {
                                         clickDropdownState.open()
