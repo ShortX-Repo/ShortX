@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
@@ -111,6 +113,8 @@ class HttpRequestDialogState(
     internal var expressionInput by mutableStateOf("")
     internal var expressions by mutableStateOf(listOf<String>())
     internal var adapter by mutableStateOf(AdapterType.Raw)
+
+    internal var isTesting by mutableStateOf(false)
 
     val httpRequest
         get() = Action.HttpRequest(
@@ -241,7 +245,6 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
     val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
     OutputDialog(state = outputDialogState)
 
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -260,18 +263,26 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                         },
                         actions = {
                             val scope = rememberCoroutineScope()
-                            IconButton(onClick = {
-                                if (dialogState.url.isNotBlank()) {
-                                    val request = dialogState.httpRequest
-                                    scope.launch {
-                                        val out = withContext(Dispatchers.IO) {
-                                            shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
+                            IconButton(
+                                enabled = !dialogState.isTesting,
+                                onClick = {
+                                    if (dialogState.url.isNotBlank()) {
+                                        val request = dialogState.httpRequest
+                                        dialogState.isTesting = true
+                                        scope.launch {
+                                            val out = withContext(Dispatchers.IO) {
+                                                shortXManager.executeHttpRequest(request.toProtoAction() as HttpRequest)
+                                            }
+                                            dialogState.isTesting = false
+                                            outputDialogState.show(out.joinToString(System.lineSeparator()))
                                         }
-                                        outputDialogState.show(out.joinToString(System.lineSeparator()))
                                     }
+                                }) {
+                                if (dialogState.isTesting) {
+                                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                                } else {
+                                    RemixIcon(remixName = Remix.Media.play_line)
                                 }
-                            }) {
-                                RemixIcon(remixName = Remix.Media.play_line)
                             }
 
                             IconButton(onClick = {

@@ -18,13 +18,14 @@ object EvaluateGlobalVar : Cond {
 
     override suspend fun evaluate(param: Cond.CondParam): Boolean {
         return with(param) {
-
             val data = condition unpack_ EvaluateGlobalVar::class.java
             val globalVar = shortXContext.rule.getGlobalVarByName(data.varName)
+
             if (globalVar == null) {
-                logger.w("EvaluateGlobalVar, var with varName: ${data.varName} not found.")
-                return false
+                logger.i("EvaluateGlobalVar, var with varName: ${data.varName} not found, op is: ${data.op}")
+                return data.op == GlobalVarOp.IsNotExists
             }
+
             val type: GlobalVarType? = globalVar.type.toType()
             if (type == null) {
                 logger.w("EvaluateGlobalVar, var with varName: ${data.varName} unknown type.")
@@ -242,6 +243,14 @@ object EvaluateGlobalVar : Cond {
                     } else if (globalVar.isList()) {
                         currentValue.isNotEmpty()
                     } else false
+                }
+
+                GlobalVarOp.IsExists -> {
+                    true
+                }
+
+                GlobalVarOp.IsNotExists -> {
+                    false
                 }
 
                 GlobalVarOp.UNRECOGNIZED -> {

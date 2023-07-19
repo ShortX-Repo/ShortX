@@ -15,6 +15,7 @@ import android.telephony.SubscriptionManager
 import android.util.Log
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.*
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.proto.action.HttpRequest
@@ -344,7 +345,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             val url = data.url.replaceGlobalVarValues {
                 shortXContext.rule.getAllGlobalVars()
             }
-            val requestBody = data.requestBody.toHttpRequestBody()
+            val requestBody =
+                data.requestBody.toHttpRequestBody(ContextData.obtain(), shortXContext)
             return kotlin.runCatching {
                 tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleUrl(
                     url = url,

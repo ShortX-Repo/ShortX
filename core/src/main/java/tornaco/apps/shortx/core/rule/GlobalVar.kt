@@ -167,6 +167,8 @@ fun GlobalVarOp.toDisplayName(): String {
         GlobalVarOp.HasBeenSet -> name
         GlobalVarOp.IsEmpty -> name
         GlobalVarOp.IsNotEmpty -> name
+        GlobalVarOp.IsExists -> name
+        GlobalVarOp.IsNotExists -> name
         GlobalVarOp.UNRECOGNIZED -> "N/A"
     }
 }

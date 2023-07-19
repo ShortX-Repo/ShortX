@@ -13,6 +13,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.mvel2.MVEL
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
@@ -22,6 +23,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.util.concurrent.TimeUnit
@@ -55,7 +57,7 @@ object HttpRequest : Actor {
         }
         logger.d("url: $url")
 
-        val requestBody = data.requestBody.toHttpRequestBody()
+        val requestBody = data.requestBody.toHttpRequestBody(contextData, shortXContext)
         handleUrl(
             url = url,
             method = data.method.name,
@@ -133,14 +135,23 @@ object HttpRequest : Actor {
         }
     }
 
-    fun ProtoAny.toHttpRequestBody(): RequestBody? {
+    fun ProtoAny.toHttpRequestBody(
+        contextData: ContextData,
+        shortXContext: ShortXContext
+    ): RequestBody? {
         return if (this is_ HttpRequestBodyJson::class.java) {
             val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+            bodyJson.json.inflateContextMap(contextData).replaceGlobalVarValues {
+                shortXContext.rule.getAllGlobalVars()
+            }.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         } else if (this is_ HttpRequestBodyForm::class.java) {
             val bodyForm = this unpack_ HttpRequestBodyForm::class.java
             FormBody.Builder().apply {
-                bodyForm.itemsList.forEach { add(it.key, it.value) }
+                bodyForm.itemsList.forEach {
+                    add(it.key, it.value.inflateContextMap(contextData).replaceGlobalVarValues {
+                        shortXContext.rule.getAllGlobalVars()
+                    })
+                }
             }.build()
         } else null
     }

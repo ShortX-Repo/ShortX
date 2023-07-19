@@ -124,6 +124,8 @@ enum GlobalVarOp {
   HasBeenSet = 8;
   IsEmpty = 9;
   IsNotEmpty = 10;
+  IsExists = 11;
+  IsNotExists = 12;
 }
 
 message GlobalVarOpPayload {
