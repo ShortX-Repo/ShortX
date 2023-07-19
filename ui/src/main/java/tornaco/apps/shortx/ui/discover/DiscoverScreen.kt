@@ -42,6 +42,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -88,7 +89,7 @@ fun DiscoverScreen() {
 
     val newRepoDialogState =
         rememberTextInputState(
-            title = "Custom repo url",
+            title = LocalI18N.current["ui.discover.source.add.custom"],
             message = null,
             showSymbolButton = true,
             onSelected = {
@@ -104,9 +105,13 @@ fun DiscoverScreen() {
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,
-        title = "Select source",
+        title = LocalI18N.current["ui.discover.select.source"],
         menuItems = mutableListOf(
-            MenuDialogItem(id = "local", title = "Local", iconName = Remix.Document.file_2_line),
+            MenuDialogItem(
+                id = "local",
+                title = LocalI18N.current["ui.discover.source.prebuilt"],
+                iconName = Remix.Document.file_2_line
+            ),
             MenuDialogItem(
                 id = "officialOnline",
                 title = "ShortX-Repo",
@@ -129,7 +134,7 @@ fun DiscoverScreen() {
             add(
                 MenuDialogItem(
                     id = "new",
-                    title = "Add custom repo",
+                    title = LocalI18N.current["ui.discover.source.add.custom"],
                     textColor = MaterialTheme.colorScheme.primary,
                     iconName = Remix.System.add_line
                 ),
@@ -222,53 +227,57 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
             .fillMaxSize()
             .pullRefresh(refreshState)
     ) {
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-        ) {
-            items(
-                items = discoverState.rules,
-                key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
+        if (discoverState.rules.isEmpty() && !discoverState.isLoading) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
+            LazyVerticalStaggeredGrid(
+                modifier = Modifier.fillMaxSize(),
+                columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+            ) {
+                items(
+                    items = discoverState.rules,
+                    key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
 
-                val ruleViewerState = rememberRuleViewerState(rule = rule.rule)
-                RuleViewerDialog(state = ruleViewerState)
+                    val ruleViewerState = rememberRuleViewerState(rule = rule.rule)
+                    RuleViewerDialog(state = ruleViewerState)
 
-                ShortXCard(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(ShortXCardRoundedCornerShape)
-                        .clickable { ruleViewerState.show() }) {
+                    ShortXCard(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(ShortXCardRoundedCornerShape)
+                            .clickable { ruleViewerState.show() }) {
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RuleIcon(rule)
-                        }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RuleIcon(rule)
+                            }
 
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 6.dp, bottom = 12.dp)
-                        ) {
-                            Text(
-                                text = rule.title,
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontSize = 16.sp
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 6.dp, bottom = 12.dp)
+                            ) {
+                                Text(
+                                    text = rule.title,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontSize = 16.sp
+                                    )
                                 )
-                            )
-                            TinySpacer()
-                            Text(
-                                text = rule.description,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                                maxLines = 8
-                            )
+                                TinySpacer()
+                                Text(
+                                    text = rule.description,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                                    maxLines = 8
+                                )
+                            }
                         }
                     }
                 }
@@ -297,67 +306,73 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
             .fillMaxSize()
             .pullRefresh(refreshState)
     ) {
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-        ) {
-            items(items = discoverState.das, key = { it.id }) {
-                val daViewerState = rememberDAViewerState(rule = it.directAction)
-                DAViewerDialog(state = daViewerState)
+        if (discoverState.das.isEmpty() && !discoverState.isLoading) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
+            LazyVerticalStaggeredGrid(
+                modifier = Modifier.fillMaxSize(),
+                columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+            ) {
+                items(items = discoverState.das, key = { it.id }) {
+                    val daViewerState = rememberDAViewerState(rule = it.directAction)
+                    DAViewerDialog(state = daViewerState)
 
-                ShortXCard(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(ShortXCardRoundedCornerShape)
-                        .clickable { daViewerState.show() }
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 12.dp)) {
+                    ShortXCard(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(ShortXCardRoundedCornerShape)
+                            .clickable { daViewerState.show() }
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 12.dp)) {
 
-                        ColoredIcon(
-                            size = 32.dp,
-                            padding = 0.dp,
-                            color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
-                        ) {
-                            RemixIcon(
-                                modifier = Modifier.size(16.dp),
-                                remixName = it.icon,
-                                tint = Color(it.iconColor)
-                            )
-                        }
-
-                        MediumSpacer()
-
-                        Column(modifier = Modifier.padding(bottom = 12.dp)) {
-                            Text(
-                                text = it.title, style = MaterialTheme.typography.titleMedium.copy(
-                                    fontSize = 16.sp
+                            ColoredIcon(
+                                size = 32.dp,
+                                padding = 0.dp,
+                                color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                            ) {
+                                RemixIcon(
+                                    modifier = Modifier.size(16.dp),
+                                    remixName = it.icon,
+                                    tint = Color(it.iconColor)
                                 )
-                            )
-                            SmallSpacer()
-                            Text(
-                                text = it.description,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                                maxLines = 8
-                            )
+                            }
 
-                            StandardSpacer()
-                            TipRow(text = it.author,
-                                icon = {
-                                    RemixIcon(
-                                        modifier = Modifier.size(12.dp),
-                                        remixName = Remix.UserAndFaces.user_line
+                            MediumSpacer()
+
+                            Column(modifier = Modifier.padding(bottom = 12.dp)) {
+                                Text(
+                                    text = it.title,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontSize = 16.sp
                                     )
-                                })
-                        }
+                                )
+                                SmallSpacer()
+                                Text(
+                                    text = it.description,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                                    maxLines = 8
+                                )
 
+                                StandardSpacer()
+                                TipRow(text = it.author,
+                                    icon = {
+                                        RemixIcon(
+                                            modifier = Modifier.size(12.dp),
+                                            remixName = Remix.UserAndFaces.user_line
+                                        )
+                                    })
+                            }
+
+                        }
                     }
                 }
             }
         }
+
         PullRefreshIndicator(
             refreshing,
             refreshState,
