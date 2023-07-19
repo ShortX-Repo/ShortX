@@ -47,7 +47,7 @@ const val assetName = "prebuilt/prebuilt-all.zip"
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<DiscoverState>(context, { DiscoverState() }) {
-    private val onlineRepo = OnlineRepo()
+    private val onlineRepo = OnlineRepo(context)
     private val pref by lazy { Pref(context) }
 
     init {

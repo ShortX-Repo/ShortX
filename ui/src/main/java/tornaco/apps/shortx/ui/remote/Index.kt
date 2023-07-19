@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.remote
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,7 +30,7 @@ data class Item(
 )
 
 
-class OnlineRepo {
+class OnlineRepo(private val context: Context) {
     private val logger = Logger("OnlineRepo")
     private val logging = HttpLoggingInterceptor {
         logger.d(it)
@@ -40,6 +42,7 @@ class OnlineRepo {
             .writeTimeout(1, TimeUnit.MINUTES)
             .readTimeout(2, TimeUnit.MINUTES)
             .addInterceptor(logging)
+            .addInterceptor(ChuckerInterceptor(context))
             .build()
     }
 
