@@ -1,21 +1,10 @@
-package tornaco.apps.shortx.services.rule.actor
+package tornaco.apps.ui
 
 import com.google.gson.Gson
 import org.junit.Test
 import tornaco.apps.shortx.core.res.Remix
-
-data class Index(
-    val directActions: List<Item>,
-    val rules: List<Item>,
-)
-
-data class Item(
-    val fileUrl: String,
-    val title: String,
-    val description: String,
-    val tag: String? = null,
-    val icon: String? = null
-)
+import tornaco.apps.shortx.ui.remote.Index
+import tornaco.apps.shortx.ui.remote.Item
 
 class OnlineRepoTest {
     @Test
@@ -25,14 +14,19 @@ class OnlineRepoTest {
                 fileUrl = "www.xxx.xxx",
                 title = "Title",
                 description = "Description",
-                tag = "Life"
+                tag = "Life",
+                author = "ShortX",
+                icon = Remix.System.forbid_2_fill,
+                iconColor = "#ff4081"
             ),
             Item(
                 fileUrl = "www.xxx.xxx",
                 title = "Title",
                 description = "Description",
                 tag = "System",
-                icon = Remix.System.forbid_2_fill
+                icon = Remix.System.forbid_2_fill,
+                author = "ShortX",
+                iconColor = "#ff4081"
             )
         )
 

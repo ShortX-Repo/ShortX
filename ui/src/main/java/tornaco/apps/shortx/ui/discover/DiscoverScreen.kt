@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildProp.SHORTX_GITHIB_REPO_URL
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
@@ -50,9 +51,13 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTabRow
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.DAViewerDialog
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -61,6 +66,7 @@ import tornaco.apps.shortx.ui.main.RuleUM
 import tornaco.apps.shortx.ui.main.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rememberDAViewerState
 import tornaco.apps.shortx.ui.main.rememberRuleViewerState
+import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -80,20 +86,63 @@ fun DiscoverScreen() {
         discoverModel.loadDiscoverData()
     }
 
+    val newRepoDialogState =
+        rememberTextInputState(
+            title = "Custom repo url",
+            message = null,
+            showSymbolButton = true,
+            onSelected = {
+                discoverModel.addCustomRepo(
+                    DiscoveryRepoSetting(
+                        // "https://raw.githubusercontent.com/ShortX-Repo/Files/main/index.json"
+                        alias = it.substringAfter("//").substringBefore("/"),
+                        url = it
+                    )
+                )
+            })
+    TextInputDialog(state = newRepoDialogState)
+
     val repoSelectState = rememberMenuDialogState<String>(
-        title = "",
-        menuItems = listOf(
-            MenuDialogItem(id = "local", title = "Local"),
-            MenuDialogItem(id = "officialOnline", title = "Official online"),
-            MenuDialogItem(id = "custom", title = "Custom online"),
-        ),
+        key1 = discoverState.customRepos,
+        title = "Select source",
+        menuItems = mutableListOf(
+            MenuDialogItem(id = "local", title = "Local", iconName = Remix.Document.file_2_line),
+            MenuDialogItem(
+                id = "officialOnline",
+                title = "ShortX-Repo",
+                summary = SHORTX_GITHIB_REPO_URL,
+                iconName = Remix.Business.global_line
+            ),
+        ).apply {
+            addAll(discoverState.customRepos.map {
+                MenuDialogItem(
+                    id = it.url,
+                    title = it.alias,
+                    summary = it.url,
+                    iconName = Remix.Business.global_line,
+                    customAction = Remix.System.delete_bin_2_line to {
+                        discoverModel.removeCustomRepo(it)
+                    }
+                )
+            })
+
+            add(
+                MenuDialogItem(
+                    id = "new",
+                    title = "Add custom repo",
+                    textColor = MaterialTheme.colorScheme.primary,
+                    iconName = Remix.System.add_line
+                ),
+            )
+        },
         onItemSelected = { _, id ->
-            val repo = when (id) {
-                "local" -> DiscoverRepo.PrebuiltLocal
-                "custom" -> DiscoverRepo.CustomOnline("", "")
-                else -> DiscoverRepo.OfficialOnline
+            when (id) {
+                "local" -> discoverModel.switchRepo(DiscoverRepo.PrebuiltLocal)
+                "officialOnline" -> discoverModel.switchRepo(DiscoverRepo.OfficialOnline)
+                "new" -> newRepoDialogState.show()
+                // Custom with url
+                else -> discoverModel.switchRepo(DiscoverRepo.CustomOnline(id))
             }
-            discoverModel.switchRepo(repo)
         })
     MenuDialog(state = repoSelectState)
 
@@ -103,7 +152,20 @@ fun DiscoverScreen() {
         enableMask = false,
         appBarActions = {
             IconButton(onClick = {
-                repoSelectState.show()
+                val selections = when (val currentRepo = discoverState.discoverRepo) {
+                    DiscoverRepo.PrebuiltLocal -> {
+                        listOf("local")
+                    }
+
+                    DiscoverRepo.OfficialOnline -> {
+                        listOf("officialOnline")
+                    }
+
+                    is DiscoverRepo.CustomOnline -> {
+                        listOf(currentRepo.indexUrl)
+                    }
+                }
+                repoSelectState.show(currentSelection = selections)
             }) {
                 RemixIcon(remixName = Remix.Business.global_line)
             }
@@ -281,6 +343,15 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                                 maxLines = 8
                             )
+
+                            StandardSpacer()
+                            TipRow(text = it.author,
+                                icon = {
+                                    RemixIcon(
+                                        modifier = Modifier.size(12.dp),
+                                        remixName = Remix.UserAndFaces.user_line
+                                    )
+                                })
                         }
 
                     }

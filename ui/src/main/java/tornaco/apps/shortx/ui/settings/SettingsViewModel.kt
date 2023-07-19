@@ -165,7 +165,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
 
     fun setIgnoreFrameworkUpdate(value: Boolean) {
         viewModelScope.launch {
-            pref.seyIgnoreFrameworkUpdate(value)
+            pref.setIgnoreFrameworkUpdate(value)
         }
     }
 

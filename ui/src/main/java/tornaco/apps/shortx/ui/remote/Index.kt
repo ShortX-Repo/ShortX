@@ -21,12 +21,14 @@ data class Item(
     val fileUrl: String,
     val title: String,
     val description: String,
+    val author: String,
     val tag: String? = null,
-    val icon: String? = null
+    val icon: String? = null,
+    val iconColor: String? = null,
 )
 
 
-class OnlineRepo(private val indexUrl: String = DEFAULT_URL) {
+class OnlineRepo {
     private val logger = Logger("OnlineRepo")
     private val logging = HttpLoggingInterceptor {
         logger.d(it)
@@ -43,11 +45,9 @@ class OnlineRepo(private val indexUrl: String = DEFAULT_URL) {
 
     companion object {
         private val gson = Gson()
-        const val DEFAULT_URL =
-            "https://raw.githubusercontent.com/ShortX-Repo/Files/main/index.json"
     }
 
-    suspend fun index(): Index {
+    suspend fun index(indexUrl: String): Index {
         return withContext(Dispatchers.IO) {
             val request = Request.Builder().url(indexUrl)
                 .method("GET", null)

@@ -85,7 +85,8 @@ data class DirectActionUM(
     val icon: String,
     val iconColor: ULong,
     val runningInsCount: Int,
-    val directAction: DirectAction
+    val directAction: DirectAction,
+    val author: String = "ShortX"
 ) : Parcelable
 
 data class MainState(

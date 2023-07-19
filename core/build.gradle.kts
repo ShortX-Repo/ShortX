@@ -45,6 +45,12 @@ buildConfig {
     )
 
     buildConfigField("String", "API_BASE_URL", "\"http://shortx.emui.tech/api/\"")
+    buildConfigField("String", "SHORTX_GITHIB_REPO_URL", "\"https://github.com/ShortX-Repo\"")
+    buildConfigField(
+        "String",
+        "SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL",
+        "\"https://raw.githubusercontent.com/ShortX-Repo/Files/main/index.json\""
+    )
 
     buildConfigField("String", "SIGNATURES", "\"A92E8A9A743FE6648E2E4743FDAC89E9EB4A568F\"")
     buildConfigField("String", "SIGNATURES_MD5", "\"25cc0926b09a6e73798de05977c420f7\"")

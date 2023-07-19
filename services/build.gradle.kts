@@ -32,7 +32,6 @@ dependencies {
     implementation(libs.mvel2)
 
     testImplementation(libs.junit)
-    testImplementation(libs.gson)
 }
 
 protobuf {

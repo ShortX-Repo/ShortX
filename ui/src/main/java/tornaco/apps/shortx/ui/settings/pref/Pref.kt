@@ -6,11 +6,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.util.Logger
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 
@@ -24,7 +27,18 @@ private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_acti
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
 
+private val DISCOVERY_CUSTOM_REPOS =
+    stringSetPreferencesKey("discovery_custom_repos")
+private val DISCOVERY_SELECTED_REPO_URL =
+    stringPreferencesKey("discovery_selected_repo_url")
+
+
 class Pref(val context: Context) {
+    companion object {
+        private val gson by lazy { Gson() }
+        private val logger = Logger("Pref")
+    }
+
     val installFakeServiceFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[INSTALL_FAKE_SERVICE_KEY] ?: false
     }
@@ -45,6 +59,22 @@ class Pref(val context: Context) {
         preferences[RECENT_SELECTED_ACTIONS]?.split("-") ?: emptyList()
     }
 
+    val discoverySelectedRepoUrl: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[DISCOVERY_SELECTED_REPO_URL] ?: ""
+    }
+
+    val discoveryRepos: Flow<Set<DiscoveryRepoSetting>> =
+        context.dataStore.data.map { preferences ->
+            val repoJson = preferences[DISCOVERY_CUSTOM_REPOS] ?: emptySet()
+            repoJson.mapNotNull {
+                runCatching { gson.fromJson(it, DiscoveryRepoSetting::class.java) }.getOrElse {
+                    logger.e(it, "discoveryRepo")
+                    null
+                }
+            }.toSet()
+        }
+
+
     suspend fun setInstallFakeService(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[INSTALL_FAKE_SERVICE_KEY] = value
@@ -63,9 +93,39 @@ class Pref(val context: Context) {
         }
     }
 
-    suspend fun seyIgnoreFrameworkUpdate(value: Boolean) {
+    suspend fun setIgnoreFrameworkUpdate(value: Boolean) {
         context.dataStore.edit { settings ->
             settings[IGNORE_FRAMEWORK_UPDATE] = value
+        }
+    }
+
+    suspend fun addDiscoveryRepo(setting: DiscoveryRepoSetting) {
+        val current = discoveryRepos.firstOrNull() ?: emptySet()
+        val updated = current.toMutableSet().apply {
+            add(setting)
+        }
+        context.dataStore.edit { settings ->
+            settings[DISCOVERY_CUSTOM_REPOS] = updated.map {
+                gson.toJson(it)
+            }.toSet()
+        }
+    }
+
+    suspend fun removeDiscoveryRepo(setting: DiscoveryRepoSetting) {
+        val current = discoveryRepos.firstOrNull() ?: emptySet()
+        val updated = current.toMutableSet().apply {
+            remove(setting)
+        }
+        context.dataStore.edit { settings ->
+            settings[DISCOVERY_CUSTOM_REPOS] = updated.map {
+                gson.toJson(it)
+            }.toSet()
+        }
+    }
+
+    suspend fun selectRepo(url: String) {
+        context.dataStore.edit { settings ->
+            settings[DISCOVERY_SELECTED_REPO_URL] = url
         }
     }
 
