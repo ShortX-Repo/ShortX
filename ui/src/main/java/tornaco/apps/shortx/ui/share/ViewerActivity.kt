@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.parseShareContentDA
 import java.nio.charset.Charset
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -40,7 +41,7 @@ class ViewerActivity : BaseActivity() {
                 val vm = hiltViewModel<MainViewModel>()
                 when (sharedData.type) {
                     "da" -> {
-                        val da = vm.parseShareContentDA(sharedData.data)
+                        val da = parseShareContentDA(sharedData.data)
                         da?.let {
                             AddDirectActionScreen(
                                 da = da,

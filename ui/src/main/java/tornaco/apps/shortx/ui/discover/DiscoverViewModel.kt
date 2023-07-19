@@ -178,7 +178,9 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     id = defaultNewDAId(),
                     runningInsCount = 0,
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author.fallbackOnEmpty("ShortX")
+                    author = it.author.fallbackOnEmpty("ShortX"),
+                    isOnlineItem = true,
+                    url = it.fileUrl
                 )
             }
             updateState { copy(das = das, isLoading = false) }

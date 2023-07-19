@@ -1,23 +1,28 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package tornaco.apps.shortx.ui.main
 
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 
-class DAViewerState(val da: DirectAction) : CommonDialogState()
+class DAViewerState(
+    val title: String,
+    val da: DirectAction? = null,
+    val url: String? = null
+) : CommonDialogState()
 
 @Composable
-fun rememberDAViewerState(rule: DirectAction): DAViewerState {
+fun rememberDAViewerState(
+    title: String,
+    da: DirectAction? = null,
+    url: String? = null
+): DAViewerState {
     return remember {
-        DAViewerState(rule)
+        DAViewerState(title, da, url)
     }
 }
 
@@ -34,9 +39,10 @@ fun DAViewerDialog(state: DAViewerState) {
 private fun DAViewer(state: DAViewerState) {
     AddDirectActionScreen(
         da = state.da,
-        screenTitle = state.da.title,
+        url = state.url,
+        screenTitle = state.title,
         canSaveWithoutChanges = true,
-        readOnly = true,
+        readOnly = false,
         saveIconName = Remix.System.download_line
     ) {
         state.dismiss()

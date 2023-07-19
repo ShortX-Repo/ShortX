@@ -315,7 +315,11 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                 contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
             ) {
                 items(items = discoverState.das, key = { it.id }) {
-                    val daViewerState = rememberDAViewerState(rule = it.directAction)
+                    val daViewerState = rememberDAViewerState(
+                        title = it.title,
+                        url = it.url,
+                        da = it.directAction
+                    )
                     DAViewerDialog(state = daViewerState)
 
                     ShortXCard(

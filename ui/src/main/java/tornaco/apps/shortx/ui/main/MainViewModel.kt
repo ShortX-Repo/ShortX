@@ -86,7 +86,9 @@ data class DirectActionUM(
     val iconColor: ULong,
     val runningInsCount: Int,
     val directAction: DirectAction,
-    val author: String = "ShortX"
+    val author: String = "ShortX",
+    val isOnlineItem: Boolean = false,
+    val url: String? = null,
 ) : Parcelable
 
 data class MainState(
@@ -601,17 +603,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         return text?.let { parseShareContentDA(it) }
     }
 
-    fun parseShareContentDA(content: String): DirectAction? {
-        return kotlin.runCatching {
-            DirectAction.newBuilder(DirectAction.parseFrom(
-                DirectAction.newBuilder().toProto(content).toByteArray()
-            )?.apply {
-                requireNotNull(this.id) { "Id is null. invalid da?" }
-                requireNotNull(this.title) { "Title is null. invalid da?" }
-            }).setId(defaultNewDAId()).setCreateTime(System.currentTimeMillis())
-                .setLastUpdateTime(System.currentTimeMillis()).build()
-        }.getOrNull()
-    }
 
     fun importRule(rule: Rule) {
         logger.d("importRule: $rule")
@@ -684,4 +675,16 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             pref.setPrivacyStatementAccepted(true)
         }
     }
+}
+
+fun parseShareContentDA(content: String): DirectAction? {
+    return kotlin.runCatching {
+        DirectAction.newBuilder(DirectAction.parseFrom(
+            DirectAction.newBuilder().toProto(content).toByteArray()
+        )?.apply {
+            requireNotNull(this.id) { "Id is null. invalid da?" }
+            requireNotNull(this.title) { "Title is null. invalid da?" }
+        }).setId(defaultNewDAId()).setCreateTime(System.currentTimeMillis())
+            .setLastUpdateTime(System.currentTimeMillis()).build()
+    }.getOrNull()
 }

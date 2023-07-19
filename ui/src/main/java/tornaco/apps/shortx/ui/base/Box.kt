@@ -13,12 +13,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 @Composable
-fun ClickOutsideClearFocusBox(content: @Composable () -> Unit) {
+fun ClickOutsideClearFocusBox(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    Box(modifier = Modifier
+    Box(modifier = modifier
         .clickable(
             interactionSource = interactionSource,
             indication = null    // this gets rid of the ripple effect

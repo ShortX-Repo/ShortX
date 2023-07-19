@@ -4,11 +4,26 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -20,8 +35,14 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionContentState
+import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
@@ -63,6 +84,7 @@ class AddDirectActionActivity : BaseActivity() {
 fun AddDirectActionScreen(
     daId: String? = null,
     da: DirectAction? = null,
+    url: String? = null,
     screenTitle: String,
     canSaveWithoutChanges: Boolean = false,
     readOnly: Boolean = false,
@@ -81,6 +103,7 @@ fun AddDirectActionScreen(
     LaunchedEffect(vm) {
         vm.initFromDirectActionId(daId)
         vm.initFromDirectAction(da)
+        vm.initFromUrl(url)
         vm.daSaved.collectLatest {
             showToast()
         }
@@ -122,31 +145,65 @@ fun AddDirectActionScreen(
                         scrollBehavior = scrollBehavior
                     )
                 }) {
-                Column(
+                ClickOutsideClearFocusBox(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(it)
-                        .padding(horizontal = 16.dp)
-                        .animateContentSize()
+                        .fillMaxSize()
                 ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(it)
+                            .padding(horizontal = 16.dp)
+                            .animateContentSize()
+                    ) {
+                        when (addDirectActionState.onlineDALoadState) {
+                            is LoadState.Error -> {
+                                LoadError(modifier = Modifier.fillMaxSize())
+                            }
 
-                    TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
-                    Spacer(modifier = Modifier.size(24.dp))
+                            LoadState.Loading -> {
+                                Loading(modifier = Modifier.fillMaxSize())
+                            }
 
-                    ActionContent(
-                        actions = actionContentState.actions,
-                        handler = actionContentStateHandler.asActionHandler(),
-                        readOnly = readOnly,
-                        warnings = actionContentState.actionWarningMessages
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
-
-                    SectionSpacer()
-                    SuggestedNavEntry()
+                            is LoadState.Success -> {
+                                DAContent(
+                                    addDirectActionState,
+                                    vm,
+                                    readOnly,
+                                    actionContentState,
+                                    actionContentStateHandler
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun DAContent(
+    addDirectActionState: AddDirectActionState,
+    vm: AddDirectActionViewModel,
+    readOnly: Boolean,
+    actionContentState: ActionContentState,
+    actionContentStateHandler: ActionContentStateHandler
+) {
+    TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
+    Spacer(modifier = Modifier.size(24.dp))
+
+    ActionContent(
+        actions = actionContentState.actions,
+        handler = actionContentStateHandler.asActionHandler(),
+        readOnly = readOnly,
+        warnings = actionContentState.actionWarningMessages
+    )
+    Spacer(modifier = Modifier.size(24.dp))
+
+    SectionSpacer()
+    SuggestedNavEntry()
 }
 
 @Composable

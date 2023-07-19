@@ -21,6 +21,7 @@ sealed interface LoadState<out T> {
 
     fun isLoading() = this is Loading
     fun isSuccess() = this is Success
+    fun isError() = this is Error
 
     val <T> LoadState<T>.data: T?
         get() = (this as? Success)?.data
