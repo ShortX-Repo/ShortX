@@ -19,11 +19,11 @@ import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
-import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.util.concurrent.TimeUnit
@@ -57,7 +57,8 @@ object HttpRequest : Actor {
         }
         logger.d("url: $url")
 
-        val requestBody = data.requestBody.toHttpRequestBody(contextData, shortXContext)
+        val requestBody =
+            data.requestBody.toHttpRequestBody(contextData) { shortXContext.rule.getAllGlobalVars() }
         handleUrl(
             url = url,
             method = data.method.name,
@@ -137,20 +138,21 @@ object HttpRequest : Actor {
 
     fun ProtoAny.toHttpRequestBody(
         contextData: ContextData,
-        shortXContext: ShortXContext
+        globalVarsLazy: () -> List<GlobalVar>
     ): RequestBody? {
         return if (this is_ HttpRequestBodyJson::class.java) {
             val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.inflateContextMap(contextData).replaceGlobalVarValues {
-                shortXContext.rule.getAllGlobalVars()
-            }.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+            bodyJson.json.inflateContextMap(contextData).replaceGlobalVarValues(globalVarsLazy)
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         } else if (this is_ HttpRequestBodyForm::class.java) {
             val bodyForm = this unpack_ HttpRequestBodyForm::class.java
             FormBody.Builder().apply {
                 bodyForm.itemsList.forEach {
-                    add(it.key, it.value.inflateContextMap(contextData).replaceGlobalVarValues {
-                        shortXContext.rule.getAllGlobalVars()
-                    })
+                    add(
+                        it.key,
+                        it.value.inflateContextMap(contextData)
+                            .replaceGlobalVarValues(globalVarsLazy)
+                    )
                 }
             }.build()
         } else null

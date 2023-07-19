@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
@@ -99,7 +100,7 @@ class HttpRequestTest {
                 }
             """.trimIndent()
             ).build().pack_()
-                .toHttpRequestBody(),
+                .toHttpRequestBody(ContextData.obtain()) { emptyList() },
             adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
         )
 

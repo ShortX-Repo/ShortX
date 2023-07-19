@@ -346,7 +346,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 shortXContext.rule.getAllGlobalVars()
             }
             val requestBody =
-                data.requestBody.toHttpRequestBody(ContextData.obtain(), shortXContext)
+                data.requestBody.toHttpRequestBody(ContextData.obtain()) {
+                    shortXContext.rule.getAllGlobalVars()
+                }
             return kotlin.runCatching {
                 tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleUrl(
                     url = url,
