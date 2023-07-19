@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.proto.rule.RuleQuit
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -34,7 +35,6 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
-import tornaco.apps.shortx.ui.main.parseShareContentRule
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
