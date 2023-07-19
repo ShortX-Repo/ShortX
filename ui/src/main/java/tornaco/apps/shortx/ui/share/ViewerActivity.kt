@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.parseShareContentDA
+import tornaco.apps.shortx.ui.main.parseShareContentRule
 import java.nio.charset.Charset
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -54,7 +55,7 @@ class ViewerActivity : BaseActivity() {
                     }
 
                     "rule" -> {
-                        val rule = vm.parseShareContentRule(sharedData.data)
+                        val rule = parseShareContentRule(sharedData.data)
                         rule?.let {
                             AddRuleScreen(
                                 rule = rule,

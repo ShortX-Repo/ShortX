@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 sealed interface LoadState<out T> {
@@ -63,7 +67,7 @@ fun LoadError(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun EmptyList(modifier: Modifier = Modifier) {
+fun EmptyList(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -79,5 +83,16 @@ fun EmptyList(modifier: Modifier = Modifier) {
             ),
             contentDescription = null,
         )
+
+        refresh?.let {
+            TextButton(onClick = { refresh() }) {
+                Text(
+                    text = LocalI18N.current["ui.common.empty.click.retry"],
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+            }
+        }
     }
 }

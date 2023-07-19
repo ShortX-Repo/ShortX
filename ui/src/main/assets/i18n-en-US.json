@@ -163,6 +163,7 @@
   "ui.common.dup": "Duplicate",
   "ui.common.share": "Share",
   "ui.common.settings": "Settings",
+  "ui.common.empty.click.retry": "No data loaded. click to retry.",
   "ui.common.long.press.sort": "Press to sort",
   "ui.common.stop": "Stop",
   "ui.common.share.clipboard": "Clipboard",

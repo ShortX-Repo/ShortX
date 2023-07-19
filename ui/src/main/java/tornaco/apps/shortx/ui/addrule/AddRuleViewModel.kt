@@ -5,9 +5,13 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -29,6 +33,9 @@ import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.main.parseShareContentRule
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
@@ -45,6 +52,8 @@ data class AddRuleState(
     val showAdvancedOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
+    // For online.
+    val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit)
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -284,6 +293,34 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode
                     )
+                }
+            }
+        }
+    }
+
+    fun initFromUrl(url: String?) {
+        url?.let { _ ->
+            logger.d("initFromUrl: $url")
+            viewModelScope.launch {
+                updateState { copy(onlineDALoadState = LoadState.Loading) }
+                withContext(Dispatchers.IO) {
+                    if (BuildProp.APP_IS_DEBUG) {
+                        delay(1000)
+                    }
+                    runCatching {
+                        val content = URL(url).readText()
+                        val rule = parseShareContentRule(content)
+                        updateState {
+                            copy(onlineDALoadState = LoadState.Success(Unit))
+                        }
+                        requireNotNull(rule) { "Fail to parse Rule: \n$content" }
+                        initFromRule(rule)
+                    }.onFailure {
+                        logger.e(it)
+                        updateState {
+                            copy(onlineDALoadState = LoadState.Error(it))
+                        }
+                    }
                 }
             }
         }

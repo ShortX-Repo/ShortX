@@ -228,7 +228,9 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
             .pullRefresh(refreshState)
     ) {
         if (discoverState.rules.isEmpty() && !discoverState.isLoading) {
-            EmptyList(modifier = Modifier.fillMaxSize())
+            EmptyList(modifier = Modifier.fillMaxSize()) {
+                refresh()
+            }
         } else {
             LazyVerticalStaggeredGrid(
                 modifier = Modifier.fillMaxSize(),
@@ -239,7 +241,11 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                     items = discoverState.rules,
                     key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
 
-                    val ruleViewerState = rememberRuleViewerState(rule = rule.rule)
+                    val ruleViewerState = rememberRuleViewerState(
+                        title = rule.title,
+                        rule = rule.rule,
+                        url = rule.url
+                    )
                     RuleViewerDialog(state = ruleViewerState)
 
                     ShortXCard(
@@ -277,6 +283,15 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                                     maxLines = 8
                                 )
+
+                                StandardSpacer()
+                                TipRow(text = rule.author,
+                                    icon = {
+                                        RemixIcon(
+                                            modifier = Modifier.size(12.dp),
+                                            remixName = Remix.UserAndFaces.user_line
+                                        )
+                                    })
                             }
                         }
                     }
@@ -307,7 +322,9 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
             .pullRefresh(refreshState)
     ) {
         if (discoverState.das.isEmpty() && !discoverState.isLoading) {
-            EmptyList(modifier = Modifier.fillMaxSize())
+            EmptyList(modifier = Modifier.fillMaxSize()) {
+                refresh()
+            }
         } else {
             LazyVerticalStaggeredGrid(
                 modifier = Modifier.fillMaxSize(),

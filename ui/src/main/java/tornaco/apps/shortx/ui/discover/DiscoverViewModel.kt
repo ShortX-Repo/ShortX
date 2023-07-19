@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.collectLatest
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
@@ -112,11 +113,11 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             when (val repo = state.value.discoverRepo) {
                 is DiscoverRepo.CustomOnline -> {
-                    loadOnlineDAs(repo.indexUrl)
+                    loadOnline(repo.indexUrl)
                 }
 
                 DiscoverRepo.OfficialOnline -> {
-                    loadOnlineDAs(SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL)
+                    loadOnline(SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL)
                 }
 
                 DiscoverRepo.PrebuiltLocal -> {
@@ -159,7 +160,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    private suspend fun loadOnlineDAs(url: String) {
+    private suspend fun loadOnline(url: String) {
         updateState { copy(isLoading = true) }
         kotlin.runCatching {
             val index = onlineRepo.index(url)
@@ -183,7 +184,31 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     url = it.fileUrl
                 )
             }
-            updateState { copy(das = das, isLoading = false) }
+            val rules = index.rules.map {
+                RuleUM(
+                    title = it.title,
+                    description = it.description,
+                    createTime = "",
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(System.currentTimeMillis())
+                    ),
+                    factIcon = it.icon ?: Remix.Development.command_line,
+                    actionIcon = it.icon ?: Remix.Development.command_line,
+                    factIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
+                        ?: Color.Magenta.value,
+                    actionIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
+                        ?: Color.Magenta.value,
+                    id = defaultNewDAId(),
+                    runningInsCount = 0,
+                    isEnabled = false,
+                    rule = Rule.newBuilder().setId(it.fileUrl).build(),
+                    author = it.author.fallbackOnEmpty("ShortX"),
+                    isOnlineItem = true,
+                    url = it.fileUrl
+                )
+            }
+            updateState { copy(das = das, rules = rules, isLoading = false) }
         }.onFailure {
             logger.e(it, "loadOnlineDAs error")
             updateState { copy(isLoading = false) }

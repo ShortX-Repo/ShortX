@@ -72,7 +72,10 @@ data class RuleUM(
     val actionIcon: String,
     val actionIconColor: ULong,
     val runningInsCount: Int,
-    val rule: Rule
+    val rule: Rule,
+    val author: String = "ShortX",
+    val isOnlineItem: Boolean = false,
+    val url: String? = null,
 )
 
 @Parcelize
@@ -554,17 +557,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         return text?.let { parseShareContentRule(it) }
     }
 
-    fun parseShareContentRule(content: String): Rule? {
-        return kotlin.runCatching {
-            Rule.newBuilder(
-                Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
-                    requireNotNull(this.id) { "Id is null. invalid rule?" }
-                    requireNotNull(this.title) { "Title is null. invalid rule?" }
-                }).setId(defaultNewRuleId()).setCreateTime(System.currentTimeMillis())
-                .setLastUpdateTime(System.currentTimeMillis()).build()
-        }.getOrNull()
-    }
-
     fun importDAFromClipboard() {
         viewModelScope.launch {
             ClipboardUtils.readClipboard(context)?.let { clip ->
@@ -685,6 +677,18 @@ fun parseShareContentDA(content: String): DirectAction? {
             requireNotNull(this.id) { "Id is null. invalid da?" }
             requireNotNull(this.title) { "Title is null. invalid da?" }
         }).setId(defaultNewDAId()).setCreateTime(System.currentTimeMillis())
+            .setLastUpdateTime(System.currentTimeMillis()).build()
+    }.getOrNull()
+}
+
+
+fun parseShareContentRule(content: String): Rule? {
+    return kotlin.runCatching {
+        Rule.newBuilder(
+            Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
+                requireNotNull(this.id) { "Id is null. invalid rule?" }
+                requireNotNull(this.title) { "Title is null. invalid rule?" }
+            }).setId(defaultNewRuleId()).setCreateTime(System.currentTimeMillis())
             .setLastUpdateTime(System.currentTimeMillis()).build()
     }.getOrNull()
 }

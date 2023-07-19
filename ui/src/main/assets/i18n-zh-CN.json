@@ -163,6 +163,7 @@
   "ui.common.dup": "创建副本",
   "ui.common.share": "分享",
   "ui.common.settings": "设置",
+  "ui.common.empty.click.retry": "没有数据，点击刷新试试",
   "ui.common.long.press.sort": "长按拖动排序",
   "ui.common.stop": "停止",
   "ui.common.share.clipboard": "剪贴板",

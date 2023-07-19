@@ -31,7 +31,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -39,16 +38,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
+import tornaco.apps.shortx.ui.addrule.action.ActionContentState
+import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.condition.ConditionContent
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentState
+import tornaco.apps.shortx.ui.addrule.condition.ConditionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.condition.asConditionHandler
+import tornaco.apps.shortx.ui.addrule.fact.FactContentState
+import tornaco.apps.shortx.ui.addrule.fact.FactContentStateHandler
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
 import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -57,6 +60,9 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
@@ -112,6 +118,7 @@ class AddRuleActivity : BaseActivity() {
 fun AddRuleScreen(
     ruleId: String? = null,
     rule: Rule? = null,
+    url: String? = null,
     screenTitle: String,
     canSaveWithoutChanges: Boolean = false,
     readOnly: Boolean = false,
@@ -154,6 +161,7 @@ fun AddRuleScreen(
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
+        vm.initFromUrl(url)
         vm.ruleSaved.collectLatest {
             showToast()
         }
@@ -208,186 +216,234 @@ fun AddRuleScreen(
                             .padding(horizontal = 16.dp)
                             .animateContentSize()
                     ) {
-
-                        TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
-                        SectionSpacer()
-
-                        FactSelectors(
-                            state = factContentState,
-                            handler = factHandler.asFactHandler(),
-                            readOnly = readOnly
-                        )
-                        SectionSpacer()
-
-                        ConditionContent(
-                            state = conditionContentState,
-                            readOnly = readOnly,
-                            handler = conditionHandler.asConditionHandler()
-                        )
-                        SectionSpacer()
-
-                        ActionContent(
-                            actions = actionContentState.actions,
-                            handler = actionHandler.asActionHandler(),
-                            readOnly = readOnly,
-                            warnings = actionContentState.actionWarningMessages
-                        )
-                        SectionSpacer()
-
-
-                        val scope = rememberCoroutineScope()
-                        TextButton(onClick = {
-                            vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
-
-                            if (!addRuleState.showAdvancedOptions) {
-                                scope.launch {
-                                    delay(100)
-                                    scrollState.animateScrollTo(Int.MAX_VALUE)
-                                }
+                        when (addRuleState.onlineDALoadState) {
+                            is LoadState.Error -> {
+                                LoadError(modifier = Modifier.fillMaxSize())
                             }
-                        }) {
-                            Text(text = LocalI18N.current["ui.advanced.options"])
-                        }
-                        StandardSpacer()
-                        AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
-                            Column {
-                                // Async Mode
-                                MediumTitleWithTip(
-                                    text = LocalI18N.current["ui.rule.async.mode"],
-                                    tipText = LocalI18N.current["ui.rule.async.mode.description"]
+
+                            LoadState.Loading -> {
+                                Loading(modifier = Modifier.fillMaxSize())
+                            }
+
+                            is LoadState.Success -> {
+                                RuleContent(
+                                    addRuleState,
+                                    vm,
+                                    readOnly,
+                                    factContentState,
+                                    factHandler,
+                                    conditionContentState,
+                                    conditionHandler,
+                                    actionContentState,
+                                    actionHandler,
+                                    quitFactContentState,
+                                    quitFactHandler,
+                                    quitConditionContentState,
+                                    quitConditionHandler,
+                                    actionOnEnabledState,
+                                    actionOnEnabledHandler,
+                                    actionOnDisabledState,
+                                    actionOnDisabledHandler,
+                                    actionOnDeletedState,
+                                    actionOnDeletedHandler
                                 )
-                                SmallSpacer()
-
-                                val typeDropdownState = rememberDropdownSelectorState()
-                                Box(modifier = Modifier.fillMaxWidth()) {
-                                    FilledTonalButton(onClick = {
-                                        typeDropdownState.open()
-                                    }) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
-                                            StandardSpacer()
-                                            RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                                        }
-                                    }
-                                    DropdownSelector(
-                                        state = typeDropdownState,
-                                        items = AsyncMode.values()
-                                            .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
-                                                DropdownItem(
-                                                    labelLines = listOf(
-                                                        LocalI18N.current[it.labelKey()]
-                                                    ),
-                                                    data = it
-                                                )
-                                            },
-                                        onSelect = {
-                                            vm.setAsyncMode(it.data)
-                                        })
-                                }
-                                SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    MediumTitleWithTip(
-                                        LocalI18N.current["ui.rule.quit.title"],
-                                        LocalI18N.current["ui.rule.quit.description"]
-                                    )
-                                    Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
-                                        vm.toggleQuitEnable()
-                                    })
-                                }
-                                AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
-                                    Column {
-                                        StandardSpacer()
-                                        FactSelectors(
-                                            header = {
-                                                FieldTitle(
-                                                    modifier = Modifier.padding(bottom = 12.dp),
-                                                    text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
-                                                )
-                                            },
-                                            state = quitFactContentState,
-                                            handler = quitFactHandler.asFactHandler(),
-                                            readOnly = readOnly
-                                        )
-
-                                        SectionSpacer()
-
-                                        ConditionContent(
-                                            header = {
-                                                FieldTitle(
-                                                    modifier = Modifier.padding(bottom = 12.dp),
-                                                    text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
-                                                )
-                                            },
-                                            state = quitConditionContentState,
-                                            readOnly = readOnly,
-                                            handler = quitConditionHandler.asConditionHandler()
-                                        )
-
-                                        SectionSpacer()
-                                    }
-                                }
-
-                                SplitLines(modifier = Modifier.padding(vertical = 30.dp))
-
-                                MediumTitle(text = "Hooks")
-                                SmallSpacer()
-                                ActionContent(
-                                    header = {
-                                        FieldTitleWithTip(
-                                            LocalI18N.current["ui.actions.hook.on.enabled.title"],
-                                            LocalI18N.current["ui.actions.hook.on.enabled.description"]
-                                        )
-                                    },
-                                    actions = actionOnEnabledState.actions,
-                                    handler = actionOnEnabledHandler.asActionHandler(),
-                                    readOnly = readOnly,
-                                    warnings = actionOnEnabledState.actionWarningMessages
-                                )
-                                SectionSpacer()
-
-                                ActionContent(
-                                    header = {
-                                        FieldTitleWithTip(
-                                            LocalI18N.current["ui.actions.hook.on.disabled.title"],
-                                            LocalI18N.current["ui.actions.hook.on.disabled.description"]
-                                        )
-                                    },
-                                    actions = actionOnDisabledState.actions,
-                                    handler = actionOnDisabledHandler.asActionHandler(),
-                                    readOnly = readOnly,
-                                    warnings = actionOnDisabledState.actionWarningMessages
-                                )
-                                SectionSpacer()
-
-                                ActionContent(
-                                    header = {
-                                        FieldTitleWithTip(
-                                            LocalI18N.current["ui.actions.hook.on.deleted.title"],
-                                            LocalI18N.current["ui.actions.hook.on.deleted.description"]
-                                        )
-                                    },
-                                    actions = actionOnDeletedState.actions,
-                                    handler = actionOnDeletedHandler.asActionHandler(),
-                                    readOnly = readOnly,
-                                    warnings = actionOnDeletedState.actionWarningMessages
-                                )
-                                SectionSpacer()
                             }
                         }
-
-                        SectionSpacer()
-                        SuggestedNavEntry()
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun RuleContent(
+    addRuleState: AddRuleState,
+    vm: AddRuleViewModel,
+    readOnly: Boolean,
+    factContentState: FactContentState,
+    factHandler: FactContentStateHandler,
+    conditionContentState: ConditionContentState,
+    conditionHandler: ConditionContentStateHandler,
+    actionContentState: ActionContentState,
+    actionHandler: ActionContentStateHandler,
+    quitFactContentState: FactContentState,
+    quitFactHandler: FactContentStateHandler,
+    quitConditionContentState: ConditionContentState,
+    quitConditionHandler: ConditionContentStateHandler,
+    actionOnEnabledState: ActionContentState,
+    actionOnEnabledHandler: ActionContentStateHandler,
+    actionOnDisabledState: ActionContentState,
+    actionOnDisabledHandler: ActionContentStateHandler,
+    actionOnDeletedState: ActionContentState,
+    actionOnDeletedHandler: ActionContentStateHandler
+) {
+    TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
+    SectionSpacer()
+
+    FactSelectors(
+        state = factContentState,
+        handler = factHandler.asFactHandler(),
+        readOnly = readOnly
+    )
+    SectionSpacer()
+
+    ConditionContent(
+        state = conditionContentState,
+        readOnly = readOnly,
+        handler = conditionHandler.asConditionHandler()
+    )
+    SectionSpacer()
+
+    ActionContent(
+        actions = actionContentState.actions,
+        handler = actionHandler.asActionHandler(),
+        readOnly = readOnly,
+        warnings = actionContentState.actionWarningMessages
+    )
+    SectionSpacer()
+
+    TextButton(onClick = {
+        vm.setShowAdvancedOptions(!addRuleState.showAdvancedOptions)
+
+    }) {
+        Text(text = LocalI18N.current["ui.advanced.options"])
+    }
+    StandardSpacer()
+    AnimatedVisibility(visible = addRuleState.showAdvancedOptions) {
+        Column {
+            // Async Mode
+            MediumTitleWithTip(
+                text = LocalI18N.current["ui.rule.async.mode"],
+                tipText = LocalI18N.current["ui.rule.async.mode.description"]
+            )
+            SmallSpacer()
+
+            val typeDropdownState = rememberDropdownSelectorState()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                FilledTonalButton(onClick = {
+                    typeDropdownState.open()
+                }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
+                        StandardSpacer()
+                        RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                    }
+                }
+                DropdownSelector(
+                    state = typeDropdownState,
+                    items = AsyncMode.values()
+                        .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
+                            DropdownItem(
+                                labelLines = listOf(
+                                    LocalI18N.current[it.labelKey()]
+                                ),
+                                data = it
+                            )
+                        },
+                    onSelect = {
+                        vm.setAsyncMode(it.data)
+                    })
+            }
+            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MediumTitleWithTip(
+                    LocalI18N.current["ui.rule.quit.title"],
+                    LocalI18N.current["ui.rule.quit.description"]
+                )
+                Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
+                    vm.toggleQuitEnable()
+                })
+            }
+            AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
+                Column {
+                    StandardSpacer()
+                    FactSelectors(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 12.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                            )
+                        },
+                        state = quitFactContentState,
+                        handler = quitFactHandler.asFactHandler(),
+                        readOnly = readOnly
+                    )
+
+                    SectionSpacer()
+
+                    ConditionContent(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 12.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                            )
+                        },
+                        state = quitConditionContentState,
+                        readOnly = readOnly,
+                        handler = quitConditionHandler.asConditionHandler()
+                    )
+
+                    SectionSpacer()
+                }
+            }
+
+            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
+            MediumTitle(text = "Hooks")
+            SmallSpacer()
+            ActionContent(
+                header = {
+                    FieldTitleWithTip(
+                        LocalI18N.current["ui.actions.hook.on.enabled.title"],
+                        LocalI18N.current["ui.actions.hook.on.enabled.description"]
+                    )
+                },
+                actions = actionOnEnabledState.actions,
+                handler = actionOnEnabledHandler.asActionHandler(),
+                readOnly = readOnly,
+                warnings = actionOnEnabledState.actionWarningMessages
+            )
+            SectionSpacer()
+
+            ActionContent(
+                header = {
+                    FieldTitleWithTip(
+                        LocalI18N.current["ui.actions.hook.on.disabled.title"],
+                        LocalI18N.current["ui.actions.hook.on.disabled.description"]
+                    )
+                },
+                actions = actionOnDisabledState.actions,
+                handler = actionOnDisabledHandler.asActionHandler(),
+                readOnly = readOnly,
+                warnings = actionOnDisabledState.actionWarningMessages
+            )
+            SectionSpacer()
+
+            ActionContent(
+                header = {
+                    FieldTitleWithTip(
+                        LocalI18N.current["ui.actions.hook.on.deleted.title"],
+                        LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                    )
+                },
+                actions = actionOnDeletedState.actions,
+                handler = actionOnDeletedHandler.asActionHandler(),
+                readOnly = readOnly,
+                warnings = actionOnDeletedState.actionWarningMessages
+            )
+            SectionSpacer()
+        }
+    }
+
+    SectionSpacer()
+    SuggestedNavEntry()
 }
 
 @Composable

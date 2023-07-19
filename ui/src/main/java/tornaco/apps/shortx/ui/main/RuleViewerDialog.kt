@@ -1,23 +1,29 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package tornaco.apps.shortx.ui.main
 
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 
-class RuleViewerState(val rule: Rule) : CommonDialogState()
+class RuleViewerState(
+    val title: String,
+    val rule: Rule? = null,
+    val url: String? = null
+) :
+    CommonDialogState()
 
 @Composable
-fun rememberRuleViewerState(rule: Rule): RuleViewerState {
+fun rememberRuleViewerState(
+    title: String,
+    rule: Rule? = null,
+    url: String? = null
+): RuleViewerState {
     return remember {
-        RuleViewerState(rule)
+        RuleViewerState(title, rule, url)
     }
 }
 
@@ -35,9 +41,10 @@ fun RuleViewerDialog(state: RuleViewerState) {
 private fun RuleViewer(state: RuleViewerState) {
     AddRuleScreen(
         rule = state.rule,
-        screenTitle = state.rule.title,
+        url = state.url,
+        screenTitle = state.title,
         canSaveWithoutChanges = true,
-        readOnly = true,
+        readOnly = false,
         saveIconName = Remix.System.download_line
     ) {
         state.dismiss()
