@@ -18,6 +18,8 @@ message DirectAction {
 
   string title = 6;
   string description = 7;
+
+  int64 versionCode = 8;
 }
 
 message DirectActionList {

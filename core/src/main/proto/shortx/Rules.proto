@@ -32,6 +32,8 @@ message Rule {
   RuleQuit quit = 15;
 
   AsyncMode asyncMode = 16;
+
+  int64 versionCode = 17;
 }
 
 message RuleHook {
