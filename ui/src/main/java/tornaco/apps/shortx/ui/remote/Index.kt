@@ -8,26 +8,9 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
-import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.rule.repo.Index
 import tornaco.apps.shortx.core.util.Logger
 import java.util.concurrent.TimeUnit
-
-@DoNotStrip
-data class Index(
-    val directActions: List<Item>,
-    val rules: List<Item>,
-)
-
-@DoNotStrip
-data class Item(
-    val fileUrl: String,
-    val title: String,
-    val description: String,
-    val author: String,
-    val tag: String? = null,
-    val icon: String? = null,
-    val iconColor: String? = null,
-)
 
 
 class OnlineRepo(private val context: Context) {
