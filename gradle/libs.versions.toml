@@ -61,7 +61,7 @@ protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.3" }
 # https://github.com/gmazzo/gradle-buildconfig-plugin
 gmazzo-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "4.1.1" }
 gladed-androidgitversion = { id = "com.gladed.androidgitversion", version = "0.4.14" }
-diffplug-spotless = { id = "com.diffplug.spotless", version = "6.19.0" }
+diffplug-spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
 
 [libraries]
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
