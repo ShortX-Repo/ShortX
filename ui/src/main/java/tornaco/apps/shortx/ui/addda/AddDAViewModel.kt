@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -21,7 +22,6 @@ import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
-import tornaco.apps.shortx.ui.main.parseShareContentDA
 import java.net.URL
 import java.util.*
 import javax.inject.Inject

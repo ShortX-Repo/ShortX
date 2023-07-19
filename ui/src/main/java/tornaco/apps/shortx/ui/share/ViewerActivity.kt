@@ -11,6 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.rule.parseShareContentDA
+import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
@@ -18,8 +20,6 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.parseShareContentDA
-import tornaco.apps.shortx.ui.main.parseShareContentRule
 import java.nio.charset.Charset
 
 @OptIn(ExperimentalAnimationApi::class)

@@ -20,12 +20,13 @@ import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
-import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.rule.parseShareContentDA
+import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -477,7 +478,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun dupRule(ruleId: String) {
         logger.d("dupRule: $ruleId")
         viewModelScope.launch {
-            shortXManager.getRuleById(ruleId)?.let { importRule(it) }
+            shortXManager.getRuleById(ruleId)?.let { importRule(it, true) }
         }
     }
 
@@ -490,7 +491,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun dupDA(daId: String) {
         viewModelScope.launch {
-            shortXManager.getDirectActionById(daId)?.let { importDA(it) }
+            shortXManager.getDirectActionById(daId)?.let {
+                importDA(it, true)
+            }
         }
     }
 
@@ -524,7 +527,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             ClipboardUtils.readClipboard(context)?.let { clip ->
                 val rule = parseShareContentRule(clip)
                 if (rule != null) {
-                    importRule(rule)
+                    importRule(rule, false)
                     _importComplete.emit(ImportResult.Success)
                 } else {
                     _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
@@ -537,7 +540,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         viewModelScope.launch {
             val rule = parseShareContentRuleFromUri(uri)
             if (rule != null) {
-                importRule(rule)
+                importRule(rule, false)
                 _importComplete.emit(ImportResult.Success)
             } else {
                 _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
@@ -562,7 +565,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             ClipboardUtils.readClipboard(context)?.let { clip ->
                 val da = parseShareContentDA(clip)
                 if (da != null) {
-                    importDA(da)
+                    importDA(da, false)
                     _importComplete.emit(ImportResult.Success)
                 } else {
                     _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
@@ -575,7 +578,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         viewModelScope.launch {
             val da = parseShareContentDAFromUri(uri)
             if (da != null) {
-                importDA(da)
+                importDA(da, false)
                 _importComplete.emit(ImportResult.Success)
             } else {
                 _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
@@ -596,7 +599,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     }
 
 
-    fun importRule(rule: Rule) {
+    fun importRule(rule: Rule, shouldChangeId: Boolean) {
         logger.d("importRule: $rule")
         val ruleWithSameNameExists =
             state.value.rules.firstOrNull { it.title == rule.title } != null
@@ -616,7 +619,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             val refined =
                 Rule.newBuilder(rule)
                     .setTitle(if (ruleWithSameNameExists) "${rule.title} $copyInd" else rule.title)
-                    .setId(defaultNewRuleId())
+                    .apply {
+                        if (shouldChangeId) {
+                            id = defaultNewRuleId()
+                        }
+                    }
                     .clearActions()
                     .addAllActions(refinedActions)
                     .clearFacts()
@@ -633,7 +640,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
-    fun importDA(da: DirectAction) {
+    fun importDA(da: DirectAction, shouldChangeId: Boolean) {
         val daWithSameNameExists =
             state.value.das.firstOrNull { it.title == da.title } != null
         val copyInd = " (Copy)"
@@ -646,7 +653,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             val refined =
                 DirectAction.newBuilder(da)
                     .setTitle(if (daWithSameNameExists) "${da.title} $copyInd" else da.title)
-                    .setId(defaultNewDAId())
+                    .apply {
+                        if (shouldChangeId) id = defaultNewDAId()
+                    }
                     .clearActions()
                     .addAllActions(refinedActions)
                     .setCreateTime(System.currentTimeMillis())
@@ -667,28 +676,4 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             pref.setPrivacyStatementAccepted(true)
         }
     }
-}
-
-fun parseShareContentDA(content: String): DirectAction? {
-    return kotlin.runCatching {
-        DirectAction.newBuilder(DirectAction.parseFrom(
-            DirectAction.newBuilder().toProto(content).toByteArray()
-        )?.apply {
-            requireNotNull(this.id) { "Id is null. invalid da?" }
-            requireNotNull(this.title) { "Title is null. invalid da?" }
-        }).setId(defaultNewDAId()).setCreateTime(System.currentTimeMillis())
-            .setLastUpdateTime(System.currentTimeMillis()).build()
-    }.getOrNull()
-}
-
-
-fun parseShareContentRule(content: String): Rule? {
-    return kotlin.runCatching {
-        Rule.newBuilder(
-            Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
-                requireNotNull(this.id) { "Id is null. invalid rule?" }
-                requireNotNull(this.title) { "Title is null. invalid rule?" }
-            }).setId(defaultNewRuleId()).setCreateTime(System.currentTimeMillis())
-            .setLastUpdateTime(System.currentTimeMillis()).build()
-    }.getOrNull()
 }
