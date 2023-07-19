@@ -11,3 +11,5 @@ fun colorForAction(action: KClass<out Action>): Color {
         runCatching { allActionClasses.indexOf(action) % ActionColorPalette.size }.getOrElse { 0 }
     return ActionColorPalette[index]
 }
+
+fun randomActionColor() = ActionColorPalette[(ActionColorPalette.indices).random()]

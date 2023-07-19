@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.discover
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,6 +14,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
+import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.colorFromHex
@@ -99,11 +99,17 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     fun switchRepo(repo: DiscoverRepo) {
         updateState { copy(discoverRepo = repo, das = emptyList(), rules = emptyList()) }
         viewModelScope.launch {
-            val url = if (repo is DiscoverRepo.CustomOnline) {
-                repo.indexUrl
-            } else if (repo == DiscoverRepo.OfficialOnline) {
-                SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
-            } else ""
+            val url = when (repo) {
+                is DiscoverRepo.CustomOnline -> {
+                    repo.indexUrl
+                }
+
+                DiscoverRepo.OfficialOnline -> {
+                    SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
+                }
+
+                else -> ""
+            }
             pref.selectRepo(url)
             loadDiscoverData()
         }
@@ -175,7 +181,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     ),
                     icon = it.icon ?: Remix.Development.command_line,
                     iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
-                        ?: Color.Magenta.value,
+                        ?: randomActionColor().value,
                     id = defaultNewDAId(),
                     runningInsCount = 0,
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
@@ -196,9 +202,9 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     factIcon = it.icon ?: Remix.Development.command_line,
                     actionIcon = it.icon ?: Remix.Development.command_line,
                     factIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
-                        ?: Color.Magenta.value,
+                        ?: randomActionColor().value,
                     actionIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
-                        ?: Color.Magenta.value,
+                        ?: randomActionColor().value,
                     id = defaultNewDAId(),
                     runningInsCount = 0,
                     isEnabled = false,

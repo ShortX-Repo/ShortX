@@ -218,7 +218,9 @@ fun AddRuleScreen(
                     ) {
                         when (addRuleState.onlineDALoadState) {
                             is LoadState.Error -> {
-                                LoadError(modifier = Modifier.fillMaxSize())
+                                LoadError(modifier = Modifier.fillMaxSize()) {
+                                    vm.initFromUrl(url)
+                                }
                             }
 
                             LoadState.Loading -> {

@@ -159,7 +159,9 @@ fun AddDirectActionScreen(
                     ) {
                         when (addDirectActionState.onlineDALoadState) {
                             is LoadState.Error -> {
-                                LoadError(modifier = Modifier.fillMaxSize())
+                                LoadError(modifier = Modifier.fillMaxSize()) {
+                                    vm.initFromUrl(url)
+                                }
                             }
 
                             LoadState.Loading -> {

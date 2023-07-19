@@ -46,7 +46,7 @@ fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoadError(modifier: Modifier = Modifier) {
+fun LoadError(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -62,6 +62,17 @@ fun LoadError(modifier: Modifier = Modifier) {
             ),
             contentDescription = null,
         )
+
+        refresh?.let {
+            TextButton(onClick = { refresh() }) {
+                Text(
+                    text = LocalI18N.current["ui.common.error.click.retry"],
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+            }
+        }
     }
 }
 
