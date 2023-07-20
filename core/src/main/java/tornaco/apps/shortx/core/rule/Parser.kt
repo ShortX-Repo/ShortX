@@ -13,8 +13,7 @@ fun parseShareContentDA(content: String): DirectAction? {
             )?.apply {
                 requireNotNull(this.id) { "Id is null. invalid da?" }
                 requireNotNull(this.title) { "Title is null. invalid da?" }
-            })
-            .setLastUpdateTime(System.currentTimeMillis()).build()
+            }).build()
     }.getOrNull()
 }
 
