@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_U
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -172,7 +173,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(
                     title = it.title,
-                    description = it.description,
+                    description = it.description.fallbackOnEmpty(it.title),
                     createTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
                         Date(it.updateTimeMillis)
@@ -187,7 +188,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     id = it.id,
                     runningInsCount = 0,
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author,
+                    author = it.author.fallbackOnEmpty("ShortX"),
                     isOnlineItem = true,
                     url = it.fileUrl,
                     versionCode = it.versionCode,
@@ -199,7 +200,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
                     title = it.title,
-                    description = it.description,
+                    description = it.description.fallbackOnEmpty(it.title),
                     createTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
                         Date(it.updateTimeMillis)
@@ -218,7 +219,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     runningInsCount = 0,
                     isEnabled = false,
                     rule = Rule.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author,
+                    author = it.author.fallbackOnEmpty("ShortX"),
                     isOnlineItem = true,
                     url = it.fileUrl,
                     versionCode = it.versionCode,

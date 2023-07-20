@@ -63,7 +63,6 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.DAViewerDialog
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.RuleIcon
 import tornaco.apps.shortx.ui.main.RuleUM
 import tornaco.apps.shortx.ui.main.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rememberDAViewerState
@@ -256,26 +255,40 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                         Column(modifier = Modifier
                             .fillMaxWidth()
                             .clip(ShortXCardRoundedCornerShape)
-                            .clickable { ruleViewerState.show() }) {
+                            .clickable { ruleViewerState.show() }
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 12.dp)) {
 
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp),
+                                    .fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                RuleIcon(rule)
+                                Box(modifier = Modifier.weight(1f)) {
+                                    ColoredIcon(
+                                        modifier = Modifier,
+                                        size = 32.dp,
+                                        padding = 0.dp,
+                                        color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                                    ) {
+                                        RemixIcon(
+                                            modifier = Modifier.size(16.dp),
+                                            remixName = Remix.Weather.meteor_line,
+                                            tint = MaterialTheme.colorScheme.tertiary
+                                        )
+                                    }
+                                }
 
                                 Row(modifier = Modifier) {
                                     if (rule.hasUpdate) {
                                         OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            modifier = Modifier,
                                             text = "Update"
                                         )
                                     }
                                     if (rule.isInstalled) {
                                         OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            modifier = Modifier.padding(horizontal = 12.dp),
                                             text = "Installed"
                                         )
                                     }
@@ -284,7 +297,6 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
 
                             Column(
                                 modifier = Modifier
-                                    .padding(horizontal = 16.dp)
                                     .padding(top = 6.dp, bottom = 12.dp)
                             ) {
                                 Text(
@@ -368,33 +380,33 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
 
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp),
+                                    .fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                ColoredIcon(
-                                    size = 32.dp,
-                                    padding = 0.dp,
-                                    color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
-                                ) {
-                                    RemixIcon(
-                                        modifier = Modifier.size(16.dp),
-                                        remixName = it.icon,
-                                        tint = Color(it.iconColor)
-                                    )
+                                Box(modifier = Modifier.weight(1f)) {
+                                    ColoredIcon(
+                                        size = 32.dp,
+                                        padding = 0.dp,
+                                        color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                                    ) {
+                                        RemixIcon(
+                                            modifier = Modifier.size(16.dp),
+                                            remixName = Remix.Development.command_line,
+                                            tint = MaterialTheme.colorScheme.tertiary
+                                        )
+                                    }
                                 }
-
 
                                 Row(modifier = Modifier) {
                                     if (it.hasUpdate) {
                                         OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            modifier = Modifier,
                                             text = "Update"
                                         )
                                     }
                                     if (it.isInstalled) {
                                         OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            modifier = Modifier.padding(horizontal = 12.dp),
                                             text = "Installed"
                                         )
                                     }

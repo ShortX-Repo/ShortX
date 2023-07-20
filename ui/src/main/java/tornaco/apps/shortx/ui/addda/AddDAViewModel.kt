@@ -34,6 +34,7 @@ data class AddDirectActionState(
     val id: String = defaultNewDAId(),
     val title: String = "",
     val description: String = "",
+    val versionCode: Long = 1L,
     val isEditDirectAction: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val daChanged: Boolean = false,
@@ -90,6 +91,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 }
                 .addAllActions(protoActions)
                 .setAuthor(authorPref)
+                .setVersionCode(state.value.versionCode)
                 .build()
 
             shortXManager.addDirectAction(da)
@@ -126,6 +128,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         description = da.description,
                         isEditDirectAction = true,
                         createTime = da.createTime,
+                        versionCode = da.versionCode,
                     )
                 }
             }

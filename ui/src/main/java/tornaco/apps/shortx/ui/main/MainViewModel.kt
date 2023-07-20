@@ -642,8 +642,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     .addAllFacts(refinedFacts)
                     .clearConditions()
                     .addAllConditions(refinedConds)
-                    .setCreateTime(System.currentTimeMillis())
-                    .setLastUpdateTime(System.currentTimeMillis())
+                    .setCreateTime(rule.createTime)
+                    .setLastUpdateTime(rule.lastUpdateTime)
+                    .setVersionCode(rule.versionCode)
                     .setIsEnabled(false)
                     .build()
             shortXManager.addRule(refined)
@@ -670,8 +671,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     }
                     .clearActions()
                     .addAllActions(refinedActions)
-                    .setCreateTime(System.currentTimeMillis())
-                    .setLastUpdateTime(System.currentTimeMillis())
+                    .setCreateTime(da.createTime)
+                    .setLastUpdateTime(da.lastUpdateTime)
+                    .setVersionCode(da.versionCode)
                     .build()
             shortXManager.addDirectAction(refined)
 

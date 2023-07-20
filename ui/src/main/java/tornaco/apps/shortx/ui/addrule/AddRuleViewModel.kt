@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
@@ -48,6 +47,7 @@ data class AddRuleState(
     val id: String = defaultNewRuleId(),
     val title: String = "",
     val description: String = "",
+    val versionCode: Long = 1L,
     val isEditRule: Boolean = false,
     val createTime: Long = System.currentTimeMillis(),
     val ruleChanged: Boolean = false,
@@ -192,6 +192,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setIsEnabled(state.value.isEnabled)
                 .setAsyncMode(state.value.asyncMode)
                 .setAuthor(authorPref)
+                .setVersionCode(state.value.versionCode)
                 .build()
 
             shortXManager.addRule(rule)
@@ -294,6 +295,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         id = r.id,
                         title = r.title,
                         description = r.description,
+                        versionCode = r.versionCode,
                         isEditRule = true,
                         createTime = r.createTime,
                         isEnabled = r.isEnabled,
