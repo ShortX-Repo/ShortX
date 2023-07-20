@@ -502,6 +502,7 @@
   "ui.settings.general": "通用",
   "ui.settings.record": "记录",
   "ui.settings.dev": "开发",
+  "ui.settings.share": "分享",
   "ui.settings.app.info": "应用信息",
   "ui.settings.core.info": "核心信息",
   "ui.settings.core.info.na": "未激活",

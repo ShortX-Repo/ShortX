@@ -502,6 +502,7 @@
   "ui.settings.general": "General",
   "ui.settings.record": "Records",
   "ui.settings.dev": "Developer",
+  "ui.settings.share": "Share",
   "ui.settings.app.info": "App info",
   "ui.settings.core.info": "Framework info",
   "ui.settings.core.info.na": "Not activated",

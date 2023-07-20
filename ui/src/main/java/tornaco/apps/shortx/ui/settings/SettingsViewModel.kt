@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.Version
+import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -33,6 +34,7 @@ data class SettingsState(
     val isInjectedShellEnabled: Boolean = false,
     val isPointerLocationEnabled: Boolean = false,
     val hasAudioRecord: Boolean = false,
+    val shareAuthor: Author? = null,
 )
 
 sealed interface BackupResult {
@@ -79,7 +81,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
                 isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
-                hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty()
+                hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
             )
         }
 
@@ -95,6 +97,19 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 logger.d("ignoreFrameworkUpdate changed: $it")
                 updateState { copy(isIgnoreFrameworkUpdate = it) }
             }
+        }
+
+        viewModelScope.launch {
+            pref.shareAuthorInfo.collectLatest {
+                logger.d("shareAuthorInfo changed: $it")
+                updateState { copy(shareAuthor = it) }
+            }
+        }
+    }
+
+    fun setShareAuthor(author: Author) {
+        viewModelScope.launch {
+            pref.setShareAuthor(author)
         }
     }
 

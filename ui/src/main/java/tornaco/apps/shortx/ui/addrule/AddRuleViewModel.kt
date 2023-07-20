@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
@@ -35,6 +37,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -63,6 +66,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     private val _ruleSaved = MutableSharedFlow<String>()
     val ruleSaved = _ruleSaved.asSharedFlow()
+
+    val pref by lazy { Pref(context) }
 
     val actionContentStateHandler = ActionContentStateHandler()
 
@@ -104,6 +109,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun save() {
         viewModelScope.launch {
+            val authorPref = pref.shareAuthorInfo.first()
+
             val conditions = conditionContentStateHandler.conditions
             val condOp = conditionContentStateHandler.conditionOp
 
@@ -184,6 +191,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 )
                 .setIsEnabled(state.value.isEnabled)
                 .setAsyncMode(state.value.asyncMode)
+                .setAuthor(authorPref)
                 .build()
 
             shortXManager.addRule(rule)

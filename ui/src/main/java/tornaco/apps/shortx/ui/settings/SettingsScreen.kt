@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
@@ -273,6 +274,7 @@ fun SettingsScreen(
                                 deleteDialogState.show()
                             })
                         )
+                        addAll(shareSettings(state, vm))
                         addAll(devSettings(state, vm))
                         addAll(aboutSettings(state, viewOpenSourceLicense))
                     })
@@ -492,6 +494,36 @@ private fun dataSettings(
         ),
     )
 }
+
+
+@Composable
+private fun shareSettings(
+    state: SettingsState,
+    vm: SettingsViewModel
+): List<Preference> {
+    val authorNameDialogState = rememberTextInputState(
+        title = "Author name",
+        message = null,
+        onSelected = {
+            vm.setShareAuthor(Author.newBuilder().setName(it).build())
+        }
+    )
+    TextInputDialog(state = authorNameDialogState)
+
+    return mutableListOf(
+        Preference.Category(LocalI18N.current["ui.settings.share"]),
+
+        Preference.TextPreference(
+            icon = Remix.System.share_box_line,
+            title = "Author info",
+            summary = if (state.shareAuthor == null) "Set author info when you share Rule or Action" else state.shareAuthor.name,
+            onClick = {
+                authorNameDialogState.show(state.shareAuthor?.name)
+            }
+        )
+    )
+}
+
 
 @Composable
 private fun devSettings(

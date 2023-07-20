@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.Author
+import tornaco.apps.shortx.core.proto.toJson
+import tornaco.apps.shortx.core.proto.toProto
+import tornaco.apps.shortx.core.rule.defaultAuthor
 import tornaco.apps.shortx.core.util.Logger
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
@@ -32,6 +36,7 @@ private val DISCOVERY_CUSTOM_REPOS =
 private val DISCOVERY_SELECTED_REPO_URL =
     stringPreferencesKey("discovery_selected_repo_url")
 
+private val SHARE_AUTHOR_INFO = stringPreferencesKey("share_author_info")
 
 class Pref(val context: Context) {
     companion object {
@@ -61,6 +66,12 @@ class Pref(val context: Context) {
 
     val discoverySelectedRepoUrl: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[DISCOVERY_SELECTED_REPO_URL] ?: ""
+    }
+
+    val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
+        preferences[SHARE_AUTHOR_INFO]?.let {
+            Author.parseFrom(Author.newBuilder().toProto(it).toByteArray())
+        }?: defaultAuthor
     }
 
     val discoveryRepos: Flow<Set<DiscoveryRepoSetting>> =
@@ -136,6 +147,12 @@ class Pref(val context: Context) {
         }
         context.dataStore.edit { settings ->
             settings[RECENT_SELECTED_ACTIONS] = current?.joinToString("-") ?: ""
+        }
+    }
+
+    suspend fun setShareAuthor(author: Author) {
+        context.dataStore.edit { settings ->
+            settings[SHARE_AUTHOR_INFO] = author.toJson()
         }
     }
 }

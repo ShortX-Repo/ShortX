@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
@@ -22,6 +23,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -49,6 +51,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     val daSaved = _daSaved.asSharedFlow()
 
     val actionContentStateHandler = ActionContentStateHandler()
+    val pref by lazy { Pref(context) }
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -73,6 +76,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
             val protoActions = actions.map {
                 it.toProtoAction().pack_()
             }
+            val authorPref = pref.shareAuthorInfo.first()
+
             val da = DirectAction.newBuilder()
                 .setId(state.value.id)
                 .setCreateTime(state.value.createTime)
@@ -84,6 +89,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                     }
                 }
                 .addAllActions(protoActions)
+                .setAuthor(authorPref)
                 .build()
 
             shortXManager.addDirectAction(da)
@@ -104,23 +110,24 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
     }
 
     fun initFromDirectAction(action: DirectAction?) {
-        action?.let { da ->
-            logger.d("initFromDirectAction: $da")
+        viewModelScope.launch {
+            action?.let { da ->
+                logger.d("initFromDirectAction: $da")
 
-            actionContentStateHandler.init(da.actionsList.mapNotNull {
-                it.toAction(
-                    shortXManager
-                )
-            })
-
-            updateState {
-                copy(
-                    id = da.id,
-                    title = da.title,
-                    description = da.description,
-                    isEditDirectAction = true,
-                    createTime = da.createTime
-                )
+                actionContentStateHandler.init(da.actionsList.mapNotNull {
+                    it.toAction(
+                        shortXManager
+                    )
+                })
+                updateState {
+                    copy(
+                        id = da.id,
+                        title = da.title,
+                        description = da.description,
+                        isEditDirectAction = true,
+                        createTime = da.createTime,
+                    )
+                }
             }
         }
     }
