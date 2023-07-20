@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -264,6 +265,21 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RuleIcon(rule)
+
+                                Row(modifier = Modifier) {
+                                    if (rule.hasUpdate) {
+                                        OutlineBadge(
+                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            text = "Update"
+                                        )
+                                    }
+                                    if (rule.isInstalled) {
+                                        OutlineBadge(
+                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            text = "Installed"
+                                        )
+                                    }
+                                }
                             }
 
                             Column(
@@ -350,16 +366,39 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                             .padding(horizontal = 12.dp)
                             .padding(top = 12.dp)) {
 
-                            ColoredIcon(
-                                size = 32.dp,
-                                padding = 0.dp,
-                                color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                RemixIcon(
-                                    modifier = Modifier.size(16.dp),
-                                    remixName = it.icon,
-                                    tint = Color(it.iconColor)
-                                )
+                                ColoredIcon(
+                                    size = 32.dp,
+                                    padding = 0.dp,
+                                    color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                                ) {
+                                    RemixIcon(
+                                        modifier = Modifier.size(16.dp),
+                                        remixName = it.icon,
+                                        tint = Color(it.iconColor)
+                                    )
+                                }
+
+
+                                Row(modifier = Modifier) {
+                                    if (it.hasUpdate) {
+                                        OutlineBadge(
+                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            text = "Update"
+                                        )
+                                    }
+                                    if (it.isInstalled) {
+                                        OutlineBadge(
+                                            modifier = Modifier.padding(horizontal = 6.dp),
+                                            text = "Installed"
+                                        )
+                                    }
+                                }
                             }
 
                             MediumSpacer()

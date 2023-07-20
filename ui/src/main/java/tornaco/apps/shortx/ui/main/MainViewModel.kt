@@ -74,9 +74,14 @@ data class RuleUM(
     val actionIconColor: ULong,
     val runningInsCount: Int,
     val rule: Rule,
+    val versionCode: Long,
+
+    // For online.
     val author: String = "ShortX",
     val isOnlineItem: Boolean = false,
     val url: String? = null,
+    val isInstalled: Boolean = false,
+    val hasUpdate: Boolean = false
 )
 
 @Parcelize
@@ -90,9 +95,14 @@ data class DirectActionUM(
     val iconColor: ULong,
     val runningInsCount: Int,
     val directAction: DirectAction,
+    val versionCode: Long,
+
+    // For online.
     val author: String = "ShortX",
     val isOnlineItem: Boolean = false,
     val url: String? = null,
+    val isInstalled: Boolean = false,
+    val hasUpdate: Boolean = false
 ) : Parcelable
 
 data class MainState(
@@ -144,7 +154,8 @@ fun <T> ContextViewModel<T>.daToDirectActionUM(
         runningInsCount = activeJobs.count {
             it == directAction.id
         },
-        directAction = directAction
+        directAction = directAction,
+        versionCode = directAction.versionCode
     )
 }
 
@@ -198,6 +209,7 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule, activeJobs: List<String>): 
         runningInsCount = activeJobs.count {
             it == rule.id
         },
+        versionCode = rule.versionCode
     )
 }
 

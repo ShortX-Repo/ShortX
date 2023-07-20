@@ -12,8 +12,6 @@ import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_U
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
-import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -166,38 +164,49 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    private suspend fun loadOnline(url: String) {
+    private suspend fun loadOnline(url: String) = withContext(Dispatchers.IO) {
         updateState { copy(isLoading = true) }
         kotlin.runCatching {
             val index = onlineRepo.index(url)
             val das = index.directActions.map {
+                val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(
                     title = it.title,
                     description = it.description,
-                    createTime = "",
+                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
                     updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
-                        Date(System.currentTimeMillis())
+                        Date(it.updateTimeMillis)
                     ),
                     icon = it.icon ?: Remix.Development.command_line,
                     iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
                         ?: randomActionColor().value,
-                    id = defaultNewDAId(),
+                    id = it.id,
                     runningInsCount = 0,
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author.fallbackOnEmpty("ShortX"),
+                    author = it.author,
                     isOnlineItem = true,
-                    url = it.fileUrl
+                    url = it.fileUrl,
+                    versionCode = it.versionCode,
+                    isInstalled = installedDAOrNull != null,
+                    hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode
                 )
             }
             val rules = index.rules.map {
+                val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
                     title = it.title,
                     description = it.description,
-                    createTime = "",
+                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
                     updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                         context,
-                        Date(System.currentTimeMillis())
+                        Date(it.updateTimeMillis)
                     ),
                     factIcon = it.icon ?: Remix.Development.command_line,
                     actionIcon = it.icon ?: Remix.Development.command_line,
@@ -205,13 +214,16 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                         ?: randomActionColor().value,
                     actionIconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
                         ?: randomActionColor().value,
-                    id = defaultNewDAId(),
+                    id = it.id,
                     runningInsCount = 0,
                     isEnabled = false,
                     rule = Rule.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author.fallbackOnEmpty("ShortX"),
+                    author = it.author,
                     isOnlineItem = true,
-                    url = it.fileUrl
+                    url = it.fileUrl,
+                    versionCode = it.versionCode,
+                    isInstalled = installedRuleOrNull != null,
+                    hasUpdate = installedRuleOrNull != null && installedRuleOrNull.versionCode < it.versionCode
                 )
             }
             updateState { copy(das = das, rules = rules, isLoading = false) }
