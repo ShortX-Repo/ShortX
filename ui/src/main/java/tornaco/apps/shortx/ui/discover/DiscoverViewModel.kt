@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.colorFromHex
 import tornaco.apps.shortx.ui.main.DirectActionUM
 import tornaco.apps.shortx.ui.main.RuleUM
@@ -47,12 +48,15 @@ sealed interface DiscoverRepo {
     }
 }
 
-data class DiscoverState(
+data class DiscoverData(
     val rules: List<RuleUM> = emptyList(),
     val das: List<DirectActionUM> = emptyList(),
+)
+
+data class DiscoverState(
+    val data: LoadState<DiscoverData> = LoadState.Loading,
     val discoverRepo: DiscoverRepo = DiscoverRepo.PrebuiltLocal,
     val customRepos: Set<DiscoveryRepoSetting> = emptySet(),
-    val isLoading: Boolean = true,
     val enableChucker: Boolean = false,
 )
 
@@ -122,7 +126,12 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     }
 
     fun switchRepo(repo: DiscoverRepo) {
-        updateState { copy(discoverRepo = repo, das = emptyList(), rules = emptyList()) }
+        updateState {
+            copy(
+                discoverRepo = repo,
+                data = LoadState.Loading,
+            )
+        }
         viewModelScope.launch {
             val url = when (repo) {
                 is DiscoverRepo.CustomOnline -> {
@@ -135,6 +144,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
 
                 else -> ""
             }
+
             pref.selectRepo(url)
             loadDiscoverData()
         }
@@ -144,39 +154,22 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             when (val repo = state.value.discoverRepo) {
                 is DiscoverRepo.CustomOnline -> {
-                    loadOnline(repo.indexUrl)
+                    loadOnlineData(repo.indexUrl)
                 }
 
                 DiscoverRepo.OfficialOnline -> {
-                    loadOnline(SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL)
+                    loadOnlineData(SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL)
                 }
 
                 DiscoverRepo.PrebuiltLocal -> {
-                    loadPrebuiltDAs()
-                    loadPrebuiltRules()
+                    loadPrebuiltData()
                 }
             }
         }
     }
 
-    private suspend fun loadPrebuiltRules() {
-        updateState { copy(isLoading = true) }
-        kotlin.runCatching {
-            val content = BackupAgent(context).readBackupPackageContent(assetName)
-            val ruleUMs = withContext(Dispatchers.IO) {
-                content.rules.map {
-                    ruleToRuleUM(it, emptyList())
-                }
-            }
-            updateState { copy(rules = ruleUMs, isLoading = false) }
-        }.onFailure {
-            logger.e(it, "loadPrebuiltRules error")
-            updateState { copy(isLoading = false) }
-        }
-    }
-
-    private suspend fun loadPrebuiltDAs() {
-        updateState { copy(isLoading = true) }
+    private suspend fun loadPrebuiltData() {
+        updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val content = BackupAgent(context).readBackupPackageContent(assetName)
             val daUMs = withContext(Dispatchers.IO) {
@@ -184,44 +177,22 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     daToDirectActionUM(directAction, emptyList())
                 }
             }
-            updateState { copy(das = daUMs, isLoading = false) }
+            val ruleUMs = withContext(Dispatchers.IO) {
+                content.rules.map {
+                    ruleToRuleUM(it, emptyList())
+                }
+            }
+            updateState { copy(data = LoadState.Success(DiscoverData(ruleUMs, daUMs))) }
         }.onFailure {
-            logger.e(it, "loadPrebuiltDAs error")
-            updateState { copy(isLoading = false) }
+            logger.e(it, "loadPrebuiltData error")
+            updateState { copy(data = LoadState.Error(it)) }
         }
     }
 
-    private suspend fun loadOnline(url: String) = withContext(Dispatchers.IO) {
-        updateState { copy(isLoading = true) }
+    private suspend fun loadOnlineData(url: String) = withContext(Dispatchers.IO) {
+        updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
             val index = onlineRepo.index(url, state.value.enableChucker)
-            val das = index.directActions.map {
-                val installedDAOrNull = shortXManager.getDirectActionById(it.id)
-                DirectActionUM(
-                    title = it.title,
-                    description = it.description.fallbackOnEmpty(it.title),
-                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
-                        context,
-                        Date(it.updateTimeMillis)
-                    ),
-                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-                        context,
-                        Date(it.updateTimeMillis)
-                    ),
-                    icon = it.icon ?: Remix.Development.command_line,
-                    iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
-                        ?: randomActionColor().value,
-                    id = it.id,
-                    runningInsCount = 0,
-                    directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
-                    author = it.author.fallbackOnEmpty("ShortX"),
-                    isOnlineItem = true,
-                    url = inflateOnlineFileUrl(url, it.fileUrl, "da"),
-                    versionCode = it.versionCode,
-                    isInstalled = installedDAOrNull != null,
-                    hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode
-                )
-            }
             val rules = index.rules.map {
                 val installedRuleOrNull = shortXManager.getRuleById(it.id)
                 RuleUM(
@@ -253,10 +224,37 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     hasUpdate = installedRuleOrNull != null && installedRuleOrNull.versionCode < it.versionCode
                 )
             }
-            updateState { copy(das = das, rules = rules, isLoading = false) }
+            val das = index.directActions.map {
+                val installedDAOrNull = shortXManager.getDirectActionById(it.id)
+                DirectActionUM(
+                    title = it.title,
+                    description = it.description.fallbackOnEmpty(it.title),
+                    createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
+                    updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                        context,
+                        Date(it.updateTimeMillis)
+                    ),
+                    icon = it.icon ?: Remix.Development.command_line,
+                    iconColor = it.iconColor?.let { it1 -> colorFromHex(it1) }?.value
+                        ?: randomActionColor().value,
+                    id = it.id,
+                    runningInsCount = 0,
+                    directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
+                    author = it.author.fallbackOnEmpty("ShortX"),
+                    isOnlineItem = true,
+                    url = inflateOnlineFileUrl(url, it.fileUrl, "da"),
+                    versionCode = it.versionCode,
+                    isInstalled = installedDAOrNull != null,
+                    hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode
+                )
+            }
+            updateState { copy(data = LoadState.Success(DiscoverData(rules, das))) }
         }.onFailure {
-            logger.e(it, "loadOnlineDAs error")
-            updateState { copy(isLoading = false) }
+            logger.e(it, "loadOnlineData error")
+            updateState { copy(data = LoadState.Error(it)) }
         }
     }
 }

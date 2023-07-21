@@ -165,6 +165,7 @@
   "ui.common.settings": "設定",
   "ui.common.empty.click.retry": "没有数据，点击刷新试试",
   "ui.common.error.click.retry": "出错了，点击刷新试试",
+  "ui.common.error.view.message": "查看错误",
   "ui.common.long.press.sort": "長按拖動排序",
   "ui.common.stop": "停止",
   "ui.common.share.clipboard": "剪貼板",

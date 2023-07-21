@@ -46,7 +46,15 @@ fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoadError(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
+fun LoadError(
+    modifier: Modifier = Modifier,
+    message: String? = null,
+    refresh: (() -> Unit)? = null
+) {
+    val errorMessageDialogState =
+        rememberErrorMessageDialogState(title = "Error", message = message ?: "")
+    ErrorMessageDialog(state = errorMessageDialogState)
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -62,6 +70,17 @@ fun LoadError(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
             ),
             contentDescription = null,
         )
+
+        message?.let {
+            TextButton(onClick = { errorMessageDialogState.show() }) {
+                Text(
+                    text = LocalI18N.current["ui.common.error.view.message"],
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+            }
+        }
 
         refresh?.let {
             TextButton(onClick = { refresh() }) {

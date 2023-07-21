@@ -201,7 +201,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getDirectActionById(id: String): DirectAction? {
         return invokeService(null) {
-            getDirectActionById(id)?.byte.let {
+            getDirectActionById(id)?.byte?.let {
                 DirectAction.parseFrom(it)
             }
         }

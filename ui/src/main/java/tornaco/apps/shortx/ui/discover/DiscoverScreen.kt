@@ -43,6 +43,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LoadError
+import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -217,7 +219,7 @@ fun DiscoverScreen() {
 
 @Composable
 private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
-    val refreshing = discoverState.isLoading
+    val refreshing = discoverState.data.isLoading()
     val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
         refresh()
     })
@@ -227,105 +229,125 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
             .fillMaxSize()
             .pullRefresh(refreshState)
     ) {
-        if (discoverState.rules.isEmpty() && !discoverState.isLoading) {
-            EmptyList(modifier = Modifier.fillMaxSize()) {
-                refresh()
-            }
-        } else {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-            ) {
-                items(
-                    items = discoverState.rules,
-                    key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
-
-                    val ruleViewerState = rememberRuleViewerState(
-                        title = rule.title,
-                        rule = rule.rule,
-                        url = rule.url
-                    )
-                    RuleViewerDialog(state = ruleViewerState)
-
-                    ShortXCard(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+        when (val discoverData = discoverState.data) {
+            is LoadState.Success -> {
+                if (discoverData.data.rules.isEmpty()) {
+                    EmptyList(modifier = Modifier.fillMaxSize()) {
+                        refresh()
+                    }
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(ShortXCardRoundedCornerShape)
-                            .clickable { ruleViewerState.show() }
-                            .padding(horizontal = 12.dp)
-                            .padding(top = 12.dp)) {
+                        items(
+                            items = discoverData.data.rules,
+                            key = { listItem: RuleUM -> listItem.id + listItem.updateTime }) { rule ->
 
-                            Row(
+                            val ruleViewerState = rememberRuleViewerState(
+                                title = rule.title,
+                                rule = rule.rule,
+                                url = rule.url
+                            )
+                            RuleViewerDialog(state = ruleViewerState)
+
+                            ShortXCard(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    ColoredIcon(
-                                        modifier = Modifier,
-                                        size = 32.dp,
-                                        padding = 0.dp,
-                                        color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                                Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(ShortXCardRoundedCornerShape)
+                                    .clickable { ruleViewerState.show() }
+                                    .padding(horizontal = 12.dp)
+                                    .padding(top = 12.dp)) {
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        RemixIcon(
-                                            modifier = Modifier.size(16.dp),
-                                            remixName = Remix.Weather.meteor_line,
-                                            tint = MaterialTheme.colorScheme.tertiary
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            ColoredIcon(
+                                                modifier = Modifier,
+                                                size = 32.dp,
+                                                padding = 0.dp,
+                                                color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+                                            ) {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(16.dp),
+                                                    remixName = Remix.Weather.meteor_line,
+                                                    tint = MaterialTheme.colorScheme.tertiary
+                                                )
+                                            }
+                                        }
+
+                                        Row(modifier = Modifier) {
+                                            if (rule.hasUpdate) {
+                                                OutlineBadge(
+                                                    modifier = Modifier,
+                                                    text = "Update"
+                                                )
+                                            }
+                                            if (rule.isInstalled) {
+                                                OutlineBadge(
+                                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                                    text = "Installed"
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(top = 6.dp, bottom = 12.dp)
+                                    ) {
+                                        Text(
+                                            text = rule.title,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 16.sp
+                                            )
                                         )
+                                        TinySpacer()
+                                        Text(
+                                            text = rule.description,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 12.sp
+                                            ),
+                                            maxLines = 8
+                                        )
+
+                                        StandardSpacer()
+                                        TipRow(text = rule.author,
+                                            icon = {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(12.dp),
+                                                    remixName = Remix.UserAndFaces.user_line
+                                                )
+                                            })
                                     }
                                 }
-
-                                Row(modifier = Modifier) {
-                                    if (rule.hasUpdate) {
-                                        OutlineBadge(
-                                            modifier = Modifier,
-                                            text = "Update"
-                                        )
-                                    }
-                                    if (rule.isInstalled) {
-                                        OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 12.dp),
-                                            text = "Installed"
-                                        )
-                                    }
-                                }
-                            }
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(top = 6.dp, bottom = 12.dp)
-                            ) {
-                                Text(
-                                    text = rule.title,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontSize = 16.sp
-                                    )
-                                )
-                                TinySpacer()
-                                Text(
-                                    text = rule.description,
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                                    maxLines = 8
-                                )
-
-                                StandardSpacer()
-                                TipRow(text = rule.author,
-                                    icon = {
-                                        RemixIcon(
-                                            modifier = Modifier.size(12.dp),
-                                            remixName = Remix.UserAndFaces.user_line
-                                        )
-                                    })
                             }
                         }
                     }
                 }
             }
+
+            is LoadState.Error -> {
+                LoadError(
+                    modifier = Modifier.fillMaxSize(),
+                    message = discoverData.err?.stackTraceToString()
+                ) {
+                    refresh()
+                }
+            }
+
+            is LoadState.Loading -> {
+                // Noop
+            }
         }
+
         PullRefreshIndicator(
             refreshing,
             refreshState,
@@ -339,7 +361,7 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
 
 @Composable
 private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
-    val refreshing = discoverState.isLoading
+    val refreshing = discoverState.data.isLoading()
     val refreshState = rememberPullRefreshState(refreshing, onRefresh = {
         refresh()
     })
@@ -349,99 +371,118 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
             .fillMaxSize()
             .pullRefresh(refreshState)
     ) {
-        if (discoverState.das.isEmpty() && !discoverState.isLoading) {
-            EmptyList(modifier = Modifier.fillMaxSize()) {
-                refresh()
-            }
-        } else {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-            ) {
-                items(items = discoverState.das, key = { it.id }) {
-                    val daViewerState = rememberDAViewerState(
-                        title = it.title,
-                        url = it.url,
-                        da = it.directAction
-                    )
-                    DAViewerDialog(state = daViewerState)
-
-                    ShortXCard(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+        when (val discoverData = discoverState.data) {
+            is LoadState.Success -> {
+                if (discoverData.data.das.isEmpty()) {
+                    EmptyList(modifier = Modifier.fillMaxSize()) {
+                        refresh()
+                    }
+                } else {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(ShortXCardRoundedCornerShape)
-                            .clickable { daViewerState.show() }
-                            .padding(horizontal = 12.dp)
-                            .padding(top = 12.dp)) {
+                        items(items = discoverData.data.das, key = { it.id }) {
+                            val daViewerState = rememberDAViewerState(
+                                title = it.title,
+                                url = it.url,
+                                da = it.directAction
+                            )
+                            DAViewerDialog(state = daViewerState)
 
-                            Row(
+                            ShortXCard(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    ColoredIcon(
-                                        size = 32.dp,
-                                        padding = 0.dp,
-                                        color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                                Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(ShortXCardRoundedCornerShape)
+                                    .clickable { daViewerState.show() }
+                                    .padding(horizontal = 12.dp)
+                                    .padding(top = 12.dp)) {
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        RemixIcon(
-                                            modifier = Modifier.size(16.dp),
-                                            remixName = Remix.Development.command_line,
-                                            tint = MaterialTheme.colorScheme.tertiary
-                                        )
-                                    }
-                                }
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            ColoredIcon(
+                                                size = 32.dp,
+                                                padding = 0.dp,
+                                                color = Color(it.iconColor).copy(alpha = ActionColorBgAlpha)
+                                            ) {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(16.dp),
+                                                    remixName = Remix.Development.command_line,
+                                                    tint = MaterialTheme.colorScheme.tertiary
+                                                )
+                                            }
+                                        }
 
-                                Row(modifier = Modifier) {
-                                    if (it.hasUpdate) {
-                                        OutlineBadge(
-                                            modifier = Modifier,
-                                            text = "Update"
-                                        )
+                                        Row(modifier = Modifier) {
+                                            if (it.hasUpdate) {
+                                                OutlineBadge(
+                                                    modifier = Modifier,
+                                                    text = "Update"
+                                                )
+                                            }
+                                            if (it.isInstalled) {
+                                                OutlineBadge(
+                                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                                    text = "Installed"
+                                                )
+                                            }
+                                        }
                                     }
-                                    if (it.isInstalled) {
-                                        OutlineBadge(
-                                            modifier = Modifier.padding(horizontal = 12.dp),
-                                            text = "Installed"
+
+                                    MediumSpacer()
+
+                                    Column(modifier = Modifier.padding(bottom = 12.dp)) {
+                                        Text(
+                                            text = it.title,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 16.sp
+                                            )
                                         )
+                                        SmallSpacer()
+                                        Text(
+                                            text = it.description,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 12.sp
+                                            ),
+                                            maxLines = 8
+                                        )
+
+                                        StandardSpacer()
+                                        TipRow(text = it.author,
+                                            icon = {
+                                                RemixIcon(
+                                                    modifier = Modifier.size(12.dp),
+                                                    remixName = Remix.UserAndFaces.user_line
+                                                )
+                                            })
                                     }
+
                                 }
                             }
-
-                            MediumSpacer()
-
-                            Column(modifier = Modifier.padding(bottom = 12.dp)) {
-                                Text(
-                                    text = it.title,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontSize = 16.sp
-                                    )
-                                )
-                                SmallSpacer()
-                                Text(
-                                    text = it.description,
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                                    maxLines = 8
-                                )
-
-                                StandardSpacer()
-                                TipRow(text = it.author,
-                                    icon = {
-                                        RemixIcon(
-                                            modifier = Modifier.size(12.dp),
-                                            remixName = Remix.UserAndFaces.user_line
-                                        )
-                                    })
-                            }
-
                         }
                     }
                 }
+            }
+
+            is LoadState.Error -> {
+                LoadError(
+                    modifier = Modifier.fillMaxSize(),
+                    message = discoverData.err?.stackTraceToString()
+                ) {
+                    refresh()
+                }
+            }
+
+            is LoadState.Loading -> {
+                // Noop
             }
         }
 

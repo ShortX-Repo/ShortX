@@ -165,6 +165,7 @@
   "ui.common.settings": "Settings",
   "ui.common.empty.click.retry": "No data loaded. click to retry.",
   "ui.common.error.click.retry": "Error. click to retry.",
+  "ui.common.error.view.message": "View error message",
   "ui.common.long.press.sort": "Press to sort",
   "ui.common.stop": "Stop",
   "ui.common.share.clipboard": "Clipboard",
