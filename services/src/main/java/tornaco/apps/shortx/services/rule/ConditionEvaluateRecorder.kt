@@ -25,7 +25,7 @@ fun ConditionEvaluator.EvaluateResult.toConditionEvaluateRecord(): ConditionEval
             ConditionEvaluateRecord.newBuilder()
                 .setIsSuccess(true)
                 .setIsMatch(match)
-                .setMessage("Success")
+                .setMessage(reason)
                 .setCondition(condition)
                 .setTimeStamp(System.currentTimeMillis()).build()
         }

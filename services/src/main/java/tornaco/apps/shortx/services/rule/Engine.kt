@@ -42,7 +42,7 @@ interface ConditionEvaluator {
     ): Boolean
 
     sealed interface EvaluateResult {
-        data class Success(val condition: ProtoAny, val match: Boolean) : EvaluateResult
+        data class Success(val condition: ProtoAny, val match: Boolean, val reason: String) : EvaluateResult
         data class Fail(val condition: ProtoAny, val error: Throwable) :
             EvaluateResult
 

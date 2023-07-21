@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
@@ -35,9 +36,21 @@ object AppIsNotRunning : Cond {
                         with(shortXContext.appState) { !it.isRunning() }
                     }
                 } else {
-                    requiredPkgList.all {
-                        with(shortXContext.appState) { !it.isRunning() }
+                    var res = true
+                    requiredPkgList.forEach {
+                        val isNotRunning = with(shortXContext.appState) {
+                            !it.isRunning()
+                        }
+                        if (!isNotRunning) {
+                            res = false
+                            contextData.add(
+                                ContextDataMapping.Condition.conditionMatchReason.name,
+                                "${it.pkgName} - u${it.userId} is still running."
+                            )
+                            return@forEach
+                        }
                     }
+                    res
                 }
             }
             if (data.isInvert) {

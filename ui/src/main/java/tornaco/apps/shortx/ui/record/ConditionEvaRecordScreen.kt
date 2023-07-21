@@ -179,7 +179,12 @@ fun ConditionEvaRecordScreen(back: () -> Unit) {
                                 val actionLabel = labelForCondition(
                                     i18N,
                                     it.actionIns
-                                ).toMutableList().apply { add(it.formattedTimeStr) }
+                                ).toMutableList().apply {
+                                    if (it.record.message.isNotBlank()) {
+                                        add(it.record.message)
+                                    }
+                                    add(it.formattedTimeStr)
+                                }
                                 val messageDialogState = rememberErrorMessageDialogState(
                                     title = actionLabel[0],
                                     message = it.record.message

@@ -16,6 +16,11 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class Condition(val description: String) {
+        conditionMatchReason("Condition match/not match reason")
+    }
+
+    @DoNotStrip
     enum class NotificationUpdated(val description: String) {
         userId("The user id"),
         pkgName("App package name of the Notification owner"),

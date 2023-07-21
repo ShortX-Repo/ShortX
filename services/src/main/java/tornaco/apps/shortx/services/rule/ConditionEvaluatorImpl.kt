@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -31,9 +32,13 @@ class ConditionEvaluatorImpl(
             return ConditionEvaluator.EvaluateResult.Break
         }
         return kotlin.runCatching {
-            ConditionEvaluator.EvaluateResult.Success(
-                condition,
+            val matchRes =
                 cond.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
+            ConditionEvaluator.EvaluateResult.Success(
+                condition = condition,
+                match = matchRes,
+                reason = contextData.get(ContextDataMapping.Condition.conditionMatchReason.name)
+                    ?.toString() ?: ""
             )
         }.getOrElse {
             ConditionEvaluator.EvaluateResult.Fail(condition, it)
@@ -92,7 +97,8 @@ class ConditionEvaluatorImpl(
                             MatchMVEL.newBuilder()
                                 .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
                                 .setExpression(expressionTranslation).build().pack_(),
-                            matchRes
+                            matchRes,
+                            ""
                         )
                     )
                     matchRes
