@@ -1,6 +1,7 @@
 import tornaco.project.android.shortx.Compose
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
+import tornaco.project.android.shortx.addI18NTask
 
 plugins {
     alias(libs.plugins.agp.lib)
@@ -115,3 +116,5 @@ dependencies {
 configurations.all {
     exclude(group = "javax.annotation", module = "javax.annotation-api")
 }
+
+addI18NTask()
