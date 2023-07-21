@@ -88,14 +88,15 @@ interface Engine {
         initialContextData: Map<String, Any> = emptyMap()
     ): Boolean
 
-    fun evaluate(
-        id: String,
+    fun evaluateActions(
+        containerId: String,
         logTag: String,
         actions: List<ProtoAny>,
-        initialContextData: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any> = emptyMap(),
+        conflictStrategy: ConflictStrategy
     )
 
-    fun evaluate(
+    fun evaluateConditions(
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
@@ -330,15 +331,40 @@ class DefaultRuleEngine(
         return anyMatch
     }
 
-    override fun evaluate(
-        id: String,
+    override fun evaluateActions(
+        containerId: String,
         logTag: String,
         actions: List<ProtoAny>,
-        initialContextData: Map<String, Any>
+        initialContextData: Map<String, Any>,
+        conflictStrategy: ConflictStrategy
     ) {
         val contextData = ContextData.obtain(initialContextData)
+        val isAlreadyRunning = jobs.any {
+            it.id == containerId
+        }
+        logger.d("evaluateActions, $logTag conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
+
+        if (isAlreadyRunning) {
+            when (conflictStrategy) {
+                ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
+                    // Fall through.
+                }
+
+                ConflictStrategy.ConflictStrategy_ReplaceOld -> {
+                    cancelJobs("ConflictStrategy_ReplaceOld") {
+                        it.id == containerId
+                    }
+                }
+
+                ConflictStrategy.ConflictStrategy_SkipNew -> {
+                    logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                    return
+                }
+            }
+        }
+
         val job = scope.launchSafety {
-            logger.d("Evaluate actions, job for id: $id start.")
+            logger.d("evaluateActions, job for id: $containerId start.")
             kotlin.run loop@{
                 actions.forEach {
                     val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
@@ -358,19 +384,19 @@ class DefaultRuleEngine(
                 }
             }
         }
-        jobs.add(JobRecord(id, job))
-        onJobStarted(id)
+        jobs.add(JobRecord(containerId, job))
+        onJobStarted(containerId)
         job.invokeOnCompletion {
-            logger.d("job for id: $id complete.")
-            jobs.remove(JobRecord(id, job))
+            logger.d("job for id: $containerId complete.")
+            jobs.remove(JobRecord(containerId, job))
             contextData.recycle()
-            onJobCompleted(id)
+            onJobCompleted(containerId)
         }
     }
 
     // This API is exposed for App check condition on Edit.
     // So let is run blocking.
-    override fun evaluate(
+    override fun evaluateConditions(
         logTag: String,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,

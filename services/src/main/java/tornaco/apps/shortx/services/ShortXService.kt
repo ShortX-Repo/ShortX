@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -364,6 +365,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        @SuppressLint("MissingPermission")
         override fun getActiveSubscriptionInfoList(): List<SubscriptionInfo> {
             enforceCallingPermissions()
             val res = mutableListOf<SubscriptionInfo>()
@@ -390,7 +392,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 initialContextData = mapOf(
                     ContextDataMapping.Context.contextSrcTitle.name to "Direct execute",
                     ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
-                )
+                ),
+                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
 

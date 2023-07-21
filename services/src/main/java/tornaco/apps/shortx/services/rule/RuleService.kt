@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -258,14 +259,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         id: String,
         reason: String,
         actions: List<ProtoAny>,
-        initialContextData: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any> = emptyMap(),
+        conflictStrategy: ConflictStrategy
     ) {
         logger.d("executeActions: $reason, $actions $id")
-        engine.evaluate(
-            id = id,
+        engine.evaluateActions(
+            containerId = id,
             logTag = reason,
             actions = actions,
-            initialContextData = initialContextData
+            initialContextData = initialContextData,
+            conflictStrategy = conflictStrategy
         )
     }
 
@@ -291,7 +294,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
         }
         registerJobStatusListener(listener)
-        executeActions(id, reason, actions, initialContextData)
+        executeActions(
+            id,
+            reason,
+            actions,
+            initialContextData,
+            ConflictStrategy.ConflictStrategy_ExecuteBoth
+        )
         latch.await(60, TimeUnit.SECONDS)
         unregisterJobStatusListener(listener)
     }
@@ -398,7 +407,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 initialContextData = mapOf(
                     ContextDataMapping.Context.contextSrcTitle.name to it.title,
                     ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_DirectAction,
-                )
+                ),
+                it.conflictPolicy
             )
         }
     }
@@ -412,7 +422,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 ContextDataMapping.Context.contextSrcTitle.name to directAction.title,
                 ContextDataMapping.Context.contextSrcId.name to directAction.id,
                 ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
-            )
+            ),
+            directAction.conflictPolicy
         )
     }
 
@@ -424,10 +435,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             executeActions(
                 id = ruleId,
                 reason = "directExecuteRuleActions",
-                actions = actions, initialContextData = mapOf(
+                actions = actions,
+                initialContextData = mapOf(
                     ContextDataMapping.Context.contextSrcTitle.name to "Direct execute: ${rule.title}",
                     ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteRuleActions,
-                )
+                ),
+                ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
     }
@@ -458,7 +471,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun evaluateCondition(
         condition: ProtoAny,
     ): Boolean {
-        return engine.evaluate(
+        return engine.evaluateConditions(
             "RuleService evaluateCondition",
             condOp = ConditionOperator.ALL,
             condOpPayload = ConditionOperatorPayload.newBuilder().build(),

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
@@ -34,7 +35,8 @@ class RuleHooksTrigger(
                             initialContextData = mapOf(
                                 ContextDataMapping.Context.contextSrcTitle.name to "On rule enabled: ${it.title}",
                                 ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                            )
+                            ),
+                            ConflictStrategy.ConflictStrategy_ExecuteBoth
                         )
                     }
                 }
@@ -56,7 +58,8 @@ class RuleHooksTrigger(
                             initialContextData = mapOf(
                                 ContextDataMapping.Context.contextSrcTitle.name to "On rule disabled: ${it.title}",
                                 ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                            )
+                            ),
+                            ConflictStrategy.ConflictStrategy_ExecuteBoth
                         )
                     }
                 }
@@ -78,7 +81,8 @@ class RuleHooksTrigger(
                         initialContextData = mapOf(
                             ContextDataMapping.Context.contextSrcTitle.name to "On rule deleted: ${rule.title}",
                             ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                        )
+                        ),
+                        ConflictStrategy.ConflictStrategy_ExecuteBoth
                     )
                 }
             }

@@ -20,6 +20,7 @@ message DirectAction {
   string description = 7;
 
   int64 versionCode = 8;
+  ConflictStrategy conflictPolicy = 9;
 }
 
 message DirectActionList {
