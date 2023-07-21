@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
@@ -321,10 +322,10 @@ private fun RuleContent(
             )
             SmallSpacer()
 
-            val typeDropdownState = rememberDropdownSelectorState()
+            val asyncModeDropdownState = rememberDropdownSelectorState()
             Box(modifier = Modifier.fillMaxWidth()) {
                 FilledTonalButton(onClick = {
-                    typeDropdownState.open()
+                    asyncModeDropdownState.open()
                 }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = LocalI18N.current[addRuleState.asyncMode.labelKey()])
@@ -333,7 +334,7 @@ private fun RuleContent(
                     }
                 }
                 DropdownSelector(
-                    state = typeDropdownState,
+                    state = asyncModeDropdownState,
                     items = AsyncMode.values()
                         .filterNot { it == AsyncMode.UNRECOGNIZED }.map {
                             DropdownItem(
@@ -345,6 +346,41 @@ private fun RuleContent(
                         },
                     onSelect = {
                         vm.setAsyncMode(it.data)
+                    })
+            }
+            SplitLines(modifier = Modifier.padding(vertical = 30.dp))
+
+            // Conflict
+            MediumTitleWithTip(
+                text = LocalI18N.current["ui.rule.conflict.strategy"],
+                tipText = LocalI18N.current["ui.rule.conflict.strategy.description"]
+            )
+            SmallSpacer()
+
+            val conflictStrategyModeDropdownState = rememberDropdownSelectorState()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                FilledTonalButton(onClick = {
+                    conflictStrategyModeDropdownState.open()
+                }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = LocalI18N.current[addRuleState.conflictStrategy.labelKey()])
+                        StandardSpacer()
+                        RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+                    }
+                }
+                DropdownSelector(
+                    state = conflictStrategyModeDropdownState,
+                    items = ConflictStrategy.values()
+                        .filterNot { it == ConflictStrategy.UNRECOGNIZED }.map {
+                            DropdownItem(
+                                labelLines = listOf(
+                                    LocalI18N.current[it.labelKey()]
+                                ),
+                                data = it
+                            )
+                        },
+                    onSelect = {
+                        vm.setConflictStrategy(it.data)
                     })
             }
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
@@ -484,5 +520,25 @@ fun AsyncMode.labelKey(): String {
         AsyncMode.AsyncMode_Sync -> "ui.rule.async.mode.sync"
         AsyncMode.AsyncMode_Sync_InRule -> "ui.rule.async.mode.sync_in_rule"
         AsyncMode.UNRECOGNIZED -> ""
+    }
+}
+
+fun ConflictStrategy.labelKey(): String {
+    return when (this) {
+        ConflictStrategy.ConflictStrategy_ExecuteBoth -> {
+            "ui.rule.conflict.strategy.both"
+        }
+
+        ConflictStrategy.ConflictStrategy_ReplaceOld -> {
+            "ui.rule.conflict.strategy.replace"
+        }
+
+        ConflictStrategy.ConflictStrategy_SkipNew -> {
+            "ui.rule.conflict.strategy.skip"
+        }
+
+        ConflictStrategy.UNRECOGNIZED -> {
+            ""
+        }
     }
 }

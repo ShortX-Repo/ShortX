@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -55,6 +56,7 @@ data class AddRuleState(
     val showAdvancedOptions: Boolean = false,
     val isQuitEnabled: Boolean = false,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
+    val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit)
 )
@@ -105,6 +107,10 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     fun setAsyncMode(asyncMode: AsyncMode) {
         updateState { copy(asyncMode = asyncMode, ruleChanged = true) }
+    }
+
+    fun setConflictStrategy(conflictStrategy: ConflictStrategy) {
+        updateState { copy(conflictStrategy = conflictStrategy, ruleChanged = true) }
     }
 
     fun save() {
@@ -191,6 +197,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 )
                 .setIsEnabled(state.value.isEnabled)
                 .setAsyncMode(state.value.asyncMode)
+                .setConflictPolicy(state.value.conflictStrategy)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .build()
