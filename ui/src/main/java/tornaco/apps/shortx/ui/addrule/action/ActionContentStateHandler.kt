@@ -28,40 +28,49 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                 action
             )
         },
-        insertAbove = { action, anchor ->
-            this.insertActionAbove(action, anchor)
+        insertAbove = { action, anchorId ->
+            this.insertActionAbove(action, anchorId)
         },
-        insertBelow = { action, anchor ->
-            this.insertActionBelow(action, anchor)
+        insertBelow = { action, anchorId ->
+            this.insertActionBelow(action, anchorId)
         },
-        copy = { action ->
-            this.copy(action)
+        copy = { actionId ->
+            actions.first { it.id == actionId }.let { this.copy(it) }
         },
-        enableDisable = { action ->
-            addAction(
-                action.clone(
-                    id = action.id,
-                    note = action.note,
-                    actionOnError = action.actionOnError,
-                    isEnabled = !action.isEnabled
+        enableDisable = { actionId ->
+            actions.first { it.id == actionId }.let {
+                addAction(
+                    it.clone(
+                        id = it.id,
+                        note = it.note,
+                        actionOnError = it.actionOnError,
+                        isEnabled = !it.isEnabled
+                    )
                 )
-            )
+            }
+
         },
-        setOnError = { action, onError ->
-            addAction(
-                action.clone(
-                    id = action.id,
-                    note = action.note,
-                    isEnabled = action.isEnabled,
-                    actionOnError = onError
+        setOnError = { actionId, onError ->
+            actions.first { it.id == actionId }.let { action ->
+                addAction(
+                    action.clone(
+                        id = action.id,
+                        note = action.note,
+                        isEnabled = action.isEnabled,
+                        actionOnError = onError
+                    )
                 )
-            )
+            }
         },
-        pasteAbove = { anchor ->
-            this.pasteActionAbove(anchor)
+        pasteAbove = { anchorId ->
+            actions.first { it.id == anchorId }.let { anchor ->
+                this.pasteActionAbove(anchor)
+            }
         },
-        pasteBelow = { anchor ->
-            this.pasteActionBelow(anchor)
+        pasteBelow = { anchorId ->
+            actions.first { it.id == anchorId }.let { anchor ->
+                this.pasteActionBelow(anchor)
+            }
         },
         removeAction = { action ->
             this.removeAction(action)
@@ -69,11 +78,13 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         applySort = { sorted ->
             this.sortActions(sorted)
         },
-        setNote = { action, note ->
-            this.setNote(action, note)
+        setNote = { actionId, note ->
+            actions.first { it.id == actionId }.let { action ->
+                this.setNote(action, note)
+            }
         },
-        execute = {
-            this.executeAction(it)
+        execute = { actionId ->
+            actions.first { it.id == actionId }.let { this.executeAction(it) }
         },
         executeAll = {
             this.executeAllAction()
@@ -107,10 +118,10 @@ class ActionContentStateHandler(
         checkUpdateWarnings()
     }
 
-    fun insertActionAbove(action: Action, anchor: Action) {
+    fun insertActionAbove(action: Action, anchorId: String) {
         updateState {
             copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
+                val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
                     add(existingIndex, action)
                 } else {
@@ -121,10 +132,10 @@ class ActionContentStateHandler(
         checkUpdateWarnings()
     }
 
-    fun insertActionBelow(action: Action, anchor: Action) {
+    fun insertActionBelow(action: Action, anchorId: String) {
         updateState {
             copy(actions = actions.toMutableList().apply {
-                val existingIndex = indexOfFirst { it.id == anchor.id }
+                val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
                     add(existingIndex + 1, action)
                 } else {

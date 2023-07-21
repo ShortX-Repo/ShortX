@@ -2,6 +2,8 @@
 
 package tornaco.apps.shortx.ui.addrule.action
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -44,13 +46,14 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectSource
-import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.INTENT_EXTRA_ARG1_ACTION
+import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.toActionOrNull
 import tornaco.apps.shortx.ui.addrule.action.selector.InputTextSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.appActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.extActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.lifeActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberActionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
 import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
@@ -164,29 +167,39 @@ private fun Actions(
         val contextDataInfoDialogState = rememberContextDataInfoDialogState()
         ContextDataInfoDialog(state = contextDataInfoDialogState)
         val i18N = LocalI18N.current
+        val context = LocalContext.current
 
-        val actionSelectorState =
-            rememberActionSelectorDialogState<ActionSelectorDialogArgs>(onSelected = { action, args ->
-                when (args) {
-                    ActionSelectorDialogArgs.New -> {
-                        handler.addAction(action)
-                    }
-
-                    is ActionSelectorDialogArgs.InsertAbove -> {
-                        handler.insertAbove(action, args.anchor)
-
-                    }
-
-                    is ActionSelectorDialogArgs.InsertBelow -> {
-                        handler.insertBelow(action, args.anchor)
-                    }
-
-                    else -> {
-                        handler.addAction(action)
-                    }
+        val newActionSelectActivityLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                val action = it.toActionOrNull()
+                composeLogger.d("newActionSelectActivityLauncher, onResult: $it $action")
+                action?.let { a -> handler.addAction(a) }
+            }
+        )
+        val insertAboveActionSelectActivityLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                val action = it.toActionOrNull()
+                val anchorId = it.data?.getStringExtra(INTENT_EXTRA_ARG1_ACTION)
+                composeLogger.d("insertAboveActionSelectActivityLauncher, onResult: $it $action $anchorId")
+                if (action != null && anchorId != null) {
+                    handler.insertAbove(action, anchorId)
                 }
-            })
-        ActionSelectorDialog(state = actionSelectorState)
+            }
+        )
+        val insertBelowActionSelectActivityLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                val action = it.toActionOrNull()
+                val anchorId = it.data?.getStringExtra(INTENT_EXTRA_ARG1_ACTION)
+                composeLogger.d("insertBelowActionSelectActivityLauncher, onResult: $it $action $anchorId")
+                if (action != null && anchorId != null) {
+                    handler.insertBelow(action, anchorId)
+                }
+            }
+        )
+
 
         ShortXCard(
             modifier = Modifier,
@@ -197,7 +210,6 @@ private fun Actions(
                     .fillMaxWidth()
                     .padding(vertical = 20.dp),
             ) {
-
                 actions.forEachIndexed { _, action ->
                     val currentAction by rememberUpdatedState(newValue = action)
                     val editAction: (Action) -> Unit = { newAction ->
@@ -222,13 +234,13 @@ private fun Actions(
                     )
 
                     val onActionClick = {
-                        composeLogger.d("addAction, onActionClick: ${action.id}")
+                        composeLogger.d("addAction, onActionClick: ${currentAction.id}")
                         selectHandlers.any { it(ActionSelectSource.FromAction(currentAction)) }
                     }
 
                     val noteDialogState =
                         rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
-                            handler.setNote(action, it)
+                            handler.setNote(currentAction.id, it)
                         }
                     InputTextSelector(state = noteDialogState)
 
@@ -248,7 +260,8 @@ private fun Actions(
                         ),
                         onItemSelected = { _, id ->
                             val policy = ActionOnError.valueOf(id)
-                            handler.setOnError(action, policy)
+                            composeLogger.d("setOnError: $policy ${currentAction.id}")
+                            handler.setOnError(currentAction.id, policy)
                         }
                     )
                     MenuDialog(state = onErrorMenuState)
@@ -334,7 +347,7 @@ private fun Actions(
                             items = listOf(
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
-                                    data = action to "ia",
+                                    data = currentAction.id to "ia",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Editor.insert_row_top,
@@ -344,7 +357,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
-                                    data = action to "ib",
+                                    data = currentAction.id to "ib",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Editor.insert_row_bottom,
@@ -354,7 +367,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
-                                    data = action to "pa",
+                                    data = currentAction.id to "pa",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Editor.insert_row_top,
@@ -364,7 +377,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
-                                    data = action to "pb",
+                                    data = currentAction.id to "pb",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Editor.insert_row_bottom,
@@ -374,7 +387,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.copy"]),
-                                    data = action to "cp",
+                                    data = currentAction.id to "cp",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Document.file_copy_fill,
@@ -384,7 +397,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.note"]),
-                                    data = action to "note",
+                                    data = currentAction.id to "note",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Document.sticky_note_fill,
@@ -394,7 +407,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.sort"]),
-                                    data = action to "sort",
+                                    data = currentAction.id to "sort",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Editor.sort_asc,
@@ -404,7 +417,7 @@ private fun Actions(
                                 ),
                                 DropdownItem(
                                     labelLines = listOf(LocalI18N.current["ui.common.execute"]),
-                                    data = action to "execute",
+                                    data = currentAction.id to "execute",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.Media.play_line,
@@ -417,7 +430,7 @@ private fun Actions(
                                         LocalI18N.current["ui.actions.on.error"],
                                         LocalI18N.current[action.actionOnError.labelKey()]
                                     ),
-                                    data = action to "onError",
+                                    data = currentAction.id to "onError",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.System.error_warning_line,
@@ -430,7 +443,7 @@ private fun Actions(
                                         LocalI18N.current["ui.common.toggle.enable.disable"],
                                         LocalI18N.current["ui.common.toggle.enable.disable.summary"]
                                     ),
-                                    data = action to "enableDisable",
+                                    data = currentAction.id to "enableDisable",
                                     icon = {
                                         RemixIcon(
                                             remixName = Remix.System.toggle_line,
@@ -442,18 +455,14 @@ private fun Actions(
                                 ), onSelect = {
                                 when (it.data.second) {
                                     "ia" -> {
-                                        actionSelectorState.show(
-                                            ActionSelectorDialogArgs.InsertAbove(
-                                                it.data.first
-                                            )
+                                        insertAboveActionSelectActivityLauncher.launch(
+                                            ActionSelectorActivity.newIntent(context, it.data.first)
                                         )
                                     }
 
                                     "ib" -> {
-                                        actionSelectorState.show(
-                                            ActionSelectorDialogArgs.InsertBelow(
-                                                it.data.first
-                                            )
+                                        insertBelowActionSelectActivityLauncher.launch(
+                                            ActionSelectorActivity.newIntent(context, it.data.first)
                                         )
                                     }
 
@@ -466,11 +475,11 @@ private fun Actions(
                                     }
 
                                     "cp" -> {
-                                        handler.copy(action)
+                                        handler.copy(it.data.first)
                                     }
 
                                     "enableDisable" -> {
-                                        handler.enableDisable(action)
+                                        handler.enableDisable(it.data.first)
                                     }
 
                                     "onError" -> {
@@ -486,7 +495,7 @@ private fun Actions(
                                     }
 
                                     "execute" -> {
-                                        scope.launch { handler.execute(action) }
+                                        scope.launch { handler.execute(it.data.first) }
                                     }
                                 }
                             })
@@ -500,7 +509,11 @@ private fun Actions(
                         Button(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             onClick = {
-                                actionSelectorState.show(ActionSelectorDialogArgs.New)
+                                newActionSelectActivityLauncher.launch(
+                                    ActionSelectorActivity.newIntent(
+                                        context
+                                    )
+                                )
                             }) {
                             RemixIcon(
                                 modifier = Modifier.size(16.dp),
@@ -565,20 +578,14 @@ class ActionHandler(
     val addAction: (Action) -> Unit = {},
     val removeAction: (Action) -> Unit = {},
     val applySort: (List<Action>) -> Unit = {},
-    val insertAbove: (action: Action, anchor: Action) -> Unit = { _, _ -> run {} },
-    val insertBelow: (action: Action, anchor: Action) -> Unit = { _, _ -> run {} },
-    val pasteAbove: (anchor: Action) -> Unit = { },
-    val pasteBelow: (anchor: Action) -> Unit = { },
-    val copy: (action: Action) -> Unit = {},
-    val enableDisable: (action: Action) -> Unit = {},
-    val setOnError: (action: Action, onError: ActionOnError) -> Unit = { _, _ -> run {} },
-    val setNote: (action: Action, note: String) -> Unit = { _, _ -> run {} },
-    val execute: suspend (action: Action) -> Unit = { },
+    val insertAbove: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },
+    val insertBelow: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },
+    val pasteAbove: (anchorId: String) -> Unit = { },
+    val pasteBelow: (anchorId: String) -> Unit = { },
+    val copy: (actionId: String) -> Unit = {},
+    val enableDisable: (actionId: String) -> Unit = {},
+    val setOnError: (actionId: String, onError: ActionOnError) -> Unit = { _, _ -> run {} },
+    val setNote: (actionId: String, note: String) -> Unit = { _, _ -> run {} },
+    val execute: suspend (actionId: String) -> Unit = { },
     val executeAll: suspend () -> Unit = { },
 )
-
-sealed interface ActionSelectorDialogArgs {
-    object New : ActionSelectorDialogArgs
-    data class InsertAbove(val anchor: Action) : ActionSelectorDialogArgs
-    data class InsertBelow(val anchor: Action) : ActionSelectorDialogArgs
-}

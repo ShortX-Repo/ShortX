@@ -22,15 +22,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
@@ -41,8 +40,7 @@ import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
-import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
@@ -66,65 +64,27 @@ enum class TabItems(val i18NKey: String, val icon: String) {
 
 val initialPageIndex = TabItems.All.ordinal
 
-class ActionSelectorDialogState<ARGS>(val onSelected: (Action, ARGS?) -> Unit) {
-    var isShowing by mutableStateOf(false)
-    var args: ARGS? = null
-
-    fun show(args: ARGS? = null) {
-        isShowing = true
-        this.args = args
-    }
-
-    fun dismiss() {
-        isShowing = false
-    }
-}
-
 @Composable
-fun <ARGS> rememberActionSelectorDialogState(onSelected: (Action, ARGS?) -> Unit): ActionSelectorDialogState<ARGS> {
-    return remember {
-        ActionSelectorDialogState(onSelected)
-    }
-}
-
-@Composable
-fun <ARGS> rememberActionSelectorDialogState(onSelected: (Action) -> Unit): ActionSelectorDialogState<ARGS> {
-    return remember {
-        ActionSelectorDialogState { action, _ ->
-            onSelected(action)
-        }
-    }
-}
-
-@Composable
-fun <ARGS> ActionSelectorDialog(state: ActionSelectorDialogState<ARGS>) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ActionSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun <ARGS> ActionSelector(
-    state: ActionSelectorDialogState<ARGS>
-) {
+fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier,
+            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
+                    ShortXMediumTopAppBar(
+                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         title = { Text(text = LocalI18N.current["ui.title.select.action"]) },
-                        actions = {
+                        navigationIcon = {
                             IconButton(onClick = {
-                                state.dismiss()
+                                close()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
+                        actions = {},
+                        scrollBehavior = scrollBehavior
                     )
                 }) { paddingValues ->
 
@@ -156,9 +116,8 @@ private fun <ARGS> ActionSelector(
                                 pageCount = TabItems.values().size,
                             ) { index ->
                                 val addAction: (Action) -> Unit = {
-                                    state.onSelected(it, state.args)
+                                    onSelected(it)
                                     selectorVM.onActionAdd(it)
-                                    state.dismiss()
                                 }
 
                                 when (index) {
