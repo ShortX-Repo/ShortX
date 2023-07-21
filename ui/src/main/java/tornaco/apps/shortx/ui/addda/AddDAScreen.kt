@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addda
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.ConflictStrategy
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentState
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
@@ -48,6 +51,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -202,7 +206,24 @@ private fun DAContent(
         readOnly = readOnly,
         warnings = actionContentState.actionWarningMessages
     )
-    Spacer(modifier = Modifier.size(24.dp))
+    SectionSpacer()
+
+    TextButton(onClick = {
+        vm.setShowAdvancedOptions(!addDirectActionState.showAdvancedOptions)
+
+    }) {
+        Text(text = LocalI18N.current["ui.advanced.options"])
+    }
+    StandardSpacer()
+    AnimatedVisibility(visible = addDirectActionState.showAdvancedOptions) {
+        Column {
+            ConflictStrategy(
+                conflictStrategy = addDirectActionState.conflictStrategy,
+                setConflictStrategy = {
+                    vm.setConflictStrategy(it)
+                })
+        }
+    }
 
     SectionSpacer()
     SuggestedNavEntry()

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentDA
@@ -39,6 +40,8 @@ data class AddDirectActionState(
     val createTime: Long = System.currentTimeMillis(),
     val daChanged: Boolean = false,
     val copiedAction: Action? = null,
+    val showAdvancedOptions: Boolean = false,
+    val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit)
 )
@@ -70,6 +73,14 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         }
     }
 
+    fun setShowAdvancedOptions(show: Boolean) {
+        updateState { copy(showAdvancedOptions = show) }
+    }
+
+    fun setConflictStrategy(conflictStrategy: ConflictStrategy) {
+        updateState { copy(conflictStrategy = conflictStrategy, daChanged = true) }
+    }
+
     fun save() {
         viewModelScope.launch {
             val actions = actionContentStateHandler.state.value.actions
@@ -92,6 +103,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .addAllActions(protoActions)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
+                .setConflictPolicy(state.value.conflictStrategy)
                 .build()
 
             shortXManager.addDirectAction(da)

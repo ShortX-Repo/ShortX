@@ -121,7 +121,15 @@ object HttpRequest : Actor {
                 logger.d("map: $map")
                 jsonAdapter.expressionsList.map { expression ->
                     logger.d("expression: $expression")
-                    val res = MVEL.executeExpression(MVEL.compileExpression(expression), map)
+                    val res = runCatching {
+                        MVEL.executeExpression(
+                            MVEL.compileExpression(expression),
+                            map
+                        )
+                    }.getOrElse {
+                        logger.e(it, "expression item")
+                        ""
+                    }
                     val resAsString = if (res is JsonPrimitive) {
                         res.content
                     } else {

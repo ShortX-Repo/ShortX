@@ -351,37 +351,8 @@ private fun RuleContent(
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
             // Conflict
-            MediumTitleWithTip(
-                text = LocalI18N.current["ui.rule.conflict.strategy"],
-                tipText = LocalI18N.current["ui.rule.conflict.strategy.description"]
-            )
-            SmallSpacer()
-
-            val conflictStrategyModeDropdownState = rememberDropdownSelectorState()
-            Box(modifier = Modifier.fillMaxWidth()) {
-                FilledTonalButton(onClick = {
-                    conflictStrategyModeDropdownState.open()
-                }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = LocalI18N.current[addRuleState.conflictStrategy.labelKey()])
-                        StandardSpacer()
-                        RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
-                    }
-                }
-                DropdownSelector(
-                    state = conflictStrategyModeDropdownState,
-                    items = ConflictStrategy.values()
-                        .filterNot { it == ConflictStrategy.UNRECOGNIZED }.map {
-                            DropdownItem(
-                                labelLines = listOf(
-                                    LocalI18N.current[it.labelKey()]
-                                ),
-                                data = it
-                            )
-                        },
-                    onSelect = {
-                        vm.setConflictStrategy(it.data)
-                    })
+            ConflictStrategy(addRuleState.conflictStrategy) {
+                vm.setConflictStrategy(it)
             }
             SplitLines(modifier = Modifier.padding(vertical = 30.dp))
 
@@ -482,6 +453,45 @@ private fun RuleContent(
 
     SectionSpacer()
     SuggestedNavEntry()
+}
+
+@Composable
+fun ConflictStrategy(
+    conflictStrategy: ConflictStrategy,
+    setConflictStrategy: (ConflictStrategy) -> Unit
+) {
+    MediumTitleWithTip(
+        text = LocalI18N.current["ui.rule.conflict.strategy"],
+        tipText = LocalI18N.current["ui.rule.conflict.strategy.description"]
+    )
+    SmallSpacer()
+
+    val conflictStrategyModeDropdownState = rememberDropdownSelectorState()
+    Box(modifier = Modifier.fillMaxWidth()) {
+        FilledTonalButton(onClick = {
+            conflictStrategyModeDropdownState.open()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = LocalI18N.current[conflictStrategy.labelKey()])
+                StandardSpacer()
+                RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
+            }
+        }
+        DropdownSelector(
+            state = conflictStrategyModeDropdownState,
+            items = ConflictStrategy.values()
+                .filterNot { it == ConflictStrategy.UNRECOGNIZED }.map {
+                    DropdownItem(
+                        labelLines = listOf(
+                            LocalI18N.current[it.labelKey()]
+                        ),
+                        data = it
+                    )
+                },
+            onSelect = {
+                setConflictStrategy(it.data)
+            })
+    }
 }
 
 @Composable
