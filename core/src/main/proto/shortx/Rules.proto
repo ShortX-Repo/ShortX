@@ -34,6 +34,7 @@ message Rule {
   AsyncMode asyncMode = 16;
 
   int64 versionCode = 17;
+  ConflictStrategy conflictPolicy = 18;
 }
 
 message RuleHook {

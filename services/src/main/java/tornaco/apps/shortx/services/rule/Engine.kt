@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
@@ -42,7 +43,9 @@ interface ConditionEvaluator {
     ): Boolean
 
     sealed interface EvaluateResult {
-        data class Success(val condition: ProtoAny, val match: Boolean, val reason: String) : EvaluateResult
+        data class Success(val condition: ProtoAny, val match: Boolean, val reason: String) :
+            EvaluateResult
+
         data class Fail(val condition: ProtoAny, val error: Throwable) :
             EvaluateResult
 
@@ -175,7 +178,6 @@ class DefaultRuleEngine(
         logger.d("fire: ${fact.javaClass}")
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->
-
             // Try fire for Rule.
             if (factMatcher.match(fact, rule.factsList)) {
                 logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
@@ -204,6 +206,30 @@ class DefaultRuleEngine(
                     }
                     logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
                     if (conditionRes) {
+                        val conflictStrategy: ConflictStrategy = rule.conflictPolicy
+                        val isThisRuleAlreadyRunning = jobs.any {
+                            it.id == rule.id
+                        }
+                        logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
+                        if (isThisRuleAlreadyRunning) {
+                            when (conflictStrategy) {
+                                ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
+                                    // Fall through.
+                                }
+
+                                ConflictStrategy.ConflictStrategy_ReplaceOld -> {
+                                    cancelJobs("ConflictStrategy_ReplaceOld") {
+                                        it.id == rule.id
+                                    }
+                                }
+
+                                ConflictStrategy.ConflictStrategy_SkipNew -> {
+                                    logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                                    return@launchSafety
+                                }
+                            }
+                        }
+
                         val runActions: suspend () -> Unit = {
                             kotlin.run loop@{
                                 logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
@@ -254,7 +280,7 @@ class DefaultRuleEngine(
                         }
                     }
                 }
-                logger.d("Created job: $job")
+                logger.d("Created job: $job for rule: ${rule.title}")
                 jobs.add(JobRecord(rule.id, job))
                 onJobStarted(rule.id)
                 job.invokeOnCompletion {

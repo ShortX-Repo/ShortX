@@ -230,3 +230,9 @@ enum ActionOnError {
   Continue = 0;
   Break = 1;
 }
+
+enum ConflictStrategy {
+  ConflictStrategy_ExecuteBoth = 0;
+  ConflictStrategy_ReplaceOld = 1;
+  ConflictStrategy_SkipNew = 2;
+}
