@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
@@ -34,6 +35,10 @@ object EvaluateGlobalVar : Cond {
 
             val emptyValue = emptyList<String>()
             val currentValue = globalVar.valueList(noValueReturn = { emptyValue })
+            contextData.add(
+                ContextDataMapping.Condition.conditionMatchReason.name,
+                "Current value: ${currentValue.joinToString()}"
+            )
             val currentValueHasBeenSet = currentValue.isNotEmpty()
             logger.d("EvaluateGlobalVar, var: ${globalVar.name}, currentValueHasBeenSet: $currentValueHasBeenSet, currentValue: $currentValue")
 

@@ -1,9 +1,11 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.rule.cond.Cond
 
 object CurrentPkgList : Cond {
@@ -25,11 +27,21 @@ object CurrentPkgList : Cond {
                 false
             } else {
                 if (currentPkg.op == ConditionOperator.ALL) {
-                    requiredPkgList.all {
-                        with(shortXContext.appState) {
+                    var res = true
+                    requiredPkgList.forEach {
+                        val isF = with(shortXContext.appState) {
                             it.isFront()
                         }
+                        if (!isF) {
+                            res = false
+                            contextData.add(
+                                ContextDataMapping.Condition.conditionMatchReason.name,
+                                "${it.appPkgToString()} is NOT front."
+                            )
+                            return@forEach
+                        }
                     }
+                    res
                 } else {
                     requiredPkgList.any {
                         with(shortXContext.appState) {

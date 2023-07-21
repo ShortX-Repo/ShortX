@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.rule.cond.Cond
 
 object AppHasAudioFocus : Cond {
@@ -31,9 +33,19 @@ object AppHasAudioFocus : Cond {
                         with(shortXContext.audio) { it.hasFocus() }
                     }
                 } else {
-                    requiredPkgList.all {
-                        with(shortXContext.audio) { it.hasFocus() }
+                    var res = true
+                    requiredPkgList.forEach {
+                        val hasFocus = with(shortXContext.audio) { it.hasFocus() }
+                        if (!hasFocus) {
+                            res = false
+                            contextData.add(
+                                ContextDataMapping.Condition.conditionMatchReason.name,
+                                "${it.appPkgToString()} has NO focus"
+                            )
+                            return@forEach
+                        }
                     }
+                    res
                 }
             }
             if (data.isInvert) {

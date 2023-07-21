@@ -22,5 +22,5 @@ fun Map<*, *>.mapToString(): String {
 }
 
 fun AppPkg.appPkgToString(): String {
-    return "$pkgName-$userId"
+    return "$pkgName-u$userId"
 }

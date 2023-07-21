@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.rule.unpack_
@@ -42,6 +43,11 @@ object BatteryPercent : Cond {
                     false
                 }
             }
+
+            contextData.add(
+                ContextDataMapping.Condition.conditionMatchReason.name,
+                "Current value: ${state.batteryLevel}"
+            )
 
             if (batteryPercent.isInvert) {
                 !res

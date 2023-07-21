@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.rule.cond.Cond
 
 object AppIsNotRunning : Cond {
@@ -45,7 +46,7 @@ object AppIsNotRunning : Cond {
                             res = false
                             contextData.add(
                                 ContextDataMapping.Condition.conditionMatchReason.name,
-                                "${it.pkgName} - u${it.userId} is still running."
+                                "${it.appPkgToString()} is still running."
                             )
                             return@forEach
                         }
