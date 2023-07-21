@@ -38,7 +38,8 @@ data class DiscoverState(
     val das: List<DirectActionUM> = emptyList(),
     val discoverRepo: DiscoverRepo = DiscoverRepo.PrebuiltLocal,
     val customRepos: Set<DiscoveryRepoSetting> = emptySet(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val enableChucker: Boolean = false,
 )
 
 const val assetName = "prebuilt/prebuilt-all.zip"
@@ -79,6 +80,17 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     }
                 }
                 switchRepo(repo)
+            }
+        }
+
+        viewModelScope.launch {
+            pref.uiEnableHttpChucker.collectLatest {
+                logger.d("uiEnableHttpChucker updated: $it")
+                updateState {
+                    copy(
+                        enableChucker = it
+                    )
+                }
             }
         }
     }
@@ -168,7 +180,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     private suspend fun loadOnline(url: String) = withContext(Dispatchers.IO) {
         updateState { copy(isLoading = true) }
         kotlin.runCatching {
-            val index = onlineRepo.index(url)
+            val index = onlineRepo.index(url, state.value.enableChucker)
             val das = index.directActions.map {
                 val installedDAOrNull = shortXManager.getDirectActionById(it.id)
                 DirectActionUM(

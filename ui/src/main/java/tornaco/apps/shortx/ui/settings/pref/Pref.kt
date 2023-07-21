@@ -31,6 +31,9 @@ private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_acti
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
 
+private val UI_ENABLE_HTTP_CHUCKER =
+    booleanPreferencesKey("ui_enable_http_chucker")
+
 private val DISCOVERY_CUSTOM_REPOS =
     stringSetPreferencesKey("discovery_custom_repos")
 private val DISCOVERY_SELECTED_REPO_URL =
@@ -60,6 +63,10 @@ class Pref(val context: Context) {
         preferences[UI_SHOW_DETAILED_DA_ITEM_CONTENT] ?: true
     }
 
+    val uiEnableHttpChucker: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_ENABLE_HTTP_CHUCKER] ?: false
+    }
+
     val recentSelectedActions: Flow<List<String>> = context.dataStore.data.map { preferences ->
         preferences[RECENT_SELECTED_ACTIONS]?.split("-") ?: emptyList()
     }
@@ -71,7 +78,7 @@ class Pref(val context: Context) {
     val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
         preferences[SHARE_AUTHOR_INFO]?.let {
             Author.parseFrom(Author.newBuilder().toProto(it).toByteArray())
-        }?: defaultAuthor
+        } ?: defaultAuthor
     }
 
     val discoveryRepos: Flow<Set<DiscoveryRepoSetting>> =
@@ -153,6 +160,12 @@ class Pref(val context: Context) {
     suspend fun setShareAuthor(author: Author) {
         context.dataStore.edit { settings ->
             settings[SHARE_AUTHOR_INFO] = author.toJson()
+        }
+    }
+
+    suspend fun setHttpChuckerEnabled(enable: Boolean) {
+        context.dataStore.edit {
+            it[UI_ENABLE_HTTP_CHUCKER] = enable
         }
     }
 }

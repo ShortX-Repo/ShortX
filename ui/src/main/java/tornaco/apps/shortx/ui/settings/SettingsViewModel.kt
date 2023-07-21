@@ -35,6 +35,7 @@ data class SettingsState(
     val isPointerLocationEnabled: Boolean = false,
     val hasAudioRecord: Boolean = false,
     val shareAuthor: Author? = null,
+    val enableHttpChucker: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -105,6 +106,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 updateState { copy(shareAuthor = it) }
             }
         }
+        viewModelScope.launch {
+            pref.uiEnableHttpChucker.collectLatest {
+                logger.d("uiEnableHttpChucker changed: $it")
+                updateState { copy(enableHttpChucker = it) }
+            }
+        }
     }
 
     fun setShareAuthor(author: Author) {
@@ -120,6 +127,12 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             updateState {
                 copy(isDebugLogEnabled = shortXManager.isLogDebugEnable())
             }
+        }
+    }
+
+    fun setEnableHttpChucker(enable: Boolean) {
+        viewModelScope.launch {
+            pref.setHttpChuckerEnabled(enable)
         }
     }
 

@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.settings
 
+import android.Manifest
 import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,6 +42,7 @@ import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValueSelectorState
@@ -502,7 +504,7 @@ private fun shareSettings(
     vm: SettingsViewModel
 ): List<Preference> {
     val authorNameDialogState = rememberTextInputState(
-        title = "Author name",
+        title = LocalI18N.current["ui.settings.share.author.info"],
         message = null,
         onSelected = {
             vm.setShareAuthor(Author.newBuilder().setName(it).build())
@@ -515,8 +517,8 @@ private fun shareSettings(
 
         Preference.TextPreference(
             icon = Remix.System.share_box_line,
-            title = "Author info",
-            summary = if (state.shareAuthor == null) "Set author info when you share Rule or Action" else state.shareAuthor.name,
+            title = LocalI18N.current["ui.settings.share.author.info"],
+            summary = LocalI18N.current["ui.settings.share.author.info.description"],
             onClick = {
                 authorNameDialogState.show(state.shareAuthor?.name)
             }
@@ -529,86 +531,106 @@ private fun shareSettings(
 private fun devSettings(
     state: SettingsState,
     vm: SettingsViewModel
-) = mutableListOf(
-    Preference.Category(LocalI18N.current["ui.settings.dev"]),
+): List<Preference> {
+    val permissionRequester = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _: Boolean ->
+    }
 
-    Preference.SwitchPreference(icon = Remix.Document.article_fill,
-        title = LocalI18N.current["ui.settings.enable.debug.log"],
-        summary = LocalI18N.current["ui.settings.enable.debug.log.description", mapOf("dir" to state.logDir)],
-        value = state.isDebugLogEnabled,
-        onCheckChanged = { enable ->
-            vm.setLogDebugEnable(enable)
-        }),
 
-    Preference.TextPreference(
-        icon = Remix.Device.save_3_fill,
-        title = LocalI18N.current["ui.settings.debug.log.export"],
-        summary = LocalI18N.current["ui.settings.debug.log.export.description", mapOf("dir" to Environment.DIRECTORY_DOWNLOADS)],
-        onClick = {
-            vm.exportLogs()
-        }
-    ),
+    return mutableListOf(
+        Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
-    Preference.SwitchPreference(
-        icon = Remix.Device.keyboard_box_fill,
-        title = LocalI18N.current["ui.settings.key.event.prompt"],
-        summary = LocalI18N.current["ui.settings.key.event.prompt.description"],
-        value = state.isKeyEventPromptEnabled,
-        onCheckChanged = { enable ->
-            vm.toggleKeyEventPromptEnabled()
-        }
-    ),
+        Preference.SwitchPreference(icon = Remix.Document.article_fill,
+            title = LocalI18N.current["ui.settings.enable.debug.log"],
+            summary = LocalI18N.current["ui.settings.enable.debug.log.description", mapOf("dir" to state.logDir)],
+            value = state.isDebugLogEnabled,
+            onCheckChanged = { enable ->
+                vm.setLogDebugEnable(enable)
+            }),
 
-    Preference.SwitchPreference(
-        icon = Remix.Development.cursor_line,
-        title = LocalI18N.current["ui.common.show.pointer.location"],
-        summary = LocalI18N.current["ui.common.show.pointer.location.description"],
-        value = state.isPointerLocationEnabled,
-        onCheckChanged = { enable ->
-            vm.togglePointerLocation()
-        }
-    ),
-
-    Preference.SwitchPreference(
-        icon = Remix.Editor.hashtag,
-        title = LocalI18N.current["ui.settings.injected.shell"],
-        summary = LocalI18N.current["ui.settings.injected.shell.description"],
-        value = state.isInjectedShellEnabled,
-        onCheckChanged = { enable ->
-            vm.toggleInjectedShell()
-        }
-    ),
-
-    ).apply {
-    if (BuildProp.APP_IS_DEBUG) {
-        add(Preference.TextPreference(
-            icon = Remix.System.download_fill,
-            title = "Import prebuilt data",
-            summary = "Include prebuilt direct actions and rules.",
+        Preference.TextPreference(
+            icon = Remix.Device.save_3_fill,
+            title = LocalI18N.current["ui.settings.debug.log.export"],
+            summary = LocalI18N.current["ui.settings.debug.log.export.description", mapOf("dir" to Environment.DIRECTORY_DOWNLOADS)],
             onClick = {
-                vm.importPrebuilts()
+                vm.exportLogs()
             }
-        ))
+        ),
 
-        add(Preference.SwitchPreference(
-            icon = Remix.Device.install_fill,
-            title = "Install fake service",
-            summary = "For debug purpose, restart app to take effect",
-            value = state.installFakeService,
+        Preference.SwitchPreference(
+            icon = Remix.Device.keyboard_box_fill,
+            title = LocalI18N.current["ui.settings.key.event.prompt"],
+            summary = LocalI18N.current["ui.settings.key.event.prompt.description"],
+            value = state.isKeyEventPromptEnabled,
             onCheckChanged = { enable ->
-                vm.setInstallFakeService(enable)
+                vm.toggleKeyEventPromptEnabled()
             }
-        ))
+        ),
 
-        add(Preference.SwitchPreference(
-            icon = Remix.Device.install_fill,
-            title = "Ignore framework update",
-            summary = "Do not show framework updated tips on main screen",
-            value = state.isIgnoreFrameworkUpdate,
+        Preference.SwitchPreference(
+            icon = Remix.Development.cursor_line,
+            title = LocalI18N.current["ui.common.show.pointer.location"],
+            summary = LocalI18N.current["ui.common.show.pointer.location.description"],
+            value = state.isPointerLocationEnabled,
             onCheckChanged = { enable ->
-                vm.setIgnoreFrameworkUpdate(enable)
+                vm.togglePointerLocation()
             }
-        ))
+        ),
+
+        Preference.SwitchPreference(
+            icon = Remix.Editor.hashtag,
+            title = LocalI18N.current["ui.settings.injected.shell"],
+            summary = LocalI18N.current["ui.settings.injected.shell.description"],
+            value = state.isInjectedShellEnabled,
+            onCheckChanged = { enable ->
+                vm.toggleInjectedShell()
+            }
+        ),
+        Preference.SwitchPreference(
+            icon = Remix.Editor.hashtag,
+            title = LocalI18N.current["ui.settings.http:chucker"],
+            summary = LocalI18N.current["ui.settings.http:chucker.description"],
+            value = state.enableHttpChucker,
+            onCheckChanged = { enable ->
+                vm.setEnableHttpChucker(enable)
+                if (enable && OsUtils.isTOrAbove()) {
+                    permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        ),
+
+        ).apply {
+        if (BuildProp.APP_IS_DEBUG) {
+            add(Preference.TextPreference(
+                icon = Remix.System.download_fill,
+                title = "Import prebuilt data",
+                summary = "Include prebuilt direct actions and rules.",
+                onClick = {
+                    vm.importPrebuilts()
+                }
+            ))
+
+            add(Preference.SwitchPreference(
+                icon = Remix.Device.install_fill,
+                title = "Install fake service",
+                summary = "For debug purpose, restart app to take effect",
+                value = state.installFakeService,
+                onCheckChanged = { enable ->
+                    vm.setInstallFakeService(enable)
+                }
+            ))
+
+            add(Preference.SwitchPreference(
+                icon = Remix.Device.install_fill,
+                title = "Ignore framework update",
+                summary = "Do not show framework updated tips on main screen",
+                value = state.isIgnoreFrameworkUpdate,
+                onCheckChanged = { enable ->
+                    vm.setIgnoreFrameworkUpdate(enable)
+                }
+            ))
+        }
     }
 }
 

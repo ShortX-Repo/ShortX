@@ -20,20 +20,22 @@ class OnlineRepo(private val context: Context) {
     }.apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
-    private val client by lazy {
-        OkHttpClient.Builder()
-            .writeTimeout(1, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(logging)
-            .addInterceptor(ChuckerInterceptor(context))
-            .build()
-    }
 
     companion object {
         private val gson = Gson()
     }
 
-    suspend fun index(indexUrl: String): Index {
+    suspend fun index(indexUrl: String, enableChucker: Boolean): Index {
+        val client = OkHttpClient.Builder()
+            .writeTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .addInterceptor(logging)
+            .apply {
+                if (enableChucker) {
+                    addInterceptor(ChuckerInterceptor(context))
+                }
+            }
+            .build()
         return withContext(Dispatchers.IO) {
             val request = Request.Builder().url(indexUrl)
                 .method("GET", null)

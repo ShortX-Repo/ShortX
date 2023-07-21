@@ -86,8 +86,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.gson)
 
-    debugImplementation(libs.chucker)
-    releaseImplementation(libs.chucker.no.op)
+    implementation(libs.chucker)
 
     implementation(libs.codeview)
 
