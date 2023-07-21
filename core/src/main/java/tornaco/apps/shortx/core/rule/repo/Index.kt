@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.core.rule.repo
 
+import android.webkit.URLUtil
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 
 @DoNotStrip
@@ -22,3 +23,8 @@ data class Item(
     val icon: String? = null,
     val iconColor: String? = null,
 )
+
+fun inflateOnlineFileUrl(repoUrl: String, fileUrl: String, dirName: String): String {
+    if (URLUtil.isNetworkUrl(fileUrl)) return fileUrl
+    return "${repoUrl.substringBeforeLast("/index.json")}/$dirName/$fileUrl"
+}

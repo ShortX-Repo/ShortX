@@ -90,7 +90,7 @@ fun DiscoverScreen() {
     val newRepoDialogState =
         rememberTextInputState(
             title = LocalI18N.current["ui.discover.source.add.custom"],
-            message = null,
+            message = LocalI18N.current["ui.discover.source.add.custom.description"],
             showSymbolButton = true,
             onSelected = {
                 discoverModel.addCustomRepo(

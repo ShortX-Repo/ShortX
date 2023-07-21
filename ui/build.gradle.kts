@@ -109,6 +109,7 @@ dependencies {
     implementation(project(":external:sec_net"))
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 }
 
 configurations.all {

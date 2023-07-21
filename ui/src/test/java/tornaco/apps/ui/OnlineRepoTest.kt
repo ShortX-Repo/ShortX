@@ -1,39 +1,43 @@
 package tornaco.apps.ui
 
-import com.google.gson.Gson
+import android.webkit.URLUtil
+import android.webkit.URLUtil.isNetworkUrl
+import io.mockk.every
+import io.mockk.mockkStatic
+import org.junit.Assert
 import org.junit.Test
-import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.remote.Index
-import tornaco.apps.shortx.ui.remote.Item
+import tornaco.apps.shortx.core.rule.repo.inflateOnlineFileUrl
 
 class OnlineRepoTest {
     @Test
-    fun outputJson() {
-        val das = listOf(
-            Item(
-                fileUrl = "www.xxx.xxx",
-                title = "Title",
-                description = "Description",
-                tag = "Life",
-                author = "ShortX",
-                icon = Remix.System.forbid_2_fill,
-                iconColor = "#ff4081"
-            ),
-            Item(
-                fileUrl = "www.xxx.xxx",
-                title = "Title",
-                description = "Description",
-                tag = "System",
-                icon = Remix.System.forbid_2_fill,
-                author = "ShortX",
-                iconColor = "#ff4081"
-            )
-        )
+    fun testUrlInflate() {
+        mockkStatic(URLUtil::class) {
+            every {
+                isNetworkUrl(any())
+            } returns true
 
-        Index(directActions = das, rules = emptyList()).apply {
-            println(
-                Gson().toJson(this)
+            val fileUrl = inflateOnlineFileUrl(
+                "https://repo/main/index.json",
+                "https://repo/main/da/Rule1.txt",
+                "da"
             )
+            Assert.assertEquals("https://repo/main/da/Rule1.txt", fileUrl)
+        }
+    }
+
+    @Test
+    fun testUrlInflateWithoutFullName() {
+        mockkStatic(URLUtil::class) {
+            every {
+                isNetworkUrl(any())
+            } returns false
+
+            val fileUrl = inflateOnlineFileUrl(
+                "https://repo/main/index.json",
+                "Rule1.txt",
+                "da"
+            )
+            Assert.assertEquals("https://repo/main/da/Rule1.txt", fileUrl)
         }
     }
 }

@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.BuildProp.SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_U
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.repo.inflateOnlineFileUrl
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.randomActionColor
 import tornaco.apps.shortx.ui.backup.BackupAgent
@@ -28,9 +29,22 @@ import java.util.*
 import javax.inject.Inject
 
 sealed interface DiscoverRepo {
-    object PrebuiltLocal : DiscoverRepo
-    object OfficialOnline : DiscoverRepo
-    data class CustomOnline(val indexUrl: String) : DiscoverRepo
+    val repoIndexUrl: String
+
+    object PrebuiltLocal : DiscoverRepo {
+        override val repoIndexUrl: String
+            get() = "app://shortx"
+    }
+
+    object OfficialOnline : DiscoverRepo {
+        override val repoIndexUrl: String
+            get() = SHORTX_DISCOVERY_DEFAULT_ONLINE_REPO_URL
+    }
+
+    data class CustomOnline(val indexUrl: String) : DiscoverRepo {
+        override val repoIndexUrl: String
+            get() = indexUrl
+    }
 }
 
 data class DiscoverState(
@@ -202,7 +216,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     directAction = DirectAction.newBuilder().setId(it.fileUrl).build(),
                     author = it.author.fallbackOnEmpty("ShortX"),
                     isOnlineItem = true,
-                    url = it.fileUrl,
+                    url = inflateOnlineFileUrl(url, it.fileUrl, "da"),
                     versionCode = it.versionCode,
                     isInstalled = installedDAOrNull != null,
                     hasUpdate = installedDAOrNull != null && installedDAOrNull.versionCode < it.versionCode
@@ -233,7 +247,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                     rule = Rule.newBuilder().setId(it.fileUrl).build(),
                     author = it.author.fallbackOnEmpty("ShortX"),
                     isOnlineItem = true,
-                    url = it.fileUrl,
+                    url = inflateOnlineFileUrl(url, it.fileUrl, "rule"),
                     versionCode = it.versionCode,
                     isInstalled = installedRuleOrNull != null,
                     hasUpdate = installedRuleOrNull != null && installedRuleOrNull.versionCode < it.versionCode
