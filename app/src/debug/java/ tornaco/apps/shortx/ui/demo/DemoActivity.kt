@@ -2,8 +2,10 @@
 
 package tornaco.apps.shortx.ui.demo
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.widget.ArrayAdapter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
@@ -63,6 +66,22 @@ class DemoActivity : BaseActivity() {
                             ShortXManagerNative.shortX?.crashSystemServer()
                         }) {
                             Text(text = "Crash System")
+                        }
+
+                        val context = LocalContext.current
+                        FilledTonalButton(onClick = {
+                            AlertDialog.Builder(context)
+                                .setAdapter(
+                                    ArrayAdapter(
+                                        context,
+                                        android.R.layout.simple_list_item_2,
+                                        listOf(mapOf("name" to "Z"), mapOf("age" to 18))
+                                    )
+                                ) { dialog, which ->
+
+                                }.create().show()
+                        }) {
+                            Text(text = "Array dialog")
                         }
 
 
