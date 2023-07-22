@@ -54,6 +54,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ShowMenuDialog::class -> {
+                subSelectorStates.showMenuDialogSettingsDialogState.show(source.getActionAs())
+                true
+            }
+
             Action.ShowDanmu::class -> {
                 subSelectorStates.showDanmuSettingsState.show(source.getActionAs())
                 true
@@ -108,6 +113,7 @@ fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Actio
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,
         Action.ShowAlertDialog::class,
+        Action.ShowMenuDialog::class,
         Action.FindAndClickViewByText::class,
         Action.InputTap::class,
         Action.InputSwipe::class,
@@ -142,6 +148,7 @@ data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
     val overlayButtonState: ShowOverlayButtonDialogState,
     val showDialogSettingsState: ShowDialogSettingsDialogState,
+    val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
     val postNotificationDialogState: PostNotificationDialogState,
@@ -177,6 +184,11 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     ShowDialogSettingsDialog(state = showDialogSettingsState)
 
+    val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
+        addAction(it)
+    }
+    ShowMenuDialogSettingsDialog(state = showMenuDialogState)
+
     val hideOverlayDialogState = rememberHideOverlayDialogState {
         addAction(it)
     }
@@ -206,6 +218,7 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
         showDialogSettingsState = showDialogSettingsState,
+        showMenuDialogSettingsDialogState = showMenuDialogState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
         postNotificationDialogState = postNotificationDialogState,

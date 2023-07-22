@@ -136,6 +136,7 @@ fun labelAndDescriptionForActionSelector(
 
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
+        Action.ShowMenuDialog::class -> i18N["ui.action.show.menu.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
         Action.RemoveNotificationForPackage::class -> i18N["ui.action.remove.notification"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
@@ -316,6 +317,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.ShowAlertDialog -> {
             listOf(
                 i18N["ui.action.show.dialog"],
+                action.title,
+                action.message
+            )
+        }
+
+        is Action.ShowMenuDialog -> {
+            listOf(
+                i18N["ui.action.show.menu.dialog"],
                 action.title,
                 action.message
             )

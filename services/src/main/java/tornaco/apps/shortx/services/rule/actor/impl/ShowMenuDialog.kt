@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
-import android.R
 import android.app.AlertDialog
 import android.content.Context
 import android.view.WindowManager
@@ -46,25 +45,36 @@ object ShowMenuDialog : Actor {
         contextData: ContextData,
         recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
-        logger.d("ShowAlertDialog, showing")
+        logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
         val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
-        val result = ShowDialog(context).invoke(d.itemsList) {
+        val result = ShowDialog(context, shortXContext, contextData).invoke(d.itemsList) {
             AlertDialog.Builder(it)
                 .setTitle(
                     d.title.inflateContextMap(contextData)
                         .replaceGlobalVarValues(allGlobalVars)
                 )
-                .setMessage(
-                    d.message.inflateContextMap(contextData)
-                        .replaceGlobalVarValues(allGlobalVars)
-                )
-                .setCancelable(d.cancelable)
+                .setCancelable(d.cancelable || d.itemsList.isEmpty())
         }
 
-        logger.d("ShowAlertDialog, result is: $result")
+        logger.d("ShowMenuDialog, result is: $result")
 
         withContext(Dispatchers.Default) {
             logger.d("handle result: $result")
+            val actions = result?.clickActionsList
+            if (!actions.isNullOrEmpty()) actions.forEach {
+                val evaRes = recursiveExecute("ShowMenuDialog", it, contextData)
+                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                    logger.e(evaRes.error, "evaluate fail")
+                    if (evaRes.shouldContinue) {
+                        logger.d("Action on error is continue execute.")
+                    } else {
+                        return@forEach
+                    }
+                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                    logger.w("evaluate break!")
+                    return@forEach
+                }
+            }
 
         }
     }
@@ -72,8 +82,11 @@ object ShowMenuDialog : Actor {
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-private class ShowDialog(val context: Context) {
-
+private class ShowDialog(
+    val context: Context,
+    val shortXContext: ShortXContext,
+    val contextData: ContextData
+) {
     suspend inline fun invoke(
         menuItems: List<DialogMenuItem>,
         crossinline builder: (Context) -> AlertDialog.Builder
@@ -85,11 +98,16 @@ private class ShowDialog(val context: Context) {
         dialogBuilder.setAdapter(
             ArrayAdapter(
                 context,
-                R.layout.simple_list_item_2,
-                listOf(mapOf("name" to "Z"), mapOf("age" to 18))
+                android.R.layout.simple_list_item_1,
+                android.R.id.text1,
+                menuItems.map {
+                    it.title.inflateContextMap(contextData).replaceGlobalVarValues {
+                        shortXContext.rule.getAllGlobalVars()
+                    }
+                }
             )
-        ) { dialog, which ->
-
+        ) { _, which ->
+            result = menuItems[which]
         }
 
         dialogBuilder.setOnDismissListener {

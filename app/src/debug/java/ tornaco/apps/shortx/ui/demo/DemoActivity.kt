@@ -74,8 +74,9 @@ class DemoActivity : BaseActivity() {
                                 .setAdapter(
                                     ArrayAdapter(
                                         context,
-                                        android.R.layout.simple_list_item_2,
-                                        listOf(mapOf("name" to "Z"), mapOf("age" to 18))
+                                        android.R.layout.simple_list_item_1,
+                                        android.R.id.text1,
+                                        listOf("A", "B", "C")
                                     )
                                 ) { dialog, which ->
 

@@ -173,6 +173,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Communication.chat_4_fill
         }
 
+        Action.ShowMenuDialog::class -> {
+            Remix.System.menu_3_line
+        }
+
         Action.StartActivity::class -> {
             Remix.Logos.android_fill
         }

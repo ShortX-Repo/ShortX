@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
+import tornaco.apps.shortx.core.proto.action.ShowMenuDialog
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.SleepScreen
@@ -378,6 +379,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllOnPositive(positiveActions.map { it.toProtoAction().pack_() })
                 .addAllOnNegative(negativeActions.map { it.toProtoAction().pack_() })
                 .addAllOnNeutral(neutralActions.map { it.toProtoAction().pack_() })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.ShowMenuDialog -> {
+            ShowMenuDialog.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(cancelable)
+                .addAllItems(items)
                 .setNote(overrideNote ?: note).build()
         }
 

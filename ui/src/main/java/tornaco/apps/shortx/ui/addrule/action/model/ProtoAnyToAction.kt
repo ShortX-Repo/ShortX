@@ -473,6 +473,21 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ShowMenuDialog::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ShowMenuDialog::class.java
+            Action.ShowMenuDialog(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                title = data.title,
+                message = data.message,
+                cancelable = data.cancelable,
+                items = data.itemsList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.StartActivity::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.StartActivity::class.java
             Action.StartActivity(

@@ -49,6 +49,7 @@ val allActionClasses = listOf(
     Action.Brk::class,
     Action.WhileLoop::class,
     Action.ShowAlertDialog::class,
+    Action.ShowMenuDialog::class,
     Action.WriteGV::class,
     Action.CreateGV::class,
     Action.DeleteGV::class,

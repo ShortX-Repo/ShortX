@@ -477,6 +477,8 @@
   "ui.actions.dialog.neutral.button": "Neutral按鈕",
   "ui.actions.dialog.button.optional": "留空即不展示該按鈕",
   "ui.action.dialog.button.text": "按鈕文字",
+  "ui.action.show.menu.dialog": "显示菜单对话框",
+  "ui.action.show.menu.dialog.item": "菜单项",
   "ui.action.advanced": "高级",
   "ui.action.misc": "其他",
   "ui.action.life": "生活",
