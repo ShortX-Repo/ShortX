@@ -329,6 +329,25 @@ message ShowAlertDialog {
   string id = 100;
 }
 
+message ShowMenuDialog {
+  repeated DialogMenuItem items = 1;
+
+  string title = 7;
+  string message = 8;
+  bool cancelable = 9;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message DialogMenuItem {
+  string title = 1;
+  string message = 2;
+  repeated google.protobuf.Any clickActions = 3;
+}
+
 message ShowDanmu {
   string text = 1;
   string icon = 2;

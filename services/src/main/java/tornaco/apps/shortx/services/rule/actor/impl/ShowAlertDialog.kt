@@ -130,44 +130,44 @@ object ShowAlertDialog : Actor {
             }
         }
     }
-}
 
-@OptIn(ExperimentalCoroutinesApi::class)
-private class ShowDialog(val context: Context) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private class ShowDialog(val context: Context) {
 
-    suspend inline fun invoke(
-        positiveButtonText: CharSequence? = null,
-        negativeButtonText: CharSequence? = null,
-        neutralButtonText: CharSequence? = null,
-        crossinline builder: (Context) -> AlertDialog.Builder
-    ) = suspendCancellableCoroutine { continuation ->
-        val dialogBuilder = builder(context)
+        suspend inline fun invoke(
+            positiveButtonText: CharSequence? = null,
+            negativeButtonText: CharSequence? = null,
+            neutralButtonText: CharSequence? = null,
+            crossinline builder: (Context) -> AlertDialog.Builder
+        ) = suspendCancellableCoroutine { continuation ->
+            val dialogBuilder = builder(context)
 
-        var result: DialogAction = DialogAction.None
+            var result: DialogAction = DialogAction.None
 
-        if (positiveButtonText != null) dialogBuilder.setPositiveButton(positiveButtonText) { _, _ ->
-            result = DialogAction.Positive
-        }
+            if (positiveButtonText != null) dialogBuilder.setPositiveButton(positiveButtonText) { _, _ ->
+                result = DialogAction.Positive
+            }
 
-        if (negativeButtonText != null) dialogBuilder.setNegativeButton(negativeButtonText) { _, _ ->
-            result = DialogAction.Negative
-        }
+            if (negativeButtonText != null) dialogBuilder.setNegativeButton(negativeButtonText) { _, _ ->
+                result = DialogAction.Negative
+            }
 
-        if (neutralButtonText != null) dialogBuilder.setNeutralButton(neutralButtonText) { _, _ ->
-            result = DialogAction.Neutral
-        }
+            if (neutralButtonText != null) dialogBuilder.setNeutralButton(neutralButtonText) { _, _ ->
+                result = DialogAction.Neutral
+            }
 
-        dialogBuilder.setOnDismissListener {
-            continuation.resume(result) {}
-        }
+            dialogBuilder.setOnDismissListener {
+                continuation.resume(result) {}
+            }
 
-        val dialog = dialogBuilder.create().apply {
-            window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
-            show()
-        }
+            val dialog = dialogBuilder.create().apply {
+                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG)
+                show()
+            }
 
-        continuation.invokeOnCancellation {
-            dialog.dismiss()
+            continuation.invokeOnCancellation {
+                dialog.dismiss()
+            }
         }
     }
 }
