@@ -124,6 +124,7 @@ sealed class PrebuiltPkgSet(
         { shortXContext ->
             PkgSet.newBuilder()
                 .setIsPrebuilt(true)
+                .setIsEditable(true)
                 .setLabel(PrebuiltPkgSetLabel.Game.name)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
@@ -137,6 +138,7 @@ sealed class PrebuiltPkgSet(
         { shortXContext ->
             PkgSet.newBuilder()
                 .setIsPrebuilt(true)
+                .setIsEditable(true)
                 .setLabel(PrebuiltPkgSetLabel.XposedModule.name)
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()

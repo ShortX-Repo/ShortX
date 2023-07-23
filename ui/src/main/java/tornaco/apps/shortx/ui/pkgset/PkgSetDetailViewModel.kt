@@ -21,6 +21,7 @@ data class PkgSetDetailState(
     val selectableApps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
     val isPrebuilt: Boolean = false,
+    val isEditable: Boolean = false,
     val isChanged: Boolean = false,
     val isLoading: Boolean = true
 )
@@ -58,6 +59,7 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>({ PkgSetDetailSt
                             selectableApps = selectableApps,
                             installedApps = installedApps,
                             isPrebuilt = pkgSet.isPrebuilt,
+                            isEditable = pkgSet.isEditable,
                             isLoading = false
                         )
                     }
