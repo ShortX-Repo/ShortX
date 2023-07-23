@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.proto.action.AdjustVolume
 import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
+import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
 import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
@@ -70,6 +71,7 @@ import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.Location
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.gv.LocalVar
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
@@ -803,6 +805,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setSlotId(slotId)
+                .build()
+        }
+
+        is Action.CreateLocalVar -> {
+            CreateLocalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setLocalVar(localVar)
                 .build()
         }
 

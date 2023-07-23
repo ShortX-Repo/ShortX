@@ -81,5 +81,6 @@ val allActionClasses = listOf(
     Action.Vibrate::class,
     Action.AudioRecording::class,
     Action.SwitchMobileDataSlot::class,
+    Action.CreateLocalVar::class,
     Action.NoAction::class,
 )

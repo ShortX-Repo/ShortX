@@ -143,6 +143,7 @@ fun labelAndDescriptionForActionSelector(
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.CreateGV::class -> i18N["ui.action.create.global.var"] to null
         Action.DeleteGV::class -> i18N["ui.action.delete.global.var"] to null
+        Action.CreateLocalVar::class -> i18N["ui.action.create.local.var"] to null
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
@@ -408,6 +409,14 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOfNotNull(
                 i18N["ui.action.delete.global.var"],
                 action.varName,
+            )
+        }
+
+        is Action.CreateLocalVar -> {
+            listOfNotNull(
+                i18N["ui.action.create.local.var"],
+                action.localVar.name,
+                action.localVar.type.toType()?.name
             )
         }
 

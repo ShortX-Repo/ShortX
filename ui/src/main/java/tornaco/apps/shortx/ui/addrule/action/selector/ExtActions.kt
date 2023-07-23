@@ -18,8 +18,11 @@ import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
+import tornaco.apps.shortx.ui.gvar.NewLocalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
+import tornaco.apps.shortx.ui.gvar.rememberNewLocalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
+import tornaco.apps.shortx.ui.gvar.toLocalVar
 import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -92,6 +95,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         }
     NewGlobalVarDialog(addGlobalVarDialogState)
 
+    val addLocalVarDialogState =
+        rememberNewLocalVarState {
+            addAction(
+                Action.CreateLocalVar(
+                    localVar = it.toLocalVar()
+                )
+            )
+        }
+    NewLocalVarDialog(addLocalVarDialogState)
+
     val i18N = LocalI18N.current
     val vm = hiltViewModel<PkgSetListViewModel>()
     val addPkgSetDialogState =
@@ -149,6 +162,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.CreateLocalVar::class -> {
+                addLocalVarDialogState.show()
+                true
+            }
+
             Action.FromDA::class -> {
                 fromDASelectorState.show()
                 true
@@ -194,6 +212,7 @@ fun ExtActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.Brk::class,
         Action.WriteGV::class,
         Action.CreateGV::class,
+        Action.CreateLocalVar::class,
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,

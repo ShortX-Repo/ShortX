@@ -6,8 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,7 +23,17 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toProtoType
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.DialogTitle
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 
 class NewGlobalVarState(
     val onSelected: (Pair<String, GlobalVarType>) -> Unit
@@ -50,7 +66,6 @@ fun Pair<String, GlobalVarType>.toGlobalVar(): GlobalVar =
         .setType(second.toProtoType())
         .build()
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewGlobalVarDialog(state: NewGlobalVarState) {
     var name by remember(state) {

@@ -333,6 +333,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.sim_card_2_fill
         }
 
+        Action.CreateLocalVar::class -> {
+            Remix.Document.file_edit_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
