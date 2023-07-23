@@ -11,6 +11,14 @@ message GlobalVarList {
   repeated GlobalVar allVars = 1;
 }
 
+message LocalVar {
+  string name = 1;
+  google.protobuf.Any var = 2;
+
+  // Type indicator, just set default value.
+  google.protobuf.Any type = 3;
+}
+
 message GlobalVar {
   string name = 1;
   google.protobuf.Any var = 2;

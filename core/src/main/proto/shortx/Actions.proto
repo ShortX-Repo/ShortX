@@ -734,3 +734,13 @@ message SwitchMobileDataSlot {
 
   int32 slotId = 1;
 }
+
+
+message CreateLocalVar {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  LocalVar localVar = 1;
+}
