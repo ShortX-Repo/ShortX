@@ -109,6 +109,7 @@ class EvaluateGlobalVarSelectorDialogState(
         val op = _action.op
         showPayloadInputField =
             op != GlobalVarOp.HasBeenSet && op != GlobalVarOp.NotSet && op != GlobalVarOp.IsEmpty && op != GlobalVarOp.IsNotEmpty
+                    && op != GlobalVarOp.IsExists && op != GlobalVarOp.IsNotExists
     }
 
     fun canSave(): Boolean {
