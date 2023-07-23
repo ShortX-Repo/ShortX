@@ -118,7 +118,7 @@ fun NewLocalVarDialog(state: NewLocalVarState) {
                         Toast.LENGTH_LONG
                     ).show()
                 }) {
-                    TipBody(text = LocalI18N.current["ui.global.var.access.help.message", mapOf("name" to "$LOCAL_VAR_REF_PREFIX${state.name}")])
+                    TipBody(text = LocalI18N.current["ui.local.var.access.help.message", mapOf("name" to "$LOCAL_VAR_REF_PREFIX${state.name}")])
                 }
 
 
