@@ -70,6 +70,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     WriteGVDialog(writeGVSelectorState)
 
+    val writeLocalVarSelectorState = rememberWriteLocalVarDialogState {
+        addAction(it)
+    }
+    WriteLocalVarDialog(writeLocalVarSelectorState)
+
     val fromDASelectorState = rememberFromDADialogState {
         addAction(it)
     }
@@ -167,6 +172,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.WriteLocalVar::class -> {
+                writeLocalVarSelectorState.show()
+                true
+            }
+
             Action.FromDA::class -> {
                 fromDASelectorState.show()
                 true
@@ -213,6 +223,7 @@ fun ExtActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.WriteGV::class,
         Action.CreateGV::class,
         Action.CreateLocalVar::class,
+        Action.WriteLocalVar::class,
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,

@@ -68,10 +68,10 @@ import tornaco.apps.shortx.core.proto.action.WakeupScreen
 import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.action.WriteClipboard
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVar
+import tornaco.apps.shortx.core.proto.action.WriteLocalVar
 import tornaco.apps.shortx.core.proto.common.AndroidIntent
 import tornaco.apps.shortx.core.proto.common.Location
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
-import tornaco.apps.shortx.core.proto.gv.LocalVar
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
@@ -815,6 +815,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setLocalVar(localVar)
+                .build()
+        }
+
+        is Action.WriteLocalVar -> {
+            WriteLocalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setVarName(varName)
+                .setValueAsString(valueAsString)
                 .build()
         }
 

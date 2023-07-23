@@ -337,6 +337,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.file_edit_fill
         }
 
+        Action.WriteLocalVar::class -> {
+            Remix.Document.file_edit_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -744,3 +744,14 @@ message CreateLocalVar {
 
   LocalVar localVar = 1;
 }
+
+message WriteLocalVar {
+  string varName = 1;
+  string valueAsString = 2;
+
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

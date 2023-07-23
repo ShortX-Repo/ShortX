@@ -956,6 +956,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.WriteLocalVar::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.WriteLocalVar::class.java
+            Action.WriteLocalVar(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                varName = data.varName,
+                valueAsString = data.valueAsString
+            )
+        }
+
         else -> null
     }
 }
