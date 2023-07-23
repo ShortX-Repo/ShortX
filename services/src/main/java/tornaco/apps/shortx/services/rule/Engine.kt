@@ -82,17 +82,18 @@ interface Engine {
     val scope: CoroutineScope
 
     fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean
+
     fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
-        initialContextData: Map<String, Any> = emptyMap()
+        initialContextData: Map<String, Any>
     ): Boolean
 
     fun evaluateActions(
         containerId: String,
         logTag: String,
         actions: List<ProtoAny>,
-        initialContextData: Map<String, Any> = emptyMap(),
+        initialContextData: Map<String, Any>,
         conflictStrategy: ConflictStrategy
     )
 
@@ -101,7 +102,7 @@ interface Engine {
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
-        contextData: ContextData,
+        initialContextData: Map<String, Any>,
     ): Boolean
 
     fun cancelJobs(reason: String, filter: (JobRecord) -> Boolean)
@@ -401,10 +402,16 @@ class DefaultRuleEngine(
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
-        contextData: ContextData
+        initialContextData: Map<String, Any>,
     ): Boolean {
         return runBlocking {
-            conditionEvaluator.evaluate(logTag, condOp, condOpPayload, conditions, contextData)
+            conditionEvaluator.evaluate(
+                logTag,
+                condOp,
+                condOpPayload,
+                conditions,
+                ContextData.obtain(initialContextData)
+            )
         }
     }
 

@@ -1,13 +1,11 @@
 package tornaco.apps.shortx.services.rule
 
 import android.annotation.TestApi
-import android.content.Context
 import android.os.RemoteCallbackList
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.IJobStatusListener
-import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
@@ -141,10 +139,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         )
     }
 
-    override fun start(context: Context) {
-        super.start(context)
-    }
-
     override fun systemReady() {
         super.systemReady()
         ruleSettingsStore.readBlocking()
@@ -199,7 +193,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     handler.postSafety {
                         engine.fire(
                             fact = fact,
-                            rules = enabledRules
+                            rules = enabledRules,
+                            initialContextData = emptyMap()
                         )
                     }
                 }
@@ -216,7 +211,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             if (shouldFire(enabledRules, fact)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
                 handler.postSafety {
-                    engine.fire(fact = fact, rules = enabledRules)
+                    engine.fire(
+                        fact = fact,
+                        rules = enabledRules,
+                        initialContextData = emptyMap()
+                    )
                 }
                 return@onGestureEvent true
             }
@@ -476,7 +475,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             condOp = ConditionOperator.ALL,
             condOpPayload = ConditionOperatorPayload.newBuilder().build(),
             conditions = listOf(condition),
-            contextData = ContextData.obtain()
+            initialContextData = emptyMap()
         )
     }
 
