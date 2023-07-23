@@ -191,10 +191,11 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
             strWithGValue =
                 strWithGValue.replaceLazy(GLOBAL_VAR_REF_PREFIX + entry.name, {
                     val valueItems = entry.valueList()
-                    if (valueItems.isEmpty()) "-" else valueItems[kotlin.math.min(
-                        valueItems.size - 1,
-                        3
-                    )]
+                    if (entry.isList()) {
+                        valueItems.joinToString()
+                    } else {
+                        if (valueItems.isEmpty()) "" else valueItems[0]
+                    }
                 })
         }
     return strWithGValue

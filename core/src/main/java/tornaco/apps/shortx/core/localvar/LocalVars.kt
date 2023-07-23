@@ -17,6 +17,9 @@ class LocalVars private constructor() {
 
     private val localVarList = mutableListOf<LocalVar>()
 
+    val isEmpty get() = localVarList.isEmpty()
+    val all get() = localVarList
+
     fun add(localVar: LocalVar) {
         localVarList.add(localVar)
     }
