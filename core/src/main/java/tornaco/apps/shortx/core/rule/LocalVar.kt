@@ -21,6 +21,8 @@ fun String.replaceLocalVarValues(localVars: LocalVars): String {
     // FAST Check if vars it empty
     if (localVars.isEmpty) return this
 
+    logger.d("localVars: ${localVars.all.map { it.name + "-" + it.valueList() }}")
+
     var strWithLocalVarValue = this
     localVars.all
         // In case name override: globalVarOf$applist and globalVarOf$app

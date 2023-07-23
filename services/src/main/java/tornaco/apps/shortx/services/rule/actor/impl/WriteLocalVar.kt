@@ -28,6 +28,6 @@ object WriteLocalVar : Actor {
                 .replaceGlobalVarValues {
                     shortXContext.rule.getAllGlobalVars()
                 }
-        localVar.addOrUpdateValue(listOf(newValue))
+        localVars.update(localVar.addOrUpdateValue(listOf(newValue)))
     }
 }

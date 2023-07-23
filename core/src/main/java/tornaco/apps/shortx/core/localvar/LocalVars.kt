@@ -24,6 +24,11 @@ class LocalVars private constructor() {
         localVarList.add(localVar)
     }
 
+    fun update(localVar: LocalVar) {
+        localVarList.removeIf { it.name == localVar.name }
+        localVarList.add(localVar)
+    }
+
     fun getByName(name: String): LocalVar? = localVarList.firstOrNull { it.name == name }
 
     fun recycle() {
