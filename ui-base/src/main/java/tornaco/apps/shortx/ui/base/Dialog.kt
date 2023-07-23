@@ -248,7 +248,7 @@ open class CommonDialogState {
     private var _isShow by mutableStateOf(false)
     val isShowing get() = _isShow
 
-    fun show() {
+    open fun show() {
         _isShow = true
     }
 

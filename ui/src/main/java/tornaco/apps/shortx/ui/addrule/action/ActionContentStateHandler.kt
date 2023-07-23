@@ -5,8 +5,8 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.WithState
@@ -16,7 +16,6 @@ import java.util.Date
 
 data class ActionContentState(
     val actions: List<Action> = emptyList(),
-    val copiedAction: Action? = null,
     val actionWarningMessages: Map<String, List<String>> = emptyMap(),
     val isChanged: Boolean = false,
 )
@@ -35,7 +34,9 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
             this.insertActionBelow(action, anchorId)
         },
         copy = { actionId ->
-            actions.first { it.id == actionId }.let { this.copy(it) }
+            actions.first { it.id == actionId }.let {
+                UiClipboard.copy(UiClipboard.ClipboardContent.ActionContent(it))
+            }
         },
         enableDisable = { actionId ->
             actions.first { it.id == actionId }.let {
@@ -60,16 +61,6 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         actionOnError = onError
                     )
                 )
-            }
-        },
-        pasteAbove = { anchorId ->
-            actions.first { it.id == anchorId }.let { anchor ->
-                this.pasteActionAbove(anchor)
-            }
-        },
-        pasteBelow = { anchorId ->
-            actions.first { it.id == anchorId }.let { anchor ->
-                this.pasteActionBelow(anchor)
             }
         },
         removeAction = { action ->
@@ -144,52 +135,6 @@ class ActionContentStateHandler(
             }, isChanged = true)
         }
         checkUpdateWarnings()
-    }
-
-    fun copy(action: Action) {
-        updateState {
-            copy(copiedAction = action)
-        }
-    }
-
-    fun pasteActionAbove(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex, it)
-                        } else {
-                            add(it)
-                        }
-                    }, isChanged = true)
-                }
-                checkUpdateWarnings()
-            }
-        }
-    }
-
-    fun pasteActionBelow(anchor: Action) {
-        state.value.copiedAction?.let { copied ->
-            val action = copied.toProtoAction(overrideId = defaultNewActionId()).pack_()
-                .toAction(shortXManager)
-            action?.let {
-                updateState {
-                    copy(actions = actions.toMutableList().apply {
-                        val existingIndex = indexOfFirst { it.id == anchor.id }
-                        if (existingIndex >= 0) {
-                            add(existingIndex + 1, it)
-                        } else {
-                            add(it)
-                        }
-                    }, isChanged = true)
-                }
-                checkUpdateWarnings()
-            }
-        }
     }
 
     fun removeAction(action: Action) {

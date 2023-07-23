@@ -35,6 +35,8 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.ClipboardDialog
+import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.ContextDataIcon
 import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
@@ -78,6 +80,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import kotlin.reflect.KClass
 
@@ -341,6 +344,9 @@ private fun Actions(
                         }
 
 
+                        val clipboardDialogState = rememberClipboardDialogState()
+                        ClipboardDialog(state = clipboardDialogState)
+
                         val scope = rememberCoroutineScope()
                         DropdownSelector(
                             state = clickDropdownState,
@@ -467,11 +473,18 @@ private fun Actions(
                                     }
 
                                     "pa" -> {
-                                        handler.pasteAbove(it.data.first)
+                                        val clipboardActions = UiClipboard.getActions()
+                                        if (clipboardActions.size == 1) {
+                                            handler.insertAbove(
+                                                clipboardActions[0].action,
+                                                it.data.first
+                                            )
+                                        } else {
+                                            clipboardDialogState.show()
+                                        }
                                     }
 
                                     "pb" -> {
-                                        handler.pasteBelow(it.data.first)
                                     }
 
                                     "cp" -> {
@@ -580,8 +593,6 @@ class ActionHandler(
     val applySort: (List<Action>) -> Unit = {},
     val insertAbove: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },
     val insertBelow: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },
-    val pasteAbove: (anchorId: String) -> Unit = { },
-    val pasteBelow: (anchorId: String) -> Unit = { },
     val copy: (actionId: String) -> Unit = {},
     val enableDisable: (actionId: String) -> Unit = {},
     val setOnError: (actionId: String, onError: ActionOnError) -> Unit = { _, _ -> run {} },
