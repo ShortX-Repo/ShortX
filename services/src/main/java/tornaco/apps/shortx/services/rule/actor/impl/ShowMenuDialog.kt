@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.ActionEvaluator
@@ -55,14 +56,16 @@ object ShowMenuDialog : Actor {
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
         val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
-        val result = ShowDialog(context, shortXContext, contextData).invoke(d.itemsList) {
-            AlertDialog.Builder(it)
-                .setTitle(
-                    d.title.inflateContextMap(contextData)
-                        .replaceGlobalVarValues(allGlobalVars)
-                )
-                .setCancelable(d.cancelable || d.itemsList.isEmpty())
-        }
+        val result =
+            ShowDialog(context, shortXContext, localVars, contextData).invoke(d.itemsList) {
+                AlertDialog.Builder(it)
+                    .setTitle(
+                        d.title.inflateContextMap(contextData)
+                            .replaceLocalVarValues(localVars)
+                            .replaceGlobalVarValues(allGlobalVars)
+                    )
+                    .setCancelable(d.cancelable || d.itemsList.isEmpty())
+            }
 
         logger.d("ShowMenuDialog, result is: $result")
 
@@ -93,6 +96,7 @@ object ShowMenuDialog : Actor {
 private class ShowDialog(
     val context: Context,
     val shortXContext: ShortXContext,
+    val localVars: LocalVars,
     val contextData: ContextData
 ) {
     suspend inline fun invoke(
@@ -109,9 +113,11 @@ private class ShowDialog(
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
                 menuItems.map {
-                    it.title.inflateContextMap(contextData).replaceGlobalVarValues {
-                        shortXContext.rule.getAllGlobalVars()
-                    }
+                    it.title.inflateContextMap(contextData)
+                        .replaceLocalVarValues(localVars)
+                        .replaceGlobalVarValues {
+                            shortXContext.rule.getAllGlobalVars()
+                        }
                 }
             )
         ) { _, which ->

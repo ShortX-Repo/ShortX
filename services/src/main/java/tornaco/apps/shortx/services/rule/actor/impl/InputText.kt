@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.powerManager
@@ -23,10 +24,12 @@ object InputText : Actor {
             "Can not InputText when device is not interactive"
         }
         params.shortXContext.input.submitText(
-            ac.text.inflateContextMap(params.contextData).replaceGlobalVarValues {
-                shortXManager.getAllGlobalVars()
-            }.apply {
-                logger.p("Input text: $this")
-            })
+            ac.text.inflateContextMap(params.contextData)
+                .replaceLocalVarValues(params.localVars)
+                .replaceGlobalVarValues {
+                    shortXManager.getAllGlobalVars()
+                }.apply {
+                    logger.p("Input text: $this")
+                })
     }
 }

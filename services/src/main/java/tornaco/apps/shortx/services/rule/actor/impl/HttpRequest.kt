@@ -16,6 +16,7 @@ import org.mvel2.MVEL
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyForm
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -52,20 +54,26 @@ object HttpRequest : Actor {
     ): Unit = with(params) {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.HttpRequest::class.java
-        val url = data.url.inflateContextMap(contextData).replaceGlobalVarValues {
-            shortXContext.rule.getAllGlobalVars()
-        }
+        val url = data.url.inflateContextMap(contextData)
+            .replaceLocalVarValues(localVars)
+            .replaceGlobalVarValues {
+                shortXContext.rule.getAllGlobalVars()
+            }
         logger.d("url: $url")
 
         val requestBody =
-            data.requestBody.toHttpRequestBody(contextData) { shortXContext.rule.getAllGlobalVars() }
+            data.requestBody.toHttpRequestBody(
+                contextData,
+                localVars
+            ) { shortXContext.rule.getAllGlobalVars() }
         handleUrl(
             url = url,
             method = data.method.name,
             headers = data.headersList.associate {
                 it.key to (it.value).inflateContextMap(
                     contextData
-                ).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+                ).replaceLocalVarValues(localVars)
+                    .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
             },
             requestBody = requestBody,
             adapter = data.adapter
@@ -146,11 +154,14 @@ object HttpRequest : Actor {
 
     fun ProtoAny.toHttpRequestBody(
         contextData: ContextData,
+        localVars: LocalVars,
         globalVarsLazy: () -> List<GlobalVar>
     ): RequestBody? {
         return if (this is_ HttpRequestBodyJson::class.java) {
             val bodyJson = this unpack_ HttpRequestBodyJson::class.java
-            bodyJson.json.inflateContextMap(contextData).replaceGlobalVarValues(globalVarsLazy)
+            bodyJson.json.inflateContextMap(contextData)
+                .replaceLocalVarValues(localVars)
+                .replaceGlobalVarValues(globalVarsLazy)
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         } else if (this is_ HttpRequestBodyForm::class.java) {
             val bodyForm = this unpack_ HttpRequestBodyForm::class.java
@@ -159,6 +170,7 @@ object HttpRequest : Actor {
                     add(
                         it.key,
                         it.value.inflateContextMap(contextData)
+                            .replaceLocalVarValues(localVars)
                             .replaceGlobalVarValues(globalVarsLazy)
                     )
                 }

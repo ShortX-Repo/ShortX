@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.ActionEvaluator
@@ -58,19 +59,24 @@ object ShowAlertDialog : Actor {
         val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
         val result = ShowDialog(context).invoke(
             positiveButtonText = d.positive.inflateContextMap(contextData)
+                .replaceLocalVarValues(localVars)
                 .replaceGlobalVarValues(allGlobalVars),
             negativeButtonText = d.negative.inflateContextMap(contextData)
+                .replaceLocalVarValues(localVars)
                 .replaceGlobalVarValues(allGlobalVars),
             neutralButtonText = d.neutral.inflateContextMap(contextData)
+                .replaceLocalVarValues(localVars)
                 .replaceGlobalVarValues(allGlobalVars)
         ) {
             AlertDialog.Builder(it)
                 .setTitle(
                     d.title.inflateContextMap(contextData)
+                        .replaceLocalVarValues(localVars)
                         .replaceGlobalVarValues(allGlobalVars)
                 )
                 .setMessage(
                     d.message.inflateContextMap(contextData)
+                        .replaceLocalVarValues(localVars)
                         .replaceGlobalVarValues(allGlobalVars)
                 )
                 .setCancelable(d.cancelable)

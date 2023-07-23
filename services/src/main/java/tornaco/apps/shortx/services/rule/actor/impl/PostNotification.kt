@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -23,9 +24,11 @@ object PostNotification : Actor {
             val d = action unpack_ PostNotification::class.java
             val inflatedTitle =
                 d.title.inflateContextMap(contextData)
+                    .replaceLocalVarValues(localVars)
                     .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
             val inflatedMessage =
                 d.message.inflateContextMap(contextData)
+                    .replaceLocalVarValues(localVars)
                     .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
             val inflatedN =
                 PostNotification.newBuilder(d).setTitle(inflatedTitle).setMessage(inflatedMessage)

@@ -4,6 +4,7 @@ import android.content.ClipData
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -24,7 +25,9 @@ object WriteClipboard : Actor {
             val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
             context.clipboardManager.primaryClip = ClipData.newPlainText(
                 data.note ?: "shortx-action",
-                data.text.inflateContextMap(contextData).replaceGlobalVarValues(allGlobalVars)
+                data.text.inflateContextMap(contextData)
+                    .replaceLocalVarValues(localVars)
+                    .replaceGlobalVarValues(allGlobalVars)
             )
         }
     }

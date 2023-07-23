@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -39,6 +40,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.DateUtils
@@ -342,12 +344,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun executeHttpRequest(request: ByteArrayWrapper): List<String> {
+            val localVars = LocalVars.obtain()
             val data = HttpRequest.parseFrom(request.byte)
-            val url = data.url.replaceGlobalVarValues {
-                shortXContext.rule.getAllGlobalVars()
-            }
+            val url = data.url
+                .replaceLocalVarValues(localVars)
+                .replaceGlobalVarValues {
+                    shortXContext.rule.getAllGlobalVars()
+                }
             val requestBody =
-                data.requestBody.toHttpRequestBody(ContextData.obtain()) {
+                data.requestBody.toHttpRequestBody(
+                    ContextData.obtain(),
+                    localVars
+                ) {
                     shortXContext.rule.getAllGlobalVars()
                 }
             return kotlin.runCatching {
@@ -355,7 +363,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     url = url,
                     method = data.method.name,
                     headers = data.headersList.associate {
-                        it.key to (it.value).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+                        it.key to (it.value)
+                            .replaceLocalVarValues(localVars)
+                            .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
                     },
                     requestBody = requestBody,
                     adapter = data.adapter

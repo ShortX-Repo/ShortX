@@ -190,7 +190,7 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
         .forEach { entry ->
             strWithGValue =
                 strWithGValue.replaceLazy(GLOBAL_VAR_REF_PREFIX + entry.name, {
-                    val valueItems = entry.valueList()
+                    val valueItems = entry.valueList(noValueReturn = { emptyList() })
                     if (entry.isList()) {
                         valueItems.joinToString()
                     } else {

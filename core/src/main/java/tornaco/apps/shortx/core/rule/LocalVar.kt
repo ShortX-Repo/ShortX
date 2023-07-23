@@ -27,7 +27,7 @@ fun String.replaceLocalVarValues(localVars: LocalVars): String {
         .forEach { entry ->
             strWithLocalVarValue =
                 strWithLocalVarValue.replaceLazy(LOCAL_VAR_REF_PREFIX + entry.name, {
-                    val valueItems = entry.valueList()
+                    val valueItems = entry.valueList(noValueReturn = { emptyList() })
                     if (entry.isList()) {
                         valueItems.joinToString()
                     } else {
