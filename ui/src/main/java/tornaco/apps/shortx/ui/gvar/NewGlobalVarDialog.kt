@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toProtoType
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -37,16 +38,15 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 
 class NewGlobalVarState(
     val onSelected: (Pair<String, GlobalVarType>) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
+) : CommonDialogState() {
+    var name by mutableStateOf("")
+    var type by mutableStateOf(GlobalVarType.String)
 
-    fun show() {
-        _isShow = true
-    }
+    fun show(current: Pair<String, GlobalVarType>? = null) {
+        this.name = current?.first ?: ""
+        this.type = current?.second ?: GlobalVarType.String
 
-    fun dismiss() {
-        _isShow = false
+        show()
     }
 }
 
@@ -68,19 +68,13 @@ fun Pair<String, GlobalVarType>.toGlobalVar(): GlobalVar =
 
 @Composable
 fun NewGlobalVarDialog(state: NewGlobalVarState) {
-    var name by remember(state) {
-        mutableStateOf("")
-    }
-    var type by remember(state) {
-        mutableStateOf(GlobalVarType.String)
-    }
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.global.var.title"])
         }, buttons = {
             TextButton(onClick = {
-                if (name.isNotBlank()) {
-                    state.onSelected(name.trim() to type)
+                if (state.name.isNotBlank()) {
+                    state.onSelected(state.name.trim() to state.type)
                     state.dismiss()
                 }
             }) {
@@ -97,10 +91,10 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                 ShortXTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = name,
+                    value = state.name,
                     showSymbolButton = false,
                     onValueChange = {
-                        name = it
+                        state.name = it
                     })
 
                 LargeSpacer()
@@ -121,14 +115,14 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                             )
                         }
                     ) {
-                        type = it.data
+                        state.type = it.data
                     }
 
                     FilledTonalButton(onClick = {
                         typeDropdownState.open()
                     }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = type.label())
+                            Text(text = state.type.label())
                             LargeSpacer()
                             LargeSpacer()
                             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)

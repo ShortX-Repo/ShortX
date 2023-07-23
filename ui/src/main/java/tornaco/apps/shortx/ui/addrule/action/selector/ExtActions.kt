@@ -4,7 +4,9 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.action.su.shellResToString
+import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -163,12 +165,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.CreateGV::class -> {
-                addGlobalVarDialogState.show()
+                addGlobalVarDialogState.show(source.getActionAs<Action.CreateGV>()?.let {
+                    it.globalVar.name to (it.globalVar.type.toType() ?: GlobalVarType.String)
+                })
                 true
             }
 
             Action.CreateLocalVar::class -> {
-                addLocalVarDialogState.show()
+                addLocalVarDialogState.show(source.getActionAs<Action.CreateLocalVar>()?.let {
+                    it.localVar.name to (it.localVar.type.toType() ?: GlobalVarType.String)
+                })
                 true
             }
 
