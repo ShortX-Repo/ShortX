@@ -23,6 +23,12 @@ class WriteLocalVarDialogState(
     var valueString by mutableStateOf("")
 
     val isValid get() = name.isNotBlank()
+
+    fun show(current: Action.WriteLocalVar? = null) {
+        this.name = current?.varName ?: ""
+        this.valueString = current?.valueAsString ?: ""
+        show()
+    }
 }
 
 @Composable

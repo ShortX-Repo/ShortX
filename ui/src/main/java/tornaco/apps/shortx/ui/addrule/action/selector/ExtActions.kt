@@ -158,7 +158,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.WriteGV::class -> {
-                writeGVSelectorState.show()
+                writeGVSelectorState.show(source.getActionAs())
                 true
             }
 
@@ -173,7 +173,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.WriteLocalVar::class -> {
-                writeLocalVarSelectorState.show()
+                writeLocalVarSelectorState.show(source.getActionAs())
                 true
             }
 

@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.*
@@ -21,15 +20,16 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class WriteGVDialogState(
     val onSelected: (Action.WriteGV) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
+) : CommonDialogState() {
+    var name by mutableStateOf("")
+    var valueString by mutableStateOf("")
 
-    fun show() {
-        isShowing = true
-    }
+    val isValid get() = name.isNotBlank()
 
-    fun dismiss() {
-        isShowing = false
+    fun show(current: Action.WriteGV? = null) {
+        this.name = current?.varName ?: ""
+        this.valueString = current?.valueAsString ?: ""
+        show()
     }
 }
 
@@ -53,9 +53,6 @@ fun WriteGVDialog(state: WriteGVDialogState) {
 
 @Composable
 private fun WriteGVSelector(dialogState: WriteGVDialogState) {
-    val vm = hiltViewModel<WriteGVSelectorViewModel>().apply { resetState() }
-    val state = vm.state.collectAsState()
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -74,8 +71,13 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
                         },
                         actions = {
                             IconButton(onClick = {
-                                if (state.value.isValid()) {
-                                    dialogState.onSelected(state.value)
+                                if (dialogState.isValid) {
+                                    dialogState.onSelected(
+                                        Action.WriteGV(
+                                            varName = dialogState.name,
+                                            valueAsString = dialogState.valueString
+                                        )
+                                    )
                                     dialogState.dismiss()
                                 }
                             }) {
@@ -85,7 +87,7 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
                         },
                     )
                 }) {
-                Content(paddingValues = it, vm = vm)
+                Content(paddingValues = it, dialogState = dialogState)
             }
         }
     }
@@ -93,13 +95,12 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
 }
 
 @Composable
-private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) {
+private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogState) {
     val globalVarToWriteSelectorState = rememberGlobalVarSelectorState {
-        vm.selectGlobalVar(it.name)
+        dialogState.name = it.name
     }
     GlobalVarSelectorDialog(globalVarToWriteSelectorState)
 
-    val state by vm.state.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -109,12 +110,15 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
             .verticalScroll(rememberScrollState())
     ) {
 
-        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.select.global.var"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.action.select.global.var"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = state.varName,
+            value = dialogState.name,
             onValueChange = {
-                vm.selectGlobalVar(it)
+                dialogState.name = it
             },
             trailingIcon = {
                 IconButton(onClick = {
@@ -126,12 +130,15 @@ private fun Content(paddingValues: PaddingValues, vm: WriteGVSelectorViewModel) 
 
         StandardSpacer()
 
-        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.global.var.value"])
+        SmallTitle(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = LocalI18N.current["ui.global.var.value"]
+        )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = state.valueAsString,
+            value = dialogState.valueString,
             onValueChange = {
-                vm.inputValue(it)
+                dialogState.valueString = it
             })
 
     }
