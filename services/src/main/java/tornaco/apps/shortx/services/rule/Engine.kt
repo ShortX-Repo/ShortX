@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -60,7 +61,8 @@ interface ActionEvaluator {
     suspend fun evaluate(
         logTag: String,
         action: ProtoAny,
-        contextData: ContextData
+        contextData: ContextData,
+        localVars: LocalVars
     ): EvaluateResult
 
     sealed interface EvaluateResult {
@@ -192,6 +194,8 @@ class DefaultRuleEngine(
                     ContextSrcEvent.ContextSrc_Rule
                 )
 
+                val localVars = LocalVars.obtain()
+
                 val job = scope.launchSafety {
                     logger.d("job for rule: ${rule.title} start.")
                     val conditionRes = if (rule.conditionsList.isEmpty()) {
@@ -237,9 +241,10 @@ class DefaultRuleEngine(
                                 logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
                                 rule.actionsList.forEach {
                                     val evaRes = actionEvaluator.evaluate(
-                                        rule.title,
-                                        it,
-                                        contextData
+                                        logTag = rule.title,
+                                        action = it,
+                                        contextData = contextData,
+                                        localVars = localVars,
                                     )
                                     logger.d("action evaluate res: $evaRes")
                                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
@@ -345,6 +350,8 @@ class DefaultRuleEngine(
         }
         logger.d("evaluateActions, $logTag conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
 
+        val localVars = LocalVars.obtain()
+
         if (isAlreadyRunning) {
             when (conflictStrategy) {
                 ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
@@ -368,7 +375,12 @@ class DefaultRuleEngine(
             logger.d("evaluateActions, job for id: $containerId start.")
             kotlin.run loop@{
                 actions.forEach {
-                    val evaRes = actionEvaluator.evaluate(logTag, it, contextData)
+                    val evaRes = actionEvaluator.evaluate(
+                        logTag = logTag,
+                        action = it,
+                        contextData = contextData,
+                        localVars = localVars
+                    )
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         if (evaRes.shouldContinue) {

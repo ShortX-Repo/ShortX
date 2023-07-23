@@ -35,7 +35,7 @@ object WhileLoop : Actor {
                 logger.d("WhileLoop inside: $index")
                 d.actionsList.forEach {
                     logger.d("evaluate one loop.")
-                    recursiveExecute("WhileLoop", it, contextData)
+                    recursiveExecute("WhileLoop", it, contextData, localVars)
                 }
                 delay(delay)
                 index += 1

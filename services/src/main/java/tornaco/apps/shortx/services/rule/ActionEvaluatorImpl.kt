@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -29,16 +30,22 @@ class ActionEvaluatorImpl(
     private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
-    private val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult =
-        { logTagR, actionR, contextDataR ->
-            evaluate(logTagR, actionR, contextDataR)
+    private val recursiveExecute: suspend (
+        logTag: String,
+        action: ProtoAny,
+        contextData: ContextData,
+        localVars: LocalVars
+    ) -> ActionEvaluator.EvaluateResult =
+        { logTagR, actionR, contextDataR, localVars ->
+            evaluate(logTagR, actionR, contextDataR, localVars)
         }
 
     @SuppressLint("MissingPermission")
     override suspend fun evaluate(
         logTag: String,
         action: ProtoAny,
-        contextData: ContextData
+        contextData: ContextData,
+        localVars: LocalVars
     ): ActionEvaluator.EvaluateResult {
         val actor = prebuiltActorFor(action)
         logger.d("evaluate: $logTag - ${action.typeUrl}, actor: $actor")
@@ -57,12 +64,13 @@ class ActionEvaluatorImpl(
         return kotlin.runCatching {
             actor.handle(
                 HandleParams(
-                    context,
-                    shortXContext,
-                    action,
-                    contextData,
-                    recursiveExecute,
-                    conditionEvaluator
+                    context = context,
+                    shortXContext = shortXContext,
+                    action = action,
+                    contextData = contextData,
+                    localVars = localVars,
+                    recursiveExecute = recursiveExecute,
+                    conditionEvaluator = conditionEvaluator
                 )
             )
             ActionEvaluator.EvaluateResult.Success(action)

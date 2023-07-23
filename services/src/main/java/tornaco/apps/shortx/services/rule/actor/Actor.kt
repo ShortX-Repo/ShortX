@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor
 import android.content.Context
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
@@ -15,7 +16,13 @@ data class HandleParams(
     val shortXContext: ShortXContext,
     val action: ProtoAny,
     val contextData: ContextData,
-    val recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult,
+    val localVars: LocalVars,
+    val recursiveExecute: suspend (
+        logTag: String,
+        action: ProtoAny,
+        contextData: ContextData,
+        localVars: LocalVars
+    ) -> ActionEvaluator.EvaluateResult,
     val conditionEvaluator: ConditionEvaluator
 )
 
@@ -310,6 +317,10 @@ enum class PrebuiltActor : ActorProvider {
     SwitchMobileDataSlot {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SwitchMobileDataSlot
+    },
+    CreateLocalVar {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.CreateLocalVar
     },
 
 

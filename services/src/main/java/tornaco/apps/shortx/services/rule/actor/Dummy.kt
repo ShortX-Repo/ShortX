@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.rule.ProtoAny
@@ -14,7 +15,8 @@ fun dummyHandlerParamsForAction(context: Context, shortXContext: ShortXContext, 
         shortXContext = shortXContext,
         action = action,
         contextData = ContextData.obtain(),
-        recursiveExecute = { _, _, _ ->
+        localVars = LocalVars.obtain(),
+        recursiveExecute = { _, _, _, _ ->
             throw java.lang.IllegalStateException("Dummy")
         },
         conditionEvaluator = object : ConditionEvaluator {
@@ -34,5 +36,5 @@ fun dummyHandlerParamsForAction(context: Context, shortXContext: ShortXContext, 
             ): Boolean {
                 throw IllegalStateException("Dummy")
             }
-        }
+        },
     )

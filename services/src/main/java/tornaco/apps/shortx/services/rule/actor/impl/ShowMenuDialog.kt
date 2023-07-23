@@ -11,6 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
@@ -34,7 +35,8 @@ object ShowMenuDialog : Actor {
             shortXContext = shortXContext,
             d = d,
             contextData = contextData,
-            recursiveExecute = recursiveExecute
+            recursiveExecute = recursiveExecute,
+            localVars = localVars
         )
     }
 
@@ -43,7 +45,13 @@ object ShowMenuDialog : Actor {
         shortXContext: ShortXContext,
         d: tornaco.apps.shortx.core.proto.action.ShowMenuDialog,
         contextData: ContextData,
-        recursiveExecute: suspend (logTag: String, action: ProtoAny, contextData: ContextData) -> ActionEvaluator.EvaluateResult
+        localVars: LocalVars,
+        recursiveExecute: suspend (
+            logTag: String,
+            action: ProtoAny,
+            contextData: ContextData,
+            localVars: LocalVars
+        ) -> ActionEvaluator.EvaluateResult
     ) = withContext(Dispatchers.Main) {
         logger.d("ShowMenuDialog, showing: ${d.itemsList.size} ${d.cancelable}")
         val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
@@ -62,7 +70,7 @@ object ShowMenuDialog : Actor {
             logger.d("handle result: $result")
             val actions = result?.clickActionsList
             if (!actions.isNullOrEmpty()) actions.forEach {
-                val evaRes = recursiveExecute("ShowMenuDialog", it, contextData)
+                val evaRes = recursiveExecute("ShowMenuDialog", it, contextData, localVars)
                 if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                     logger.e(evaRes.error, "evaluate fail")
                     if (evaRes.shouldContinue) {

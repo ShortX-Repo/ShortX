@@ -29,7 +29,7 @@ object IfThenElse : Actor {
         if (matchCond) {
             if (d.ifActionsList.isNullOrEmpty().not()) {
                 d.ifActionsList.forEach {
-                    val evaRes = recursiveExecute("IfThenElse-IfAction", it, contextData)
+                    val evaRes = recursiveExecute("IfThenElse-IfAction", it, contextData, localVars)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         if (evaRes.shouldContinue) {
@@ -46,7 +46,7 @@ object IfThenElse : Actor {
         } else {
             if (d.elseActionsList.isNullOrEmpty().not()) {
                 d.elseActionsList.forEach {
-                    val evaRes = recursiveExecute("IfThenElse-ElseAction", it, contextData)
+                    val evaRes = recursiveExecute("IfThenElse-ElseAction", it, contextData, localVars)
                     if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
                         logger.e(evaRes.error, "evaluate fail")
                         if (evaRes.shouldContinue) {
