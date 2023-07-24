@@ -213,8 +213,10 @@ class DefaultRuleEngine(
                     logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
                     if (conditionRes) {
                         val conflictStrategy: ConflictStrategy = rule.conflictPolicy
-                        val isThisRuleAlreadyRunning = jobs.any {
-                            it.id == rule.id
+                        val isThisRuleAlreadyRunning = synchronized(jobs) {
+                            jobs.any {
+                                it.id == rule.id
+                            }
                         }
                         logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
                         if (isThisRuleAlreadyRunning) {
@@ -288,11 +290,15 @@ class DefaultRuleEngine(
                     }
                 }
                 logger.d("Created job: $job for rule: ${rule.title}")
-                jobs.add(JobRecord(rule.id, job))
+                synchronized(jobs) {
+                    jobs.add(JobRecord(rule.id, job))
+                }
                 onJobStarted(rule.id)
                 job.invokeOnCompletion {
                     logger.d("job for rule: ${rule.title} complete, err: $it")
-                    jobs.remove(JobRecord(rule.id, job))
+                    synchronized(jobs) {
+                        jobs.remove(JobRecord(rule.id, job))
+                    }
                     contextData.recycle()
                     onJobCompleted(rule.id)
                 }
@@ -345,8 +351,10 @@ class DefaultRuleEngine(
         conflictStrategy: ConflictStrategy
     ) {
         val contextData = ContextData.obtain(initialContextData)
-        val isAlreadyRunning = jobs.any {
-            it.id == containerId
+        val isAlreadyRunning = synchronized(jobs) {
+            jobs.any {
+                it.id == containerId
+            }
         }
         logger.d("evaluateActions, $logTag conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
 
@@ -397,11 +405,15 @@ class DefaultRuleEngine(
                 }
             }
         }
-        jobs.add(JobRecord(containerId, job))
+        synchronized(jobs) {
+            jobs.add(JobRecord(containerId, job))
+        }
         onJobStarted(containerId)
         job.invokeOnCompletion {
             logger.d("job for id: $containerId complete.")
-            jobs.remove(JobRecord(containerId, job))
+            synchronized(jobs) {
+                jobs.remove(JobRecord(containerId, job))
+            }
             contextData.recycle()
             onJobCompleted(containerId)
         }
@@ -428,16 +440,20 @@ class DefaultRuleEngine(
     }
 
     override fun cancelJobs(reason: String, filter: (JobRecord) -> Boolean) {
-        val canceled = jobs.filter(filter).onEach {
-            logger.d("cancel job: $it, reason: $reason")
-            it.job.cancel()
-            onJobCancelled(it.id)
+        synchronized(jobs) {
+            val canceled = jobs.filter(filter).onEach {
+                logger.d("cancel job: $it, reason: $reason")
+                it.job.cancel()
+                onJobCancelled(it.id)
+            }
+            jobs.removeAll(canceled)
         }
-        jobs.removeAll(canceled)
     }
 
     override fun activeJobs(): List<JobRecord> {
-        return jobs.filter { it.job.isActive }
+        return synchronized(jobs) {
+            jobs.filter { it.job.isActive }
+        }
     }
 }
 
