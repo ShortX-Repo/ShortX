@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
@@ -15,6 +16,17 @@ fun FactContentStateHandler.asFactHandler(): FactHandler {
     return FactHandler(
         addFact = this::addFact,
         removeFact = this::removeFact,
+        copy = { factId ->
+            UiClipboard.copy(UiClipboard.ClipboardContent.FactContent(
+                facts.first { it.id == factId }
+            ))
+        },
+        insertAbove = { fact, anchorId ->
+            insertFactAbove(fact, anchorId)
+        },
+        insertBelow = { fact, anchorId ->
+            insertFactBelow(fact, anchorId)
+        }
     )
 }
 
@@ -56,6 +68,32 @@ class FactContentStateHandler(
                     isChanged = true
                 )
             }
+        }
+    }
+
+    fun insertFactAbove(action: Fact, anchorId: String) {
+        updateState {
+            copy(facts = facts.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchorId }
+                if (existingIndex >= 0) {
+                    add(existingIndex, action)
+                } else {
+                    add(action)
+                }
+            }, isChanged = true)
+        }
+    }
+
+    fun insertFactBelow(action: Fact, anchorId: String) {
+        updateState {
+            copy(facts = facts.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchorId }
+                if (existingIndex >= 0) {
+                    add(existingIndex + 1, action)
+                } else {
+                    add(action)
+                }
+            }, isChanged = true)
         }
     }
 
