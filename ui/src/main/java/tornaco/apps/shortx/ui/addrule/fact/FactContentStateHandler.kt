@@ -1,8 +1,12 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
+import tornaco.apps.shortx.ui.addrule.fact.model.toFact
+import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
 import tornaco.apps.shortx.ui.base.i18NIns
@@ -71,27 +75,39 @@ class FactContentStateHandler(
         }
     }
 
-    fun insertFactAbove(action: Fact, anchorId: String) {
+    fun insertFactAbove(fact: Fact, anchorId: String) {
+        val refinedFact = requireNotNull(
+            fact.toProtoFact(overrideId = defaultNewFactId()).pack_()
+                .toFact(shortXManager)
+        ) {
+            "refinedFact is null"
+        }
         updateState {
             copy(facts = facts.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
-                    add(existingIndex, action)
+                    add(existingIndex, refinedFact)
                 } else {
-                    add(action)
+                    add(refinedFact)
                 }
             }, isChanged = true)
         }
     }
 
-    fun insertFactBelow(action: Fact, anchorId: String) {
+    fun insertFactBelow(fact: Fact, anchorId: String) {
+        val refinedFact = requireNotNull(
+            fact.toProtoFact(overrideId = defaultNewFactId()).pack_()
+                .toFact(shortXManager)
+        ) {
+            "refinedFact is null"
+        }
         updateState {
             copy(facts = facts.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
-                    add(existingIndex + 1, action)
+                    add(existingIndex + 1, refinedFact)
                 } else {
-                    add(action)
+                    add(refinedFact)
                 }
             }, isChanged = true)
         }

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.WithState
@@ -110,13 +111,19 @@ class ActionContentStateHandler(
     }
 
     fun insertActionAbove(action: Action, anchorId: String) {
+        val refinedAction = requireNotNull(
+            action.toProtoAction(overrideId = defaultNewActionId()).pack_()
+                .toAction(shortXManager)
+        ) {
+            "refinedAction is null"
+        }
         updateState {
             copy(actions = actions.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
-                    add(existingIndex, action)
+                    add(existingIndex, refinedAction)
                 } else {
-                    add(action)
+                    add(refinedAction)
                 }
             }, isChanged = true)
         }
@@ -124,13 +131,19 @@ class ActionContentStateHandler(
     }
 
     fun insertActionBelow(action: Action, anchorId: String) {
+        val refinedAction = requireNotNull(
+            action.toProtoAction(overrideId = defaultNewActionId()).pack_()
+                .toAction(shortXManager)
+        ) {
+            "refinedAction is null"
+        }
         updateState {
             copy(actions = actions.toMutableList().apply {
                 val existingIndex = indexOfFirst { it.id == anchorId }
                 if (existingIndex >= 0) {
-                    add(existingIndex + 1, action)
+                    add(existingIndex + 1, refinedAction)
                 } else {
-                    add(action)
+                    add(refinedAction)
                 }
             }, isChanged = true)
         }
