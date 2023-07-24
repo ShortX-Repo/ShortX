@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.ui.subscribe.code
 
 import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -26,10 +25,7 @@ interface CodeApi {
             val retrofit: Retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(
-                    OkHttpClient.Builder()
-                        .addInterceptor(ChuckerInterceptor.Builder(context).build()).build()
-                )
+                .client(OkHttpClient.Builder().build())
                 .build()
             return retrofit.create(CodeApi::class.java)
         }
