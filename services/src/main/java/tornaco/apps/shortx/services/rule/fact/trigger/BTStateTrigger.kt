@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothHeadset
+import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -19,6 +20,7 @@ import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.bluetoothManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper.getBTBondedDevices
 import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
@@ -26,7 +28,7 @@ import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 class BTStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
     private val logger = Logger("BTStateTrigger")
-    private val _boundDevices: MutableStateFlow<List<BTBondedDevice>> =
+    private val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
         MutableStateFlow(emptyList())
 
     private val receiver = object : SafeBroadcastReceiver(shortXContext) {
@@ -54,6 +56,18 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                 }
 
                 checkConnectionState()
+            } else if (action == BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED) {
+                val btDevice: BluetoothDevice? =
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                logger.d(
+                    "ACTION_ACTIVE_DEVICE_CHANGED btDevice: ${
+                        btDevice?.let {
+                            BTHelper.btDeviceToProtoDevice(
+                                it
+                            )
+                        }
+                    }"
+                )
             } else {
                 logger.d("BT Action: $action")
                 checkConnectionState()
@@ -63,26 +77,23 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
     private fun checkConnectionState() {
         val eventDevices = getBTBondedDevices()
-        logger.d("eventDevices: $eventDevices")
-
         val eventConnectedDevices = eventDevices.filter { it.isConnected }
-        logger.d("eventConnectedDevices: $eventDevices")
+        logger.d("eventConnectedDevices: ${eventConnectedDevices.map { it.deviceToString() }}")
 
-        val currentBoundDevices = _boundDevices.value
-        logger.d("currentBoundDevices: $currentBoundDevices")
+        val currentBoundDevices = _connectedDevices.value
+        logger.d("currentBoundDevices: ${currentBoundDevices.map { it.deviceToString() }}")
 
         val newConnectedDevices = eventConnectedDevices.filter { ed ->
             !currentBoundDevices.any { it.address == ed.address }
         }
-        logger.d("newConnectedDevices: $newConnectedDevices")
+        logger.d("newConnectedDevices: ${newConnectedDevices.map { it.deviceToString() }}")
 
         val disconnectedDevices = currentBoundDevices.filter { cd ->
             !eventConnectedDevices.any { it.address == cd.address }
         }
-        logger.d("disconnectedDevices: $disconnectedDevices")
+        logger.d("disconnectedDevices: ${disconnectedDevices.map { it.deviceToString() }}")
 
-        _boundDevices.value = eventConnectedDevices
-
+        _connectedDevices.value = eventConnectedDevices
 
         if (newConnectedDevices.isNotEmpty()) {
             newConnectedDevices.forEach {
@@ -163,35 +174,52 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
     }
 }
 
+@SuppressLint("MissingPermission")
 object BTHelper {
-    @SuppressLint("MissingPermission", "NewApi")
     fun getBTBondedDevices() = BluetoothAdapter.getDefaultAdapter().bondedDevices.toList()
         .map { device ->
-            val address = runCatching { device.address }.getOrElse {
-                Logger("getBTBondedDevices").e(it, "get BT address")
-                ""
-            }
-            var alias = kotlin.runCatching {
-                device.alias
-            }.getOrElse { error ->
-                XLog.e("Get bt device alias error", error)
-                ""
-            }
-            if (TextUtils.isEmpty(alias)) {
-                alias = device.name
-            }
-            // device.aliasName
-            // No virtual method getAliasName()Ljava/lang/String; in class Landroid/bluetooth/BluetoothDevice
-
-            val batteryLevel = device.batteryLevel
-
-            val isConnected = device.isConnected
-
-            BTBondedDevice.newBuilder()
-                .setAddress(address)
-                .setAlias(alias)
-                .setBatteryLevel(batteryLevel)
-                .setIsConnected(isConnected)
-                .build()
+            btDeviceToProtoDevice(device)
         }
+
+    fun getConnectedDevices(context: Context) {
+        val a2dpDevices = context.bluetoothManager.getConnectedDevices(BluetoothProfile.A2DP)
+        val a2DpSinkDevices =
+            context.bluetoothManager.getConnectedDevices(BluetoothProfile.A2DP_SINK)
+        val headSetDevices = context.bluetoothManager.getConnectedDevices(BluetoothProfile.HEADSET)
+        val headSetClientDevices =
+            context.bluetoothManager.getConnectedDevices(BluetoothProfile.HEADSET_CLIENT)
+    }
+
+    @SuppressLint("NewApi")
+    fun btDeviceToProtoDevice(device: BluetoothDevice): BTBondedDevice {
+        val address = runCatching { device.address }.getOrElse {
+            Logger("getBTBondedDevices").e(it, "get BT address")
+            ""
+        }
+        var alias = kotlin.runCatching {
+            device.alias
+        }.getOrElse { error ->
+            XLog.e("Get bt device alias error", error)
+            ""
+        }
+        if (TextUtils.isEmpty(alias)) {
+            alias = device.name
+        }
+        // device.aliasName
+        // No virtual method getAliasName()Ljava/lang/String; in class Landroid/bluetooth/BluetoothDevice
+
+        val batteryLevel = device.batteryLevel
+
+        val isConnected = device.isConnected
+
+        return BTBondedDevice.newBuilder()
+            .setAddress(address)
+            .setAlias(alias)
+            .setBatteryLevel(batteryLevel)
+            .setIsConnected(isConnected)
+            .build()
+    }
 }
+
+fun BTBondedDevice.deviceToString() =
+    "${this.alias} - ${this.address} - connected: ${this.isConnected}"
