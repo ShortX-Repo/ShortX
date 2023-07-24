@@ -69,7 +69,7 @@ class NetworkService(shortXContext: ShortXContext) :
         _currentVpnState.value = detailedState
     }
 
-    private fun registerWifiReceiver() {
+    private fun registerWifiReceiver() = kotlin.runCatching {
         wifiStatusTracker = WifiStatusTracker(context) {
             val ws = WifiState(
                 enabled = wifiStatusTracker.enabled,
@@ -131,6 +131,8 @@ class NetworkService(shortXContext: ShortXContext) :
             wifiIntentFilter,
             ContextCompat.RECEIVER_EXPORTED
         )
+    }.onFailure {
+        logger.e(it, "registerWifiReceiver")
     }
 
     override fun shutdown() {

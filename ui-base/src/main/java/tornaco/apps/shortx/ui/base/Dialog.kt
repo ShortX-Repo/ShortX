@@ -252,7 +252,7 @@ open class CommonDialogState {
         _isShow = true
     }
 
-    fun dismiss() {
+    open fun dismiss() {
         _isShow = false
     }
 }

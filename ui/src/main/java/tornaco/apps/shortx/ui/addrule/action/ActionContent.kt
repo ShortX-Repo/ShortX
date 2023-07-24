@@ -458,17 +458,23 @@ private fun Actions(
                                     }
                                 ),
 
-                                ), onSelect = {
-                                when (it.data.second) {
+                                ), onSelect = { dropdownItem ->
+                                when (dropdownItem.data.second) {
                                     "ia" -> {
                                         insertAboveActionSelectActivityLauncher.launch(
-                                            ActionSelectorActivity.newIntent(context, it.data.first)
+                                            ActionSelectorActivity.newIntent(
+                                                context,
+                                                dropdownItem.data.first
+                                            )
                                         )
                                     }
 
                                     "ib" -> {
                                         insertBelowActionSelectActivityLauncher.launch(
-                                            ActionSelectorActivity.newIntent(context, it.data.first)
+                                            ActionSelectorActivity.newIntent(
+                                                context,
+                                                dropdownItem.data.first
+                                            )
                                         )
                                     }
 
@@ -477,22 +483,47 @@ private fun Actions(
                                         if (clipboardActions.size == 1) {
                                             handler.insertAbove(
                                                 clipboardActions[0].action,
-                                                it.data.first
+                                                dropdownItem.data.first
                                             )
                                         } else {
-                                            clipboardDialogState.show()
+                                            clipboardDialogState.show { contentList ->
+                                                contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
+                                                    .forEach {
+                                                        handler.insertAbove(
+                                                            it.action,
+                                                            dropdownItem.data.first
+                                                        )
+                                                    }
+                                            }
                                         }
                                     }
 
                                     "pb" -> {
+                                        val clipboardActions = UiClipboard.getActions()
+                                        if (clipboardActions.size == 1) {
+                                            handler.insertBelow(
+                                                clipboardActions[0].action,
+                                                dropdownItem.data.first
+                                            )
+                                        } else {
+                                            clipboardDialogState.show { contentList ->
+                                                contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
+                                                    .forEach {
+                                                        handler.insertBelow(
+                                                            it.action,
+                                                            dropdownItem.data.first
+                                                        )
+                                                    }
+                                            }
+                                        }
                                     }
 
                                     "cp" -> {
-                                        handler.copy(it.data.first)
+                                        handler.copy(dropdownItem.data.first)
                                     }
 
                                     "enableDisable" -> {
-                                        handler.enableDisable(it.data.first)
+                                        handler.enableDisable(dropdownItem.data.first)
                                     }
 
                                     "onError" -> {
@@ -508,7 +539,7 @@ private fun Actions(
                                     }
 
                                     "execute" -> {
-                                        scope.launch { handler.execute(it.data.first) }
+                                        scope.launch { handler.execute(dropdownItem.data.first) }
                                     }
                                 }
                             })

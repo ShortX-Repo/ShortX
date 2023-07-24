@@ -1,12 +1,12 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package tornaco.apps.shortx.ui
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,14 +21,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionIcon
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.condition.ConditionIcon
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.fact.FactIcon
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -61,26 +67,38 @@ object UiClipboard {
 
     private val contents: MutableList<ClipboardContent> = mutableListOf()
 
-    val all get() = contents.toList()
+    val all get() = contents.toList().reversed()
 
     fun hasAction() = contents.any { it is ClipboardContent.ActionContent }
     fun getActions() = contents.filterIsInstance<ClipboardContent.ActionContent>()
 
     fun copy(clipboardContent: ClipboardContent) {
+        remove(clipboardContent.id)
         this.contents.add(clipboardContent)
     }
 
     fun remove(id: String) {
         this.contents.removeIf { it.id == id }
     }
+
+    fun removeAll() {
+        this.contents.clear()
+    }
 }
 
 class ClipboardDialogState : CommonDialogState() {
     var all by mutableStateOf<List<UiClipboard.ClipboardContent>>(emptyList())
+    var onSelected: (List<UiClipboard.ClipboardContent>) -> Unit = {}
 
-    override fun show() {
+    fun show(onSelected: (List<UiClipboard.ClipboardContent>) -> Unit) {
         all = UiClipboard.all
-        super.show()
+        this.onSelected = onSelected
+        show()
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        this.onSelected = {}
     }
 
     fun remove(id: String) {
@@ -91,6 +109,11 @@ class ClipboardDialogState : CommonDialogState() {
         }
 
         UiClipboard.remove(id)
+    }
+
+    fun removeAll() {
+        all = emptyList()
+        UiClipboard.removeAll()
     }
 }
 
@@ -119,7 +142,7 @@ fun ClipboardDialog(
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(LocalI18N.current["ui.title.select.action"]) },
+                                title = { Text(LocalI18N.current["ui.title.ui.clipboard"]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         state.dismiss()
@@ -128,47 +151,114 @@ fun ClipboardDialog(
                                     }
                                 },
                                 actions = {
+                                    IconButton(onClick = {
+                                        state.removeAll()
+                                    }) {
+                                        RemixIcon(remixName = Remix.System.delete_bin_4_line)
+                                    }
                                 },
                             )
-                        }) {
-                        Column(
+                        }) { paddingValues ->
+
+                        val facts = remember(state.all) {
+                            state.all.filterIsInstance<UiClipboard.ClipboardContent.FactContent>()
+                        }
+                        val conditions = remember(state.all) {
+                            state.all.filterIsInstance<UiClipboard.ClipboardContent.ConditionContent>()
+                        }
+                        val actions = remember(state.all) {
+                            state.all.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
+                        }
+
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(it)
-                                .verticalScroll(rememberScrollState())
+                                .padding(paddingValues)
                         ) {
-                            state.all.forEach { item ->
-                                when (item) {
-                                    is UiClipboard.ClipboardContent.ActionContent -> {
-                                        val action = item.action
-                                        ListItem(
-                                            modifier = Modifier,
-                                            titleLines = mutableListOf<String>().apply {
-                                                addAll(labelLinesForAction(action = action))
-                                                onDebugBuild { add(action.id) }
-                                            },
-                                            textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
-                                            titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
-                                            textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
-                                            icon = {
-                                                ActionIcon(action) {}
-                                            },
-                                            action1 = {
-                                                IconButton(onClick = { state.remove(item.id) }) {
-                                                    RemixIcon(remixName = Remix.System.close_line)
-                                                }
-                                            }
-                                        )
+                            if (facts.isNotEmpty()) stickyHeader {
+                                FieldTitle(
+                                    modifier = Modifier.padding(16.dp),
+                                    text = LocalI18N.current["ui.fact.title"]
+                                )
+                            }
+                            items(facts) {
+                                val fact = it.fact
+                                ListItem(
+                                    modifier = Modifier,
+                                    titleLines = mutableListOf<String>().apply {
+                                        addAll(labelForFact(fact = fact))
+                                    },
+                                    onClick = {
+                                        state.onSelected(listOf(it))
+                                        state.dismiss()
+                                    },
+                                    icon = {
+                                        FactIcon(fact)
+                                    },
+                                    action1 = {
+                                        IconButton(onClick = { state.remove(it.id) }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
                                     }
+                                )
+                            }
 
-                                    is UiClipboard.ClipboardContent.ConditionContent -> {
+                            if (conditions.isNotEmpty()) stickyHeader {
+                                FieldTitle(
+                                    modifier = Modifier.padding(16.dp),
+                                    text = LocalI18N.current["ui.conditions.title"]
+                                )
+                            }
+                            items(conditions) {
+                                val condition = it.condition
+                                ListItem(
+                                    titleLines = mutableListOf<String>().apply {
+                                        addAll(labelForCondition(condition = condition))
+                                    },
+                                    icon = {
+                                        ConditionIcon(condition)
+                                    },
+                                    action1 = {
+                                        IconButton(onClick = { state.remove(it.id) }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
+                                    },
+                                    onClick = {
+                                        state.onSelected(listOf(it))
+                                        state.dismiss()
+                                    })
+                            }
 
+                            if (actions.isNotEmpty()) stickyHeader {
+                                FieldTitle(
+                                    modifier = Modifier.padding(16.dp),
+                                    text = LocalI18N.current["ui.actions.title"]
+                                )
+                            }
+                            items(actions) {
+                                val action = it.action
+                                ListItem(
+                                    modifier = Modifier,
+                                    titleLines = mutableListOf<String>().apply {
+                                        addAll(labelLinesForAction(action = action))
+                                        onDebugBuild { add(action.id) }
+                                    },
+                                    textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
+                                    titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
+                                    textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
+                                    icon = {
+                                        ActionIcon(action) {}
+                                    },
+                                    action1 = {
+                                        IconButton(onClick = { state.remove(it.id) }) {
+                                            RemixIcon(remixName = Remix.System.close_line)
+                                        }
+                                    },
+                                    onClick = {
+                                        state.onSelected(listOf(it))
+                                        state.dismiss()
                                     }
-
-                                    is UiClipboard.ClipboardContent.FactContent -> {
-
-                                    }
-                                }
+                                )
                             }
                         }
                     }
