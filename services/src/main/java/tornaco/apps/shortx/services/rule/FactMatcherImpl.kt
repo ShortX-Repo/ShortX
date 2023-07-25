@@ -34,7 +34,6 @@ import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Notification
-import tornaco.apps.shortx.core.proto.fact.NotificationMatcher
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
@@ -199,7 +198,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
+            ) && matchNotificationMatcher(actualN, ruleN)
         }
 
         register(NotificationUpdated::class.java) { actual, rule ->
@@ -208,7 +207,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
+            ) && matchNotificationMatcher(actualN, ruleN)
         }
 
         register(NotificationRemoved::class.java) { actual, rule ->
@@ -217,7 +216,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
+            ) && matchNotificationMatcher(actualN, ruleN)
         }
 
         register(AppRemoved::class.java) { actual, rule ->
@@ -445,11 +444,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     }
 
     private fun matchNotificationMatcher(
-        actual: NotificationMatcher,
-        rule: NotificationMatcher
+        actual: Notification,
+        rule: Notification
     ): Boolean {
         // FAST: No matcher settings
-        if (rule == NotificationMatcher.getDefaultInstance()) {
+        if (rule == Notification.getDefaultInstance()) {
             return true
         }
         return emptyOrRegexMatch(

@@ -25,11 +25,8 @@ fun AppFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
         Fact.AppBecomeForeground::class,
 
         Fact.NotificationPosted::class,
-        Fact.NotificationPostedAny::class,
         Fact.NotificationRemoved::class,
-        Fact.NotificationRemovedAny::class,
         Fact.NotificationUpdated::class,
-        Fact.NotificationUpdatedAny::class,
 
         Fact.TaskRemoved::class,
         Fact.TaskRemovedAny::class,

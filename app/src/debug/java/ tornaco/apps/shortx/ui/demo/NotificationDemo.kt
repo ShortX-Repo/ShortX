@@ -103,7 +103,7 @@ fun NotificationDemo() {
         )
         id += 1
     }) {
-        Text(text = "Notification Post(diff ID.)")
+        Text(text = "Notification Post(diff ID. $id)")
     }
 
     FilledTonalButton(onClick = {

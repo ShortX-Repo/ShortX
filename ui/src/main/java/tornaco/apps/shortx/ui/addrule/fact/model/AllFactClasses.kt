@@ -40,10 +40,6 @@ val allFactClasses = listOf(
     Fact.NotificationRemoved::class,
     Fact.NotificationUpdated::class,
 
-    Fact.NotificationPostedAny::class,
-    Fact.NotificationRemovedAny::class,
-    Fact.NotificationUpdatedAny::class,
-
     Fact.TaskRemoved::class,
     Fact.TaskRemovedAny::class,
 

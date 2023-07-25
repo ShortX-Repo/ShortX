@@ -98,18 +98,6 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.n.removed"] to null
         }
 
-        Fact.NotificationPostedAny::class -> {
-            i18n["ui.fact.n.posted"] to i18n["ui.fact.n.any"]
-        }
-
-        Fact.NotificationUpdatedAny::class -> {
-            i18n["ui.fact.n.updated"] to i18n["ui.fact.n.any"]
-        }
-
-        Fact.NotificationRemovedAny::class -> {
-            i18n["ui.fact.n.removed"] to i18n["ui.fact.n.any"]
-        }
-
         Fact.TaskRemoved::class -> {
             i18n["ui.fact.task.removed"] to i18n["ui.fact.task.removed.specific"]
         }
@@ -423,24 +411,6 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             mutableListOf(
                 i18N["ui.fact.n.updated"],
             ).labelLinesFromAppsAndPkgSets(fact.n.apps, fact.n.pkgSets)
-        }
-
-        is Fact.NotificationPostedAny -> {
-            listOf(
-                i18N["ui.fact.n.posted"], i18N["ui.fact.n.any"]
-            )
-        }
-
-        is Fact.NotificationRemovedAny -> {
-            listOf(
-                i18N["ui.fact.n.removed"], i18N["ui.fact.n.any"]
-            )
-        }
-
-        is Fact.NotificationUpdatedAny -> {
-            listOf(
-                i18N["ui.fact.n.updated"], i18N["ui.fact.n.any"]
-            )
         }
 
         is Fact.TaskRemoved -> {

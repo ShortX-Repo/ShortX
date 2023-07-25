@@ -338,11 +338,14 @@ sealed interface Fact {
         }
     }
 
+    // For match purpose.
     data class Notification(
+        val titleRegex: String,
+        val contentRegex: String,
+        val tagRegex: String,
+
         val apps: List<App>,
         val pkgSets: List<PkgSet>,
-        val titleRegex: String? = null,
-        val contentRegex: String? = null
     )
 
     data class NotificationPosted(
@@ -369,34 +372,6 @@ sealed interface Fact {
         override val note: String = "",
         override val id: String = defaultNewFactId(),
         val n: Notification
-    ) : Fact {
-        override fun clone(id: String, note: String): Fact {
-            return copy(id = id, note = note)
-        }
-    }
-
-
-    data class NotificationPostedAny(
-        override val note: String = "",
-        override val id: String = defaultNewFactId(),
-    ) : Fact {
-        override fun clone(id: String, note: String): Fact {
-            return copy(id = id, note = note)
-        }
-    }
-
-    data class NotificationRemovedAny(
-        override val note: String = "",
-        override val id: String = defaultNewFactId(),
-    ) : Fact {
-        override fun clone(id: String, note: String): Fact {
-            return copy(id = id, note = note)
-        }
-    }
-
-    data class NotificationUpdatedAny(
-        override val note: String = "",
-        override val id: String = defaultNewFactId(),
     ) : Fact {
         override fun clone(id: String, note: String): Fact {
             return copy(id = id, note = note)

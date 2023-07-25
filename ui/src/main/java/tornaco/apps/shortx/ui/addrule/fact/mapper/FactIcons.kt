@@ -36,9 +36,6 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.NotificationPosted::class -> Remix.System.notification_badge_fill
         Fact.NotificationUpdated::class -> Remix.System.notification_badge_fill
         Fact.NotificationRemoved::class -> Remix.System.notification_badge_fill
-        Fact.NotificationPostedAny::class -> Remix.System.notification_badge_fill
-        Fact.NotificationUpdatedAny::class -> Remix.System.notification_badge_fill
-        Fact.NotificationRemovedAny::class -> Remix.System.notification_badge_fill
         Fact.TaskRemoved::class -> Remix.System.checkbox_multiple_blank_fill
         Fact.TaskRemovedAny::class -> Remix.System.checkbox_multiple_blank_fill
         Fact.PkgStopRunning::class -> Remix.UserAndFaces.skull_2_fill

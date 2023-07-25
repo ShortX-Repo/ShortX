@@ -278,14 +278,6 @@ message Notification {
   bool isFgService = 7;
 
   string tag = 8;
-
-  NotificationMatcher matcher = 20;
-}
-
-message NotificationMatcher {
-  string title = 1;
-  string contentText = 2;
-  string tag = 3;
 }
 
 message NotificationPosted {

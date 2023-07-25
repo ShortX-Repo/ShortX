@@ -216,10 +216,9 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
                         .addAllPkgSets(n.pkgSets.map { it.label })
-                        .apply {
-                            n.titleRegex?.let { title = it }
-                            n.contentRegex?.let { contentText = it }
-                        }
+                        .setTitle(n.titleRegex)
+                        .setContentText(n.contentRegex)
+                        .setTag(n.tagRegex)
                         .build()
                 )
                 .setId(overrideId ?: id).setNote(note).build()
@@ -231,10 +230,9 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
                         .addAllPkgSets(n.pkgSets.map { it.label })
-                        .apply {
-                            n.titleRegex?.let { title = it }
-                            n.contentRegex?.let { contentText = it }
-                        }
+                        .setTitle(n.titleRegex)
+                        .setContentText(n.contentRegex)
+                        .setTag(n.tagRegex)
                         .build()
                 )
                 .setId(overrideId ?: id).setNote(note).build()
@@ -246,35 +244,10 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
                     Notification.newBuilder()
                         .addAllApps(n.apps.map { it.pkg })
                         .addAllPkgSets(n.pkgSets.map { it.label })
-                        .apply {
-                            n.titleRegex?.let { title = it }
-                            n.contentRegex?.let { contentText = it }
-                        }
+                        .setTitle(n.titleRegex)
+                        .setContentText(n.contentRegex)
+                        .setTag(n.tagRegex)
                         .build()
-                )
-                .setId(overrideId ?: id).setNote(note).build()
-        }
-
-        is Fact.NotificationPostedAny -> {
-            NotificationPosted.newBuilder()
-                .setRecord(
-                    Notification.getDefaultInstance()
-                )
-                .setId(overrideId ?: id).setNote(note).build()
-        }
-
-        is Fact.NotificationRemovedAny -> {
-            NotificationRemoved.newBuilder()
-                .setRecord(
-                    Notification.getDefaultInstance()
-                )
-                .setId(overrideId ?: id).setNote(note).build()
-        }
-
-        is Fact.NotificationUpdatedAny -> {
-            NotificationUpdated.newBuilder()
-                .setNew(
-                    Notification.getDefaultInstance()
                 )
                 .setId(overrideId ?: id).setNote(note).build()
         }

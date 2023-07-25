@@ -8,7 +8,10 @@ import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
+import tornaco.apps.shortx.ui.base.LocalI18N
 
 @Composable
 fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -108,74 +111,23 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     AppPkgSelectorDialog(audioFocusLostSelectorState)
 
     val notificationPostedSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                setFact(
-                    Fact.NotificationPosted(
-                        n = Fact.Notification(
-                            apps = pkg,
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }, onPkgSetSelected = {
-                setFact(
-                    Fact.NotificationPosted(
-                        n = Fact.Notification(
-                            pkgSets = it,
-                            apps = emptyList()
-                        )
-                    )
-                )
-            })
-    AppPkgSelectorDialog(notificationPostedSelectorState)
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.posted"]) {
+            setFact(Fact.NotificationPosted(n = it))
+        }
+    NotificationAppAndMatcherSelectorDialog(notificationPostedSelectorState)
 
     val notificationUpdatedSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                setFact(
-                    Fact.NotificationUpdated(
-                        n = Fact.Notification(
-                            apps = pkg,
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }, onPkgSetSelected = {
-                setFact(
-                    Fact.NotificationUpdated(
-                        n = Fact.Notification(
-                            pkgSets = it,
-                            apps = emptyList()
-                        )
-                    )
-                )
-            })
-    AppPkgSelectorDialog(notificationUpdatedSelectorState)
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.updated"]) {
+            setFact(Fact.NotificationUpdated(n = it))
+        }
+    NotificationAppAndMatcherSelectorDialog(notificationUpdatedSelectorState)
 
 
     val notificationRemovedSelectorState =
-        rememberAppPkgSelectorState(
-            onAppListSelected = { pkg ->
-                setFact(
-                    Fact.NotificationRemoved(
-                        n = Fact.Notification(
-                            apps = pkg,
-                            pkgSets = emptyList()
-                        )
-                    )
-                )
-            }, onPkgSetSelected = {
-                setFact(
-                    Fact.NotificationRemoved(
-                        n = Fact.Notification(
-                            pkgSets = it,
-                            apps = emptyList()
-                        )
-                    )
-                )
-            })
-    AppPkgSelectorDialog(notificationRemovedSelectorState)
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.removed"]) {
+            setFact(Fact.NotificationRemoved(n = it))
+        }
+    NotificationAppAndMatcherSelectorDialog(notificationRemovedSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -231,47 +183,23 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
                 true
             }
 
-            Fact.NotificationPostedAny::class -> {
-                setFact(
-                    Fact.NotificationPostedAny()
-                )
-                true
-            }
-
-            Fact.NotificationUpdatedAny::class -> {
-                setFact(
-                    Fact.NotificationUpdatedAny()
-                )
-                true
-            }
-
-            Fact.NotificationRemovedAny::class -> {
-                setFact(
-                    Fact.NotificationRemovedAny()
-                )
-                true
-            }
-
             Fact.NotificationPosted::class -> {
                 notificationPostedSelectorState.show(
-                    source.getFactAs<Fact.NotificationPosted>()?.n?.apps,
-                    source.getFactAs<Fact.NotificationPosted>()?.n?.pkgSets
+                    source.getFactAs<Fact.NotificationPosted>()?.n
                 )
                 true
             }
 
             Fact.NotificationUpdated::class -> {
-                notificationUpdatedSelectorState.show(
-                    source.getFactAs<Fact.NotificationUpdated>()?.n?.apps,
-                    source.getFactAs<Fact.NotificationUpdated>()?.n?.pkgSets
+                notificationPostedSelectorState.show(
+                    source.getFactAs<Fact.NotificationUpdated>()?.n
                 )
                 true
             }
 
             Fact.NotificationRemoved::class -> {
-                notificationRemovedSelectorState.show(
-                    source.getFactAs<Fact.NotificationRemoved>()?.n?.apps,
-                    source.getFactAs<Fact.NotificationRemoved>()?.n?.pkgSets
+                notificationPostedSelectorState.show(
+                    source.getFactAs<Fact.NotificationRemoved>()?.n
                 )
                 true
             }
