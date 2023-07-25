@@ -91,7 +91,7 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVa
         val isList = gv.isList()
         if (isList && valueItems.size > index) {
             val newValues = valueItems.toMutableList().apply { removeAt(index) }
-            gv.setValue(newValues)
+            shortXManager.addGlobalVar(gv.setValue(newValues))
             loadState(gv.name)
         }
     }

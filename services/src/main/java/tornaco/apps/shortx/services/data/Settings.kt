@@ -33,8 +33,11 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
             BoolSettings(key = "EnableInjectedShell", defaultValue = false)
     }
 
-    sealed class StringSettings(key: String, defaultValue: String) :
-        Settings<String>(key, defaultValue) {
+    sealed class StringSettings(key: String, defaultValue: String?) :
+        Settings<String?>(key, defaultValue) {
+        // Unique ID for Service ins, usually used for data enc.
+        object ServiceIns :
+            StringSettings(key = "ServiceIns", defaultValue = null)
     }
 
     sealed class IntSettings(key: String, defaultValue: Int) :

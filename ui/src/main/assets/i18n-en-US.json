@@ -563,6 +563,8 @@
   "ui.global.var.desc": "Manage and view global variables",
   "ui.global.var.access.help.title": "How to access",
   "ui.global.var.access.help.message": "You can access it via {name} in UI actions or MVEL expressions",
+  "ui.global.var.secrets.title": "Secret var",
+  "ui.global.var.secrets.message": "A secret Global var will be encryped on peristent, and it can not backup/restore",
   "ui.local.var.title": "Global var",
   "ui.local.var.name": "Var name",
   "ui.local.var.name.description": "Please use English name, name will be used when Write/read a var\nName is unique",

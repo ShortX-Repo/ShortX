@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.gvar.NewGlobalVar
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
 import tornaco.apps.shortx.ui.gvar.NewLocalVarDialog
 import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
@@ -166,7 +167,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
             Action.CreateGV::class -> {
                 addGlobalVarDialogState.show(source.getActionAs<Action.CreateGV>()?.let {
-                    it.globalVar.name to (it.globalVar.type.toType() ?: GlobalVarType.String)
+                    NewGlobalVar(
+                        name = it.globalVar.name,
+                        type = (it.globalVar.type.toType() ?: GlobalVarType.String),
+                        isSecret = it.globalVar.isSecret
+                    )
                 })
                 true
             }

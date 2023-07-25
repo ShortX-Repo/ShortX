@@ -40,6 +40,7 @@ import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -55,6 +56,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     private val globalVarStore: GlobalVarStore by lazy {
         GlobalVarStore(
             scope = systemServiceScope,
+            encKey = requireNotNull(store.read(Settings.StringSettings.ServiceIns)) {
+                "ServiceIns is null"
+            },
             onAddOrUpdate = { gv ->
                 globalVarObs.broadcast {
                     kotlin.runCatching { it.onAddOrUpdate(gv.name) }
@@ -141,6 +145,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     override fun systemReady() {
         super.systemReady()
+
+        // Install ServiceIns store
+        if (store.read(Settings.StringSettings.ServiceIns).isNullOrBlank()) {
+            store.write(Settings.StringSettings.ServiceIns, UUID.randomUUID().toString())
+            logger.i("Service Ins installed.")
+        }
+
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
         globalVarStore.readBlocking()

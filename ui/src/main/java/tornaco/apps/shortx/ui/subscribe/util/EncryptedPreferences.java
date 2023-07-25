@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import tornaco.apps.shortx.core.BuildProp;
+import tornaco.apps.shortx.core.util.enc.AESCrypt;
 
 /**
  * https://github.com/PDDStudio/EncryptedPreferences

@@ -27,6 +27,8 @@ message GlobalVar {
   google.protobuf.Any type = 3;
 
   int64 updateTimeMillis = 4;
+
+  bool isSecret = 5;
 }
 
 enum VarOp {

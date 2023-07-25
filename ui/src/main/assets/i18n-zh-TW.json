@@ -563,6 +563,8 @@
   "ui.global.var.desc": "查看和管理全局变量",
   "ui.global.var.access.help.title": "如何访问",
   "ui.global.var.access.help.message": "你可以通过 {name} 在UI动作中或MVEL表达式中访问该全局变量的值",
+  "ui.global.var.secrets.title": "隐私全局变量",
+  "ui.global.var.secrets.message": "隐私全局变量会被加密存储，且不能备份还原",
   "ui.local.var.title": "局部变量",
   "ui.local.var.name": "变量名称",
   "ui.local.var.name.description": "尽量使用英文，当你需要读取、写入某个变量时，会用到这个名称\n名称具有唯一性，两个变量名称不能一样",

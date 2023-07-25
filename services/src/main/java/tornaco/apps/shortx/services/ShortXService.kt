@@ -320,7 +320,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             val pkgName = if (uid == 1000) {
                 "android"
             } else {
-                shortXContext.appState.uidToApp(uid)
+                shortXContext.appState.uidToApp(uid)?.pkg?.pkgName ?: "Unknown_Pkg"
             }
             logger.e("UID: $uid")
             logger.e("pkg: $pkgName")

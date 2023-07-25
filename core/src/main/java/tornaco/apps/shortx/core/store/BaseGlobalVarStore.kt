@@ -7,14 +7,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.GlobalVarList
+import tornaco.apps.shortx.core.rule.setValue
+import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.enc.AESCrypt
 import java.io.File
 
 open class BaseGlobalVarStore(
     private val scope: CoroutineScope,
     private val storeFile: File,
+    private val encKey: String? = null
 ) {
     private val logger = Logger("GlobalVarStore")
 
@@ -46,11 +51,11 @@ open class BaseGlobalVarStore(
         return deleted
     }
 
-    fun getGlobalVarByName(name: String): GlobalVar? {
+    open fun getGlobalVarByName(name: String): GlobalVar? {
         return globalVarCaches[name]
     }
 
-    fun getAllGlobalVars(): List<GlobalVar> {
+    open fun getAllGlobalVars(): List<GlobalVar> {
         return globalVarCaches.values.toList()
     }
 
@@ -65,7 +70,22 @@ open class BaseGlobalVarStore(
             }
             list.run {
                 globalVarCaches.clear()
-                globalVarCaches.putAll(this.allVarsList.associateBy { it.name })
+                globalVarCaches.putAll(this.allVarsList
+                    .map { globalVar ->
+                        if (globalVar.isSecret && encKey != null) {
+                            val currentValueEnc = globalVar.valueList { emptyList() }
+                            onDebugBuild { logger.d("currentValueEnc: $currentValueEnc") }
+                            val currentValueDec = currentValueEnc.map {
+                                AESCrypt.decrypt(encKey, it)
+                            }
+                            onDebugBuild { logger.d("currentValueDec: $currentValueDec") }
+                            val decGV = globalVar.setValue(currentValueDec)
+                            decGV
+                        } else {
+                            globalVar
+                        }
+                    }
+                    .associateBy { it.name })
             }
         }.onFailure {
             logger.e(it, "read error")
@@ -83,7 +103,20 @@ open class BaseGlobalVarStore(
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
         val list = GlobalVarList.newBuilder().apply {
-            addAllAllVars(globalVarCaches.values.toList())
+            addAllAllVars(globalVarCaches.values.toList().map { globalVar ->
+                if (globalVar.isSecret && encKey != null) {
+                    val currentValue = globalVar.valueList { emptyList() }
+                    onDebugBuild { logger.d("currentValue: $currentValue") }
+                    val encValue = currentValue.map {
+                        AESCrypt.encrypt(encKey, it)
+                    }
+                    onDebugBuild { logger.d("encValue: $encValue") }
+                    val encGV = globalVar.setValue(encValue)
+                    encGV
+                } else {
+                    globalVar
+                }
+            })
         }.build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {

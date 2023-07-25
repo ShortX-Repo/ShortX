@@ -6,11 +6,13 @@ import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 
 class GlobalVarStore(
     scope: CoroutineScope,
+    encKey: String,
     private val onAddOrUpdate: (globalVar: GlobalVar) -> Unit,
     private val onDelete: (globalVar: GlobalVar) -> Unit,
 ) : BaseGlobalVarStore(
     scope = scope,
-    storeFile = Dirs.dataStoreFile("globalVars")
+    storeFile = Dirs.dataStoreFile("globalVars"),
+    encKey
 ) {
     override fun addGlobalVar(globalVar: GlobalVar) {
         super.addGlobalVar(globalVar)
@@ -22,4 +24,5 @@ class GlobalVarStore(
         res?.let { onDelete(it) }
         return res
     }
+
 }

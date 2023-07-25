@@ -258,9 +258,9 @@ fun GlobalVar.addOrUpdateValue(value: List<String>) {
 }
 
 
-fun GlobalVar.setValue(value: List<String>) {
+fun GlobalVar.setValue(value: List<String>): GlobalVar {
     logger.d("setValue: $value")
-    if (this.isList()) {
+    return if (this.isList()) {
         val newVarProtoAny: ProtoAny? = when (this.type.toType()) {
             GlobalVarType.IntList -> {
                 value.mapNotNull { kotlin.runCatching { it.toLong() }.getOrNull() }
@@ -285,14 +285,14 @@ fun GlobalVar.setValue(value: List<String>) {
             }
         }
 
-        shortXManager.addGlobalVar(
-            GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
-        )
+        GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
     } else {
-        shortXManager.addGlobalVar(
+        if (value.isEmpty()) {
+            GlobalVar.newBuilder(this).clearVar().build()
+        } else {
             GlobalVar.newBuilder(this).setVar(
                 value.first().toVarValueNotList(this.type.toType())
             ).build()
-        )
+        }
     }
 }

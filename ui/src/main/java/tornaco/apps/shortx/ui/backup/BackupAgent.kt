@@ -57,7 +57,7 @@ class BackupAgent(private val context: Context) {
             pkgSetStore.write()
 
             // GV
-            val allGV = shortXManager.getAllGlobalVars()
+            val allGV = shortXManager.getAllGlobalVars().filterNot { it.isSecret }
             val gvStore = BaseGlobalVarStore(this, File(backupTempDir, GV_FILE_NAME))
             gvStore.addAllGlobalVars(globalVars = allGV, write = false)
             gvStore.write()
@@ -190,7 +190,7 @@ class BackupAgent(private val context: Context) {
             val gvPb = File(tmpExtractedFile, GV_FILE_NAME)
             val gvStore = BaseGlobalVarStore(this, gvPb)
             gvStore.read()
-            val gvs = gvStore.getAllGlobalVars()
+            val gvs = gvStore.getAllGlobalVars().filterNot { it.isSecret }
 
             // Clean up.
             tmpExtractedFile.deleteRecursively()

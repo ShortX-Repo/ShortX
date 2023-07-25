@@ -2,12 +2,14 @@ package tornaco.apps.shortx.ui.gvar
 
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,19 +41,28 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
+data class NewGlobalVar(
+    val name: String,
+    val type: GlobalVarType,
+    val isSecret: Boolean
+)
+
 class NewGlobalVarState(
-    val onSelected: (Pair<String, GlobalVarType>) -> Unit
+    val onSelected: (NewGlobalVar) -> Unit
 ) : CommonDialogState() {
     var name by mutableStateOf("")
     var type by mutableStateOf(GlobalVarType.String)
+    var isSecret by mutableStateOf(false)
 
-    fun show(current: Pair<String, GlobalVarType>? = null) {
-        this.name = current?.first ?: ""
-        this.type = current?.second ?: GlobalVarType.String
+    fun show(current: NewGlobalVar? = null) {
+        this.name = current?.name ?: ""
+        this.type = current?.type ?: GlobalVarType.String
+        this.isSecret = current?.isSecret ?: false
 
         show()
     }
@@ -59,18 +70,19 @@ class NewGlobalVarState(
 
 @Composable
 fun rememberNewGlobalVarState(
-    onSelected: (Pair<String, GlobalVarType>) -> Unit
+    onSelected: (NewGlobalVar) -> Unit
 ): NewGlobalVarState {
     return remember {
         NewGlobalVarState(onSelected)
     }
 }
 
-fun Pair<String, GlobalVarType>.toGlobalVar(): GlobalVar =
+fun NewGlobalVar.toGlobalVar(): GlobalVar =
     GlobalVar
         .newBuilder()
-        .setName(first)
-        .setType(second.toProtoType())
+        .setName(name)
+        .setType(type.toProtoType())
+        .setIsSecret(isSecret)
         .build()
 
 @Composable
@@ -81,7 +93,13 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
         }, buttons = {
             TextButton(onClick = {
                 if (state.name.isNotBlank()) {
-                    state.onSelected(state.name.trim() to state.type)
+                    state.onSelected(
+                        NewGlobalVar(
+                            state.name.trim(),
+                            state.type,
+                            state.isSecret
+                        )
+                    )
                     state.dismiss()
                 }
             }) {
@@ -159,6 +177,22 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                         }
                     }
                 }
+
+                LargeSpacer()
+
+                // Secret
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SmallTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
+                    Switch(checked = state.isSecret, onCheckedChange = {
+                        state.isSecret = it
+                    })
+                }
+                SmallSpacer()
+                TipRow(text = LocalI18N.current["ui.global.var.secrets.message"])
             }
         })
     }
