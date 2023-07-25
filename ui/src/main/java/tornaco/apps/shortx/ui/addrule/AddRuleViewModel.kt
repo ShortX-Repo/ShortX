@@ -308,7 +308,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isEnabled = r.isEnabled,
                         showAdvancedOptions = hasAnyHookActions,
                         isQuitEnabled = r.quit.isEnabled,
-                        asyncMode = r.asyncMode
+                        asyncMode = r.asyncMode,
+                        conflictStrategy = r.conflictPolicy
                     )
                 }
             }

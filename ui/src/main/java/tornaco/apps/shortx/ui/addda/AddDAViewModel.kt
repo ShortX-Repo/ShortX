@@ -141,6 +141,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         isEditDirectAction = true,
                         createTime = da.createTime,
                         versionCode = da.versionCode,
+                        conflictStrategy = da.conflictPolicy
                     )
                 }
             }
