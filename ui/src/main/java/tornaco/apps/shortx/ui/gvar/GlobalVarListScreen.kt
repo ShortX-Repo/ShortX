@@ -1,5 +1,4 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
@@ -14,6 +13,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -173,6 +173,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                     SearchBar(searchBarState = searchBarState, modifier = Modifier.padding(16.dp))
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 64.dp),
                         columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
                     ) {
                         items(state.globalVars.filter {
