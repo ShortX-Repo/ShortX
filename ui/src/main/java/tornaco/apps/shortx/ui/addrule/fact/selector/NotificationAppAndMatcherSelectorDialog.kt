@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -161,7 +162,7 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.title"])
                                     MediumSpacer()
-                                    TipRow(text = LocalI18N.current["ui.fact.n.matcher.title.message"])
+                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.title.message"])
                                     MediumSpacer()
                                     ShortXTextField(
                                         modifier = Modifier.fillMaxWidth(),
@@ -171,7 +172,7 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.content"])
                                     MediumSpacer()
-                                    TipRow(text = LocalI18N.current["ui.fact.n.matcher.content.message"])
+                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.content.message"])
                                     MediumSpacer()
                                     ShortXTextField(
                                         modifier = Modifier.fillMaxWidth(),
@@ -181,7 +182,7 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.tag"])
                                     MediumSpacer()
-                                    TipRow(text = LocalI18N.current["ui.fact.n.matcher.tag.message"])
+                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.tag.message"])
                                     MediumSpacer()
                                     ShortXTextField(
                                         modifier = Modifier.fillMaxWidth(),

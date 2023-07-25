@@ -132,12 +132,12 @@ fun TipBody(text: String) {
 @Composable
 fun TipRow(
     text: String,
-    icon: String = Remix.Others.lightbulb_fill,
+    icon: String = Remix.Others.lightbulb_line,
     color: Color = Color.Unspecified
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ColoredIcon(size = 16.dp) {
-            RemixIcon(modifier = Modifier.size(8.dp), remixName = icon)
+            RemixIcon(modifier = Modifier.size(12.dp), remixName = icon)
         }
         SmallSpacer()
         Text(
