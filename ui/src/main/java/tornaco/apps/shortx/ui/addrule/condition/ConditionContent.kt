@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.ClipboardDialog
+import tornaco.apps.shortx.ui.UiClipboard
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
@@ -59,11 +61,17 @@ import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
+import tornaco.apps.shortx.ui.rememberClipboardDialogState
 
 class ConditionHandler(
     val addCondition: (Condition) -> Unit,
     val removeCondition: (Condition) -> Unit,
     val setConditionOp: (Op) -> Unit,
+    val insertAbove: (condition: Condition, anchorId: String) -> Unit = { _, _ -> run {} },
+    val insertBelow: (condition: Condition, anchorId: String) -> Unit = { _, _ -> run {} },
+    val copy: (conditionId: String) -> Unit = {},
+    val enableDisable: (conditionId: String) -> Unit = {},
+    val invert: (conditionId: String) -> Unit = {},
 )
 
 @Composable
@@ -143,71 +151,177 @@ fun ConditionList(
                             },
                         )
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(ShortXCardRoundedCornerShape)
-                                .combinedClickable(
-                                    onClick = {
-                                        allHandlers.any {
-                                            it(
-                                                ConditionSelectSource.FromCondition(
-                                                    currentCondition
+                        Box(modifier = Modifier) {
+                            val clickDropdownState = rememberDropdownSelectorState()
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(ShortXCardRoundedCornerShape)
+                                    .combinedClickable(
+                                        onClick = {
+                                            allHandlers.any {
+                                                it(
+                                                    ConditionSelectSource.FromCondition(
+                                                        currentCondition
+                                                    )
                                                 )
-                                            )
+                                            }
+                                        },
+                                        onLongClick = {
+                                            clickDropdownState.open()
+                                        }
+                                    )
+                            ) {
+
+                                ListItem(
+                                    titleLines = mutableListOf<String>().apply {
+                                        addAll(labelForCondition(condition = conditionItem))
+                                        onDebugBuild { add(conditionItem.id) }
+                                    },
+                                    icon = {
+                                        ConditionIcon(conditionItem) {
+                                            clickDropdownState.open()
                                         }
                                     },
-                                    onLongClick = {
-                                        handler.addCondition(
-                                            currentCondition.clone(
-                                                id = currentCondition.id,
-                                                note = currentCondition.note,
-                                                isInvert = !currentCondition.isInvert
-                                            )
+                                    action1 = {
+                                        val invertDialog = rememberTipDialogState(
+                                            title = LocalI18N.current["ui.condition.invert"],
+                                            tip = LocalI18N.current["ui.condition.invert.description"]
+                                        )
+                                        TipDialog(state = invertDialog)
+                                        AnimatedVisibility(visible = conditionItem.isInvert) {
+                                            ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
+                                                invertDialog.show()
+                                            }
+                                        }
+
+                                        if (!readOnly) {
+                                            IconButton(onClick = {
+                                                handler.removeCondition(conditionItem)
+                                            }) {
+                                                RemixIcon(remixName = Remix.System.close_line)
+                                            }
+                                        }
+                                    })
+                                // Warning.
+                                val actionWarning: List<String>? = warnings[conditionItem.id]
+                                AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
+                                    actionWarning?.let {
+                                        ErrorCard(
+                                            LocalI18N.current["ui.condition.warning.message"],
+                                            it
                                         )
                                     }
-                                )
-                        ) {
-                            ListItem(
-                                titleLines = mutableListOf<String>().apply {
-                                    addAll(labelForCondition(condition = conditionItem))
-                                    onDebugBuild { add(conditionItem.id) }
-                                },
-                                icon = {
-                                    ConditionIcon(conditionItem)
-                                },
-                                action1 = {
-                                    val invertDialog = rememberTipDialogState(
-                                        title = LocalI18N.current["ui.condition.invert"],
-                                        tip = LocalI18N.current["ui.condition.invert.description"]
-                                    )
-                                    TipDialog(state = invertDialog)
-                                    AnimatedVisibility(visible = conditionItem.isInvert) {
-                                        ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
-                                            invertDialog.show()
-                                        }
-                                    }
+                                }
+                            }
 
-                                    if (!readOnly) {
-                                        IconButton(onClick = {
-                                            handler.removeCondition(conditionItem)
-                                        }) {
-                                            RemixIcon(remixName = Remix.System.close_line)
+
+                            val clipboardDialogState = rememberClipboardDialogState()
+                            ClipboardDialog(state = clipboardDialogState)
+
+                            DropdownSelector(
+                                state = clickDropdownState,
+                                items = listOf(
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                                        data = currentCondition.id to "pa",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_top,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                                        data = currentCondition.id to "pb",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_bottom,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                                        data = currentCondition.id to "cp",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Document.file_copy_fill,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.condition.invert"]),
+                                        data = currentCondition.id to "invert",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Arrows.arrow_go_back_line,
+                                                tint = colorForCondition(conditionItem::class)
+                                            )
+                                        }
+                                    ),
+                                ),
+                                onSelect = { dropdownItem: DropdownItem<Pair<String, String>> ->
+                                    when (dropdownItem.data.second) {
+                                        "pa" -> {
+                                            val conditionContents = UiClipboard.getConditions()
+                                            if (conditionContents.size == 1) {
+                                                handler.insertAbove(
+                                                    conditionContents[0].condition,
+                                                    dropdownItem.data.first
+                                                )
+                                            } else {
+                                                clipboardDialogState.show { contentList ->
+                                                    contentList.filterIsInstance<UiClipboard.ClipboardContent.ConditionContent>()
+                                                        .forEach {
+                                                            handler.insertAbove(
+                                                                it.condition,
+                                                                dropdownItem.data.first
+                                                            )
+                                                        }
+                                                }
+                                            }
+                                        }
+
+                                        "pb" -> {
+                                            val conditionContents = UiClipboard.getConditions()
+                                            if (conditionContents.size == 1) {
+                                                handler.insertBelow(
+                                                    conditionContents[0].condition,
+                                                    dropdownItem.data.first
+                                                )
+                                            } else {
+                                                clipboardDialogState.show { contentList ->
+                                                    contentList.filterIsInstance<UiClipboard.ClipboardContent.ConditionContent>()
+                                                        .forEach {
+                                                            handler.insertBelow(
+                                                                it.condition,
+                                                                dropdownItem.data.first
+                                                            )
+                                                        }
+                                                }
+                                            }
+                                        }
+
+                                        "cp" -> {
+                                            handler.copy(dropdownItem.data.first)
+                                        }
+
+                                        "invert" -> {
+                                            handler.invert(dropdownItem.data.first)
+                                        }
+
+                                        "enableDisable" -> {
+                                            handler.enableDisable(dropdownItem.data.first)
                                         }
                                     }
                                 })
-
-                            // Warning.
-                            val actionWarning: List<String>? = warnings[conditionItem.id]
-                            AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
-                                actionWarning?.let {
-                                    ErrorCard(
-                                        LocalI18N.current["ui.condition.warning.message"],
-                                        it
-                                    )
-                                }
-                            }
                         }
+
+
                     }
 
                     // Add button
@@ -267,10 +381,11 @@ private fun ConditionSelector(
 }
 
 @Composable
-fun ConditionIcon(it: Condition) {
+fun ConditionIcon(it: Condition, onClick: (() -> Unit)? = null) {
     ColoredIcon(
         size = 36.dp,
-        color = colorForCondition(it::class).copy(alpha = ActionColorBgAlpha)
+        color = colorForCondition(it::class).copy(alpha = ActionColorBgAlpha),
+        onClick = onClick
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),

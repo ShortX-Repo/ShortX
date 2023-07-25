@@ -1,10 +1,15 @@
 package tornaco.apps.shortx.ui.addrule.condition
 
-import tornaco.apps.shortx.core.ShortXManager
-import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.addrule.condition.model.Condition
-import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.UiClipboard
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.defaultNewConditionId
+import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
+import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
+import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.base.WithState
 import tornaco.apps.shortx.ui.base.WithStateImpl
 import tornaco.apps.shortx.ui.base.i18NIns
@@ -20,7 +25,31 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
     return ConditionHandler(
         addCondition = this::addCondition,
         removeCondition = this::removeCondition,
-        setConditionOp = this::setConditionOp
+        setConditionOp = this::setConditionOp,
+        copy = { conditionId ->
+            UiClipboard.copy(UiClipboard.ClipboardContent.ConditionContent(
+                conditions.first { it.id == conditionId }
+            ))
+        },
+        insertAbove = { condition, anchorId ->
+            insertConditionAbove(condition, anchorId)
+        },
+        insertBelow = { condition, anchorId ->
+            insertConditionBelow(condition, anchorId)
+        },
+        enableDisable = {
+
+        },
+        invert = { conditionId ->
+            val currentCondition = conditions.first { it.id == conditionId }
+            addCondition(
+                currentCondition.clone(
+                    id = currentCondition.id,
+                    note = currentCondition.note,
+                    isInvert = !currentCondition.isInvert
+                )
+            )
+        }
     )
 }
 
@@ -66,6 +95,46 @@ class ConditionContentStateHandler(
                 )
             }
         }
+    }
+
+    fun insertConditionAbove(condition: Condition, anchorId: String) {
+        val refinedCondition = requireNotNull(
+            condition.toProtoCondition(overrideId = defaultNewConditionId()).pack_()
+                .toCondition(shortXManager)
+        ) {
+            "refinedCondition is null"
+        }
+        updateState {
+            copy(conditions = conditions.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchorId }
+                if (existingIndex >= 0) {
+                    add(existingIndex, refinedCondition)
+                } else {
+                    add(refinedCondition)
+                }
+            }, isChanged = true)
+        }
+        checkUpdateWarnings()
+    }
+
+    fun insertConditionBelow(action: Condition, anchorId: String) {
+        val refinedCondition = requireNotNull(
+            action.toProtoCondition(overrideId = defaultNewConditionId()).pack_()
+                .toCondition(shortXManager)
+        ) {
+            "refinedCondition is null"
+        }
+        updateState {
+            copy(conditions = conditions.toMutableList().apply {
+                val existingIndex = indexOfFirst { it.id == anchorId }
+                if (existingIndex >= 0) {
+                    add(existingIndex + 1, refinedCondition)
+                } else {
+                    add(refinedCondition)
+                }
+            }, isChanged = true)
+        }
+        checkUpdateWarnings()
     }
 
     fun init(

@@ -69,9 +69,9 @@ object UiClipboard {
 
     val all get() = contents.toList().reversed()
 
-    fun hasAction() = contents.any { it is ClipboardContent.ActionContent }
     fun getActions() = contents.filterIsInstance<ClipboardContent.ActionContent>()
     fun getFacts() = contents.filterIsInstance<ClipboardContent.FactContent>()
+    fun getConditions() = contents.filterIsInstance<ClipboardContent.ConditionContent>()
 
     fun copy(clipboardContent: ClipboardContent) {
         remove(clipboardContent.id)
