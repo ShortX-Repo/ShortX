@@ -136,7 +136,9 @@ fun TipRow(
     color: Color = Color.Unspecified
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        RemixIcon(modifier = Modifier.size(14.dp), remixName = icon)
+        ColoredIcon(size = 16.dp) {
+            RemixIcon(modifier = Modifier.size(8.dp), remixName = icon)
+        }
         SmallSpacer()
         Text(
             modifier = Modifier,
