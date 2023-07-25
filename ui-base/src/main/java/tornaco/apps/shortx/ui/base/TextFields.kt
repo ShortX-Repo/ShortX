@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 
 @Composable
@@ -145,7 +147,7 @@ fun ShortXTextField(
                     if (showSymbolButton) IconButton(onClick = {
                         symbolDropdownState.open()
                     }) {
-                        RemixIcon(remixName = Remix.Device.keyboard_fill)
+                        RemixIcon(modifier = Modifier.size(18.dp), remixName = Remix.Editor.text)
                     }
                 }
             },

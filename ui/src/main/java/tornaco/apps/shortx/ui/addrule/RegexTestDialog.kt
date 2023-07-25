@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class RegexTestDialogState(
@@ -136,8 +137,14 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                             AnimatedVisibility(visible = dialogState.output.isNotBlank()) {
                                 Column {
                                     MediumSpacer()
-                                    ShortXCard(modifier = Modifier.padding(16.dp)) {
-                                        Text(text = LocalI18N.current["ui.tools.regex.test.result"] + "\n\n" + dialogState.output)
+                                    ShortXCard {
+                                        Column(modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)) {
+                                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
+                                            StandardSpacer()
+                                            Text(dialogState.output)
+                                        }
                                     }
                                 }
                             }

@@ -588,7 +588,7 @@ private fun devSettings(
             }
         ),
         Preference.SwitchPreference(
-            icon = Remix.Editor.hashtag,
+            icon = Remix.Business.global_line,
             title = LocalI18N.current["ui.settings.http:chucker"],
             summary = LocalI18N.current["ui.settings.http:chucker.description"],
             value = state.enableHttpChucker,
