@@ -93,7 +93,8 @@ class RuleProtoTest {
                 conditionEvaluateResultListener = {}
             ).fire(
                 KeyEvent.newBuilder().setKeyCode(20).build(),
-                listOf(rule)
+                listOf(rule),
+                emptyMap()
             )
         }
     }
