@@ -191,14 +191,14 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
             }
 
             Fact.NotificationUpdated::class -> {
-                notificationPostedSelectorState.show(
+                notificationUpdatedSelectorState.show(
                     source.getFactAs<Fact.NotificationUpdated>()?.n
                 )
                 true
             }
 
             Fact.NotificationRemoved::class -> {
-                notificationPostedSelectorState.show(
+                notificationRemovedSelectorState.show(
                     source.getFactAs<Fact.NotificationRemoved>()?.n
                 )
                 true
