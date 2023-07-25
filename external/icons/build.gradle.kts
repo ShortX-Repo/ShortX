@@ -31,6 +31,6 @@ android {
 }
 dependencies {
     testImplementation(libs.junit)
-    testImplementation("com.android.tools:sdk-common:31.0.2")
-    testImplementation("com.android.tools:common:31.0.2")
+    testImplementation("com.android.tools:sdk-common:31.1.0")
+    testImplementation("com.android.tools:common:31.1.0")
 }
