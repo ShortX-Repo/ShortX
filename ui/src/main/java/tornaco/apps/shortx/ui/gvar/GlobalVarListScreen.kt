@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -48,11 +49,13 @@ import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -60,6 +63,7 @@ import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberFabState
@@ -202,10 +206,12 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                         onEdit = { goToDetail(it.name) }
                                     )
 
-                                    GlobalVarListItem(modifier = Modifier,
+                                    GlobalVarListItem(
+                                        modifier = Modifier,
                                         name = globalVar.name,
                                         value = globalVar.valueString(),
                                         type = globalVar.type.toType()?.label() ?: "?",
+                                        isSecret = globalVar.isSecret,
                                         onInfoClick = {
                                             globalVarAccessHelpDialogState.show()
                                         },
@@ -233,6 +239,7 @@ private fun GlobalVarListItem(
     name: String,
     value: String? = null,
     type: String,
+    isSecret: Boolean,
     onInfoClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -256,8 +263,27 @@ private fun GlobalVarListItem(
                 RemixIcon(remixName = Remix.System.information_line)
             }
         }
+
         Text(text = name, style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp))
-        Text(value ?: "", fontSize = 12.sp, maxLines = 3)
+        Text(
+            if (!isSecret) {
+                (value ?: "")
+            } else {
+                "****"
+            }, fontSize = 12.sp, maxLines = 3
+        )
+        if (isSecret) {
+            MediumSpacer()
+            TipRow(text = LocalI18N.current["ui.global.var.secrets.title"],
+                icon = {
+                    ColoredIcon(size = 16.dp) {
+                        RemixIcon(
+                            modifier = Modifier.size(8.dp),
+                            remixName = Remix.Document.file_search_line
+                        )
+                    }
+                })
+        }
     }
 }
 

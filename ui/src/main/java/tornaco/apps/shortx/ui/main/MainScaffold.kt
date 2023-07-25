@@ -202,7 +202,7 @@ fun MainScaffold(
                     .padding(paddingValues)
                     .let {
                         if (enableMask) {
-                            it.blur(4.dp)
+                            it.blur(12.dp)
                         } else it
                     },
             ) {
