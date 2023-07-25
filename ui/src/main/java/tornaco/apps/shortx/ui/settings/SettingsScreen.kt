@@ -392,7 +392,7 @@ private fun recordSettings(
     return listOfNotNull(
         Preference.Category(LocalI18N.current["ui.settings.record"]),
 
-        Preference.TextPreference(icon = Remix.Media.notification_3_line,
+        Preference.TextPreference(icon = Remix.Media.notification_3_fill,
             title = LocalI18N.current["ui.settings.fact.record"],
             summary = LocalI18N.current["ui.settings.fact.record.summary"],
             badge = badge,
@@ -516,7 +516,7 @@ private fun shareSettings(
         Preference.Category(LocalI18N.current["ui.settings.share"]),
 
         Preference.TextPreference(
-            icon = Remix.System.share_box_line,
+            icon = Remix.System.share_box_fill,
             title = LocalI18N.current["ui.settings.share.author.info"],
             summary = LocalI18N.current["ui.settings.share.author.info.description"],
             onClick = {
@@ -569,7 +569,7 @@ private fun devSettings(
         ),
 
         Preference.SwitchPreference(
-            icon = Remix.Development.cursor_line,
+            icon = Remix.Development.cursor_fill,
             title = LocalI18N.current["ui.common.show.pointer.location"],
             summary = LocalI18N.current["ui.common.show.pointer.location.description"],
             value = state.isPointerLocationEnabled,
@@ -588,7 +588,7 @@ private fun devSettings(
             }
         ),
         Preference.SwitchPreference(
-            icon = Remix.Business.global_line,
+            icon = Remix.Business.global_fill,
             title = LocalI18N.current["ui.settings.http:chucker"],
             summary = LocalI18N.current["ui.settings.http:chucker.description"],
             value = state.enableHttpChucker,

@@ -37,6 +37,7 @@ class MVELExecutor(
             }
 
             localVars?.all?.forEach {
+                logger.d("localVar: $it")
                 put(
                     LOCAL_VAR_REF_PREFIX + it.name,
                     if (it.isList()) {
