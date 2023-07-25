@@ -21,27 +21,12 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
-    enum class NotificationUpdated(val description: String) {
+    enum class Notification(val description: String) {
         userId("The user id"),
         pkgName("App package name of the Notification owner"),
         title("Title of the notification"),
-        contentText("Content text of the notification")
-    }
-
-    @DoNotStrip
-    enum class NotificationPosted(val description: String) {
-        userId("The user id"),
-        pkgName("App package name of the Notification owner"),
-        title("Title of the notification"),
-        contentText("Content text of the notification")
-    }
-
-    @DoNotStrip
-    enum class NotificationRemoved(val description: String) {
-        userId("The user id"),
-        pkgName("App package name of the Notification owner"),
-        title("Title of the notification"),
-        contentText("Content text of the notification")
+        contentText("Content text of the notification"),
+        notificationTag("Tag of the notification, maybe null")
     }
 
     @DoNotStrip

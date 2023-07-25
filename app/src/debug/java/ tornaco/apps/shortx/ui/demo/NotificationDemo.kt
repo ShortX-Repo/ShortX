@@ -59,7 +59,7 @@ fun mockNotification(
         .setAutoCancel(true)
         .build()
     NotificationManagerCompat.from(context)
-        .notify(id, n)
+        .notify("demo-tag", id, n)
 }
 
 private fun createNotificationChannelIfNeed(context: Context) {

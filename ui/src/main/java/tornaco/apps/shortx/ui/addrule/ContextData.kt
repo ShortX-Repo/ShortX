@@ -34,15 +34,15 @@ private inline fun <reified T : Enum<T>> dats(): List<ContextData> = runCatching
 fun KClass<out Fact>.factContextData(): List<ContextData> {
     return when (this) {
         Fact.NotificationPosted::class -> {
-            dats<ContextDataMapping.NotificationPosted>()
+            dats<ContextDataMapping.Notification>()
         }
 
         Fact.NotificationUpdated::class -> {
-            dats<ContextDataMapping.NotificationUpdated>()
+            dats<ContextDataMapping.Notification>()
         }
 
         Fact.NotificationRemoved::class -> {
-            dats<ContextDataMapping.NotificationRemoved>()
+            dats<ContextDataMapping.Notification>()
         }
 
         Fact.AppBecomeBackground::class -> {

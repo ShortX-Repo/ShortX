@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.appPkgToString
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
@@ -139,9 +140,10 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     private fun Notification.contextMap() = mapOf(
-        ContextDataMapping.NotificationRemoved.title.name to title,
-        ContextDataMapping.NotificationRemoved.contentText.name to contentText,
-        ContextDataMapping.NotificationRemoved.pkgName.name to appsList.first().pkgName,
-        ContextDataMapping.NotificationRemoved.userId.name to appsList.first().userId,
+        ContextDataMapping.Notification.title.name to title,
+        ContextDataMapping.Notification.contentText.name to contentText,
+        ContextDataMapping.Notification.pkgName.name to appsList.first().pkgName,
+        ContextDataMapping.Notification.userId.name to appsList.first().userId,
+        ContextDataMapping.Notification.notificationTag.name to tag,
     )
 }

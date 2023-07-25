@@ -34,6 +34,7 @@ import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
 import tornaco.apps.shortx.core.proto.fact.Notification
+import tornaco.apps.shortx.core.proto.fact.NotificationMatcher
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
@@ -64,8 +65,9 @@ internal class Matcher(
     val impl: (l: ProtoMessage, r: ProtoMessage) -> Boolean
 )
 
+private val logger = Logger("FactMatcher")
+
 class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
-    private val logger = Logger("FactMatcher")
     private val factValueMatchers: MutableMap<Class<*>, Matcher> =
         mutableMapOf()
 
@@ -197,7 +199,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            )
+            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
         }
 
         register(NotificationUpdated::class.java) { actual, rule ->
@@ -206,7 +208,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            )
+            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
         }
 
         register(NotificationRemoved::class.java) { actual, rule ->
@@ -215,7 +217,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             matchWithAppOrPkgSetListFact(
                 actual = NotificationWrapper(actualN),
                 rule = NotificationWrapper(ruleN)
-            )
+            ) && matchNotificationMatcher(actualN.matcher, ruleN.matcher)
         }
 
         register(AppRemoved::class.java) { actual, rule ->
@@ -388,13 +390,6 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         logger.i("Init complete.")
     }
 
-    private fun nullEmptyOrEq(vararg ruleAndActuals: Pair<String?, String>) = ruleAndActuals.all {
-        nullEmptyOrEq(it.first, it.second)
-    }
-
-    private fun nullEmptyOrEq(ruleField: String?, actualField: String) =
-        ruleField.isNullOrEmpty() || ruleField == actualField
-
     private fun register(clazz: Class<*>, matcher: (l: ProtoMessage, f: ProtoMessage) -> Boolean) {
         logger.d("register: $clazz --> $matcher")
         if (factValueMatchers[clazz] != null) throw IllegalStateException("Dup matcher for class: $clazz")
@@ -447,6 +442,21 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         } + rule.appList
         logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
         return pkgListRule.isNotEmpty() && pkgListRule.containsAll(pkgListActual)
+    }
+
+    private fun matchNotificationMatcher(
+        actual: NotificationMatcher,
+        rule: NotificationMatcher
+    ): Boolean {
+        // FAST: No matcher settings
+        if (rule == NotificationMatcher.getDefaultInstance()) {
+            return true
+        }
+        return emptyOrRegexMatch(
+            rule.title to actual.title,
+            rule.contentText to actual.contentText,
+            rule.tag to actual.tag,
+        )
     }
 
     internal interface WithAppOrPkgSetListFact {
@@ -542,3 +552,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
     }
 }
+
+fun emptyOrRegexMatch(vararg ruleAndActuals: Pair<String, String>) = ruleAndActuals.all {
+    emptyOrRegexMatch(it.first, it.second)
+}
+
+fun emptyOrRegexMatch(ruleField: String, actualField: String) =
+    ruleField.isEmpty() || ruleField.toRegex().matches(actualField).apply {
+        logger.d("emptyOrRegexMatch, regex: $ruleField, result: $this")
+    }

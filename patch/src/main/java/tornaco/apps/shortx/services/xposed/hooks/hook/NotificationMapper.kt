@@ -19,6 +19,7 @@ fun Any.androidNotificationRecordToNotification(): Notification? {
         Notification.newBuilder()
             .setTitle(getTitle(n) ?: "")
             .setContentText(getContent(n) ?: "")
+            .setTag(getTag(sbn) ?: "")
             .setIsFgService(isFgService)
             .addApps(
                 AppPkg.newBuilder()
@@ -55,10 +56,19 @@ fun getContent(notification: android.app.Notification): String? {
     if (extras != null) {
         // java.lang.ClassCastException: android.text.SpannableString cannot be cast to java.lang.String
         val ext: Any? = extras.get(android.app.Notification.EXTRA_TEXT)
-        logger.p("ext: $ext")
+        logger.p("content: $ext")
         return ext?.toString()
     }
     return null
+}
+
+fun getTag(sbn: StatusBarNotification): String? {
+    return runCatching { sbn.tag }.getOrElse {
+        logger.w(it)
+        null
+    }.also {
+        logger.p("tag: $it")
+    }
 }
 
 private fun getNormalizedUserId(sbn: StatusBarNotification): Int {
