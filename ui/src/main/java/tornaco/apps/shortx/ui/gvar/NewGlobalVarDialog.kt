@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.label
@@ -38,6 +39,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -118,7 +120,11 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                         Toast.LENGTH_LONG
                     ).show()
                 }) {
-                    TipBody(text = LocalI18N.current["ui.global.var.access.help.message", mapOf("name" to "$LOCAL_VAR_REF_PREFIX${state.name}")])
+                    UnderlineSmallText(
+                        text = LocalI18N.current["ui.global.var.access.help.message", mapOf(
+                            "name" to "$GLOBAL_VAR_REF_PREFIX${state.name}"
+                        )]
+                    )
                 }
 
                 LargeSpacer()

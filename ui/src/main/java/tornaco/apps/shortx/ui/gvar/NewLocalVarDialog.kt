@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -118,7 +119,11 @@ fun NewLocalVarDialog(state: NewLocalVarState) {
                         Toast.LENGTH_LONG
                     ).show()
                 }) {
-                    TipBody(text = LocalI18N.current["ui.local.var.access.help.message", mapOf("name" to "$LOCAL_VAR_REF_PREFIX${state.name}")])
+                    UnderlineSmallText(
+                        text = LocalI18N.current["ui.local.var.access.help.message", mapOf(
+                            "name" to "$LOCAL_VAR_REF_PREFIX${state.name}"
+                        )]
+                    )
                 }
 
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
+import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 val symbols1 = arrayOf(
@@ -100,6 +101,16 @@ fun SymbolDropdown(state: SymbolDropdownState) {
                 }) {
                     Text(
                         LocalI18N.current["ui.global.var.title"],
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // LocalVar
+                TextButton(onClick = {
+                    state.input(LOCAL_VAR_REF_PREFIX)
+                }) {
+                    Text(
+                        LocalI18N.current["ui.local.var.title"],
                         color = MaterialTheme.colorScheme.primary
                     )
                 }

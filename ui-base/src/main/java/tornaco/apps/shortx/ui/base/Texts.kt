@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
@@ -240,4 +241,14 @@ fun CategoryTitle(title: String) {
             )
         )
     }
+}
+
+@Composable
+fun UnderlineSmallText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall.copy(
+            textDecoration = TextDecoration.Underline
+        )
+    )
 }
