@@ -23,11 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CategoryTitle
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -149,11 +151,16 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
 @Composable
 private fun PreferenceIcon(preference: Preference) {
     preference.icon?.let {
-        RemixIcon(
-            modifier = Modifier.size(24.dp),
-            remixName = it,
-            tint = prefColorForPreference(preference)
-        )
+        ColoredIcon(
+            size = 28.dp,
+            color = prefColorForPreference(preference)
+        ) {
+            RemixIcon(
+                modifier = Modifier.size(14.dp),
+                remixName = it,
+                tint = Color.White
+            )
+        }
     }
 }
 
