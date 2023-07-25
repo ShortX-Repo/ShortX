@@ -597,5 +597,9 @@
   "ui.subscription.code.verify.message": "正在校验你的激活码是否有效，请耐心等待",
   "ui.subscription.code.verify.fail.network": "校验失败，请检查网络或稍等一下再试试",
   "ui.subscription.code.verify.fail": "校验失败",
-  "ui.suggest.nav.entry.title": "其他功能快捷入口"
+  "ui.suggest.nav.entry.title": "其他功能快捷入口",
+  "ui.tools.regex.test.title": "正则表达式测试",
+  "ui.tools.regex.test.regex": "表达式",
+  "ui.tools.regex.test.string": "字符串",
+  "ui.tools.regex.test.result": "匹配结果"
 }

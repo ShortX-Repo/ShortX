@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
-import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.ui.addrule.RegexTestDialog
+import tornaco.apps.shortx.ui.addrule.rememberRegexTestState
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -47,6 +49,7 @@ enum class SuggestedNav(val labelKey: String) {
     FactRecord("ui.settings.fact.record"),
     ConditionRecord("ui.settings.condition.record"),
     ActionRecord("ui.settings.action.record"),
+    RegexTest("ui.tools.regex.test.title"),
 }
 
 @Composable
@@ -74,6 +77,9 @@ fun SuggestedNavEntry() {
             val danmuSettingsScreenState = rememberCommonDialogState()
             DanmuUISettingsScreenDialog(state = danmuSettingsScreenState)
 
+            val regexTestDialog = rememberRegexTestState()
+            RegexTestDialog(state = regexTestDialog)
+
             SuggestedNav.values().forEach {
                 SuggestionChip(
                     onClick = {
@@ -95,6 +101,10 @@ fun SuggestedNavEntry() {
 
                             SuggestedNav.ActionRecord -> {
                                 ActionEvaRecordActivity.start(context)
+                            }
+
+                            SuggestedNav.RegexTest -> {
+                                regexTestDialog.show()
                             }
                         }
                     }, label = {

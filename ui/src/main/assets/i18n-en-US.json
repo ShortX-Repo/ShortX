@@ -597,5 +597,9 @@
   "ui.subscription.code.verify.message": "Verifying your activation code...",
   "ui.subscription.code.verify.fail.network": "Verification failed, please check the network or try again later",
   "ui.subscription.code.verify.fail": "Verification failed",
-  "ui.suggest.nav.entry.title": "Feature shortcuts"
+  "ui.suggest.nav.entry.title": "Feature shortcuts",
+  "ui.tools.regex.test.title": "Regex test",
+  "ui.tools.regex.test.regex": "Regex",
+  "ui.tools.regex.test.string": "String",
+  "ui.tools.regex.test.result": "Match result"
 }
