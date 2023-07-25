@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -89,7 +90,10 @@ class ConditionEvaluatorImpl(
 
                 runCatching {
                     val res =
-                        MVELExecutor(context, shortXContext, expressionTranslation).invoke(varMap)
+                        MVELExecutor(context, shortXContext, expressionTranslation).invoke(
+                            varMap,
+                            null
+                        )
                     logger.d("evaluate rule condition MVEL: $expressionTranslation, result: $res")
                     val matchRes = res.toString().toBooleanStrictOrNull() ?: false
                     evaluateResultListener(

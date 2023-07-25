@@ -21,7 +21,7 @@ object RemoteExecuteMVEL : Actor {
             params.context,
             params.shortXContext,
             d.expression
-        ).invoke(params.contextData.map).apply {
+        ).invoke(params.contextData.map, params.localVars).apply {
             params.contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
         }
     }

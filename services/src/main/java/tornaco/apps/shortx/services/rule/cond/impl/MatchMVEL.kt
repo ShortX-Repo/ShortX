@@ -23,7 +23,7 @@ object MatchMVEL : Cond {
                     }
                 }).apply {
                     logger.d("inflated expression: $this")
-                }).invoke()
+                }).invoke(emptyMap(), null)
             val retValue = res as Boolean
             if (mvel.isInvert) {
                 !retValue

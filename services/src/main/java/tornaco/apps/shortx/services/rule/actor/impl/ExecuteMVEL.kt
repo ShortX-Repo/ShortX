@@ -29,7 +29,7 @@ object ExecuteMVEL : Actor {
             }).apply {
                 logger.d("inflated expression: $this")
             }
-        ).invoke(params.contextData.map).apply {
+        ).invoke(vars = params.contextData.map, localVars = params.localVars).apply {
             params.contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
         }
     }
