@@ -13,7 +13,6 @@ message PkgSet {
   string description = 3;
 
   bool isPrebuilt = 4;
-  bool isEditable = 5;
 }
 
 message PkgSetList {

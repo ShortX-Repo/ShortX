@@ -1,5 +1,9 @@
 package tornaco.apps.shortx.core
 
-enum class PrebuiltPkgSetLabel {
-    All, System, User, Game, XposedModule
+enum class PrebuiltStablePkgSetLabel {
+    All, System, User, XposedModule
+}
+
+enum class PrebuiltUserPkgSetLabel {
+    Game
 }

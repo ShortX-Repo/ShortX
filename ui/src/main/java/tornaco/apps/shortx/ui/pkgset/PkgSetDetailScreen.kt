@@ -102,7 +102,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                     )
                 },
                 floatingActionButton = {
-                    if (!state.isPrebuilt || state.isEditable) {
+                    if (!state.isPrebuilt) {
                         FloatingActionButton(onClick = {
                             appSelectorDialogState.show()
                         }) {
@@ -162,7 +162,7 @@ private fun PkgSetContent(
         }
 
         items(state.apps) {
-            AppItem(app = it, canRemove = !state.isPrebuilt || state.isEditable) { app ->
+            AppItem(app = it, canRemove = !state.isPrebuilt) { app ->
                 vm.removeApps(listOf(app))
             }
         }
