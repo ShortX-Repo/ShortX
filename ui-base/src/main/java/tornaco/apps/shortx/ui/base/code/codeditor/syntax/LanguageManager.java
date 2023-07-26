@@ -20,18 +20,26 @@ public class LanguageManager {
         this.codeView = codeView;
     }
 
-    public void applyTheme(LanguageName language, ThemeName theme) {
+    public void applyTheme(LanguageName language, ThemeName theme, boolean isDarkTheme) {
         switch (theme) {
             case DYNAMIC:
-                applyDynamicTheme(language);
+                switch (language) {
+                    case JAVA:
+                        if (isDarkTheme) {
+                            JavaLanguage.applyMonokaiTheme(context, codeView);
+                        } else {
+                            JavaLanguage.applyNoctisWhiteTheme(context, codeView);
+                        }
+                        break;
+                }
                 break;
         }
     }
 
     public String[] getLanguageKeywords(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getKeywords(context);
+            case JAVA:
+                return JavaLanguage.getKeywords(context);
             default:
                 return new String[]{};
         }
@@ -39,8 +47,8 @@ public class LanguageManager {
 
     public List<Code> getLanguageCodeList(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getCodeList(context);
+            case JAVA:
+                return JavaLanguage.getCodeList(context);
             default:
                 return new ArrayList<>();
         }
@@ -48,8 +56,8 @@ public class LanguageManager {
 
     public Set<Character> getLanguageIndentationStarts(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getIndentationStarts();
+            case JAVA:
+                return JavaLanguage.getIndentationStarts();
             default:
                 return new HashSet<>();
         }
@@ -57,8 +65,8 @@ public class LanguageManager {
 
     public Set<Character> getLanguageIndentationEnds(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getIndentationEnds();
+            case JAVA:
+                return JavaLanguage.getIndentationEnds();
             default:
                 return new HashSet<>();
         }
@@ -66,8 +74,8 @@ public class LanguageManager {
 
     public String getCommentStart(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getCommentStart();
+            case JAVA:
+                return JavaLanguage.getCommentStart();
             default:
                 return "";
         }
@@ -75,18 +83,10 @@ public class LanguageManager {
 
     public String getCommentEnd(LanguageName language) {
         switch (language) {
-            case JSON:
-                return JsonLanguage.getCommentEnd();
+            case JAVA:
+                return JavaLanguage.getCommentEnd();
             default:
                 return "";
-        }
-    }
-
-    private void applyDynamicTheme(LanguageName language) {
-        switch (language) {
-            case JSON:
-                JsonLanguage.applyDynamicTheme(context, codeView);
-                break;
         }
     }
 }

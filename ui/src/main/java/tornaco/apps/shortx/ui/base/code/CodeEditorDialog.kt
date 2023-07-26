@@ -3,19 +3,35 @@
 package tornaco.apps.shortx.ui.base.code
 
 
-import android.graphics.Color
-import android.view.Gravity
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -27,15 +43,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util._sp
-import tornaco.apps.shortx.ui.addrule.action.selector.*
-import tornaco.apps.shortx.ui.base.*
-import tornaco.apps.shortx.ui.base.code.codeditor.syntax.LanguageManager
-import tornaco.apps.shortx.ui.base.code.codeditor.syntax.LanguageName
-import tornaco.apps.shortx.ui.base.code.codeditor.syntax.ThemeName
+import tornaco.apps.shortx.ui.addrule.action.selector.InputTextSelector
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.WarningCard
+import tornaco.apps.shortx.ui.base.code.codeditor.initView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
-import tornaco.apps.shortx.ui.util.TypefaceHelper
 
 data class Code(val src: String, val note: String)
 
@@ -156,24 +177,28 @@ private fun CodeEditor(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp)
                         .verticalScroll(rememberScrollState()),
                 ) {
                     state.message?.let {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)) {
-                            Text(text = it, style = MaterialTheme.typography.titleSmall)
-                            StandardSpacer()
+                        WarningCard {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(text = it, style = MaterialTheme.typography.titleSmall)
+                                StandardSpacer()
+                            }
                         }
                     }
+                    val isDarkTheme = isSystemInDarkTheme()
                     AndroidView(modifier = Modifier
                         .fillMaxSize()
                         .systemBarsPadding()
                         .imePadding(),
                         factory = { ctx ->
                             return@AndroidView CodeView(ctx).apply {
-                                initView(this)
+                                initView(this, isDarkTheme)
                                 setText(state.currentText)
                                 doAfterTextChanged {
                                     it?.toString()?.let { text ->
@@ -190,60 +215,6 @@ private fun CodeEditor(
         }
     }
 }
-
-
-private fun initView(
-    codeView: CodeView
-) {
-    setupCodeView(codeView)
-    setupLanguageAutoComplete(codeView)
-}
-
-private fun setupCodeView(codeView: CodeView) {
-    codeView.background = null
-    codeView.textSize = 14f
-    codeView.gravity = Gravity.TOP or Gravity.START
-    codeView.typeface = TypefaceHelper.jetbrainsMonoMedium(codeView.context)
-
-    // Setup Line number feature
-    codeView.setEnableLineNumber(true)
-    codeView.setLineNumberTextColor(Color.GRAY)
-    codeView.setLineNumberTextSize(12._sp)
-
-    // Setup Auto indenting feature
-    codeView.setTabLength(4)
-    codeView.setEnableAutoIndentation(true)
-
-    // Setup the language and theme with SyntaxManager helper class
-    val languageManager = LanguageManager(codeView.context, codeView)
-    languageManager.applyTheme(LanguageName.JSON, ThemeName.DYNAMIC)
-
-    // Setup auto pair complete
-    val pairCompleteMap: MutableMap<Char, Char> = HashMap()
-    pairCompleteMap['{'] = '}'
-    pairCompleteMap['['] = ']'
-    pairCompleteMap['('] = ')'
-    pairCompleteMap['<'] = '>'
-    pairCompleteMap['"'] = '"'
-    pairCompleteMap['\''] = '\''
-    codeView.setPairCompleteMap(pairCompleteMap)
-    codeView.enablePairComplete(true)
-    codeView.enablePairCompleteCenterCursor(true)
-    codeView.setHorizontallyScrolling(false)
-}
-
-private fun setupLanguageAutoComplete(codeView: CodeView) {
-    val languageManager = LanguageManager(codeView.context, codeView)
-    val languageKeywords: Array<String> = languageManager.getLanguageKeywords(LanguageName.JSON)
-
-    val layoutId = tornaco.apps.shortx.ui.R.layout.ui_list_item_suggestion
-
-    val viewId = tornaco.apps.shortx.ui.R.id.suggestItemTextView
-    val adapter = ArrayAdapter(codeView.context, layoutId, viewId, languageKeywords)
-
-    codeView.setAdapter(adapter)
-}
-
 
 class OutputDialogState(val title: String) : CommonDialogState() {
     var output: String by mutableStateOf("")

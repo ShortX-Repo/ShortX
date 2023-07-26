@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.io.noties.markwo.html)
     implementation(libs.io.noties.markwo.linkify)
 
+    implementation(libs.codeview)
+
     implementation(project(":core"))
     implementation(project(":external:icons"))
 }

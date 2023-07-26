@@ -152,11 +152,11 @@ private fun TextPreferenceUi(preference: Preference.TextPreference) {
 private fun PreferenceIcon(preference: Preference) {
     preference.icon?.let {
         ColoredIcon(
-            size = 28.dp,
-            color = prefColorForPreference(preference)
+            size = 24.dp,
+            color = MaterialTheme.colorScheme.secondaryContainer,
         ) {
             RemixIcon(
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(12.dp),
                 remixName = it,
                 tint = Color.White
             )
