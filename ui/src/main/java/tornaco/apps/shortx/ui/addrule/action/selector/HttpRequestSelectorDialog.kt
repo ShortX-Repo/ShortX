@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import android.R
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -25,15 +26,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +61,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
@@ -71,6 +76,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -93,7 +99,6 @@ enum class HttpRequestBodyType(val label: String) {
     Form("Form"),
     None("None")
 }
-
 
 class HttpRequestDialogState(
     val onSelected: (Action.HttpRequest) -> Unit
@@ -179,6 +184,13 @@ class HttpRequestDialogState(
             add(header)
         }
     }
+
+    fun addHeader(header: HttpRequestHeader, index: Int) {
+        this.headers = this.headers.toMutableList().apply {
+            add(index, header)
+        }
+    }
+
 
     fun removeHeader(index: Int) {
         this.headers = this.headers.toMutableList().apply {
@@ -307,16 +319,16 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Url(dialogState)
-                        StandardSpacer()
+                        LargeSpacer()
 
                         Method(dialogState)
-                        StandardSpacer()
+                        LargeSpacer()
 
                         Headers(dialogState)
-                        StandardSpacer()
+                        LargeSpacer()
 
                         RequestBody(dialogState)
-                        StandardSpacer()
+                        LargeSpacer()
 
                         ResponseAdapter(dialogState)
 
@@ -489,8 +501,15 @@ private fun ColumnScope.ResponseAdapter(
 private fun Headers(dialogState: HttpRequestDialogState) {
     FieldTitle(text = "Headers (Optional)")
     SmallSpacer()
+
+    val httpDialogState = rememberHttpHeaderEditDialogState()
+    HttpHeaderEditDialog(state = httpDialogState)
+
     dialogState.headers.forEachIndexed { index, it ->
-        ListItem(titleLines = listOf(it.key, it.value),
+        val updateIndex = rememberUpdatedState(newValue = index)
+        val updateItem = rememberUpdatedState(newValue = it)
+        ListItem(
+            titleLines = listOf(it.key, it.value),
             icon = {
                 RemixIcon(remixName = Remix.Logos.flickr_line)
             },
@@ -500,6 +519,21 @@ private fun Headers(dialogState: HttpRequestDialogState) {
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }
+            },
+            onClick = {
+                httpDialogState.show(
+                    key = updateItem.value.key,
+                    value = updateItem.value.value,
+                    callback = {
+                        dialogState.removeHeader(index)
+                        dialogState.addHeader(
+                            HttpRequestHeader.newBuilder()
+                                .setKey(it.first)
+                                .setValue(it.second)
+                                .build(),
+                            updateIndex.value
+                        )
+                    })
             })
     }
     Column(
@@ -522,7 +556,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
             },
             showSymbolButton = false
         )
-        SmallSpacer()
+        StandardSpacer()
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = valueInput,
@@ -534,7 +568,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
             },
             showSymbolButton = false
         )
-        SmallSpacer()
+        StandardSpacer()
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -546,6 +580,8 @@ private fun Headers(dialogState: HttpRequestDialogState) {
                             .setValue(valueInput)
                             .build()
                     )
+                    keyInput = ""
+                    valueInput = ""
                 }
             }) {
             Text(text = "Add header")
@@ -722,5 +758,72 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                 }
             }
         }
+    }
+}
+
+class HttpHeaderEditDialogState : CommonDialogState() {
+    var key: String by mutableStateOf("")
+    var value: String by mutableStateOf("")
+
+    var callback: (Pair<String, String>) -> Unit = {}
+
+    fun show(key: String, value: String, callback: (Pair<String, String>) -> Unit) {
+        this.key = key
+        this.value = value
+        this.callback = callback
+
+        show()
+    }
+}
+
+@Composable
+fun rememberHttpHeaderEditDialogState(): HttpHeaderEditDialogState {
+    return remember {
+        HttpHeaderEditDialogState()
+    }
+}
+
+
+@Composable
+fun HttpHeaderEditDialog(state: HttpHeaderEditDialogState) {
+    if (state.isShowing) {
+        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
+            DialogTitle(text = "Header")
+        }, buttons = {
+            TextButton(onClick = {
+                if (state.key.isNotEmpty()) {
+                    state.callback(state.key to state.value)
+                    state.dismiss()
+                }
+            }) {
+                Text(text = stringResource(id = R.string.ok))
+            }
+        }, content = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.key,
+                    onValueChange = {
+                        state.key = it
+                    },
+                    label = {
+                        Text(text = "Key")
+                    },
+                    showSymbolButton = false
+                )
+                StandardSpacer()
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.value,
+                    onValueChange = {
+                        state.value = it
+                    },
+                    label = {
+                        Text(text = "Value")
+                    },
+                    showSymbolButton = false
+                )
+            }
+        })
     }
 }
