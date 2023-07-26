@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
+import tornaco.apps.shortx.ui.base.thenIf
 
 private val minWidth = 48.dp
 
@@ -200,11 +201,11 @@ private fun OverlayButtons(
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
-    state.buttons.forEachIndexed { _, button ->
+    state.buttons.forEachIndexed { index, button ->
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
-                .padding(top = 6.dp)
+                .thenIf(Modifier.padding(top = 6.dp), index != 0)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {

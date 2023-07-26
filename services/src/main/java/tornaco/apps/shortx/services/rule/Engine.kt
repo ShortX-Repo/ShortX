@@ -186,6 +186,8 @@ class DefaultRuleEngine(
             if (factMatcher.match(fact, rule.factsList)) {
                 logger.d("fire, rule matched: ${fact.javaClass} ${rule.title}")
                 anyMatch = true
+
+                // Init data
                 val contextData = ContextData.obtain(initialContextData)
                 contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
                 contextData.add(ContextDataMapping.Context.contextSrcTitle.name, rule.title)
@@ -193,12 +195,11 @@ class DefaultRuleEngine(
                     ContextDataMapping.Context.contextSrcEvent.name,
                     ContextSrcEvent.ContextSrc_Rule
                 )
-
                 val localVars = LocalVars.obtain()
 
-                val job = scope.launchSafety {
-                    logger.d("job for rule: ${rule.title} start.")
-                    val conditionRes = if (rule.conditionsList.isEmpty()) {
+                // Match condition
+                val conditionRes = runBlocking {
+                    if (rule.conditionsList.isEmpty()) {
                         logger.d("this rule: ${rule.title} has no condition, assume match!")
                         true
                     } else {
@@ -210,97 +211,109 @@ class DefaultRuleEngine(
                             contextData = contextData
                         )
                     }
-                    logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
-                    if (conditionRes) {
-                        val conflictStrategy: ConflictStrategy = rule.conflictPolicy
-                        val isThisRuleAlreadyRunning = synchronized(jobs) {
-                            jobs.any {
-                                it.id == rule.id
+                }
+                logger.d("conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+
+                // Check if should execute actions?
+                var shouldExecuteActions = conditionRes
+                if (conditionRes) {
+                    val conflictStrategy: ConflictStrategy = rule.conflictPolicy
+                    val isThisRuleAlreadyRunning = synchronized(jobs) {
+                        jobs.any {
+                            it.id == rule.id
+                        }
+                    }
+                    logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
+                    if (isThisRuleAlreadyRunning) {
+                        when (conflictStrategy) {
+                            ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
+                                // Fall through.
+                                shouldExecuteActions = true
+                            }
+
+                            ConflictStrategy.ConflictStrategy_ReplaceOld -> {
+                                cancelJobs("ConflictStrategy_ReplaceOld") {
+                                    it.id == rule.id
+                                }
+                                shouldExecuteActions = true
+                            }
+
+                            ConflictStrategy.ConflictStrategy_SkipNew -> {
+                                logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
+                                shouldExecuteActions = false
                             }
                         }
-                        logger.d("${rule.title} conflictStrategy: $conflictStrategy, isThisRuleAlreadyRunning: $isThisRuleAlreadyRunning")
-                        if (isThisRuleAlreadyRunning) {
-                            when (conflictStrategy) {
-                                ConflictStrategy.ConflictStrategy_ExecuteBoth, ConflictStrategy.UNRECOGNIZED -> {
-                                    // Fall through.
-                                }
+                    }
+                    logger.d("shouldExecuteActions for rule ${rule.title} $shouldExecuteActions")
 
-                                ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                                    cancelJobs("ConflictStrategy_ReplaceOld") {
-                                        it.id == rule.id
-                                    }
-                                }
-
-                                ConflictStrategy.ConflictStrategy_SkipNew -> {
-                                    logger.d("Skip this rule actions since ConflictStrategy_SkipNew")
-                                    return@launchSafety
-                                }
-                            }
-                        }
-
-                        val runActions: suspend () -> Unit = {
-                            kotlin.run loop@{
-                                logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
-                                rule.actionsList.forEach {
-                                    val evaRes = actionEvaluator.evaluate(
-                                        logTag = rule.title,
-                                        action = it,
-                                        contextData = contextData,
-                                        localVars = localVars,
-                                    )
-                                    logger.d("action evaluate res: $evaRes")
-                                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                        logger.e(evaRes.error, "evaluate fail")
-                                        if (evaRes.shouldContinue) {
-                                            logger.d("Action on error is continue execute.")
-                                        } else {
+                    // Launch actions.
+                    if (shouldExecuteActions) {
+                        val job = scope.launchSafety {
+                            logger.d("job for rule: ${rule.title} start.")
+                            val runActions: suspend () -> Unit = {
+                                kotlin.run loop@{
+                                    logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
+                                    rule.actionsList.forEach {
+                                        val evaRes = actionEvaluator.evaluate(
+                                            logTag = rule.title,
+                                            action = it,
+                                            contextData = contextData,
+                                            localVars = localVars,
+                                        )
+                                        logger.d("action evaluate res: $evaRes")
+                                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                            logger.e(evaRes.error, "evaluate fail")
+                                            if (evaRes.shouldContinue) {
+                                                logger.d("Action on error is continue execute.")
+                                            } else {
+                                                return@loop
+                                            }
+                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                            logger.w("evaluate break!")
                                             return@loop
+                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
                                         }
-                                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                        logger.w("evaluate break!")
-                                        return@loop
-                                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
+                                    }
+                                }
+                            }
+
+                            when (rule.asyncMode) {
+                                AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
+                                    logger.d("Run actions with Async")
+                                    runActions()
+                                }
+
+                                AsyncMode.AsyncMode_Sync_InRule -> {
+                                    val muteX = rule.muteX
+                                    logger.d("Run actions with Sync_InRule: $muteX")
+                                    muteX.withLock {
+                                        runActions()
+                                    }
+                                }
+
+                                else -> {
+                                    logger.d("Run actions with globalMuteX")
+                                    globalMuteX.withLock {
+                                        runActions()
                                     }
                                 }
                             }
                         }
-
-                        when (rule.asyncMode) {
-                            AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
-                                logger.d("Run actions with Async")
-                                runActions()
+                        logger.d("Created job: $job for rule: ${rule.title}")
+                        synchronized(jobs) {
+                            jobs.add(JobRecord(rule.id, job))
+                        }
+                        onJobStarted(rule.id)
+                        job.invokeOnCompletion {
+                            logger.d("job for rule: ${rule.title} complete, err: $it")
+                            synchronized(jobs) {
+                                jobs.remove(JobRecord(rule.id, job))
                             }
-
-                            AsyncMode.AsyncMode_Sync_InRule -> {
-                                val muteX = rule.muteX
-                                logger.d("Run actions with Sync_InRule: $muteX")
-                                muteX.withLock {
-                                    runActions()
-                                }
-                            }
-
-                            else -> {
-                                logger.d("Run actions with globalMuteX")
-                                globalMuteX.withLock {
-                                    runActions()
-                                }
-                            }
+                            contextData.recycle()
+                            onJobCompleted(rule.id)
                         }
                     }
-                }
-                logger.d("Created job: $job for rule: ${rule.title}")
-                synchronized(jobs) {
-                    jobs.add(JobRecord(rule.id, job))
-                }
-                onJobStarted(rule.id)
-                job.invokeOnCompletion {
-                    logger.d("job for rule: ${rule.title} complete, err: $it")
-                    synchronized(jobs) {
-                        jobs.remove(JobRecord(rule.id, job))
-                    }
-                    contextData.recycle()
-                    onJobCompleted(rule.id)
                 }
             } else {
                 logger.d("fire, not match for rule it self: ${fact.javaClass} ${rule.title}, will check it's quit.")
