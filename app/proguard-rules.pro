@@ -129,3 +129,11 @@
 -dontwarn android.media.projection.IMediaProjectionManager$Stub
 -dontwarn android.media.projection.IMediaProjectionManager
 -dontwarn android.util.MathUtils
+-dontwarn android.bluetooth.BluetoothA2dpSink
+-dontwarn android.bluetooth.BluetoothHeadsetClient
+-dontwarn android.bluetooth.BluetoothHidHost
+-dontwarn android.bluetooth.BluetoothMap
+-dontwarn android.bluetooth.BluetoothMapClient
+-dontwarn android.bluetooth.BluetoothPan
+-dontwarn android.bluetooth.BluetoothPbapClient
+-dontwarn android.bluetooth.BluetoothUuid

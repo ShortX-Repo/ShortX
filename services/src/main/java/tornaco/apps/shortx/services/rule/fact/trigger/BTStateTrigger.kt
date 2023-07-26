@@ -1,18 +1,12 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothHeadset
-import android.bluetooth.BluetoothProfile
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.text.TextUtils
 import com.elvishew.xlog.XLog
 import kotlinx.coroutines.flow.MutableStateFlow
-import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -20,10 +14,11 @@ import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.bluetoothManager
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper.getBTBondedDevices
-import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
+import tornaco.apps.shortx.services.util.bluetooth.BluetoothCallback
+import tornaco.apps.shortx.services.util.bluetooth.CachedBluetoothDevice
+import tornaco.apps.shortx.services.util.bluetooth.LocalBluetoothManager
+
 
 class BTStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
@@ -31,53 +26,13 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
     private val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
         MutableStateFlow(emptyList())
 
-    private val receiver = object : SafeBroadcastReceiver(shortXContext) {
-        override fun handleReceive(context: Context, intent: Intent) {
-            val action = intent.action ?: return
-            if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
-                val state =
-                    intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
-                logger.d("btEventReceiver state: $state")
-                if (state == BluetoothAdapter.STATE_OFF) {
-                    shortXContext.rule.publishFact(
-                        "btStateChanged to btStateOff",
-                        BTStatusChanged.newBuilder()
-                            .setOoa(OnOffAny.Off)
-                            .build()
-                    )
-                }
-                if (state == BluetoothAdapter.STATE_ON) {
-                    shortXContext.rule.publishFact(
-                        "btStateChanged to btStateOn",
-                        BTStatusChanged.newBuilder()
-                            .setOoa(OnOffAny.On)
-                            .build()
-                    )
-                }
-
-                checkConnectionState()
-            } else if (action == BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED) {
-                val btDevice: BluetoothDevice? =
-                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                logger.d(
-                    "ACTION_ACTIVE_DEVICE_CHANGED btDevice: ${
-                        btDevice?.let {
-                            BTHelper.btDeviceToProtoDevice(
-                                it
-                            )
-                        }
-                    }"
-                )
-            } else {
-                logger.d("BT Action: $action")
-                checkConnectionState()
-            }
-        }
-    }
+    private var btManager: LocalBluetoothManager? = null
 
     private fun checkConnectionState() {
-        val eventDevices = getBTBondedDevices()
-        val eventConnectedDevices = eventDevices.filter { it.isConnected }
+        val eventConnectedDevices =
+            btManager?.cachedDeviceManager?.cachedDevicesCopy?.filter { it.isConnected }
+                ?.map { BTHelper.btDeviceToProtoDevice(it) }
+                ?: emptyList()
         logger.d("eventConnectedDevices: ${eventConnectedDevices.map { it.deviceToString() }}")
 
         val currentBoundDevices = _connectedDevices.value
@@ -86,12 +41,12 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
         val newConnectedDevices = eventConnectedDevices.filter { ed ->
             !currentBoundDevices.any { it.address == ed.address }
         }
-        logger.d("newConnectedDevices: ${newConnectedDevices.map { it.deviceToString() }}")
+        logger.d("newConnectedDevices ---->: ${newConnectedDevices.map { it.deviceToString() }}")
 
         val disconnectedDevices = currentBoundDevices.filter { cd ->
             !eventConnectedDevices.any { it.address == cd.address }
         }
-        logger.d("disconnectedDevices: ${disconnectedDevices.map { it.deviceToString() }}")
+        logger.d("disconnectedDevices ---->: ${disconnectedDevices.map { it.deviceToString() }}")
 
         _connectedDevices.value = eventConnectedDevices
 
@@ -129,48 +84,76 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
 
     override fun register() {
-        //    addHandler(BluetoothDevice.ACTION_FOUND, new DeviceFoundHandler());
-        //        addHandler(BluetoothDevice.ACTION_NAME_CHANGED, new NameChangedHandler());
-        //        addHandler(BluetoothDevice.ACTION_ALIAS_CHANGED, new NameChangedHandler());
-        //
-        //        // Pairing broadcasts
-        //        addHandler(BluetoothDevice.ACTION_BOND_STATE_CHANGED, new BondStateChangedHandler());
-        //
-        //        // Fine-grained state broadcasts
-        //        addHandler(BluetoothDevice.ACTION_CLASS_CHANGED, new ClassChangedHandler());
-        //        addHandler(BluetoothDevice.ACTION_UUID, new UuidChangedHandler());
-        //        addHandler(BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED, new BatteryLevelChangedHandler());
-        //
-        //        // Active device broadcasts
-        //        addHandler(BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED, new ActiveDeviceChangedHandler());
-        //        addHandler(BluetoothHeadset.ACTION_ACTIVE_DEVICE_CHANGED, new ActiveDeviceChangedHandler());
-        //        addHandler(BluetoothHearingAid.ACTION_ACTIVE_DEVICE_CHANGED,
-        //                new ActiveDeviceChangedHandler());
-        //        addHandler(BluetoothLeAudio.ACTION_LE_AUDIO_ACTIVE_DEVICE_CHANGED,
-        //                   new ActiveDeviceChangedHandler());
-        //
-        //        // Headset state changed broadcasts
-        //        addHandler(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED,
-        //                new AudioModeChangedHandler());
-        //        addHandler(TelephonyManager.ACTION_PHONE_STATE_CHANGED,
-        //                new AudioModeChangedHandler());
-        //
-        //        // ACL connection changed broadcasts
-        //        addHandler(BluetoothDevice.ACTION_ACL_CONNECTED, new AclStateChangedHandler());
-        //        addHandler(BluetoothDevice.ACTION_ACL_DISCONNECTED, new AclStateChangedHandler());
-        val btFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-        btFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
-        btFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-        btFilter.addAction(BluetoothDevice.ACTION_CLASS_CHANGED)
-        btFilter.addAction(BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED)
-        btFilter.addAction(BluetoothDevice.ACTION_UUID)
-        btFilter.addAction(BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED)
-        btFilter.addAction(BluetoothHeadset.ACTION_ACTIVE_DEVICE_CHANGED)
-        ContextCompat.registerReceiver(context, receiver, btFilter, ContextCompat.RECEIVER_EXPORTED)
+        LocalBluetoothManager.getInstance(
+            context
+        ) { _, bluetoothManager ->
+            logger.d("onBluetoothManagerInitialized: $bluetoothManager")
+            btManager = bluetoothManager
+            bluetoothManager.eventManager.registerCallback(object : BluetoothCallback {
+                override fun onBluetoothStateChanged(bluetoothState: Int) {
+                    logger.d("onBluetoothStateChanged: $bluetoothState")
+                    if (bluetoothState == BluetoothAdapter.STATE_OFF) {
+                        shortXContext.rule.publishFact(
+                            "btStateChanged to btStateOff",
+                            BTStatusChanged.newBuilder()
+                                .setOoa(OnOffAny.Off)
+                                .build()
+                        )
+                    }
+                    if (bluetoothState == BluetoothAdapter.STATE_ON) {
+                        shortXContext.rule.publishFact(
+                            "btStateChanged to btStateOn",
+                            BTStatusChanged.newBuilder()
+                                .setOoa(OnOffAny.On)
+                                .build()
+                        )
+                    }
+
+                }
+
+                override fun onScanningStateChanged(started: Boolean) {
+                    logger.d("onScanningStateChanged: $started")
+                }
+
+                override fun onDeviceAdded(cachedDevice: CachedBluetoothDevice?) {
+                    logger.d("onDeviceAdded: ${cachedDevice?.name}")
+                }
+
+                override fun onDeviceDeleted(cachedDevice: CachedBluetoothDevice?) {
+                    logger.d("onDeviceDeleted: ${cachedDevice?.name}")
+                }
+
+                override fun onDeviceBondStateChanged(
+                    cachedDevice: CachedBluetoothDevice?,
+                    bondState: Int
+                ) {
+                    logger.d("onDeviceBondStateChanged: bondState: $bondState, ${cachedDevice?.name}")
+                }
+
+                override fun onConnectionStateChanged(
+                    cachedDevice: CachedBluetoothDevice?,
+                    state: Int
+                ) {
+                    logger.d("onConnectionStateChanged: state: $state, ${cachedDevice?.name}")
+                    checkConnectionState()
+                }
+
+                override fun onActiveDeviceChanged(
+                    activeDevice: CachedBluetoothDevice?,
+                    bluetoothProfile: Int
+                ) {
+                    logger.d("onActiveDeviceChanged: bluetoothProfile: $bluetoothProfile, ${activeDevice?.name}")
+                    checkConnectionState()
+                }
+
+                override fun onAudioModeChanged() {
+                    logger.d("onAudioModeChanged")
+                }
+            })
+        }
     }
 
     override fun unRegister() {
-        context.unregisterReceiver(receiver)
     }
 }
 
@@ -181,19 +164,10 @@ object BTHelper {
             btDeviceToProtoDevice(device)
         }
 
-    fun getConnectedDevices(context: Context) {
-        val a2dpDevices = context.bluetoothManager.getConnectedDevices(BluetoothProfile.A2DP)
-        val a2DpSinkDevices =
-            context.bluetoothManager.getConnectedDevices(BluetoothProfile.A2DP_SINK)
-        val headSetDevices = context.bluetoothManager.getConnectedDevices(BluetoothProfile.HEADSET)
-        val headSetClientDevices =
-            context.bluetoothManager.getConnectedDevices(BluetoothProfile.HEADSET_CLIENT)
-    }
-
     @SuppressLint("NewApi")
     fun btDeviceToProtoDevice(device: BluetoothDevice): BTBondedDevice {
         val address = runCatching { device.address }.getOrElse {
-            Logger("getBTBondedDevices").e(it, "get BT address")
+            Logger("btDeviceToProtoDevice").e(it, "get BT address")
             ""
         }
         var alias = kotlin.runCatching {
@@ -208,6 +182,26 @@ object BTHelper {
         // device.aliasName
         // No virtual method getAliasName()Ljava/lang/String; in class Landroid/bluetooth/BluetoothDevice
 
+        val batteryLevel = device.batteryLevel
+
+        val isConnected = device.isConnected
+
+        return BTBondedDevice.newBuilder()
+            .setAddress(address)
+            .setAlias(alias)
+            .setBatteryLevel(batteryLevel)
+            .setIsConnected(isConnected)
+            .build()
+    }
+
+
+    @SuppressLint("NewApi")
+    fun btDeviceToProtoDevice(device: CachedBluetoothDevice): BTBondedDevice {
+        val address = runCatching { device.address }.getOrElse {
+            Logger("btDeviceToProtoDevice").e(it, "get BT address")
+            ""
+        }
+        val alias = device.name
         val batteryLevel = device.batteryLevel
 
         val isConnected = device.isConnected
