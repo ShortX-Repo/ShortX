@@ -153,7 +153,7 @@ private fun PreferenceIcon(preference: Preference) {
     preference.icon?.let {
         ColoredIcon(
             size = 24.dp,
-            color = MaterialTheme.colorScheme.secondaryContainer,
+            color = prefColorForPreference(preference),
         ) {
             RemixIcon(
                 modifier = Modifier.size(12.dp),
