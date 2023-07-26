@@ -14,8 +14,7 @@ object RequireBTDisconnected : Cond {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected::class.java
 
-            val currentConnectedDevices =
-                BTHelper.getBTBondedDevices().filter { it.isConnected }.map { it.alias }
+            val currentConnectedDevices = BTHelper._connectedDevices.value.map { it.alias }
             logger.d("currentConnectedDevices: $currentConnectedDevices")
 
             val res = currentConnectedDevices.isEmpty()

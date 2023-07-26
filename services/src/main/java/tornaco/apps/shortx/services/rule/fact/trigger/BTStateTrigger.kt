@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper._connectedDevices
 import tornaco.apps.shortx.services.util.bluetooth.BluetoothCallback
 import tornaco.apps.shortx.services.util.bluetooth.CachedBluetoothDevice
 import tornaco.apps.shortx.services.util.bluetooth.LocalBluetoothManager
@@ -23,8 +24,6 @@ import tornaco.apps.shortx.services.util.bluetooth.LocalBluetoothManager
 class BTStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
     private val logger = Logger("BTStateTrigger")
-    private val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
-        MutableStateFlow(emptyList())
 
     private var btManager: LocalBluetoothManager? = null
 
@@ -159,6 +158,10 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
 @SuppressLint("MissingPermission")
 object BTHelper {
+    // Cache.
+    val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
+        MutableStateFlow(emptyList())
+
     fun getBTBondedDevices() = BluetoothAdapter.getDefaultAdapter().bondedDevices.toList()
         .map { device ->
             btDeviceToProtoDevice(device)

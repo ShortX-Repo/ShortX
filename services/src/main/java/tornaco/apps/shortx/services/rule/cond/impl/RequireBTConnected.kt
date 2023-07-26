@@ -3,7 +3,7 @@ package tornaco.apps.shortx.services.rule.cond.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
-import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
+import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper._connectedDevices
 
 object RequireBTConnected : Cond {
     override fun condClass(): Class<out Message> =
@@ -14,8 +14,7 @@ object RequireBTConnected : Cond {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireBTConnected::class.java
 
-            val currentConnectedDevices =
-                BTHelper.getBTBondedDevices().filter { it.isConnected }.map { it.alias }
+            val currentConnectedDevices = _connectedDevices.value.map { it.alias }
             logger.d("currentConnectedDevices: $currentConnectedDevices")
 
             val requiredDevice = data.device
