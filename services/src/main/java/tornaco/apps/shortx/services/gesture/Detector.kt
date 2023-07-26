@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.gesture
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.VibrationEffect
 import android.view.GestureDetector
@@ -22,6 +23,10 @@ class Detector(
     private val handler: Handler,
     private val service: GestureService,
 ) {
+    companion object {
+        const val LOGV = false
+    }
+
     private val logger = Logger("Detector")
 
     private val screenSize by lazy {
@@ -86,13 +91,27 @@ class Detector(
     }
 
     private fun detectArea(downX: Float, downY: Float): Edge? {
+        val currentOrientation = context.resources.configuration.orientation
+        if (LOGV) logger.d("currentOrientation: $currentOrientation (ORIENTATION_PORTRAIT = 1, ORIENTATION_LANDSCAPE = 2)")
         val area = Edge.values().firstOrNull {
-            it.getRect(
-                screenSize.x.toFloat(),
-                screenSize.y.toFloat(),
-                service.getGestureAreaSize()._dp.toFloat()
-            ).contains(downX, downY)
+            val rect = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                it.getRect(
+                    screenSize.x.toFloat(),
+                    screenSize.y.toFloat(),
+                    service.getGestureAreaSize()._dp.toFloat()
+                )
+            } else {
+                it.getRectL(
+                    screenSize.x.toFloat(),
+                    screenSize.y.toFloat(),
+                    service.getGestureAreaSize()._dp.toFloat()
+                )
+            }
+            if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")
+            val res = rect.contains(downX, downY)
+            res
         }
+        if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
         return area
     }
 

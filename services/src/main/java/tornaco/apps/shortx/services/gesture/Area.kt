@@ -7,6 +7,14 @@ import tornaco.apps.shortx.core.proto.fact.Edge
 
 data class HotSeat(val area: Edge, @ColorInt val color: Int)
 
+fun Edge.getRectL(
+    screenWidth: Float,
+    screenHeight: Float,
+    areaSize: Float,
+): RectF {
+    return getRect(screenHeight, screenWidth, areaSize)
+}
+
 fun Edge.getRect(
     screenWidth: Float,
     screenHeight: Float,
