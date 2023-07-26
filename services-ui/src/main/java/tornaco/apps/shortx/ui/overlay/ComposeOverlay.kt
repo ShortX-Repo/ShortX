@@ -35,7 +35,8 @@ class ComposeOverlay(
     private val action: ShowOverlayButton,
     private val initialPos: Pair<Int, Int>,
     private val onPosChange: (Int, Int) -> Unit,
-    private val onButtonClick: (OverlayButtonSetting) -> Unit
+    private val onButtonClick: (OverlayButtonSetting) -> Unit,
+    private val onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) : FrameLayout(context) {
     private val logger: Logger = Logger("ComposeOverlay")
     private val overlayLP = createLayoutParams()
@@ -121,7 +122,9 @@ class ComposeOverlay(
                                 this@ComposeOverlay, it
                             )
                         },
-                        onButtonClick = { onButtonClick(it) })
+                        onButtonClick = { onButtonClick(it) },
+                        onButtonLongClick = { onButtonLongClick(it) }
+                    )
                 }
             }
             isFocusable = false

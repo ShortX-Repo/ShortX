@@ -3,11 +3,32 @@ package tornaco.apps.shortx.ui.overlay
 import android.view.MotionEvent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -68,6 +89,7 @@ private class ExpandState(private val scope: CoroutineScope) {
 fun OverlayContent(
     action: ShowOverlayButton,
     onButtonClick: (OverlayButtonSetting) -> Unit,
+    onButtonLongClick: (OverlayButtonSetting) -> Unit,
     motionEventSpy: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
@@ -149,7 +171,7 @@ fun OverlayContent(
                                 },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            OverlayButtons(state, onButtonClick)
+                            OverlayButtons(state, onButtonClick, onButtonLongClick)
                         }
                     } else {
                         Column(
@@ -161,7 +183,7 @@ fun OverlayContent(
                                 },
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            OverlayButtons(state, onButtonClick)
+                            OverlayButtons(state, onButtonClick, onButtonLongClick)
                         }
                     }
 
@@ -176,22 +198,28 @@ fun OverlayContent(
 private fun OverlayButtons(
     state: OverlayState,
     onButtonClick: (OverlayButtonSetting) -> Unit,
+    onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
     state.buttons.forEachIndexed { _, button ->
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
-            modifier = Modifier.clickableWithRipple {
-                onButtonClick(updateButton.setting)
-            },
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .clip(ShortXCardRoundedCornerShape)
+                .clickableWithRipple(
+                    onLongClick = {
+                        onButtonLongClick(updateButton.setting)
+                    },
+                    onClick = {
+                        onButtonClick(updateButton.setting)
+                    }),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             val icon = updateButton.setting.icon
 
             if (icon.isNotBlank()) {
-                IconButtonContainer(onClick = {
-                    onButtonClick(updateButton.setting)
-                }) {
+                IconButtonContainer {
                     IconForButton(icon = icon)
                 }
             }
@@ -200,7 +228,6 @@ private fun OverlayButtons(
             if (label.isNotEmpty()) {
                 Text(
                     modifier = Modifier
-                        .offset(y = (-4).dp)
                         .padding(horizontal = 4.dp),
                     text = label,
                     textAlign = TextAlign.Center,
@@ -217,14 +244,8 @@ private fun IconForButton(modifier: Modifier = Modifier, icon: String) {
 }
 
 @Composable
-private fun IconButtonContainer(onClick: () -> Unit, icon: @Composable () -> Unit) {
-    Box(modifier = Modifier
-        .clip(ShortXCardRoundedCornerShape)
-        .clickableWithRipple {
-            onClick()
-        }
-        .padding(4.dp)
-    ) {
+private fun IconButtonContainer(icon: @Composable () -> Unit) {
+    Box(modifier = Modifier) {
         icon()
     }
 }

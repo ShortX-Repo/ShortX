@@ -32,7 +32,7 @@ buildConfig {
         "APP_SHELL_SERVICE_NAME",
         "\"tornaco.apps.shortx.ui.service.ShellService\""
     )
-    buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"Settings\"")
+    buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"\"")
     buildConfigField(
         "String",
         "OPEN_SOURCE_LICENSE_URL",

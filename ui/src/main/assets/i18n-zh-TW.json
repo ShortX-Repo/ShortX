@@ -362,7 +362,7 @@
   "ui.action.hide.all.overlay": "隱藏所有懸浮工具",
   "ui.action.show.overlay": "顯示懸浮工具",
   "ui.action.show.overlay.button.of": "第{index}個按鈕",
-  "ui.action.show.overlay.icon": "按鈕圖標",
+  "ui.action.show.overlay.icon": "按鈕圖標（可選）",
   "ui.action.show.overlay.text": "按鈕文本（可選）",
   "ui.action.show.overlay.tag": "標籤（可選）",
   "ui.action.show.overlay.tag.description": "給懸浮工具設置一個標籤，此後你可以在隱藏懸浮工具動作裡使用該標籤來隱藏它",

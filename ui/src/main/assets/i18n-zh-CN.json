@@ -362,7 +362,7 @@
   "ui.action.hide.all.overlay": "隐藏所有悬浮工具",
   "ui.action.show.overlay": "显示悬浮工具",
   "ui.action.show.overlay.button.of": "第{index}个按钮",
-  "ui.action.show.overlay.icon": "按钮图标",
+  "ui.action.show.overlay.icon": "按钮图标（可选）",
   "ui.action.show.overlay.text": "按钮文本（可选）",
   "ui.action.show.overlay.tag": "标签（可选）",
   "ui.action.show.overlay.tag.description": "给悬浮工具设置一个标签，此后你可以在隐藏悬浮工具动作里使用该标签来隐藏它",

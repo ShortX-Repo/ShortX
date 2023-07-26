@@ -60,18 +60,20 @@ class OverlayService(shortXContext: ShortXContext) :
                     store.write(Settings.IntSettings.OverlayButtonPosY, y)
                 }
             },
-        ) { button: OverlayButtonSetting ->
-            shortXContext.rule.executeActions(
-                id = "Overlay-Button-${action.id}",
-                reason = "Overlay Button #${button.label} click",
-                actions = button.actionsList,
-                initialContextData = mapOf(
-                    ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${action.tag}",
-                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnOverlay,
-                ),
-                ConflictStrategy.ConflictStrategy_ExecuteBoth
-            )
-        }
+            onButtonClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    id = "Overlay-Button-${action.id}",
+                    reason = "Overlay Button #${button.label} click",
+                    actions = button.actionsList,
+                    initialContextData = mapOf(
+                        ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${action.tag}",
+                        ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnOverlay,
+                    ),
+                    ConflictStrategy.ConflictStrategy_ExecuteBoth
+                )
+            },
+            onButtonLongClick = {},
+        )
 
         showingOverlays.add(
             ShowingOverlay(
