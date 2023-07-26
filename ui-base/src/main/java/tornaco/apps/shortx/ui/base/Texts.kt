@@ -92,11 +92,11 @@ fun FieldTitle(
     Text(
         modifier = modifier,
         text = text,
-        style = MaterialTheme.typography.bodySmall.copy(
-            fontWeight = FontWeight.W400,
-            fontSize = 14.sp
-        ),
-        color = color
+        style = MaterialTheme.typography.titleMedium.copy(
+            fontWeight = FontWeight.W500,
+            fontSize = 16.sp,
+            color = color
+        )
     )
 }
 
