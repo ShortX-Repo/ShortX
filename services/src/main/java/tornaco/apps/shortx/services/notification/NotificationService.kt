@@ -18,7 +18,6 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.appPkgToString
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety

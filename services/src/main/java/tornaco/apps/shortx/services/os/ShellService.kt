@@ -6,7 +6,9 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -15,6 +17,7 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.util.AppServiceProxy
+import java.time.Duration
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -55,12 +58,20 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             }
             val first = shellStubs.getBroadcastItem(0)
             logger.d("Using shell: $first")
-            val shellRes = kotlin.runCatching { first.exe(arrayOf(command)) }.getOrElse {
+            val receiver = SynchronousResultReceiver.get()
+            kotlin.runCatching { first.exe(arrayOf(command), receiver) }.getOrElse {
                 logger.e(it, "Error call ISu")
                 null
             }
+            val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
+            logger.d("receiver get res: $receiverRes")
+            val byteRes = receiverRes.getValue(emptyByteArrayWrapper)
             shellStubs.finishBroadcast()
-            return shellRes?.let { ShellRes.parseFrom(shellRes.byte) }
+            return if (byteRes == emptyByteArrayWrapper) null else byteRes?.let {
+                ShellRes.parseFrom(
+                    byteRes.byteData
+                )
+            }
         }
     }
 
@@ -80,9 +91,16 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
         val res: AtomicReference<ShellRes> = AtomicReference()
         setTask(object : ProxyTask() {
             override fun run() {
-                requireNotNull(impl) { "Impl is null." }.exe(command)?.let {
-                    res.set(ShellRes.parseFrom(it.byte))
-                }
+                val receiver = SynchronousResultReceiver.get()
+                requireNotNull(impl) { "Impl is null." }.exe(command, receiver)
+                val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
+                logger.d("receiver get res: $receiverRes")
+                val byteRes = receiverRes.getValue(emptyByteArrayWrapper)
+                res.set(
+                    if (byteRes == emptyByteArrayWrapper) null else {
+                        ShellRes.parseFrom(byteRes.byteData)
+                    }
+                )
             }
 
         })

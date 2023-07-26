@@ -3,12 +3,12 @@ package tornaco.apps.shortx.core.rule.action
 import android.os.Parcel
 import android.os.Parcelable
 
-data class ByteArrayWrapper(val byte: ByteArray) : Parcelable {
+data class ByteArrayWrapper(val byteData: ByteArray) : Parcelable {
     constructor(parcel: Parcel) : this(parcel.createByteArray()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeByteArray(byte)
+        parcel.writeByteArray(byteData)
     }
 
     override fun describeContents(): Int {
@@ -21,13 +21,11 @@ data class ByteArrayWrapper(val byte: ByteArray) : Parcelable {
 
         other as ByteArrayWrapper
 
-        if (!byte.contentEquals(other.byte)) return false
-
-        return true
+        return byteData.contentEquals(other.byteData)
     }
 
     override fun hashCode(): Int {
-        return byte.contentHashCode()
+        return byteData.contentHashCode()
     }
 
     companion object CREATOR : Parcelable.Creator<ByteArrayWrapper> {

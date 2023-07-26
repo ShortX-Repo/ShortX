@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.annotation.Keep
 import com.topjohnwu.superuser.Shell
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
@@ -31,16 +32,22 @@ class ShellService : Service() {
 
     override fun onBind(intent: Intent?): IBinder {
         return object : ISu.Stub() {
-            override fun exe(command: Array<String>): ByteArrayWrapper {
-                return Shell.cmd(*command)
-                    .exec().apply {
-                        logger.i("Shell res: out: ${this.out} err: ${this.err}")
-                    }.let {
-                        ShellRes.newBuilder().setCode(it.code).addAllOut(it.out).addAllErr(it.err)
-                            .build()
-                    }.let {
-                        ByteArrayWrapper(it.toByteArray())
-                    }
+            override fun exe(command: Array<out String>, receiver: SynchronousResultReceiver) {
+                runCatching {
+                    val shellRes = Shell.cmd(*command)
+                        .exec().apply {
+                            logger.i("Shell res: out: ${this.out} err: ${this.err}")
+                        }.let {
+                            ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                                .addAllErr(it.err)
+                                .build()
+                        }.let {
+                            ByteArrayWrapper(it.toByteArray())
+                        }
+                    receiver.send(shellRes)
+                }.onFailure {
+                    receiver.propagateException(RuntimeException(it))
+                }
             }
         }
     }

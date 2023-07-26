@@ -133,7 +133,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getRuleById(id: String): Rule? {
         return invokeService(null) {
-            getRuleById(id)?.byte?.let {
+            getRuleById(id)?.byteData?.let {
                 Rule.parseFrom(it)
             }
         }
@@ -148,7 +148,7 @@ class ShortXManager(private val service: IShortX) {
     fun getAllRules(): List<Rule> {
         return invokeService(emptyList()) {
             allRules.map {
-                Rule.parseFrom(it.byte)
+                Rule.parseFrom(it.byteData)
             }
         }
     }
@@ -162,7 +162,7 @@ class ShortXManager(private val service: IShortX) {
     fun getInstalledApps(): List<App> {
         return invokeService(emptyList()) {
             installedApps.map {
-                App.parseFrom(it.byte)
+                App.parseFrom(it.byteData)
             }
         }
     }
@@ -176,7 +176,7 @@ class ShortXManager(private val service: IShortX) {
     fun pkgToApp(pkg: AppPkg): App? {
         return invokeService(null) {
             pkgToApp(ByteArrayWrapper(pkg.toByteArray()))?.let {
-                App.parseFrom(it.byte)
+                App.parseFrom(it.byteData)
             }
         }
     }
@@ -201,7 +201,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getDirectActionById(id: String): DirectAction? {
         return invokeService(null) {
-            getDirectActionById(id)?.byte?.let {
+            getDirectActionById(id)?.byteData?.let {
                 DirectAction.parseFrom(it)
             }
         }
@@ -210,7 +210,7 @@ class ShortXManager(private val service: IShortX) {
     fun getAllDirectAction(): List<DirectAction> {
         return invokeService(emptyList()) {
             allDirectAction.map {
-                DirectAction.parseFrom(it.byte)
+                DirectAction.parseFrom(it.byteData)
             }
         }
     }
@@ -272,7 +272,7 @@ class ShortXManager(private val service: IShortX) {
     fun getPkgSetByLabel(label: String): PkgSet? {
         return invokeService(null) {
             getPkgSetByLabel(label)?.let {
-                PkgSet.parseFrom(it.byte)
+                PkgSet.parseFrom(it.byteData)
             }
         }
     }
@@ -280,7 +280,7 @@ class ShortXManager(private val service: IShortX) {
     fun getAllPkgSets(withPkgList: Boolean = true): List<PkgSet> {
         return invokeService(emptyList()) {
             getAllPkgSets(withPkgList).map {
-                PkgSet.parseFrom(it.byte)
+                PkgSet.parseFrom(it.byteData)
             }
         }
     }
@@ -294,7 +294,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getDanmuUISettings(): DanmuUISettings {
         return invokeService(defaultDanmuUISettings) {
-            DanmuUISettings.parseFrom(danmuUISettings.byte)
+            DanmuUISettings.parseFrom(danmuUISettings.byteData)
         }
     }
 
@@ -352,7 +352,7 @@ class ShortXManager(private val service: IShortX) {
     ): List<AppComponentInfo> {
         return invokeService(emptyList()) {
             getActivities(pkg.userId, pkg.pkgName).map {
-                AppComponentInfo.parseFrom(it.byte)
+                AppComponentInfo.parseFrom(it.byteData)
             }
         }
     }
@@ -362,7 +362,7 @@ class ShortXManager(private val service: IShortX) {
     ): List<AppComponentInfo> {
         return invokeService(emptyList()) {
             getReceivers(pkg.userId, pkg.pkgName).map {
-                AppComponentInfo.parseFrom(it.byte)
+                AppComponentInfo.parseFrom(it.byteData)
             }
         }
     }
@@ -370,7 +370,7 @@ class ShortXManager(private val service: IShortX) {
     fun getServices(pkg: AppPkg): List<AppComponentInfo> {
         return invokeService(emptyList()) {
             getServices(pkg.userId, pkg.pkgName).map {
-                AppComponentInfo.parseFrom(it.byte)
+                AppComponentInfo.parseFrom(it.byteData)
             }
         }
     }
@@ -378,20 +378,20 @@ class ShortXManager(private val service: IShortX) {
     fun getProviders(pkg: AppPkg): List<AppComponentInfo> {
         return invokeService(emptyList()) {
             getProviders(pkg.userId, pkg.pkgName).map {
-                AppComponentInfo.parseFrom(it.byte)
+                AppComponentInfo.parseFrom(it.byteData)
             }
         }
     }
 
     fun getRunningAppPkgs(pkgSetLabel: String): List<AppPkg> {
         return invokeService(emptyList()) {
-            getRunningAppPkgs(pkgSetLabel).map { AppPkg.parseFrom(it.byte) }
+            getRunningAppPkgs(pkgSetLabel).map { AppPkg.parseFrom(it.byteData) }
         }
     }
 
     fun getRunningServices(pkg: AppPkg): List<AppComponent> {
         return invokeService(emptyList()) {
-            getRunningServices(ByteArrayWrapper(pkg.toByteArray())).map { AppComponent.parseFrom(it.byte) }
+            getRunningServices(ByteArrayWrapper(pkg.toByteArray())).map { AppComponent.parseFrom(it.byteData) }
         }
     }
 
@@ -414,7 +414,7 @@ class ShortXManager(private val service: IShortX) {
     fun getAppComponentInfo(component: AppComponent): AppComponentInfo? {
         return invokeService(null) {
             getAppComponentInfo(ByteArrayWrapper(component.toByteArray())).let {
-                AppComponentInfo.parseFrom(it.byte)
+                AppComponentInfo.parseFrom(it.byteData)
             }
         }
     }
@@ -434,7 +434,7 @@ class ShortXManager(private val service: IShortX) {
     fun getGlobalVarByName(name: String): GlobalVar? {
         return invokeService(null) {
             getGlobalVarByName(name)?.let {
-                GlobalVar.parseFrom(it.byte)
+                GlobalVar.parseFrom(it.byteData)
             }
         }
     }
@@ -442,7 +442,7 @@ class ShortXManager(private val service: IShortX) {
     fun getAllGlobalVars(): List<GlobalVar> {
         return invokeService(emptyList()) {
             allGlobalVars.mapNotNull {
-                GlobalVar.parseFrom(it.byte)
+                GlobalVar.parseFrom(it.byteData)
             }
         }
     }
@@ -500,7 +500,7 @@ class ShortXManager(private val service: IShortX) {
         invokeService(Unit) {
             vb(code, deviceId, object : ICallback.Stub() {
                 override fun receive(data: ByteArrayWrapper) {
-                    callback(CommonApiRes.parseFrom(data.byte))
+                    callback(CommonApiRes.parseFrom(data.byteData))
                 }
             })
         }
@@ -508,7 +508,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getAllUsers(): List<UserInfo> {
         return invokeService(emptyList()) {
-            allUsers.mapNotNull { UserInfo.parseFrom(it.byte) }
+            allUsers.mapNotNull { UserInfo.parseFrom(it.byteData) }
         }
     }
 
@@ -527,7 +527,7 @@ class ShortXManager(private val service: IShortX) {
     fun getActionEvaluateRecords(): List<ActionEvaluateRecord> {
         return invokeService(emptyList()) {
             actionEvaluateRecords.map {
-                ActionEvaluateRecord.parseFrom(it.byte)
+                ActionEvaluateRecord.parseFrom(it.byteData)
             }
         }
     }
@@ -553,7 +553,7 @@ class ShortXManager(private val service: IShortX) {
     fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
         return invokeService(emptyList()) {
             conditionEvaluateRecords.map {
-                ConditionEvaluateRecord.parseFrom(it.byte)
+                ConditionEvaluateRecord.parseFrom(it.byteData)
             }
         }
     }
@@ -579,7 +579,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getFactPublishRecords(): List<FactPublishRecord> {
         return invokeService(emptyList()) {
-            factPublishRecords.map { FactPublishRecord.parseFrom(it.byte) }
+            factPublishRecords.map { FactPublishRecord.parseFrom(it.byteData) }
         }
     }
 
@@ -626,7 +626,7 @@ class ShortXManager(private val service: IShortX) {
     fun executeShellCommand(command: String): ShellRes {
         return invokeService(ShellRes.getDefaultInstance()) {
             executeShellCommand(command).let {
-                ShellRes.parseFrom(it.byte)
+                ShellRes.parseFrom(it.byteData)
             }
         }
     }
@@ -647,7 +647,7 @@ class ShortXManager(private val service: IShortX) {
     }
 
     fun getBTBondedDevices(): List<BTBondedDevice> = invokeService(emptyList()) {
-        btBondedDevices.map { BTBondedDevice.parseFrom(it.byte) }
+        btBondedDevices.map { BTBondedDevice.parseFrom(it.byteData) }
     }
 
     fun isAudioRecording(): Boolean {
@@ -672,7 +672,7 @@ class ShortXManager(private val service: IShortX) {
 
     fun getAllAudioRecordFiles(): List<AudioRecordFile> {
         return invokeService(emptyList()) {
-            allAudioRecordFiles.map { AudioRecordFile.parseFrom(it.byte) }
+            allAudioRecordFiles.map { AudioRecordFile.parseFrom(it.byteData) }
         }
     }
 

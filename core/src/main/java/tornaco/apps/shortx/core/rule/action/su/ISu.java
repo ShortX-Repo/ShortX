@@ -7,9 +7,8 @@ public interface ISu extends android.os.IInterface
   /** Default implementation for ISu. */
   public static class Default implements tornaco.apps.shortx.core.rule.action.su.ISu
   {
-    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper exe(java.lang.String[] command) throws android.os.RemoteException
+    @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
     {
-      return null;
     }
     @Override
     public android.os.IBinder asBinder() {
@@ -59,15 +58,14 @@ public interface ISu extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String[] _arg0;
           _arg0 = data.createStringArray();
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.exe(_arg0);
-          reply.writeNoException();
-          if ((_result!=null)) {
-            reply.writeInt(1);
-            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg1;
+          if ((0!=data.readInt())) {
+            _arg1 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
           }
           else {
-            reply.writeInt(0);
+            _arg1 = null;
           }
+          this.exe(_arg0, _arg1);
           return true;
         }
         default:
@@ -91,31 +89,28 @@ public interface ISu extends android.os.IInterface
       {
         return DESCRIPTOR;
       }
-      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper exe(java.lang.String[] command) throws android.os.RemoteException
+      @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
-        android.os.Parcel _reply = android.os.Parcel.obtain();
-        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStringArray(command);
-          boolean _status = mRemote.transact(Stub.TRANSACTION_exe, _data, _reply, 0);
-          if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().exe(command);
-          }
-          _reply.readException();
-          if ((0!=_reply.readInt())) {
-            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          if ((receiver!=null)) {
+            _data.writeInt(1);
+            receiver.writeToParcel(_data, 0);
           }
           else {
-            _result = null;
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_exe, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().exe(command, receiver);
+            return;
           }
         }
         finally {
-          _reply.recycle();
           _data.recycle();
         }
-        return _result;
       }
       public static tornaco.apps.shortx.core.rule.action.su.ISu sDefaultImpl;
     }
@@ -137,5 +132,5 @@ public interface ISu extends android.os.IInterface
       return Stub.Proxy.sDefaultImpl;
     }
   }
-  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper exe(java.lang.String[] command) throws android.os.RemoteException;
+  public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
 }

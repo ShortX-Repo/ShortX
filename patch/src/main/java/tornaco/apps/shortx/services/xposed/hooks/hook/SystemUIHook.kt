@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP
 import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
@@ -78,7 +79,7 @@ object SystemUIHook {
         val stub = object : INotificationPoster.Stub() {
             override fun post(data: ByteArrayWrapper) {
                 runCatching {
-                    val n = PostNotification.parseFrom(data.byte)
+                    val n = PostNotification.parseFrom(data.byteData)
                     notificationPoster.invoke(n)
                 }
             }
@@ -102,18 +103,27 @@ object SystemUIShellImpl : ISu.Stub() {
         )
     }
 
-    override fun exe(command: Array<String>): ByteArrayWrapper {
+    override fun exe(
+        command: Array<out String>,
+        receiver: SynchronousResultReceiver
+    ) {
         logger.i("execute: ${command.joinToString()}")
-        return Shell.cmd(*command)
-            .exec().apply {
-                logger.i("Shell res: out: ${this.out} err: ${this.err}")
-            }.let {
-                ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                    .addAllErr(it.err)
-                    .build()
-            }.let {
-                ByteArrayWrapper(it.toByteArray())
-            }
+        runCatching {
+            val shellResult = Shell.cmd(*command)
+                .exec().apply {
+                    logger.i("Shell res: out: ${this.out} err: ${this.err}")
+                }.let {
+                    ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                        .addAllErr(it.err)
+                        .build()
+                }.let {
+                    ByteArrayWrapper(it.toByteArray())
+                }
+
+            receiver.send(shellResult)
+        }.onFailure {
+            receiver.propagateException(RuntimeException(it))
+        }
     }
 }
 

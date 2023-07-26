@@ -144,7 +144,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun addRule(rule: ByteArrayWrapper) {
             v(context) {
-                shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byte))
+                shortXContext.rule.addOrUpdateRule(Rule.parseFrom(rule.byteData))
             }
         }
 
@@ -181,11 +181,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getAppLabel(pkg: ByteArrayWrapper): String? {
-            return shortXContext.appState.getAppLabel(AppPkg.parseFrom(pkg.byte))
+            return shortXContext.appState.getAppLabel(AppPkg.parseFrom(pkg.byteData))
         }
 
         override fun pkgToApp(pkg: ByteArrayWrapper): ByteArrayWrapper? {
-            return shortXContext.appState.pkgToApp(AppPkg.parseFrom(pkg.byte))?.let {
+            return shortXContext.appState.pkgToApp(AppPkg.parseFrom(pkg.byteData))?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
@@ -197,7 +197,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun addDirectAction(da: ByteArrayWrapper) {
             enforceCallingPermissions()
             v(context) {
-                shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byte))
+                shortXContext.rule.addDirectAction(DirectAction.parseFrom(da.byteData))
             }
         }
 
@@ -230,7 +230,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun executeDirectionAction(da: ByteArrayWrapper) {
             enforceCallingPermissions()
-            shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byte))
+            shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byteData))
         }
 
         override fun onMediaStoreInsert(uri: Uri, path: String) {
@@ -291,13 +291,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun deleteAudioRecordFile(file: ByteArrayWrapper) {
-            shortXContext.audio.deleteAudioRecordFile(AudioRecordFile.parseFrom(file.byte))
+            shortXContext.audio.deleteAudioRecordFile(AudioRecordFile.parseFrom(file.byteData))
         }
 
         override fun exportAudioRecordFile(file: ByteArrayWrapper, pfd: ParcelFileDescriptor?) {
             logger.w("exportAudioRecordFile: $file $pfd")
             shortXContext.audio.exportAudioRecordFile(
-                AudioRecordFile.parseFrom(file.byte),
+                AudioRecordFile.parseFrom(file.byteData),
                 requireNotNull(pfd)
             )
         }
@@ -345,7 +345,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun executeHttpRequest(request: ByteArrayWrapper): List<String> {
             val localVars = LocalVars.obtain()
-            val data = HttpRequest.parseFrom(request.byte)
+            val data = HttpRequest.parseFrom(request.byteData)
             val url = data.url
                 .replaceLocalVarValues(localVars)
                 .replaceGlobalVarValues {
@@ -398,7 +398,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.executeActions(
                 id = "EA-${UUID.randomUUID()}",
                 reason = "IShortX executeAction",
-                actions = listOf(ProtoAny.parseFrom(action.byte)),
+                actions = listOf(ProtoAny.parseFrom(action.byteData)),
                 initialContextData = mapOf(
                     ContextDataMapping.Context.contextSrcTitle.name to "Direct execute",
                     ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
@@ -412,7 +412,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.executeActionsBlocking(
                 "EAB-${UUID.randomUUID()}",
                 "IShortX executeAction",
-                listOf(ProtoAny.parseFrom(action.byte))
+                listOf(ProtoAny.parseFrom(action.byteData))
             )
         }
 
@@ -515,7 +515,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun evaluateCondition(condition: ByteArrayWrapper): Boolean {
-            return shortXContext.rule.evaluateCondition(ProtoAny.parseFrom(condition.byte))
+            return shortXContext.rule.evaluateCondition(ProtoAny.parseFrom(condition.byteData))
         }
 
         override fun vb(code: String, deviceId: String, cb: ICallback) {
@@ -553,7 +553,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun addPkgSet(set: ByteArrayWrapper) {
-            shortXContext.pkgSet.addPkgSet(PkgSet.parseFrom(set.byte))
+            shortXContext.pkgSet.addPkgSet(PkgSet.parseFrom(set.byteData))
         }
 
         override fun deletePkgSet(id: String) {
@@ -590,7 +590,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun setDanmuUISettings(settings: ByteArrayWrapper) {
-            shortXContext.ui.setDanmuUISettings(DanmuUISettings.parseFrom(settings.byte))
+            shortXContext.ui.setDanmuUISettings(DanmuUISettings.parseFrom(settings.byteData))
         }
 
         override fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
@@ -659,21 +659,21 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             flags: Int
         ) {
             shortXContext.appState.setComponentEnabledSetting(
-                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byte),
+                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byteData),
                 newState, flags
             )
         }
 
         override fun getComponentEnabledSetting(component: ByteArrayWrapper): Int {
             return shortXContext.appState.getComponentEnabledSetting(
-                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byte)
+                tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(component.byteData)
             )
         }
 
         override fun getAppComponentInfo(component: ByteArrayWrapper): ByteArrayWrapper? {
             return shortXContext.appState.getAppComponentInfo(
                 tornaco.apps.shortx.core.proto.common.AppComponent.parseFrom(
-                    component.byte
+                    component.byteData
                 )
             )?.let {
                 ByteArrayWrapper(it.toByteArray())
@@ -681,7 +681,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun addGlobalVar(gv: ByteArrayWrapper) {
-            shortXContext.rule.addGlobalVar(GlobalVar.parseFrom(gv.byte))
+            shortXContext.rule.addGlobalVar(GlobalVar.parseFrom(gv.byteData))
         }
 
         override fun deleteGlobalVar(id: String) {
@@ -714,7 +714,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getRunningServices(pkg: ByteArrayWrapper): List<ByteArrayWrapper> {
-            return shortXContext.appState.getRunningServices(AppPkg.parseFrom(pkg.byte))
+            return shortXContext.appState.getRunningServices(AppPkg.parseFrom(pkg.byteData))
                 .map { ByteArrayWrapper(it.toByteArray()) }
         }
 
