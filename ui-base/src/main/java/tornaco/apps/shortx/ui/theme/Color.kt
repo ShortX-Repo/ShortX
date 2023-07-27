@@ -77,6 +77,7 @@ val SuccessGreen = Color(0XFF43a047)
 val ErrorRed = Color(0xFFB91D1B)
 val WarningYellow = Color(0xFFfdd835)
 
+val GoogleBlue = Color(0xFF2962ff)
 val ThanoxBlue = Color(0xFF2962ff)
 val PrefIcon = Color(0xFF777777)
 val DisabledActionIconColor = Color(0xFF777777)

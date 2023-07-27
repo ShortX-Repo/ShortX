@@ -61,25 +61,25 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MarkdownText
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
-import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.TipDialog
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UiState
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
-import tornaco.apps.shortx.ui.theme.AliBlue
-import tornaco.apps.shortx.ui.theme.PayPalBlue
+import tornaco.apps.shortx.ui.theme.GoogleBlue
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.VipColorGold
-import tornaco.apps.shortx.ui.theme.WeChatGreen
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @AndroidEntryPoint
@@ -242,16 +242,6 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
             }
         }
 
-        val inputDialogState = rememberTextInputState(
-            title = i18N["Input code"],
-            message = null,
-            onSelected = {
-                vm.verify(it.trim().replace(System.lineSeparator(), ""))
-            }
-        )
-        TextInputDialog(state = inputDialogState)
-
-
         LargeSpacer()
 
         if (config.extra1.isNotBlank()) {
@@ -294,16 +284,25 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
         LargeSpacer()
 
 
-        Fabs(inputDialogState)
+        Fabs(vm)
     }
 }
 
 @Composable
 private fun Fabs(
-    inputDialogState: TextInputState,
+    vm: SubscribeViewModel
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
+
+    val verifyCodeInputState = rememberTextInputState(
+        title = i18N["ui.subscription.subscribe.verify.code"],
+        message = null,
+        onSelected = {
+            vm.verify(it.trim().replace(System.lineSeparator(), ""))
+        }
+    )
+    TextInputDialog(state = verifyCodeInputState)
 
     val wechatPayQRDialogState = rememberCommonDialogState()
     ImageDialog(wechatPayQRDialogState, R.drawable.ui_pay_qr_wechat)
@@ -317,6 +316,52 @@ private fun Fabs(
     )
     TipDialog(state = paypalDialogState)
 
+    val payMenuDialogState =
+        rememberMenuDialogState<String>(title = LocalI18N.current["ui.subscription.pay"],
+            menuItems = listOf(
+                MenuDialogItem(
+                    id = "wechat",
+                    title = "Wechat",
+                    iconName = Remix.Logos.wechat_pay_fill
+                ),
+                MenuDialogItem(
+                    id = "alipay",
+                    title = "Ali Pay",
+                    iconName = Remix.Logos.alipay_fill
+                ),
+                MenuDialogItem(
+                    id = "paypal",
+                    title = "Paypal",
+                    iconName = Remix.Logos.paypal_fill
+                )
+            ),
+            onItemSelected = { data, id ->
+                when (id) {
+                    "wechat" -> {
+                        wechatPayQRDialogState.show()
+                    }
+
+                    "alipay" -> {
+                        aliPayQRDialogState.show()
+                    }
+
+                    "paypal" -> {
+                        paypalDialogState.show()
+                        ClipboardUtils.copyToClipboard(
+                            context,
+                            "paypal",
+                            "https://www.paypal.me/tornaco"
+                        )
+                        Toast.makeText(
+                            context,
+                            i18N["ui.common.copied.to.clipboard"],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            })
+    MenuDialog(state = payMenuDialogState)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -325,54 +370,24 @@ private fun Fabs(
     ) {
 
         ExtendedFloatingActionButton(
-            containerColor = WeChatGreen,
-            onClick = { wechatPayQRDialogState.show() },
-            text = {
-                Text(text = "Wechat", color = Color.White)
-            },
-            icon = {
-                RemixIcon(tint = Color.White, remixName = Remix.Logos.wechat_pay_fill)
-            })
-        StandardSpacer()
-
-        ExtendedFloatingActionButton(
-            containerColor = AliBlue,
-            onClick = { aliPayQRDialogState.show() },
-            text = {
-                Text(text = "Ali Pay", color = Color.White)
-            },
-            icon = {
-                RemixIcon(tint = Color.White, remixName = Remix.Logos.alipay_fill)
-            })
-        StandardSpacer()
-
-        ExtendedFloatingActionButton(
-            containerColor = PayPalBlue,
+            containerColor = MaterialTheme.colorScheme.primary,
             onClick = {
-                paypalDialogState.show()
-                ClipboardUtils.copyToClipboard(
-                    context,
-                    "paypal",
-                    "https://www.paypal.me/tornaco"
-                )
-                Toast.makeText(
-                    context,
-                    i18N["ui.common.copied.to.clipboard"],
-                    Toast.LENGTH_LONG
-                ).show()
+                payMenuDialogState.show()
             },
             text = {
-                Text(text = "PayPal", color = Color.White)
+                Text(text = LocalI18N.current["ui.subscription.pay"], color = Color.White)
             },
             icon = {
-                RemixIcon(tint = Color.White, remixName = Remix.Logos.paypal_fill)
+                RemixIcon(
+                    tint = Color.White,
+                    remixName = Remix.Finance.shopping_cart_2_fill
+                )
             })
-        StandardSpacer()
         StandardSpacer()
 
         ExtendedFloatingActionButton(
             containerColor = VipColorGold,
-            onClick = { inputDialogState.show() },
+            onClick = { verifyCodeInputState.show() },
             text = {
                 Text(
                     text = LocalI18N.current["ui.subscription.subscribe.verify.code"],
@@ -385,7 +400,7 @@ private fun Fabs(
         StandardSpacer()
 
         ExtendedFloatingActionButton(
-            containerColor = VipColorGold,
+            containerColor = GoogleBlue,
             onClick = { LVLCheckActivity.start(context) },
             text = {
                 Text(
