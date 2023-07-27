@@ -140,6 +140,20 @@ class GestureService(shortXContext: ShortXContext) :
         return gestureRecordStore.getGestureRecord(id)
     }
 
+    fun deleteGestureRecordById(id: String) {
+        gestureRecordStore.deleteGestureRecord(id)
+    }
+
+    fun getAllGestureRecords(withEventData: Boolean): List<GestureRecord> {
+        return gestureRecordStore.getAllGestureRecords().map {
+            if (withEventData) {
+                it
+            } else {
+                GestureRecord.newBuilder(it).clearEventData().build()
+            }
+        }
+    }
+
     fun injectGestureRecord(id: String) {
         logger.d("injectGestureRecord: $id")
         systemServiceScope.launchSafety {

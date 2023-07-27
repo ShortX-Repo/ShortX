@@ -400,6 +400,16 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun deleteGestureRecordById(id: String) {
+            shortXContext.gesture.deleteGestureRecordById(id)
+        }
+
+        override fun getAllGestureRecords(withEventData: Boolean): List<ByteArrayWrapper> {
+            return shortXContext.gesture.getAllGestureRecords(withEventData).map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
         override fun injectGestureRecord(id: String) {
             shortXContext.gesture.injectGestureRecord(id)
         }

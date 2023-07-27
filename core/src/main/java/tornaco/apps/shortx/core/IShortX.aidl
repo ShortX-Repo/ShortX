@@ -190,5 +190,7 @@ interface IShortX {
     // Gesture record
     void addGestureRecord(in ByteArrayWrapper record);
     ByteArrayWrapper getGestureRecordById(String id);
+    void deleteGestureRecordById(String id);
+    List<ByteArrayWrapper> getAllGestureRecords(boolean withEventData);
     void injectGestureRecord(String id);
 }

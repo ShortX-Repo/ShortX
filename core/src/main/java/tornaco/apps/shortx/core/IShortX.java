@@ -420,6 +420,13 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public void deleteGestureRecordById(java.lang.String id) throws android.os.RemoteException
+    {
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGestureRecords(boolean withEventData) throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override public void injectGestureRecord(java.lang.String id) throws android.os.RemoteException
     {
     }
@@ -1604,6 +1611,25 @@ public interface IShortX extends android.os.IInterface
           else {
             reply.writeInt(0);
           }
+          return true;
+        }
+        case TRANSACTION_deleteGestureRecordById:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.deleteGestureRecordById(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getAllGestureRecords:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllGestureRecords(_arg0);
+          reply.writeNoException();
+          reply.writeTypedList(_result);
           return true;
         }
         case TRANSACTION_injectGestureRecord:
@@ -3954,6 +3980,46 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void deleteGestureRecordById(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_deleteGestureRecordById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteGestureRecordById(id);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGestureRecords(boolean withEventData) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((withEventData)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllGestureRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllGestureRecords(withEventData);
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       @Override public void injectGestureRecord(java.lang.String id) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -4080,7 +4146,9 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getActiveSubscriptionInfoList = (android.os.IBinder.FIRST_CALL_TRANSACTION + 102);
     static final int TRANSACTION_addGestureRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 103);
     static final int TRANSACTION_getGestureRecordById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 104);
-    static final int TRANSACTION_injectGestureRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 105);
+    static final int TRANSACTION_deleteGestureRecordById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 105);
+    static final int TRANSACTION_getAllGestureRecords = (android.os.IBinder.FIRST_CALL_TRANSACTION + 106);
+    static final int TRANSACTION_injectGestureRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 107);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4251,5 +4319,7 @@ public interface IShortX extends android.os.IInterface
 
   public void addGestureRecord(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper record) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGestureRecordById(java.lang.String id) throws android.os.RemoteException;
+  public void deleteGestureRecordById(java.lang.String id) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGestureRecords(boolean withEventData) throws android.os.RemoteException;
   public void injectGestureRecord(java.lang.String id) throws android.os.RemoteException;
 }

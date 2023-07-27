@@ -719,6 +719,20 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun deleteGestureRecordById(id: String) {
+        return invokeService(Unit) {
+            deleteGestureRecordById(id)
+        }
+    }
+
+    fun getAllGestureRecords(withEventData: Boolean): List<GestureRecord> {
+        return invokeService(emptyList()) {
+            getAllGestureRecords(withEventData).map {
+                GestureRecord.parseFrom(it.byteData)
+            }
+        }
+    }
+
     fun injectGestureRecord(id: String) {
         invokeService(Unit) {
             injectGestureRecord(id)
