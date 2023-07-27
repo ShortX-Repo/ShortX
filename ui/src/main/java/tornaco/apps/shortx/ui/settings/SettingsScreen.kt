@@ -83,6 +83,7 @@ fun SettingsScreen(
     goToConditionRecord: () -> Unit,
     goToFactPublishRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
+    goToGestureRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -263,7 +264,8 @@ fun SettingsScreen(
                                 goToActionRecord = goToActionRecord,
                                 goToConditionRecord = goToConditionRecord,
                                 goToFactPublishRecord = goToFactPublishRecord,
-                                goToAudioRecord = goToAudioRecord
+                                goToAudioRecord = goToAudioRecord,
+                                goToGestureRecord = goToGestureRecord,
                             )
                         )
                         addAll(dataSettings(
@@ -381,6 +383,7 @@ private fun recordSettings(
     goToConditionRecord: () -> Unit,
     goToFactPublishRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
+    goToGestureRecord: () -> Unit,
 ): List<Preference> {
     val badge = if (mainState.isSubscribed) {
         null
@@ -429,6 +432,16 @@ private fun recordSettings(
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select({ goToAudioRecord() },
+                    { subscribeDialogState.show() })
+            }
+        ),
+        Preference.TextPreference(
+            icon = Remix.Editor.sketching,
+            title = LocalI18N.current["ui.settings.gesture.record"],
+            summary = LocalI18N.current["ui.settings.gesture.record.summary"],
+            badge = badge,
+            onClick = {
+                mainState.isSubscribed.select({ goToGestureRecord() },
                     { subscribeDialogState.show() })
             }
         )

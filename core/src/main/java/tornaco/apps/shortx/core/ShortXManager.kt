@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
+import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -702,6 +703,26 @@ class ShortXManager(private val service: IShortX) {
 
     fun getSlotLabel(slotId: Int): String? {
         return getActiveSubscriptionInfoList().firstOrNull { it.simSlotIndex == slotId }?.displayName?.toString()
+    }
+
+    fun addGestureRecord(record: GestureRecord) {
+        invokeService(Unit) {
+            addGestureRecord(ByteArrayWrapper(record.toByteArray()))
+        }
+    }
+
+    fun getGestureRecordById(id: String): GestureRecord? {
+        return invokeService(null) {
+            getGestureRecordById(id)?.let {
+                GestureRecord.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun injectGestureRecord(id: String) {
+        invokeService(Unit) {
+            injectGestureRecord(id)
+        }
     }
 
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {

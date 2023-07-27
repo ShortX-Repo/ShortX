@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.input
 
 import android.hardware.input.InputManager
 import android.view.Display
+import android.view.InputEvent
 import android.view.KeyEvent
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -27,7 +28,7 @@ object IMSFunc {
 
     private val logger = Logger("IMSFunc")
 
-    fun injectInputEvent(event: KeyEvent) = kotlin.runCatching {
+    fun injectInputEvent(event: InputEvent) = kotlin.runCatching {
         val ims = requireNotNull(ServiceHolder.inputManagerService) {
             "inputManagerService is null"
         }
@@ -46,14 +47,14 @@ object IMSFunc {
         logger.e(it, "injectInputEvent")
     }
 
-    private fun injectInputEventWithInputHost(event: KeyEvent, inputHost: Any) {
+    private fun injectInputEventWithInputHost(event: InputEvent, inputHost: Any) {
         logger.d("injectInputEventWithInputHost: $inputHost")
         // public void sendInputEvent(InputEvent event, int policyFlags)
         Reflections.callMethod(inputHost, "sendInputEvent", event, injectPolicyFlags)
     }
 
     // Below Android13
-    private fun injectInputEvent(event: KeyEvent, ims: Any) {
+    private fun injectInputEvent(event: InputEvent, ims: Any) {
         logger.d("injectInputEvent: $ims")
         //   nativeInjectInputEvent(mPtr, event, Display.DEFAULT_DISPLAY, 0, 0,
         //2226                              InputManager.INJECT_INPUT_EVENT_MODE_ASYNC, 0,
@@ -113,16 +114,20 @@ object IMSFunc {
     }
 
     // Android 13+
-    private fun injectInputEvent33(event: KeyEvent, ims: Any) {
+    private fun injectInputEvent33(event: InputEvent, ims: Any) {
         logger.d("injectInputEvent33: $ims")
         val nat = requireNotNull(ims.fieldOrNull<Any>("mNative")) { "mNative is null." }
         Reflections.callMethod(
             nat,
             "injectInputEvent",
-            KeyEvent.changeFlags(
-                event,
-                event.flags or KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT
-            ),
+            if (event is KeyEvent) {
+                KeyEvent.changeFlags(
+                    event,
+                    event.flags or KeyEvent.FLAG_IS_ACCESSIBILITY_EVENT
+                )
+            } else {
+                event
+            },
             false,
             -1,
             Device.INJECT_MODE_ASYNC,

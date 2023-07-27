@@ -45,7 +45,7 @@ object InputManagerHook {
 
         onDebugBuild {
             if (OsUtils.isTOrAbove()) {
-                debugHooks(lpparam)
+                // debugHooks(lpparam)
             }
         }
     }.onFailure {

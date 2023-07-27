@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -387,6 +388,20 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                 }.join()
             }
             return res
+        }
+
+        override fun addGestureRecord(record: ByteArrayWrapper) {
+            shortXContext.gesture.addGestureRecord(GestureRecord.parseFrom(record.byteData))
+        }
+
+        override fun getGestureRecordById(id: String): ByteArrayWrapper? {
+            return shortXContext.gesture.getGestureRecordById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun injectGestureRecord(id: String) {
+            shortXContext.gesture.injectGestureRecord(id)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

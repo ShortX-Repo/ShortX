@@ -186,4 +186,9 @@ interface IShortX {
 
     // Phone
     List<SubscriptionInfo> getActiveSubscriptionInfoList();
+
+    // Gesture record
+    void addGestureRecord(in ByteArrayWrapper record);
+    ByteArrayWrapper getGestureRecordById(String id);
+    void injectGestureRecord(String id);
 }

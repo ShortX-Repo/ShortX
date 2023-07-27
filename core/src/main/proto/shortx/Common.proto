@@ -236,3 +236,15 @@ enum ConflictStrategy {
   ConflictStrategy_ReplaceOld = 1;
   ConflictStrategy_SkipNew = 2;
 }
+
+message GestureRecord {
+  repeated bytes eventData = 1;
+  string label = 2;
+  string duration = 3;
+
+  string id = 100;
+}
+
+message GestureRecordList {
+  repeated GestureRecord records = 1;
+}

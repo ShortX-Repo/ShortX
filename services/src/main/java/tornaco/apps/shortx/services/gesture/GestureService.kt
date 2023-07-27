@@ -2,18 +2,23 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.graphics.Color
+import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.util.ParcelableUtil
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
@@ -22,6 +27,10 @@ private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
 
 class GestureService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "GestureService") {
+    private val gestureRecordStore by lazy {
+        GestureRecordsStore(systemServiceScope)
+    }
+
     private var gestureDetector: Detector? = null
 
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
@@ -37,6 +46,7 @@ class GestureService(shortXContext: ShortXContext) :
 
     override fun systemReady() {
         super.systemReady()
+        gestureRecordStore.readBlocking()
         gestureDetector = Detector(context, handler, this).also {
             it.dump()
         }
@@ -121,4 +131,56 @@ class GestureService(shortXContext: ShortXContext) :
     fun getGestureAreaSize(): Int = store.read(Settings.IntSettings.GestureAreaSizeDp)
 
     fun setGestureAreaSize(dp: Int) = store.write(Settings.IntSettings.GestureAreaSizeDp, dp)
+
+    fun addGestureRecord(record: GestureRecord) {
+        gestureRecordStore.addGestureRecord(record)
+    }
+
+    fun getGestureRecordById(id: String): GestureRecord? {
+        return gestureRecordStore.getGestureRecord(id)
+    }
+
+    fun injectGestureRecord(id: String) {
+        logger.d("injectGestureRecord: $id")
+        systemServiceScope.launchSafety {
+            val gesture = getGestureRecordById(id)
+            logger.d("injectGestureRecord, gesture: $gesture")
+            if (gesture != null) {
+                val motionEvents = gesture.eventDataList.map {
+                    ParcelableUtil.unmarshall(it.toByteArray(), MotionEvent.CREATOR)
+                }
+                logger.d("injectGestureRecord, event count: ${motionEvents.size}")
+                if (motionEvents.isNotEmpty()) {
+                    var lastEventTime = motionEvents.first().eventTime
+                    val firstDownTime = motionEvents.first().downTime
+                    val downTimeDelta = SystemClock.uptimeMillis() - firstDownTime
+
+                    motionEvents.forEach { event ->
+                        val delay = event.eventTime - lastEventTime
+                        lastEventTime = event.eventTime
+                        delay(delay)
+
+                        val newEvent = MotionEvent.obtain(
+                            event.downTime + downTimeDelta,
+                            SystemClock.uptimeMillis(),
+                            event.action,
+                            event.x,
+                            event.y,
+                            event.pressure,
+                            event.size,
+                            event.metaState,
+                            event.xPrecision,
+                            event.yPrecision,
+                            event.deviceId,
+                            event.edgeFlags,
+                            event.source,
+                            event.displayId
+                        )
+                        IMSFunc.injectInputEvent(newEvent)
+                        newEvent.recycle()
+                    }
+                }
+            }
+        }
+    }
 }

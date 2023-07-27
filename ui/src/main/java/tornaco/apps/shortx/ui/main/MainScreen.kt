@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
+import tornaco.apps.shortx.ui.gesture.GestureRecorderActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
@@ -117,6 +118,9 @@ fun HomeScreen() {
                             },
                             goToAudioRecord = {
                                 AudioRecordActivity.start(context)
+                            },
+                            goToGestureRecord = {
+                                GestureRecorderActivity.start(context)
                             },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
