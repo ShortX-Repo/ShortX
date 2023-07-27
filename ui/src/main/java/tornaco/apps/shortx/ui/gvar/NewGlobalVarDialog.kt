@@ -26,7 +26,6 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.GlobalVarType
-import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.label
 import tornaco.apps.shortx.core.rule.toProtoType
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -130,7 +129,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     ClipboardUtils.copyToClipboard(
                         context,
                         "var",
-                        "$LOCAL_VAR_REF_PREFIX${state.name}"
+                        "$GLOBAL_VAR_REF_PREFIX${state.name}"
                     )
                     Toast.makeText(
                         context,
