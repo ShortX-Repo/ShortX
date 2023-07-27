@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.StateViewModel
-import tornaco.apps.shortx.ui.base.afterNavDelay
 
 data class GestureRecordListState(
     val gestures: List<GestureRecord> = emptyList(),
@@ -18,7 +17,6 @@ class GestureRecordListViewModel :
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
             updateState { copy(isLoading = true) }
-            afterNavDelay()
 
             val gestures = shortXManager.getAllGestureRecords(false)
             updateState {
@@ -29,6 +27,18 @@ class GestureRecordListViewModel :
 
     fun delete(id: String) {
         shortXManager.deleteGestureRecordById(id)
+        loadState()
+    }
+
+    fun rename(gestureRecord: GestureRecord, name: String) {
+        val richRecord = shortXManager.getGestureRecordById(gestureRecord.id)
+        richRecord?.let {
+            shortXManager.addGestureRecord(
+                GestureRecord.newBuilder(richRecord)
+                    .setLabel(name)
+                    .build()
+            )
+        }
         loadState()
     }
 }

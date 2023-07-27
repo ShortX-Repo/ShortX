@@ -4,14 +4,11 @@ package tornaco.apps.shortx.ui.gesture
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.Card
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,20 +21,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ColorDefaults
-import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
@@ -45,10 +39,10 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
-import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -72,15 +66,15 @@ class GestureRecordListActivity : BaseActivity() {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GestureRecordListScreen(back: () -> Unit) {
     val vm = hiltViewModel<GestureRecordListViewModel>()
     val state by vm.state.collectAsState()
-
-    LaunchedEffect(vm) {
-        vm.loadState()
-    }
+    DisposableEffectWithLifeCycle(
+        onResume = {
+            vm.loadState()
+        }
+    )
 
     val context = LocalContext.current
     ShortXTheme {
@@ -118,39 +112,33 @@ fun GestureRecordListScreen(back: () -> Unit) {
                             .padding(paddingValues)
                     )
                 } else {
-                    LazyVerticalStaggeredGrid(
+                    LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
                         contentPadding = paddingValues
                     ) {
                         items(state.gestures) {
-                            Card(
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                                shape = ShortXCardRoundedCornerShape,
-                                elevation = 0.dp
-                            ) {
-                                Box {
-                                    val popMenuState = listItemOverflowMenu(
-                                        record = it,
-                                        onDelete = {
-                                            vm.delete(it.id)
-                                        },
-                                    )
+                            Box {
+                                val popMenuState = listItemOverflowMenu(
+                                    record = it,
+                                    onDelete = {
+                                        vm.delete(it.id)
+                                    },
+                                    onRename = { gestureRecord, name ->
+                                        vm.rename(gestureRecord, name)
+                                    },
+                                    onView = {
+                                        GestureRecordeViewerActivity.start(context, it.id)
+                                    }
+                                )
 
-                                    ListItem(
-                                        title = it.label,
-                                        icon = {
-                                            ColoredIcon {
-                                                RemixIcon(remixName = Remix.Editor.sketching)
-                                            }
-                                        },
-
-                                        onClick = {
-                                            popMenuState.open()
-                                        })
-                                }
+                                ListItem(
+                                    title = it.label,
+                                    icon = {
+                                        RemixIcon(remixName = Remix.Editor.sketching)
+                                    },
+                                    onClick = {
+                                        popMenuState.open()
+                                    })
                             }
                         }
                     }
@@ -165,11 +153,33 @@ fun GestureRecordListScreen(back: () -> Unit) {
 
 @Composable
 private fun listItemOverflowMenu(
-    record: GestureRecord, onDelete: (GestureRecord) -> Unit
+    record: GestureRecord,
+    onDelete: (GestureRecord) -> Unit,
+    onRename: (GestureRecord, String) -> Unit,
+    onView: (GestureRecord) -> Unit,
 ): DropdownSelectorState {
     val menuState = rememberDropdownSelectorState()
 
+    val textInputState = rememberTextInputState(
+        title = LocalI18N.current["ui.common.rename"],
+        message = null,
+        showSymbolButton = false,
+        onSelected = {
+            onRename(record, it)
+        })
+    TextInputDialog(textInputState)
+
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+            data = "rename",
+            icon = {
+                RemixIcon(remixName = Remix.Editor.font_size)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.view"]),
+            data = "view",
+            icon = {
+                RemixIcon(remixName = Remix.Media.play_line)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
             icon = {
@@ -179,6 +189,14 @@ private fun listItemOverflowMenu(
         when (it.data) {
             "delete" -> {
                 onDelete(record)
+            }
+
+            "rename" -> {
+                textInputState.show(initialValue = record.label)
+            }
+
+            "view" -> {
+                onView(record)
             }
 
             else -> {}

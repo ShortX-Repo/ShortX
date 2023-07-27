@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.util.UUID
 
 @AndroidEntryPoint
 class GestureRecorderActivity : BaseActivity() {
@@ -85,7 +86,7 @@ class GestureRecorderActivity : BaseActivity() {
         if (keyCode != KeyEvent.KEYCODE_BACK) {
             val eventRecord = GestureRecord.newBuilder()
                 .setLabel(DateUtils.formatForFileName(System.currentTimeMillis()))
-                .setId("test")
+                .setId(UUID.randomUUID().toString())
                 .addAllEventData(
                     events.map {
                         ByteString.copyFrom(it)
