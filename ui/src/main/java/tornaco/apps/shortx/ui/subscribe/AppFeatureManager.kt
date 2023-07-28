@@ -50,14 +50,28 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Fact.VPNDisconnected::class,
     Fact.BTConnectedTo::class,
     Fact.BTDisconnectedFrom::class,
+    Fact.TaskRemoved::class,
+    Fact.AdvancedKeyEvent::class,
+    Fact.FixedInPeriod::class,
 
     Condition.AppHasAudioFocus::class,
     Condition.RequireMobileDataEnabled::class,
 
+    Action.SuspendApp::class,
+    Action.UnSuspendApp::class,
+    Action.DisableApp::class,
+    Action.EnableApp::class,
     Action.AudioRecording::class,
     Action.ShowOverlay::class,
     Action.SwitchMobileDataSlot::class,
     Action.HttpRequest::class,
+    Action.InputText::class,
+    Action.InputTap::class,
+    Action.InputSwipe::class,
+    Action.InjectGestureRecording::class,
+    Action.ToggleGestureRecording::class,
+    Action.StartGestureRecording::class,
+    Action.StopGestureRecording::class,
 )
 
 fun isForSubscribedOnly(clazz: KClass<*>): Boolean = subscribedOnlyActions.contains(clazz)
