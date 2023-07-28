@@ -159,17 +159,20 @@ public class PointerLocationView extends View implements InputDeviceListener,
         mPaint.setStrokeWidth(2);
         mCurrentPointPaint = new Paint();
         mCurrentPointPaint.setAntiAlias(true);
+        // Red
         mCurrentPointPaint.setARGB(255, 255, 0, 0);
         mCurrentPointPaint.setStyle(Paint.Style.STROKE);
-        mCurrentPointPaint.setStrokeWidth(2);
+        mCurrentPointPaint.setStrokeWidth(6);
         mTargetPaint = new Paint();
         mTargetPaint.setAntiAlias(false);
+        // Blue
         mTargetPaint.setARGB(255, 0, 0, 192);
         mPathPaint = new Paint();
         mPathPaint.setAntiAlias(false);
+        // Light blue
         mPathPaint.setARGB(255, 0, 96, 255);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(1);
+        mPaint.setStrokeWidth(2);
 
         PointerState ps = new PointerState();
         mPointers.add(ps);
@@ -534,11 +537,11 @@ public class PointerLocationView extends View implements InputDeviceListener,
             final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
                     >> MotionEvent.ACTION_POINTER_INDEX_SHIFT; // will be 0 for down
             if (action == MotionEvent.ACTION_DOWN) {
-                for (int p = 0; p < NP; p++) {
-                    final PointerState ps = mPointers.get(p);
-                    ps.clearTrace();
-                    ps.mCurDown = false;
-                }
+//                for (int p = 0; p < NP; p++) {
+//                    final PointerState ps = mPointers.get(p);
+//                    ps.clearTrace();
+//                    ps.mCurDown = false;
+//                }
                 mCurDown = true;
                 mCurNumPointers = 0;
                 mMaxNumPointers = 0;

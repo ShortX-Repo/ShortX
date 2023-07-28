@@ -739,6 +739,22 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun startGestureRecording() {
+        invokeService(Unit) {
+            startGestureRecording()
+        }
+    }
+
+    fun stopGestureRecording(save: Boolean) {
+        invokeService(Unit) {
+            stopGestureRecording(save)
+        }
+    }
+
+    fun isGestureRecording(): Boolean {
+        return invokeService(false) { isGestureRecording }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

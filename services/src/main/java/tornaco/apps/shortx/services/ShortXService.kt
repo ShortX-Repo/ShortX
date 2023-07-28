@@ -414,6 +414,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.injectGestureRecord(id)
         }
 
+        override fun startGestureRecording() {
+            shortXContext.gesture.startGestureRecording()
+        }
+
+        override fun stopGestureRecording(save: Boolean) {
+            shortXContext.gesture.stopGestureRecording(save)
+        }
+
+        override fun isGestureRecording(): Boolean {
+            return shortXContext.gesture.isGestureRecording()
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }
