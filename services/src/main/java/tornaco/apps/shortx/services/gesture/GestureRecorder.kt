@@ -6,11 +6,12 @@ import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.os.SystemClock
 import android.view.MotionEvent
-import android.view.MotionEvent.PointerCoords
-import android.view.MotionEvent.PointerProperties
 import android.view.WindowManager
 import com.google.protobuf.ByteString
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ScreenOrientation
 import tornaco.apps.shortx.core.util.Logger
@@ -20,6 +21,7 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.ui.PointerLocationView
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.util.copyUse
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -34,7 +36,7 @@ class GestureRecorder(
 
     val isRecording get() = isStart.get()
 
-    fun start() {
+    suspend fun start() {
         require(!isStart.get()) {
             "Already started!"
         }
@@ -47,7 +49,7 @@ class GestureRecorder(
         eventCache.add(ParcelableUtil.marshall(motionEvent))
     }
 
-    fun stop(): GestureRecord? {
+    suspend fun stop(): GestureRecord? {
         isStart.set(false)
         disablePointerLocation()
 
@@ -79,9 +81,11 @@ class GestureRecorder(
         return record
     }
 
-    fun onPointerEvent(input: MotionEvent) {
+    suspend fun onPointerEvent(input: MotionEvent) {
         if (isRecording) {
-            mPointerLocationView?.onPointerEvent(input)
+            withContext(Dispatchers.Main) {
+                mPointerLocationView?.onPointerEvent(input)
+            }
             add(input)
         }
     }
@@ -90,67 +94,43 @@ class GestureRecorder(
         stop()
         enablePointerLocation()
 
-        val motionEvents = gesture.eventDataList.map {
-            ParcelableUtil.unmarshall(it.toByteArray(), MotionEvent.CREATOR)
-        }
-        val speedScale = 1f / (if (speed <= 0) 1f else speed)
-        logger.d("injectGesture: ${gesture.label}, speed: $speedScale, event size: ${gesture.eventDataList.size}")
-        if (motionEvents.isNotEmpty()) {
-            var lastEventTime = motionEvents.first().eventTime
-            val firstDownTime = motionEvents.first().downTime
-            val downTimeDelta = SystemClock.uptimeMillis() - firstDownTime
+        withContext(Dispatchers.IO) {
+            val motionEvents = gesture.eventDataList.map {
+                ParcelableUtil.unmarshall(it.toByteArray(), MotionEvent.CREATOR)
+            }
+            val speedScale = 1f / (if (speed <= 0) 1f else speed)
+            logger.d("injectGesture: ${gesture.label}, speed: $speedScale, event size: ${gesture.eventDataList.size}")
+            if (motionEvents.isNotEmpty()) {
+                var lastEventTime = motionEvents.first().eventTime
+                val firstDownTime = motionEvents.first().downTime
+                val downTimeDelta = SystemClock.uptimeMillis() - firstDownTime
 
-            motionEvents.forEach { event ->
-                val delay = event.eventTime - lastEventTime
-                lastEventTime = event.eventTime
-                delay((delay * speedScale).toLong())
+                motionEvents.forEach { event ->
+                    if (isActive) {
+                        val delay = event.eventTime - lastEventTime
+                        lastEventTime = event.eventTime
+                        delay((delay * speedScale).toLong())
 
-                val pointerProps = arrayOfNulls<PointerProperties>(event.pointerCount)
-                val pointerCoords = arrayOfNulls<PointerCoords>(event.pointerCount)
-                for (i in 0 until event.pointerCount) {
-                    val prop = PointerProperties()
-                    val coords = PointerCoords()
-
-                    event.getPointerProperties(i, prop)
-                    pointerProps[i] = prop
-
-                    event.getPointerCoords(i, coords)
-                    pointerCoords[i] = coords
+                        event.copyUse(
+                            event.downTime + downTimeDelta,
+                            SystemClock.uptimeMillis()
+                        ) {
+                            IMSFunc.injectInputEvent(it)
+                            // Dispatch to us because we can not catch injected event..
+                            withContext(Dispatchers.Main) {
+                                mPointerLocationView?.onPointerEvent(it)
+                            }
+                        }
+                    }
                 }
-
-                val newEvent = MotionEvent.obtain(
-                    event.downTime + downTimeDelta,
-                    SystemClock.uptimeMillis(),
-                    event.action,
-                    event.pointerCount,
-                    pointerProps,
-                    pointerCoords,
-                    event.metaState,
-                    event.buttonState,
-                    event.xPrecision,
-                    event.yPrecision,
-                    event.deviceId,
-                    event.edgeFlags,
-                    event.source,
-                    event.displayId,
-                    event.flags
-                )
-
-                IMSFunc.injectInputEvent(newEvent)
-
-                // Dispatch to us because we can not catch injected event..
-                mPointerLocationView?.onPointerEvent(newEvent)
-
-                newEvent.recycle()
             }
         }
-
         disablePointerLocation()
     }
 
-    private fun enablePointerLocation() {
+    private suspend fun enablePointerLocation() = withContext(Dispatchers.Main) {
         if (mPointerLocationView != null) {
-            return
+            return@withContext
         }
         mPointerLocationView = PointerLocationView(context)
         mPointerLocationView!!.setPrintCoords(false)
@@ -183,7 +163,6 @@ class GestureRecorder(
         }
         val wm: WindowManager = context.getSystemService(WindowManager::class.java)
         wm.removeView(mPointerLocationView)
-
         mPointerLocationView = null
     }
 }

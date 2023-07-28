@@ -5,7 +5,9 @@ import android.graphics.Color
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -96,7 +98,9 @@ class GestureService(shortXContext: ShortXContext) :
         if (!isSystemReady) return null
         if (input == null) return null
         if (input is MotionEvent) {
-            gestureRecorder.onPointerEvent(input)
+            if (gestureRecorder.isRecording) {
+                runBlocking { gestureRecorder.onPointerEvent(input) }
+            }
             return filterMotionEvent(input)
         }
         if (input is KeyEvent) {
@@ -159,22 +163,28 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    fun injectGestureRecord(
+    suspend fun injectGestureRecord(
         id: String,
         speed: Float,
         onComplete: SynchronousResultReceiver?
     ) {
         logger.d("injectGestureRecord: $id $speed $onComplete")
-        systemServiceScope.launchSafety {
-            val gesture = getGestureRecordById(id)
-            logger.d("injectGestureRecord, gesture: $gesture")
-            if (gesture != null) {
+        val gesture = getGestureRecordById(id)
+        logger.d("injectGestureRecord, gesture: $gesture")
+        if (gesture != null) {
+            runCatching {
                 gestureRecorder.injectGesture(gesture, speed)
+            }.onFailure {
+                if (it is CancellationException) {
+                    logger.i("injectGestureRecord canceled.")
+                    // Clean up views.
+                    gestureRecorder.stop()
+                }
+                throw it
             }
-            onComplete?.send(ByteArrayWrapper(byteArrayOf()))
         }
+        onComplete?.send(ByteArrayWrapper(byteArrayOf()))
     }
-
 
     fun startGestureRecording() {
         systemServiceScope.launchSafety {
