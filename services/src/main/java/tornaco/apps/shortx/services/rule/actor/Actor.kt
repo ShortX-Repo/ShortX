@@ -326,6 +326,18 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.WriteLocalVar
     },
+    StartGestureRecording {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartGestureRecording
+    },
+    StopGestureRecording {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StopGestureRecording
+    },
+    ToggleGestureRecording {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ToggleGestureRecording
+    },
 
 
     ;

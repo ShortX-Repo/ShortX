@@ -969,6 +969,39 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartGestureRecording::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartGestureRecording::class.java
+            Action.StartGestureRecording(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.StopGestureRecording::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StopGestureRecording::class.java
+            Action.StopGestureRecording(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ToggleGestureRecording::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ToggleGestureRecording::class.java
+            Action.ToggleGestureRecording(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+            )
+        }
+
         else -> null
     }
 }

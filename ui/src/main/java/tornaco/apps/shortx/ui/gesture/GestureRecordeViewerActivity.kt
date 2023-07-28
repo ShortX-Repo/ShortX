@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -43,10 +45,12 @@ class GestureRecordeViewerActivity : BaseActivity() {
             LaunchedEffect(Unit) {
                 afterNavDelay()
                 intent.getStringExtra(ID)?.let {
-                    val receiver = SynchronousResultReceiver.get()
-                    shortXManager.injectGestureRecord(it, receiver)
-                    receiver.awaitResultNoInterrupt(Duration.ofHours(24))
-                    shortXManager.showDanmu(doneI18N, null)
+                    withContext(Dispatchers.IO) {
+                        val receiver = SynchronousResultReceiver.get()
+                        shortXManager.injectGestureRecord(it, receiver)
+                        receiver.awaitResultNoInterrupt(Duration.ofHours(24))
+                        shortXManager.showDanmu(doneI18N, null)
+                    }
                     delay(500)
                     finish()
                 }

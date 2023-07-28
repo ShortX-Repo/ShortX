@@ -237,10 +237,17 @@ enum ConflictStrategy {
   ConflictStrategy_SkipNew = 2;
 }
 
+enum ScreenOrientation {
+  ScreenOrientation_P = 0;
+  ScreenOrientation_L = 1;
+}
+
 message GestureRecord {
   repeated bytes eventData = 1;
   string label = 2;
-  string duration = 3;
+  int64 duration = 3;
+  int64 recordingTimeMillis = 4;
+  ScreenOrientation screenOrientation = 5;
 
   string id = 100;
 }

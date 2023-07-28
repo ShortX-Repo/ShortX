@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -80,7 +78,6 @@ class GestureRecorderActivity : BaseActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode != KeyEvent.KEYCODE_BACK) {
             shortXManager.stopGestureRecording(true)
-            Toast.makeText(this, i18NIns["ui.common.saved"], Toast.LENGTH_SHORT).show()
             finish()
             return true
         }

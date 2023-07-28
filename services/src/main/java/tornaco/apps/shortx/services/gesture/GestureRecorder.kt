@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.gesture
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.os.SystemClock
 import android.view.MotionEvent
@@ -11,12 +12,14 @@ import android.view.WindowManager
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.common.GestureRecord
-import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.proto.common.ScreenOrientation
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.ParcelableUtil
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.ui.PointerLocationView
+import tornaco.apps.shortx.services.ui.i18NIns
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -51,8 +54,22 @@ class GestureRecorder(
         if (eventCache.isEmpty()) {
             return null
         }
-        val record = GestureRecord.newBuilder().setId(UUID.randomUUID().toString())
-            .setLabel(DateUtils.formatForFileName(System.currentTimeMillis()))
+        val screenOrientation = context.resources.configuration.orientation
+        val firstEvent = ParcelableUtil.unmarshall(eventCache.first(), MotionEvent.CREATOR)
+        val lastEvent = ParcelableUtil.unmarshall(eventCache.last(), MotionEvent.CREATOR)
+        val duration = maxOf(lastEvent.eventTime - firstEvent.eventTime, 0L)
+        val record = GestureRecord
+            .newBuilder()
+            .setId(UUID.randomUUID().toString())
+            .setLabel(i18NIns["ui.settings.gesture.record"])
+            .setRecordingTimeMillis(System.currentTimeMillis())
+            .setDuration(duration)
+            .setScreenOrientation(
+                (screenOrientation == Configuration.ORIENTATION_PORTRAIT).select(
+                    ScreenOrientation.ScreenOrientation_P,
+                    ScreenOrientation.ScreenOrientation_L
+                )
+            )
             .addAllEventData(eventCache.map {
                 ByteString.copyFrom(it)
             })

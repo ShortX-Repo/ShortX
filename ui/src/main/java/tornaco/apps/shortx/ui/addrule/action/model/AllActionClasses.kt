@@ -83,5 +83,8 @@ val allActionClasses = listOf(
     Action.SwitchMobileDataSlot::class,
     Action.CreateLocalVar::class,
     Action.WriteLocalVar::class,
+    Action.StartGestureRecording::class,
+    Action.StopGestureRecording::class,
+    Action.ToggleGestureRecording::class,
     Action.NoAction::class,
 )

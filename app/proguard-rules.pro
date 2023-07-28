@@ -137,3 +137,6 @@
 -dontwarn android.bluetooth.BluetoothPan
 -dontwarn android.bluetooth.BluetoothPbapClient
 -dontwarn android.bluetooth.BluetoothUuid
+-dontwarn android.os.SystemProperties
+-dontwarn android.view.VelocityTracker$Estimator
+-dontwarn android.view.WindowManagerPolicyConstants$PointerEventListener

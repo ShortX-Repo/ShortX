@@ -19,8 +19,10 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
+import tornaco.apps.shortx.services.ui.i18NIns
 
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
@@ -186,6 +188,13 @@ class GestureService(shortXContext: ShortXContext) :
                 if (save) {
                     logger.d("stopGestureRecording: ${it.label}")
                     addGestureRecord(it)
+
+                    handler.postSafety {
+                        shortXContext.ui.showDanmu(
+                            null,
+                            i18NIns["ui.settings.gesture.record"] + i18NIns["ui.common.saved"]
+                        )
+                    }
                 }
             }
         }

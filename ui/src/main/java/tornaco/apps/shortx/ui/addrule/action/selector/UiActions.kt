@@ -94,6 +94,21 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.StartGestureRecording::class -> {
+                addAction(Action.StartGestureRecording())
+                true
+            }
+
+            Action.StopGestureRecording::class -> {
+                addAction(Action.StopGestureRecording())
+                true
+            }
+
+            Action.ToggleGestureRecording::class -> {
+                addAction(Action.ToggleGestureRecording())
+                true
+            }
+
             else -> false
         }
     }
@@ -118,6 +133,9 @@ fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Actio
         Action.InputTap::class,
         Action.InputSwipe::class,
         Action.WaitForIdle::class,
+        Action.StartGestureRecording::class,
+        Action.StopGestureRecording::class,
+        Action.ToggleGestureRecording::class,
     ).map {
         SelectorItem(
             it,

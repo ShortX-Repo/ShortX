@@ -28,9 +28,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.ScreenOrientation
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -44,6 +48,8 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.time.Duration
+import java.util.Date
 
 @AndroidEntryPoint
 class GestureRecordListActivity : BaseActivity() {
@@ -131,10 +137,26 @@ fun GestureRecordListScreen(back: () -> Unit) {
                                     }
                                 )
 
+                                val orientationString =
+                                    if (it.screenOrientation == ScreenOrientation.ScreenOrientation_P) {
+                                        LocalI18N.current["ui.common.screen.p"]
+                                    } else {
+                                        LocalI18N.current["ui.common.screen.p"]
+                                    }
+                                val durationString =
+                                    DateUtils.formatDuration(Duration.ofMillis(it.duration))
+
                                 ListItem(
                                     title = it.label,
+                                    text1 = orientationString + "\t" + durationString,
+                                    text2 = FuzzyDateTimeFormatter.getTimeAgo(
+                                        context,
+                                        Date(it.recordingTimeMillis)
+                                    ),
                                     icon = {
-                                        RemixIcon(remixName = Remix.Editor.sketching)
+                                        ColoredIcon {
+                                            RemixIcon(remixName = Remix.Editor.sketching)
+                                        }
                                     },
                                     onClick = {
                                         popMenuState.open()
@@ -170,15 +192,15 @@ private fun listItemOverflowMenu(
     TextInputDialog(textInputState)
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
-            data = "rename",
-            icon = {
-                RemixIcon(remixName = Remix.Editor.font_size)
-            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.view"]),
             data = "view",
             icon = {
                 RemixIcon(remixName = Remix.Media.play_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+            data = "rename",
+            icon = {
+                RemixIcon(remixName = Remix.Editor.font_size)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",

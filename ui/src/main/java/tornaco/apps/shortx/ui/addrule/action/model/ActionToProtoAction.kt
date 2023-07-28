@@ -56,12 +56,15 @@ import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
+import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
+import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.Vibrate
 import tornaco.apps.shortx.core.proto.action.WaitForIdle
 import tornaco.apps.shortx.core.proto.action.WakeupScreen
@@ -826,6 +829,33 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setVarName(varName)
                 .setValueAsString(valueAsString)
+                .build()
+        }
+
+        is Action.StartGestureRecording -> {
+            StartGestureRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.StopGestureRecording -> {
+            StopGestureRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.ToggleGestureRecording -> {
+            ToggleGestureRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

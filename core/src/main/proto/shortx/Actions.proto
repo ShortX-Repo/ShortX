@@ -755,3 +755,24 @@ message WriteLocalVar {
   string note = 99;
   string id = 100;
 }
+
+message StartGestureRecording {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message StopGestureRecording {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message ToggleGestureRecording {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
