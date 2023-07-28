@@ -65,6 +65,8 @@ import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.share.SharedData
+import tornaco.apps.shortx.ui.share.ViewerActivity
 
 
 @Composable
@@ -121,6 +123,9 @@ fun RuleScreen() {
         },
         onAddClick = {
             AddRuleActivity.start(context)
+        },
+        onUrlClick = {
+            ViewerActivity.start(context, SharedData("ruleUrl", it))
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()

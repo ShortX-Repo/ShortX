@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
@@ -72,7 +73,6 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.EmptyList
-import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.MediumSpacer
@@ -87,6 +87,8 @@ import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.share.SharedData
+import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
@@ -156,6 +158,9 @@ fun DirectActionListScreen() {
         },
         onAddClick = {
             AddDirectActionActivity.start(context)
+        },
+        onUrlClick = {
+            ViewerActivity.start(context, SharedData("daUrl", it))
         },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()

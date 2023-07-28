@@ -70,9 +70,11 @@ import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.util.AssetUtils
@@ -85,15 +87,26 @@ fun MainScaffold(
     onClipboardClick: () -> Unit,
     onFileClick: () -> Unit,
     onAddClick: () -> Unit,
+    onUrlClick: (String) -> Unit,
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var enableFabMask by remember {
         mutableStateOf(false)
     }
-    val fabState = rememberFabState(onCollapsed = {
-        enableFabMask = false
-    },
+
+    val urlInputState = rememberTextInputState(
+        title = "URL",
+        message = null,
+        onSelected = {
+            onUrlClick(it)
+        })
+    TextInputDialog(state = urlInputState)
+
+    val fabState = rememberFabState(
+        onCollapsed = {
+            enableFabMask = false
+        },
         onExpanded = {
             enableFabMask = true
         },
@@ -109,6 +122,10 @@ fun MainScaffold(
 
                 "new" -> {
                     onAddClick()
+                }
+
+                "url" -> {
+                    urlInputState.show()
                 }
             }
         })
@@ -419,6 +436,9 @@ fun AddOptionsFab(
             id = "clipboard",
             icon = Remix.Document.clipboard_line,
             label = LocalI18N.current["ui.common.share.clipboard"]
+        ),
+        MultiFabItem(
+            id = "url", icon = Remix.Business.global_line, label = "URL"
         ),
         MultiFabItem(
             id = "new", icon = Remix.System.add_line, label = "New"

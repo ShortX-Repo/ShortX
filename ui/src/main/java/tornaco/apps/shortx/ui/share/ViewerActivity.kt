@@ -2,15 +2,17 @@ package tornaco.apps.shortx.ui.share
 
 import android.content.Context
 import android.content.Intent
+import android.os.Parcelable
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.Logger
@@ -19,13 +21,21 @@ import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
-import tornaco.apps.shortx.ui.main.MainViewModel
 import java.nio.charset.Charset
 
 @OptIn(ExperimentalAnimationApi::class)
 @AndroidEntryPoint
 class ViewerActivity : BaseActivity() {
     private val logger = Logger("ViewerActivity")
+
+    companion object {
+        @JvmStatic
+        fun start(context: Context, data: SharedData) {
+            val starter = Intent(context, ViewerActivity::class.java)
+                .putExtra("data", data)
+            context.startActivity(starter)
+        }
+    }
 
     @Composable
     override fun Content() {
@@ -39,7 +49,6 @@ class ViewerActivity : BaseActivity() {
                 ToastUnknownContentAndFinish(context)
             } else {
 
-                val vm = hiltViewModel<MainViewModel>()
                 when (sharedData.type) {
                     "da" -> {
                         val da = parseShareContentDA(sharedData.data)
@@ -54,6 +63,17 @@ class ViewerActivity : BaseActivity() {
                         }
                     }
 
+                    "daUrl" -> {
+                        AddDirectActionScreen(
+                            da = null,
+                            url = sharedData.data,
+                            screenTitle = "URL",
+                            canSaveWithoutChanges = true
+                        ) {
+                            finish()
+                        }
+                    }
+
                     "rule" -> {
                         val rule = parseShareContentRule(sharedData.data)
                         rule?.let {
@@ -64,6 +84,17 @@ class ViewerActivity : BaseActivity() {
                             ) {
                                 finish()
                             }
+                        }
+                    }
+
+                    "ruleUrl" -> {
+                        AddRuleScreen(
+                            rule = null,
+                            url = sharedData.data,
+                            screenTitle = "URL",
+                            canSaveWithoutChanges = true
+                        ) {
+                            finish()
                         }
                     }
 
@@ -86,6 +117,7 @@ class ViewerActivity : BaseActivity() {
     }
 
     private fun parseIntent(): SharedData? {
+        logger.d("parseIntent: $intent")
         return if (Intent.ACTION_VIEW == intent.action) {
             val uri = intent.data
             logger.d("uri: $uri")
@@ -104,8 +136,10 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
             }
-        } else null
+        } else intent.getParcelableExtra("data")
     }
 }
 
-data class SharedData(val type: String, val data: String)
+@DoNotStrip
+@Parcelize
+data class SharedData(val type: String, val data: String) : Parcelable
