@@ -176,7 +176,7 @@ fun GestureRecordItem(record: GestureRecord, onClick: () -> Unit) {
         if (record.screenOrientation == ScreenOrientation.ScreenOrientation_P) {
             LocalI18N.current["ui.common.screen.p"]
         } else {
-            LocalI18N.current["ui.common.screen.p"]
+            LocalI18N.current["ui.common.screen.l"]
         }
     val durationString =
         DateUtils.formatDuration(Duration.ofMillis(record.duration))

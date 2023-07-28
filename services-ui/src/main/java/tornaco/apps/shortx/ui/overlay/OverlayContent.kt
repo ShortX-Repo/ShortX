@@ -172,7 +172,7 @@ fun OverlayContent(
                                 },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            OverlayButtons(state, onButtonClick, onButtonLongClick)
+                            OverlayButtons(state, false, onButtonClick, onButtonLongClick)
                         }
                     } else {
                         Column(
@@ -184,7 +184,7 @@ fun OverlayContent(
                                 },
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            OverlayButtons(state, onButtonClick, onButtonLongClick)
+                            OverlayButtons(state, true, onButtonClick, onButtonLongClick)
                         }
                     }
 
@@ -198,6 +198,7 @@ fun OverlayContent(
 @Composable
 private fun OverlayButtons(
     state: OverlayState,
+    addPaddingToChild: Boolean,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
@@ -205,7 +206,7 @@ private fun OverlayButtons(
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
-                .thenIf(Modifier.padding(top = 6.dp), index != 0)
+                .thenIf(Modifier.padding(top = 6.dp), addPaddingToChild && index != 0)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {
