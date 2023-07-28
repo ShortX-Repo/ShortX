@@ -193,7 +193,7 @@ interface IShortX {
     ByteArrayWrapper getGestureRecordById(String id);
     void deleteGestureRecordById(String id);
     List<ByteArrayWrapper> getAllGestureRecords(boolean withEventData);
-    void injectGestureRecord(String id, in SynchronousResultReceiver onComplete);
+    void injectGestureRecord(String id, float speed, in SynchronousResultReceiver onComplete);
     void startGestureRecording();
     void stopGestureRecording(boolean save);
     boolean isGestureRecording();

@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
 import tornaco.apps.shortx.core.proto.action.InjectKeyCode
 import tornaco.apps.shortx.core.proto.action.InputSwipe
 import tornaco.apps.shortx.core.proto.action.InputTap
@@ -856,6 +857,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.InjectGestureRecording -> {
+            InjectGestureRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setSpeed(speed)
+                .setGestureId(gestureRecord.id)
                 .build()
         }
 

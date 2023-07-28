@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -999,6 +1000,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.InjectGestureRecording::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.InjectGestureRecording::class.java
+            Action.InjectGestureRecording(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                speed = data.speed,
+                gestureRecord = shortXManager.getGestureRecordById(data.gestureId)
+                    ?: GestureRecord.newBuilder().setLabel("N/A").setId("NotExists").build()
             )
         }
 

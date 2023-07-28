@@ -734,9 +734,13 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun injectGestureRecord(id: String, onComplete: SynchronousResultReceiver? = null) {
+    fun injectGestureRecord(
+        id: String,
+        speed: Float = 1f,
+        onComplete: SynchronousResultReceiver? = null
+    ) {
         invokeService(Unit) {
-            injectGestureRecord(id, onComplete)
+            injectGestureRecord(id, speed, onComplete)
         }
     }
 

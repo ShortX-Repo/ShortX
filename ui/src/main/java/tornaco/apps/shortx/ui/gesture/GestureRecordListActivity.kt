@@ -5,6 +5,7 @@ package tornaco.apps.shortx.ui.gesture
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -118,52 +119,13 @@ fun GestureRecordListScreen(back: () -> Unit) {
                             .padding(paddingValues)
                     )
                 } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = paddingValues
-                    ) {
-                        items(state.gestures) {
-                            Box {
-                                val popMenuState = listItemOverflowMenu(
-                                    record = it,
-                                    onDelete = {
-                                        vm.delete(it.id)
-                                    },
-                                    onRename = { gestureRecord, name ->
-                                        vm.rename(gestureRecord, name)
-                                    },
-                                    onView = {
-                                        GestureRecordeViewerActivity.start(context, it.id)
-                                    }
-                                )
-
-                                val orientationString =
-                                    if (it.screenOrientation == ScreenOrientation.ScreenOrientation_P) {
-                                        LocalI18N.current["ui.common.screen.p"]
-                                    } else {
-                                        LocalI18N.current["ui.common.screen.p"]
-                                    }
-                                val durationString =
-                                    DateUtils.formatDuration(Duration.ofMillis(it.duration))
-
-                                ListItem(
-                                    title = it.label,
-                                    text1 = orientationString + "\t" + durationString,
-                                    text2 = FuzzyDateTimeFormatter.getTimeAgo(
-                                        context,
-                                        Date(it.recordingTimeMillis)
-                                    ),
-                                    icon = {
-                                        ColoredIcon {
-                                            RemixIcon(remixName = Remix.Editor.sketching)
-                                        }
-                                    },
-                                    onClick = {
-                                        popMenuState.open()
-                                    })
-                            }
-                        }
-                    }
+                    GestureRecordList(
+                        paddingValues = paddingValues,
+                        gestures = state.gestures,
+                        delete = { vm.delete(it) },
+                        rename = { gestureRecord, name ->
+                            vm.rename(gestureRecord, name)
+                        })
                 }
 
 
@@ -172,6 +134,68 @@ fun GestureRecordListScreen(back: () -> Unit) {
     }
 }
 
+@Composable
+private fun GestureRecordList(
+    paddingValues: PaddingValues,
+    gestures: List<GestureRecord>,
+    delete: (String) -> Unit,
+    rename: (GestureRecord, String) -> Unit,
+) {
+    val context = LocalContext.current
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = paddingValues
+    ) {
+        items(gestures) {
+            Box {
+                val popMenuState = listItemOverflowMenu(
+                    record = it,
+                    onDelete = {
+                        delete(it.id)
+                    },
+                    onRename = { gestureRecord, name ->
+                        rename(gestureRecord, name)
+                    },
+                    onView = {
+                        GestureRecordeViewerActivity.start(context, it.id)
+                    }
+                )
+
+                GestureRecordItem(record = it) {
+                    popMenuState.open()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GestureRecordItem(record: GestureRecord, onClick: () -> Unit) {
+    val context = LocalContext.current
+    val orientationString =
+        if (record.screenOrientation == ScreenOrientation.ScreenOrientation_P) {
+            LocalI18N.current["ui.common.screen.p"]
+        } else {
+            LocalI18N.current["ui.common.screen.p"]
+        }
+    val durationString =
+        DateUtils.formatDuration(Duration.ofMillis(record.duration))
+
+    ListItem(
+        title = record.label,
+        text1 = orientationString + "\t" + durationString,
+        text2 = FuzzyDateTimeFormatter.getTimeAgo(
+            context,
+            Date(record.recordingTimeMillis)
+        ),
+        icon = {
+            ColoredIcon {
+                RemixIcon(remixName = Remix.Editor.sketching)
+            }
+        },
+        onClick = onClick
+    )
+}
 
 @Composable
 private fun listItemOverflowMenu(

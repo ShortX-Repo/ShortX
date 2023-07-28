@@ -411,8 +411,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun injectGestureRecord(id: String, onComplete: SynchronousResultReceiver?) {
-            shortXContext.gesture.injectGestureRecord(id, onComplete)
+        override fun injectGestureRecord(
+            id: String,
+            speed: Float,
+            onComplete: SynchronousResultReceiver?
+        ) {
+            shortXContext.gesture.injectGestureRecord(id, speed, onComplete)
         }
 
         override fun startGestureRecording() {

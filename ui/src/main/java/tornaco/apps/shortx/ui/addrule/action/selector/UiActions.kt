@@ -20,6 +20,11 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val subSelectorStates = uiActionSubSelectors(addAction)
 
+    val injectGestureSelectorState = rememberInjectGestureRecordDialogState(onSelected = {
+        addAction(it)
+    })
+    InjectGestureRecordSelectorDialog(state = injectGestureSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -109,6 +114,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.InjectGestureRecording::class -> {
+                injectGestureSelectorState.show(source.getActionAs())
+                true
+            }
+
             else -> false
         }
     }
@@ -133,9 +143,8 @@ fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Actio
         Action.InputTap::class,
         Action.InputSwipe::class,
         Action.WaitForIdle::class,
-        Action.StartGestureRecording::class,
-        Action.StopGestureRecording::class,
         Action.ToggleGestureRecording::class,
+        Action.InjectGestureRecording::class,
     ).map {
         SelectorItem(
             it,

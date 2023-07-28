@@ -86,14 +86,15 @@ class GestureRecorder(
         }
     }
 
-    suspend fun injectGesture(gesture: GestureRecord) {
+    suspend fun injectGesture(gesture: GestureRecord, speed: Float) {
         stop()
         enablePointerLocation()
 
         val motionEvents = gesture.eventDataList.map {
             ParcelableUtil.unmarshall(it.toByteArray(), MotionEvent.CREATOR)
         }
-        logger.d("injectGesture: ${gesture.label}, event size: ${gesture.eventDataList.size}")
+        val speedScale = 1f / (if (speed <= 0) 1f else speed)
+        logger.d("injectGesture: ${gesture.label}, speed: $speedScale, event size: ${gesture.eventDataList.size}")
         if (motionEvents.isNotEmpty()) {
             var lastEventTime = motionEvents.first().eventTime
             val firstDownTime = motionEvents.first().downTime
@@ -102,7 +103,7 @@ class GestureRecorder(
             motionEvents.forEach { event ->
                 val delay = event.eventTime - lastEventTime
                 lastEventTime = event.eventTime
-                delay(delay)
+                delay((delay * speedScale).toLong())
 
                 val pointerProps = arrayOfNulls<PointerProperties>(event.pointerCount)
                 val pointerCoords = arrayOfNulls<PointerCoords>(event.pointerCount)

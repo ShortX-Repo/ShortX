@@ -161,14 +161,15 @@ class GestureService(shortXContext: ShortXContext) :
 
     fun injectGestureRecord(
         id: String,
+        speed: Float,
         onComplete: SynchronousResultReceiver?
     ) {
-        logger.d("injectGestureRecord: $id $onComplete")
+        logger.d("injectGestureRecord: $id $speed $onComplete")
         systemServiceScope.launchSafety {
             val gesture = getGestureRecordById(id)
             logger.d("injectGestureRecord, gesture: $gesture")
             if (gesture != null) {
-                gestureRecorder.injectGesture(gesture)
+                gestureRecorder.injectGesture(gesture, speed)
             }
             onComplete?.send(ByteArrayWrapper(byteArrayOf()))
         }

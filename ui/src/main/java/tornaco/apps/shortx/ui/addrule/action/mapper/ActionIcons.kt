@@ -341,6 +341,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.file_edit_fill
         }
 
+        Action.InjectGestureRecording::class,
         Action.StartGestureRecording::class,
         Action.StopGestureRecording::class,
         Action.ToggleGestureRecording::class -> {

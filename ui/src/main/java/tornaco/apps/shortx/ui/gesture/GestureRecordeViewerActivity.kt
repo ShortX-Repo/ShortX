@@ -47,7 +47,11 @@ class GestureRecordeViewerActivity : BaseActivity() {
                 intent.getStringExtra(ID)?.let {
                     withContext(Dispatchers.IO) {
                         val receiver = SynchronousResultReceiver.get()
-                        shortXManager.injectGestureRecord(it, receiver)
+                        shortXManager.injectGestureRecord(
+                            id = it,
+                            speed = 1f,
+                            onComplete = receiver
+                        )
                         receiver.awaitResultNoInterrupt(Duration.ofHours(24))
                         shortXManager.showDanmu(doneI18N, null)
                     }

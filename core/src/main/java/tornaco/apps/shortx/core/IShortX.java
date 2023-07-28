@@ -427,7 +427,7 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
-    @Override public void injectGestureRecord(java.lang.String id, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException
+    @Override public void injectGestureRecord(java.lang.String id, float speed, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException
     {
     }
     @Override public void startGestureRecording() throws android.os.RemoteException
@@ -1647,14 +1647,16 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg1;
+          float _arg1;
+          _arg1 = data.readFloat();
+          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg2;
           if ((0!=data.readInt())) {
-            _arg1 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
+            _arg2 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
           }
           else {
-            _arg1 = null;
+            _arg2 = null;
           }
-          this.injectGestureRecord(_arg0, _arg1);
+          this.injectGestureRecord(_arg0, _arg1, _arg2);
           reply.writeNoException();
           return true;
         }
@@ -4061,13 +4063,14 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public void injectGestureRecord(java.lang.String id, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException
+      @Override public void injectGestureRecord(java.lang.String id, float speed, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
+          _data.writeFloat(speed);
           if ((onComplete!=null)) {
             _data.writeInt(1);
             onComplete.writeToParcel(_data, 0);
@@ -4077,7 +4080,7 @@ public interface IShortX extends android.os.IInterface
           }
           boolean _status = mRemote.transact(Stub.TRANSACTION_injectGestureRecord, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().injectGestureRecord(id, onComplete);
+            getDefaultImpl().injectGestureRecord(id, speed, onComplete);
             return;
           }
           _reply.readException();
@@ -4429,7 +4432,7 @@ public interface IShortX extends android.os.IInterface
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGestureRecordById(java.lang.String id) throws android.os.RemoteException;
   public void deleteGestureRecordById(java.lang.String id) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllGestureRecords(boolean withEventData) throws android.os.RemoteException;
-  public void injectGestureRecord(java.lang.String id, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException;
+  public void injectGestureRecord(java.lang.String id, float speed, tornaco.apps.shortx.core.os.SynchronousResultReceiver onComplete) throws android.os.RemoteException;
   public void startGestureRecording() throws android.os.RemoteException;
   public void stopGestureRecording(boolean save) throws android.os.RemoteException;
   public boolean isGestureRecording() throws android.os.RemoteException;
