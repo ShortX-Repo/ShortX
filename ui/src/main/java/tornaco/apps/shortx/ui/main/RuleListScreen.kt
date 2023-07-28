@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import tornaco.apps.shortx.core.compat.ManifestCompat
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
@@ -67,6 +68,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
+import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 
 @Composable
@@ -134,6 +136,10 @@ fun RuleScreen() {
         val shareDialogState = rememberShareDialogState("share.shortx")
         ShareDialog(state = shareDialogState)
 
+        val permissionRequest = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = {})
+
         RuleContent(
             state = state,
             onDup = {
@@ -146,8 +152,17 @@ fun RuleScreen() {
                 AddRuleActivity.start(context, rule.id)
             },
             onShare = { rule ->
-                vm.ruleToShareString(rule)?.let {
-                    shareDialogState.show(rule.title, it)
+                if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
+                    permissionRequest.launch(
+                        arrayOf(
+                            ManifestCompat.permission.READ_EXTERNAL_STORAGE,
+                            ManifestCompat.permission.WRITE_EXTERNAL_STORAGE,
+                        )
+                    )
+                } else {
+                    vm.ruleToShareString(rule)?.let {
+                        shareDialogState.show(rule.title, it)
+                    }
                 }
             },
             onRuleClick = { rule ->

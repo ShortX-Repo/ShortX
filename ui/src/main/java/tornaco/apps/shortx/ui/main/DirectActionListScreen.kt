@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.compat.ManifestCompat
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
@@ -92,6 +93,7 @@ import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
+import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 const val EXECUTE_ANIM_DURATION = 600
 
@@ -166,6 +168,10 @@ fun DirectActionListScreen() {
             vm.acceptPrivacyStatement()
         }
     ) {
+        val permissionRequest = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = {})
+
         val shareDialogState = rememberShareDialogState("share.shortx")
         ShareDialog(state = shareDialogState)
 
@@ -182,9 +188,20 @@ fun DirectActionListScreen() {
                 AddDirectActionActivity.start(context, it.id)
             },
             onShare = { um ->
-                vm.daToShareString(um)?.let {
-                    shareDialogState.show(um.title, it)
+                if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
+                    permissionRequest.launch(
+                        arrayOf(
+                            ManifestCompat.permission.READ_EXTERNAL_STORAGE,
+                            ManifestCompat.permission.WRITE_EXTERNAL_STORAGE,
+                        )
+                    )
+                } else {
+                    vm.daToShareString(um)?.let {
+                        shareDialogState.show(um.title, it)
+                    }
                 }
+
+
             },
             onDirectActionClick = { da ->
                 vm.executeDA(da)
