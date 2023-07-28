@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.input
 
 import android.hardware.input.InputManager
 import android.view.Display
+import android.view.InputChannel
 import android.view.InputEvent
 import android.view.KeyEvent
 import tornaco.apps.shortx.core.util.Logger
@@ -27,6 +28,24 @@ object IMSFunc {
         FLAG_TRUSTED or FLAG_FILTERED or FLAG_INTERACTIVE or FLAG_PASS_TO_USER
 
     private val logger = Logger("IMSFunc")
+
+    fun monitorInput(
+        inputChannelName: String,
+        displayId: Int = Display.DEFAULT_DISPLAY
+    ): InputChannel? = runCatching {
+        val ims = requireNotNull(ServiceHolder.inputManagerService) {
+            "inputManagerService is null"
+        }
+        Reflections.callMethod(
+            ims,
+            "monitorInput",
+            inputChannelName,
+            displayId
+        ) as InputChannel
+    }.getOrElse {
+        logger.e(it, "monitorInput")
+        null
+    }
 
     fun injectInputEvent(event: InputEvent) = kotlin.runCatching {
         val ims = requireNotNull(ServiceHolder.inputManagerService) {

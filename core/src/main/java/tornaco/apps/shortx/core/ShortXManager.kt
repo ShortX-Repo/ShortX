@@ -9,6 +9,7 @@ import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.telephony.SubscriptionInfo
 import com.android.internal.appwidget.IAppWidgetService
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
@@ -733,9 +734,9 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun injectGestureRecord(id: String) {
+    fun injectGestureRecord(id: String, onComplete: SynchronousResultReceiver? = null) {
         invokeService(Unit) {
-            injectGestureRecord(id)
+            injectGestureRecord(id, onComplete)
         }
     }
 

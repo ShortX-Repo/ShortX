@@ -232,6 +232,9 @@ public class PointerLocationView extends View implements InputDeviceListener,
 
         final int NP = mPointers.size();
 
+        Log.d(TAG, "mActivePointerId: " + mActivePointerId);
+        Log.d(TAG, "mPointers: " + mPointers.size());
+
         // Labels
         if (mActivePointerId >= 0) {
             final PointerState ps = mPointers.get(mActivePointerId);
@@ -531,6 +534,8 @@ public class PointerLocationView extends View implements InputDeviceListener,
     public void onPointerEvent(MotionEvent event) {
         final int action = event.getAction();
         int NP = mPointers.size();
+
+        Log.d(TAG, "onPointerEvent: " + event);
 
         if (action == MotionEvent.ACTION_DOWN
                 || (action & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_POINTER_DOWN) {

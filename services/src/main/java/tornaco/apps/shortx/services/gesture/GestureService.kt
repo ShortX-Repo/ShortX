@@ -6,9 +6,11 @@ import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -38,7 +40,7 @@ class GestureService(shortXContext: ShortXContext) :
 
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
-    private val gestureRecorder by lazy { GestureRecorder(context, systemServiceScope, handler) }
+    private val gestureRecorder by lazy { GestureRecorder(context) }
 
     override fun start(context: Context) {
         super.start(context)
@@ -155,28 +157,36 @@ class GestureService(shortXContext: ShortXContext) :
         }
     }
 
-    fun injectGestureRecord(id: String) {
-        logger.d("injectGestureRecord: $id")
+    fun injectGestureRecord(
+        id: String,
+        onComplete: SynchronousResultReceiver?
+    ) {
+        logger.d("injectGestureRecord: $id $onComplete")
         systemServiceScope.launchSafety {
             val gesture = getGestureRecordById(id)
             logger.d("injectGestureRecord, gesture: $gesture")
             if (gesture != null) {
                 gestureRecorder.injectGesture(gesture)
             }
+            onComplete?.send(ByteArrayWrapper(byteArrayOf()))
         }
     }
 
 
     fun startGestureRecording() {
-        logger.d("startGestureRecording")
-        gestureRecorder.start()
+        systemServiceScope.launchSafety {
+            logger.d("startGestureRecording")
+            gestureRecorder.start()
+        }
     }
 
     fun stopGestureRecording(save: Boolean) {
-        gestureRecorder.stop()?.let {
-            if (save) {
-                logger.d("stopGestureRecording: ${it.label}")
-                addGestureRecord(it)
+        systemServiceScope.launchSafety {
+            gestureRecorder.stop()?.let {
+                if (save) {
+                    logger.d("stopGestureRecording: ${it.label}")
+                    addGestureRecord(it)
+                }
             }
         }
     }

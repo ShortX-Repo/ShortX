@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.rule.IDAObserver;
 import tornaco.apps.shortx.core.IAudioRecordingListener;
 import tornaco.apps.shortx.core.rule.action.su.ISu;
 import tornaco.apps.shortx.core.notification.INotificationPoster;
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver;
 
 interface IShortX {
     Version version();
@@ -192,7 +193,7 @@ interface IShortX {
     ByteArrayWrapper getGestureRecordById(String id);
     void deleteGestureRecordById(String id);
     List<ByteArrayWrapper> getAllGestureRecords(boolean withEventData);
-    void injectGestureRecord(String id);
+    void injectGestureRecord(String id, in SynchronousResultReceiver onComplete);
     void startGestureRecording();
     void stopGestureRecording(boolean save);
     boolean isGestureRecording();

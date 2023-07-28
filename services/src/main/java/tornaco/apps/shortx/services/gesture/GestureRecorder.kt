@@ -3,14 +3,12 @@ package tornaco.apps.shortx.services.gesture
 import android.app.ActivityManager
 import android.content.Context
 import android.graphics.PixelFormat
-import android.os.Handler
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.WindowManager
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.util.DateUtils
@@ -18,16 +16,12 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.ParcelableUtil
 import tornaco.apps.shortx.services.input.IMSFunc
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.ui.PointerLocationView
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GestureRecorder(
     private val context: Context,
-    private val serviceScope: CoroutineScope,
-    private val handler: Handler
 ) {
     private val logger = Logger("GestureRecorder")
     private val isStart = AtomicBoolean(false)
@@ -75,7 +69,7 @@ class GestureRecorder(
         }
     }
 
-    fun injectGesture(gesture: GestureRecord) = serviceScope.launchSafety {
+    suspend fun injectGesture(gesture: GestureRecord) {
         stop()
         enablePointerLocation()
 
@@ -125,6 +119,7 @@ class GestureRecorder(
                 )
 
                 IMSFunc.injectInputEvent(newEvent)
+
                 // Dispatch to us because we can not catch injected event..
                 mPointerLocationView?.onPointerEvent(newEvent)
 
@@ -135,12 +130,12 @@ class GestureRecorder(
         disablePointerLocation()
     }
 
-    private fun enablePointerLocation() = handler.postSafety {
+    private fun enablePointerLocation() {
         if (mPointerLocationView != null) {
-            return@postSafety
+            return
         }
         mPointerLocationView = PointerLocationView(context)
-        mPointerLocationView!!.setPrintCoords(true)
+        mPointerLocationView!!.setPrintCoords(false)
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.type = WindowManager.LayoutParams.TYPE_SECURE_SYSTEM_OVERLAY
         lp.flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -164,12 +159,13 @@ class GestureRecorder(
         wm.addView(mPointerLocationView, lp)
     }
 
-    private fun disablePointerLocation() = handler.postSafety {
+    private fun disablePointerLocation() {
         if (mPointerLocationView == null) {
-            return@postSafety
+            return
         }
         val wm: WindowManager = context.getSystemService(WindowManager::class.java)
         wm.removeView(mPointerLocationView)
+
         mPointerLocationView = null
     }
 }

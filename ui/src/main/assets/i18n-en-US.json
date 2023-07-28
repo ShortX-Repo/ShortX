@@ -164,6 +164,7 @@
   "ui.common.copy": "Copy",
   "ui.common.add": "Add",
   "ui.common.saved": "Saved",
+  "ui.common.done": "Done",
   "ui.common.copied.to.clipboard": "Has been copied to clipboard",
   "ui.common.save.success.to": "Saved to: {path}",
   "ui.common.manually.input": "Manually input",

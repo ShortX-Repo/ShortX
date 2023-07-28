@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
@@ -410,8 +411,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun injectGestureRecord(id: String) {
-            shortXContext.gesture.injectGestureRecord(id)
+        override fun injectGestureRecord(id: String, onComplete: SynchronousResultReceiver?) {
+            shortXContext.gesture.injectGestureRecord(id, onComplete)
         }
 
         override fun startGestureRecording() {
