@@ -509,7 +509,7 @@
   "ui.settings.fact.record.summary": "查看触发器记录",
   "ui.settings.gesture.record": "手势记录",
   "ui.settings.gesture.record.summary": "查看和新增手势记录",
-  "ui.gesture.record.tips": "点击返回键取消，点击其他按键保存",
+  "ui.gesture.record.tips": "点击返回键取消，点击其他按键保存，你也可以通过动作中的 开关手势录制 进行录制",
   "ui.gesture.record.start": "立即开始",
   "ui.action.gesture.record.start": "开始手势录制",
   "ui.action.gesture.record.stop": "结束手势录制",

@@ -510,7 +510,7 @@
   "ui.settings.fact.record.summary": "View fact publish records",
   "ui.settings.gesture.record": "Gesture records",
   "ui.settings.gesture.record.summary": "View and Record gestures",
-  "ui.gesture.record.tips": "Click back button to cancel, other button to save",
+  "ui.gesture.record.tips": "Click back button to cancel, other button to save, you can also record gesture via Gesture Recording Action",
   "ui.gesture.record.start": "Start",
   "ui.action.gesture.record.start": "Start gesture recording",
   "ui.action.gesture.record.stop": "Stop gesture recording",
