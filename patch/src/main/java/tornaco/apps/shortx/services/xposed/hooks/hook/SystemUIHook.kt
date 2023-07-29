@@ -109,7 +109,7 @@ object SystemUIShellImpl : ISu.Stub() {
     ) {
         logger.i("execute: ${command.joinToString()}")
         runCatching {
-            val shellResult = Shell.cmd(*command)
+            val shellResult: ByteArrayWrapper = Shell.cmd(*command)
                 .exec().apply {
                     logger.i("Shell res: out: ${this.out} err: ${this.err}")
                 }.let {

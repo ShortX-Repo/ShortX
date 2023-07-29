@@ -8,7 +8,7 @@ import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
-import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -65,9 +65,9 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             }
             val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
             logger.d("receiver get res: $receiverRes")
-            val byteRes = receiverRes.getValue(emptyByteArrayWrapper)
+            val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
             shellStubs.finishBroadcast()
-            return if (byteRes == emptyByteArrayWrapper) null else byteRes?.let {
+            return byteRes?.let {
                 ShellRes.parseFrom(
                     byteRes.byteData
                 )
@@ -95,9 +95,11 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
                 requireNotNull(impl) { "Impl is null." }.exe(command, receiver)
                 val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
                 logger.d("receiver get res: $receiverRes")
-                val byteRes = receiverRes.getValue(emptyByteArrayWrapper)
+                val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
                 res.set(
-                    if (byteRes == emptyByteArrayWrapper) null else {
+                    if (byteRes == null) {
+                        null
+                    } else {
                         ShellRes.parseFrom(byteRes.byteData)
                     }
                 )
