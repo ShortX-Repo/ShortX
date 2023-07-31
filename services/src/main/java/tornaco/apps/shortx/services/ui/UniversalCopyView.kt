@@ -12,7 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.android.internal.R
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -20,11 +20,10 @@ import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.services.gesture.HotSeat
 import tornaco.apps.shortx.services.gesture.OnGestureListenerAdapter
 import tornaco.apps.shortx.services.gesture.getRect
-import util.Reflections
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
-    FrameLayout(context) {
+    LinearLayout(context) {
 
     private val logger = Logger(UniversalCopyView::class.java.simpleName)
     private val windowManager: WindowManager by lazy {
@@ -32,7 +31,6 @@ class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int
     }
 
     private var isAttached = false
-
 
     private val gestureDetector: GestureDetector =
         GestureDetector(context, object : OnGestureListenerAdapter() {
@@ -68,8 +66,7 @@ class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int
         isClickable = true
 
         val lp = createLayoutParams()
-        lp.trySetTrustedOverlay()
-        lp.title = "GuideLineView"
+        lp.title = "UniversalCopyView"
         windowManager.addView(this, lp)
 
         isAttached = true
@@ -98,12 +95,6 @@ class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int
         lp.packageName = mContext.packageName
         lp.windowAnimations = R.style.Animation_Toast
         return lp
-    }
-
-    private fun WindowManager.LayoutParams.trySetTrustedOverlay() {
-        kotlin.runCatching { Reflections.callMethod(this, "setTrustedOverlay") }.onFailure {
-            logger.e(it, "trySetTrustedOverlay")
-        }
     }
 
     class Guideline(
