@@ -14,6 +14,17 @@ fun Any.androidNotificationRecordToNotification(): Notification? {
     return kotlin.runCatching {
         val sbn = Reflections
             .getObjectField(this, "sbn") as StatusBarNotification
+        sbn.androidSBNToNotification()
+    }.getOrElse {
+        logger.e(it, "androidNotificationRecordToNotification error")
+        null
+    }
+}
+
+
+fun StatusBarNotification.androidSBNToNotification(): Notification? {
+    return kotlin.runCatching {
+        val sbn = this
         val n = sbn.notification ?: return null
         val isFgService = kotlin.runCatching { n.isForegroundService }.getOrElse { false }
         Notification.newBuilder()

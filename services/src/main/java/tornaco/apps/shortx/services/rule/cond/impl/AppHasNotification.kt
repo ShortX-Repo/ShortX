@@ -24,23 +24,22 @@ object AppHasNotification : Cond {
                 data.pkgsList
             }
 
-            requiredPkgList.forEach {
-                logger.d("requiredPkgList ${it.pkgName} has N? ${with(shortXContext.notification) { it.hasNotification() }}")
-            }
-
             val res = if (requiredPkgList.isEmpty()) {
                 logger.w("requiredPkgList is empty, return false.")
                 false
             } else {
+                val allN = shortXContext.notification.getActiveNotifications()
+                logger.p("allN: ${allN.joinToString(System.lineSeparator())}")
+
                 if (data.op == ConditionOperator.ANY) {
                     requiredPkgList.any {
-                        with(shortXContext.notification) { it.hasNotification() }
+                        with(shortXContext.notification) { it.hasNotification(allN) }
                     }
                 } else {
                     var res = true
                     requiredPkgList.forEach {
                         val hasN = with(shortXContext.notification) {
-                            it.hasNotification()
+                            it.hasNotification(allN)
                         }
                         if (!hasN) {
                             res = false
