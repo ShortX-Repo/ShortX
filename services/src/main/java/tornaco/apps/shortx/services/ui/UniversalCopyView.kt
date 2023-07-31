@@ -6,6 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PixelFormat
+import android.graphics.Rect
+import android.graphics.RectF
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.MotionEvent
@@ -22,7 +24,12 @@ import tornaco.apps.shortx.services.gesture.OnGestureListenerAdapter
 import tornaco.apps.shortx.services.gesture.getRect
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
-class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int) :
+class UniversalCopyView(
+    context: Context,
+    hotSeats: List<HotSeat>,
+    areaSize: Int,
+    onClick: (Float, Float) -> Unit
+) :
     LinearLayout(context) {
 
     private val logger = Logger(UniversalCopyView::class.java.simpleName)
@@ -41,6 +48,7 @@ class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
                 logger.d("onSingleTapUp")
+                onClick(e.x, e.y)
                 return true
             }
 
@@ -84,14 +92,14 @@ class UniversalCopyView(context: Context, hotSeats: List<HotSeat>, areaSize: Int
         lp.gravity = Gravity.START or Gravity.TOP
         lp.width = ViewGroup.LayoutParams.MATCH_PARENT
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
-        lp.format = PixelFormat.TRANSLUCENT
+        lp.format = PixelFormat.RGBA_8888
         lp.flags =
             (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
         if (OsUtils.isROrAbove()) {
             lp.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
         }
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
+        lp.type = WindowManager.LayoutParams.TYPE_PHONE
         lp.packageName = mContext.packageName
         lp.windowAnimations = R.style.Animation_Toast
         return lp
