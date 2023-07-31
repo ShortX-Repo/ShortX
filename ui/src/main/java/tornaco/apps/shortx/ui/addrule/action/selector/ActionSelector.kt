@@ -5,20 +5,14 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,12 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
@@ -93,70 +85,17 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
-                    val pagerState = rememberPagerState(initialPage = initialPageIndex)
-                    val scope = rememberCoroutineScope()
-
-                    val items = TabItems.values().map { it.i18NKey }
-                    val icons = TabItems.values().map { it.icon }
-
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f, fill = false)
-                        ) {
-                            val selectorVM = hiltViewModel<ActionSelectorViewModel>()
-                            val selectorState by selectorVM.state.collectAsState()
-
-                            HorizontalPager(
-                                state = pagerState,
-                                pageCount = TabItems.values().size,
-                            ) { index ->
-                                val addAction: (Action) -> Unit = {
-                                    onSelected(it)
-                                    selectorVM.onActionAdd(it)
-                                }
-
-                                when (index) {
-                                    TabItems.Remote.ordinal -> {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(16.dp)
-                                        ) {
-                                            RemoteActions(addAction = addAction)
-                                        }
-                                    }
-
-                                    TabItems.All.ordinal -> {
-                                        AllActions(selectorState, addAction)
-                                    }
-
-                                    else -> {}
-                                }
-                            }
+                        val selectorVM = hiltViewModel<ActionSelectorViewModel>()
+                        val selectorState by selectorVM.state.collectAsState()
+                        val addAction: (Action) -> Unit = {
+                            onSelected(it)
+                            selectorVM.onActionAdd(it)
                         }
-
-                        NavigationBar(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            items.forEachIndexed { index, item ->
-                                NavigationBarItem(
-                                    icon = { RemixIcon(remixName = icons[index]) },
-                                    label = { Text(LocalI18N.current[item]) },
-                                    selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    }
-                                )
-                            }
-                        }
+                        AllActions(selectorState, addAction)
                     }
                 }
             }
@@ -171,7 +110,7 @@ private fun AllActions(
 ) {
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         val searchBarState = rememberSearchBarState(
