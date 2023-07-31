@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition.model
 
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
+import tornaco.apps.shortx.core.proto.condition.AppHasNotification
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
@@ -28,6 +29,26 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
     return when (this) {
         is Condition.CurrentForegroundApp -> {
             CurrentPkgList.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .addAllPkgs(
+                    apps.map { app ->
+                        AppPkg.newBuilder()
+                            .setPkgName(app.pkg.pkgName)
+                            .setUserId(app.pkg.userId)
+                            .build()
+                    }
+                )
+                .addAllPkgSets(pkgSets.map {
+                    it.label
+                })
+                .setOp(op.toConditionOperator())
+                .build()
+        }
+
+        is Condition.AppHasNotification -> {
+            AppHasNotification.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

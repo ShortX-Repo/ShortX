@@ -108,6 +108,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.RequireMobileDataEnabled
     },
+    AppHasNotification {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.AppHasNotification
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

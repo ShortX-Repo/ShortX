@@ -1,0 +1,64 @@
+package tornaco.apps.shortx.services.rule.cond.impl
+
+import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.condition.ConditionOperator
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.appPkgToString
+import tornaco.apps.shortx.services.rule.cond.Cond
+
+object AppHasNotification : Cond {
+    override fun condClass(): Class<out Message> =
+        tornaco.apps.shortx.core.proto.condition.AppHasNotification::class.java
+
+    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+        return with(param) {
+            val data =
+                condition unpack_ tornaco.apps.shortx.core.proto.condition.AppHasNotification::class.java
+
+            val requiredPkgList = if (data.pkgSetsList.isNotEmpty()) {
+                data.pkgSetsList.flatMap {
+                    shortXContext.pkgSet.getPkgSetByLabel(it)?.appPkgsList ?: emptyList()
+                }
+            } else {
+                data.pkgsList
+            }
+
+            requiredPkgList.forEach {
+                logger.d("requiredPkgList ${it.pkgName} has N? ${with(shortXContext.notification) { it.hasNotification() }}")
+            }
+
+            val res = if (requiredPkgList.isEmpty()) {
+                logger.w("requiredPkgList is empty, return false.")
+                false
+            } else {
+                if (data.op == ConditionOperator.ANY) {
+                    requiredPkgList.any {
+                        with(shortXContext.notification) { it.hasNotification() }
+                    }
+                } else {
+                    var res = true
+                    requiredPkgList.forEach {
+                        val hasN = with(shortXContext.notification) {
+                            it.hasNotification()
+                        }
+                        if (!hasN) {
+                            res = false
+                            contextData.add(
+                                ContextDataMapping.Condition.conditionMatchReason.name,
+                                "${it.appPkgToString()} has no notification"
+                            )
+                            return@forEach
+                        }
+                    }
+                    res
+                }
+            }
+            if (data.isInvert) {
+                !res
+            } else {
+                res
+            }
+        }
+    }
+}

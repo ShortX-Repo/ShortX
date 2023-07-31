@@ -20,4 +20,5 @@ val allConditionClasses = listOf(
     Condition.RequireBTConnected::class,
     Condition.RequireBTDisconnected::class,
     Condition.RequireMobileDataEnabled::class,
+    Condition.AppHasNotification::class,
 )

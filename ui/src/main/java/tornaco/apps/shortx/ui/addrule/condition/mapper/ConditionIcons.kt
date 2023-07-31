@@ -84,6 +84,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Arrows.arrow_up_down_line
         }
 
+        Condition.AppHasNotification::class -> {
+            Remix.System.notification_badge_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

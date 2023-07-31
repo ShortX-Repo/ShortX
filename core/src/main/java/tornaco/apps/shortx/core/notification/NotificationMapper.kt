@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.services.xposed.hooks.hook
+package tornaco.apps.shortx.core.notification
 
 import android.os.UserHandle
 import android.service.notification.StatusBarNotification

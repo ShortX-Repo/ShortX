@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.notification.androidNotificationRecordToNotification
 import tornaco.apps.shortx.core.platform.Classes.notificationUsageStatsClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger

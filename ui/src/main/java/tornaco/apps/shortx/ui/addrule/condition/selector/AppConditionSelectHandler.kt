@@ -34,6 +34,28 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             })
     ConditionAppPkgSelectorDialog(currentPkgSelectorState)
 
+    val appHasNSelectorState =
+        rememberConditionAppPkgSelectorState(
+            onAppListSelected = { appList, op ->
+                addCondition(
+                    Condition.AppHasNotification(
+                        apps = appList,
+                        pkgSets = emptyList(),
+                        op
+                    )
+                )
+            },
+            onPkgSetSelected = { pkgSets, op ->
+                addCondition(
+                    Condition.AppIsRunning(
+                        apps = emptyList(),
+                        pkgSets = pkgSets,
+                        op
+                    )
+                )
+            })
+    ConditionAppPkgSelectorDialog(appHasNSelectorState)
+
     val appIsRunningSelectorState =
         rememberConditionAppPkgSelectorState(
             onAppListSelected = { appList, op ->
@@ -136,6 +158,14 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 appIsNotRunningSelectorState.show(
                     source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
                     source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
+                )
+                true
+            }
+
+            Condition.AppHasNotification::class -> {
+                appHasNSelectorState.show(
+                    source.getConditionAs<Condition.AppHasNotification>()?.apps,
+                    source.getConditionAs<Condition.AppHasNotification>()?.pkgSets
                 )
                 true
             }

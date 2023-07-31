@@ -22,6 +22,7 @@ fun AppConditions(subscribeState: SubscribeState, setCondition: (Condition) -> U
         Condition.AppIsNotRunning::class,
         Condition.AppHasAudioFocus::class,
         Condition.ServiceIsRunning::class,
+        Condition.AppHasNotification::class,
     ).map {
         SelectorItem(
             type = it,

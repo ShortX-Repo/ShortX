@@ -65,6 +65,14 @@ class ServiceRetriever(private val classLoader: ClassLoader) {
         null
     }
 
+    fun getNMS(): Any? = kotlin.runCatching {
+        val className = ClassNames.NMS
+        getServiceFromSystemServiceManager(Reflections.findClass(className, classLoader))
+    }.getOrElse {
+        logger.e(it, "getNMS error")
+        null
+    }
+
     private fun getServiceFromSystemServiceManager(serviceClass: Class<*>): Any? {
         return getServicesFromSystemServiceManager().firstOrNull {
             it::class.java == serviceClass

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.condition.model
 
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.condition.AppHasAudioFocus
+import tornaco.apps.shortx.core.proto.condition.AppHasNotification
 import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
@@ -33,6 +34,19 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
             val data = this unpack_ CurrentPkgList::class.java
             val models = (data.pkgsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
             Condition.CurrentForegroundApp(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                apps = models.first,
+                pkgSets = models.second,
+                op = data.op.toOp(null)
+            )
+        }
+
+        this is_ AppHasNotification::class.java -> {
+            val data = this unpack_ AppHasNotification::class.java
+            val models = (data.pkgsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
+            Condition.AppHasNotification(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

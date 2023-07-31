@@ -123,6 +123,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.AppHasNotification::class -> {
+            listOf(
+                i18N["ui.conditions.app.has.notification"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -144,6 +150,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.AppIsRunning -> {
             mutableListOf(i18N["ui.conditions.app.running"])
+                .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
+                .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
+        }
+
+        is Condition.AppHasNotification -> {
+            mutableListOf(i18N["ui.conditions.app.has.notification"])
                 .appendConditionOp(condition.apps, condition.pkgSets, condition.op, i18N)
                 .labelLinesFromAppsAndPkgSets(condition.apps, condition.pkgSets)
         }

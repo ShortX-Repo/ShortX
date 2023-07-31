@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.app.NMSFuncs
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
@@ -51,6 +52,16 @@ class NotificationService(shortXContext: ShortXContext) :
             }
         )
     }
+
+    fun AppPkg.hasNotification() = NMSFuncs.getActiveNotifications()
+        .also {
+            logger.p(this)
+        }
+        .any { notification ->
+            notification.appsList.any {
+                it == this
+            }
+        }
 
     fun post(postNotification: PostNotification) {
         if (!postByAttached(postNotification)) {

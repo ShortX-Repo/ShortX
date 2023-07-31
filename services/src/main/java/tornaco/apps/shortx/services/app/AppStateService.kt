@@ -35,7 +35,8 @@ import tornaco.apps.shortx.services.app.pm.*
 import tornaco.apps.shortx.services.os.UserEvent
 import java.util.*
 
-class AppStateService(shortXContext: ShortXContext) : SystemService(shortXContext, "AppStateService") {
+class AppStateService(shortXContext: ShortXContext) :
+    SystemService(shortXContext, "AppStateService") {
     private val pkgPools = mutableListOf<PkgPool>()
 
     private val onPackageUpdatedListeners: MutableList<((App) -> Unit)> = mutableListOf()
