@@ -37,6 +37,7 @@
   "ui.conditions.has.audio.focus": "App is playing audio",
   "ui.conditions.battery.percent.op": "Select op",
   "ui.conditions.battery.percent.value": "Value (0-100)",
+  "ui.conditions.app.has.notification": "App has notification",
   "ui.actions.title": "Actions",
   "ui.actions.hook.on.enabled.title": "On enabled",
   "ui.actions.hook.on.enabled.description": "Actions called when this Rule is enabled",

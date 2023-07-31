@@ -37,6 +37,7 @@
   "ui.conditions.plug.state.not.plug": "未插入",
   "ui.conditions.battery.percent.op": "判斷條件",
   "ui.conditions.battery.percent.value": "電量值 (0-100)",
+  "ui.conditions.app.has.notification": "应用有通知",
   "ui.actions.title": "動作",
   "ui.actions.hook.on.enabled.title": "被啟用時",
   "ui.actions.hook.on.enabled.description": "當該自動指令被啟用時會執行的動作，一般可以添加一些初始化相關的動作，例如創建一些全域變數",

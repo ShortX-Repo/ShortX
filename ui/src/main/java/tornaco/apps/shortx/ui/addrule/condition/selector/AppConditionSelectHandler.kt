@@ -47,7 +47,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             },
             onPkgSetSelected = { pkgSets, op ->
                 addCondition(
-                    Condition.AppIsRunning(
+                    Condition.AppHasNotification(
                         apps = emptyList(),
                         pkgSets = pkgSets,
                         op
