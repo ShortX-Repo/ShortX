@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.wm
 
+import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.util.Pair
@@ -13,11 +15,16 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.proto.fact.Edge
+import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.gesture.HotSeat
+import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.ui.UniversalCopyView
 
 class WindowManagerService(shortXContext: ShortXContext) :
-    SystemService(shortXContext, "WindowManagerService") {
+    SystemService(shortXContext, "WindowManagerService"), OnAccessibilityEventListener {
 
     private val automationManager by lazy { UiAutomationManager(handler) }
     private var screenSize: Pair<Int, Int>? = null
@@ -62,36 +69,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     logger.w("ensureAutomationConnected, connect: $reason")
                     disableThanoxProfileAutoEngine()
                     automationManager.connect()
-                    automationManager.setOnAccessibilityEventListener {
-                        logger.d("OnAccessibilityEvent: $it")
-                        if (it.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-                            val root = automationManager.rootInActiveWindow
-                            if (root != null) {
-                                val texts = mutableListOf<kotlin.Pair<Rect, String>>()
-                                discoverText(texts, root)
-                                logger.d("texts: ${texts.joinToString(System.lineSeparator())}")
-                            }
-                        }
-                    }
+                    automationManager.setOnAccessibilityEventListener(this)
+                    enableUniversalCopy()
                 }
             }.onFailure {
                 shortXContext.watchDog.onFatalError(it, "ensureAutomationConnected")
-            }
-        }
-    }
-
-    private fun discoverText(
-        list: MutableList<kotlin.Pair<Rect, String>>,
-        root: AccessibilityNodeInfo
-    ) {
-        if (root.childCount <= 0) {
-            if (root.isVisibleToUser && root.text != null) {
-                list.add(root.boundsInScreen to root.text.toString())
-            }
-        } else {
-            for (i in 0 until root.childCount) {
-                val child = root.getChild(i)
-                if (child != null) discoverText(list, child)
             }
         }
     }
@@ -101,7 +83,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             if (ThanosManagerNative.isServiceInstalled()) {
                 val thanox = ThanosManagerNative.getDefault()
                 val currentEnabled = thanox.profileManager.isProfileEngineUiAutomationEnabled
-                logger.w("disableThanoxProfileAutoEngine, current thanox enable state: ${currentEnabled}")
+                logger.w("disableThanoxProfileAutoEngine, current thanox enable state: $currentEnabled")
                 if (currentEnabled) {
                     thanox.profileManager.isProfileEngineUiAutomationEnabled = false
                     logger.w("disableThanoxProfileAutoEngine success.")
@@ -253,5 +235,45 @@ class WindowManagerService(shortXContext: ShortXContext) :
             screenSize = Pair(width, height)
         }
         return intArrayOf(screenSize!!.first, screenSize!!.second)
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        logger.d("OnAccessibilityEvent: $event")
+    }
+
+    fun enableUniversalCopy() = handler.postSafety {
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        val screenTexts = mutableListOf<kotlin.Pair<Rect, String>>()
+        if (root != null) {
+            discoverText(screenTexts, root)
+        }
+
+        val guideLineView =
+            UniversalCopyView(
+                context = context,
+                hotSeats = Edge.values().filterNot { it == Edge.UNRECOGNIZED }.map {
+                    HotSeat(it, Color.BLUE)
+                },
+                areaSize = 4._dp
+            ).apply {
+                attach()
+            }
+    }
+
+}
+
+private fun discoverText(
+    list: MutableList<kotlin.Pair<Rect, String>>,
+    root: AccessibilityNodeInfo
+) {
+    if (root.childCount <= 0) {
+        if (root.isVisibleToUser && root.text != null) {
+            list.add(root.boundsInScreen to root.text.toString())
+        }
+    } else {
+        for (i in 0 until root.childCount) {
+            val child = root.getChild(i)
+            if (child != null) discoverText(list, child)
+        }
     }
 }
