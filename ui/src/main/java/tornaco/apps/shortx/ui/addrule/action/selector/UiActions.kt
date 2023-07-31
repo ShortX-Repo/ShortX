@@ -119,6 +119,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.EnableUniversalCopy::class -> {
+                addAction(Action.EnableUniversalCopy())
+                true
+            }
+
             else -> false
         }
     }
@@ -145,6 +150,7 @@ fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Actio
         Action.WaitForIdle::class,
         Action.ToggleGestureRecording::class,
         Action.InjectGestureRecording::class,
+        Action.EnableUniversalCopy::class,
     ).map {
         SelectorItem(
             it,

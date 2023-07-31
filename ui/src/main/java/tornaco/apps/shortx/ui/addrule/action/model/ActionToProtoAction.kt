@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
 import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
+import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ExpandNotification
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
@@ -868,6 +869,15 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setSpeed(speed)
                 .setGestureId(gestureRecord.id)
+                .build()
+        }
+
+        is Action.EnableUniversalCopy -> {
+            EnableUniversalCopy.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

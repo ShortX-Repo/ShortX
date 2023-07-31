@@ -786,3 +786,10 @@ message InjectGestureRecording {
   string gestureId = 1;
   float speed = 2;
 }
+
+message EnableUniversalCopy {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

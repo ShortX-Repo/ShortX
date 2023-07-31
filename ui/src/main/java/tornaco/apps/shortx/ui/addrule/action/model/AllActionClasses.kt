@@ -87,5 +87,6 @@ val allActionClasses = listOf(
     Action.StopGestureRecording::class,
     Action.ToggleGestureRecording::class,
     Action.InjectGestureRecording::class,
+    Action.EnableUniversalCopy::class,
     Action.NoAction::class,
 )

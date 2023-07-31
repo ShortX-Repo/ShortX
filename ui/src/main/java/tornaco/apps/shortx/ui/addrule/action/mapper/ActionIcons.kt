@@ -348,6 +348,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Editor.sketching
         }
 
+        Action.EnableUniversalCopy::class -> {
+            Remix.Document.file_copy_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

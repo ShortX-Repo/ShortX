@@ -342,6 +342,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.InjectGestureRecording
     },
+    EnableUniversalCopy {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.EnableUniversalCopy
+    },
 
 
     ;

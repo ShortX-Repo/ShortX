@@ -170,6 +170,7 @@ fun labelAndDescriptionForActionSelector(
         Action.StopGestureRecording::class -> i18N["ui.action.gesture.record.stop"] to null
         Action.ToggleGestureRecording::class -> i18N["ui.action.gesture.record.toggle"] to null
         Action.InjectGestureRecording::class -> i18N["ui.action.gesture.record.inject"] to null
+        Action.EnableUniversalCopy::class -> i18N["ui.action.enable.universal.copy"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -616,6 +617,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.InjectGestureRecording -> listOf(
             i18N["ui.action.gesture.record.inject"],
             i18N["ui.action.gesture.record.inject.speed"] + " ${action.speed}x"
+        )
+
+        is Action.EnableUniversalCopy -> listOf(
+            i18N["ui.action.enable.universal.copy"]
         )
     }
 }

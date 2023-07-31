@@ -21,8 +21,10 @@ import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.gesture.HotSeat
+import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.UniversalCopyView
+import tornaco.apps.shortx.services.ui.i18NIns
 
 class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WindowManagerService"), OnAccessibilityEventListener {
@@ -260,18 +262,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     areaSize = 4._dp,
                     onClick = { x, y ->
                         disableUniversalCopy {
-                            val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
-                            logger.d("rootInActiveWindow: $root")
-                            val screenTexts = mutableListOf<kotlin.Pair<RectF, String>>()
-                            if (root != null) {
-                                discoverText(screenTexts, root)
-                            }
-                            logger.p("UniversalCopyView click: $screenTexts")
-
-                            val matchText = screenTexts.firstOrNull {
-                                it.first.contains(x, y)
-                            }
-                            logger.p("matchText [$x $y]: $matchText")
+                            lookUpTextFromClick(x, y)
                         }
                     }
                 ).apply {
@@ -282,7 +273,33 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun disableUniversalCopy(action: suspend () -> Unit) {
+    private fun lookUpTextFromClick(x: Float, y: Float) {
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("rootInActiveWindow: $root")
+        val screenTexts = mutableListOf<kotlin.Pair<RectF, String>>()
+        if (root != null) {
+            discoverTextFromAccessibilityNode(screenTexts, root)
+        }
+        logger.p("UniversalCopyView click: $screenTexts")
+
+        val matchText = screenTexts.firstOrNull {
+            it.first.contains(x, y)
+        }
+        logger.p("matchText [$x $y]: $matchText")
+
+        systemServiceScope.launchSafety {
+            if (matchText == null) {
+                shortXContext.ui.showDanmu(
+                    null,
+                    i18NIns["ui.action.enable.universal.copy.text.not.found"]
+                )
+            } else {
+                UniversalCopyEditDialog(context, matchText.second).show()
+            }
+        }
+    }
+
+    private fun disableUniversalCopy(action: suspend () -> Unit) {
         systemServiceScope.launch {
             showingHints.forEach {
                 kotlin.runCatching { it.detach() }.onFailure { logger.e(it, "detach fail") }
@@ -292,7 +309,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    private fun discoverText(
+    private fun discoverTextFromAccessibilityNode(
         list: MutableList<kotlin.Pair<RectF, String>>,
         root: AccessibilityNodeInfo
     ) {
@@ -311,7 +328,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         } else {
             for (i in 0 until root.childCount) {
                 val child = root.getChild(i)
-                if (child != null) discoverText(list, child)
+                if (child != null) discoverTextFromAccessibilityNode(list, child)
             }
         }
     }
