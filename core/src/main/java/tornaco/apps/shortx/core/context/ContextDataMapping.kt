@@ -180,4 +180,9 @@ object ContextDataMapping {
         opAppUid("The uid of the App"),
         opAppUserId("The userId of the App"),
     }
+
+    @DoNotStrip
+    enum class ShowTextFieldDialog(val description: String) {
+        textFieldInput("Input of the text field"),
+    }
 }

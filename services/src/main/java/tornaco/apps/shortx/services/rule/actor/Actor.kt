@@ -346,6 +346,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.EnableUniversalCopy
     },
+    ShowTextFieldDialog {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowTextFieldDialog
+    },
 
 
     ;

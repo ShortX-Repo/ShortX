@@ -31,4 +31,5 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.BTDeviceDisConnected>().map { it.name },
     enumValues<ContextDataMapping.OnStartOp>().map { it.name },
     enumValues<ContextDataMapping.OnFinishOp>().map { it.name },
+    enumValues<ContextDataMapping.ShowTextFieldDialog>().map { it.name },
 ).flatten().distinct().sorted()

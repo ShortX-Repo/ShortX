@@ -255,3 +255,10 @@ message GestureRecord {
 message GestureRecordList {
   repeated GestureRecord records = 1;
 }
+
+
+message TextFieldProp {
+  string label = 1;
+  string placeholder = 2;
+  string isRequired = 3;
+}

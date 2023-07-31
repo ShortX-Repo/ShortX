@@ -187,7 +187,7 @@ private fun ShowMenuDialogSelector(dialogState: ShowMenuDialogSettingsDialogStat
                     Button(onClick = {
                         dialogState.addButton()
                     }) {
-                        Text(text = LocalI18N.current["ui.action.show.add.button"])
+                        Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
                     }
 
                     SectionSpacer()
@@ -263,7 +263,7 @@ private fun ItemSettings(
             containerColor = Color.Transparent
         ),
         label = {
-            Text(text = LocalI18N.current["ui.action.dialog.button.text"])
+            Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.text"])
         },
         value = text,
         onValueChange = {

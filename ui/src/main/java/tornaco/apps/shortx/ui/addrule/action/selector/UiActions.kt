@@ -25,6 +25,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     })
     InjectGestureRecordSelectorDialog(state = injectGestureSelectorState)
 
+    val showTextFieldSelectorState = rememberShowTextFieldDialogSettingsDialogState {
+        addAction(it)
+    }
+    ShowTextFieldDialogSettingsDialog(state = showTextFieldSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -124,6 +129,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.ShowTextFieldDialog::class -> {
+                showTextFieldSelectorState.show(source.getActionAs())
+                true
+            }
+
             else -> false
         }
     }
@@ -144,6 +154,7 @@ fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Actio
         Action.HideAllOverlay::class,
         Action.ShowAlertDialog::class,
         Action.ShowMenuDialog::class,
+        Action.ShowTextFieldDialog::class,
         Action.FindAndClickViewByText::class,
         Action.InputTap::class,
         Action.InputSwipe::class,

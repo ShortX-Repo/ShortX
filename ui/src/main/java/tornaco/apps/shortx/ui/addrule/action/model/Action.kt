@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.proto.common.ProcessName
+import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.LocalVar
@@ -1114,6 +1115,32 @@ sealed interface Action : Parcelable {
         val positiveActions: List<Action> = emptyList(),
         val negativeActions: List<Action> = emptyList(),
         val neutralActions: List<Action> = emptyList(),
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
+    data class ShowTextFieldDialog(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+        val title: String,
+        val message: String,
+        val cancelable: Boolean = true,
+        val textFields: List<TextFieldProp> = emptyList(),
     ) : Action {
         override fun clone(
             id: String,

@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowMenuDialog
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowTextFieldDialog
 import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.action.SleepScreen
 import tornaco.apps.shortx.core.proto.action.StartActivity
@@ -879,6 +880,19 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.ShowTextFieldDialog -> {
+            ShowTextFieldDialog.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(cancelable)
+                .addAllTextFields(textFields)
                 .build()
         }
 

@@ -177,6 +177,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.menu_3_line
         }
 
+        Action.ShowTextFieldDialog::class -> {
+            Remix.Editor.input_cursor_move
+        }
+
         Action.StartActivity::class -> {
             Remix.Logos.android_fill
         }
