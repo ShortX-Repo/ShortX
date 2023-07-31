@@ -328,7 +328,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
         } else {
             for (i in 0 until root.childCount) {
                 val child = root.getChild(i)
-                if (child != null) discoverTextFromAccessibilityNode(list, child)
+                if (child != null && child.isVisibleToUser) discoverTextFromAccessibilityNode(
+                    list,
+                    child
+                )
             }
         }
     }

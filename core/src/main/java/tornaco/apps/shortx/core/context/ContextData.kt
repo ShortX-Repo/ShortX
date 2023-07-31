@@ -26,6 +26,7 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
     }
 
     fun add(key: String, value: Any?) {
+        logger.p("add $key $value")
         if (map.containsKey(key)) {
             logger.w("Override key: $key")
         }
@@ -39,6 +40,7 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
     }
 
     fun recycle() {
+        logger.p("recycle ${hashCode()}")
         map.clear()
         pool.release(this)
     }
