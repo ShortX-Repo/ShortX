@@ -40,6 +40,7 @@ import java.util.ArrayList;
 public class PointerLocationView extends View implements InputDeviceListener,
         PointerEventListener {
     private static final String TAG = "PointerLocationView";
+    private static final boolean DRAW_LABEL = false;
 
     // The system property key used to specify an alternate velocity tracker strategy
     // to plot alongside the default one.  Useful for testing and comparison purposes.
@@ -236,7 +237,7 @@ public class PointerLocationView extends View implements InputDeviceListener,
         Log.d(TAG, "mPointers: " + mPointers.size());
 
         // Labels
-        if (mActivePointerId >= 0) {
+        if (DRAW_LABEL && mActivePointerId >= 0) {
             final PointerState ps = mPointers.get(mActivePointerId);
 
             canvas.drawRect(0, 0, itemW - 1, bottom, mTextBackgroundPaint);
