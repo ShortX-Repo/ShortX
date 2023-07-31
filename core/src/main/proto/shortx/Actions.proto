@@ -806,3 +806,13 @@ message ShowTextFieldDialog {
   bool cancelable = 3;
   repeated TextFieldProp textFields = 4;
 }
+
+
+message TTS {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  string text = 1;
+}

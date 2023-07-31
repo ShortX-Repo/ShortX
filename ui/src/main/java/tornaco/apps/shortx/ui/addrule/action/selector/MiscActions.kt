@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -10,8 +11,11 @@ import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 
 @Composable
@@ -20,10 +24,24 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
         addAction(Action.NoAction(icon = it))
     })
     MDIconSelectorDialog(state = noActionIconSelectorState)
+
+    val ttsDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.tts"],
+        message = null,
+        onSelected = {
+            addAction(Action.TTS(text = it))
+        })
+    TextInputDialog(state = ttsDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.NoAction::class -> {
                 noActionIconSelectorState.show()
+                true
+            }
+
+            Action.TTS::class -> {
+                ttsDialogState.show(initialValue = source.getActionAs<Action.TTS>()?.text)
                 true
             }
 
@@ -39,17 +57,19 @@ fun MiscActions(keyword: String, subscribeState: SubscribeState, addAction: (Act
     val i18N = LocalI18N.current
 
     val actionItems = listOf(
+        Action.TTS::class,
+        Action.NoAction::class,
+    ).map {
         SelectorItem(
-            type = Action.NoAction::class,
-            labelAndDescription = labelAndDescriptionForActionSelector(
-                i18N,
-                Action.NoAction::class
-            ),
-            icon = imageVectorForAction(Action.NoAction::class),
-            isForSubscribedOnly = false,
-            iconColor = colorForAction(Action.NoAction::class)
-        ),
-    ).filter {
+            it,
+            labelAndDescriptionForActionSelector(i18N, it),
+            imageVectorForAction(it),
+            isForSubscribedOnly = remember(subscribeState) {
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
+            },
+            iconColor = colorForAction(it)
+        )
+    }.filter {
         keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 

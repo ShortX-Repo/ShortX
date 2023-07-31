@@ -1045,6 +1045,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.TTS::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.TTS::class.java
+            Action.TTS(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                text = data.text
+            )
+        }
+
         else -> null
     }
 }

@@ -66,6 +66,7 @@ import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopService
 import tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot
+import tornaco.apps.shortx.core.proto.action.TTS
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
 import tornaco.apps.shortx.core.proto.action.ToggleGestureRecording
 import tornaco.apps.shortx.core.proto.action.Vibrate
@@ -893,6 +894,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setMessage(message)
                 .setCancelable(cancelable)
                 .addAllTextFields(textFields)
+                .build()
+        }
+
+        is Action.TTS -> {
+            TTS.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setText(text)
                 .build()
         }
 

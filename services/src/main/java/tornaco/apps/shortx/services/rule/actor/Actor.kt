@@ -350,6 +350,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.ShowTextFieldDialog
     },
+    TTS {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.TTS
+    },
 
 
     ;

@@ -12,6 +12,12 @@
         android:maxSdkVersion="29" />
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:requestLegacyExternalStorage="true"
         android:theme="@style/UiTheme.ShortX">

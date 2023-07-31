@@ -489,6 +489,7 @@
   "ui.action.dark.mode": "暗色模式",
   "ui.action.system.settings": "系统",
   "ui.action.brk": "停止执行后续动作",
+  "ui.action.tts": "朗读文本",
   "ui.action.show.dialog": "显示对话框",
   "ui.action.dialog.message": "对话框信息",
   "ui.action.dialog.title": "标题",

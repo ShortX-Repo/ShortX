@@ -356,6 +356,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.file_copy_line
         }
 
+        Action.TTS::class -> {
+            Remix.Communication.speak_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

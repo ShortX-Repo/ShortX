@@ -490,6 +490,7 @@
   "ui.action.dark.mode": "Dark mode",
   "ui.action.system.settings": "System",
   "ui.action.brk": "Stop execute next actions",
+  "ui.action.tts": "Speech text",
   "ui.action.show.dialog": "Show dialog",
   "ui.action.dialog.message": "Message",
   "ui.action.dialog.title": "Title",

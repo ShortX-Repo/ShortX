@@ -46,7 +46,7 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Settings("ui.action.system.settings", Remix.System.settings_2_fill),
     Life("ui.action.life", Remix.Map.riding_fill),
     Advanced("ui.action.advanced", Remix.System.function_fill),
-    Misc("ui.action.advanced", Remix.Others.box_1_fill),
+    Misc("ui.action.misc", Remix.Others.box_1_fill),
 }
 
 enum class TabItems(val i18NKey: String, val icon: String) {

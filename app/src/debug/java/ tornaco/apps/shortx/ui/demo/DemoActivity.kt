@@ -5,7 +5,9 @@ package tornaco.apps.shortx.ui.demo
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.speech.tts.TextToSpeech
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.util.Locale
 
 class DemoActivity : BaseActivity() {
     @Composable
@@ -95,6 +98,35 @@ class DemoActivity : BaseActivity() {
                             startActivity(intent)
                         }) {
                             Text(text = "Bing.com")
+                        }
+
+                        Button(onClick = {
+                            var tts: TextToSpeech? = null
+                            tts = TextToSpeech(
+                                context
+                            ) { status ->
+                                Logger().d("status: $status")
+                                if (status == TextToSpeech.SUCCESS) {
+                                    val result = tts!!.setLanguage(Locale.getDefault())
+                                    if (result == TextToSpeech.LANG_MISSING_DATA
+                                        || result == TextToSpeech.LANG_NOT_SUPPORTED
+                                    ) {
+                                        Toast.makeText(
+                                            context,
+                                            "数据丢失或不支持",
+                                            Toast.LENGTH_SHORT
+                                        ).show();
+                                    }
+                                    // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
+                                    tts!!.setPitch(1.0f)
+                                    tts!!.speak(
+                                        "Hello 你好啊",
+                                        TextToSpeech.QUEUE_FLUSH, null
+                                    );
+                                }
+                            }
+                        }) {
+                            Text(text = "TTS")
                         }
                     }
                 }

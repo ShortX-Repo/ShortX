@@ -72,6 +72,7 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Action.ToggleGestureRecording::class,
     Action.StartGestureRecording::class,
     Action.StopGestureRecording::class,
+    Action.EnableUniversalCopy::class,
 )
 
 fun isForSubscribedOnly(clazz: KClass<*>): Boolean = subscribedOnlyActions.contains(clazz)
