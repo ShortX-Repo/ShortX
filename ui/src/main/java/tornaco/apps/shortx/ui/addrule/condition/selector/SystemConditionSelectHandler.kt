@@ -154,6 +154,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.KeyguardIsLocked::class -> {
+                addCondition(Condition.KeyguardIsLocked())
+                true
+            }
+
             else -> false
         }
     }

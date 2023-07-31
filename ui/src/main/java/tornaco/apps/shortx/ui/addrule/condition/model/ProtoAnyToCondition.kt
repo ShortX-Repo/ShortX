@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
+import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
@@ -229,6 +230,15 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 slot = data.slotId
+            )
+        }
+
+        this is_ KeyguardIsLocked::class.java -> {
+            val data = this unpack_ KeyguardIsLocked::class.java
+            Condition.KeyguardIsLocked(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
             )
         }
 

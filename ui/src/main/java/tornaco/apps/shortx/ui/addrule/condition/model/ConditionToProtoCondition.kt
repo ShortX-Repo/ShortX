@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
+import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
@@ -256,6 +257,14 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setSlotId(slot)
+                .build()
+        }
+
+        is Condition.KeyguardIsLocked -> {
+            KeyguardIsLocked.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
                 .build()
         }
     }

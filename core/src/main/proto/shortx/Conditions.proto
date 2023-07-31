@@ -235,3 +235,9 @@ message AppHasNotification {
   string note = 99;
   string id = 100;
 }
+
+message KeyguardIsLocked {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

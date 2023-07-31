@@ -13,6 +13,7 @@
   "ui.conditions.true.desc": "Actions will always be performed when they are triggered.",
   "ui.conditions.eva.global.var": "Check global var",
   "ui.conditions.screen.on": "Screen is ON",
+  "ui.conditions.screen.locked": "Screen is Locked",
   "ui.conditions.vpn.is.connected": "VPN is connected",
   "ui.conditions.time.in.range": "Time in range",
   "ui.conditions.wifi.connected": "Wifi is connected",

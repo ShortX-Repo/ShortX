@@ -88,6 +88,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.notification_badge_line
         }
 
+        Condition.KeyguardIsLocked::class -> {
+            Remix.System.lock_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

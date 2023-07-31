@@ -129,6 +129,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.KeyguardIsLocked::class -> {
+            listOf(
+                i18N["ui.conditions.screen.locked"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -196,6 +202,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.ScreenIsOn -> {
             listOf(
                 i18N["ui.conditions.screen.on"],
+            )
+        }
+
+        is Condition.KeyguardIsLocked -> {
+            listOf(
+                i18N["ui.conditions.screen.locked"],
             )
         }
 
