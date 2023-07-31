@@ -262,3 +262,9 @@ message TextFieldProp {
   string placeholder = 2;
   string isRequired = 3;
 }
+
+enum AppLanguage {
+  enUS = 0;
+  zhCN = 2;
+  zhTW = 3;
+}

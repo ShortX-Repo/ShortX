@@ -2,8 +2,11 @@ package tornaco.apps.shortx.ui.base
 
 import android.content.Context
 import android.icu.text.MessageFormat
+import android.preference.PreferenceManager
 import kotlinx.serialization.json.Json
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.common.AppLanguage
+import tornaco.apps.shortx.core.res.appLanguageToAssetsFileName
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
 
@@ -28,9 +31,18 @@ object I18NCache {
     }
 
     fun init(context: Context) {
-        val name = context.getString(R.string.ui_i18n_name)
-        logger.d("locale: $name")
-        kotlin.runCatching { context.assets.open(name) }.getOrElse {
+        val preferredAppLanguage = AppLanguage.valueOf(
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .getString("i18n", AppLanguage.UNRECOGNIZED.name) ?: AppLanguage.UNRECOGNIZED.name
+        )
+        logger.d("preferredAppLanguage: $preferredAppLanguage")
+
+        val i18NFileName = preferredAppLanguage.appLanguageToAssetsFileName {
+            context.getString(R.string.ui_i18n_name)
+        }
+
+        logger.d("i18NFileName: $i18NFileName")
+        kotlin.runCatching { context.assets.open(i18NFileName) }.getOrElse {
             logger.e(it, "Using fallback file: $DEFAULT_LANGUAGE")
             context.assets.open(DEFAULT_LANGUAGE)
         }.use {
