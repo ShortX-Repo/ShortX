@@ -8,6 +8,7 @@ import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
 import android.graphics.Bitmap;
 import android.graphics.Region;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -43,6 +44,13 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
     private final ArrayList<AccessibilityEvent> mEventQueue = new ArrayList<>();
     private boolean mWaitingForEventDelivery;
     private long mLastEventTimeMillis;
+
+    private UiAutomation.OnAccessibilityEventListener mOnAccessibilityEventListener;
+    private final Handler mLocalCallbackHandler;
+
+    public UiAutomationManager(Handler localCallbackHandler) {
+        this.mLocalCallbackHandler = localCallbackHandler;
+    }
 
     boolean isConnected() {
         return connectionId.get() != AccessibilityInteractionClient.NO_ID;
@@ -255,7 +263,7 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
 
     @Override
     public void setOnAccessibilityEventListener(UiAutomation.OnAccessibilityEventListener listener) {
-
+        this.mOnAccessibilityEventListener = listener;
     }
 
     @Override
@@ -333,6 +341,14 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
                 mEventQueue.add(AccessibilityEvent.obtain(event));
             }
             syncLock.notifyAll();
+        }
+
+        if (mOnAccessibilityEventListener != null) {
+            AccessibilityEvent cloneEvent = AccessibilityEvent.obtain(event);
+            mLocalCallbackHandler.post(() -> {
+                mOnAccessibilityEventListener.onAccessibilityEvent(cloneEvent);
+                cloneEvent.recycle();
+            });
         }
     }
 

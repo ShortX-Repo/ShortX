@@ -40,8 +40,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
-import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
 import androidx.test.uiautomator.imp.adapter.IUiAutomation;
+import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -312,37 +312,6 @@ public class UiDevice implements Searchable {
     public String getProductName() {
         Tracer.trace();
         return Build.PRODUCT;
-    }
-
-    /**
-     * Retrieves the text from the last UI traversal event received.
-     * <p>
-     * You can use this method to read the contents in a WebView container
-     * because the accessibility framework fires events
-     * as each text is highlighted. You can write a test to perform
-     * directional arrow presses to focus on different elements inside a WebView,
-     * and call this method to get the text from each traversed element.
-     * If you are testing a view container that can return a reference to a
-     * Document Object Model (DOM) object, your test should use the view's
-     * DOM instead.
-     *
-     * @return text of the last traversal event, else return an empty string
-     * @since API Level 16
-     */
-    public String getLastTraversedText() {
-        Tracer.trace();
-        return getQueryController().getLastTraversedText();
-    }
-
-    /**
-     * Clears the text from the last UI traversal event.
-     * See {@link #getLastTraversedText()}.
-     *
-     * @since API Level 16
-     */
-    public void clearLastTraversedText() {
-        Tracer.trace();
-        getQueryController().clearLastTraversedText();
     }
 
     /**
@@ -662,19 +631,6 @@ public class UiDevice implements Searchable {
     public void waitForIdle(long timeout) {
         Tracer.trace(timeout);
         getQueryController().waitForIdle(timeout);
-    }
-
-    /**
-     * Retrieves the last activity to report accessibility events.
-     *
-     * @return String name of activity
-     * @since API Level 16
-     * @deprecated The results returned should be considered unreliable
-     */
-    @Deprecated
-    public String getCurrentActivityName() {
-        Tracer.trace();
-        return getQueryController().getCurrentActivityName();
     }
 
     /**

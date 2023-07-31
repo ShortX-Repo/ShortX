@@ -2,9 +2,12 @@ package tornaco.apps.shortx.services.wm
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.uiautomator.imp.UiDevice
 import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
@@ -16,7 +19,7 @@ import tornaco.apps.shortx.services.SystemService
 class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WindowManagerService") {
 
-    private val automationManager = UiAutomationManager()
+    private val automationManager by lazy { UiAutomationManager(handler) }
     private var screenSize: Pair<Int, Int>? = null
 
     private val uiAutoLock = "UiAutoLock"
@@ -52,14 +55,43 @@ class WindowManagerService(shortXContext: ShortXContext) :
         return true
     }
 
-    fun ensureAutomationConnected(reason: String) {
+    private fun ensureAutomationConnected(reason: String) {
         synchronized(uiAutoLock) {
             kotlin.runCatching {
-                logger.w("ensureAutomationConnected: $reason")
-                disableThanoxProfileAutoEngine()
-                automationManager.connect()
+                if (!automationManager.isConnected) {
+                    logger.w("ensureAutomationConnected, connect: $reason")
+                    disableThanoxProfileAutoEngine()
+                    automationManager.connect()
+                    automationManager.setOnAccessibilityEventListener {
+                        logger.d("OnAccessibilityEvent: $it")
+                        if (it.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                            val root = automationManager.rootInActiveWindow
+                            if (root != null) {
+                                val texts = mutableListOf<kotlin.Pair<Rect, String>>()
+                                discoverText(texts, root)
+                                logger.d("texts: ${texts.joinToString(System.lineSeparator())}")
+                            }
+                        }
+                    }
+                }
             }.onFailure {
                 shortXContext.watchDog.onFatalError(it, "ensureAutomationConnected")
+            }
+        }
+    }
+
+    private fun discoverText(
+        list: MutableList<kotlin.Pair<Rect, String>>,
+        root: AccessibilityNodeInfo
+    ) {
+        if (root.childCount <= 0) {
+            if (root.isVisibleToUser && root.text != null) {
+                list.add(root.boundsInScreen to root.text.toString())
+            }
+        } else {
+            for (i in 0 until root.childCount) {
+                val child = root.getChild(i)
+                if (child != null) discoverText(list, child)
             }
         }
     }
@@ -78,7 +110,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun ensureAutomationDisconnected(reason: String) {
+    private fun ensureAutomationDisconnected(reason: String) {
         synchronized(uiAutoLock) {
             kotlin.runCatching {
                 logger.w("ensureAutomationDisConnected:  $reason")

@@ -16,10 +16,8 @@
 
 package androidx.test.uiautomator.imp;
 
-import android.app.UiAutomation.OnAccessibilityEventListener;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter;
@@ -48,8 +46,6 @@ class QueryController {
 
     private final Object mLock = new Object();
 
-    private String mLastActivityName = null;
-
     // During a pattern selector search, the recursive pattern search
     // methods will track their counts and indexes here.
     private int mPatternCounter = 0;
@@ -62,65 +58,10 @@ class QueryController {
     private int mLogIndent = 0;
     private int mLogParentIndent = 0;
 
-    private String mLastTraversedText = "";
-
-    private OnAccessibilityEventListener mEventListener = new OnAccessibilityEventListener() {
-        @Override
-        public void onAccessibilityEvent(AccessibilityEvent event) {
-            synchronized (mLock) {
-                switch (event.getEventType()) {
-                    case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-                        // don't trust event.getText(), check for nulls
-                        if (event.getText() != null && event.getText().size() > 0) {
-                            if (event.getText().get(0) != null)
-                                mLastActivityName = event.getText().get(0).toString();
-                        }
-                        break;
-                    case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
-                        // don't trust event.getText(), check for nulls
-                        if (event.getText() != null && event.getText().size() > 0)
-                            if (event.getText().get(0) != null)
-                                mLastTraversedText = event.getText().get(0).toString();
-                        if (DEBUG)
-                            Log.d(LOG_TAG, "Last text selection reported: " +
-                                    mLastTraversedText);
-                        break;
-                }
-                mLock.notifyAll();
-            }
-        }
-    };
-
     public QueryController(InstrumentationAdapter instrumentation) {
         mInstrumentation = instrumentation;
-        UiDevice.getUiAutomation(instrumentation).setOnAccessibilityEventListener(mEventListener);
     }
 
-    /**
-     * Returns the last text selection reported by accessibility
-     * event TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY. One way to cause
-     * this event is using a DPad arrows to focus on UI elements.
-     */
-    public String getLastTraversedText() {
-        waitForIdle();
-        synchronized (mLock) {
-            if (mLastTraversedText.length() > 0) {
-                return mLastTraversedText;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Clears the last text selection value saved from the TYPE_VIEW_TEXT_SELECTION_CHANGED
-     * event
-     */
-    public void clearLastTraversedText() {
-        waitForIdle();
-        synchronized (mLock) {
-            mLastTraversedText = "";
-        }
-    }
 
     private void initializeNewSearch() {
         mPatternCounter = 0;
@@ -495,20 +436,6 @@ class QueryController {
             }
         }
         return null;
-    }
-
-    /**
-     * Last activity to report accessibility events.
-     *
-     * @return String name of activity
-     * @deprecated The results returned should be considered unreliable
-     */
-    @Deprecated
-    public String getCurrentActivityName() {
-        waitForIdle();
-        synchronized (mLock) {
-            return mLastActivityName;
-        }
     }
 
     /**
