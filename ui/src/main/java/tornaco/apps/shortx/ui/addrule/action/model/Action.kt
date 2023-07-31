@@ -110,7 +110,8 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
-        override val note: String = "", val time: Long
+        override val note: String = "",
+        val time: String
     ) : Action {
         override fun clone(
             id: String,

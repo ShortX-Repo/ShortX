@@ -90,7 +90,8 @@ message ShowToast {
 }
 
 message Delay {
-  int64 time = 1;
+  int64 time = 1 [deprecated = true];
+  string timeString = 2;
 
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

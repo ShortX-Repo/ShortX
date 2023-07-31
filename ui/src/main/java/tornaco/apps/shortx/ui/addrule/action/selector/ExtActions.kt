@@ -54,7 +54,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             message = LocalI18N.current["ui.action.delay.input.message"],
             showSymbolButton = false,
             onSelected = {
-                addAction(Action.Delay(time = it.toLongOrNull() ?: 0))
+                addAction(Action.Delay(time = it))
             })
     TextInputDialog(state = delaySelectionState)
 
@@ -146,7 +146,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.Delay::class -> {
-                delaySelectionState.show(source.getActionAs<Action.Delay>()?.time?.toString())
+                delaySelectionState.show(source.getActionAs<Action.Delay>()?.time)
                 true
             }
 

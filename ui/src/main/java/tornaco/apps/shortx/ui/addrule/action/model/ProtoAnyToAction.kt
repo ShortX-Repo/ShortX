@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
@@ -106,7 +107,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
                 id = data.id,
-                note = data.note, time = data.time
+                note = data.note,
+                time = data.timeString.fallbackOnEmpty(data.time.toString())
             )
         }
 

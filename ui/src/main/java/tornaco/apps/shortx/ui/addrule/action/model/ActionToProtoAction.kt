@@ -115,7 +115,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
         is Action.Delay -> {
             Delay.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
-                .setActionOnError(actionOnError).setTime(time)
+                .setActionOnError(actionOnError)
+                .setTimeString(time)
                 .setNote(overrideNote ?: note)
                 .build()
         }
