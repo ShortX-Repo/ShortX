@@ -93,3 +93,43 @@ fun ErrorCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
         }
     }
 }
+
+
+@Composable
+fun InfoCard(title: String?, infos: List<String>, onClick: () -> Unit = {}) {
+    androidx.compose.material3.Card(
+        modifier = Modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Row {
+                RemixIcon(
+                    modifier = Modifier.offset(y = 2.dp),
+                    remixName = Remix.System.information_fill
+                )
+                MediumSpacer()
+                Column {
+                    title?.let {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 14.sp
+                            )
+                        )
+                        MediumSpacer()
+                    }
+                    Text(
+                        text = infos.joinToString(System.lineSeparator()),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+            }
+        }
+    }
+}

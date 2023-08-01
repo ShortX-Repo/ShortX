@@ -4,6 +4,7 @@ import android.os.RemoteCallbackList
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
+import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.StatusBarTileSettingsStore
@@ -21,6 +22,15 @@ class StatusBarTileService(shortXContext: ShortXContext) :
     override fun systemReady() {
         super.systemReady()
         tileSettingsStore.readBlocking()
+        // Init default settings.
+        StatusBarTile.values().filterNot { it == StatusBarTile.UNRECOGNIZED }.forEach {
+            val setting = getStatusBarTileSettingsByNumber(it.number)
+            logger.d("Tile: $it, setting: $setting")
+            if (setting == null) {
+                logger.i("Init default settings for tile: $it")
+                updateStatusBarTileSetting(defaultStatusBarTileSetting(it))
+            }
+        }
     }
 
     fun getAllStatusBarTileSettings(): List<StatusBarTileSetting> {
@@ -33,6 +43,7 @@ class StatusBarTileService(shortXContext: ShortXContext) :
 
     fun updateStatusBarTileSetting(tileSetting: StatusBarTileSetting) {
         tileSettingsStore.addSetting(tileSetting)
+        notifySettingChanged(tileSetting)
     }
 
     fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {

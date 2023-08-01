@@ -6,6 +6,7 @@ import android.service.quicksettings.TileService
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.AppResources
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 
@@ -32,25 +33,30 @@ abstract class GenericTileService : TileService() {
             logger.d("updateTile: $it")
 
             qsTile.label = it.label
-            qsTile.icon = appRes.getIcon(it.iconName)
+            val resName = Remix.allFlat[it.iconName]
+            qsTile.icon = appRes.getIcon(resName)
+            qsTile.updateTile()
         }
     }
 
     override fun onStartListening() {
         super.onStartListening()
         logger.d("onStartListening")
+        updateTile()
+
+        shortXManager.unregisterStatusBarTileSettingsChangeListener(onTileSettingsChangeListener)
         shortXManager.registerStatusBarTileSettingsChangeListener(onTileSettingsChangeListener)
     }
 
     override fun onStopListening() {
         super.onStopListening()
         logger.d("onStopListening")
-        shortXManager.unregisterStatusBarTileSettingsChangeListener(onTileSettingsChangeListener)
     }
 
     override fun onClick() {
         super.onClick()
         logger.d("onClick: $tileIndex")
+        updateTile()
     }
 
 }

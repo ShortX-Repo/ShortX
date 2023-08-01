@@ -38,8 +38,7 @@ open class BaseStatusBarSettingsStore(
     }
 
     fun addSetting(setting: StatusBarTileSetting) {
-        logger.d("addSetting: ${setting.tile}")
-        tileSettingsCache.removeIf { setting.tile == setting.tile }
+        tileSettingsCache.removeIf { setting.tile == it.tile }
         tileSettingsCache.add(setting)
         postWrite()
     }
@@ -83,6 +82,7 @@ open class BaseStatusBarSettingsStore(
 
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
+
         val statusBarTileSettingList = StatusBarTileSettingList.newBuilder().apply {
             addAllSettings(tileSettingsCache)
         }.build()

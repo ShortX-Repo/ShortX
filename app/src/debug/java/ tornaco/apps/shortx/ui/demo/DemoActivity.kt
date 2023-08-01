@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.util.Locale
 
@@ -99,6 +100,13 @@ class DemoActivity : BaseActivity() {
                         }) {
                             Text(text = "Bing.com")
                         }
+
+                        Button(onClick = {
+                            TileSettingsActivity.start(context, false)
+                        }) {
+                            Text(text = "Tile")
+                        }
+
 
                         Button(onClick = {
                             var tts: TextToSpeech? = null
