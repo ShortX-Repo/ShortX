@@ -32,6 +32,7 @@ data class SettingsState(
     val isKeyEventPromptEnabled: Boolean = false,
     val gestureAreaSize: Int = 0,
     val isInjectedShellEnabled: Boolean = false,
+    val isQSTileOptEnabled: Boolean = false,
     val isPointerLocationEnabled: Boolean = false,
     val hasAudioRecord: Boolean = false,
     val shareAuthor: Author? = null,
@@ -81,6 +82,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 gestureAreaSize = shortXManager.getGestureAreaSize(),
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
                 isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
+                isQSTileOptEnabled = shortXManager.isQSTileOptEnabled(),
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
             )
@@ -229,6 +231,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setInjectedShellEnabled(!state.value.isInjectedShellEnabled)
             updateState { copy(isInjectedShellEnabled = shortXManager.isInjectedShellEnabled()) }
+        }
+    }
+
+    fun toggleQSTileOpt() {
+        viewModelScope.launch {
+            shortXManager.setQSTileOptEnabled(!state.value.isQSTileOptEnabled)
+            updateState { copy(isQSTileOptEnabled = shortXManager.isQSTileOptEnabled()) }
         }
     }
 

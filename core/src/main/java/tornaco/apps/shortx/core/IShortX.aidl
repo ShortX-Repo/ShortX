@@ -206,4 +206,6 @@ interface IShortX {
     void registerStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
     void unregisterStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
     void onTileClick(int tileNumber);
+    boolean isQSTileOptEnabled();
+    void setQSTileOptEnabled(boolean enable);
 }

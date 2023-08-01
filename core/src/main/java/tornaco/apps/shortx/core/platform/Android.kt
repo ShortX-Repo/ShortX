@@ -56,6 +56,7 @@ object ClassNames {
     const val MEDIA_DOCUMENTS_PROVIDER = "com.android.providers.media.MediaDocumentsProvider"
     const val PHONE_WINDOW_MANAGER = "com.android.server.policy.PhoneWindowManager"
     const val SYSTEM_UI_APP = "com.android.systemui.SystemUIApplication"
+    const val SYSTEM_UI_CUSTOM_TILE = "com.android.systemui.qs.external.CustomTile"
 }
 
 object Fields {

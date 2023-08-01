@@ -31,6 +31,9 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         object EnableInjectedShell :
             BoolSettings(key = "EnableInjectedShell", defaultValue = false)
+
+        object EnableQSTileOpt :
+            BoolSettings(key = "EnableQSTileOpt", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String?) :

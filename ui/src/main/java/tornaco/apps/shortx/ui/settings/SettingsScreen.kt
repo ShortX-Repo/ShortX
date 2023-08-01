@@ -279,6 +279,7 @@ fun SettingsScreen(
                             })
                         )
                         addAll(shareSettings(state, vm))
+                        addAll(systemSettings(state, vm))
                         addAll(devSettings(state, vm))
                         addAll(aboutSettings(state, viewOpenSourceLicense))
                     })
@@ -592,15 +593,6 @@ private fun devSettings(
         ),
 
         Preference.SwitchPreference(
-            icon = Remix.Editor.hashtag,
-            title = LocalI18N.current["ui.settings.injected.shell"],
-            summary = LocalI18N.current["ui.settings.injected.shell.description"],
-            value = state.isInjectedShellEnabled,
-            onCheckChanged = { enable ->
-                vm.toggleInjectedShell()
-            }
-        ),
-        Preference.SwitchPreference(
             icon = Remix.Business.global_fill,
             title = LocalI18N.current["ui.settings.http:chucker"],
             summary = LocalI18N.current["ui.settings.http:chucker.description"],
@@ -645,6 +637,37 @@ private fun devSettings(
             ))
         }
     }
+}
+
+@Composable
+private fun systemSettings(
+    state: SettingsState,
+    vm: SettingsViewModel
+): List<Preference> {
+    return mutableListOf(
+        Preference.Category(LocalI18N.current["ui.settings.system"]),
+
+        Preference.SwitchPreference(
+            icon = Remix.Editor.hashtag,
+            title = LocalI18N.current["ui.settings.injected.shell"],
+            summary = LocalI18N.current["ui.settings.injected.shell.description"],
+            hasLongSummary = true,
+            value = state.isInjectedShellEnabled,
+            onCheckChanged = { enable ->
+                vm.toggleInjectedShell()
+            }
+        ),
+        Preference.SwitchPreference(
+            icon = Remix.Media.equalizer_fill,
+            title = LocalI18N.current["ui.settings.sb.tile.opt"],
+            summary = LocalI18N.current["ui.settings.sb.tile.opt.summary"],
+            hasLongSummary = true,
+            value = state.isQSTileOptEnabled,
+            onCheckChanged = { enable ->
+                vm.toggleQSTileOpt()
+            }
+        ),
+    )
 }
 
 @Composable

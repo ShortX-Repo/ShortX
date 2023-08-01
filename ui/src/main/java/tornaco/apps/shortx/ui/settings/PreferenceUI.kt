@@ -170,14 +170,21 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
     var checkState by remember(preference) {
         mutableStateOf(preference.value)
     }
+    var isShowMoreSummary by remember {
+        mutableStateOf(false)
+    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
-                checkState = !checkState
-                preference.onCheckChanged(checkState)
+                if (preference.hasLongSummary) {
+                    isShowMoreSummary = !isShowMoreSummary
+                } else {
+                    checkState = !checkState
+                    preference.onCheckChanged(checkState)
+                }
             }, verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -196,14 +203,28 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                     text = preference.title,
                     style = MaterialTheme.typography.titleMedium
                 )
-                preference.summary?.let {
-                    SmallSpacer()
+                SmallSpacer()
+
+                val showMoreLines = !preference.hasLongSummary || isShowMoreSummary
+
+                AnimatedVisibility(visible = showMoreLines) {
                     Text(
                         modifier = Modifier.padding(end = 36.dp),
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall
+                        text = preference.summary ?: preference.title,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 8
                     )
                 }
+                AnimatedVisibility(visible = !showMoreLines) {
+                    Text(
+                        modifier = Modifier.padding(end = 36.dp),
+                        text = preference.summary ?: preference.title,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2
+                    )
+                }
+
+
             }
         }
 

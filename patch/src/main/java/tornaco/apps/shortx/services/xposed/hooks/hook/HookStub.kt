@@ -14,6 +14,7 @@ object HookStub {
             androidHooks(lpparam)
         } else {
             SystemUIHook.hookApp(lpparam)
+            SystemUIHook.hookTile(lpparam)
             MediaProviderHook.hook(lpparam)
         }
     }

@@ -634,6 +634,16 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun isQSTileOptEnabled(): Boolean {
+        return invokeService(false) { isQSTileOptEnabled }
+    }
+
+    fun setQSTileOptEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isQSTileOptEnabled = enable
+        }
+    }
+
     fun isInjectedShellEnabled(): Boolean {
         return invokeService(false) { isInjectedShellEnabled }
     }
@@ -643,7 +653,6 @@ class ShortXManager(private val service: IShortX) {
             isInjectedShellEnabled = enable
         }
     }
-
 
     fun getWifiScanResults(): List<String> = invokeService(emptyList()) {
         wifiScanResults

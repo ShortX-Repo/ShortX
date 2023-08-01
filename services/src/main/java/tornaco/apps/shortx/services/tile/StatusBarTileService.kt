@@ -7,7 +7,10 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.StatusBarTileSettingsStore
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.systemServiceScope
 
 
@@ -52,6 +55,14 @@ class StatusBarTileService(shortXContext: ShortXContext) :
 
     fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
         settingsChangeListeners.unregister(listener)
+    }
+
+    fun isQSTileOptEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableQSTileOpt)
+    }
+
+    fun setQSTileOptEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableQSTileOpt, enable)
     }
 
     private fun notifySettingChanged(tileSetting: StatusBarTileSetting) {

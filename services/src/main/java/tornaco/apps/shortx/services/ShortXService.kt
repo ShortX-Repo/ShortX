@@ -475,6 +475,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun isQSTileOptEnabled(): Boolean {
+            return shortXContext.tile.isQSTileOptEnabled()
+        }
+
+        override fun setQSTileOptEnabled(enable: Boolean) {
+            shortXContext.tile.setQSTileOptEnabled(enable)
+        }
+
         override fun directExecuteRuleActions(ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(ruleId)
         }
