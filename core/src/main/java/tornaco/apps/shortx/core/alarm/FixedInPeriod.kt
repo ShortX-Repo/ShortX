@@ -111,7 +111,8 @@ fun getTriggerTimeSegmentsByTimes(
 ): List<Date> {
     if (totalTimes <= 0) return emptyList()
     val totalPeriodMillis = end.time - start.time
-    val interval: Long = totalPeriodMillis / if (startInclusive) totalTimes - 1 else totalTimes
+    val interval: Long =
+        totalPeriodMillis / maxOf(1, if (startInclusive) totalTimes - 1 else totalTimes)
     logger.d("getTriggerTimeSegmentsByTimes, start: $start, end: $end, interval: $interval, totalPeriodMillis: $totalPeriodMillis, totalTimes: $totalTimes")
     val segments = mutableListOf<Date>()
     for (i in (if (startInclusive) 0 else 1)..if (startInclusive) totalTimes - 1 else totalTimes) {
