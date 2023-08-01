@@ -1,33 +1,35 @@
-package tornaco.apps.shortx.services.ui
+package tornaco.apps.shortx.ui.overlay
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.PixelFormat
-import android.graphics.Rect
-import android.graphics.RectF
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.android.internal.R
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.core.util.screenSize
-import tornaco.apps.shortx.services.gesture.HotSeat
-import tornaco.apps.shortx.services.gesture.OnGestureListenerAdapter
-import tornaco.apps.shortx.services.gesture.getRect
+import tornaco.apps.shortx.ui.base.Loading
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class UniversalCopyView(
     context: Context,
-    hotSeats: List<HotSeat>,
-    areaSize: Int,
     onClick: (Float, Float) -> Unit
 ) :
     LinearLayout(context) {
@@ -38,6 +40,7 @@ class UniversalCopyView(
     }
 
     private var isAttached = false
+    private var isLoading by mutableStateOf(true)
 
     private val gestureDetector: GestureDetector =
         GestureDetector(context, object : OnGestureListenerAdapter() {
@@ -48,7 +51,9 @@ class UniversalCopyView(
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
                 logger.d("onSingleTapUp")
-                onClick(e.x, e.y)
+                if (!isLoading) {
+                    onClick(e.x, e.y)
+                }
                 return true
             }
 
@@ -57,19 +62,25 @@ class UniversalCopyView(
             }
         }, handler)
 
-    init {
-        addView(
-            Guideline(context, hotSeats, areaSize),
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT
+    fun attach() {
+        val wrapContent = FrameLayout.LayoutParams(
+            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
+
+        val composeView = ComposeView(context).apply {
+            setContent {
+                UCVContent(isLoading)
+            }
+            isFocusable = false
+            isClickable = false
+            addToLifecycle()
+        }
+        addView(composeView, wrapContent)
 
         setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
         }
-    }
 
-    fun attach() {
         isFocusable = true
         isClickable = true
 
@@ -78,6 +89,11 @@ class UniversalCopyView(
         windowManager.addView(this, lp)
 
         isAttached = true
+        isLoading = true
+    }
+
+    fun loadComplete() {
+        isLoading = false
     }
 
     fun detach() {
@@ -100,41 +116,24 @@ class UniversalCopyView(
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
         }
         lp.type = WindowManager.LayoutParams.TYPE_PHONE
-        lp.packageName = mContext.packageName
-        lp.windowAnimations = R.style.Animation_Toast
+        lp.packageName = context.packageName
+        lp.windowAnimations = android.R.style.Animation_Toast
         return lp
     }
+}
 
-    class Guideline(
-        context: Context,
-        private val hotSeats: List<HotSeat>,
-        private val areaSize: Int
-    ) :
-        View(context) {
-        private val screenSize by lazy {
-            context.screenSize()
-        }
+open class OnGestureListenerAdapter : GestureDetector.SimpleOnGestureListener()
 
-        private val paint by lazy {
-            Paint().apply {
-                isAntiAlias = true
-                color = Color.GREEN
-                alpha = 64
-            }
-        }
-
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            hotSeats.forEach {
-                val rect = it.area.getRect(
-                    screenSize.x.toFloat(),
-                    screenSize.y.toFloat(),
-                    areaSize.toFloat()
-                )
-                canvas.drawRect(rect, paint.apply {
-                    color = it.color
-                })
-            }
+@Composable
+fun UCVContent(isLoading: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .border(4.dp, color = MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isLoading) {
+            Loading(Modifier.size(48.dp))
         }
     }
 }

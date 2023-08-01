@@ -61,8 +61,6 @@ subprojects {
         extensions.configure(com.android.build.api.dsl.CommonExtension::class.java) {
             compileSdk = tornaco.project.android.shortx.Configs.compileSdkVersion
             ndkVersion = tornaco.project.android.shortx.Configs.ndkVersion
-            buildToolsVersion = tornaco.project.android.shortx.Configs.buildToolsVersion
-
 
             externalNativeBuild {
                 cmake {
