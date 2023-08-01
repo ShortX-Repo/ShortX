@@ -517,7 +517,7 @@
   "ui.action.recent": "最近",
   "ui.settings.sb.tile": "快速设置磁贴",
   "ui.settings.sb.tile.summary": "查看和管理快速设置磁贴（QS Tile）",
-  "ui.settings.sb.tile.tip": "你可以在指令触发器中引用这些磁贴；磁贴的标签和图标可以在当前页面进行修改",
+  "ui.settings.sb.tile.tip": "你可以在指令触发器中引用这些磁贴；磁贴的标签和图标可以在当前页面进行修改\n\n受限于系统绑定策略，有时候点击一个磁贴可能需要几秒钟的时间才会有反应",
   "ui.settings.sb.unused": "未使用",
   "ui.settings.sb.used": "被 {title} 指令使用",
   "ui.settings.danmu": "弹幕设置",

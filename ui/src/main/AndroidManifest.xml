@@ -105,7 +105,14 @@
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.settings.TileSettingsActivity"
-            android:exported="false" />
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"
