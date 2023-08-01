@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -431,6 +432,30 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isGestureRecording(): Boolean {
             return shortXContext.gesture.isGestureRecording()
+        }
+
+        override fun getAllStatusBarTileSettings(): List<ByteArrayWrapper> {
+            return shortXContext.tile.getAllStatusBarTileSettings().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getStatusBarTileSettingsByNumber(tileNumber: Int): ByteArrayWrapper? {
+            return shortXContext.tile.getStatusBarTileSettingsByNumber(tileNumber)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun updateStatusBarTileSetting(tileSetting: ByteArrayWrapper) {
+            shortXContext.tile.updateStatusBarTileSetting(StatusBarTileSetting.parseFrom(tileSetting.byteData))
+        }
+
+        override fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
+            shortXContext.tile.registerStatusBarTileSettingsChangeListener(listener)
+        }
+
+        override fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
+            shortXContext.tile.unregisterStatusBarTileSettingsChangeListener(listener)
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

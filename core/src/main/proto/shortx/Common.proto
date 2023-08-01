@@ -268,3 +268,25 @@ enum AppLanguage {
   zhCN = 2;
   zhTW = 3;
 }
+
+enum StatusBarTile {
+  Tile1 = 0;
+  Tile2 = 1;
+  Tile3 = 2;
+  Tile4 = 3;
+  Tile5 = 4;
+  Tile6 = 5;
+  Tile7 = 6;
+  Tile8 = 7;
+  Tile9 = 8;
+}
+
+message StatusBarTileSetting {
+  StatusBarTile tile = 1;
+  string label = 2;
+  string iconName = 3;
+}
+
+message StatusBarTileSettingList {
+  repeated StatusBarTileSetting settings = 1;
+}

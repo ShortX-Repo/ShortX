@@ -14,6 +14,7 @@ import tornaco.apps.shortx.services.os.UserService
 import tornaco.apps.shortx.services.overlay.OverlayService
 import tornaco.apps.shortx.services.phone.PhoneService
 import tornaco.apps.shortx.services.rule.RuleService
+import tornaco.apps.shortx.services.tile.StatusBarTileService
 import tornaco.apps.shortx.services.ui.UIService
 import tornaco.apps.shortx.services.wm.WindowManagerService
 
@@ -35,6 +36,7 @@ interface ShortXContext {
     val media: MediaService
     val phone: PhoneService
     val shell: ShellService
+    val tile: StatusBarTileService
 
     val allServices
         get() = listOf(
@@ -55,6 +57,7 @@ interface ShortXContext {
             media,
             phone,
             shell,
+            tile,
         )
 }
 
@@ -76,4 +79,5 @@ class ShortXContextImpl : ShortXContext {
     override val media = MediaService(this)
     override val phone = PhoneService(this)
     override val shell = ShellService(this)
+    override val tile = StatusBarTileService(this)
 }

@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.IAudioRecordingListener;
 import tornaco.apps.shortx.core.rule.action.su.ISu;
 import tornaco.apps.shortx.core.notification.INotificationPoster;
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver;
+import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
 
 interface IShortX {
     Version version();
@@ -197,4 +198,11 @@ interface IShortX {
     void startGestureRecording();
     void stopGestureRecording(boolean save);
     boolean isGestureRecording();
+
+    // Tile
+    List<ByteArrayWrapper> getAllStatusBarTileSettings();
+    ByteArrayWrapper getStatusBarTileSettingsByNumber(int tileNumber);
+    void updateStatusBarTileSetting(in ByteArrayWrapper tileSetting);
+    void registerStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
+    void unregisterStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
 }

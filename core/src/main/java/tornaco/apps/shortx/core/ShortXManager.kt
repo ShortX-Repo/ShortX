@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -758,6 +759,40 @@ class ShortXManager(private val service: IShortX) {
 
     fun isGestureRecording(): Boolean {
         return invokeService(false) { isGestureRecording }
+    }
+
+    fun getAllStatusBarTileSettings(): List<StatusBarTileSetting> {
+        return invokeService(emptyList()) {
+            allStatusBarTileSettings.map {
+                StatusBarTileSetting.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun getStatusBarTileSettingsByNumber(tileNumber: Int): StatusBarTileSetting? {
+        return invokeService(null) {
+            getStatusBarTileSettingsByNumber(tileNumber)?.let {
+                StatusBarTileSetting.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun updateStatusBarTileSetting(tileSetting: StatusBarTileSetting) {
+        invokeService(Unit) {
+            updateStatusBarTileSetting(ByteArrayWrapper(tileSetting.toByteArray()))
+        }
+    }
+
+    fun registerStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
+        invokeService(Unit) {
+            registerStatusBarTileSettingsChangeListener(listener)
+        }
+    }
+
+    fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
+        invokeService(Unit) {
+            unregisterStatusBarTileSettingsChangeListener(listener)
+        }
     }
 
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {

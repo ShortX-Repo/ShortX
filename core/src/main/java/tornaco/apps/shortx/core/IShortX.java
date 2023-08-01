@@ -440,6 +440,25 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    // Tile
+
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getStatusBarTileSettingsByNumber(int tileNumber) throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void updateStatusBarTileSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper tileSetting) throws android.os.RemoteException
+    {
+    }
+    @Override public void registerStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1682,6 +1701,62 @@ public interface IShortX extends android.os.IInterface
           boolean _result = this.isGestureRecording();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_getAllStatusBarTileSettings:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllStatusBarTileSettings();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getStatusBarTileSettingsByNumber:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getStatusBarTileSettingsByNumber(_arg0);
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_updateStatusBarTileSetting:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.updateStatusBarTileSetting(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_registerStatusBarTileSettingsChangeListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
+          this.registerStatusBarTileSettingsChangeListener(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterStatusBarTileSettingsChangeListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
+          this.unregisterStatusBarTileSettingsChangeListener(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -4147,6 +4222,117 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      // Tile
+
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllStatusBarTileSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllStatusBarTileSettings();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getStatusBarTileSettingsByNumber(int tileNumber) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(tileNumber);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getStatusBarTileSettingsByNumber, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getStatusBarTileSettingsByNumber(tileNumber);
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void updateStatusBarTileSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper tileSetting) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((tileSetting!=null)) {
+            _data.writeInt(1);
+            tileSetting.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_updateStatusBarTileSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().updateStatusBarTileSetting(tileSetting);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void registerStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerStatusBarTileSettingsChangeListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerStatusBarTileSettingsChangeListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterStatusBarTileSettingsChangeListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterStatusBarTileSettingsChangeListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -4260,6 +4446,11 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_startGestureRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 108);
     static final int TRANSACTION_stopGestureRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 109);
     static final int TRANSACTION_isGestureRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 110);
+    static final int TRANSACTION_getAllStatusBarTileSettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 111);
+    static final int TRANSACTION_getStatusBarTileSettingsByNumber = (android.os.IBinder.FIRST_CALL_TRANSACTION + 112);
+    static final int TRANSACTION_updateStatusBarTileSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 113);
+    static final int TRANSACTION_registerStatusBarTileSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 114);
+    static final int TRANSACTION_unregisterStatusBarTileSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 115);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4436,4 +4627,11 @@ public interface IShortX extends android.os.IInterface
   public void startGestureRecording() throws android.os.RemoteException;
   public void stopGestureRecording(boolean save) throws android.os.RemoteException;
   public boolean isGestureRecording() throws android.os.RemoteException;
+  // Tile
+
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getStatusBarTileSettingsByNumber(int tileNumber) throws android.os.RemoteException;
+  public void updateStatusBarTileSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper tileSetting) throws android.os.RemoteException;
+  public void registerStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException;
+  public void unregisterStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException;
 }

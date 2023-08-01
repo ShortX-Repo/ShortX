@@ -109,6 +109,97 @@
             android:exported="true"
             tools:ignore="ExportedService" />
 
+        <service
+            android:name=".service.tile.Tile1"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 1"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile2"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 2"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile3"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 3"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile4"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 4"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile5"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 5"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile6"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 6"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile7"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 7"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile8"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 8"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.tile.Tile9"
+            android:exported="true"
+            android:icon="@drawable/ic_remix_settings_6_line"
+            android:label="Tile 9"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="tornaco.apps.shortx"
