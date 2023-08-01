@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 
 package tornaco.apps.shortx.services.rule.actor.impl
 
@@ -42,7 +42,6 @@ object TTS : Actor {
     }
 
     private suspend fun initTTS(context: Context) {
-        var tts: TextToSpeech? = null
         val status = suspendCancellableCoroutine {
             tts = TextToSpeech(
                 context
