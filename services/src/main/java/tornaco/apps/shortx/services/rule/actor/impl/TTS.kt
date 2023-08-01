@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package tornaco.apps.shortx.services.rule.actor.impl
 
@@ -33,12 +33,30 @@ object TTS : Actor {
         val text = d.text.inflateContextMap(contextData)
             .replaceLocalVarValues(localVars)
             .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
-        tts!!.speak(
+
+        val speakRes1 = requireNotNull(tts) { "TTS is null" }.speak(
             text,
             TextToSpeech.QUEUE_FLUSH,
             null
         )
-        Unit
+        logger.d("speakRes1: $speakRes1 (SUCCESS: 0, ERROR: -1)")
+
+        // May: speak failed: not bound to TTS engine
+        if (speakRes1 != TextToSpeech.SUCCESS) {
+            logger.w("speakRes1 is ERROR, re-init and try 1 more time.")
+            tts?.let { runCatching { it.shutdown() } }
+            initTTS(context)
+
+            val speakRes2 = requireNotNull(tts) { "TTS is null" }.speak(
+                text,
+                TextToSpeech.QUEUE_FLUSH,
+                null
+            )
+
+            require(speakRes2 == TextToSpeech.SUCCESS) {
+                "Speak fail at second time, result is: $speakRes2"
+            }
+        }
     }
 
     private suspend fun initTTS(context: Context) {
