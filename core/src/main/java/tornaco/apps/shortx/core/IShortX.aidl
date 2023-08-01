@@ -205,4 +205,5 @@ interface IShortX {
     void updateStatusBarTileSetting(in ByteArrayWrapper tileSetting);
     void registerStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
     void unregisterStatusBarTileSettingsChangeListener(in IStatusBarTileSettingsChangeListener listener);
+    void onTileClick(int tileNumber);
 }

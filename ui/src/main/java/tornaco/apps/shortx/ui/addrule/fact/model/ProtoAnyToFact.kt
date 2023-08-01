@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.toFixedBy
+import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -429,6 +430,16 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 codes = data.opCodesList,
                 apps = models.first,
                 pkgSets = models.second,
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.OnQSTileClick::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.OnQSTileClick::class.java
+
+            Fact.OnQSTileClick(
+                id = data.id, note = data.note,
+                tile = StatusBarTile.forNumber(data.tileNumber)
             )
         }
 

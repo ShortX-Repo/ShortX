@@ -68,4 +68,6 @@ val allFactClasses = listOf(
 
     Fact.OnStartOp::class,
     Fact.OnFinishOp::class,
+
+    Fact.OnQSTileClick::class,
 )

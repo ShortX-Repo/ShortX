@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
@@ -547,6 +548,16 @@ sealed interface Fact {
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList(),
         val codes: List<Int>
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class OnQSTileClick(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+        val tile: StatusBarTile
     ) : Fact {
         override fun clone(id: String, note: String): Fact {
             return copy(id = id, note = note)

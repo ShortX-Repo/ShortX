@@ -173,6 +173,29 @@ fun TipRow(
 }
 
 @Composable
+fun LinkText(
+    text: String,
+    color: Color = Color.Unspecified,
+    onClick: () -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = color
+        )
+        SmallSpacer()
+        ColoredIcon(onClick = onClick, size = 24.dp, color = Color.Transparent) {
+            RemixIcon(modifier = Modifier.size(10.dp), remixName = Remix.Editor.link)
+        }
+    }
+}
+
+
+@Composable
 fun ErrorTipRow(text: String, color: Color = MaterialTheme.colorScheme.error) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         RemixIcon(

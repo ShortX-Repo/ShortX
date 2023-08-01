@@ -2,8 +2,10 @@ package tornaco.apps.shortx.ui.service.tile
 
 import android.os.Handler
 import android.os.Looper
+import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
@@ -36,6 +38,7 @@ abstract class GenericTileService : TileService() {
             val resName = Remix.allFlat[it.iconName]
             qsTile.icon = appRes.getIcon(resName)
             qsTile.updateTile()
+            qsTile.state = Tile.STATE_INACTIVE
         }
     }
 
@@ -56,7 +59,7 @@ abstract class GenericTileService : TileService() {
     override fun onClick() {
         super.onClick()
         logger.d("onClick: $tileIndex")
-        updateTile()
+        ShortXManagerNative.shortX?.onTileClick(tileIndex.number)
     }
 
 }

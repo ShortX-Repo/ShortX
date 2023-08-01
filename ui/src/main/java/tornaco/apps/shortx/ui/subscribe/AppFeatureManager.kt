@@ -53,6 +53,7 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Fact.TaskRemoved::class,
     Fact.AdvancedKeyEvent::class,
     Fact.FixedInPeriod::class,
+    Fact.OnQSTileClick::class,
 
     Condition.AppHasAudioFocus::class,
     Condition.RequireMobileDataEnabled::class,

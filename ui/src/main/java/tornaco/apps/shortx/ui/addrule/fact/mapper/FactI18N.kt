@@ -15,6 +15,8 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -176,6 +178,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.OnFinishOp::class -> {
             i18n["ui.fact.op.finish"] to null
+        }
+
+        Fact.OnQSTileClick::class -> {
+            i18n["ui.settings.sb.tile"] to null
         }
 
         else -> "N/A" to null
@@ -527,6 +533,15 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 i18N["ui.fact.op.finish"],
                 fact.codes.map { i18N[it.opsLabelKey()] }.distinct().joinToString()
             ).labelLinesFromAppsAndPkgSets(fact.apps, fact.pkgSets)
+        }
+
+        is Fact.OnQSTileClick -> {
+            listOf(
+                i18N["ui.settings.sb.tile"],
+                (shortXManager.getStatusBarTileSettingsByNumber(fact.tile.number)
+                    ?: defaultStatusBarTileSetting(fact.tile))
+                    .label
+            )
         }
     }
 }

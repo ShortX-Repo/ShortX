@@ -413,3 +413,10 @@ message OnFinishOp {
   string note = 99;
   string id = 100;
 }
+
+message OnQSTileClick {
+  int32 tileNumber = 1;
+
+  string note = 99;
+  string id = 100;
+}

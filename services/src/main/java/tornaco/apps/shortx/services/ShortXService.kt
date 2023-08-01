@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -47,8 +48,10 @@ import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.UserHandleUtils.userIdToUserHandle
 import tornaco.apps.shortx.core.util.powerManager
+import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
@@ -456,6 +459,20 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
             shortXContext.tile.unregisterStatusBarTileSettingsChangeListener(listener)
+        }
+
+        @SuppressLint("MissingPermission")
+        override fun onTileClick(tileNumber: Int) {
+            shortXContext.rule.publishFact(
+                reason = "onTileClick-$tileNumber",
+                fact = OnQSTileClick.newBuilder().setTileNumber(tileNumber).build(),
+                initialContextData = emptyMap()
+            )
+            if (OsUtils.isQOrAbove()) {
+                systemServiceScope.launchSafety {
+                    context.statusBarManager.collapsePanels()
+                }
+            }
         }
 
         override fun directExecuteRuleActions(ruleId: String) {

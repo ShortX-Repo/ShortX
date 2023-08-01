@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 enum class FactCategory(val i18NKey: String, val icon: String) {
     Apps("ui.action.category.app", Remix.System.apps_2_line),
     System("ui.action.system.settings", Remix.System.settings_2_line),
+    Misc("ui.action.misc", Remix.System.settings_2_line),
 }
 
 class FactSelectorDialogState<ARGS>(val onSelected: (Fact, ARGS?) -> Unit) {
@@ -131,6 +132,10 @@ private fun <ARGS> FactSelector(
 
                         FactCategoryTitle(FactCategory.System)
                         SystemFacts(subscribeState, setFact = setFact)
+                        StandardSpacer()
+
+                        FactCategoryTitle(FactCategory.Misc)
+                        MiscFacts(subscribeState, setFact = setFact)
                         StandardSpacer()
                     }
                 }

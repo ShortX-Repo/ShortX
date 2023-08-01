@@ -459,6 +459,9 @@ public interface IShortX extends android.os.IInterface
     @Override public void unregisterStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException
     {
     }
+    @Override public void onTileClick(int tileNumber) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1756,6 +1759,15 @@ public interface IShortX extends android.os.IInterface
           tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterStatusBarTileSettingsChangeListener(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_onTileClick:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          this.onTileClick(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -4333,6 +4345,25 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void onTileClick(int tileNumber) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(tileNumber);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onTileClick, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onTileClick(tileNumber);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -4451,6 +4482,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_updateStatusBarTileSetting = (android.os.IBinder.FIRST_CALL_TRANSACTION + 113);
     static final int TRANSACTION_registerStatusBarTileSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 114);
     static final int TRANSACTION_unregisterStatusBarTileSettingsChangeListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 115);
+    static final int TRANSACTION_onTileClick = (android.os.IBinder.FIRST_CALL_TRANSACTION + 116);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4634,4 +4666,5 @@ public interface IShortX extends android.os.IInterface
   public void updateStatusBarTileSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper tileSetting) throws android.os.RemoteException;
   public void registerStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException;
   public void unregisterStatusBarTileSettingsChangeListener(tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener listener) throws android.os.RemoteException;
+  public void onTileClick(int tileNumber) throws android.os.RemoteException;
 }

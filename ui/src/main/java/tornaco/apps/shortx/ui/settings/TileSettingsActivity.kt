@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 
 package tornaco.apps.shortx.ui.settings
 
@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,17 +34,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.InfoCard
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -53,6 +61,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.main.RuleUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -113,34 +122,55 @@ fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit) {
                         }
                     )
                 }) { paddingValues ->
-                Column(
-                    Modifier
+
+                val vm = hiltViewModel<TileSettingsViewModel>()
+                val state by vm.state.collectAsState()
+
+                DisposableEffectWithLifeCycle(
+                    onResume = {
+                        vm.loadState()
+                    }
+                )
+                val pullRefreshState = rememberPullRefreshState(state.isLoading, { vm.loadState() })
+
+                Box(
+                    modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(rememberScrollState())
+                        .pullRefresh(pullRefreshState)
                 ) {
-                    val vm = hiltViewModel<TileSettingsViewModel>()
-                    val state by vm.state.collectAsState()
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        state.tiles.forEach {
+                            TileItem(
+                                tile = it,
+                                usage = (state.usages[it.tile]) ?: emptyList(),
+                                onClick = { onTileClick(it.tile) },
+                                rename = { tile, newName ->
+                                    vm.rename(tile, newName)
+                                },
+                                setIcon = { tile, newName ->
+                                    vm.setIcon(tile, newName)
+                                })
+                        }
 
-                    state.tiles.forEach {
-                        TileItem(
-                            tile = it,
-                            onClick = { onTileClick(it.tile) },
-                            rename = { tile, newName ->
-                                vm.rename(tile, newName)
-                            },
-                            setIcon = { tile, newName ->
-                                vm.setIcon(tile, newName)
-                            })
+                        SectionSpacer()
+                        InfoCard(
+                            title = null,
+                            infos = listOf(LocalI18N.current["ui.settings.sb.tile.tip"])
+                        )
+
                     }
 
-                    SectionSpacer()
-                    InfoCard(
-                        title = null,
-                        infos = listOf(LocalI18N.current["ui.settings.sb.tile.tip"])
+                    PullRefreshIndicator(
+                        state.isLoading,
+                        pullRefreshState,
+                        Modifier.align(Alignment.TopCenter)
                     )
-
                 }
             }
         }
@@ -151,10 +181,13 @@ fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit) {
 @Composable
 private fun TileItem(
     tile: StatusBarTileSetting,
+    usage: List<RuleUM>,
     onClick: () -> Unit,
     rename: (StatusBarTile, String) -> Unit,
     setIcon: (StatusBarTile, String) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val renameDialogState =
         rememberTextInputState(title = LocalI18N.current["ui.common.rename"], message = null,
             onSelected = {
@@ -199,11 +232,20 @@ private fun TileItem(
 
                     Column(modifier = Modifier) {
                         Text(text = tile.label, style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            text = LocalI18N.current["ui.settings.sb.unused"],
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Red
-                        )
+
+                        if (usage.isEmpty()) {
+                            Text(
+                                text = LocalI18N.current["ui.settings.sb.unused"],
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+
+                        } else {
+                            usage.forEach {
+                                LinkText(text = LocalI18N.current["ui.settings.sb.used", mapOf("title" to it.title)]) {
+                                    AddRuleActivity.start(context, it.id)
+                                }
+                            }
+                        }
 
                     }
                 }

@@ -38,6 +38,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.OnFinishOp
+import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
@@ -384,6 +385,13 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 actual = OnFinishOpWrapper(actualN),
                 rule = OnFinishOpWrapper(ruleN)
             )
+        }
+
+        register(OnQSTileClick::class.java) { actual, rule ->
+            val actualN = (actual as OnQSTileClick)
+            val ruleN = (rule as OnQSTileClick)
+
+            actualN.tileNumber == ruleN.tileNumber
         }
 
         logger.i("Init complete.")

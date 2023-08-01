@@ -56,6 +56,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.MediaStoreInsert::class -> Remix.Media.landscape_line
         Fact.OnStartOp::class -> Remix.System.alarm_warning_line
         Fact.OnFinishOp::class -> Remix.System.check_line
+        Fact.OnQSTileClick::class -> Remix.Media.equalizer_fill
 
         else -> {
             Remix.Document.file_unknow_fill

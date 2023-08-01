@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
 import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.proto.fact.OnFinishOp
+import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.OnStartOp
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
@@ -360,6 +361,12 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
                     AppPkg.newBuilder().setPkgName(it.pkg.pkgName).setUserId(it.pkg.userId).build()
                 })
                 .addAllPkgSets(pkgSets.map { it.label })
+                .build()
+        }
+
+        is Fact.OnQSTileClick -> {
+            OnQSTileClick.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setTileNumber(tile.number)
                 .build()
         }
 

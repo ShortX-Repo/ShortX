@@ -129,6 +129,9 @@ private fun FactItem(
             handler.addFact(newFact.clone(id = currentFact.id, note = currentFact.note).apply {
                 composeLogger.d("systemFactSelectHandler: $this")
             })
+        },
+        miscFactSelectHandler { newFact ->
+            handler.addFact(newFact.clone(id = currentFact.id, note = currentFact.note))
         }
     )
 

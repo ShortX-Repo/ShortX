@@ -121,10 +121,6 @@ object ShowTextFieldDialog : Actor {
                 result = DialogAction.Positive
             }
 
-            dialogBuilder.setNegativeButton(android.R.string.cancel) { _, _ ->
-                result = DialogAction.Negative
-            }
-
             dialogBuilder.setOnDismissListener {
                 continuation.resume(result) {}
             }
