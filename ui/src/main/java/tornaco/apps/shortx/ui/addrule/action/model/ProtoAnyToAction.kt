@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import tornaco.apps.shortx.core.App
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.ShortXManager
+import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.common.GestureRecord
@@ -847,7 +848,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 adapter = data.adapter.let {
                     if (it is_ HttpRequestJsonMapAdapter::class.java) {
                         val ja = it unpack_ HttpRequestJsonMapAdapter::class.java
-                        HttpRequestAdapter.JsonMap(ja.expressionsList)
+                        HttpRequestAdapter.BodyJsonMap(ja.expressionsList)
+                    } else if (it is_ HttpRequestHeaderBodyJsonMapAdapter::class.java) {
+                        val ja = it unpack_ HttpRequestHeaderBodyJsonMapAdapter::class.java
+                        HttpRequestAdapter.HeaderBodyJsonMap(ja.expressionsList)
                     } else {
                         HttpRequestAdapter.Raw
                     }

@@ -36,7 +36,7 @@ class Logger(private val tag: String = "-") {
         logAdapter(
             Log.ERROR,
             fullTag,
-            "[${Thread.currentThread().name}] $any --- ${Log.getStackTraceString(throwable)}"
+            "[${Thread.currentThread().name}] $any --- ${throwable.stackTraceToString()}"
         )
     }
 }

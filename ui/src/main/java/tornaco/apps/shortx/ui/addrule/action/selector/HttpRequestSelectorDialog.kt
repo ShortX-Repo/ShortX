@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import android.R
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -81,17 +80,19 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.code.OutputDialog
 import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 internal enum class AdapterType {
-    Raw, Json
+    Raw, BodyJson, HeaderBodyJson
 }
 
 enum class HttpRequestBodyType(val label: String) {
@@ -108,16 +109,15 @@ class HttpRequestDialogState(
     internal var headers by mutableStateOf<List<HttpRequestHeader>>(emptyList())
 
     internal var requestBody by mutableStateOf(HttpRequestBodyType.None)
-    internal var requestBodyJson by mutableStateOf<String>(
+    internal var requestBodyJson by mutableStateOf(
         "{}"
     )
     internal var requestBodyForm by mutableStateOf<List<HttpRequestBodyFormItem>>(
         emptyList()
     )
 
-    internal var expressionInput by mutableStateOf("")
     internal var expressions by mutableStateOf(listOf<String>())
-    internal var adapter by mutableStateOf(AdapterType.Raw)
+    internal var responseAdapter by mutableStateOf(AdapterType.Raw)
 
     internal var isTesting by mutableStateOf(false)
 
@@ -133,10 +133,18 @@ class HttpRequestDialogState(
             } else {
                 ProtoAny.getDefaultInstance()
             },
-            adapter = if (this.adapter == AdapterType.Json) {
-                HttpRequestAdapter.JsonMap(expressions = this.expressions)
-            } else {
-                HttpRequestAdapter.Raw
+            adapter = when (this.responseAdapter) {
+                AdapterType.BodyJson -> {
+                    HttpRequestAdapter.BodyJsonMap(expressions = this.expressions)
+                }
+
+                AdapterType.HeaderBodyJson -> {
+                    HttpRequestAdapter.HeaderBodyJsonMap(expressions = this.expressions)
+                }
+
+                else -> {
+                    HttpRequestAdapter.Raw
+                }
             }
         )
 
@@ -144,6 +152,7 @@ class HttpRequestDialogState(
         this.url = currentAction?.url ?: ""
         this.method = currentAction?.method ?: HttpRequestMethod.GET
         this.headers = currentAction?.headers ?: emptyList()
+
         currentAction?.requestBody?.let {
             if (it is_ HttpRequestBodyJson::class.java) {
                 val bodyJson = it unpack_ HttpRequestBodyJson::class.java
@@ -160,16 +169,27 @@ class HttpRequestDialogState(
             }
         } ?: HttpRequestBodyType.None
 
-        this.expressionInput = ""
         this.expressions = currentAction?.let {
-            if (it.adapter is HttpRequestAdapter.JsonMap) {
-                it.adapter.expressions
-            } else {
-                emptyList()
+            when (it.adapter) {
+                is HttpRequestAdapter.BodyJsonMap -> {
+                    it.adapter.expressions
+                }
+
+                is HttpRequestAdapter.HeaderBodyJsonMap -> {
+                    it.adapter.expressions
+                }
+
+                else -> {
+                    emptyList()
+                }
             }
         } ?: emptyList()
-        this.adapter = currentAction?.let {
-            if (it.adapter is HttpRequestAdapter.JsonMap) AdapterType.Json else AdapterType.Raw
+        this.responseAdapter = currentAction?.let {
+            when (it.adapter) {
+                is HttpRequestAdapter.BodyJsonMap -> AdapterType.BodyJson
+                is HttpRequestAdapter.HeaderBodyJsonMap -> AdapterType.HeaderBodyJson
+                else -> AdapterType.Raw
+            }
         } ?: AdapterType.Raw
 
         show()
@@ -208,10 +228,6 @@ class HttpRequestDialogState(
         this.expressions = this.expressions.toMutableList().apply {
             removeAt(expression)
         }
-    }
-
-    fun inputExpression(expression: String) {
-        this.expressionInput = expression
     }
 
     fun setRequestBodyType(bodyType: HttpRequestBodyType) {
@@ -406,13 +422,18 @@ private fun ColumnScope.ResponseAdapter(
                         summary = LocalI18N.current["ui.action.http.request.raw.summary"]
                     ),
                     MenuDialogItem(
-                        id = AdapterType.Json.name,
+                        id = AdapterType.BodyJson.name,
                         title = LocalI18N.current["ui.action.http.request.json"],
                         summary = LocalI18N.current["ui.action.http.request.json.summary"],
                     ),
+                    MenuDialogItem(
+                        id = AdapterType.HeaderBodyJson.name,
+                        title = LocalI18N.current["ui.action.http.request.json.header.body"],
+                        summary = LocalI18N.current["ui.action.http.request.json.summary.header.body"],
+                    ),
                 ),
                 onItemSelected = { data, id ->
-                    dialogState.adapter = AdapterType.valueOf(id)
+                    dialogState.responseAdapter = AdapterType.valueOf(id)
                 }
             )
         MenuDialog(state = adapterSelectorState)
@@ -420,11 +441,19 @@ private fun ColumnScope.ResponseAdapter(
             adapterSelectorState.show()
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = dialogState.adapter.let {
-                    if (it == AdapterType.Raw) {
-                        LocalI18N.current["ui.action.http.request.raw"]
-                    } else {
-                        LocalI18N.current["ui.action.http.request.json"]
+                Text(text = dialogState.responseAdapter.let {
+                    when (it) {
+                        AdapterType.Raw -> {
+                            LocalI18N.current["ui.action.http.request.raw"]
+                        }
+
+                        AdapterType.HeaderBodyJson -> {
+                            LocalI18N.current["ui.action.http.request.json.header.body"]
+                        }
+
+                        AdapterType.BodyJson -> {
+                            LocalI18N.current["ui.action.http.request.json"]
+                        }
                     }
                 })
                 StandardSpacer()
@@ -436,7 +465,7 @@ private fun ColumnScope.ResponseAdapter(
 
     StandardSpacer()
 
-    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Raw) {
+    AnimatedVisibility(visible = dialogState.responseAdapter == AdapterType.Raw) {
         val contextDataKey =
             "{${ContextDataMapping.HttpRequest.httpRequestRet.name}}"
         ListItem(
@@ -458,7 +487,10 @@ private fun ColumnScope.ResponseAdapter(
         )
     }
 
-    AnimatedVisibility(visible = dialogState.adapter == AdapterType.Json) {
+    AnimatedVisibility(
+        visible = dialogState.responseAdapter == AdapterType.BodyJson
+                || dialogState.responseAdapter == AdapterType.HeaderBodyJson
+    ) {
         Column {
             TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
             StandardSpacer()
@@ -468,31 +500,23 @@ private fun ColumnScope.ResponseAdapter(
                 }
             }
             StandardSpacer()
-            ShortXTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = dialogState.expressionInput,
-                onValueChange = {
-                    dialogState.inputExpression(it)
-                },
-                label = {
-                    Text(text = LocalI18N.current["ui.action.http.request.json.expression"])
-                },
-                trailingIcon = {
-                    Button(
-                        onClick = {
-                            if (dialogState.expressionInput.isNotBlank()) {
-                                dialogState.addExpression(dialogState.expressionInput)
-                            }
-                        }) {
-                        RemixIcon(
-                            remixName = Remix.System.add_fill,
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                },
-                showSymbolButton = false
-            )
 
+            val mvelInputState = rememberTextInputState(
+                title = LocalI18N.current["ui.action.http.request.json.expression"],
+                message = null,
+                onSelected = {
+                    if (it.isNotBlank()) {
+                        dialogState.addExpression(it)
+                    }
+                })
+            TextInputDialog(state = mvelInputState)
+            Button(
+                modifier = Modifier,
+                onClick = {
+                    mvelInputState.show()
+                }) {
+                Text(text = "Add MVEL")
+            }
         }
     }
 }
@@ -539,52 +563,26 @@ private fun Headers(dialogState: HttpRequestDialogState) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        var keyInput by remember {
-            mutableStateOf("")
-        }
-        var valueInput by remember {
-            mutableStateOf("")
-        }
-        ShortXTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = keyInput,
-            onValueChange = {
-                keyInput = it
-            },
-            label = {
-                Text(text = "Key")
-            },
-            showSymbolButton = false
-        )
-        StandardSpacer()
-        ShortXTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = valueInput,
-            onValueChange = {
-                valueInput = it
-            },
-            label = {
-                Text(text = "Value")
-            },
-            showSymbolButton = false
-        )
-        StandardSpacer()
         Button(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier,
             onClick = {
-                if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
-                    dialogState.addHeader(
-                        HttpRequestHeader.newBuilder()
-                            .setKey(keyInput)
-                            .setValue(valueInput)
-                            .build()
-                    )
-                    keyInput = ""
-                    valueInput = ""
-                }
+                httpDialogState.show(
+                    key = "",
+                    value = "",
+                    callback = {
+                        if (it.first.isNotEmpty()) {
+                            dialogState.addHeader(
+                                HttpRequestHeader.newBuilder()
+                                    .setKey(it.first)
+                                    .setValue(it.second)
+                                    .build()
+                            )
+                        }
+
+                    }
+                )
             }) {
-            Text(text = "Add header")
+            Text(text = "Add Header")
         }
     }
 }
@@ -796,7 +794,7 @@ fun HttpHeaderEditDialog(state: HttpHeaderEditDialogState) {
                     state.dismiss()
                 }
             }) {
-                Text(text = stringResource(id = R.string.ok))
+                Text(text = stringResource(id = android.R.string.ok))
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {

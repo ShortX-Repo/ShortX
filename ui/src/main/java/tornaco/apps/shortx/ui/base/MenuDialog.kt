@@ -19,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.ui.util.BrowserUtils
 
 @Composable
 fun <T> MenuDialog(
@@ -76,6 +78,7 @@ private fun ItemContent(
     customAction: (Pair<String, () -> Unit>)? = null,
     onClick: () -> Unit,
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,11 +112,16 @@ private fun ItemContent(
                 summary?.let {
                     Column {
                         TinySpacer()
-                        Text(
-                            text = summary,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                            maxLines = 3,
-                            color = textColor ?: Color.Unspecified
+                        MarkdownText(
+                            markdown = summary,
+                            fontSize = 12.sp,
+                            color = textColor ?: Color.Unspecified,
+                            onLinkClicked = {
+                                BrowserUtils.launch(context, it)
+                            },
+                            onClick = {
+                                onClick()
+                            }
                         )
                     }
                 }

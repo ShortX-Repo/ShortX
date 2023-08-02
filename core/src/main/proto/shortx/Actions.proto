@@ -639,6 +639,10 @@ message HttpRequestJsonMapAdapter {
   repeated string expressions = 1;
 }
 
+message HttpRequestHeaderBodyJsonMapAdapter {
+  repeated string expressions = 1;
+}
+
 message HttpRequestRawAdapter {}
 
 message InjectKeyCode {

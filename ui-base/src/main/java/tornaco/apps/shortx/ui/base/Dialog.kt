@@ -172,7 +172,6 @@ fun ShortXDialog(
             color = AlertDialogDefaults.containerColor,
             tonalElevation = AlertDialogDefaults.TonalElevation
         ) {
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

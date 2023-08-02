@@ -36,7 +36,7 @@ object ContextDataMapping {
 
     @DoNotStrip
     enum class HttpRequest(val description: String) {
-        httpRequestRet("The return value of the Http request")
+        httpRequestRet("The return value of the Http request, as String")
     }
 
     @DoNotStrip

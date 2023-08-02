@@ -54,7 +54,8 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -358,14 +359,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     shortXContext.rule.getAllGlobalVars()
                 }
             val requestBody =
-                data.requestBody.toHttpRequestBody(
+                data.requestBody.toHttpResponseBody(
                     ContextData.obtain(),
                     localVars
                 ) {
                     shortXContext.rule.getAllGlobalVars()
                 }
             return kotlin.runCatching {
-                tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleUrl(
+                tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.callUrl(
                     url = url,
                     method = data.method.name,
                     headers = data.headersList.associate {
@@ -374,8 +375,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                             .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
                     },
                     requestBody = requestBody,
-                    adapter = data.adapter
-                )
+                ).let {
+                    handleResponseBody(it, data.adapter)
+                }
             }.getOrElse {
                 listOf(Log.getStackTraceString(it))
             }

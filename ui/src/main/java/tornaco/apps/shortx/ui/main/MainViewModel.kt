@@ -405,8 +405,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 }
                 val rules = shortXManager.getAllRules()
                     .let(sort(state.value.ruleSortBy))
-                    .map { rule ->
-                        ruleToRuleUM(rule, activeJobs)
+                    .mapNotNull { rule ->
+                        runCatching {
+                            ruleToRuleUM(rule, activeJobs)
+                        }.getOrElse {
+                            logger.e(it, "ruleToRuleUM")
+                            null
+                        }
                     }
                 updateState {
                     copy(rules = rules, isLoading = false)
@@ -439,8 +444,13 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 }
                 val das = shortXManager.getAllDirectAction()
                     .sortedByDescending { it.createTime }
-                    .map { directAction ->
-                        daToDirectActionUM(directAction, activeJobs)
+                    .mapNotNull { directAction ->
+                        runCatching {
+                            daToDirectActionUM(directAction, activeJobs)
+                        }.getOrElse {
+                            logger.e(it, "daToDirectActionUM")
+                            null
+                        }
                     }
                 updateState {
                     copy(das = das, isLoading = false)

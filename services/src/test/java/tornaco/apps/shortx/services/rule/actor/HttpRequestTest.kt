@@ -5,13 +5,16 @@ import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
-import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpRequestBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
+import tornaco.apps.shortx.services.rule.actor.impl.fixSpecialLetters
 
 class HttpRequestTest {
     @Before
@@ -23,43 +26,93 @@ class HttpRequestTest {
 
     @Test
     fun testJsonAdapter() {
-        val res = HttpRequest.handleUrl(
+        val res = HttpRequest.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/profiles/forceidle.json",
             method = "GET",
             headers = emptyMap(),
             requestBody = null,
-            adapter = HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
-                .build()
-                .pack_(),
-        )
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
+                    .build()
+                    .pack_()
+            )
+        }
         Assert.assertEquals(listOf("countrysideboy"), res)
     }
 
     @Test
+    fun testJsonAdapterWithHeaderAndBody() {
+        val res = HttpRequest.callUrl(
+            url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/profiles/forceidle.json",
+            method = "GET",
+            headers = emptyMap(),
+            requestBody = null,
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
+                    .addAllExpressions(listOf("headers.content-type"))
+                    .build()
+                    .pack_()
+            )
+        }
+        // content-type: text/plain; charset=utf-8
+        Assert.assertEquals(listOf("text/plain; charset=utf-8"), res)
+    }
+
+    @Test
     fun testJsonAdapter2() {
-        val res = HttpRequest.handleUrl(
+        val res = HttpRequest.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "GET",
             headers = emptyMap(),
             requestBody = null,
-            adapter = HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("colors.red"))
-                .build()
-                .pack_(),
-        )
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("colors.red"))
+                    .build()
+                    .pack_()
+            )
+        }
+        Assert.assertEquals(listOf("#FF5252"), res)
+    }
+
+    @Test
+    fun testJsonAdapterWithHeaderAndBody2() {
+        val res = HttpRequest.callUrl(
+            url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
+            method = "GET",
+            headers = emptyMap(),
+            requestBody = null,
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
+                    .addAllExpressions(listOf("body.colors.red"))
+                    .build()
+                    .pack_()
+            )
+        }
         Assert.assertEquals(listOf("#FF5252"), res)
     }
 
     @Test
     fun testRawAdapter() {
-        val res = HttpRequest.handleUrl(
+        val res = HttpRequest.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "GET",
             headers = emptyMap(),
             requestBody = null,
-            adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
-        )
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestRawAdapter.newBuilder().build().pack_()
+            )
+        }
         Assert.assertEquals(
-            res,
             listOf(
                 """
             {
@@ -84,13 +137,14 @@ class HttpRequestTest {
                 }
             }
         """.trimIndent()
-            )
+            ),
+            res,
         )
     }
 
     @Test
     fun testRequestBody() {
-        val res = HttpRequest.handleUrl(
+        val res = HttpRequest.callUrl(
             url = "https://raw.githubusercontent.com/Tornaco/Thanox/master/files/profile/tag.json",
             method = "POST",
             headers = mapOf("name" to "Nick"),
@@ -101,10 +155,23 @@ class HttpRequestTest {
                 }
             """.trimIndent()
             ).build().pack_()
-                .toHttpRequestBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
-            adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
-        )
+                .toHttpResponseBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
+        ).let {
+            handleResponseBody(
+                it,
+                HttpRequestRawAdapter.newBuilder().build().pack_()
+            )
+        }
 
         println(res)
+    }
+
+    @Test
+    fun testFixExpressions() {
+        Assert.assertEquals("name_1", "name-1".fixSpecialLetters())
+        Assert.assertEquals("name__1", "name--1".fixSpecialLetters())
+        Assert.assertEquals("name__1_2", "name--1-2".fixSpecialLetters())
+        Assert.assertEquals("name_1", "name 1".fixSpecialLetters())
+        Assert.assertEquals("name__1", "name  1".fixSpecialLetters())
     }
 }

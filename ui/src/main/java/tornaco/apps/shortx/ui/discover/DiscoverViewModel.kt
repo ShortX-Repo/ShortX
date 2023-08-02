@@ -173,13 +173,23 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         kotlin.runCatching {
             val content = BackupAgent(context).readBackupPackageContent(assetName)
             val daUMs = withContext(Dispatchers.IO) {
-                content.das.map { directAction ->
-                    daToDirectActionUM(directAction, emptyList())
+                content.das.mapNotNull { directAction ->
+                    runCatching {
+                        daToDirectActionUM(directAction, emptyList())
+                    }.getOrElse {
+                        logger.e(it, "daToDirectActionUM")
+                        null
+                    }
                 }
             }
             val ruleUMs = withContext(Dispatchers.IO) {
-                content.rules.map {
-                    ruleToRuleUM(it, emptyList())
+                content.rules.mapNotNull {
+                    runCatching {
+                        ruleToRuleUM(it, emptyList())
+                    }.getOrElse {
+                        logger.e(it, "ruleToRuleUM")
+                        null
+                    }
                 }
             }
             updateState { copy(data = LoadState.Success(DiscoverData(ruleUMs, daUMs))) }
