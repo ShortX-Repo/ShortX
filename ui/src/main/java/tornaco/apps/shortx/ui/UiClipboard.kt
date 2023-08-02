@@ -2,7 +2,9 @@
 
 package tornaco.apps.shortx.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +43,9 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import java.util.UUID
 
 
 object UiClipboard {
@@ -51,17 +54,17 @@ object UiClipboard {
 
         data class ActionContent(
             val action: Action,
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = action.id
         ) : ClipboardContent
 
         data class ConditionContent(
             val condition: Condition,
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = condition.id
         ) : ClipboardContent
 
         data class FactContent(
             val fact: Fact,
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = fact.id
         ) : ClipboardContent
     }
 
@@ -91,15 +94,30 @@ class ClipboardDialogState : CommonDialogState() {
     var all by mutableStateOf<List<UiClipboard.ClipboardContent>>(emptyList())
     var onSelected: (List<UiClipboard.ClipboardContent>) -> Unit = {}
 
+    var selections: List<UiClipboard.ClipboardContent> by mutableStateOf(emptyList())
+
     fun show(onSelected: (List<UiClipboard.ClipboardContent>) -> Unit) {
         all = UiClipboard.all
         this.onSelected = onSelected
+        this.selections = emptyList()
         show()
     }
 
     override fun dismiss() {
         super.dismiss()
         this.onSelected = {}
+    }
+
+    fun select(content: UiClipboard.ClipboardContent) {
+        this.selections = this.selections.toMutableList().apply {
+            add(content)
+        }
+    }
+
+    fun unSelect(content: UiClipboard.ClipboardContent) {
+        this.selections = this.selections.toMutableList().apply {
+            remove(content)
+        }
     }
 
     fun remove(id: String) {
@@ -152,10 +170,13 @@ fun ClipboardDialog(
                                     }
                                 },
                                 actions = {
-                                    IconButton(onClick = {
-                                        state.removeAll()
-                                    }) {
-                                        RemixIcon(remixName = Remix.System.delete_bin_4_line)
+                                    AnimatedVisibility(visible = state.selections.isNotEmpty()) {
+                                        TextButton(onClick = {
+                                            state.onSelected(state.selections)
+                                            state.dismiss()
+                                        }) {
+                                            Text(LocalI18N.current["ui.common.done"] + " ${state.selections.size}")
+                                        }
                                     }
                                 },
                             )
@@ -176,22 +197,30 @@ fun ClipboardDialog(
                                 .fillMaxSize()
                                 .padding(paddingValues)
                         ) {
-                            if (facts.isNotEmpty()) stickyHeader {
-                                FieldTitle(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = LocalI18N.current["ui.fact.title"]
-                                )
+                            if (facts.isNotEmpty()) {
+                                stickyHeader {
+                                    FieldTitle(
+                                        modifier = Modifier.padding(16.dp),
+                                        text = LocalI18N.current["ui.fact.title"]
+                                    )
+                                }
                             }
                             items(facts) {
                                 val fact = it.fact
                                 ListItem(
-                                    modifier = Modifier,
+                                    modifier = Modifier.thenIf(
+                                        Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                                        state.selections.contains(it)
+                                    ),
                                     titleLines = mutableListOf<String>().apply {
                                         addAll(labelForFact(fact = fact))
                                     },
                                     onClick = {
-                                        state.onSelected(listOf(it))
-                                        state.dismiss()
+                                        if (state.selections.contains(it)) {
+                                            state.unSelect(it)
+                                        } else {
+                                            state.select(it)
+                                        }
                                     },
                                     icon = {
                                         FactIcon(fact)
@@ -204,15 +233,21 @@ fun ClipboardDialog(
                                 )
                             }
 
-                            if (conditions.isNotEmpty()) stickyHeader {
-                                FieldTitle(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = LocalI18N.current["ui.conditions.title"]
-                                )
+                            if (conditions.isNotEmpty()) {
+                                stickyHeader {
+                                    FieldTitle(
+                                        modifier = Modifier.padding(16.dp),
+                                        text = LocalI18N.current["ui.conditions.title"]
+                                    )
+                                }
                             }
                             items(conditions) {
                                 val condition = it.condition
                                 ListItem(
+                                    modifier = Modifier.thenIf(
+                                        Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                                        state.selections.contains(it)
+                                    ),
                                     titleLines = mutableListOf<String>().apply {
                                         addAll(labelForCondition(condition = condition))
                                     },
@@ -225,21 +260,29 @@ fun ClipboardDialog(
                                         }
                                     },
                                     onClick = {
-                                        state.onSelected(listOf(it))
-                                        state.dismiss()
+                                        if (state.selections.contains(it)) {
+                                            state.unSelect(it)
+                                        } else {
+                                            state.select(it)
+                                        }
                                     })
                             }
 
-                            if (actions.isNotEmpty()) stickyHeader {
-                                FieldTitle(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = LocalI18N.current["ui.actions.title"]
-                                )
+                            if (actions.isNotEmpty()) {
+                                stickyHeader {
+                                    FieldTitle(
+                                        modifier = Modifier.padding(16.dp),
+                                        text = LocalI18N.current["ui.actions.title"]
+                                    )
+                                }
                             }
                             items(actions) {
                                 val action = it.action
                                 ListItem(
-                                    modifier = Modifier,
+                                    modifier = Modifier.thenIf(
+                                        Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                                        state.selections.contains(it)
+                                    ),
                                     titleLines = mutableListOf<String>().apply {
                                         addAll(labelLinesForAction(action = action))
                                         onDebugBuild { add(action.id) }
@@ -256,8 +299,11 @@ fun ClipboardDialog(
                                         }
                                     },
                                     onClick = {
-                                        state.onSelected(listOf(it))
-                                        state.dismiss()
+                                        if (state.selections.contains(it)) {
+                                            state.unSelect(it)
+                                        } else {
+                                            state.select(it)
+                                        }
                                     }
                                 )
                             }
