@@ -26,7 +26,6 @@ import android.bluetooth.BluetoothHearingAid;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.media.AudioManager;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +51,6 @@ public class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> 
     private final AudioManager mAudioManager;
     private final BluetoothDevice mDevice;
     //TODO: consider remove, BluetoothDevice.getName() is already cached
-    private String mName;
     private long mHiSyncId;
     // Need this since there is no method for getting RSSI
     private short mRssi;
@@ -200,7 +198,6 @@ public class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> 
 
     // TODO: do any of these need to run async on a background thread?
     private void fillData() {
-        fetchName();
         fetchBtClass();
         fetchActiveDevices();
         dispatchAttributesChanged();
@@ -221,21 +218,11 @@ public class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> 
     }
 
     public String getName() {
-        return mName;
+        return tryGetAliasName(mDevice);
     }
 
     void refreshName() {
-        fetchName();
         dispatchAttributesChanged();
-    }
-
-    private void fetchName() {
-        mName = tryGetAliasName(mDevice);
-
-        if (TextUtils.isEmpty(mName)) {
-            mName = mDevice.getAddress();
-            LOGGER.d("Device has no name (yet), use address: " + mName);
-        }
     }
 
     /**
@@ -498,7 +485,7 @@ public class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> 
         if (comparison != 0) return comparison;
 
         // Fallback on name
-        return mName.compareTo(another.mName);
+        return getName().compareTo(another.getName());
     }
 
     public interface Callback {
