@@ -52,6 +52,7 @@ import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.FabState
@@ -78,6 +79,7 @@ import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -105,6 +107,9 @@ fun MainScaffold(
         })
     TextInputDialog(state = urlInputState)
 
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
     val fabState = rememberFabState(
         onCollapsed = {
             enableFabMask = false
@@ -119,7 +124,9 @@ fun MainScaffold(
                 }
 
                 "file" -> {
-                    onFileClick()
+                    state.isSubscribed.select({
+                        onFileClick()
+                    }, { subscribeDialogState.show() })
                 }
 
                 "new" -> {
@@ -127,7 +134,9 @@ fun MainScaffold(
                 }
 
                 "url" -> {
-                    urlInputState.show()
+                    state.isSubscribed.select({
+                        urlInputState.show()
+                    }, { subscribeDialogState.show() })
                 }
             }
         })

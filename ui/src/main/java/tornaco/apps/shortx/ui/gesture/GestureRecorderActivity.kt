@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -48,6 +49,7 @@ class GestureRecorderActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
+        require(isLVLChecked(this))
         ShortXTheme {
             var startRecord by remember {
                 mutableStateOf(false)
