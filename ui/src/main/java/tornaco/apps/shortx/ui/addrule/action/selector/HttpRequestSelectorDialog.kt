@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +58,6 @@ import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
@@ -75,7 +72,6 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
-import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
@@ -240,6 +236,12 @@ class HttpRequestDialogState(
     fun addForm(item: HttpRequestBodyFormItem) {
         this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
             add(item)
+        }
+    }
+
+    fun addForm(item: HttpRequestBodyFormItem, index: Int) {
+        this.requestBodyForm = this.requestBodyForm.toMutableList().apply {
+            add(index, item)
         }
     }
 
@@ -526,8 +528,8 @@ private fun Headers(dialogState: HttpRequestDialogState) {
     FieldTitle(text = "Headers (Optional)")
     SmallSpacer()
 
-    val httpDialogState = rememberHttpHeaderEditDialogState()
-    HttpHeaderEditDialog(state = httpDialogState)
+    val headerDialogState = rememberKeyValueEditDialogState("Header")
+    KeyValueEditDialog(state = headerDialogState)
 
     dialogState.headers.forEachIndexed { index, it ->
         val updateIndex = rememberUpdatedState(newValue = index)
@@ -545,7 +547,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
                 }
             },
             onClick = {
-                httpDialogState.show(
+                headerDialogState.show(
                     key = updateItem.value.key,
                     value = updateItem.value.value,
                     callback = {
@@ -566,7 +568,7 @@ private fun Headers(dialogState: HttpRequestDialogState) {
         Button(
             modifier = Modifier,
             onClick = {
-                httpDialogState.show(
+                headerDialogState.show(
                     key = "",
                     value = "",
                     callback = {
@@ -692,8 +694,13 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
     }
 
     AnimatedVisibility(visible = dialogState.requestBody == HttpRequestBodyType.Form) {
+        val itemDialogState = rememberKeyValueEditDialogState("Form item")
+        KeyValueEditDialog(state = itemDialogState)
+
         Column {
             dialogState.requestBodyForm.forEachIndexed { index, it ->
+                val updateItem = rememberUpdatedState(newValue = it)
+                val updateIndex = rememberUpdatedState(newValue = index)
                 ListItem(titleLines = listOf(it.key, it.value),
                     icon = {
                         RemixIcon(remixName = Remix.Logos.flickr_line)
@@ -704,124 +711,47 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
                         }) {
                             RemixIcon(remixName = Remix.System.close_line)
                         }
+                    },
+                    onClick = {
+                        itemDialogState.show(
+                            key = updateItem.value.key,
+                            value = updateItem.value.value,
+                            callback = {
+                                dialogState.removeForm(index)
+                                dialogState.addForm(
+                                    HttpRequestBodyFormItem.newBuilder()
+                                        .setKey(it.first)
+                                        .setValue(it.second)
+                                        .build(),
+                                    updateIndex.value
+                                )
+                            })
                     })
             }
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                var keyInput by remember {
-                    mutableStateOf("")
-                }
-                var valueInput by remember {
-                    mutableStateOf("")
-                }
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = keyInput,
-                    onValueChange = {
-                        keyInput = it
-                    },
-                    label = {
-                        Text(text = "Key")
-                    },
-                    showSymbolButton = false
-                )
-                SmallSpacer()
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = valueInput,
-                    onValueChange = {
-                        valueInput = it
-                    },
-                    label = {
-                        Text(text = "Value")
-                    },
-                    showSymbolButton = false
-                )
-                SmallSpacer()
-                FilledTonalButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                Button(
+                    modifier = Modifier,
                     onClick = {
-                        if (keyInput.isNotEmpty() && valueInput.isNotEmpty()) {
-                            dialogState.addForm(
-                                HttpRequestBodyFormItem.newBuilder()
-                                    .setKey(keyInput)
-                                    .setValue(valueInput)
-                                    .build()
-                            )
-                        }
+                        itemDialogState.show(
+                            key = "",
+                            value = "",
+                            callback = {
+                                dialogState.addForm(
+                                    HttpRequestBodyFormItem.newBuilder()
+                                        .setKey(it.first)
+                                        .setValue(it.second)
+                                        .build()
+                                )
+                            })
                     }) {
-                    Text(text = "Add form item")
+                    Text(text = "Add Form item")
                 }
             }
         }
     }
 }
 
-class HttpHeaderEditDialogState : CommonDialogState() {
-    var key: String by mutableStateOf("")
-    var value: String by mutableStateOf("")
-
-    var callback: (Pair<String, String>) -> Unit = {}
-
-    fun show(key: String, value: String, callback: (Pair<String, String>) -> Unit) {
-        this.key = key
-        this.value = value
-        this.callback = callback
-
-        show()
-    }
-}
-
-@Composable
-fun rememberHttpHeaderEditDialogState(): HttpHeaderEditDialogState {
-    return remember {
-        HttpHeaderEditDialogState()
-    }
-}
 
 
-@Composable
-fun HttpHeaderEditDialog(state: HttpHeaderEditDialogState) {
-    if (state.isShowing) {
-        ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = "Header")
-        }, buttons = {
-            TextButton(onClick = {
-                if (state.key.isNotEmpty()) {
-                    state.callback(state.key to state.value)
-                    state.dismiss()
-                }
-            }) {
-                Text(text = stringResource(id = android.R.string.ok))
-            }
-        }, content = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.key,
-                    onValueChange = {
-                        state.key = it
-                    },
-                    label = {
-                        Text(text = "Key")
-                    },
-                    showSymbolButton = false
-                )
-                StandardSpacer()
-                ShortXTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.value,
-                    onValueChange = {
-                        state.value = it
-                    },
-                    label = {
-                        Text(text = "Value")
-                    },
-                    showSymbolButton = false
-                )
-            }
-        })
-    }
-}
