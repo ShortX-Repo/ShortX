@@ -17,7 +17,7 @@ class ActorTest {
     @Test
     fun `should handle all proto actions`() {
         val allActionNames = OuterActions.getDescriptor().messageTypes.map { it.name }.filter {
-            "HttpRequestJsonMapAdapter" != it && "HttpRequestRawAdapter" != it && "DialogMenuItem" != it
+            "HttpRequestHeaderBodyJsonMapAdapter" != it && "HttpRequestJsonMapAdapter" != it && "HttpRequestRawAdapter" != it && "DialogMenuItem" != it
         }
 
         allActionNames.forEach { actionProtoName ->
