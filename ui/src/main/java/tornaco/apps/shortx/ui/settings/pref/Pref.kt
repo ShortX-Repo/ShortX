@@ -31,6 +31,9 @@ private val RECENT_SELECTED_ACTIONS = stringPreferencesKey("recent_selected_acti
 private val UI_SHOW_DETAILED_DA_ITEM_CONTENT =
     booleanPreferencesKey("ui_show_detailed_da_item_content")
 
+private val UI_HIDE_SUBSCRIBE_INFO =
+    booleanPreferencesKey("ui_hide_subscribe_info")
+
 private val UI_ENABLE_HTTP_CHUCKER =
     booleanPreferencesKey("ui_enable_http_chucker")
 
@@ -45,6 +48,10 @@ class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
         private val logger = Logger("Pref")
+    }
+
+    val hideSubscribeInfoFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[UI_HIDE_SUBSCRIBE_INFO] ?: false
     }
 
     val installFakeServiceFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -92,6 +99,11 @@ class Pref(val context: Context) {
             }.toSet()
         }
 
+    suspend fun hideSubscribeInfo() {
+        context.dataStore.edit {
+            it[UI_HIDE_SUBSCRIBE_INFO] = true
+        }
+    }
 
     suspend fun setInstallFakeService(value: Boolean) {
         context.dataStore.edit { settings ->

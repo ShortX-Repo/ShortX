@@ -107,6 +107,7 @@ data class DirectActionUM(
 
 data class MainState(
     val isSubscribed: Boolean = false,
+    val isHideSubscribeInfo: Boolean = false,
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
     val isIgnoreFrameworkUpdate: Boolean = false,
@@ -374,6 +375,12 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                 logger.d("reload data since data restored")
                 loadRules()
                 loadDA()
+            }
+        }
+
+        viewModelScope.launch {
+            pref.hideSubscribeInfoFlow.collectLatest {
+                updateState { copy(isHideSubscribeInfo = it) }
             }
         }
     }

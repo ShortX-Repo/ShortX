@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,6 +77,7 @@ import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
+import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -225,7 +227,10 @@ fun MainScaffold(
             ) {
                 val context = LocalContext.current
 
-                AnimatedVisibility(visible = state.isSubscribed.not()) {
+                AnimatedVisibility(
+                    visible = !state.isSubscribed
+                            && !state.isHideSubscribeInfo
+                ) {
                     Card(
                         modifier = Modifier
                             .padding(16.dp),
@@ -247,6 +252,20 @@ fun MainScaffold(
                                 Text(
                                     LocalI18N.current["ui.subscription.intro.message"],
                                 )
+                            }
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                val scope = rememberCoroutineScope()
+                                TextButton(onClick = {
+                                    scope.launch {
+                                        Pref(context).hideSubscribeInfo()
+                                    }
+                                }) {
+                                    Text(text = stringResource(id = android.R.string.ok))
+                                }
                             }
                         }
                     }

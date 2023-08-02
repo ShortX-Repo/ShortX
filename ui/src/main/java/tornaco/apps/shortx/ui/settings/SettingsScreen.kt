@@ -352,9 +352,8 @@ private fun generalSettings(
         Preference.TextPreference(icon = Remix.System.apps_fill,
             title = LocalI18N.current["ui.pkg.set.title"],
             summary = LocalI18N.current["ui.pkg.set.desc"],
-            badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToPkgSetList() }, { subscribeDialogState.show() })
+                goToPkgSetList()
             }
         ),
 
