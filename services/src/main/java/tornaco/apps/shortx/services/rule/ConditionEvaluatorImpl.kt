@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -38,7 +37,7 @@ class ConditionEvaluatorImpl(
             ConditionEvaluator.EvaluateResult.Success(
                 condition = condition,
                 match = matchRes,
-                reason = contextData.get(ContextDataMapping.Condition.conditionMatchReason.name)
+                reason = contextData.pop(ContextDataMapping.Condition.conditionMatchReason.name)
                     ?.toString() ?: ""
             )
         }.getOrElse {

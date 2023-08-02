@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.main.ruleToRuleUM
 import tornaco.apps.shortx.ui.remote.OnlineRepo
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import java.util.*
 import javax.inject.Inject
 
@@ -58,6 +59,7 @@ data class DiscoverState(
     val discoverRepo: DiscoverRepo = DiscoverRepo.PrebuiltLocal,
     val customRepos: Set<DiscoveryRepoSetting> = emptySet(),
     val enableChucker: Boolean = false,
+    val isSubscribed: Boolean = false
 )
 
 const val assetName = "prebuilt/prebuilt-all.zip"
@@ -109,6 +111,14 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                         enableChucker = it
                     )
                 }
+            }
+        }
+    }
+
+    fun loadSubscribeState() {
+        viewModelScope.launch {
+            updateState {
+                copy(isSubscribed = isLVLChecked(context))
             }
         }
     }

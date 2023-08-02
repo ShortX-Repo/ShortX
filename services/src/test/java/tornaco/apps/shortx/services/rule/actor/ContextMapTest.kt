@@ -72,4 +72,12 @@ class ContextMapTest {
         val obtainedReuse = ContextData.obtain()
         Assert.assertTrue(obtainedReuse.map.keys.containsAll(allKeys))
     }
+
+    @Test
+    fun testPop() {
+        val data = ContextData.obtain()
+        data.add("name", "Nick")
+        Assert.assertEquals("Nick", data.pop("name"))
+        Assert.assertNull(data.get("Nick"))
+    }
 }

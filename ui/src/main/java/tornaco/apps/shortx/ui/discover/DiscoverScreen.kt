@@ -39,9 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp.SHORTX_GITHIB_REPO_URL
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
@@ -60,6 +62,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.DAViewerDialog
@@ -70,6 +73,7 @@ import tornaco.apps.shortx.ui.main.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rememberDAViewerState
 import tornaco.apps.shortx.ui.main.rememberRuleViewerState
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -104,6 +108,9 @@ fun DiscoverScreen() {
                 )
             })
     TextInputDialog(state = newRepoDialogState)
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,
@@ -145,8 +152,17 @@ fun DiscoverScreen() {
         onItemSelected = { _, id ->
             when (id) {
                 "local" -> discoverModel.switchRepo(DiscoverRepo.PrebuiltLocal)
-                "officialOnline" -> discoverModel.switchRepo(DiscoverRepo.OfficialOnline)
-                "new" -> newRepoDialogState.show()
+                "officialOnline" -> discoverState.isSubscribed.select({
+                    discoverModel.switchRepo(DiscoverRepo.OfficialOnline)
+                }, {
+                    subscribeDialogState.show()
+                })
+
+                "new" -> discoverState.isSubscribed.select({
+                    newRepoDialogState.show()
+                }, {
+                    subscribeDialogState.show()
+                })
                 // Custom with url
                 else -> discoverModel.switchRepo(DiscoverRepo.CustomOnline(id))
             }
@@ -185,6 +201,10 @@ fun DiscoverScreen() {
     ) {
         val pagerState = rememberPagerState(initialPage = initialPageIndex)
         val scope = rememberCoroutineScope()
+
+        DisposableEffectWithLifeCycle(onResume = {
+            discoverModel.loadSubscribeState()
+        })
 
         Column {
             ShortXTabRow(
