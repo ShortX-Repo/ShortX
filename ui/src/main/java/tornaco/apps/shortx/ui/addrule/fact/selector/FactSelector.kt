@@ -26,13 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -110,8 +113,15 @@ private fun <ARGS> FactSelector(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp)
+                        .verticalScroll(rememberScrollState()),
                 ) {
+                    val searchBarState = rememberSearchBarState(
+                        itemCount = allFactClasses.size,
+                        keywordChanged = { })
+                    SearchBar(searchBarState = searchBarState)
+
                     val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
                     LaunchedEffect(subscribeStateViewModel) {
                         subscribeStateViewModel.refreshStates()
@@ -121,23 +131,14 @@ private fun <ARGS> FactSelector(
                     })
                     val subscribeState by subscribeStateViewModel.state.collectAsState()
 
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        FactCategoryTitle(FactCategory.Apps)
-                        AppFacts(subscribeState, setFact = setFact)
-                        StandardSpacer()
+                    AppFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                    StandardSpacer()
 
-                        FactCategoryTitle(FactCategory.System)
-                        SystemFacts(subscribeState, setFact = setFact)
-                        StandardSpacer()
+                    SystemFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                    StandardSpacer()
 
-                        FactCategoryTitle(FactCategory.Misc)
-                        MiscFacts(subscribeState, setFact = setFact)
-                        StandardSpacer()
-                    }
+                    MiscFacts(searchBarState.keyword, subscribeState, setFact = setFact)
+                    StandardSpacer()
                 }
             }
         }
@@ -145,7 +146,7 @@ private fun <ARGS> FactSelector(
 }
 
 @Composable
-private fun FactCategoryTitle(category: FactCategory) {
+fun FactCategoryTitle(category: FactCategory) {
     SmallTitle(
         modifier = Modifier.padding(vertical = 12.dp),
         text = LocalI18N.current[category.i18NKey]

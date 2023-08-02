@@ -15,7 +15,7 @@ import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
-fun MiscFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
+fun MiscFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
     val items = listOf(
         Fact.OnQSTileClick::class,
@@ -29,13 +29,19 @@ fun MiscFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
             },
             iconColor = colorForFact(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
+    }
+
+    if (items.isNotEmpty()) {
+        FactCategoryTitle(FactCategory.Misc)
     }
 
     val itemSelected = miscFactSelectHandler(setFact)
 
     SelectorList(
         items = items,
-        itemSelected = { it ->
+        itemSelected = {
             itemSelected(FactSelectSource.FromClass(it))
         }
     )

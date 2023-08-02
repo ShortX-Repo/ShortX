@@ -15,7 +15,7 @@ import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
-fun SystemFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
+fun SystemFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
     val items = listOf(
         Fact.KeyEvent::class,
@@ -70,6 +70,12 @@ fun SystemFacts(subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
             },
             iconColor = colorForFact(it)
         )
+    }.filter {
+        keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
+    }
+
+    if (items.isNotEmpty()) {
+        FactCategoryTitle(FactCategory.System)
     }
 
     val itemSelected = systemFactSelectHandler(setFact)
