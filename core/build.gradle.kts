@@ -26,6 +26,7 @@ buildConfig {
     buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}L")
     buildConfigField("String", "BUILD_FINGERPRINT", "\"${UUID.randomUUID()}\"")
     buildConfigField("String", "TG_GROUP", "\"https://t.me/shortxmod\"")
+    buildConfigField("String", "WIKI_URL", "\"https://shortx-repo.github.io/ShortX-Pages/zh/\"")
 
     buildConfigField(
         "String",

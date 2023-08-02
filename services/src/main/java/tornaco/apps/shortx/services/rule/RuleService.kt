@@ -5,8 +5,12 @@ import android.os.RemoteCallbackList
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
+import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -39,6 +43,7 @@ import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
@@ -156,6 +161,28 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         dasSettingsStore.readBlocking()
         globalVarStore.readBlocking()
         installListeners()
+
+        // Add guide DA
+        if (getAllDirectAction().isEmpty()) {
+            addDirectAction(
+                DirectAction.newBuilder()
+                    .setId("UserGuide")
+                    .setCreateTime(System.currentTimeMillis())
+                    .setTitle(i18NIns["ui.user.guide"])
+                    .setDescription("\uD83E\uDD13")
+                    .setAuthor(Author.newBuilder().setName("ShortX").build())
+                    .addAllActions(
+                        listOf(
+                            StartActivityUrlSchema.newBuilder()
+                                .setId("startUserGuideByUrl")
+                                .setUrlSchema(BuildProp.WIKI_URL)
+                                .setUserId(myUserId)
+                                .build().pack_()
+                        )
+                    )
+                    .build()
+            )
+        }
     }
 
     override fun shutdown() {

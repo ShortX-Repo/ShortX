@@ -643,5 +643,6 @@
   "ui.tools.regex.test.title": "正则表达式测试",
   "ui.tools.regex.test.regex": "表达式",
   "ui.tools.regex.test.string": "字符串",
-  "ui.tools.regex.test.result": "匹配结果"
+  "ui.tools.regex.test.result": "匹配结果",
+  "ui.user.guide": "查看教程"
 }

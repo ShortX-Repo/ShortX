@@ -7,10 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -51,6 +53,7 @@ import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -154,8 +157,18 @@ fun SettingsScreen(
                         StandardSpacer()
                     }
 
-                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        val context = LocalContext.current
                         MediumTitle(text = LocalI18N.current["ui.common.settings"])
+                        LinkText(text = LocalI18N.current["ui.user.guide"]) {
+                            BrowserUtils.launch(context, BuildProp.WIKI_URL)
+                        }
                     }
 
                     val i18N = LocalI18N.current
@@ -399,30 +412,24 @@ private fun recordSettings(
         Preference.TextPreference(icon = Remix.Media.notification_3_fill,
             title = LocalI18N.current["ui.settings.fact.record"],
             summary = LocalI18N.current["ui.settings.fact.record.summary"],
-            badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToFactPublishRecord() },
-                    { subscribeDialogState.show() })
+                goToFactPublishRecord()
             }
         ),
 
         Preference.TextPreference(icon = Remix.System.history_fill,
             title = LocalI18N.current["ui.settings.condition.record"],
             summary = LocalI18N.current["ui.settings.condition.record.summary"],
-            badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToConditionRecord() },
-                    { subscribeDialogState.show() })
+                goToConditionRecord()
             }
         ),
 
         Preference.TextPreference(icon = Remix.Document.task_fill,
             title = LocalI18N.current["ui.settings.action.record"],
             summary = LocalI18N.current["ui.settings.action.record.summary"],
-            badge = badge,
             onClick = {
-                mainState.isSubscribed.select({ goToActionRecord() },
-                    { subscribeDialogState.show() })
+                goToActionRecord()
             }
         ),
 

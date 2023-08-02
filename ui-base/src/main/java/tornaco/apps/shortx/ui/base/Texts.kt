@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -175,22 +176,31 @@ fun TipRow(
 @Composable
 fun LinkText(
     text: String,
-    color: Color = Color.Unspecified,
+    color: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .padding(6.dp)
+            .clip(ShortXCardRoundedCornerShape)
+            .clickable {
+                onClick()
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RemixIcon(
+            modifier = Modifier.size(12.dp),
+            remixName = Remix.System.external_link_line,
+            tint = color
+        )
         Text(
             modifier = Modifier,
             text = text,
             style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 12.sp
+                textDecoration = TextDecoration.Underline
             ),
             color = color
         )
-        SmallSpacer()
-        ColoredIcon(onClick = onClick, size = 24.dp, color = Color.Transparent) {
-            RemixIcon(modifier = Modifier.size(10.dp), remixName = Remix.Editor.link)
-        }
     }
 }
 
