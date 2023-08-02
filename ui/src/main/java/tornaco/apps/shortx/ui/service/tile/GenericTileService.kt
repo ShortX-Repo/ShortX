@@ -58,6 +58,10 @@ abstract class GenericTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
+        if (shortXManager.isQSTileOptEnabled()) {
+            logger.i("Tile opt is enabled, ignore click")
+            return
+        }
         logger.d("onClick: $tileIndex")
         ShortXManagerNative.shortX?.onTileClick(tileIndex.number)
     }
