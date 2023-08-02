@@ -37,7 +37,7 @@ buildConfig {
     buildConfigField(
         "String",
         "OPEN_SOURCE_LICENSE_URL",
-        "\"https://github.com/Tornaco/ShortX-Release/blob/main/open_source_license.txt\""
+        "\"https://raw.githubusercontent.com/ShortX-Repo/ShortX-Release/main/open_source_license.md\""
     )
     buildConfigField(
         "String",
