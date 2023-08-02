@@ -291,4 +291,15 @@ sealed interface Condition : Parcelable {
             return copy(id = id, note = note, isInvert = isInvert)
         }
     }
+
+    @Parcelize
+    data class ScreenOrientationIsPort(
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 }

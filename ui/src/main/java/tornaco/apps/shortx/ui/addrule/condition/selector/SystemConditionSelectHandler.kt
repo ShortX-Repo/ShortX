@@ -159,6 +159,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.ScreenOrientationIsPort::class -> {
+                addCondition(Condition.ScreenOrientationIsPort())
+                true
+            }
+
             else -> false
         }
     }

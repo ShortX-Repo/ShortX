@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
+import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
@@ -236,6 +237,15 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ KeyguardIsLocked::class.java -> {
             val data = this unpack_ KeyguardIsLocked::class.java
             Condition.KeyguardIsLocked(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+            )
+        }
+
+        this is_ ScreenOrientationIsPort::class.java -> {
+            val data = this unpack_ ScreenOrientationIsPort::class.java
+            Condition.ScreenOrientationIsPort(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

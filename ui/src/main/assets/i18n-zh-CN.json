@@ -18,6 +18,7 @@
   "ui.conditions.has.audio.focus": "应用正在播放音频",
   "ui.conditions.screen.on": "屏幕亮着",
   "ui.conditions.screen.locked": "屏幕已锁",
+  "ui.conditions.screen.orientation.p": "屏幕为竖屏",
   "ui.conditions.vpn.is.connected": "VPN已连接",
   "ui.conditions.time.in.range": "当前时间段",
   "ui.conditions.wifi.connected": "Wifi已连接",

@@ -135,6 +135,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.ScreenOrientationIsPort::class -> {
+            listOf(
+                i18N["ui.conditions.screen.orientation.p"]
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -278,6 +284,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.RequireBTDisconnected -> {
             listOf(
                 i18N["ui.conditions.bt.not.connected"],
+            )
+        }
+
+        is Condition.ScreenOrientationIsPort -> {
+            listOf(
+                i18N["ui.conditions.screen.orientation.p"],
             )
         }
 

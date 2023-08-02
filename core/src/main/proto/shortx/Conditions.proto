@@ -241,3 +241,9 @@ message KeyguardIsLocked {
   string note = 99;
   string id = 100;
 }
+
+message ScreenOrientationIsPort {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

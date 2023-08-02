@@ -26,13 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -94,15 +97,22 @@ private fun <ARGS> ConditionSelector(
                         },
                     )
                 }) { paddingValues ->
-                val setCondition: (Condition) -> Unit = {
-                    state.onSelected(it, state.args)
-                    state.dismiss()
-                }
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(horizontal = 16.dp)
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState())
                 ) {
+                    val searchBarState = rememberSearchBarState(
+                        itemCount = allConditionClasses.size,
+                        keywordChanged = { })
+                    SearchBar(searchBarState = searchBarState)
+
+                    val setCondition: (Condition) -> Unit = {
+                        state.onSelected(it, state.args)
+                        state.dismiss()
+                    }
+
                     val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
                     LaunchedEffect(subscribeStateViewModel) {
                         subscribeStateViewModel.refreshStates()
@@ -112,23 +122,26 @@ private fun <ARGS> ConditionSelector(
                     })
                     val subscribeState by subscribeStateViewModel.state.collectAsState()
 
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        ConditionCategoryTitle(ConditionCategory.Apps)
-                        AppConditions(subscribeState, setCondition = setCondition)
-                        StandardSpacer()
+                    AppConditions(
+                        searchBarState.keyword,
+                        subscribeState,
+                        setCondition = setCondition
+                    )
+                    StandardSpacer()
 
-                        ConditionCategoryTitle(ConditionCategory.System)
-                        SystemConditions(subscribeState, setCondition = setCondition)
-                        StandardSpacer()
+                    SystemConditions(
+                        searchBarState.keyword,
+                        subscribeState,
+                        setCondition = setCondition
+                    )
+                    StandardSpacer()
 
-                        ConditionCategoryTitle(ConditionCategory.Other)
-                        OtherConditions(subscribeState, setCondition = setCondition)
-                        StandardSpacer()
-                    }
+                    OtherConditions(
+                        searchBarState.keyword,
+                        subscribeState,
+                        setCondition = setCondition
+                    )
+                    StandardSpacer()
                 }
             }
         }
@@ -136,7 +149,7 @@ private fun <ARGS> ConditionSelector(
 }
 
 @Composable
-private fun ConditionCategoryTitle(category: ConditionCategory) {
+fun ConditionCategoryTitle(category: ConditionCategory) {
     SmallTitle(
         modifier = Modifier.padding(vertical = 12.dp),
         text = LocalI18N.current[category.i18NKey]

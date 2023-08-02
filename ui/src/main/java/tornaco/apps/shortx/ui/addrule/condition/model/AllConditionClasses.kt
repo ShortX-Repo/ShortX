@@ -22,4 +22,5 @@ val allConditionClasses = listOf(
     Condition.RequireMobileDataEnabled::class,
     Condition.AppHasNotification::class,
     Condition.KeyguardIsLocked::class,
+    Condition.ScreenOrientationIsPort::class,
 )
