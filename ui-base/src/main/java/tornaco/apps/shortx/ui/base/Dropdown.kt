@@ -27,6 +27,7 @@ const val DROPDOWN_WIDTH_FRACTION = 0.6f
 data class DropdownItem<T>(
     val labelLines: List<String>,
     val data: T,
+    val badge: String? = null,
     val icon: @Composable () -> Unit = {}
 )
 
@@ -52,7 +53,7 @@ fun rememberDropdownSelectorState(): DropdownSelectorState {
 
 @Composable
 fun <T> DropdownSelector(
-    widthFraction: Float = 0.6f,
+    widthFraction: Float = 0.8f,
     state: DropdownSelectorState = rememberDropdownSelectorState(),
     items: List<DropdownItem<T>>,
     onSelect: (DropdownItem<T>) -> Unit,
@@ -64,26 +65,31 @@ fun <T> DropdownSelector(
             state.close()
         },
     ) {
-        items.forEach {
+        items.forEach { dropdownItem ->
             DropdownMenuItem(text = {
                 Row(verticalAlignment = CenterVertically) {
-                    it.icon.invoke()
+                    dropdownItem.icon.invoke()
                     Spacer(modifier = Modifier.size(8.dp))
                     Column {
-                        Text(text = it.labelLines[0], style = MaterialTheme.typography.titleSmall)
-                        if (it.labelLines.size > 1) {
-                            it.labelLines.subList(1, it.labelLines.size).forEach {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
-                                )
-                            }
+                        Text(
+                            text = dropdownItem.labelLines[0],
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        dropdownItem.badge?.let { OutlineBadge(text = it) }
+                        if (dropdownItem.labelLines.size > 1) {
+                            dropdownItem.labelLines.subList(1, dropdownItem.labelLines.size)
+                                .forEach {
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
+                                    )
+                                }
                         }
                     }
                 }
             }, onClick = {
                 state.close()
-                onSelect(it)
+                onSelect(dropdownItem)
             })
         }
     }

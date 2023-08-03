@@ -63,11 +63,13 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 
@@ -208,6 +210,7 @@ private fun RuleContent(
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
         RuleListContent(
+            isSubscribed = state.isSubscribed,
             rules = state.rules,
             onRuleClick = onRuleClick,
             setRuleEnabled = setRuleEnabled,
@@ -224,6 +227,7 @@ private fun RuleContent(
 
 @Composable
 private fun RuleListContent(
+    isSubscribed: Boolean,
     rules: List<RuleUM>,
     onRuleClick: (RuleUM) -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit = { id, enable -> },
@@ -261,6 +265,7 @@ private fun RuleListContent(
             ) {
                 RuleItem2(
                     rule = rule,
+                    isSubscribed = isSubscribed,
                     onClick = {
                         onRuleClick(rule)
                         scaleAnimStarted = true
@@ -282,6 +287,7 @@ private fun RuleListContent(
 @Composable
 private fun RuleItem2(
     rule: RuleUM,
+    isSubscribed: Boolean,
     onClick: () -> Unit,
     setRuleEnabled: (String, Boolean) -> Unit,
     onDup: (RuleUM) -> Unit,
@@ -294,6 +300,7 @@ private fun RuleItem2(
     Box {
         val popMenuState = listItemOverflowMenu(
             rule = rule,
+            isSubscribed = isSubscribed,
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
@@ -417,12 +424,20 @@ fun RuleIcon(rule: RuleUM, arrow: String = Remix.Arrows.arrow_right_line) {
 @Composable
 private fun listItemOverflowMenu(
     rule: RuleUM,
+    isSubscribed: Boolean,
     onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
     onShare: (RuleUM) -> Unit,
     onExecute: (RuleUM) -> Unit,
 ): DropdownSelectorState {
+    val badge = if (isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
         state = deleteDialogState,
@@ -444,6 +459,7 @@ private fun listItemOverflowMenu(
                 }),
             DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
                 data = "dup",
+                badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
@@ -455,6 +471,7 @@ private fun listItemOverflowMenu(
             DropdownItem(
                 labelLines = listOf(LocalI18N.current["ui.common.share"]),
                 data = "share",
+                badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
@@ -468,7 +485,11 @@ private fun listItemOverflowMenu(
             Logger("RuleMenu").d("onSelect: ${it.data}")
             when (it.data) {
                 "dup" -> {
-                    onDup(rule)
+                    if (isSubscribed) {
+                        onDup(rule)
+                    } else {
+                        subscribeDialogState.show()
+                    }
                 }
 
                 "delete" -> {
@@ -480,7 +501,11 @@ private fun listItemOverflowMenu(
                 }
 
                 "share" -> {
-                    onShare(rule)
+                    if (isSubscribed) {
+                        onShare(rule)
+                    } else {
+                        subscribeDialogState.show()
+                    }
                 }
 
                 "execute" -> {

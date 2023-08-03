@@ -291,10 +291,15 @@ fun SettingsScreen(
                                 deleteDialogState.show()
                             })
                         )
-                        addAll(shareSettings(state, vm))
-                        addAll(systemSettings(state, vm))
-                        addAll(devSettings(state, vm))
-                        addAll(aboutSettings(state, viewOpenSourceLicense))
+                        addAll(shareSettings(state = state, vm = vm))
+                        addAll(systemSettings(state = state, mainState = subscribeState, vm = vm))
+                        addAll(devSettings(state = state, vm = vm))
+                        addAll(
+                            aboutSettings(
+                                state = state,
+                                viewOpenSourceLicense = viewOpenSourceLicense
+                            )
+                        )
                     })
 
                     StandardSpacer()
@@ -648,8 +653,16 @@ private fun devSettings(
 @Composable
 private fun systemSettings(
     state: SettingsState,
+    mainState: SubscribeState,
     vm: SettingsViewModel
 ): List<Preference> {
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else LocalI18N.current["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
     return mutableListOf(
         Preference.Category(LocalI18N.current["ui.settings.system"]),
 
@@ -658,9 +671,14 @@ private fun systemSettings(
             title = LocalI18N.current["ui.settings.injected.shell"],
             summary = LocalI18N.current["ui.settings.injected.shell.description"],
             hasLongSummary = true,
+            badge = badge,
             value = state.isInjectedShellEnabled,
-            onCheckChanged = { enable ->
-                vm.toggleInjectedShell()
+            onCheckChanged = {
+                if (mainState.isSubscribed) {
+                    vm.toggleInjectedShell()
+                } else {
+                    subscribeDialogState.show()
+                }
             }
         ),
         Preference.SwitchPreference(
@@ -668,9 +686,14 @@ private fun systemSettings(
             title = LocalI18N.current["ui.settings.sb.tile.opt"],
             summary = LocalI18N.current["ui.settings.sb.tile.opt.summary"],
             hasLongSummary = true,
+            badge = badge,
             value = state.isQSTileOptEnabled,
             onCheckChanged = { enable ->
-                vm.toggleQSTileOpt()
+                if (mainState.isSubscribed) {
+                    vm.toggleQSTileOpt()
+                } else {
+                    subscribeDialogState.show()
+                }
             }
         ),
     )

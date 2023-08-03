@@ -85,12 +85,14 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
+import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
+import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
@@ -239,25 +241,26 @@ fun DirectActionListContent(
     } else {
         if (state.isShowDetailedDAItem) {
             DAListContent(
-                state.das,
-                showOverflowMenu,
-                onDirectActionClick,
-                onDup,
-                onDelete,
-                onEdit,
-                onShare,
-                stopAllJobs
+                das = state.das,
+                isSubscribed = state.isSubscribed,
+                showOverflowMenu = showOverflowMenu,
+                onDirectActionClick = onDirectActionClick,
+                onDup = onDup,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                onShare = onShare,
+                stopAllJobs = stopAllJobs
             )
         } else {
             DAListContentCompat(
-                state,
-                showOverflowMenu,
-                onDirectActionClick,
-                onDup,
-                onDelete,
-                onEdit,
-                onShare,
-                stopAllJobs
+                state = state,
+                showOverflowMenu = showOverflowMenu,
+                onDirectActionClick = onDirectActionClick,
+                onDup = onDup,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                onShare = onShare,
+                stopAllJobs = stopAllJobs
             )
         }
     }
@@ -266,6 +269,7 @@ fun DirectActionListContent(
 @Composable
 private fun DAListContent(
     das: List<DirectActionUM>,
+    isSubscribed: Boolean,
     showOverflowMenu: Boolean,
     onDirectActionClick: (DirectActionUM) -> Unit,
     onDup: (DirectActionUM) -> Unit = {},
@@ -319,6 +323,7 @@ private fun DAListContent(
                             }
                         },
                         da = da,
+                        isSubscribed = isSubscribed,
                         isLongClickEnabled = showOverflowMenu,
                         onClick = {
                             onDirectActionClick(da)
@@ -365,6 +370,7 @@ private fun DAListContentCompat(
             DirectActionItemCompat(
                 modifier = Modifier,
                 da = da,
+                isSubscribed = state.isSubscribed,
                 isLongClickEnabled = showOverflowMenu,
                 onClick = {
                     onDirectActionClick(da)
@@ -383,6 +389,7 @@ private fun DAListContentCompat(
 private fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
+    isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
     onClick: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
@@ -394,6 +401,7 @@ private fun DirectActionItem(
     Box {
         val popMenuState = listItemOverflowMenu(
             da = da,
+            isSubscribed = isSubscribed,
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
@@ -421,6 +429,7 @@ private fun DirectActionItem(
 private fun DirectActionItemCompat(
     modifier: Modifier,
     da: DirectActionUM,
+    isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
     onClick: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
@@ -432,6 +441,7 @@ private fun DirectActionItemCompat(
     Box {
         val popMenuState = listItemOverflowMenu(
             da = da,
+            isSubscribed = isSubscribed,
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
@@ -607,6 +617,7 @@ fun RunningIndicator(modifier: Modifier = Modifier, runningInsCount: Int, stopAl
 @Composable
 private fun listItemOverflowMenu(
     da: DirectActionUM,
+    isSubscribed: Boolean,
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
@@ -616,6 +627,13 @@ private fun listItemOverflowMenu(
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbarHostState.current
     val i18N = LocalI18N.current
+
+    val badge = if (isSubscribed) {
+        null
+    } else i18N["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
 
     val deleteDialogState = rememberDeleteConfirmDialogState()
     DeleteConfirmDialog(
@@ -630,11 +648,13 @@ private fun listItemOverflowMenu(
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
             data = "shortcut",
+            badge = badge,
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
             data = "dup",
+            badge = badge,
             icon = {
                 RemixIcon(Remix.Document.file_copy_2_fill)
             }),
@@ -645,6 +665,7 @@ private fun listItemOverflowMenu(
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
             data = "share",
+            badge = badge,
             icon = {
                 RemixIcon(Remix.System.share_line)
             }),
@@ -656,26 +677,34 @@ private fun listItemOverflowMenu(
     ), onSelect = {
         when (it.data) {
             "shortcut" -> {
-                ActionShortcutActivity.addShortcut(context, da)
-                scope.launch {
-                    val res = snackbar.showSnackbar(
-                        i18N["ui.common.create.shortcut.snackbar.message"],
-                        i18N["ui.common.settings"],
-                        true,
-                    )
-                    if (res == SnackbarResult.ActionPerformed) {
-                        kotlin.runCatching {
-                            PkgUtils.launchPkgSettings(
-                                context,
-                                BuildProp.APP_PACKAGE_NAME
-                            )
+                if (isSubscribed) {
+                    ActionShortcutActivity.addShortcut(context, da)
+                    scope.launch {
+                        val res = snackbar.showSnackbar(
+                            i18N["ui.common.create.shortcut.snackbar.message"],
+                            i18N["ui.common.settings"],
+                            true,
+                        )
+                        if (res == SnackbarResult.ActionPerformed) {
+                            kotlin.runCatching {
+                                PkgUtils.launchPkgSettings(
+                                    context,
+                                    BuildProp.APP_PACKAGE_NAME
+                                )
+                            }
                         }
                     }
+                } else {
+                    subscribeDialogState.show()
                 }
             }
 
             "dup" -> {
-                onDup(da)
+                if (isSubscribed) {
+                    onDup(da)
+                } else {
+                    subscribeDialogState.show()
+                }
             }
 
             "delete" -> {
@@ -687,7 +716,11 @@ private fun listItemOverflowMenu(
             }
 
             "share" -> {
-                onShare(da)
+                if (isSubscribed) {
+                    onShare(da)
+                } else {
+                    subscribeDialogState.show()
+                }
             }
 
             else -> {}

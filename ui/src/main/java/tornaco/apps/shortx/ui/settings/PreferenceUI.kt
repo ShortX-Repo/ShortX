@@ -198,11 +198,17 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
             PreferenceIcon(preference)
             StandardSpacer()
             Column(modifier = Modifier) {
-                Text(
-                    modifier = Modifier.padding(end = 36.dp),
-                    text = preference.title,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Text(
+                        text = preference.title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    StandardSpacer()
+                    preference.badge?.let { OutlineBadge(text = it) }
+                }
                 SmallSpacer()
 
                 val showMoreLines = !preference.hasLongSummary || isShowMoreSummary
