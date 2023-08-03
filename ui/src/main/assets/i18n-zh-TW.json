@@ -457,6 +457,8 @@
   "ui.action.map.gaode": "高德地圖",
   "ui.action.map.poi": "商圈（可選）",
   "ui.action.stop.app": "強行停止應用",
+  "ui.action.stop.app.by.pkg": "強行停止應用（动态）",
+  "ui.action.stop.app.by.pkg.package": "输入应用包名",
   "ui.action.start.app.process": "啟動應用行程",
   "ui.action.set.app.inactive": "休眠應用",
   "ui.action.disable.app": "凍結應用",

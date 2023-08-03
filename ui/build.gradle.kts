@@ -99,6 +99,9 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
 
+    implementation(libs.orbit.compose)
+    implementation(libs.orbit.viewmodel)
+
     implementation(project(":binder-retriever"))
     implementation(project(":ui-base"))
     implementation(project(":core"))
@@ -109,8 +112,11 @@ dependencies {
     implementation(project(":external:icons"))
     implementation(project(":external:sec_net"))
 
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.orbit.test)
+    testImplementation(libs.androidx.test.runner)
 }
 
 configurations.all {

@@ -4,6 +4,8 @@ activity-compose = "1.7.2"
 agp = "8.1.0"
 kotest-assertions-core = "5.6.2"
 libsu = "5.1.0"
+orbit = "6.0.0"
+androidx-test-runner = "1.5.2"
 uiautomator = "2.3.0-alpha04"
 espresso-core = "3.5.1"
 androidx-junit = "1.1.5"
@@ -62,15 +64,20 @@ protobuf-gradle-plugin = { id = "com.google.protobuf", version = "0.9.4" }
 gmazzo-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }
 gladed-androidgitversion = { id = "com.gladed.androidgitversion", version = "0.4.14" }
 diffplug-spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.3" }
 
 [libraries]
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions-core" }
 libsu-nio = { module = "com.github.topjohnwu.libsu:nio", version.ref = "libsu" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsu" }
+orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbit" }
+orbit-test = { module = "org.orbit-mvi:orbit-test", version.ref = "orbit" }
+orbit-viewmodel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbit" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposed-api" }
 accompanist-placeholder-material = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanist" }
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
@@ -145,6 +152,7 @@ hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", vers
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-stdlib-common = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }

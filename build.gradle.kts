@@ -26,6 +26,7 @@ plugins {
 
     alias(libs.plugins.gladed.androidgitversion) apply true
     alias(libs.plugins.diffplug.spotless) apply true
+    alias(libs.plugins.kover) apply false
 
     id("shortx")
 }

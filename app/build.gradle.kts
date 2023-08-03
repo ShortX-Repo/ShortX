@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -116,6 +117,9 @@ dependencies {
     implementation(project(":services-ui"))
     implementation(project(":patch"))
     implementation(project(":core"))
+
+    kover(project(":core"))
+    kover(project(":services"))
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

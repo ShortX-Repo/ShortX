@@ -458,6 +458,8 @@
   "ui.action.map.gaode": "Gaode Map",
   "ui.action.map.poi": "Poi (optional)",
   "ui.action.stop.app": "Force stop app",
+  "ui.action.stop.app.by.pkg": "Force stop app (Input)",
+  "ui.action.stop.app.by.pkg.package": "App package name",
   "ui.action.start.app.process": "Start app process",
   "ui.action.set.app.inactive": "Set app inactive",
   "ui.action.disable.app": "Disable app",
