@@ -63,6 +63,7 @@ import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
+import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopService
@@ -348,6 +349,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.StopAppByPkg -> {
+            StopAppByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .addAllPkgAndUsers(stringPairs)
                 .setNote(overrideNote ?: note).build()
         }
 

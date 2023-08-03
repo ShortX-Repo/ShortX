@@ -141,6 +141,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.stop_fill
         }
 
+        Action.StopAppByPkg::class -> {
+            Remix.Media.stop_fill
+        }
+
         Action.StartAppProcess::class -> {
             Remix.Media.play_fill
         }

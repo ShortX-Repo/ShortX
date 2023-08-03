@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.proto.common.ProcessName
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -322,6 +323,30 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
+    data class StopAppByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+
+        val stringPairs: List<StringPair>
     ) : Action {
         override fun clone(
             id: String,

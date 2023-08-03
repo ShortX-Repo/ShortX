@@ -44,6 +44,11 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = stopAppSelectorState)
 
+    val stopAppByPackageSelectorState = rememberStopAppByPkgDialogState(onSelected = {
+        addAction(it)
+    })
+    StopAppByPkgDialog(state = stopAppByPackageSelectorState)
+
     val removeTasksSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -216,6 +221,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.StopAppByPkg::class -> {
+                stopAppByPackageSelectorState.show(
+                    source.getActionAs()
+                )
+                true
+            }
+
             Action.RemoveTasks::class -> {
                 removeTasksSelectorState.show(
                     source.getActionAs<Action.RemoveTasks>()?.apps,
@@ -315,6 +327,7 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.LaunchApp::class,
         Action.StartLastApp::class,
         Action.StopApp::class,
+        Action.StopAppByPkg::class,
         Action.StopCurrentApp::class,
         Action.StartAppProcess::class,
         Action.SetAppInactive::class,

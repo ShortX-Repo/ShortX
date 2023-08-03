@@ -373,6 +373,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StopAppByPkg::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.StopAppByPkg::class.java
+            Action.StopAppByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.StartAppProcess::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.StartAppProcess::class.java

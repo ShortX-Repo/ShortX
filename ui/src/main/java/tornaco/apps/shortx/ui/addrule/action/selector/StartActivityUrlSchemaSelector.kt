@@ -33,12 +33,12 @@ import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -137,7 +137,7 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
                 ) {
                     val context = LocalContext.current
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = "URL Schema")
+                    FieldTitle(modifier = Modifier.padding(vertical = 12.dp), text = "URL Schema")
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.urlSchema,
@@ -156,7 +156,10 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
                         })
                     StandardSpacer()
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.common.user.id"])
+                    FieldTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.common.user.id"]
+                    )
                     val userSelectorState = rememberUserSelectorDialogState(onSelected = {
                         dialogState.updateUser(it.userId)
                     })

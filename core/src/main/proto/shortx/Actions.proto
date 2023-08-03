@@ -161,6 +161,15 @@ message StopApp {
   string id = 100;
 }
 
+message StopAppByPkg {
+  repeated StringPair pkgAndUsers = 1;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetAppEnabled {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;

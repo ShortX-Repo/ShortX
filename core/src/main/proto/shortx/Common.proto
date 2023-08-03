@@ -290,3 +290,8 @@ message StatusBarTileSetting {
 message StatusBarTileSettingList {
   repeated StatusBarTileSetting settings = 1;
 }
+
+message StringPair {
+  string first = 1;
+  string second = 2;
+}

@@ -172,7 +172,7 @@
   "ui.common.copied.to.clipboard": "已复制到剪贴板",
   "ui.common.save.success.to": "已保存到: {path}",
   "ui.common.manually.input": "手动输入",
-  "ui.common.create.shortcut": "桌面快捷方式",
+  "ui.common.create.shortcut": "桌面快捷",
   "ui.common.create.shortcut.snackbar.message": "如果添加失败，请在系统设置授予 创建快捷方式 权限",
   "ui.common.dup": "创建副本",
   "ui.common.share": "分享",
