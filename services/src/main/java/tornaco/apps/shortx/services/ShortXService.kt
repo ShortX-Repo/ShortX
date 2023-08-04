@@ -689,6 +689,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
             return runClearCallingIdentity {
                 val drawable: Drawable? = ApkUtils.loadIconByPkgName(context, pkgName)
+                logger.d("getAppIcon, drawable: $drawable")
                 drawable?.let {
                     val badged =
                         context.packageManager.getUserBadgedIcon(it, userIdToUserHandle(userId))

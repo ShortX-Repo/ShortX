@@ -29,6 +29,8 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -121,6 +123,24 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
+                    dialogState.selectedPairs.forEachIndexed { index, it ->
+                        ListItem(
+                            titleLines = listOf(it.first, it.second),
+                            icon = {
+                                RemixIcon(remixName = Remix.Logos.flickr_line)
+                            },
+                            action1 = {
+                                IconButton(onClick = {
+                                    dialogState.remove(index)
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            },
+                            onClick = {
+                            })
+                    }
+
+
                     var inputPackage by remember {
                         mutableStateOf("")
                     }
@@ -128,6 +148,7 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                         mutableStateOf("")
                     }
 
+                    LargeSpacer()
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
                         text = LocalI18N.current["ui.action.stop.app.by.pkg.package"]

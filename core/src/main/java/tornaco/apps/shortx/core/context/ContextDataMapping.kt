@@ -48,6 +48,7 @@ object ContextDataMapping {
 
     @DoNotStrip
     enum class TaskRemoved(val description: String) {
+        appLabel("The app label"),
         taskId("Id of the removed task"),
         userId("The user id"),
         pkgName("App package name of the task owner"),

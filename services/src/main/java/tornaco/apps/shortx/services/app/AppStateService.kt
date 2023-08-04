@@ -368,13 +368,14 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun onTaskRemoved(task: RecentTask) {
         logger.d("onTaskRemoved: ${task.owner.pkgName} - ${task.owner.userId} - ${task.taskId}")
-
+        val app = pkgToApp(task.owner)
         shortXContext.rule.publishFact(
             "onTaskRemoved",
             TaskRemoved.newBuilder()
                 .addAllApps(listOf(task.owner))
                 .build(),
             mapOf(
+                ContextDataMapping.TaskRemoved.appLabel.name to (app?.label ?: task.owner.pkgName),
                 ContextDataMapping.TaskRemoved.taskId.name to "${task.taskId}",
                 ContextDataMapping.TaskRemoved.userId.name to "${task.owner.userId}",
                 ContextDataMapping.TaskRemoved.pkgName.name to task.owner.pkgName,

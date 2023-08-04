@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 /**
  * Created by Nick@NewStand.org on 2017/3/13 9:56
@@ -32,6 +33,7 @@ public abstract class ApkUtils {
             if (info == null) return null;
             return info.loadIcon(pm);
         } catch (Throwable e) {
+            Log.e("ShortX-ApkUtils", Log.getStackTraceString(e));
             return null;
         }
     }

@@ -6,6 +6,7 @@ import com.squareup.picasso3.Picasso
 import com.squareup.picasso3.Request
 import com.squareup.picasso3.RequestHandler
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -32,7 +33,7 @@ object PicassoInitializer {
                 logger.d("pkgName: $pkgName")
                 callback.onSuccess(
                     Result.Bitmap(
-                        ShortXService.serviceBinder.getAppIcon(pkgName, 0),
+                        ShortXService.serviceBinder.getAppIcon(pkgName, myUserId),
                         Picasso.LoadedFrom.DISK
                     )
                 )
