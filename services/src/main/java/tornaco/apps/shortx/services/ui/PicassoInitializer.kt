@@ -29,7 +29,7 @@ object PicassoInitializer {
 
         override fun load(picasso: Picasso, request: Request, callback: Callback) {
             kotlin.runCatching {
-                val pkgName = request.uri!!.toString().replace("app://", "")
+                val pkgName = request.uri!!.toString().replace("app://", "").trim()
                 logger.d("pkgName: $pkgName")
                 callback.onSuccess(
                     Result.Bitmap(
