@@ -135,13 +135,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             },
             actionEvaluateResultListener = { result, context ->
                 logger.d("actionEvaluateResultListener: $result")
-                if (isActionEvaluateRecorderEnabled()) {
+                if (isEvaluateRecordEnabled()) {
                     result.toActionEvaluateRecord(context)?.let { actionEvaluateRecorder.add(it) }
                 }
             },
             conditionEvaluateResultListener = {
                 logger.d("conditionEvaluateResultListener: $it")
-                if (isConditionEvaluateRecorderEnabled()) {
+                if (isEvaluateRecordEnabled()) {
                     conditionEvaluateRecorder.add(it.toConditionEvaluateRecord())
                 }
             }
@@ -286,7 +286,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 initialContextData = initialContextData
             )
 
-            if (anyMatch && isFactPublishRecordEnabled()) {
+            if (anyMatch && isEvaluateRecordEnabled()) {
                 factPublishRecorder.add(fact.toFactPublishRecord())
             }
         }
@@ -557,28 +557,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         actionEvaluateRecorder.clear()
     }
 
-    fun setActionEvaluateRecorderEnabled(enable: Boolean) {
-        store.write(Settings.BoolSettings.EnableActionEvaluateRecorder, enable)
-    }
-
-    fun isActionEvaluateRecorderEnabled(): Boolean {
-        return store.read(Settings.BoolSettings.EnableActionEvaluateRecorder)
-    }
-
     fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
         return conditionEvaluateRecorder.conditionEvaluateRecords
     }
 
     fun clearConditionEvaluateRecords() {
         conditionEvaluateRecorder.clear()
-    }
-
-    fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
-        store.write(Settings.BoolSettings.EnableConditionEvaluateRecorder, enable)
-    }
-
-    fun isConditionEvaluateRecorderEnabled(): Boolean {
-        return store.read(Settings.BoolSettings.EnableConditionEvaluateRecorder)
     }
 
     fun getFactPublishRecords(): List<FactPublishRecord> {
@@ -589,12 +573,18 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         factPublishRecorder.clear()
     }
 
-    fun setFactPublishRecordEnabled(enable: Boolean) {
-        store.write(Settings.BoolSettings.EnableFactPublishRecorder, enable)
+    fun clearEvaluateRecords() {
+        clearFactPublishRecords()
+        clearConditionEvaluateRecords()
+        clearActionEvaluateRecords()
     }
 
-    fun isFactPublishRecordEnabled(): Boolean {
-        return store.read(Settings.BoolSettings.EnableFactPublishRecorder)
+    fun isEvaluateRecordEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableEvaluateRecorder)
+    }
+
+    fun setEvaluateRecordEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableEvaluateRecorder, enable)
     }
 
     fun registerRuleObs(obs: IRuleObserver) {

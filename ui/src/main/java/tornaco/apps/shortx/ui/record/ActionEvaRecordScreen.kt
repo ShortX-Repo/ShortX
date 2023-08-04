@@ -66,6 +66,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ActionRecordColor
 import tornaco.apps.shortx.ui.theme.ConditionRecordColor
@@ -106,6 +107,7 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
     val state by vm.collectAsState()
 
     DisposableEffectWithLifeCycle(onResume = {
+        vm.loadSwitch()
         vm.loadRecords()
     })
 
@@ -161,7 +163,13 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                         }
 
                         is LoadState.Success -> {
-                            RecordList(records = loadState.data)
+                            Column {
+                                SwitchBar(isChecked = state.isRecordEnabled,
+                                    onCheckChange = {
+                                        vm.toggleRecordEnable(it)
+                                    })
+                                RecordList(records = loadState.data)
+                            }
                         }
                     }
 

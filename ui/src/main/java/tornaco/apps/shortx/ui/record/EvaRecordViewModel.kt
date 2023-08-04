@@ -91,6 +91,17 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
         initialState = EvaRecordState()
     )
 
+    fun loadSwitch() = intent {
+        reduce {
+            state.copy(isRecordEnabled = shortXManager.isEvaluateRecordEnabled())
+        }
+    }
+
+    fun toggleRecordEnable(enable: Boolean) = intent {
+        shortXManager.setEvaluateRecordEnabled(enable)
+        loadSwitch()
+    }
+
     fun showFact(show: Boolean) = intent {
         loadRecords()
         reduce {

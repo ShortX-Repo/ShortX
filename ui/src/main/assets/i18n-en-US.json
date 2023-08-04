@@ -210,6 +210,7 @@
   "ui.common.show.pointer.location.description": "Enable to view touch event location",
   "ui.common.execute.actions": "Execute actions",
   "ui.common.select": "Select",
+  "ui.common.select.all": "Select all",
   "ui.common.filter": "Filter",
   "ui.common.filter.matched": "Matched",
   "ui.common.filter.unmatched": "Not matched",

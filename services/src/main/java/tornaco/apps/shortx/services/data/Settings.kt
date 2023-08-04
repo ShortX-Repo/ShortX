@@ -11,35 +11,27 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
     sealed class BoolSettings(key: String, defaultValue: Boolean) :
         Settings<Boolean>(key, defaultValue) {
-        object EnableActionEvaluateRecorder :
+
+        data object EnableEvaluateRecorder :
             BoolSettings(
-                key = "EnableActionEvaluateRecorder",
+                key = "EnableEvaluateRecorder",
                 defaultValue = BuildProp.APP_IS_DEBUG
             )
 
-        object EnableConditionEvaluateRecorder :
-            BoolSettings(
-                key = "EnableConditionEvaluateRecorder",
-                defaultValue = BuildProp.APP_IS_DEBUG
-            )
-
-        object EnableFactPublishRecorder :
-            BoolSettings(key = "EnableFactPublishRecorder", defaultValue = BuildProp.APP_IS_DEBUG)
-
-        object EnableKeyEventPrompt :
+        data object EnableKeyEventPrompt :
             BoolSettings(key = "EnableKeyEventPrompt", defaultValue = BuildProp.APP_IS_DEBUG)
 
-        object EnableInjectedShell :
+        data object EnableInjectedShell :
             BoolSettings(key = "EnableInjectedShell", defaultValue = false)
 
-        object EnableQSTileOpt :
+        data object EnableQSTileOpt :
             BoolSettings(key = "EnableQSTileOpt", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String?) :
         Settings<String?>(key, defaultValue) {
         // Unique ID for Service ins, usually used for data enc.
-        object ServiceIns :
+        data object ServiceIns :
             StringSettings(key = "ServiceIns", defaultValue = null)
     }
 

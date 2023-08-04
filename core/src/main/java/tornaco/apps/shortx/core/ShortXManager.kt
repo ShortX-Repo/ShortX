@@ -535,47 +535,11 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun clearActionEvaluateRecords() {
-        invokeService(Unit) {
-            clearActionEvaluateRecords()
-        }
-    }
-
-    fun setActionEvaluateRecorderEnabled(enable: Boolean) {
-        invokeService(Unit) {
-            isActionEvaluateRecorderEnabled = enable
-        }
-    }
-
-    fun isActionEvaluateRecorderEnabled(): Boolean {
-        return invokeService(false) {
-            isActionEvaluateRecorderEnabled
-        }
-    }
-
     fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
         return invokeService(emptyList()) {
             conditionEvaluateRecords.map {
                 ConditionEvaluateRecord.parseFrom(it.byteData)
             }
-        }
-    }
-
-    fun clearConditionEvaluateRecords() {
-        invokeService(Unit) {
-            clearConditionEvaluateRecords()
-        }
-    }
-
-    fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
-        invokeService(Unit) {
-            isConditionEvaluateRecorderEnabled = enable
-        }
-    }
-
-    fun isConditionEvaluateRecorderEnabled(): Boolean {
-        return invokeService(false) {
-            isConditionEvaluateRecorderEnabled
         }
     }
 
@@ -586,21 +550,21 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun clearFactPublishRecords() {
+    fun clearEvaluateRecords() {
         invokeService(Unit) {
-            clearFactPublishRecords()
+            clearEvaluateRecords()
         }
     }
 
-    fun setFactPublishRecordEnabled(enable: Boolean) {
-        invokeService(Unit) {
-            isFactPublishRecordEnabled = enable
-        }
-    }
-
-    fun isFactPublishRecordEnabled(): Boolean {
+    fun isEvaluateRecordEnabled(): Boolean {
         return invokeService(false) {
-            isFactPublishRecordEnabled
+            isEvaluateRecordEnabled
+        }
+    }
+
+    fun setEvaluateRecordEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isEvaluateRecordEnabled = enable
         }
     }
 

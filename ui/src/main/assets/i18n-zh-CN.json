@@ -210,6 +210,7 @@
   "ui.common.show.pointer.location.description": "开启后可查看触摸操作坐标",
   "ui.common.execute.actions": "执行动作",
   "ui.common.select": "选择",
+  "ui.common.select.all": "全选",
   "ui.common.filter": "过滤器",
   "ui.common.filter.matched": "匹配",
   "ui.common.filter.unmatched": "不匹配",

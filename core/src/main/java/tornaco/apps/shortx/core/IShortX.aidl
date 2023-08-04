@@ -52,14 +52,11 @@ interface IShortX {
     // Direct Actions end
 
     List<ByteArrayWrapper> getActionEvaluateRecords();
-    void clearActionEvaluateRecords();
-    void setActionEvaluateRecorderEnabled(boolean enable);
-    boolean isActionEvaluateRecorderEnabled();
-
     List<ByteArrayWrapper> getConditionEvaluateRecords();
-    void clearConditionEvaluateRecords();
-    void setConditionEvaluateRecorderEnabled(boolean enable);
-    boolean isConditionEvaluateRecorderEnabled();
+    List<ByteArrayWrapper> getFactPublishRecords();
+    void clearEvaluateRecords();
+    void setEvaluateRecordEnabled(boolean enable);
+    boolean isEvaluateRecordEnabled();
 
     // Pkg Set
     void addPkgSet(in ByteArrayWrapper set);
@@ -130,11 +127,6 @@ interface IShortX {
 
     List<ByteArrayWrapper> getRunningServices(in ByteArrayWrapper pkg);
     List<ByteArrayWrapper> getRunningAppPkgs(String pkgSetLabel);
-
-    List<ByteArrayWrapper> getFactPublishRecords();
-    void clearFactPublishRecords();
-    void setFactPublishRecordEnabled(boolean enable);
-    boolean isFactPublishRecordEnabled();
 
     int getGestureAreaSize();
     void setGestureAreaSize(int dp);

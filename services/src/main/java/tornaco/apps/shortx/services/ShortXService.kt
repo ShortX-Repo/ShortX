@@ -518,26 +518,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun clearActionEvaluateRecords() {
-            shortXContext.rule.clearActionEvaluateRecords()
-        }
-
-        override fun setActionEvaluateRecorderEnabled(enable: Boolean) {
-            shortXContext.rule.setActionEvaluateRecorderEnabled(enable)
-        }
-
-        override fun isActionEvaluateRecorderEnabled(): Boolean {
-            return shortXContext.rule.isActionEvaluateRecorderEnabled()
-        }
-
         override fun getConditionEvaluateRecords(): List<ByteArrayWrapper> {
             return shortXContext.rule.getConditionEvaluateRecords().map {
                 ByteArrayWrapper(it.toByteArray())
             }
-        }
-
-        override fun clearConditionEvaluateRecords() {
-            shortXContext.rule.clearConditionEvaluateRecords()
         }
 
         override fun getFactPublishRecords(): List<ByteArrayWrapper> {
@@ -546,16 +530,16 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
-        override fun clearFactPublishRecords() {
-            shortXContext.rule.clearFactPublishRecords()
+        override fun clearEvaluateRecords() {
+            shortXContext.rule.clearEvaluateRecords()
         }
 
-        override fun setFactPublishRecordEnabled(enable: Boolean) {
-            shortXContext.rule.setFactPublishRecordEnabled(enable)
+        override fun isEvaluateRecordEnabled(): Boolean {
+            return shortXContext.rule.isEvaluateRecordEnabled()
         }
 
-        override fun isFactPublishRecordEnabled(): Boolean {
-            return shortXContext.rule.isFactPublishRecordEnabled()
+        override fun setEvaluateRecordEnabled(enable: Boolean) {
+            shortXContext.rule.setEvaluateRecordEnabled(enable)
         }
 
         override fun getGestureAreaSize(): Int {
@@ -596,14 +580,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isKeyEventPromptEnabled(): Boolean {
             return shortXContext.rule.isKeyEventPromptEnabled()
-        }
-
-        override fun setConditionEvaluateRecorderEnabled(enable: Boolean) {
-            shortXContext.rule.setConditionEvaluateRecorderEnabled(enable)
-        }
-
-        override fun isConditionEvaluateRecorderEnabled(): Boolean {
-            return shortXContext.rule.isConditionEvaluateRecorderEnabled()
         }
 
         override fun executeMVEL(expression: String): String {
