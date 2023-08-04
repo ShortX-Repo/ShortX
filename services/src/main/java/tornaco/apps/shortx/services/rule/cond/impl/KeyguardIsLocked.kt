@@ -9,7 +9,7 @@ object KeyguardIsLocked : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked::class.java
@@ -18,7 +18,7 @@ object KeyguardIsLocked : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult()
         }
     }
 }

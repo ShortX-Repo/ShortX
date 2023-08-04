@@ -9,7 +9,7 @@ object ScreenIsOn : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.ScreenIsOn::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.ScreenIsOn::class.java
@@ -19,7 +19,7 @@ object ScreenIsOn : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult()
         }
     }
 }

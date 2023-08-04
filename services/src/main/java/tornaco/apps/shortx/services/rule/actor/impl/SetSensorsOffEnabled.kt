@@ -25,13 +25,13 @@ object SetSensorsOffEnabled : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled::class.java
         val enable = data.enable
         if (OsUtils.isSOrAbove()) {
-            if (enable && context.keyguardManager.isKeyguardLocked) {
+            if (enable && androidContext.keyguardManager.isKeyguardLocked) {
                 logger.w("Keyguard is locked, skip.")
                 return@with
             }
             logger.i("setAllSensorPrivacy: $enable")
             val sensorPriv: SensorPrivacyManager =
-                context.getSystemService(Context.SENSOR_PRIVACY_SERVICE) as SensorPrivacyManager
+                androidContext.getSystemService(Context.SENSOR_PRIVACY_SERVICE) as SensorPrivacyManager
             sensorPriv.setAllSensorPrivacy(enable)
         }
     }

@@ -16,7 +16,7 @@ object ReadClipboard : Actor {
         params: HandleParams
     ) {
         with(params) {
-            kotlin.runCatching { context.clipboardManager.primaryClip?.getItemAt(0)?.text }
+            kotlin.runCatching { androidContext.clipboardManager.primaryClip?.getItemAt(0)?.text }
                 .getOrElse {
                     logger.e(it, "read primaryClip")
                     null

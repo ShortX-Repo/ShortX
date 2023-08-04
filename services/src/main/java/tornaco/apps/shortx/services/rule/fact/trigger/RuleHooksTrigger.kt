@@ -1,9 +1,9 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
@@ -28,15 +28,15 @@ class RuleHooksTrigger(
             it.hook?.let { hook ->
                 hook.actionsOnEnabledList.apply {
                     if (isNotEmpty()) {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(it.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcTitle(it.title)
+                            .build()
                         shortXContext.rule.executeActions(
-                            id = it.id,
-                            reason = "Hook: actionsOnEnabled",
+                            context = evaluateContext,
                             actions = this,
-                            initialContextData = mapOf(
-                                ContextDataMapping.Context.contextSrcTitle.name to "On rule enabled: ${it.title}",
-                                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                            ),
-                            ConflictStrategy.ConflictStrategy_ExecuteBoth
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
                         )
                     }
                 }
@@ -51,15 +51,15 @@ class RuleHooksTrigger(
             it.hook?.let { hook ->
                 hook.actionsOnDisabledList.apply {
                     if (isNotEmpty()) {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId(it.id)
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                            .setSrcTitle(it.title)
+                            .build()
                         shortXContext.rule.executeActions(
-                            id = it.id,
-                            reason = "Hook: actionsOnDisabled",
+                            context = evaluateContext,
                             actions = this,
-                            initialContextData = mapOf(
-                                ContextDataMapping.Context.contextSrcTitle.name to "On rule disabled: ${it.title}",
-                                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                            ),
-                            ConflictStrategy.ConflictStrategy_ExecuteBoth
+                            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
                         )
                     }
                 }
@@ -74,15 +74,15 @@ class RuleHooksTrigger(
         rule.hook?.let { hook ->
             hook.actionsOnDeletedList.apply {
                 if (isNotEmpty()) {
+                    val evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(rule.id)
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_RuleHook)
+                        .setSrcTitle(rule.title)
+                        .build()
                     shortXContext.rule.executeActions(
-                        id = rule.id,
-                        reason = "Hook: actionsOnDeleted",
+                        context = evaluateContext,
                         actions = this,
-                        initialContextData = mapOf(
-                            ContextDataMapping.Context.contextSrcTitle.name to "On rule deleted: ${rule.title}",
-                            ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_RuleHook,
-                        ),
-                        ConflictStrategy.ConflictStrategy_ExecuteBoth
+                        conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
                     )
                 }
             }

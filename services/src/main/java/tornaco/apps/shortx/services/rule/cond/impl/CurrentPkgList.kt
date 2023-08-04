@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.rule.unpack_
@@ -11,8 +10,9 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object CurrentPkgList : Cond {
     override fun condClass(): Class<out Message> = CurrentPkgList::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
+            var reason: String? = null
             val currentPkg = condition unpack_ CurrentPkgList::class.java
             val requiredPkgList = if (currentPkg.pkgSetsList.isNotEmpty()) {
                 currentPkg.pkgSetsList.flatMap {
@@ -34,10 +34,7 @@ object CurrentPkgList : Cond {
                         }
                         if (!isF) {
                             res = false
-                            contextData.add(
-                                ContextDataMapping.Condition.conditionMatchReason.name,
-                                "${it.appPkgToString()} is NOT front."
-                            )
+                            reason = "${it.appPkgToString()} is NOT front."
                             return@forEach
                         }
                     }
@@ -54,7 +51,7 @@ object CurrentPkgList : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult(reason)
         }
     }
 }

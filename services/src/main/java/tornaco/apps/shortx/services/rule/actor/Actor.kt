@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
@@ -12,13 +13,15 @@ import tornaco.apps.shortx.services.rule.ActionEvaluator
 import tornaco.apps.shortx.services.rule.ConditionEvaluator
 
 data class HandleParams(
-    val context: Context,
+    val androidContext: Context,
     val shortXContext: ShortXContext,
+    val evaluateContext: EvaluateContext,
     val action: ProtoAny,
     val contextData: ContextData,
     val localVars: LocalVars,
+
     val recursiveExecute: suspend (
-        logTag: String,
+        context: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
         localVars: LocalVars

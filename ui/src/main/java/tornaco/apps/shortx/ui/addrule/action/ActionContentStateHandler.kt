@@ -3,6 +3,8 @@ package tornaco.apps.shortx.ui.addrule.action
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.UiClipboard
@@ -196,7 +198,15 @@ class ActionContentStateHandler(
     suspend fun executeAction(action: Action) {
         withContext(Dispatchers.IO) {
             logger.d("executeAction: $action")
-            shortXManager.executeAction(action.toProtoAction().pack_())
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(action.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                .setSrcTitle("Testing")
+                .build()
+            shortXManager.executeAction(
+                context = evaluateContext,
+                action = action.toProtoAction().pack_()
+            )
         }
     }
 
@@ -209,11 +219,17 @@ class ActionContentStateHandler(
             val da = DirectAction.newBuilder()
                 .setId("Tmp-${Date()}")
                 .setLastUpdateTime(System.currentTimeMillis())
-                .setTitle("Tmp")
+                .setTitle("Testing")
                 .addAllActions(protoActions)
                 .build()
 
-            shortXManager.executeDirectionAction(da)
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(da.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                .setSrcTitle(da.title)
+                .build()
+
+            shortXManager.executeDirectionAction(context = evaluateContext, da = da)
         }
     }
 }

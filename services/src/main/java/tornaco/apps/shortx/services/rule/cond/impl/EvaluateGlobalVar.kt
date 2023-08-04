@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
@@ -17,28 +16,24 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object EvaluateGlobalVar : Cond {
     override fun condClass(): Class<out Message> = EvaluateGlobalVar::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data = condition unpack_ EvaluateGlobalVar::class.java
             val globalVar = shortXContext.rule.getGlobalVarByName(data.varName)
 
             if (globalVar == null) {
                 logger.i("EvaluateGlobalVar, var with varName: ${data.varName} not found, op is: ${data.op}")
-                return data.op == GlobalVarOp.IsNotExists
+                return (data.op == GlobalVarOp.IsNotExists).toResult("Var not found")
             }
 
             val type: GlobalVarType? = globalVar.type.toType()
             if (type == null) {
                 logger.w("EvaluateGlobalVar, var with varName: ${data.varName} unknown type.")
-                return false
+                return false.toResult("Type is null")
             }
 
             val emptyValue = emptyList<String>()
             val currentValue = globalVar.valueList(noValueReturn = { emptyValue })
-            contextData.add(
-                ContextDataMapping.Condition.conditionMatchReason.name,
-                "Current value: ${currentValue.joinToString()}"
-            )
             val currentValueHasBeenSet = currentValue.isNotEmpty()
             logger.d("EvaluateGlobalVar, var: ${globalVar.name}, currentValueHasBeenSet: $currentValueHasBeenSet, currentValue: $currentValue")
 
@@ -267,7 +262,9 @@ object EvaluateGlobalVar : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult(
+                "Current value: ${currentValue.joinToString()}"
+            )
         }
     }
 }

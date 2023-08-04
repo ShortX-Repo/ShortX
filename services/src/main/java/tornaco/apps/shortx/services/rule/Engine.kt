@@ -7,13 +7,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
@@ -31,12 +31,13 @@ interface FactMatcher {
 
 interface ConditionEvaluator {
     suspend fun evaluate(
+        evaluateContext: EvaluateContext,
         condition: ProtoAny,
         contextData: ContextData
     ): EvaluateResult
 
     suspend fun evaluate(
-        logTag: String,
+        evaluateContext: EvaluateContext,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
@@ -44,13 +45,22 @@ interface ConditionEvaluator {
     ): Boolean
 
     sealed interface EvaluateResult {
-        data class Success(val condition: ProtoAny, val match: Boolean, val reason: String) :
-            EvaluateResult
+        val evaluateContext: EvaluateContext
 
-        data class Fail(val condition: ProtoAny, val error: Throwable) :
-            EvaluateResult
+        data class Success(
+            val condition: ProtoAny,
+            val match: Boolean,
+            val reason: String,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
 
-        object Break : EvaluateResult
+        data class Fail(
+            val condition: ProtoAny,
+            val error: Throwable,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
+
+        data class Break(override val evaluateContext: EvaluateContext) : EvaluateResult
     }
 }
 
@@ -59,19 +69,36 @@ fun ConditionEvaluator.EvaluateResult.isMatch() =
 
 interface ActionEvaluator {
     suspend fun evaluate(
-        logTag: String,
+        evaluateContext: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
         localVars: LocalVars
     ): EvaluateResult
 
     sealed interface EvaluateResult {
-        data class Success(val action: ProtoAny) : EvaluateResult
-        data class Fail(val shouldContinue: Boolean, val action: ProtoAny, val error: Throwable) :
-            EvaluateResult
+        val evaluateContext: EvaluateContext
 
-        data class Break(val action: ProtoAny) : EvaluateResult
-        data class Disabled(val action: ProtoAny) : EvaluateResult
+        data class Success(
+            val action: ProtoAny,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
+
+        data class Fail(
+            val shouldContinue: Boolean,
+            val action: ProtoAny,
+            val error: Throwable,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
+
+        data class Break(
+            val action: ProtoAny,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
+
+        data class Disabled(
+            val action: ProtoAny,
+            override val evaluateContext: EvaluateContext
+        ) : EvaluateResult
     }
 }
 
@@ -83,7 +110,9 @@ interface Engine {
     val factMatcher: FactMatcher
     val scope: CoroutineScope
 
-    fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean
+    fun shouldFire(
+        rules: List<Rule>, fact: ProtoMessage
+    ): Boolean
 
     fun fire(
         fact: ProtoMessage,
@@ -92,15 +121,14 @@ interface Engine {
     ): Boolean
 
     fun evaluateActions(
-        containerId: String,
-        logTag: String,
+        context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         conflictStrategy: ConflictStrategy
     )
 
     fun evaluateConditions(
-        logTag: String,
+        context: EvaluateContext,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
@@ -137,19 +165,29 @@ class DefaultRuleEngine(
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         val startTimeMillis = System.currentTimeMillis()
         return rules.filterInvalid().any {
-            shouldFireRuleForFact(fact, it) || shouldFireRuleZQuitForFact(fact, it)
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(it.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                .setSrcTitle(it.title)
+                .build()
+            shouldFireRuleForFact(evaluateContext, fact, it) || shouldFireRuleZQuitForFact(
+                evaluateContext,
+                fact,
+                it
+            )
         }.also {
             logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
         }
     }
 
     private fun shouldFireRuleForFact(
+        context: EvaluateContext,
         fact: ProtoMessage,
         rule: Rule
     ) = factMatcher.match(fact, rule.factsList) && runBlocking {
         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
             conditionEvaluator.evaluate(
-                logTag = rule.title,
+                evaluateContext = context,
                 condOp = rule.condOp,
                 condOpPayload = rule.condOpPayload,
                 conditions = rule.conditionsList,
@@ -159,12 +197,13 @@ class DefaultRuleEngine(
     } ?: defaultCondRes(rule)
 
     private fun shouldFireRuleZQuitForFact(
+        context: EvaluateContext,
         fact: ProtoMessage,
         rule: Rule
     ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList) && runBlocking {
         withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
             conditionEvaluator.evaluate(
-                logTag = "${rule.title}-$LOG_TAG_RULE_QUIT",
+                evaluateContext = context,
                 condOp = rule.quit.condOp,
                 condOpPayload = rule.quit.condOpPayload,
                 conditions = rule.quit.conditionsList,
@@ -189,12 +228,12 @@ class DefaultRuleEngine(
 
                 // Init data
                 val contextData = ContextData.obtain(initialContextData)
-                contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
-                contextData.add(ContextDataMapping.Context.contextSrcTitle.name, rule.title)
-                contextData.add(
-                    ContextDataMapping.Context.contextSrcEvent.name,
-                    ContextSrcEvent.ContextSrc_Rule
-                )
+                val evaluateContext = EvaluateContext.newBuilder()
+                    .setSrcId(rule.id)
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                    .setSrcTitle(rule.title)
+                    .build()
+
                 val localVars = LocalVars.obtain()
 
                 // Match condition
@@ -204,7 +243,7 @@ class DefaultRuleEngine(
                         true
                     } else {
                         conditionEvaluator.evaluate(
-                            logTag = rule.title,
+                            evaluateContext = evaluateContext,
                             condOp = rule.condOp,
                             condOpPayload = rule.condOpPayload,
                             conditions = rule.conditionsList,
@@ -255,7 +294,7 @@ class DefaultRuleEngine(
                                     logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
                                     rule.actionsList.forEach {
                                         val evaRes = actionEvaluator.evaluate(
-                                            logTag = rule.title,
+                                            evaluateContext = evaluateContext,
                                             action = it,
                                             contextData = contextData,
                                             localVars = localVars,
@@ -324,12 +363,11 @@ class DefaultRuleEngine(
                     anyMatch = true
 
                     val contextData = ContextData.obtain(initialContextData)
-                    contextData.add(ContextDataMapping.Context.contextSrcId.name, rule.id)
-                    contextData.add(ContextDataMapping.Context.contextSrcTitle.name, rule.title)
-                    contextData.add(
-                        ContextDataMapping.Context.contextSrcEvent.name,
-                        ContextSrcEvent.ContextSrc_RuleQuit
-                    )
+                    val evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(rule.id)
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)
+                        .setSrcTitle(rule.title)
+                        .build()
 
                     scope.launchSafety {
                         val conditionRes = if (quit.conditionsList.isEmpty()) {
@@ -337,7 +375,7 @@ class DefaultRuleEngine(
                             true
                         } else {
                             conditionEvaluator.evaluate(
-                                logTag = "${rule.title}-$LOG_TAG_RULE_QUIT",
+                                evaluateContext = evaluateContext,
                                 condOp = quit.condOp,
                                 condOpPayload = quit.condOpPayload,
                                 conditions = quit.conditionsList,
@@ -357,19 +395,14 @@ class DefaultRuleEngine(
     }
 
     override fun evaluateActions(
-        containerId: String,
-        logTag: String,
+        context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
         conflictStrategy: ConflictStrategy
     ) {
         val contextData = ContextData.obtain(initialContextData)
-        val isAlreadyRunning = synchronized(jobs) {
-            jobs.any {
-                it.id == containerId
-            }
-        }
-        logger.d("evaluateActions, $logTag conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
+        val isAlreadyRunning = synchronized(jobs) { jobs.any { it.id == context.srcId } }
+        logger.d("evaluateActions, ${context.srcTitle} conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
 
         val localVars = LocalVars.obtain()
 
@@ -380,9 +413,7 @@ class DefaultRuleEngine(
                 }
 
                 ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-                    cancelJobs("ConflictStrategy_ReplaceOld") {
-                        it.id == containerId
-                    }
+                    cancelJobs("ConflictStrategy_ReplaceOld") { it.id == context.srcId }
                 }
 
                 ConflictStrategy.ConflictStrategy_SkipNew -> {
@@ -393,11 +424,11 @@ class DefaultRuleEngine(
         }
 
         val job = scope.launchSafety {
-            logger.d("evaluateActions, job for id: $containerId start.")
+            logger.d("evaluateActions, job for id: ${context.srcId} start.")
             kotlin.run loop@{
                 actions.forEach {
                     val evaRes = actionEvaluator.evaluate(
-                        logTag = logTag,
+                        evaluateContext = context,
                         action = it,
                         contextData = contextData,
                         localVars = localVars
@@ -419,23 +450,23 @@ class DefaultRuleEngine(
             }
         }
         synchronized(jobs) {
-            jobs.add(JobRecord(containerId, job))
+            jobs.add(JobRecord(context.srcId, job))
         }
-        onJobStarted(containerId)
+        onJobStarted(context.srcId)
         job.invokeOnCompletion {
-            logger.d("job for id: $containerId complete.")
+            logger.d("job for id: ${context.srcId} complete.")
             synchronized(jobs) {
-                jobs.remove(JobRecord(containerId, job))
+                jobs.remove(JobRecord(context.srcId, job))
             }
             contextData.recycle()
-            onJobCompleted(containerId)
+            onJobCompleted(context.srcId)
         }
     }
 
     // This API is exposed for App check condition on Edit.
     // So let is run blocking.
     override fun evaluateConditions(
-        logTag: String,
+        context: EvaluateContext,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
@@ -443,7 +474,7 @@ class DefaultRuleEngine(
     ): Boolean {
         return runBlocking {
             conditionEvaluator.evaluate(
-                logTag,
+                context,
                 condOp,
                 condOpPayload,
                 conditions,

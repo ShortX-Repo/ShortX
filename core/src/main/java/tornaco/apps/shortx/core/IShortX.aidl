@@ -45,10 +45,13 @@ interface IShortX {
     ByteArrayWrapper getDirectActionById(String id);
     List<ByteArrayWrapper> getAllDirectAction();
     int getDirectActionCount();
-    void executeDirectionActionById(String id);
-    
-    void executeAction(in ByteArrayWrapper action);
-    void executeActionBlocking(in ByteArrayWrapper action);
+
+    void executeDirectionActionById(in ByteArrayWrapper evaluateContext, String id);
+    void executeDirectionAction(in ByteArrayWrapper evaluateContext, in ByteArrayWrapper da);
+    void executeAction(in ByteArrayWrapper evaluateContext, in ByteArrayWrapper action);
+    void executeActionBlocking(in ByteArrayWrapper evaluateContext, in ByteArrayWrapper action);
+    void directExecuteRuleActions(in ByteArrayWrapper evaluateContext, in String ruleId);
+
     // Direct Actions end
 
     List<ByteArrayWrapper> getActionEvaluateRecords();
@@ -109,7 +112,7 @@ interface IShortX {
     String executeMVEL(String expression);
 
     // Condition start
-    boolean evaluateCondition(in ByteArrayWrapper condition);
+    boolean evaluateCondition(in ByteArrayWrapper evaluateContext, in ByteArrayWrapper condition);
     // Condition end
 
     // Verify binding.
@@ -121,9 +124,6 @@ interface IShortX {
     // Dev settings
     void setPointerLocationEnabled(boolean enable);
     boolean isPointerLocationEnabled();
-
-    // Ext
-    void directExecuteRuleActions(in String ruleId);
 
     List<ByteArrayWrapper> getRunningServices(in ByteArrayWrapper pkg);
     List<ByteArrayWrapper> getRunningAppPkgs(String pkgSetLabel);
@@ -142,8 +142,6 @@ interface IShortX {
 
     void setKeyEventPromptEnabled(boolean enable);
     boolean isKeyEventPromptEnabled();
-
-    void executeDirectionAction(in ByteArrayWrapper da);
 
     void onMediaStoreInsert(in Uri uri, String path);
     void onMediaStoreDelete(in Uri uri, String path);

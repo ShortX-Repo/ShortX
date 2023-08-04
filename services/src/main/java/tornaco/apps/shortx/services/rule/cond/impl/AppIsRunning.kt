@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.appPkgToString
@@ -11,8 +10,9 @@ object AppIsRunning : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.AppIsRunning::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
+            var reason: String? = null
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.AppIsRunning::class.java
 
@@ -40,10 +40,7 @@ object AppIsRunning : Cond {
                         }
                         if (!isRunning) {
                             res = false
-                            contextData.add(
-                                ContextDataMapping.Condition.conditionMatchReason.name,
-                                "${it.appPkgToString()} is NOT running."
-                            )
+                            reason = "${it.appPkgToString()} is NOT running."
                             return@forEach
                         }
                     }
@@ -54,7 +51,7 @@ object AppIsRunning : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult(reason)
         }
     }
 }

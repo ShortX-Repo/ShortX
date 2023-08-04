@@ -11,7 +11,7 @@ object TimeInRange : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.TimeInRange::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.TimeInRange::class.java
@@ -31,7 +31,7 @@ object TimeInRange : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult()
         }
     }
 }

@@ -174,7 +174,7 @@ fun RuleScreen() {
                 vm.setRuleEnabled(id, enable)
             },
             onExecute = {
-                vm.directExecuteRuleActions(it.id)
+                vm.directExecuteRuleActions(it)
             },
             stopAllJobs = {
                 vm.stopJobs(it)

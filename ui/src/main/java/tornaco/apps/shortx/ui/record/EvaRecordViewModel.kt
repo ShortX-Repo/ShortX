@@ -8,6 +8,8 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import tornaco.apps.shortx.core.context.isFromDA
+import tornaco.apps.shortx.core.context.isFromRule
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
@@ -26,6 +28,8 @@ sealed interface EvaRecord {
     val formattedTimeStr: String
     val timeMillis: Long
 
+    val canViewSrc: Boolean
+
     data class FactPublishRecordUM(
         val factIns: Fact,
         override val formattedTimeStr: String,
@@ -33,12 +37,15 @@ sealed interface EvaRecord {
     ) : EvaRecord {
         override val timeMillis: Long
             get() = record.timeStamp
+        override val canViewSrc: Boolean
+            get() = false
     }
 
     data class ConditionEvaluateRecordUM(
         val actionIns: Condition,
         override val formattedTimeStr: String,
-        val record: ConditionEvaluateRecord
+        val record: ConditionEvaluateRecord,
+        override val canViewSrc: Boolean
     ) : EvaRecord {
         override val timeMillis: Long
             get() = record.timeStamp
@@ -47,7 +54,8 @@ sealed interface EvaRecord {
     data class ActionEvaluateRecordUM(
         val actionIns: Action,
         override val formattedTimeStr: String,
-        val record: ActionEvaluateRecord
+        val record: ActionEvaluateRecord,
+        override val canViewSrc: Boolean
     ) : EvaRecord {
         override val timeMillis: Long
             get() = record.timeStamp
@@ -198,7 +206,8 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
                             EvaRecord.ConditionEvaluateRecordUM(
                                 actionIns = actionIns,
                                 formattedTimeStr = DateUtils.formatLongForMessageTime(record.timeStamp),
-                                record = record
+                                record = record,
+                                canViewSrc = record.context.srcEvent.isFromRule || record.context.srcEvent.isFromDA
                             )
                         }
                     }
@@ -211,6 +220,9 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
                                 || (state.actionSetting.showError && !it.isSuccess)
                     }
                     .reversed()
+                    .apply {
+                        logger.d("${this.map { "${it.context.srcTitle} - ${it.context.srcId} - ${it.message}" }}")
+                    }
                     .mapNotNull { record ->
                         val actionIns = kotlin.runCatching {
                             record.action.toAction(shortXManager)
@@ -222,7 +234,8 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
                             EvaRecord.ActionEvaluateRecordUM(
                                 actionIns = actionIns,
                                 formattedTimeStr = DateUtils.formatLongForMessageTime(record.timeStamp),
-                                record = record
+                                record = record,
+                                canViewSrc = record.context.srcEvent.isFromRule || record.context.srcEvent.isFromDA
                             )
                         }
                     }

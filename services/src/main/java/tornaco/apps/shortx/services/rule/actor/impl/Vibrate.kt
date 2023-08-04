@@ -51,7 +51,7 @@ object Vibrate : Actor {
             customVibPattern,
             SEVEN_ELEMENTS_VIBRATION_AMPLITUDE, -1
         )
-        context.vibrate.vibrate(effect, VIBRATION_ATTRIBUTES)
+        androidContext.vibrate.vibrate(effect, VIBRATION_ATTRIBUTES)
     }
 
 }

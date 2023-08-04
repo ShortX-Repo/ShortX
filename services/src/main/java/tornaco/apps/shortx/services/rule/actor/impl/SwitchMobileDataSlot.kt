@@ -20,13 +20,13 @@ object SwitchMobileDataSlot : Actor {
         val data =
             action unpack_ tornaco.apps.shortx.core.proto.action.SwitchMobileDataSlot::class.java
         val targetSubInfo =
-            SubscriptionManager.from(context).activeSubscriptionInfoList.firstOrNull {
+            SubscriptionManager.from(androidContext).activeSubscriptionInfoList.firstOrNull {
                 it.simSlotIndex == data.slotId
             }
         requireNotNull(targetSubInfo) {
             "Sub not found for slot: ${data.slotId}"
         }
         logger.i("setDataEnabled: ${targetSubInfo.subscriptionId}")
-        SubscriptionManager.from(context).setDefaultDataSubId(targetSubInfo.subscriptionId)
+        SubscriptionManager.from(androidContext).setDefaultDataSubId(targetSubInfo.subscriptionId)
     }
 }

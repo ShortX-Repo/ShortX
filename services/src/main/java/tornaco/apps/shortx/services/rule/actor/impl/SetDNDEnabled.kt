@@ -18,7 +18,7 @@ object SetDNDEnabled : Actor {
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ SetDNDEnabled::class.java
-        val notificationManager = context.notificationManager
+        val notificationManager = androidContext.notificationManager
         val currentFilter = notificationManager.currentInterruptionFilter
         logger.d("currentFilter: $currentFilter")
         if (d.enable) {

@@ -32,7 +32,7 @@ object StartActivityUrlSchema : Actor {
             shortXContext.rule.getAllGlobalVars()
         }
         logger.d("startActivity: $url")
-        context.startActivityAsUser(
+        androidContext.startActivityAsUser(
             Intent(Intent.ACTION_VIEW).setData(Uri.parse(url))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             UserHandleUtils.userIdToUserHandle(userId)

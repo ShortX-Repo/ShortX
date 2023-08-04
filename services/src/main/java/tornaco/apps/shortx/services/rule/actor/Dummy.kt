@@ -5,14 +5,21 @@ import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.ConditionEvaluator
 
-fun dummyHandlerParamsForAction(context: Context, shortXContext: ShortXContext, action: ProtoAny) =
+fun dummyHandlerParamsForAction(
+    androidContext: Context,
+    shortXContext: ShortXContext,
+    evaluateContext: EvaluateContext,
+    action: ProtoAny
+) =
     HandleParams(
-        context = context,
+        androidContext = androidContext,
         shortXContext = shortXContext,
+        evaluateContext = evaluateContext,
         action = action,
         contextData = ContextData.obtain(),
         localVars = LocalVars.obtain(),
@@ -21,20 +28,22 @@ fun dummyHandlerParamsForAction(context: Context, shortXContext: ShortXContext, 
         },
         conditionEvaluator = object : ConditionEvaluator {
             override suspend fun evaluate(
+                evaluateContext: EvaluateContext,
                 condition: ProtoAny,
                 contextData: ContextData
             ): ConditionEvaluator.EvaluateResult {
-                throw IllegalStateException("Dummy")
+                TODO("Dummy")
             }
 
             override suspend fun evaluate(
-                logTag: String,
+                evaluateContext: EvaluateContext,
                 condOp: ConditionOperator,
                 condOpPayload: ConditionOperatorPayload,
                 conditions: List<ProtoAny>,
                 contextData: ContextData
             ): Boolean {
-                throw IllegalStateException("Dummy")
+                TODO("Dummy")
             }
+
         },
     )

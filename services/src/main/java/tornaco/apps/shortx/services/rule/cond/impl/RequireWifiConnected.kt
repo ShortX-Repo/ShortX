@@ -8,7 +8,7 @@ object RequireWifiConnected : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.RequireWifiConnected::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.RequireWifiConnected::class.java
@@ -21,7 +21,7 @@ object RequireWifiConnected : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult()
         }
     }
 }

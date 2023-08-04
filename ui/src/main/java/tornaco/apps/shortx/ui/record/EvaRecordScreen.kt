@@ -9,12 +9,17 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
@@ -37,12 +42,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
+import tornaco.apps.shortx.core.context.isFromRule
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
+import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.ActionIcon
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.condition.ConditionIcon
@@ -55,16 +66,17 @@ import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
-import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.theme.ActionRecordColor
 import tornaco.apps.shortx.ui.theme.ConditionRecordColor
@@ -112,7 +124,7 @@ fun EvaRecordScreen(back: () -> Unit) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.settings.action.record"]) },
+                        title = { Text(text = i18N["ui.settings.eva.record"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -147,6 +159,8 @@ fun EvaRecordScreen(back: () -> Unit) {
                         .padding(paddingValues)
                         .pullRefresh(pullRefreshState),
                 ) {
+                    val context = LocalContext.current
+
                     when (val loadState = state.loadState) {
                         is LoadState.Error -> {
                             LoadError(Modifier.fillMaxSize())
@@ -164,7 +178,14 @@ fun EvaRecordScreen(back: () -> Unit) {
                                     onCheckChange = {
                                         vm.toggleRecordEnable(it)
                                     })
-                                RecordList(records = loadState.data)
+
+                                RecordList(records = loadState.data,
+                                    viewDASrc = {
+                                        AddDirectActionActivity.start(context, it)
+                                    },
+                                    viewRuleSrc = {
+                                        AddRuleActivity.start(context, it)
+                                    })
                             }
                         }
                     }
@@ -181,23 +202,39 @@ fun EvaRecordScreen(back: () -> Unit) {
 }
 
 @Composable
-private fun RecordList(records: List<EvaRecord>) {
+private fun RecordList(
+    records: List<EvaRecord>,
+    viewDASrc: (String) -> Unit,
+    viewRuleSrc: (String) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(records) {
-            when (it) {
+        items(records) { record ->
+            when (record) {
                 is EvaRecord.ActionEvaluateRecordUM -> {
-                    ActionRecordItem(it = it)
+                    ActionRecordItem(it = record) {
+                        if (record.record.context.srcEvent.isFromRule) {
+                            viewRuleSrc(it)
+                        } else {
+                            viewDASrc(it)
+                        }
+                    }
                 }
 
                 is EvaRecord.ConditionEvaluateRecordUM -> {
-                    ConditionRecordItem(it = it)
+                    ConditionRecordItem(it = record) {
+                        if (record.record.context.srcEvent.isFromRule) {
+                            viewRuleSrc(it)
+                        } else {
+                            viewDASrc(it)
+                        }
+                    }
                 }
 
                 is EvaRecord.FactPublishRecordUM -> {
-                    FactRecordItem(it = it)
+                    FactRecordItem(it = record)
                 }
             }
         }
@@ -348,16 +385,13 @@ fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
 }
 
 @Composable
-private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM) {
+private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM, viewSrc: (String) -> Unit) {
     val i18N = LocalI18N.current
     Box {
         val actionLabel = labelLinesForAction(
             i18N,
             it.actionIns
         ).toMutableList().apply {
-            if (it.record.srcTitle.isNotBlank()) {
-                add("${it.record.srcEvent.displayLabel(i18N)}   ${it.record.srcTitle}")
-            }
             add(it.formattedTimeStr)
         }
         val messageDialogState = rememberErrorMessageDialogState(
@@ -366,15 +400,24 @@ private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM) {
         )
         ErrorMessageDialog(state = messageDialogState)
 
-        ListItem(
+        CommonRecordListItem(
             modifier = Modifier
                 .background(ActionRecordColor.copy(RECORD_BG_ALPHA))
                 .padding(end = 16.dp),
-            titleLines = actionLabel,
+            title = actionLabel[0],
+            messages = if (actionLabel.size > 1) actionLabel.subList(
+                1,
+                actionLabel.size
+            ) else emptyList(),
+            event = "${it.record.context.srcEvent.displayLabel(i18N)}   ${it.record.context.srcTitle}",
+            canViewSrc = it.canViewSrc,
+            onLinkClick = {
+                viewSrc(it.record.context.srcId)
+            },
             icon = {
                 ActionIcon(it.actionIns)
             },
-            action1 = {
+            overflow = {
                 if (it.record.isSuccess) {
                     RemixIcon(
                         remixName = Remix.System.checkbox_circle_fill,
@@ -394,10 +437,14 @@ private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM) {
 }
 
 @Composable
-private fun ConditionRecordItem(it: EvaRecord.ConditionEvaluateRecordUM) {
+private fun ConditionRecordItem(
+    it: EvaRecord.ConditionEvaluateRecordUM,
+    viewSrc: (String) -> Unit
+) {
+    val i18N = LocalI18N.current
     Box {
-        val actionLabel = labelForCondition(
-            LocalI18N.current,
+        val conditionLabel = labelForCondition(
+            i18N,
             it.actionIns
         ).toMutableList().apply {
             if (it.record.message.isNotBlank()) {
@@ -406,20 +453,29 @@ private fun ConditionRecordItem(it: EvaRecord.ConditionEvaluateRecordUM) {
             add(it.formattedTimeStr)
         }
         val messageDialogState = rememberErrorMessageDialogState(
-            title = actionLabel[0],
+            title = conditionLabel[0],
             message = it.record.message
         )
         ErrorMessageDialog(state = messageDialogState)
 
-        ListItem(
+        CommonRecordListItem(
             modifier = Modifier
                 .background(ConditionRecordColor.copy(RECORD_BG_ALPHA))
                 .padding(end = 16.dp),
-            titleLines = actionLabel,
+            title = conditionLabel[0],
+            messages = if (conditionLabel.size > 1) conditionLabel.subList(
+                1,
+                conditionLabel.size
+            ) else emptyList(),
+            event = "${it.record.context.srcEvent.displayLabel(i18N)}   ${it.record.context.srcTitle}",
+            canViewSrc = it.canViewSrc,
+            onLinkClick = {
+                viewSrc(it.record.context.srcId)
+            },
             icon = {
                 ConditionIcon(it.actionIns)
             },
-            action1 = {
+            overflow = {
                 if (it.record.isSuccess) {
                     if (it.record.isMatch) {
                         RemixIcon(
@@ -448,7 +504,7 @@ private fun ConditionRecordItem(it: EvaRecord.ConditionEvaluateRecordUM) {
 @Composable
 private fun FactRecordItem(it: EvaRecord.FactPublishRecordUM) {
     Box {
-        val actionLabel = mutableListOf<String>().apply {
+        val factLabels = mutableListOf<String>().apply {
             addAll(
                 labelForFact(
                     LocalI18N.current,
@@ -458,16 +514,80 @@ private fun FactRecordItem(it: EvaRecord.FactPublishRecordUM) {
             add(it.formattedTimeStr)
         }
 
-        ListItem(
+        CommonRecordListItem(
             modifier = Modifier
                 .background(FactRecordColor.copy(RECORD_BG_ALPHA))
                 .padding(end = 16.dp),
-            titleLines = actionLabel,
+            title = factLabels[0],
+            messages = if (factLabels.size > 1) factLabels.subList(
+                1,
+                factLabels.size
+            ) else emptyList(),
             icon = {
                 FactIcon(it.factIns)
             },
+            event = null,
+            canViewSrc = false,
             onClick = {
             })
+    }
+}
+
+
+@Composable
+private fun CommonRecordListItem(
+    modifier: Modifier = Modifier,
+    icon: (@Composable () -> Unit),
+    title: String,
+    messages: List<String> = emptyList(),
+    event: String? = null,
+    canViewSrc: Boolean,
+    overflow: @Composable ColumnScope.() -> Unit = {},
+    onClick: () -> Unit,
+    onLinkClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .clickable {
+                onClick()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(end = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon.invoke()
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(modifier = Modifier) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp,
+                    )
+                )
+
+                if (event != null) {
+                    if (canViewSrc) {
+                        LinkText(text = event, onClick = onLinkClick)
+                    } else {
+                        TipBody(text = event)
+                    }
+                }
+
+                TipBody(text = messages.joinToString(System.lineSeparator()))
+            }
+        }
+
+        Column(horizontalAlignment = Alignment.End) {
+            overflow()
+        }
     }
 }
 

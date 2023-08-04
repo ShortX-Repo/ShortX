@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.IntOp
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.rule.unpack_
@@ -11,7 +10,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object BatteryPercent : Cond {
     override fun condClass(): Class<out Message> = BatteryPercent::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val state =
                 requireNotNull(BatteryImpl(context).batteryState) { "Fail get battery state" }
@@ -44,16 +43,11 @@ object BatteryPercent : Cond {
                 }
             }
 
-            contextData.add(
-                ContextDataMapping.Condition.conditionMatchReason.name,
-                "Current value: ${state.batteryLevel}"
-            )
-
             if (batteryPercent.isInvert) {
                 !res
             } else {
                 res
-            }
+            }.toResult("Current value: ${state.batteryLevel}")
         }
     }
 }

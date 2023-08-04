@@ -18,7 +18,7 @@ object RemoteExecuteMVEL : Actor {
         val d =
             params.action unpack_ tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL::class.java
         MVELExecutor(
-            params.context,
+            params.androidContext,
             params.shortXContext,
             d.expression
         ).invoke(params.contextData.map, params.localVars).apply {

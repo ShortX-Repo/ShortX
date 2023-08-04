@@ -20,6 +20,7 @@ object ShowOverlayButton : Actor {
         withContext(Dispatchers.Main) {
             val d = action unpack_ ShowOverlayButton::class.java
             shortXContext.overlay.postShowOverlay(
+                evaluateContext,
                 ShowOverlayButton.newBuilder(d).apply {
                     if (d.tag.isBlank()) {
                         logger.i("Use action id as overlay tag: ${d.id}")

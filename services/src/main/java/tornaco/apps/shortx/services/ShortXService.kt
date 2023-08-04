@@ -16,7 +16,6 @@ import android.util.Log
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
@@ -33,7 +32,7 @@ import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.res.AppResources
@@ -62,7 +61,6 @@ import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.v.v
 import java.io.File
-import java.util.UUID
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
@@ -236,14 +234,35 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.getDirectActionCount()
         }
 
-        override fun executeDirectionActionById(id: String) {
+        override fun executeDirectionActionById(
+            evaluateContext: ByteArrayWrapper,
+            id: String
+        ) {
             enforceCallingPermissions()
-            shortXContext.rule.executeDirectionActionById(id)
+            shortXContext.rule.executeDirectionActionById(
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                id = id
+            )
         }
 
-        override fun executeDirectionAction(da: ByteArrayWrapper) {
+        override fun executeDirectionAction(
+            evaluateContext: ByteArrayWrapper,
+            da: ByteArrayWrapper
+        ) {
             enforceCallingPermissions()
-            shortXContext.rule.executeDirectionAction(DirectAction.parseFrom(da.byteData))
+            shortXContext.rule.executeDirectionAction(
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                directAction = DirectAction.parseFrom(da.byteData)
+            )
+        }
+
+        override fun evaluateCondition(
+            evaluateContext: ByteArrayWrapper,
+            condition: ByteArrayWrapper): Boolean {
+            return shortXContext.rule.evaluateCondition(
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                condition = ProtoAny.parseFrom(condition.byteData)
+            )
         }
 
         override fun onMediaStoreInsert(uri: Uri, path: String) {
@@ -491,30 +510,30 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.tile.setQSTileOptEnabled(enable)
         }
 
-        override fun directExecuteRuleActions(ruleId: String) {
-            shortXContext.rule.directExecuteRuleActions(ruleId)
+        override fun directExecuteRuleActions(evaluateContext: ByteArrayWrapper, ruleId: String) {
+            shortXContext.rule.directExecuteRuleActions(
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                ruleId = ruleId
+            )
         }
 
-        override fun executeAction(action: ByteArrayWrapper) {
+        override fun executeAction(evaluateContext: ByteArrayWrapper, action: ByteArrayWrapper) {
             enforceCallingPermissions()
             shortXContext.rule.executeActions(
-                id = "EA-${UUID.randomUUID()}",
-                reason = "IShortX executeAction",
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
                 actions = listOf(ProtoAny.parseFrom(action.byteData)),
-                initialContextData = mapOf(
-                    ContextDataMapping.Context.contextSrcTitle.name to "Direct execute",
-                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
-                ),
                 conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
 
-        override fun executeActionBlocking(action: ByteArrayWrapper) {
+        override fun executeActionBlocking(
+            evaluateContext: ByteArrayWrapper,
+            action: ByteArrayWrapper
+        ) {
             enforceCallingPermissions()
             shortXContext.rule.executeActionsBlocking(
-                "EAB-${UUID.randomUUID()}",
-                "IShortX executeAction",
-                listOf(ProtoAny.parseFrom(action.byteData))
+                context = EvaluateContext.parseFrom(evaluateContext.byteData),
+                actions = listOf(ProtoAny.parseFrom(action.byteData))
             )
         }
 
@@ -590,10 +609,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun executeMVEL(expression: String): String {
             return shortXContext.rule.executeMVEL(expression)
-        }
-
-        override fun evaluateCondition(condition: ByteArrayWrapper): Boolean {
-            return shortXContext.rule.evaluateCondition(ProtoAny.parseFrom(condition.byteData))
         }
 
         override fun vb(code: String, deviceId: String, cb: ICallback) {

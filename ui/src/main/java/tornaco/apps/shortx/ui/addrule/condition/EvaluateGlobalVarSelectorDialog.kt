@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.toDisplayName
@@ -55,6 +57,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import java.util.UUID
 
 class EvaluateGlobalVarSelectorDialogState(
     val onSelected: (Condition.EvaluateGlobalVar) -> Unit
@@ -121,7 +124,14 @@ class EvaluateGlobalVarSelectorDialogState(
     }
 
     fun evaluate() {
-        val res = shortXManager.evaluateCondition(action.toProtoCondition().pack_())
+        val res = shortXManager.evaluateCondition(
+            EvaluateContext.newBuilder()
+                .setSrcId(UUID.randomUUID().toString())
+                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                .setSrcTitle("Testing global var")
+                .build(),
+            action.toProtoCondition().pack_()
+        )
         setOutput(res?.toString() ?: "FAIL TO EVALUATE")
     }
 }

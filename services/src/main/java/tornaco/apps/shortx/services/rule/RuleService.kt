@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.IDAObserver
@@ -133,16 +134,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     }
                 }
             },
-            actionEvaluateResultListener = { result, context ->
+            actionEvaluateResultListener = { result ->
                 logger.d("actionEvaluateResultListener: $result")
                 if (isEvaluateRecordEnabled()) {
-                    result.toActionEvaluateRecord(context)?.let { actionEvaluateRecorder.add(it) }
+                    result.toActionEvaluateRecord()?.let { actionEvaluateRecorder.add(it) }
                 }
             },
-            conditionEvaluateResultListener = {
-                logger.d("conditionEvaluateResultListener: $it")
+            conditionEvaluateResultListener = { result ->
+                logger.d("conditionEvaluateResultListener: $result")
                 if (isEvaluateRecordEnabled()) {
-                    conditionEvaluateRecorder.add(it.toConditionEvaluateRecord())
+                    conditionEvaluateRecorder.add(result.toConditionEvaluateRecord())
                 }
             }
         )
@@ -278,6 +279,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
+        val publishTimeMillis = System.currentTimeMillis()
         handler.postSafety {
             logger.i("publishFact, ${fact::class.java}: $reason")
             val anyMatch = engine.fire(
@@ -287,22 +289,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             )
 
             if (anyMatch && isEvaluateRecordEnabled()) {
-                factPublishRecorder.add(fact.toFactPublishRecord())
+                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
             }
         }
     }
 
     fun executeActions(
-        id: String,
-        reason: String,
+        context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any> = emptyMap(),
         conflictStrategy: ConflictStrategy
     ) {
-        logger.d("executeActions: $reason, $actions $id")
+        logger.d("executeActions: ${context.srcEvent} ${context.srcTitle}")
         engine.evaluateActions(
-            containerId = id,
-            logTag = reason,
+            context = context,
             actions = actions,
             initialContextData = initialContextData,
             conflictStrategy = conflictStrategy
@@ -311,8 +311,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     @TestApi
     fun executeActionsBlocking(
-        id: String,
-        reason: String,
+        context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
@@ -322,7 +321,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
 
             override fun onJobCompleted(completion: String?) {
-                if (id == completion) {
+                if (context.srcId == completion) {
                     latch.countDown()
                 }
             }
@@ -332,8 +331,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
         registerJobStatusListener(listener)
         executeActions(
-            id,
-            reason,
+            context,
             actions,
             initialContextData,
             ConflictStrategy.ConflictStrategy_ExecuteBoth
@@ -435,49 +433,36 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun getDirectActionCount() = dasSettingsStore.getDirectActionCount()
 
-    fun executeDirectionActionById(id: String) {
+    fun executeDirectionActionById(context: EvaluateContext, id: String) {
         getDirectActionById(id)?.let {
             executeActions(
-                id = id,
-                reason = "executeDirectionActionById#${it.title}",
+                context = context,
                 actions = it.actionsList,
-                initialContextData = mapOf(
-                    ContextDataMapping.Context.contextSrcTitle.name to it.title,
-                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_DirectAction,
-                ),
-                it.conflictPolicy
+                conflictStrategy = it.conflictPolicy
             )
         }
     }
 
-    fun executeDirectionAction(directAction: DirectAction) {
+    fun executeDirectionAction(
+        context: EvaluateContext,
+        directAction: DirectAction
+    ) {
         executeActions(
-            id = directAction.id,
-            reason = "executeDirectionAction#${directAction.title}",
+            context = context,
             actions = directAction.actionsList,
-            initialContextData = mapOf(
-                ContextDataMapping.Context.contextSrcTitle.name to directAction.title,
-                ContextDataMapping.Context.contextSrcId.name to directAction.id,
-                ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnDAEditor,
-            ),
-            directAction.conflictPolicy
+            conflictStrategy = directAction.conflictPolicy
         )
     }
 
-    fun directExecuteRuleActions(ruleId: String) {
+    fun directExecuteRuleActions(context: EvaluateContext, ruleId: String) {
         val rule = getRuleById(ruleId)
         logger.d("directExecuteRuleActions: $ruleId ${rule?.title}")
         rule?.let {
             val actions = it.actionsList
             executeActions(
-                id = ruleId,
-                reason = "directExecuteRuleActions",
+                context = context,
                 actions = actions,
-                initialContextData = mapOf(
-                    ContextDataMapping.Context.contextSrcTitle.name to "Direct execute: ${rule.title}",
-                    ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteRuleActions,
-                ),
-                ConflictStrategy.ConflictStrategy_ExecuteBoth
+                conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
     }
@@ -487,9 +472,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         runBlocking {
             systemServiceScope.launchSafety {
                 val handleParams = dummyHandlerParamsForAction(
-                    context,
-                    shortXContext,
-                    tornaco.apps.shortx.core.proto.action.ExecuteMVEL.newBuilder()
+                    androidContext = context,
+                    shortXContext = shortXContext,
+                    evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(UUID.randomUUID().toString())
+                        .setSrcTitle("Testing MVEL")
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                        .build(),
+                    action = tornaco.apps.shortx.core.proto.action.ExecuteMVEL.newBuilder()
                         .setExpression(expression).build().pack_()
                 )
                 runCatching {
@@ -506,10 +496,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun evaluateCondition(
+        context: EvaluateContext,
         condition: ProtoAny,
     ): Boolean {
         return engine.evaluateConditions(
-            "RuleService evaluateCondition",
+            context = context,
             condOp = ConditionOperator.ALL,
             condOpPayload = ConditionOperatorPayload.newBuilder().build(),
             conditions = listOf(condition),

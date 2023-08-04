@@ -10,6 +10,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.TakeScreenshot
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 
@@ -26,13 +28,26 @@ class ActionTest {
 
     @Test
     fun testTakeScreenshot() {
-        shortXManager.executeActionBlocking(TakeScreenshot.newBuilder().build().pack_())
+        val evaluateContext = EvaluateContext.newBuilder()
+            .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+            .setSrcTitle("Test")
+            .build()
+        shortXManager.executeActionBlocking(
+            context = evaluateContext,
+            action = TakeScreenshot.newBuilder().build().pack_()
+        )
     }
 
     @Test
     fun testShellCommand() = runTest {
+        val evaluateContext = EvaluateContext.newBuilder()
+            .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+            .setSrcTitle("Test")
+            .build()
         shortXManager.executeActionBlocking(
-            ShellCommand.newBuilder().setCommand("settings put system pointer_location 1").build()
+            context = evaluateContext,
+            action = ShellCommand.newBuilder().setCommand("settings put system pointer_location 1")
+                .build()
                 .pack_()
         )
         Thread.sleep(1000)
@@ -40,7 +55,9 @@ class ActionTest {
             .trimShellRes() shouldBe "1"
 
         shortXManager.executeActionBlocking(
-            ShellCommand.newBuilder().setCommand("settings put system pointer_location 0").build()
+            context = evaluateContext,
+            action = ShellCommand.newBuilder().setCommand("settings put system pointer_location 0")
+                .build()
                 .pack_()
         )
         Thread.sleep(1000)

@@ -15,6 +15,6 @@ object ExpandNotification : Actor {
         params: HandleParams
     ) {
         // TODO API
-        params.context.statusBarManager.expandNotificationsPanel()
+        params.androidContext.statusBarManager.expandNotificationsPanel()
     }
 }

@@ -123,13 +123,14 @@ fun ListItem(
 
 @Composable
 fun ListItem(
+    modifier: Modifier = Modifier,
     title: String,
     icon: (@Composable () -> Unit)? = null,
     action1: @Composable () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
@@ -235,14 +236,52 @@ fun ListItem(
 @Composable
 fun ListItem(
     icon: (@Composable () -> Unit)? = null,
-    title: String? = null,
+    title: String,
     text1: String? = null,
     text2: String? = null,
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
 ) {
+    ListItem(icon = icon, title = title, texts = arrayOf(
+        {
+            text1?.let {
+                Text(
+                    modifier = Modifier.padding(top = 4.dp),
+                    text = text1,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                    maxLines = 12
+                )
+            }
+        },
+        {
+            text2?.let {
+                Column {
+                    Text(
+                        modifier = Modifier.padding(top = 6.dp),
+                        text = text2,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        maxLines = 12
+                    )
+                }
+            }
+        }
+
+
+    ), overflow = overflow, onClick = onClick)
+}
+
+
+@Composable
+fun ListItem(
+    modifier: Modifier = Modifier,
+    icon: (@Composable () -> Unit)? = null,
+    title: String,
+    texts: Array<@Composable () -> Unit> = arrayOf(),
+    overflow: @Composable ColumnScope.() -> Unit = {},
+    onClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
@@ -261,35 +300,12 @@ fun ListItem(
             icon?.invoke()
             Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier) {
-                title?.let {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 20.sp,
-                        )
-                    )
-                }
-                text1?.let {
-                    Column {
-                        TinySpacer()
-                        Text(
-                            text = text1,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                            maxLines = 12
-                        )
-                    }
-                }
-                text2?.let {
-                    Column {
-                        TinySpacer()
-                        TinySpacer()
-                        TinySpacer()
-                        Text(
-                            text = text2,
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                            maxLines = 12
-                        )
-                    }
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp)
+                )
+                texts.forEach {
+                    it()
                 }
             }
         }
@@ -299,6 +315,7 @@ fun ListItem(
         }
     }
 }
+
 
 @Composable
 @Preview

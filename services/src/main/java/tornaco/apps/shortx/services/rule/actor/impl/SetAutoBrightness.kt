@@ -22,7 +22,7 @@ object SetAutoBrightness : Actor {
             android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
         }
         android.provider.Settings.System.putInt(
-            context.contentResolver,
+            androidContext.contentResolver,
             android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE,
             mode
         )

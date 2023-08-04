@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import tornaco.apps.shortx.core.proto.action.Vibrate
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -21,6 +23,7 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import java.util.UUID
 import kotlin.math.roundToInt
 
 class VibratePatternSelectorState(
@@ -39,8 +42,14 @@ class VibratePatternSelectorState(
     }
 
     fun preview() {
+        val evaluateContext = EvaluateContext.newBuilder()
+            .setSrcId("Test-" + UUID.randomUUID().toString())
+            .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+            .setSrcTitle("Testing Vibrate")
+            .build()
         shortXManager.executeAction(
-            Vibrate.newBuilder()
+            context = evaluateContext,
+            action = Vibrate.newBuilder()
                 .setVib1(vib1)
                 .setVib2(vib2)
                 .setVib3(vib3)

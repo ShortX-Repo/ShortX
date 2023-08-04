@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
@@ -224,33 +225,69 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun executeDirectionActionById(id: String) {
+    fun executeDirectionActionById(context: EvaluateContext, id: String) {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
         invokeService(Unit) {
-            executeDirectionActionById(id)
+            executeDirectionActionById(ByteArrayWrapper(context.toByteArray()), id)
         }
     }
 
-    fun executeDirectionAction(da: DirectAction) {
+    fun executeDirectionAction(context: EvaluateContext, da: DirectAction) {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
         invokeService(Unit) {
-            executeDirectionAction(ByteArrayWrapper(da.toByteArray()))
+            executeDirectionAction(
+                ByteArrayWrapper(context.toByteArray()),
+                ByteArrayWrapper(da.toByteArray())
+            )
         }
     }
 
-    fun directExecuteRuleActions(ruleId: String) {
+    fun directExecuteRuleActions(context: EvaluateContext, ruleId: String) {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
         invokeService(Unit) {
-            directExecuteRuleActions(ruleId)
+            directExecuteRuleActions(ByteArrayWrapper(context.toByteArray()), ruleId)
         }
     }
 
-    fun executeAction(action: ProtoAny) {
+    fun executeAction(context: EvaluateContext, action: ProtoAny) {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
         invokeService(Unit) {
-            executeAction(ByteArrayWrapper(action.toByteArray()))
+            executeAction(
+                ByteArrayWrapper(context.toByteArray()),
+                ByteArrayWrapper(action.toByteArray())
+            )
         }
     }
 
-    fun executeActionBlocking(action: ProtoAny) {
+    fun executeActionBlocking(context: EvaluateContext, action: ProtoAny) {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
         invokeService(Unit) {
-            executeActionBlocking(ByteArrayWrapper(action.toByteArray()))
+            executeActionBlocking(
+                ByteArrayWrapper(context.toByteArray()),
+                ByteArrayWrapper(action.toByteArray())
+            )
+        }
+    }
+
+    fun evaluateCondition(context: EvaluateContext, condition: ProtoAny): Boolean? {
+        requireNotNull(context.srcId) {
+            "context.srcId is null"
+        }
+        return invokeService(null) {
+            evaluateCondition(
+                ByteArrayWrapper(context.toByteArray()),
+                ByteArrayWrapper(condition.toByteArray())
+            )
         }
     }
 
@@ -316,12 +353,6 @@ class ShortXManager(private val service: IShortX) {
     fun getAppIcon(pkgName: String, userId: Int): Bitmap? {
         return invokeService(null) {
             getAppIcon(pkgName, userId)
-        }
-    }
-
-    fun evaluateCondition(condition: ProtoAny): Boolean? {
-        return invokeService(null) {
-            evaluateCondition(ByteArrayWrapper(condition.toByteArray()))
         }
     }
 

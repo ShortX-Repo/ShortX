@@ -23,7 +23,7 @@ object MapNav : Actor {
         if (app == MapApp.Baidu) {
             kotlin.runCatching {
                 MapUtils.openBaiduNaviMap(
-                    context = context,
+                    context = androidContext,
                     longitude = d.loc.longitude.toString(),
                     latitude = d.loc.latitude.toString()
                 )
@@ -33,7 +33,7 @@ object MapNav : Actor {
         } else if (app == MapApp.Gaode) {
             kotlin.runCatching {
                 MapUtils.openGaodeNaviMap(
-                    context = context,
+                    context = androidContext,
                     appName = "ShortX",
                     poiName = d.poi.fallbackOnEmpty("Destination"),
                     latitude = d.loc.latitude.toString(),

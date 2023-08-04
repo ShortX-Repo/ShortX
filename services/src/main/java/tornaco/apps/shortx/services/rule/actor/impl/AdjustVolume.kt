@@ -18,7 +18,7 @@ object AdjustVolume : Actor {
     ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.AdjustVolume::class.java
 
-        context.audioManager.adjustVolume(
+        androidContext.audioManager.adjustVolume(
             d.direction.number.apply {
                 logger.d("adjustVolume: $this")
             },

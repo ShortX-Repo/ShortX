@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.services.ShortXContext
 
 object RuleEngineFactory {
@@ -20,7 +19,7 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         handler: Handler,
         conditionEvaluator: ConditionEvaluator,
-        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult, ContextData) -> Unit,
+        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     ) = ActionEvaluatorImpl(
         context,
         shortXContext,
@@ -35,7 +34,7 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         androidContext: Context,
         handler: Handler,
-        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult, ContextData) -> Unit,
+        actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
         conditionEvaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
         factMatcher: FactMatcher = newFactMatcher(shortXContext),
         conditionEvaluator: ConditionEvaluator = newConditionEvaluator(

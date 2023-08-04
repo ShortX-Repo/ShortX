@@ -22,7 +22,7 @@ object SetFlashLightEnabled : Actor {
     ): Unit = with(params) {
         synchronized(SetFlashLightEnabled) {
             if (hw == null) {
-                hw = HwImpl(context, shortXContext)
+                hw = HwImpl(androidContext, shortXContext)
             }
         }
         val d = action unpack_ SetFlashLightEnabled::class.java

@@ -16,7 +16,7 @@ object InputSwipe : Actor {
     ): Unit = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.InputSwipe::class.java
 
-        require(context.powerManager.isInteractive) {
+        require(androidContext.powerManager.isInteractive) {
             "Can not swipe when device is not interactive"
         }
 

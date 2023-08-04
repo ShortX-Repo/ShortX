@@ -16,7 +16,7 @@ object SetBrightness : Actor {
     ): Unit = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.SetBrightness::class.java
         android.provider.Settings.System.putInt(
-            context.contentResolver,
+            androidContext.contentResolver,
             android.provider.Settings.System.SCREEN_BRIGHTNESS,
             minOf(255, maxOf(0, data.value)).apply {
                 logger.d("set brightness to: $this")

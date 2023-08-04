@@ -14,7 +14,7 @@ object WaitForIdle : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        if (!context.powerManager.isInteractive) return@with
+        if (!androidContext.powerManager.isInteractive) return@with
         shortXContext.wm.withUiAutomation("WaitForIdle") {
             it.waitForIdle()
         }

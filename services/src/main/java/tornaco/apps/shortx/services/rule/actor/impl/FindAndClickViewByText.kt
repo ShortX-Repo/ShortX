@@ -17,7 +17,7 @@ object FindAndClickViewByText : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val d = action unpack_ FindAndClickViewByText::class.java
-        require(context.powerManager.isInteractive) {
+        require(androidContext.powerManager.isInteractive) {
             "Can not FindAndClickViewByText when device is not interactive"
         }
         shortXContext.wm.withUiAutomation("WaitForIdle") {

@@ -15,7 +15,7 @@ object InputTap : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java
-        require(context.powerManager.isInteractive) {
+        require(androidContext.powerManager.isInteractive) {
             "Can not InputTap when device is not interactive"
         }
         shortXContext.wm.withUiAutomation("InputTap") {

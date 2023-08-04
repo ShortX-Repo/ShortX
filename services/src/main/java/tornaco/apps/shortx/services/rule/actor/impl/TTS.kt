@@ -27,7 +27,7 @@ object TTS : Actor {
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.TTS::class.java
         if (tts == null) {
-            initTTS(context)
+            initTTS(androidContext)
         }
 
         val text = d.text.inflateContextMap(contextData)
@@ -45,7 +45,7 @@ object TTS : Actor {
         if (speakRes1 != TextToSpeech.SUCCESS) {
             logger.w("speakRes1 is ERROR, re-init and try 1 more time.")
             tts?.let { runCatching { it.shutdown() } }
-            initTTS(context)
+            initTTS(androidContext)
 
             val speakRes2 = requireNotNull(tts) { "TTS is null" }.speak(
                 text,

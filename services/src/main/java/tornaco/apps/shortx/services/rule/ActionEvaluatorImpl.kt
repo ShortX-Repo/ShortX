@@ -7,6 +7,7 @@ import com.google.protobuf.Descriptors
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.common.ActionOnError
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.unpack_
@@ -26,12 +27,12 @@ class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler,
-    private val evaluateResultListener: (ActionEvaluator.EvaluateResult, ContextData) -> Unit,
+    private val evaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
     private val logger = Logger("ActionEvaluatorImpl")
     private val recursiveExecute: suspend (
-        logTag: String,
+        context: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
         localVars: LocalVars
@@ -42,30 +43,31 @@ class ActionEvaluatorImpl(
 
     @SuppressLint("MissingPermission")
     override suspend fun evaluate(
-        logTag: String,
+        evaluateContext: EvaluateContext,
         action: ProtoAny,
         contextData: ContextData,
         localVars: LocalVars
     ): ActionEvaluator.EvaluateResult {
         val actor = prebuiltActorFor(action)
-        logger.d("evaluate: $logTag - ${action.typeUrl}, actor: $actor")
+        logger.d("evaluate: ${evaluateContext.srcTitle} - ${action.typeUrl}, actor: $actor")
         if (actor == null) {
-            return ActionEvaluator.EvaluateResult.Break(action)
+            return ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
         }
 
         // Do not worry about unpack cost, protobuf has cache.
         val unPacked = action unpack_ actor.actionsCanHandle()
         val attrs = extractActionAttrs(unPacked)
         if (attrs != null && attrs.isDisabled) {
-            return ActionEvaluator.EvaluateResult.Disabled(action)
+            return ActionEvaluator.EvaluateResult.Disabled(action, evaluateContext)
         }
         val shouldContinueOnError = attrs != null && attrs.onError == ActionOnError.Continue
 
         return kotlin.runCatching {
             actor.handle(
                 HandleParams(
-                    context = context,
+                    androidContext = context,
                     shortXContext = shortXContext,
+                    evaluateContext = evaluateContext,
                     action = action,
                     contextData = contextData,
                     localVars = localVars,
@@ -73,19 +75,20 @@ class ActionEvaluatorImpl(
                     conditionEvaluator = conditionEvaluator
                 )
             )
-            ActionEvaluator.EvaluateResult.Success(action)
-        }.getOrElse {
-            if (it is StopExecuteException) {
-                ActionEvaluator.EvaluateResult.Break(action)
+            ActionEvaluator.EvaluateResult.Success(action, evaluateContext)
+        }.getOrElse { throwable ->
+            if (throwable is StopExecuteException) {
+                ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
             } else {
                 ActionEvaluator.EvaluateResult.Fail(
                     shouldContinue = shouldContinueOnError,
                     action = action,
-                    error = it
+                    error = throwable,
+                    evaluateContext = evaluateContext
                 )
             }
         }.apply {
-            evaluateResultListener(this, contextData)
+            evaluateResultListener(this)
         }
     }
 

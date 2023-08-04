@@ -19,7 +19,7 @@ object StartActivity : Actor {
         val startActivity =
             action unpack_ tornaco.apps.shortx.core.proto.action.StartActivity::class.java
 
-        context.startActivity(
+        androidContext.startActivity(
             Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setComponent(ComponentName.unflattenFromString(startActivity.componentNameAsString))
         )

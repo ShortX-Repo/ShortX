@@ -2,10 +2,10 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.Logger
@@ -23,25 +23,26 @@ class ConditionEvaluatorImpl(
 
     // For single
     override suspend fun evaluate(
+        evaluateContext: EvaluateContext,
         condition: ProtoAny,
         contextData: ContextData
     ): ConditionEvaluator.EvaluateResult {
         val cond = prebuiltCondFor(condition)
         logger.d("evaluate, cond for ${condition.typeUrl}: $cond")
         if (cond == null) {
-            return ConditionEvaluator.EvaluateResult.Break
+            return ConditionEvaluator.EvaluateResult.Break(evaluateContext)
         }
         return kotlin.runCatching {
             val matchRes =
                 cond.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
             ConditionEvaluator.EvaluateResult.Success(
                 condition = condition,
-                match = matchRes,
-                reason = contextData.pop(ContextDataMapping.Condition.conditionMatchReason.name)
-                    ?.toString() ?: ""
+                match = matchRes.match,
+                reason = matchRes.reason ?: "",
+                evaluateContext = evaluateContext
             )
         }.getOrElse {
-            ConditionEvaluator.EvaluateResult.Fail(condition, it)
+            ConditionEvaluator.EvaluateResult.Fail(condition, it, evaluateContext)
         }.apply {
             evaluateResultListener(this)
         }
@@ -49,24 +50,24 @@ class ConditionEvaluatorImpl(
 
     // For List
     override suspend fun evaluate(
-        logTag: String,
+        evaluateContext: EvaluateContext,
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
         contextData: ContextData
     ): Boolean {
-        logger.d("evaluate rule condition: $logTag $condOp condition size: ${conditions.size}, context: $contextData")
+        logger.d("evaluate rule condition: ${evaluateContext.srcTitle} $condOp condition size: ${conditions.size}, context: $contextData")
         return when (condOp) {
             ConditionOperator.ALL -> {
-                conditions.all { evaluate(it, contextData).isMatch() }
+                conditions.all { evaluate(evaluateContext, it, contextData).isMatch() }
             }
 
             ConditionOperator.ANY -> {
-                conditions.any { evaluate(it, contextData).isMatch() }
+                conditions.any { evaluate(evaluateContext, it, contextData).isMatch() }
             }
 
             ConditionOperator.NONE -> {
-                conditions.none { evaluate(it, contextData).isMatch() }
+                conditions.none { evaluate(evaluateContext, it, contextData).isMatch() }
             }
 
             ConditionOperator.MVEL -> {
@@ -78,6 +79,7 @@ class ConditionEvaluatorImpl(
                 repeat(conditions.size) { index ->
                     val codeName = "c${index + 1}"
                     varMap[codeName] = ConditionCallable(
+                        evaluateContext = evaluateContext,
                         eva = this,
                         condition = conditions[index],
                         contextData = contextData
@@ -97,11 +99,12 @@ class ConditionEvaluatorImpl(
                     val matchRes = res.toString().toBooleanStrictOrNull() ?: false
                     evaluateResultListener(
                         ConditionEvaluator.EvaluateResult.Success(
-                            MatchMVEL.newBuilder()
+                            condition = MatchMVEL.newBuilder()
                                 .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
                                 .setExpression(expressionTranslation).build().pack_(),
-                            matchRes,
-                            ""
+                            match = matchRes,
+                            reason = "",
+                            evaluateContext = evaluateContext
                         )
                     )
                     matchRes
@@ -109,10 +112,11 @@ class ConditionEvaluatorImpl(
                     logger.e(it, "Match MVEL error")
                     evaluateResultListener(
                         ConditionEvaluator.EvaluateResult.Fail(
-                            MatchMVEL.newBuilder()
+                            condition = MatchMVEL.newBuilder()
                                 .setId("ConditionOperator.MVEL${System.currentTimeMillis()}")
                                 .setExpression(expressionTranslation).build().pack_(),
-                            it
+                            error = it,
+                            evaluateContext = evaluateContext
                         )
                     )
                     false
@@ -120,7 +124,7 @@ class ConditionEvaluatorImpl(
             }
 
             else -> {
-                conditions.all { evaluate(it, contextData).isMatch() }
+                conditions.all { evaluate(evaluateContext, it, contextData).isMatch() }
             }
         }
     }

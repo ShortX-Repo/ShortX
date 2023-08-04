@@ -61,8 +61,7 @@ message ActionEvaluateRecord {
   string message = 3;
   int64 timeStamp = 4;
 
-  string srcTitle = 5;
-  ContextSrcEvent srcEvent = 6;
+  EvaluateContext context = 6;
 }
 
 message ConditionEvaluateRecord {
@@ -71,11 +70,19 @@ message ConditionEvaluateRecord {
   bool isMatch = 3;
   string message = 4;
   int64 timeStamp = 5;
+
+  EvaluateContext context = 6;
 }
 
 message FactPublishRecord {
   google.protobuf.Any fact = 1;
   int64 timeStamp = 2;
+}
+
+message EvaluateContext {
+  string srcId = 1;
+  string srcTitle = 2;
+  ContextSrcEvent srcEvent = 8;
 }
 
 enum ContextSrcEvent {

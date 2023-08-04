@@ -28,6 +28,6 @@ object StartActivityIntent : Actor {
             ) { shortXContext.rule.getAllGlobalVars() }
         val userId = startActivity.userId
         logger.d("startActivityAsUser: $intent $userId")
-        context.startActivityAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))
+        androidContext.startActivityAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))
     }
 }

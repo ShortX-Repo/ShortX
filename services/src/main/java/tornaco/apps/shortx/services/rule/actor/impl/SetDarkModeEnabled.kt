@@ -16,7 +16,7 @@ object SetDarkModeEnabled : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
-        val settings = SettingsImpl(context)
+        val settings = SettingsImpl(androidContext)
         val d = action unpack_ SetDarkModeEnabled::class.java
         if (d.enable) settings.enableDarkMode() else settings.disableDarkMode()
     }

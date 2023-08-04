@@ -25,7 +25,7 @@ object WhileLoop : Actor {
             while (
                 index < repeat &&
                 (d.conditionsList.isNullOrEmpty() || conditionEvaluator.evaluate(
-                    logTag = "WhileLoop",
+                    evaluateContext = evaluateContext,
                     condOp = d.condOp,
                     condOpPayload = d.condOpPayload,
                     conditions = d.conditionsList,
@@ -35,7 +35,7 @@ object WhileLoop : Actor {
                 logger.d("WhileLoop inside: $index")
                 d.actionsList.forEach {
                     logger.d("evaluate one loop.")
-                    recursiveExecute("WhileLoop", it, contextData, localVars)
+                    recursiveExecute(evaluateContext, it, contextData, localVars)
                 }
                 delay(delay)
                 index += 1

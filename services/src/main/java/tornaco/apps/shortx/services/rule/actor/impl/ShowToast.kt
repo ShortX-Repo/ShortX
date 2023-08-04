@@ -24,7 +24,7 @@ object ShowToast : Actor {
         val t = action unpack_ ShowToast::class.java
         withContext(Dispatchers.Main) {
             Toast.makeText(
-                context,
+                androidContext,
                 t.message.inflateContextMap(contextData)
                     .replaceLocalVarValues(localVars)
                     .replaceGlobalVarValues {

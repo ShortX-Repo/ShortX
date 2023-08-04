@@ -10,7 +10,7 @@ import tornaco.apps.shortx.services.rule.cond.Cond
 object MatchMVEL : Cond {
     override fun condClass(): Class<out Message> = MatchMVEL::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val mvel = condition unpack_ MatchMVEL::class.java
             val res = MVELExecutor(
@@ -29,7 +29,7 @@ object MatchMVEL : Cond {
                 !retValue
             } else {
                 retValue
-            }
+            }.toResult()
         }
     }
 }

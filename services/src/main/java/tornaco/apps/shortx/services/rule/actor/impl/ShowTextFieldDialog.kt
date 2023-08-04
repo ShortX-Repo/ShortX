@@ -36,7 +36,7 @@ object ShowTextFieldDialog : Actor {
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.ShowTextFieldDialog::class.java
         evaluateShowDialogAction(
-            context = context,
+            context = androidContext,
             shortXContext = shortXContext,
             d = d,
             contextData = contextData,

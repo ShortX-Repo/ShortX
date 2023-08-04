@@ -16,7 +16,7 @@ object SetDataEnabled : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
-        val data = DataImpl(context, shortXContext)
+        val data = DataImpl(androidContext, shortXContext)
         val d = action unpack_ SetDataEnabled::class.java
         if (d.hasSpecificSlotId) {
             data.setDataEnabledForSlot(d.slotId, d.enable)

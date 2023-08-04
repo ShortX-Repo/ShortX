@@ -23,7 +23,7 @@ object WriteClipboard : Actor {
             val data =
                 action unpack_ tornaco.apps.shortx.core.proto.action.WriteClipboard::class.java
             val allGlobalVars = { shortXContext.rule.getAllGlobalVars() }
-            context.clipboardManager.primaryClip = ClipData.newPlainText(
+            androidContext.clipboardManager.primaryClip = ClipData.newPlainText(
                 data.note ?: "shortx-action",
                 data.text.inflateContextMap(contextData)
                     .replaceLocalVarValues(localVars)

@@ -4,9 +4,10 @@ import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
 
-fun ProtoMessage.toFactPublishRecord(): FactPublishRecord =
-    FactPublishRecord.newBuilder().setFact(this.pack_())
-        .setTimeStamp(System.currentTimeMillis()).build()
+fun ProtoMessage.toFactPublishRecord(publishTimeMillis: Long): FactPublishRecord =
+    FactPublishRecord.newBuilder()
+        .setFact(this.pack_())
+        .setTimeStamp(publishTimeMillis).build()
 
 private const val MAX_ENTRY_SIZE = 100
 

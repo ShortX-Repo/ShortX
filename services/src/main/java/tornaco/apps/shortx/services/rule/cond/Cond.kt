@@ -13,7 +13,7 @@ interface Cond {
 
     fun condClass(): Class<out Message>
 
-    suspend fun evaluate(param: CondParam): Boolean
+    suspend fun evaluate(param: CondParam): Result
 
     data class CondParam(
         val context: Context,
@@ -21,6 +21,13 @@ interface Cond {
         val condition: ProtoAny,
         val contextData: ContextData
     )
+
+    data class Result(
+        val match: Boolean,
+        val reason: String? = null
+    )
+
+    fun Boolean.toResult(reason: String? = null) = Result(this, reason)
 }
 
 interface CondProvider {

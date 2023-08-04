@@ -18,6 +18,8 @@ import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.res.Remix
@@ -490,10 +492,15 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
-    fun directExecuteRuleActions(ruleId: String) {
-        logger.d("directExecuteRuleActions: $ruleId")
+    fun directExecuteRuleActions(ruleUM: RuleUM) {
+        logger.d("directExecuteRuleActions: ${ruleUM.title}")
         viewModelScope.launch {
-            shortXManager.directExecuteRuleActions(ruleId)
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(ruleUM.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteRuleActions)
+                .setSrcTitle(ruleUM.title)
+                .build()
+            shortXManager.directExecuteRuleActions(evaluateContext, ruleUM.id)
         }
     }
 
@@ -528,7 +535,15 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
 
     fun executeDA(da: DirectActionUM) {
         viewModelScope.launch {
-            shortXManager.executeDirectionActionById(da.id)
+            val evaluateContext = EvaluateContext.newBuilder()
+                .setSrcId(da.id)
+                .setSrcEvent(ContextSrcEvent.ContextSrc_DirectAction)
+                .setSrcTitle(da.title)
+                .build()
+            shortXManager.executeDirectionActionById(
+                context = evaluateContext,
+                id = da.id
+            )
         }
     }
 

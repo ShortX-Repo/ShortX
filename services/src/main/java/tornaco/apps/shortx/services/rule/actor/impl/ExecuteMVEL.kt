@@ -19,7 +19,7 @@ object ExecuteMVEL : Actor {
     ) {
         val d = params.action unpack_ ExecuteMVEL::class.java
         MVELExecutor(
-            context = params.context,
+            context = params.androidContext,
             shortXContext = params.shortXContext,
             expression = d.expression.inflateContextMap(params.contextData.map.mapValues { entry ->
                 // Wrap all data with ""

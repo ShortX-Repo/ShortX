@@ -16,7 +16,7 @@ object SetWifiEnabled : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        val hw = HwImpl(context, shortXContext)
+        val hw = HwImpl(androidContext, shortXContext)
         val d = action unpack_ SetWifiEnabled::class.java
         if (d.enable) hw.enableWifi() else hw.disableWifi()
     }

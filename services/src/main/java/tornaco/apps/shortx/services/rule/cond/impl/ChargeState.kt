@@ -9,7 +9,7 @@ object ChargeState : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.ChargeState::class.java
 
-    override suspend fun evaluate(param: Cond.CondParam): Boolean {
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =
                 condition unpack_ tornaco.apps.shortx.core.proto.condition.ChargeState::class.java
@@ -20,7 +20,7 @@ object ChargeState : Cond {
                 !res
             } else {
                 res
-            }
+            }.toResult()
         }
     }
 }

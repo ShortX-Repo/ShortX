@@ -20,7 +20,7 @@ object InputText : Actor {
         params: HandleParams
     ) {
         val ac = params.action unpack_ InputText::class.java
-        require(params.context.powerManager.isInteractive) {
+        require(params.androidContext.powerManager.isInteractive) {
             "Can not InputText when device is not interactive"
         }
         params.shortXContext.input.submitText(

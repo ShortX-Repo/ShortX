@@ -3,10 +3,9 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
-import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -35,6 +34,7 @@ class OverlayService(shortXContext: ShortXContext) :
     }
 
     fun postShowOverlay(
+        evaluateContext: EvaluateContext,
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
         logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
@@ -62,14 +62,9 @@ class OverlayService(shortXContext: ShortXContext) :
             },
             onButtonClick = { button: OverlayButtonSetting ->
                 shortXContext.rule.executeActions(
-                    id = "Overlay-Button-${action.id}",
-                    reason = "Overlay Button #${button.label} click",
+                    context = evaluateContext,
                     actions = button.actionsList,
-                    initialContextData = mapOf(
-                        ContextDataMapping.Context.contextSrcTitle.name to "Overlay#${action.tag}",
-                        ContextDataMapping.Context.contextSrcEvent.name to ContextSrcEvent.ContextSrc_ExecuteOnOverlay,
-                    ),
-                    ConflictStrategy.ConflictStrategy_ExecuteBoth
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
                 )
             },
             onButtonLongClick = {},
