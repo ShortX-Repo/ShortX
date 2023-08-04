@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.context.isFromDA
 import tornaco.apps.shortx.core.context.isFromRule
 import tornaco.apps.shortx.core.proto.rule.ActionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.DateUtils
@@ -22,13 +23,14 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
-import tornaco.apps.shortx.ui.base.LoadState
 
 sealed interface EvaRecord {
     val formattedTimeStr: String
     val timeMillis: Long
 
     val canViewSrc: Boolean
+
+    fun filterSrc(evaluateContext: EvaluateContext): Boolean
 
     data class FactPublishRecordUM(
         val factIns: Fact,
@@ -39,6 +41,10 @@ sealed interface EvaRecord {
             get() = record.timeStamp
         override val canViewSrc: Boolean
             get() = false
+
+        override fun filterSrc(evaluateContext: EvaluateContext): Boolean {
+            return true
+        }
     }
 
     data class ConditionEvaluateRecordUM(
@@ -49,6 +55,10 @@ sealed interface EvaRecord {
     ) : EvaRecord {
         override val timeMillis: Long
             get() = record.timeStamp
+
+        override fun filterSrc(evaluateContext: EvaluateContext): Boolean {
+            return evaluateContext.srcId == record.context.srcId
+        }
     }
 
     data class ActionEvaluateRecordUM(
@@ -59,11 +69,17 @@ sealed interface EvaRecord {
     ) : EvaRecord {
         override val timeMillis: Long
             get() = record.timeStamp
+
+        override fun filterSrc(evaluateContext: EvaluateContext): Boolean {
+            return evaluateContext.srcId == record.context.srcId
+        }
     }
 }
 
 data class EvaRecordState(
-    val loadState: LoadState<List<EvaRecord>> = LoadState.Loading,
+    val data: List<EvaRecord> = emptyList(),
+    val isLoading: Boolean = false,
+
     val factSetting: ViewRecordType.Fact = ViewRecordType.Fact(show = true),
     val conditionSetting: ViewRecordType.Condition = ViewRecordType.Condition(
         showMatch = true,
@@ -75,6 +91,7 @@ data class EvaRecordState(
         showError = true
     ),
     val isRecordEnabled: Boolean = false,
+    val onlyShowSrc: EvaluateContext? = null
 )
 
 sealed interface ViewRecordType {
@@ -98,6 +115,19 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
     override val container: Container<EvaRecordState, Nothing> = container(
         initialState = EvaRecordState()
     )
+
+    fun setOnlyShowSrcId(onlyShowSrc: EvaluateContext?) = intent {
+        reduce {
+            state.copy(
+                onlyShowSrc = if (state.onlyShowSrc == onlyShowSrc) {
+                    null
+                } else {
+                    onlyShowSrc
+                }
+            )
+        }
+        loadRecords()
+    }
 
     fun loadSwitch() = intent {
         reduce {
@@ -160,7 +190,7 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
     fun loadRecords() =
         intent {
             reduce {
-                state.copy(loadState = LoadState.Loading)
+                state.copy(isLoading = true)
             }
 
             val facts = withContext(Dispatchers.IO) {
@@ -241,8 +271,12 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
                     }
             }
 
+            val onlyShowSrc = state.onlyShowSrc
             val finalRecords = withContext(Dispatchers.IO) {
                 (facts + conditions + actions)
+                    .filter {
+                        onlyShowSrc == null || it.filterSrc(onlyShowSrc)
+                    }
                     .sortedByDescending {
                         it.timeMillis
                     }
@@ -250,7 +284,8 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
 
             reduce {
                 state.copy(
-                    loadState = LoadState.Success(data = finalRecords),
+                    data = finalRecords,
+                    isLoading = false
                 )
             }
         }

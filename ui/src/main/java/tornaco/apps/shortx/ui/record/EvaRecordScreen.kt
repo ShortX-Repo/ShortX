@@ -7,7 +7,9 @@ package tornaco.apps.shortx.ui.record
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +54,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.context.isFromRule
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
@@ -61,14 +65,13 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
 import tornaco.apps.shortx.ui.addrule.fact.FactIcon
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LinkText
-import tornaco.apps.shortx.ui.base.LoadError
-import tornaco.apps.shortx.ui.base.LoadState
-import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -149,7 +152,7 @@ fun EvaRecordScreen(back: () -> Unit) {
                     )
                 }) { paddingValues ->
                 val pullRefreshState =
-                    rememberPullRefreshState(state.loadState.isLoading(), { vm.loadRecords() })
+                    rememberPullRefreshState(state.isLoading, { vm.loadRecords() })
 
                 BottomSheetMenu(sheetState, vm)
 
@@ -161,37 +164,34 @@ fun EvaRecordScreen(back: () -> Unit) {
                 ) {
                     val context = LocalContext.current
 
-                    when (val loadState = state.loadState) {
-                        is LoadState.Error -> {
-                            LoadError(Modifier.fillMaxSize())
-                        }
+                    Column {
+                        SwitchBar(
+                            modifier = Modifier.padding(16.dp),
+                            isChecked = state.isRecordEnabled,
+                            onCheckChange = {
+                                vm.toggleRecordEnable(it)
+                            })
 
-                        LoadState.Loading -> {
-                            Loading(Modifier.fillMaxSize())
-                        }
-
-                        is LoadState.Success -> {
-                            Column {
-                                SwitchBar(
-                                    modifier = Modifier.padding(16.dp),
-                                    isChecked = state.isRecordEnabled,
-                                    onCheckChange = {
-                                        vm.toggleRecordEnable(it)
-                                    })
-
-                                RecordList(records = loadState.data,
-                                    viewDASrc = {
-                                        AddDirectActionActivity.start(context, it)
-                                    },
-                                    viewRuleSrc = {
-                                        AddRuleActivity.start(context, it)
-                                    })
-                            }
-                        }
+                        RecordList(
+                            records = state.data,
+                            viewDASrc = {
+                                AddDirectActionActivity.start(context, it)
+                            },
+                            viewRuleSrc = {
+                                AddRuleActivity.start(context, it)
+                            },
+                            onShowThisSrc = {
+                                Toast.makeText(
+                                    context,
+                                    i18N["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                vm.setOnlyShowSrcId(it)
+                            })
                     }
 
                     PullRefreshIndicator(
-                        state.loadState.isLoading(),
+                        state.isLoading,
                         pullRefreshState,
                         Modifier.align(Alignment.TopCenter)
                     )
@@ -205,7 +205,8 @@ fun EvaRecordScreen(back: () -> Unit) {
 private fun RecordList(
     records: List<EvaRecord>,
     viewDASrc: (String) -> Unit,
-    viewRuleSrc: (String) -> Unit
+    viewRuleSrc: (String) -> Unit,
+    onShowThisSrc: (EvaluateContext) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -214,23 +215,31 @@ private fun RecordList(
         items(records) { record ->
             when (record) {
                 is EvaRecord.ActionEvaluateRecordUM -> {
-                    ActionRecordItem(it = record) {
-                        if (record.record.context.srcEvent.isFromRule) {
-                            viewRuleSrc(it)
-                        } else {
-                            viewDASrc(it)
-                        }
-                    }
+                    ActionRecordItem(
+                        it = record,
+                        viewSrc = {
+                            if (record.record.context.srcEvent.isFromRule) {
+                                viewRuleSrc(it)
+                            } else {
+                                viewDASrc(it)
+                            }
+                        },
+                        onShowThisSrc = onShowThisSrc
+                    )
                 }
 
                 is EvaRecord.ConditionEvaluateRecordUM -> {
-                    ConditionRecordItem(it = record) {
-                        if (record.record.context.srcEvent.isFromRule) {
-                            viewRuleSrc(it)
-                        } else {
-                            viewDASrc(it)
-                        }
-                    }
+                    ConditionRecordItem(
+                        it = record,
+                        viewSrc = {
+                            if (record.record.context.srcEvent.isFromRule) {
+                                viewRuleSrc(it)
+                            } else {
+                                viewDASrc(it)
+                            }
+                        },
+                        onShowThisSrc = onShowThisSrc
+                    )
                 }
 
                 is EvaRecord.FactPublishRecordUM -> {
@@ -264,6 +273,17 @@ fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
                     .padding(horizontal = 16.dp)
             ) {
                 CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
+
+                AnimatedVisibility(visible = state.onlyShowSrc != null) {
+                    ListItem(title = LocalI18N.current["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
+                        action1 = {
+                            IconButton(onClick = {
+                                vm.setOnlyShowSrcId(null)
+                            }) {
+                                RemixIcon(remixName = Remix.System.close_line)
+                            }
+                        })
+                }
 
                 FieldTitle(text = LocalI18N.current["ui.fact.title"])
                 SmallSpacer()
@@ -385,7 +405,11 @@ fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
 }
 
 @Composable
-private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM, viewSrc: (String) -> Unit) {
+private fun ActionRecordItem(
+    it: EvaRecord.ActionEvaluateRecordUM,
+    viewSrc: (String) -> Unit,
+    onShowThisSrc: (EvaluateContext) -> Unit,
+) {
     val i18N = LocalI18N.current
     Box {
         val actionLabel = labelLinesForAction(
@@ -414,6 +438,9 @@ private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM, viewSrc: (Str
             onLinkClick = {
                 viewSrc(it.record.context.srcId)
             },
+            onlyShowThisSrc = {
+                onShowThisSrc(it.record.context)
+            },
             icon = {
                 ActionIcon(it.actionIns)
             },
@@ -439,7 +466,8 @@ private fun ActionRecordItem(it: EvaRecord.ActionEvaluateRecordUM, viewSrc: (Str
 @Composable
 private fun ConditionRecordItem(
     it: EvaRecord.ConditionEvaluateRecordUM,
-    viewSrc: (String) -> Unit
+    viewSrc: (String) -> Unit,
+    onShowThisSrc: (EvaluateContext) -> Unit,
 ) {
     val i18N = LocalI18N.current
     Box {
@@ -471,6 +499,9 @@ private fun ConditionRecordItem(
             canViewSrc = it.canViewSrc,
             onLinkClick = {
                 viewSrc(it.record.context.srcId)
+            },
+            onlyShowThisSrc = {
+                onShowThisSrc(it.record.context)
             },
             icon = {
                 ConditionIcon(it.actionIns)
@@ -545,6 +576,7 @@ private fun CommonRecordListItem(
     overflow: @Composable ColumnScope.() -> Unit = {},
     onClick: () -> Unit,
     onLinkClick: () -> Unit = {},
+    onlyShowThisSrc: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -575,7 +607,21 @@ private fun CommonRecordListItem(
 
                 if (event != null) {
                     if (canViewSrc) {
-                        LinkText(text = event, onClick = onLinkClick)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            LinkText(text = event, onClick = onLinkClick)
+                            StandardSpacer()
+                            ColoredIcon(
+                                color = Color.Transparent,
+                                size = 24.dp,
+                                onClick = {
+                                    onlyShowThisSrc()
+                                }) {
+                                RemixIcon(
+                                    modifier = Modifier.size(18.dp),
+                                    remixName = Remix.System.filter_2_line
+                                )
+                            }
+                        }
                     } else {
                         TipBody(text = event)
                     }
