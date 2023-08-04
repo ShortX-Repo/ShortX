@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -87,6 +88,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
         serviceLifecycle.systemReady()
+
+        shortXContext.rule.publishFact(
+            "SystemReady",
+            SystemReady.newBuilder().build()
+        )
     }
 
     private fun publishBinderService() {
