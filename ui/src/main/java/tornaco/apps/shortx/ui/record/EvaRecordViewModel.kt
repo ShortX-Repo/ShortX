@@ -144,6 +144,11 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
         }
     }
 
+    fun clearRecords() = intent {
+        shortXManager.clearEvaluateRecords()
+        loadRecords()
+    }
+
     fun loadRecords() =
         intent {
             reduce {

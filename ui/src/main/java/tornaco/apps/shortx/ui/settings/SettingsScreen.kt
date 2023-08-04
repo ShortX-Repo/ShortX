@@ -82,9 +82,7 @@ fun SettingsScreen(
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
-    goToActionRecord: () -> Unit,
-    goToConditionRecord: () -> Unit,
-    goToFactPublishRecord: () -> Unit,
+    goToEvaRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
     goToGestureRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit
@@ -274,9 +272,7 @@ fun SettingsScreen(
                                 state = state,
                                 mainState = subscribeState,
                                 vm = vm,
-                                goToActionRecord = goToActionRecord,
-                                goToConditionRecord = goToConditionRecord,
-                                goToFactPublishRecord = goToFactPublishRecord,
+                                goToEvaRecord = goToEvaRecord,
                                 goToAudioRecord = goToAudioRecord,
                                 goToGestureRecord = goToGestureRecord,
                             )
@@ -397,9 +393,7 @@ private fun recordSettings(
     state: SettingsState,
     mainState: SubscribeState,
     vm: SettingsViewModel,
-    goToActionRecord: () -> Unit,
-    goToConditionRecord: () -> Unit,
-    goToFactPublishRecord: () -> Unit,
+    goToEvaRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
     goToGestureRecord: () -> Unit,
 ): List<Preference> {
@@ -414,26 +408,10 @@ private fun recordSettings(
         Preference.Category(LocalI18N.current["ui.settings.record"]),
 
         Preference.TextPreference(icon = Remix.Media.notification_3_fill,
-            title = LocalI18N.current["ui.settings.fact.record"],
-            summary = LocalI18N.current["ui.settings.fact.record.summary"],
+            title = LocalI18N.current["ui.settings.eva.record"],
+            summary = LocalI18N.current["ui.settings.eva.record.summary"],
             onClick = {
-                goToFactPublishRecord()
-            }
-        ),
-
-        Preference.TextPreference(icon = Remix.System.history_fill,
-            title = LocalI18N.current["ui.settings.condition.record"],
-            summary = LocalI18N.current["ui.settings.condition.record.summary"],
-            onClick = {
-                goToConditionRecord()
-            }
-        ),
-
-        Preference.TextPreference(icon = Remix.Document.task_fill,
-            title = LocalI18N.current["ui.settings.action.record"],
-            summary = LocalI18N.current["ui.settings.action.record.summary"],
-            onClick = {
-                goToActionRecord()
+                goToEvaRecord()
             }
         ),
 

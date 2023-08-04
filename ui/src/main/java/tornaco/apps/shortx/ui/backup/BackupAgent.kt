@@ -114,8 +114,7 @@ class BackupAgent(private val context: Context) {
                 logger.w("Delete pkg set: ${it.label}")
                 shortXManager.deletePkgSet(it.label)
             }
-            shortXManager.clearActionEvaluateRecords()
-            shortXManager.clearConditionEvaluateRecords()
+            shortXManager.clearEvaluateRecords()
         }
     }
 

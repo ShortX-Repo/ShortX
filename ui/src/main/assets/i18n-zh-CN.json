@@ -538,6 +538,8 @@
   "ui.settings.danmu.summary": "调整弹幕颜色，字体大小，速度等",
   "ui.settings.edge.gesture.size": "边缘手势",
   "ui.settings.edge.gesture.size.summary": "设置边缘手势触摸区域大小",
+  "ui.settings.eva.record": "指令记录",
+  "ui.settings.eva.record.summary": "查看触发器、条件、动作记录",
   "ui.settings.fact.record": "触发器记录",
   "ui.settings.fact.record.summary": "查看触发器记录",
   "ui.settings.gesture.record": "手势记录",

@@ -79,7 +79,7 @@ import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
+import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import kotlin.reflect.KClass
@@ -154,7 +154,7 @@ private fun Actions(
                     if (it.data == "exe") {
                         scope.launch { handler.executeAll() }
                     } else if (it.data == "history") {
-                        ActionEvaRecordActivity.start(context)
+                        EvaRecordActivity.start(context)
                     }
                 })
 

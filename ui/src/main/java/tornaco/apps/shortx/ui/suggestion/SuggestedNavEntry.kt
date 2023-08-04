@@ -35,9 +35,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
-import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
-import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
-import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
+import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
 
@@ -92,15 +90,15 @@ fun SuggestedNavEntry() {
                             }
 
                             SuggestedNav.FactRecord -> {
-                                FactPublishRecordActivity.start(context)
+                                EvaRecordActivity.start(context)
                             }
 
                             SuggestedNav.ConditionRecord -> {
-                                ConditionEvaRecordActivity.start(context)
+                                EvaRecordActivity.start(context)
                             }
 
                             SuggestedNav.ActionRecord -> {
-                                ActionEvaRecordActivity.start(context)
+                                EvaRecordActivity.start(context)
                             }
 
                             SuggestedNav.RegexTest -> {

@@ -42,10 +42,8 @@ import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
-import tornaco.apps.shortx.ui.record.ActionEvaRecordActivity
 import tornaco.apps.shortx.ui.record.AudioRecordActivity
-import tornaco.apps.shortx.ui.record.ConditionEvaRecordActivity
-import tornaco.apps.shortx.ui.record.FactPublishRecordActivity
+import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -107,14 +105,8 @@ fun HomeScreen() {
                             goToDanmuUISettings = {
                                 DanmuUISettingsActivity.start(context)
                             },
-                            goToActionRecord = {
-                                ActionEvaRecordActivity.start(context)
-                            },
-                            goToConditionRecord = {
-                                ConditionEvaRecordActivity.start(context)
-                            },
-                            goToFactPublishRecord = {
-                                FactPublishRecordActivity.start(context)
+                            goToEvaRecord = {
+                                EvaRecordActivity.start(context)
                             },
                             goToAudioRecord = {
                                 AudioRecordActivity.start(context)

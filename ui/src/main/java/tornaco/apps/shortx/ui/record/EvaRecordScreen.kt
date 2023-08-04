@@ -50,7 +50,6 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
 import tornaco.apps.shortx.ui.addrule.fact.FactIcon
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelForFact
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
@@ -62,7 +61,6 @@ import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -77,32 +75,23 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.SuccessGreen
 
 @AndroidEntryPoint
-class ActionEvaRecordActivity : BaseActivity() {
+class EvaRecordActivity : BaseActivity() {
     companion object {
         @JvmStatic
         fun start(context: Context) {
-            val starter = Intent(context, ActionEvaRecordActivity::class.java)
+            val starter = Intent(context, EvaRecordActivity::class.java)
             context.startActivity(starter)
         }
     }
 
     @Composable
     override fun Content() {
-        ActionEvaRecordScreen { finish() }
+        EvaRecordScreen { finish() }
     }
 }
 
 @Composable
-fun ActionEvaRecordScreenDialog(state: CommonDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ActionEvaRecordScreen(back = { state.dismiss() })
-        }
-    }
-}
-
-@Composable
-fun ActionEvaRecordScreen(back: () -> Unit) {
+fun EvaRecordScreen(back: () -> Unit) {
     val vm = hiltViewModel<EvaRecordViewModel>()
     val state by vm.collectAsState()
 
@@ -133,11 +122,16 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
                         },
                         actions = {
                             IconButton(onClick = {
+                                vm.clearRecords()
+                            }) {
+                                RemixIcon(remixName = Remix.System.delete_bin_5_line)
+                            }
+                            IconButton(onClick = {
                                 scope.launch {
                                     sheetState.expand()
                                 }
                             }) {
-                                RemixIcon(remixName = Remix.System.filter_2_fill)
+                                RemixIcon(remixName = Remix.System.filter_2_line)
                             }
                         }
                     )
@@ -164,7 +158,9 @@ fun ActionEvaRecordScreen(back: () -> Unit) {
 
                         is LoadState.Success -> {
                             Column {
-                                SwitchBar(isChecked = state.isRecordEnabled,
+                                SwitchBar(
+                                    modifier = Modifier.padding(16.dp),
+                                    isChecked = state.isRecordEnabled,
                                     onCheckChange = {
                                         vm.toggleRecordEnable(it)
                                     })

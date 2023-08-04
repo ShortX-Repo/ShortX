@@ -539,6 +539,8 @@
   "ui.settings.danmu.summary": "Adjust danmu color, font size, speed, etc.",
   "ui.settings.edge.gesture.size": "Edge gesture",
   "ui.settings.edge.gesture.size.summary": "Adjust edge gesture touch size",
+  "ui.settings.eva.record": "ShortX Records",
+  "ui.settings.eva.record.summary": "View fact, condition and action records",
   "ui.settings.fact.record": "Fact record",
   "ui.settings.fact.record.summary": "View fact publish records",
   "ui.settings.gesture.record": "Gesture records",

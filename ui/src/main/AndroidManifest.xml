@@ -68,7 +68,7 @@
             android:name="tornaco.apps.shortx.ui.pkgset.PkgSetDetailActivity"
             android:exported="false" />
         <activity
-            android:name="tornaco.apps.shortx.ui.record.ActionEvaRecordActivity"
+            android:name="tornaco.apps.shortx.ui.record.EvaRecordActivity"
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.record.FactPublishRecordActivity"
