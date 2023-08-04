@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import tornaco.apps.shortx.core.context.isFromDA
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
+import tornaco.apps.shortx.ui.base.i18NIns
 
 sealed interface EvaRecord {
     val formattedTimeStr: String
@@ -109,22 +111,24 @@ sealed interface ViewRecordType {
     ) : ViewRecordType
 }
 
-class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, Nothing> {
+class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, String> {
     private val logger = Logger("EvaRecordViewModel")
 
-    override val container: Container<EvaRecordState, Nothing> = container(
+    override val container: Container<EvaRecordState, String> = container(
         initialState = EvaRecordState()
     )
 
     fun setOnlyShowSrcId(onlyShowSrc: EvaluateContext?) = intent {
+        val showSrc = if (state.onlyShowSrc == onlyShowSrc) {
+            null
+        } else {
+            onlyShowSrc
+        }
         reduce {
-            state.copy(
-                onlyShowSrc = if (state.onlyShowSrc == onlyShowSrc) {
-                    null
-                } else {
-                    onlyShowSrc
-                }
-            )
+            state.copy(onlyShowSrc = showSrc)
+        }
+        if (showSrc != null) {
+            postSideEffect(i18NIns["ui.common.only.show"] + " ${showSrc.srcTitle}")
         }
         loadRecords()
     }

@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.context.isFromRule
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.Remix
@@ -110,6 +110,13 @@ fun EvaRecordScreen(back: () -> Unit) {
     val vm = hiltViewModel<EvaRecordViewModel>()
     val state by vm.collectAsState()
 
+    val i18N = LocalI18N.current
+    val context = LocalContext.current
+
+    vm.collectSideEffect(sideEffect = {
+        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    })
+
     DisposableEffectWithLifeCycle(onResume = {
         vm.loadSwitch()
         vm.loadRecords()
@@ -122,7 +129,6 @@ fun EvaRecordScreen(back: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val i18N = LocalI18N.current
             Scaffold(modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
@@ -162,7 +168,6 @@ fun EvaRecordScreen(back: () -> Unit) {
                         .padding(paddingValues)
                         .pullRefresh(pullRefreshState),
                 ) {
-                    val context = LocalContext.current
 
                     Column {
                         SwitchBar(
@@ -181,11 +186,6 @@ fun EvaRecordScreen(back: () -> Unit) {
                                 AddRuleActivity.start(context, it)
                             },
                             onShowThisSrc = {
-                                Toast.makeText(
-                                    context,
-                                    i18N["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                                 vm.setOnlyShowSrcId(it)
                             })
                     }
@@ -274,7 +274,7 @@ fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
             ) {
                 CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
 
-                AnimatedVisibility(visible = state.onlyShowSrc != null) {
+                if (state.onlyShowSrc != null) {
                     ListItem(title = LocalI18N.current["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
                         action1 = {
                             IconButton(onClick = {
