@@ -83,6 +83,10 @@ val PrefIcon = Color(0xFF777777)
 val DisabledActionIconColor = Color(0xFF777777)
 
 
+val FactRecordColor = Color(0XFFFF5145)
+val ConditionRecordColor = Color(0xFF00BBDF)
+val ActionRecordColor = Color(0xFFF8B62E)
+
 @Stable
 data class ShortXColorScheme(
     val uncheckedTrack: Color,

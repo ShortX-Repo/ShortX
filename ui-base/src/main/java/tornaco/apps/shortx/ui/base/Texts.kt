@@ -177,6 +177,13 @@ fun TipRow(
 fun LinkText(
     text: String,
     color: Color = MaterialTheme.colorScheme.primary,
+    icon: @Composable () -> Unit = {
+        RemixIcon(
+            modifier = Modifier.size(12.dp),
+            remixName = Remix.System.external_link_line,
+            tint = color
+        )
+    },
     onClick: () -> Unit
 ) {
     Row(
@@ -188,11 +195,7 @@ fun LinkText(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RemixIcon(
-            modifier = Modifier.size(12.dp),
-            remixName = Remix.System.external_link_line,
-            tint = color
-        )
+        icon()
         Text(
             modifier = Modifier,
             text = text,

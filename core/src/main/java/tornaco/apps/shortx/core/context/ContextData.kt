@@ -28,7 +28,7 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
     fun add(key: String, value: Any?) {
         logger.p("add $key $value")
         if (map.containsKey(key)) {
-            logger.w("Override key: $key")
+            logger.w("Override key: $key ${Throwable().stackTraceToString()}")
         }
         map[key] = value
     }
