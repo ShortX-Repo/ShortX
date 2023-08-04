@@ -579,6 +579,8 @@
   "ui.settings.share.author.info": "作者信息",
   "ui.settings.share.author.info.description": "设置当你分享指令时的作者信息",
   "ui.settings.app.info": "应用信息",
+  "ui.settings.tg": "电报",
+  "ui.settings.tg.summary": "加入Telegram群组讨论新需求，反馈问题",
   "ui.settings.core.info": "核心信息",
   "ui.settings.core.info.na": "未激活",
   "ui.settings.open.source.license": "开源许可",

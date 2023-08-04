@@ -580,6 +580,8 @@
   "ui.settings.share.author.info": "Author info",
   "ui.settings.share.author.info.description": "Set author info used when you share Rule or Direction",
   "ui.settings.app.info": "App info",
+  "ui.settings.tg": "Telegram",
+  "ui.settings.tg.summary": "Join Telegram group to raise feature request, report bugs",
   "ui.settings.core.info": "Framework info",
   "ui.settings.core.info.na": "Not activated",
   "ui.settings.open.source.license": "Open source license",

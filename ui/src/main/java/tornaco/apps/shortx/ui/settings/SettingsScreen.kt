@@ -704,8 +704,8 @@ private fun aboutSettings(
         ),
 
         Preference.TextPreference(icon = Remix.Logos.telegram_fill,
-            title = "Telegram",
-            summary = BuildProp.TG_GROUP,
+            title = LocalI18N.current["ui.settings.tg"],
+            summary = LocalI18N.current["ui.settings.tg.summary"],
             onClick = {
                 BrowserUtils.launch(context, BuildProp.TG_GROUP)
             }
