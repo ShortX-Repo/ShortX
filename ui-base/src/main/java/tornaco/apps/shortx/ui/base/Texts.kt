@@ -188,11 +188,11 @@ fun LinkText(
 ) {
     Row(
         modifier = Modifier
-            .padding(6.dp)
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
                 onClick()
-            },
+            }
+            .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         icon()

@@ -170,6 +170,7 @@
   "ui.common.saved": "Saved",
   "ui.common.done": "Done",
   "ui.common.only.show": "Only show",
+  "ui.common.show.all": "Show all",
   "ui.common.copied.to.clipboard": "Has been copied to clipboard",
   "ui.common.save.success.to": "Saved to: {path}",
   "ui.common.manually.input": "Manually input",

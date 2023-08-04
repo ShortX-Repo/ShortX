@@ -1,6 +1,10 @@
 package tornaco.apps.shortx.ui.record
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
@@ -25,6 +29,8 @@ import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.i18NIns
+import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import javax.inject.Inject
 
 sealed interface EvaRecord {
     val formattedTimeStr: String
@@ -92,6 +98,9 @@ data class EvaRecordState(
         showSuccess = true,
         showError = true
     ),
+
+    val isSubscribed: Boolean = false,
+
     val isRecordEnabled: Boolean = false,
     val onlyShowSrc: EvaluateContext? = null
 )
@@ -111,7 +120,11 @@ sealed interface ViewRecordType {
     ) : ViewRecordType
 }
 
-class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, String> {
+@HiltViewModel
+@SuppressLint("StaticFieldLeak")
+class EvaRecordViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+    ViewModel(),
+    ContainerHost<EvaRecordState, String> {
     private val logger = Logger("EvaRecordViewModel")
 
     override val container: Container<EvaRecordState, String> = container(
@@ -129,13 +142,18 @@ class EvaRecordViewModel : ViewModel(), ContainerHost<EvaRecordState, String> {
         }
         if (showSrc != null) {
             postSideEffect(i18NIns["ui.common.only.show"] + " ${showSrc.srcTitle}")
+        } else {
+            postSideEffect(i18NIns["ui.common.show.all"])
         }
         loadRecords()
     }
 
     fun loadSwitch() = intent {
         reduce {
-            state.copy(isRecordEnabled = shortXManager.isEvaluateRecordEnabled())
+            state.copy(
+                isRecordEnabled = shortXManager.isEvaluateRecordEnabled(),
+                isSubscribed = isLVLChecked(context)
+            )
         }
     }
 

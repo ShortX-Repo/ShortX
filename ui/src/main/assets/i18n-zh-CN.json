@@ -170,6 +170,7 @@
   "ui.common.saved": "已保存",
   "ui.common.done": "完成",
   "ui.common.only.show": "只显示",
+  "ui.common.show.all": "显示全部",
   "ui.common.copied.to.clipboard": "已复制到剪贴板",
   "ui.common.save.success.to": "已保存到: {path}",
   "ui.common.manually.input": "手动输入",
