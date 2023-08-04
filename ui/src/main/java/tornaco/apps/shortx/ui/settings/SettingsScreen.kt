@@ -407,7 +407,7 @@ private fun recordSettings(
     return listOfNotNull(
         Preference.Category(LocalI18N.current["ui.settings.record"]),
 
-        Preference.TextPreference(icon = Remix.Media.notification_3_fill,
+        Preference.TextPreference(icon = Remix.System.history_fill,
             title = LocalI18N.current["ui.settings.eva.record"],
             summary = LocalI18N.current["ui.settings.eva.record.summary"],
             onClick = {
