@@ -3,7 +3,15 @@ package app.shortx.prebuilts_gen
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.condition.True
-import tornaco.apps.shortx.core.proto.fact.*
+import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
+import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
+import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
+import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
+import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
+import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.pack_
 import java.util.concurrent.atomic.AtomicInteger
@@ -21,8 +29,8 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("Danmu notification")
-                    .setFact(
-                        NotificationUpdated.newBuilder().build().pack_()
+                    .addAllFacts(
+                        listOf(NotificationUpdated.newBuilder().build().pack_())
                     )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
@@ -42,7 +50,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("Wifi ${onOffAny.name}")
-                    .setFact(WifiStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (WifiStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -57,7 +68,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("BT ${onOffAny.name}")
-                    .setFact(BTStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (BTStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -72,7 +86,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("NFC ${onOffAny.name}")
-                    .setFact(NFCStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (NFCStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -87,7 +104,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("DarkMode ${onOffAny.name}")
-                    .setFact(DarkModeStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (DarkModeStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -103,7 +123,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("DND ${onOffAny.name}")
-                    .setFact(DNDStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (DNDStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -118,7 +141,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("Location ${onOffAny.name}")
-                    .setFact(LocationStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    .addAllFacts(
+                        listOf
+                            (LocationStatusChanged.newBuilder().setOoa(onOffAny).build().pack_())
+                    )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
                         listOf(
@@ -134,8 +160,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("MobileData ${onOffAny.name}")
-                    .setFact(
-                        MobileDataStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
+                    .addAllFacts(
+                        listOf(
+                            MobileDataStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
+                        )
                     )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(
@@ -152,8 +180,10 @@ object DevRules {
                     .setId(nextId())
                     .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
                     .setTitle("FlashLight ${onOffAny.name}")
-                    .setFact(
-                        FlashLightStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
+                    .addAllFacts(
+                        listOf(
+                            FlashLightStatusChanged.newBuilder().setOoa(onOffAny).build().pack_()
+                        )
                     )
                     .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
                     .addAllActions(

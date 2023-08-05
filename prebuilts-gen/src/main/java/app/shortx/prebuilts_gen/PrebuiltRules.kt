@@ -18,8 +18,10 @@ object PrebuiltRules {
             .setId(nextId())
             .setCreateTime(System.currentTimeMillis() + idGen.get() * 1000)
             .setTitle("Danmu notification")
-            .setFact(
-                NotificationUpdated.newBuilder().build().pack_()
+            .addAllFacts(
+                listOf(
+                    NotificationUpdated.newBuilder().build().pack_()
+                )
             )
             .addAllConditions(listOf(True.newBuilder().build()).map { it.pack_() })
             .addAllActions(

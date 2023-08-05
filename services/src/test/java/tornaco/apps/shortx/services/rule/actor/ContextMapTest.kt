@@ -59,12 +59,12 @@ class ContextMapTest {
         val obtainedWithInit = ContextData.obtain(
             mapOf(
                 "testKey1" to "value1",
-                ContextDataMapping.Context.contextSrcId.name to "valueOverride"
+                ContextDataMapping.BTDeviceConnected.btDeviceAddress.name to "valueOverride"
             )
         )
         Assert.assertTrue(obtained.map.keys.containsAll(allKeys))
         Assert.assertEquals("value1", obtainedWithInit.get("testKey1"))
-        Assert.assertEquals("valueOverride", obtainedWithInit.get("contextSrcId"))
+        Assert.assertEquals("valueOverride", obtainedWithInit.get("btDeviceAddress"))
         Assert.assertEquals("", obtainedWithInit.get("contentText"))
 
         obtainedWithInit.recycle()

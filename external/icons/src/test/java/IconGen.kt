@@ -1,4 +1,5 @@
 import com.android.ide.common.vectordrawable.Svg2Vector
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 
@@ -6,6 +7,7 @@ class IconGen {
     private val sourceFile = File("../../core/src/main/java/tornaco/apps/shortx/core/res/Remix.kt")
 
     @Test
+    @Ignore
     fun gen() {
         exportIcons()
     }
