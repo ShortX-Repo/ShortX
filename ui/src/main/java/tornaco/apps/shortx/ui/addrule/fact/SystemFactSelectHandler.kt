@@ -247,7 +247,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     AppOpSelectorDialog(state = onFinishOpSelectorState)
 
     val systemSettingsChangeDialogState = rememberSystemSettingsUrlSelectorState(onSelected = {
-        addFact(Fact.SystemSettingsChanged(urls = it))
+        addFact(it)
     })
     SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
 
@@ -442,7 +442,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.SystemSettingsChanged::class -> {
                 systemSettingsChangeDialogState.show(
-                    source.getFactAs<Fact.SystemSettingsChanged>()?.urls ?: emptyList()
+                    source.getFactAs()
                 )
                 true
             }

@@ -373,7 +373,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
 
         is Fact.SystemSettingsChanged -> {
             SystemSettingsChanged.newBuilder().setId(overrideId ?: id).setNote(note)
-                .addAllUrl(urls)
+                .setUrlAndExpectedValueRegex(urlAndValueRegex)
                 .build()
         }
 

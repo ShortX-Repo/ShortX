@@ -422,7 +422,7 @@ message OnQSTileClick {
 }
 
 message SystemSettingsChanged {
-  repeated string url = 1;
+  StringPair urlAndExpectedValueRegex = 1;
 
   string note = 99;
   string id = 100;

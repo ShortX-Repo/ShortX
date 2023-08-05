@@ -551,7 +551,8 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.SystemSettingsChanged -> {
             listOf(
                 i18N["ui.fact.system.settings.changed"],
-                fact.urls.joinToString()
+                fact.urlAndValueRegex.first,
+                fact.urlAndValueRegex.second,
             )
         }
     }

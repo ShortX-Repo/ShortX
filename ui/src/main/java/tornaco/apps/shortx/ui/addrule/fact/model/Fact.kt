@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
@@ -567,7 +568,7 @@ sealed interface Fact {
     data class SystemSettingsChanged(
         override val note: String = "",
         override val id: String = defaultNewFactId(),
-        val urls: List<String>
+        val urlAndValueRegex: StringPair
     ) : Fact {
         override fun clone(id: String, note: String): Fact {
             return copy(id = id, note = note)

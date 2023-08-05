@@ -174,4 +174,10 @@ object ContextDataMapping {
     enum class ShowTextFieldDialog(val description: String) {
         textFieldInput("Input of the text field"),
     }
+
+    @DoNotStrip
+    enum class SystemSettingsChanged(val description: String) {
+        settingsUrl("Url of the Settings"),
+        settingsValue("Current value"),
+    }
 }

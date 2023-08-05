@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,53 +19,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
-import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class SystemSettingsUrlSelectorState(
-    val onSelected: (List<String>) -> Unit
+    val onSelected: (Fact.SystemSettingsChanged) -> Unit
 ) : CommonDialogState() {
-    private val logger = Logger("SystemSettingsUrlSelectorState")
+    var inputUrl by mutableStateOf("content://settings/")
+    var inputValueRegex by mutableStateOf("")
 
-    var selectedUrls by mutableStateOf(emptyList<String>())
-
-    fun show(initialValue: List<String> = emptyList()) {
-        logger.p("initialValue: $initialValue")
-
-        this.selectedUrls = initialValue
+    fun show(initialValue: Fact.SystemSettingsChanged? = null) {
+        this.inputUrl = initialValue?.urlAndValueRegex?.first ?: "content://settings/"
+        this.inputValueRegex = initialValue?.urlAndValueRegex?.second ?: ""
 
         show()
     }
 
-    fun addUrl(it: String) {
-        if (!selectedUrls.contains(it)) {
-            selectedUrls = selectedUrls.toMutableList().apply {
-                add(it)
-            }
-        }
+    fun inputUrl(it: String) {
+        this.inputUrl = it
     }
 
-    fun removeUrl(it: String) {
-        selectedUrls = selectedUrls.toMutableList().apply {
-            remove(it)
-        }
+    fun inputRegex(it: String) {
+        this.inputValueRegex = it
     }
 }
 
 @Composable
 fun rememberSystemSettingsUrlSelectorState(
-    onSelected: (List<String>) -> Unit
+    onSelected: (Fact.SystemSettingsChanged) -> Unit
 ): SystemSettingsUrlSelectorState {
     return remember {
         SystemSettingsUrlSelectorState(
@@ -91,8 +88,15 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                                 title = { Text(text = LocalI18N.current["ui.fact.system.settings.changed"]) },
                                 actions = {
                                     IconButton(onClick = {
-                                        if (state.selectedUrls.isNotEmpty()) {
-                                            state.onSelected(state.selectedUrls)
+                                        if (state.inputUrl.isNotEmpty() && state.inputValueRegex.isNotEmpty()) {
+                                            state.onSelected(
+                                                Fact.SystemSettingsChanged(
+                                                    urlAndValueRegex = StringPair.newBuilder()
+                                                        .setFirst(state.inputUrl)
+                                                        .setSecond(state.inputValueRegex)
+                                                        .build()
+                                                )
+                                            )
                                             state.dismiss()
                                         }
                                     }) {
@@ -116,38 +120,36 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                                 .verticalScroll(rememberScrollState())
                         ) {
                             val inputState = rememberTextInputState(
-                                title = "Url",
-                                message = null,
+                                title = LocalI18N.current["ui.fact.system.settings.changed.url"],
+                                message = LocalI18N.current["ui.fact.system.settings.changed.summary"],
                                 onSelected = {
-                                    state.addUrl(it)
+                                    state.inputUrl(it)
                                 }
                             )
                             TextInputDialog(state = inputState)
 
                             FieldTitle(text = LocalI18N.current["ui.fact.system.settings.changed.url"])
-                            state.selectedUrls.forEach {
-                                ListItem(
-                                    titleLines = listOf(it),
-                                    icon = {
-                                        RemixIcon(remixName = Remix.Logos.flickr_line)
-                                    },
-                                    action1 = {
-                                        IconButton(onClick = {
-                                            state.removeUrl(it)
-                                        }) {
-                                            RemixIcon(remixName = Remix.System.close_line)
-                                        }
-                                    },
-                                    onClick = {
-                                    })
-                            }
+                            SmallSpacer()
+                            TipRow(text = LocalI18N.current["ui.fact.system.settings.changed.url.summary"])
+                            MediumSpacer()
+                            ShortXTextField(
+                                value = state.inputUrl,
+                                onValueChange = { state.inputUrl(it) })
 
                             LargeSpacer()
-                            Button(onClick = {
-                                inputState.show("content://settings/")
-                            }) {
-                                Text(text = LocalI18N.current["ui.common.add"])
-                            }
+
+                            FieldTitle(text = LocalI18N.current["ui.fact.system.settings.changed.regex"])
+                            SmallSpacer()
+                            TipRow(text = LocalI18N.current["ui.fact.system.settings.changed.regex.summary"])
+                            MediumSpacer()
+                            ShortXTextField(
+                                value = state.inputValueRegex,
+                                onValueChange = { state.inputRegex(it) })
+
+
+                            LargeSpacer()
+                            SectionSpacer()
+                            SuggestedNavEntry()
                         }
                     }
                 }

@@ -449,7 +449,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
 
             Fact.SystemSettingsChanged(
                 id = data.id, note = data.note,
-                urls = data.urlList
+                urlAndValueRegex = data.urlAndExpectedValueRegex
             )
         }
 

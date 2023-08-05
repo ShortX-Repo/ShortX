@@ -399,7 +399,11 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as SystemSettingsChanged)
             val ruleN = (rule as SystemSettingsChanged)
 
-            ruleN.urlList.contains(actualN.urlList[0])
+            ruleN.urlAndExpectedValueRegex.first == actualN.urlAndExpectedValueRegex.first
+                    && emptyOrRegexMatch(
+                ruleN.urlAndExpectedValueRegex.second,
+                actualN.urlAndExpectedValueRegex.second
+            )
         }
 
         logger.i("Init complete.")
