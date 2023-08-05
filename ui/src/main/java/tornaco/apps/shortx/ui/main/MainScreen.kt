@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.AudioRecordActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
+import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -113,6 +114,9 @@ fun HomeScreen() {
                             },
                             goToGestureRecord = {
                                 GestureRecordListActivity.start(context)
+                            },
+                            goToSettingsCatcherRecord = {
+                                SettingsAccessRecordActivity.start(context)
                             },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)

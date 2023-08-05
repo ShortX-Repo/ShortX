@@ -85,7 +85,8 @@ fun SettingsScreen(
     goToEvaRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
     goToGestureRecord: () -> Unit,
-    viewOpenSourceLicense: () -> Unit
+    viewOpenSourceLicense: () -> Unit,
+    goToSettingsCatcherRecord: () -> Unit,
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
     val state by vm.state.collectAsState()
@@ -288,7 +289,14 @@ fun SettingsScreen(
                             })
                         )
                         addAll(shareSettings(state = state, vm = vm))
-                        addAll(systemSettings(state = state, mainState = subscribeState, vm = vm))
+                        addAll(
+                            systemSettings(
+                                state = state,
+                                mainState = subscribeState,
+                                vm = vm,
+                                goToSettingsCatcherRecord = goToSettingsCatcherRecord
+                            )
+                        )
                         addAll(devSettings(state = state, vm = vm))
                         addAll(
                             aboutSettings(
@@ -632,7 +640,8 @@ private fun devSettings(
 private fun systemSettings(
     state: SettingsState,
     mainState: SubscribeState,
-    vm: SettingsViewModel
+    vm: SettingsViewModel,
+    goToSettingsCatcherRecord: () -> Unit
 ): List<Preference> {
     val badge = if (mainState.isSubscribed) {
         null
@@ -674,6 +683,25 @@ private fun systemSettings(
                 }
             }
         ),
+        Preference.SwitchPreference(
+            icon = Remix.System.settings_6_fill,
+            title = LocalI18N.current["ui.settings.settings.catcher"],
+            summary = LocalI18N.current["ui.settings.settings.catcher.summary"],
+            hasLongSummary = false,
+            badge = badge,
+            value = state.isSettingsCatcherEnabled,
+            onClick = {
+                mainState.isSubscribed.select({ goToSettingsCatcherRecord() },
+                    { subscribeDialogState.show() })
+            },
+            onCheckChanged = { enable ->
+                if (mainState.isSubscribed) {
+                    vm.setSystemSettingsCatcherEnabled(enable)
+                } else {
+                    subscribeDialogState.show()
+                }
+            }
+        )
     )
 }
 

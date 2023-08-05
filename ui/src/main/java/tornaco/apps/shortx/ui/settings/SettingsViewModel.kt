@@ -33,6 +33,7 @@ data class SettingsState(
     val gestureAreaSize: Int = 0,
     val isInjectedShellEnabled: Boolean = false,
     val isQSTileOptEnabled: Boolean = false,
+    val isSettingsCatcherEnabled: Boolean = false,
     val isPointerLocationEnabled: Boolean = false,
     val hasAudioRecord: Boolean = false,
     val shareAuthor: Author? = null,
@@ -83,6 +84,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isKeyEventPromptEnabled = shortXManager.isKeyEventPromptEnabled(),
                 isInjectedShellEnabled = shortXManager.isInjectedShellEnabled(),
                 isQSTileOptEnabled = shortXManager.isQSTileOptEnabled(),
+                isSettingsCatcherEnabled = shortXManager.isSettingsCatcherEnabled(),
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
             )
@@ -128,6 +130,15 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setLogDebugEnable(enable)
             updateState {
                 copy(isDebugLogEnabled = shortXManager.isLogDebugEnable())
+            }
+        }
+    }
+
+    fun setSystemSettingsCatcherEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setSettingsCatcherEnabled(enable)
+            updateState {
+                copy(isSettingsCatcherEnabled = shortXManager.isSettingsCatcherEnabled())
             }
         }
     }

@@ -258,7 +258,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun evaluateCondition(
             evaluateContext: ByteArrayWrapper,
-            condition: ByteArrayWrapper): Boolean {
+            condition: ByteArrayWrapper
+        ): Boolean {
             return shortXContext.rule.evaluateCondition(
                 context = EvaluateContext.parseFrom(evaluateContext.byteData),
                 condition = ProtoAny.parseFrom(condition.byteData)
@@ -508,6 +509,42 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun setQSTileOptEnabled(enable: Boolean) {
             shortXContext.tile.setQSTileOptEnabled(enable)
+        }
+
+        override fun isSettingsCatcherEnabled(): Boolean {
+            return shortXContext.systemSettings.isSettingsCatcherEnabled()
+        }
+
+        override fun setSettingsCatcherEnabled(enabled: Boolean) {
+            shortXContext.systemSettings.setSettingsCatcherEnabled(enabled)
+        }
+
+        override fun onReadSettings(url: String, value: String) {
+            shortXContext.systemSettings.onRead(url, value)
+        }
+
+        override fun onWriteSettings(url: String, value: String) {
+            shortXContext.systemSettings.onWrite(url, value)
+        }
+
+        override fun getReadSettingsRecord(): List<ByteArrayWrapper> {
+            return shortXContext.systemSettings.getReadSettingsRecord().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getWriteSettingsRecord(): List<ByteArrayWrapper> {
+            return shortXContext.systemSettings.getWriteSettingsRecord().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun clearWriteSettingsRecord() {
+            shortXContext.systemSettings.clearWriteSettingsRecord()
+        }
+
+        override fun clearReadSettingsRecord() {
+            shortXContext.systemSettings.clearReadSettingsRecord()
         }
 
         override fun directExecuteRuleActions(evaluateContext: ByteArrayWrapper, ruleId: String) {

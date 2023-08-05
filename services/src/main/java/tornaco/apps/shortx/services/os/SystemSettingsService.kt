@@ -2,8 +2,11 @@ package tornaco.apps.shortx.services.os
 
 import android.provider.Settings
 import kotlinx.coroutines.runBlocking
+import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
@@ -11,6 +14,9 @@ import tornaco.apps.shortx.services.systemServiceScope
 
 class SystemSettingsService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "SystemSettingsService") {
+    private val recorder by lazy {
+        SystemSettingsAccessRecorder()
+    }
 
     fun setPointerLocationEnabled(enable: Boolean) {
         runBlocking {
@@ -32,5 +38,40 @@ class SystemSettingsService(shortXContext: ShortXContext) :
                 0
             ) != 0
         } ?: false
+    }
+
+    fun isSettingsCatcherEnabled(): Boolean {
+        return store.read(tornaco.apps.shortx.services.data.Settings.BoolSettings.EnableSettingsCatcher)
+    }
+
+    fun setSettingsCatcherEnabled(enabled: Boolean) {
+        store.write(
+            tornaco.apps.shortx.services.data.Settings.BoolSettings.EnableSettingsCatcher,
+            enabled
+        )
+    }
+
+    fun onRead(url: String, value: String) {
+        recorder.onRead(url, value)
+    }
+
+    fun onWrite(url: String, value: String) {
+        recorder.onWrite(url, value)
+    }
+
+    fun getReadSettingsRecord(): List<SystemSettingsAccessRecord> {
+        return recorder.getReadRecords()
+    }
+
+    fun getWriteSettingsRecord(): List<SystemSettingsAccessRecord> {
+        return recorder.getWriteRecords()
+    }
+
+    fun clearWriteSettingsRecord() {
+        recorder.clearWriteRecords()
+    }
+
+    fun clearReadSettingsRecord() {
+        recorder.clearReadRecords()
     }
 }

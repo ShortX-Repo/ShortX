@@ -113,6 +113,9 @@
             </intent-filter>
 
         </activity>
+        <activity
+            android:name="tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity"
+            android:exported="false" />
 
         <service
             android:name="tornaco.apps.shortx.ui.service.ShellService"

@@ -22,6 +22,7 @@ object HookStub {
     fun onPackageLoaded() {
         RuntimeInitHook.hookUncaughtException()
         ContextImplHook.onPackageLoaded()
+        SettingsProviderHook.hookPutGetString()
     }
 
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {

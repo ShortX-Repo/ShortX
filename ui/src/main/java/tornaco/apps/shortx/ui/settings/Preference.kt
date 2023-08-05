@@ -43,6 +43,7 @@ sealed interface Preference {
         override val icon: String? = null,
         override val badge: String? = null,
         val value: Boolean,
+        val onClick: (() -> Unit)? = null,
         val onCheckChanged: (Boolean) -> Unit
     ) : Preference
 

@@ -179,11 +179,15 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
             .fillMaxWidth()
             .clip(ShortXCardRoundedCornerShape)
             .clickable {
-                if (preference.hasLongSummary) {
-                    isShowMoreSummary = !isShowMoreSummary
+                if (preference.onClick != null) {
+                    preference.onClick.invoke()
                 } else {
-                    checkState = !checkState
-                    preference.onCheckChanged(checkState)
+                    if (preference.hasLongSummary) {
+                        isShowMoreSummary = !isShowMoreSummary
+                    } else {
+                        checkState = !checkState
+                        preference.onCheckChanged(checkState)
+                    }
                 }
             }, verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

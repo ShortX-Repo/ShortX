@@ -26,6 +26,9 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
 
         data object EnableQSTileOpt :
             BoolSettings(key = "EnableQSTileOpt", defaultValue = false)
+
+        data object EnableSettingsCatcher :
+            BoolSettings(key = "EnableSettingsCatcher", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String?) :

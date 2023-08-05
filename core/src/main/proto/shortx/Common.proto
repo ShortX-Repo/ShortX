@@ -295,3 +295,9 @@ message StringPair {
   string first = 1;
   string second = 2;
 }
+
+message SystemSettingsAccessRecord {
+  string url = 1;
+  string value = 2;
+  int64 timeMillis = 3;
+}

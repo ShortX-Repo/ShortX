@@ -447,6 +447,35 @@ public interface IShortX extends android.os.IInterface
     @Override public void setQSTileOptEnabled(boolean enable) throws android.os.RemoteException
     {
     }
+    // Catcher
+
+    @Override public boolean isSettingsCatcherEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
+    @Override public void setSettingsCatcherEnabled(boolean enabled) throws android.os.RemoteException
+    {
+    }
+    @Override public void onReadSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException
+    {
+    }
+    @Override public void onWriteSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException
+    {
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReadSettingsRecord() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getWriteSettingsRecord() throws android.os.RemoteException
+    {
+      return null;
+    }
+    @Override public void clearWriteSettingsRecord() throws android.os.RemoteException
+    {
+    }
+    @Override public void clearReadSettingsRecord() throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -1764,6 +1793,75 @@ public interface IShortX extends android.os.IInterface
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setQSTileOptEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isSettingsCatcherEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isSettingsCatcherEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_setSettingsCatcherEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setSettingsCatcherEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_onReadSettings:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          this.onReadSettings(_arg0, _arg1);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_onWriteSettings:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          java.lang.String _arg1;
+          _arg1 = data.readString();
+          this.onWriteSettings(_arg0, _arg1);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getReadSettingsRecord:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getReadSettingsRecord();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_getWriteSettingsRecord:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getWriteSettingsRecord();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_clearWriteSettingsRecord:
+        {
+          data.enforceInterface(descriptor);
+          this.clearWriteSettingsRecord();
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_clearReadSettingsRecord:
+        {
+          data.enforceInterface(descriptor);
+          this.clearReadSettingsRecord();
           reply.writeNoException();
           return true;
         }
@@ -4325,6 +4423,163 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Catcher
+
+      @Override public boolean isSettingsCatcherEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isSettingsCatcherEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isSettingsCatcherEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void setSettingsCatcherEnabled(boolean enabled) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enabled)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setSettingsCatcherEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setSettingsCatcherEnabled(enabled);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void onReadSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(url);
+          _data.writeString(value);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onReadSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onReadSettings(url, value);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void onWriteSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(url);
+          _data.writeString(value);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onWriteSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onWriteSettings(url, value);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReadSettingsRecord() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getReadSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getReadSettingsRecord();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getWriteSettingsRecord() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getWriteSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getWriteSettingsRecord();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void clearWriteSettingsRecord() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_clearWriteSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearWriteSettingsRecord();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void clearReadSettingsRecord() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_clearReadSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearReadSettingsRecord();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -4440,6 +4695,14 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_onTileClick = (android.os.IBinder.FIRST_CALL_TRANSACTION + 110);
     static final int TRANSACTION_isQSTileOptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 111);
     static final int TRANSACTION_setQSTileOptEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 112);
+    static final int TRANSACTION_isSettingsCatcherEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 113);
+    static final int TRANSACTION_setSettingsCatcherEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 114);
+    static final int TRANSACTION_onReadSettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 115);
+    static final int TRANSACTION_onWriteSettings = (android.os.IBinder.FIRST_CALL_TRANSACTION + 116);
+    static final int TRANSACTION_getReadSettingsRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 117);
+    static final int TRANSACTION_getWriteSettingsRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 118);
+    static final int TRANSACTION_clearWriteSettingsRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 119);
+    static final int TRANSACTION_clearReadSettingsRecord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 120);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -4618,4 +4881,14 @@ public interface IShortX extends android.os.IInterface
   public void onTileClick(int tileNumber) throws android.os.RemoteException;
   public boolean isQSTileOptEnabled() throws android.os.RemoteException;
   public void setQSTileOptEnabled(boolean enable) throws android.os.RemoteException;
+  // Catcher
+
+  public boolean isSettingsCatcherEnabled() throws android.os.RemoteException;
+  public void setSettingsCatcherEnabled(boolean enabled) throws android.os.RemoteException;
+  public void onReadSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException;
+  public void onWriteSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReadSettingsRecord() throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getWriteSettingsRecord() throws android.os.RemoteException;
+  public void clearWriteSettingsRecord() throws android.os.RemoteException;
+  public void clearReadSettingsRecord() throws android.os.RemoteException;
 }

@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
+import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -796,6 +797,46 @@ class ShortXManager(private val service: IShortX) {
     fun unregisterStatusBarTileSettingsChangeListener(listener: IStatusBarTileSettingsChangeListener) {
         invokeService(Unit) {
             unregisterStatusBarTileSettingsChangeListener(listener)
+        }
+    }
+
+    fun isSettingsCatcherEnabled(): Boolean {
+        return invokeService(false) {
+            isSettingsCatcherEnabled
+        }
+    }
+
+    fun setSettingsCatcherEnabled(enabled: Boolean) {
+        invokeService(Unit) {
+            isSettingsCatcherEnabled = enabled
+        }
+    }
+
+    fun getReadSettingsRecord(): List<SystemSettingsAccessRecord> {
+        return invokeService(emptyList()) {
+            readSettingsRecord.map {
+                SystemSettingsAccessRecord.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun getWriteSettingsRecord(): List<SystemSettingsAccessRecord> {
+        return invokeService(emptyList()) {
+            writeSettingsRecord.map {
+                SystemSettingsAccessRecord.parseFrom(it.byteData)
+            }
+        }
+    }
+
+    fun clearWriteSettingsRecord() {
+        invokeService(Unit) {
+            clearWriteSettingsRecord()
+        }
+    }
+
+    fun clearReadSettingsRecord() {
+        invokeService(Unit) {
+            clearReadSettingsRecord()
         }
     }
 

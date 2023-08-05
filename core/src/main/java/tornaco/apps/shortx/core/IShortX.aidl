@@ -198,4 +198,14 @@ interface IShortX {
     void onTileClick(int tileNumber);
     boolean isQSTileOptEnabled();
     void setQSTileOptEnabled(boolean enable);
+
+    // Catcher
+    boolean isSettingsCatcherEnabled();
+    void setSettingsCatcherEnabled(boolean enabled);
+    void onReadSettings(String url, String value);
+    void onWriteSettings(String url, String value);
+    List<ByteArrayWrapper> getReadSettingsRecord();
+    List<ByteArrayWrapper> getWriteSettingsRecord();
+    void clearWriteSettingsRecord();
+    void clearReadSettingsRecord();
 }
