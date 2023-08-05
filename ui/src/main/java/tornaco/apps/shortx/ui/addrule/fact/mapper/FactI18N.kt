@@ -184,6 +184,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.settings.sb.tile"] to null
         }
 
+        Fact.SystemSettingsChanged::class -> {
+            i18n["ui.fact.system.settings.changed"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -541,6 +545,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 (shortXManager.getStatusBarTileSettingsByNumber(fact.tile.number)
                     ?: defaultStatusBarTileSetting(fact.tile))
                     .label
+            )
+        }
+
+        is Fact.SystemSettingsChanged -> {
+            listOf(
+                i18N["ui.fact.system.settings.changed"],
+                fact.urls.joinToString()
             )
         }
     }

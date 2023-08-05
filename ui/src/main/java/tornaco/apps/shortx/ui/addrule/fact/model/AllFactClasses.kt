@@ -70,4 +70,5 @@ val allFactClasses = listOf(
     Fact.OnFinishOp::class,
 
     Fact.OnQSTileClick::class,
+    Fact.SystemSettingsChanged::class,
 )

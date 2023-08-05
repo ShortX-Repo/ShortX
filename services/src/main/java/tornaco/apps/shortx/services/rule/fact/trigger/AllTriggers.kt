@@ -24,4 +24,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     BatteryTemperatureTrigger(context, shortXContext),
     BroadcastTrigger(context, shortXContext),
     StartOpTrigger(context, shortXContext),
+    SystemSettingsTrigger(context, shortXContext),
 )

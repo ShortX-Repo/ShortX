@@ -44,6 +44,7 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
+import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
@@ -367,6 +368,12 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.OnQSTileClick -> {
             OnQSTileClick.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setTileNumber(tile.number)
+                .build()
+        }
+
+        is Fact.SystemSettingsChanged -> {
+            SystemSettingsChanged.newBuilder().setId(overrideId ?: id).setNote(note)
+                .addAllUrl(urls)
                 .build()
         }
 

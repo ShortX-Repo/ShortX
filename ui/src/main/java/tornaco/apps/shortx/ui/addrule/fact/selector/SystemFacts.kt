@@ -60,6 +60,7 @@ fun SystemFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact)
         Fact.MediaStoreInsert::class,
         Fact.OnStartOp::class,
         Fact.OnFinishOp::class,
+        Fact.SystemSettingsChanged::class,
     ).map {
         SelectorItem(
             type = it,

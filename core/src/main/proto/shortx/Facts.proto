@@ -420,3 +420,10 @@ message OnQSTileClick {
   string note = 99;
   string id = 100;
 }
+
+message SystemSettingsChanged {
+  repeated string url = 1;
+
+  string note = 99;
+  string id = 100;
+}

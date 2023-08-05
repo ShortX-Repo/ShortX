@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.FixedPeriodSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnOffAnyStateSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.PeriodSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.SystemSettingsUrlSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAdvancedKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAlarmSelectorState
@@ -28,6 +29,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberFixedInPeriodSelecto
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
@@ -244,6 +246,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         })
     AppOpSelectorDialog(state = onFinishOpSelectorState)
 
+    val systemSettingsChangeDialogState = rememberSystemSettingsUrlSelectorState(onSelected = {
+        addFact(Fact.SystemSettingsChanged(urls = it))
+    })
+    SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -429,6 +436,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                         source.getFactAs<Fact.OnFinishOp>()?.pkgSets ?: emptyList(),
                         source.getFactAs<Fact.OnFinishOp>()?.codes ?: emptyList(),
                     )
+                )
+                true
+            }
+
+            Fact.SystemSettingsChanged::class -> {
+                systemSettingsChangeDialogState.show(
+                    source.getFactAs<Fact.SystemSettingsChanged>()?.urls ?: emptyList()
                 )
                 true
             }

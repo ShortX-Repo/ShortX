@@ -45,6 +45,7 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.proto.fact.SystemReady
+import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.proto.fact.UserPresent
 import tornaco.apps.shortx.core.proto.fact.VPNConnected
@@ -392,6 +393,13 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val ruleN = (rule as OnQSTileClick)
 
             actualN.tileNumber == ruleN.tileNumber
+        }
+
+        register(SystemSettingsChanged::class.java) { actual, rule ->
+            val actualN = (actual as SystemSettingsChanged)
+            val ruleN = (rule as SystemSettingsChanged)
+
+            ruleN.urlList.contains(actualN.urlList[0])
         }
 
         logger.i("Init complete.")
