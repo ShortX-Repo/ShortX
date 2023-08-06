@@ -42,7 +42,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 enum class ConditionCategory(val i18NKey: String, val icon: String) {
     Apps("ui.action.category.app", Remix.System.apps_2_line),
     System("ui.action.system.settings", Remix.System.settings_2_line),
-    Other("Misc", Remix.System.settings_2_line),
+    Other("ui.action.misc", Remix.System.settings_2_line),
 }
 
 class ConditionSelectorDialogState<ARGS>(val onSelected: (Condition, ARGS?) -> Unit) {

@@ -33,7 +33,8 @@ interface ConditionEvaluator {
     suspend fun evaluate(
         evaluateContext: EvaluateContext,
         condition: ProtoAny,
-        contextData: ContextData
+        contextData: ContextData,
+        localVars: LocalVars
     ): EvaluateResult
 
     suspend fun evaluate(
@@ -42,6 +43,7 @@ interface ConditionEvaluator {
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
         contextData: ContextData,
+        localVars: LocalVars
     ): Boolean
 
     sealed interface EvaluateResult {
@@ -191,7 +193,8 @@ class DefaultRuleEngine(
                 condOp = rule.condOp,
                 condOpPayload = rule.condOpPayload,
                 conditions = rule.conditionsList,
-                contextData = ContextData.obtain()
+                contextData = ContextData.obtain(),
+                localVars = LocalVars.obtain()
             )
         }
     } ?: defaultCondRes(rule)
@@ -207,7 +210,8 @@ class DefaultRuleEngine(
                 condOp = rule.quit.condOp,
                 condOpPayload = rule.quit.condOpPayload,
                 conditions = rule.quit.conditionsList,
-                contextData = ContextData.obtain()
+                contextData = ContextData.obtain(),
+                localVars = LocalVars.obtain()
             )
         }
     } ?: defaultCondRes(rule)
@@ -247,7 +251,9 @@ class DefaultRuleEngine(
                             condOp = rule.condOp,
                             condOpPayload = rule.condOpPayload,
                             conditions = rule.conditionsList,
-                            contextData = contextData
+                            contextData = contextData,
+                            // No local var for a Rule condition.
+                            localVars = LocalVars.obtain()
                         )
                     }
                 }
@@ -379,7 +385,9 @@ class DefaultRuleEngine(
                                 condOp = quit.condOp,
                                 condOpPayload = quit.condOpPayload,
                                 conditions = quit.conditionsList,
-                                contextData = contextData
+                                contextData = contextData,
+                                // No local var for a Rule condition.
+                                localVars = LocalVars.obtain()
                             )
                         }
                         logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
@@ -478,7 +486,8 @@ class DefaultRuleEngine(
                 condOp,
                 condOpPayload,
                 conditions,
-                ContextData.obtain(initialContextData)
+                ContextData.obtain(initialContextData),
+                localVars = LocalVars.obtain()
             )
         }
     }

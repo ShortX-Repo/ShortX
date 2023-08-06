@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.addrule.condition
 
@@ -164,7 +164,7 @@ private fun EvaluateGlobalVarSelector(dialogState: EvaluateGlobalVarSelectorDial
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
+                        title = { Text(text = LocalI18N.current["ui.conditions.eva.global.var"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

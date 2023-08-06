@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
+import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -156,6 +157,17 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.EvaluateGlobalVar -> {
             EvaluateGlobalVar.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setVarName(varName)
+                .setOp(op)
+                .setPayload(payload)
+                .build()
+        }
+
+        is Condition.EvaluateLocalVar -> {
+            EvaluateLocalVar.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

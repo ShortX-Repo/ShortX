@@ -57,6 +57,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.EvaluateLocalVar::class -> {
+            listOf(
+                i18N["ui.conditions.eva.local.var"]
+            )
+        }
+
         Condition.BatteryPercent::class -> {
             listOf(
                 i18N["ui.conditions.battery.percent"]
@@ -225,6 +231,10 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.EvaluateGlobalVar -> listOf(
             i18N["ui.conditions.eva.global.var"]
+        )
+
+        is Condition.EvaluateLocalVar -> listOf(
+            i18N["ui.conditions.eva.local.var"]
         )
 
         is Condition.BatteryPercent -> {

@@ -40,6 +40,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Document.file_list_fill
         }
 
+        Condition.EvaluateLocalVar::class -> {
+            Remix.Document.file_list_fill
+        }
+
         Condition.BatteryPercent::class -> {
             Remix.Device.battery_2_fill
         }

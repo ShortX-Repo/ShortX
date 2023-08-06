@@ -168,6 +168,21 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class EvaluateLocalVar(
+        val varName: String,
+        val op: GlobalVarOp,
+        val payload: GlobalVarOpPayload,
+
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
     data class BatteryPercent(
         val value: Int,
         val op: IntOp,

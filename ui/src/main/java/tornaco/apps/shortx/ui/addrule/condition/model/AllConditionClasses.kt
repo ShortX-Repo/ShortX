@@ -5,6 +5,7 @@ val allConditionClasses = listOf(
     Condition.MVEL::class,
     Condition.TRUE::class,
     Condition.EvaluateGlobalVar::class,
+    Condition.EvaluateLocalVar::class,
     Condition.BatteryPercent::class,
     Condition.AppIsRunning::class,
     Condition.AppIsNotRunning::class,

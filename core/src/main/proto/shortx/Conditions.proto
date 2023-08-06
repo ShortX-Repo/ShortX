@@ -102,6 +102,16 @@ message AppHasAudioFocus {
 }
 
 
+message EvaluateLocalVar {
+  GlobalVarOp op = 1;
+  string varName = 2;
+  GlobalVarOpPayload payload = 3;
+
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message EvaluateGlobalVar {
   GlobalVarOp op = 1;
   string varName = 2;

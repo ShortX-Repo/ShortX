@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import android.content.Context
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
@@ -25,7 +26,8 @@ class ConditionEvaluatorImpl(
     override suspend fun evaluate(
         evaluateContext: EvaluateContext,
         condition: ProtoAny,
-        contextData: ContextData
+        contextData: ContextData,
+        localVars: LocalVars
     ): ConditionEvaluator.EvaluateResult {
         val cond = prebuiltCondFor(condition)
         logger.d("evaluate, cond for ${condition.typeUrl}: $cond")
@@ -34,7 +36,15 @@ class ConditionEvaluatorImpl(
         }
         return kotlin.runCatching {
             val matchRes =
-                cond.evaluate(Cond.CondParam(context, shortXContext, condition, contextData))
+                cond.evaluate(
+                    Cond.CondParam(
+                        context,
+                        shortXContext,
+                        condition,
+                        contextData,
+                        localVars
+                    )
+                )
             ConditionEvaluator.EvaluateResult.Success(
                 condition = condition,
                 match = matchRes.match,
@@ -54,20 +64,21 @@ class ConditionEvaluatorImpl(
         condOp: ConditionOperator,
         condOpPayload: ConditionOperatorPayload,
         conditions: List<ProtoAny>,
-        contextData: ContextData
+        contextData: ContextData,
+        localVars: LocalVars
     ): Boolean {
         logger.d("evaluate rule condition: ${evaluateContext.srcTitle} $condOp condition size: ${conditions.size}, context: $contextData")
         return when (condOp) {
             ConditionOperator.ALL -> {
-                conditions.all { evaluate(evaluateContext, it, contextData).isMatch() }
+                conditions.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.ANY -> {
-                conditions.any { evaluate(evaluateContext, it, contextData).isMatch() }
+                conditions.any { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.NONE -> {
-                conditions.none { evaluate(evaluateContext, it, contextData).isMatch() }
+                conditions.none { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
 
             ConditionOperator.MVEL -> {
@@ -82,7 +93,8 @@ class ConditionEvaluatorImpl(
                         evaluateContext = evaluateContext,
                         eva = this,
                         condition = conditions[index],
-                        contextData = contextData
+                        contextData = contextData,
+                        localVars = localVars
                     )
                     expressionTranslation =
                         expressionTranslation.replace(codeName, "$codeName.call()")
@@ -124,7 +136,7 @@ class ConditionEvaluatorImpl(
             }
 
             else -> {
-                conditions.all { evaluate(evaluateContext, it, contextData).isMatch() }
+                conditions.all { evaluate(evaluateContext, it, contextData, localVars).isMatch() }
             }
         }
     }

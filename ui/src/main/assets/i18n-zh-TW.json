@@ -12,6 +12,7 @@
   "ui.conditions.true": "無條件",
   "ui.conditions.true.desc": "觸發器觸發後，動作會無條件執行",
   "ui.conditions.eva.global.var": "比較全域變數",
+  "ui.conditions.eva.local.var": "比较局部变量",
   "ui.conditions.app.running": "應用正在運行",
   "ui.conditions.app.not.running": "應用未在運行",
   "ui.conditions.service.running": "服務正在運行",

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.cond
 import android.content.Context
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextData
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.util.Logger
@@ -19,7 +20,8 @@ interface Cond {
         val context: Context,
         val shortXContext: ShortXContext,
         val condition: ProtoAny,
-        val contextData: ContextData
+        val contextData: ContextData,
+        val localVars: LocalVars
     )
 
     data class Result(
@@ -54,6 +56,10 @@ enum class PrebuiltCond : CondProvider {
     EvaluateGlobalVar {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateGlobalVar
+    },
+    EvaluateLocalVar {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateLocalVar
     },
     BatteryPercent {
         override val cond: Cond

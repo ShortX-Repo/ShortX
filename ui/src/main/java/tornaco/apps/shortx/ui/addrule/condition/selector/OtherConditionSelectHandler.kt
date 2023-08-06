@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
+import tornaco.apps.shortx.ui.addrule.condition.EvaluateLocalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.getConditionAs
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
+import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateLocalVarSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
@@ -27,6 +29,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     }
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
 
+    val evaluateLocalVarSelectorDialogState = rememberEvaluateLocalVarSelectorState {
+        addCondition(it)
+    }
+    EvaluateLocalVarSelectorDialog(state = evaluateLocalVarSelectorDialogState)
+
     return { source ->
         when (source.clazz) {
             Condition.MVEL::class -> {
@@ -41,6 +48,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.EvaluateGlobalVar::class -> {
                 evaluateGlobalVarSelectorDialogState.show(source.getConditionAs())
+                true
+            }
+
+            Condition.EvaluateLocalVar::class -> {
+                evaluateLocalVarSelectorDialogState.show(source.getConditionAs())
                 true
             }
 

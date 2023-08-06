@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
+import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -136,6 +137,18 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ EvaluateGlobalVar::class.java -> {
             val data = this unpack_ EvaluateGlobalVar::class.java
             Condition.EvaluateGlobalVar(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                varName = data.varName,
+                op = data.op,
+                payload = data.payload
+            )
+        }
+
+        this is_ EvaluateLocalVar::class.java -> {
+            val data = this unpack_ EvaluateLocalVar::class.java
+            Condition.EvaluateLocalVar(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

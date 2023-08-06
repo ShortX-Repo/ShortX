@@ -24,6 +24,7 @@ fun OtherConditions(
         Condition.MVEL::class,
         Condition.TRUE::class,
         Condition.EvaluateGlobalVar::class,
+        Condition.EvaluateLocalVar::class,
     ).map {
         SelectorItem(
             type = it,
