@@ -218,10 +218,18 @@ fun imageVectorForAction(action: KClass<out Action>): String {
         }
 
         Action.CreateGV::class -> {
-            Remix.Document.file_edit_fill
+            Remix.System.add_line
         }
 
         Action.DeleteGV::class -> {
+            Remix.System.delete_bin_2_line
+        }
+
+        Action.CreateLocalVar::class -> {
+            Remix.System.add_line
+        }
+
+        Action.WriteLocalVar::class -> {
             Remix.Document.file_edit_fill
         }
 
@@ -341,13 +349,6 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.sim_card_2_fill
         }
 
-        Action.CreateLocalVar::class -> {
-            Remix.Document.file_edit_fill
-        }
-
-        Action.WriteLocalVar::class -> {
-            Remix.Document.file_edit_fill
-        }
 
         Action.InjectGestureRecording::class,
         Action.StartGestureRecording::class,

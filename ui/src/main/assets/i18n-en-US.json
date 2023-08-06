@@ -531,6 +531,7 @@
   "ui.action.show.text.field.dialog.item.context.var": "Use conetxt data: {var} to get text input from user",
   "ui.action.advanced": "Advanced",
   "ui.action.misc": "Misc",
+  "ui.action.var": "Vars",
   "ui.action.life": "Life",
   "ui.action.remote": "Online",
   "ui.action.all": "All",

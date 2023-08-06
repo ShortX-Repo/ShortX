@@ -4,9 +4,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.rule.GlobalVarType
 import tornaco.apps.shortx.core.rule.action.su.shellResToString
-import tornaco.apps.shortx.core.rule.toType
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -19,13 +17,6 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.gvar.NewGlobalVar
-import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
-import tornaco.apps.shortx.ui.gvar.NewLocalVarDialog
-import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
-import tornaco.apps.shortx.ui.gvar.rememberNewLocalVarState
-import tornaco.apps.shortx.ui.gvar.toGlobalVar
-import tornaco.apps.shortx.ui.gvar.toLocalVar
 import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
@@ -68,16 +59,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     CodeEditorDialog(state = mvelSelectorState)
 
-    val writeGVSelectorState = rememberWriteGVDialogState {
-        addAction(it)
-    }
-    WriteGVDialog(writeGVSelectorState)
-
-    val writeLocalVarSelectorState = rememberWriteLocalVarDialogState {
-        addAction(it)
-    }
-    WriteLocalVarDialog(writeLocalVarSelectorState)
-
     val fromDASelectorState = rememberFromDADialogState {
         addAction(it)
     }
@@ -92,26 +73,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         addAction(it)
     }
     WhileLoopDialog(state = whileLoopSelectorState)
-
-    val addGlobalVarDialogState =
-        rememberNewGlobalVarState {
-            addAction(
-                Action.CreateGV(
-                    globalVar = it.toGlobalVar()
-                )
-            )
-        }
-    NewGlobalVarDialog(addGlobalVarDialogState)
-
-    val addLocalVarDialogState =
-        rememberNewLocalVarState {
-            addAction(
-                Action.CreateLocalVar(
-                    localVar = it.toLocalVar()
-                )
-            )
-        }
-    NewLocalVarDialog(addLocalVarDialogState)
 
     val i18N = LocalI18N.current
     val vm = hiltViewModel<PkgSetListViewModel>()
@@ -160,34 +121,6 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
-            Action.WriteGV::class -> {
-                writeGVSelectorState.show(source.getActionAs())
-                true
-            }
-
-            Action.CreateGV::class -> {
-                addGlobalVarDialogState.show(source.getActionAs<Action.CreateGV>()?.let {
-                    NewGlobalVar(
-                        name = it.globalVar.name,
-                        type = (it.globalVar.type.toType() ?: GlobalVarType.String),
-                        isSecret = it.globalVar.isSecret
-                    )
-                })
-                true
-            }
-
-            Action.CreateLocalVar::class -> {
-                addLocalVarDialogState.show(source.getActionAs<Action.CreateLocalVar>()?.let {
-                    it.localVar.name to (it.localVar.type.toType() ?: GlobalVarType.String)
-                })
-                true
-            }
-
-            Action.WriteLocalVar::class -> {
-                writeLocalVarSelectorState.show(source.getActionAs())
-                true
-            }
-
             Action.FromDA::class -> {
                 fromDASelectorState.show()
                 true
@@ -231,10 +164,6 @@ fun ExtActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.Delay::class,
         Action.MVEL::class,
         Action.Brk::class,
-        Action.WriteGV::class,
-        Action.CreateGV::class,
-        Action.CreateLocalVar::class,
-        Action.WriteLocalVar::class,
         Action.CreatePkgSet::class,
         Action.IfThenElse::class,
         Action.WhileLoop::class,

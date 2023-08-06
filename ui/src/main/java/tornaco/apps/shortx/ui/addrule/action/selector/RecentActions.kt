@@ -39,6 +39,7 @@ fun RecentActions(
         systemActionSelectHandler(addAction = addAction),
         lifeActionSelectHandler(addAction = addAction),
         extActionSelectHandler(addAction = addAction),
+        varActionSelectHandler(addAction = addAction),
         miscActionSelectHandler(addAction = addAction),
     )
 

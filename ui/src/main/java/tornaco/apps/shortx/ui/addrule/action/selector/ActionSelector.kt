@@ -46,6 +46,7 @@ enum class ActionCategory(val i18NKey: String, val icon: String) {
     Settings("ui.action.system.settings", Remix.System.settings_2_fill),
     Life("ui.action.life", Remix.Map.riding_fill),
     Advanced("ui.action.advanced", Remix.System.function_fill),
+    Vars("ui.action.var", Remix.System.function_fill),
     Misc("ui.action.misc", Remix.Others.box_1_fill),
 }
 
@@ -149,6 +150,9 @@ private fun AllActions(
         StandardSpacer()
 
         ExtActions(searchBarState.keyword, subscribeState, addAction = addAction)
+        StandardSpacer()
+
+        VarActions(searchBarState.keyword, subscribeState, addAction = addAction)
         StandardSpacer()
 
         LifeActions(searchBarState.keyword, subscribeState, addAction = addAction)

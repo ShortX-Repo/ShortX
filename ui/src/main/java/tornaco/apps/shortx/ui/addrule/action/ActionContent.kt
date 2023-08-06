@@ -59,6 +59,7 @@ import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
 import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.action.selector.varActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -233,6 +234,7 @@ private fun Actions(
                         systemActionSelectHandler(addAction = editAction),
                         extActionSelectHandler(addAction = editAction),
                         lifeActionSelectHandler(addAction = editAction),
+                        varActionSelectHandler(addAction = editAction),
                         miscActionSelectHandler(addAction = editAction),
                     )
 
