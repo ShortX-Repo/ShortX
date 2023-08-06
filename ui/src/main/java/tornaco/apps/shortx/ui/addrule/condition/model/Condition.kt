@@ -9,7 +9,9 @@ import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.conditionContextData
 import java.util.UUID
 
 fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
@@ -318,3 +320,5 @@ sealed interface Condition : Parcelable {
         }
     }
 }
+
+val Condition.contextData: List<ContextData> get() = this::class.conditionContextData()

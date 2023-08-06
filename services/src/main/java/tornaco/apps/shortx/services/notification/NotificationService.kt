@@ -58,7 +58,6 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun AppPkg.hasNotification() = hasNotification(NMSFuncs.getActiveNotifications(nms))
 
-
     fun AppPkg.hasNotification(allN: List<Notification>) = allN.any { notification ->
         notification.appsList.any {
             it == this

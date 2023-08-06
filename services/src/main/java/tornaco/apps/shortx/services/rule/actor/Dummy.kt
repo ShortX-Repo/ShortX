@@ -30,7 +30,8 @@ fun dummyHandlerParamsForAction(
             override suspend fun evaluate(
                 evaluateContext: EvaluateContext,
                 condition: ProtoAny,
-                contextData: ContextData
+                contextData: ContextData,
+                localVars: LocalVars
             ): ConditionEvaluator.EvaluateResult {
                 TODO("Dummy")
             }
@@ -40,10 +41,12 @@ fun dummyHandlerParamsForAction(
                 condOp: ConditionOperator,
                 condOpPayload: ConditionOperatorPayload,
                 conditions: List<ProtoAny>,
-                contextData: ContextData
+                contextData: ContextData,
+                localVars: LocalVars
             ): Boolean {
                 TODO("Dummy")
             }
+
 
         },
     )

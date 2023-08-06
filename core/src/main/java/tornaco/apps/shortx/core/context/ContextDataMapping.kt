@@ -14,7 +14,16 @@ object ContextDataMapping {
         pkgName("App package name of the Notification owner"),
         title("Title of the notification"),
         contentText("Content text of the notification"),
-        notificationTag("Tag of the notification, maybe null")
+        notificationTag("Tag of the notification, nullable")
+    }
+
+    @DoNotStrip
+    enum class AppHasNotification(val description: String) {
+        matchedAppHasNotificationUserId("The user id of the matched Notification"),
+        matchedAppHasNotificationPkgName("App package name of the matched Notification owner"),
+        matchedAppHasNotificationTitle("Title of the matched notification"),
+        matchedAppHasNotificationContentText("Content text of the matched notification"),
+        matchedAppHasNotificationNotificationTag("Tag of the matched notification, nullable")
     }
 
     @DoNotStrip

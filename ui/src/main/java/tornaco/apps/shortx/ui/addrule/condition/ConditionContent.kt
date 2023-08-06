@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -21,26 +22,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.ClipboardDialog
 import tornaco.apps.shortx.ui.UiClipboard
+import tornaco.apps.shortx.ui.addrule.ContextDataIcon
+import tornaco.apps.shortx.ui.addrule.ContextDataInfoDialog
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.condition.mapper.colorForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForOp
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForCondition
+import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opDescription
 import tornaco.apps.shortx.ui.addrule.condition.mapper.opTitle
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
+import tornaco.apps.shortx.ui.addrule.condition.model.contextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.condition.selector.ConditionSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.selector.appConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.otherConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.condition.selector.systemConditionSelectHandler
+import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -57,6 +64,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipDialog
+import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -154,6 +162,11 @@ fun ConditionList(
                         Box(modifier = Modifier) {
                             val clickDropdownState = rememberDropdownSelectorState()
 
+                            val contextDataInfoDialogState = rememberContextDataInfoDialogState()
+                            ContextDataInfoDialog(state = contextDataInfoDialogState)
+                            val i18N = LocalI18N.current
+                            val context = LocalContext.current
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -194,6 +207,21 @@ fun ConditionList(
                                             ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
                                                 invertDialog.show()
                                             }
+                                        }
+
+                                        if (conditionItem.contextData.isNotEmpty()) {
+                                            IconButton(onClick = {
+                                                contextDataInfoDialogState.show(
+                                                    labelForConditionSelector(
+                                                        i18N,
+                                                        conditionItem::class
+                                                    )[0],
+                                                    conditionItem.contextData
+                                                )
+                                            }) {
+                                                ContextDataIcon()
+                                            }
+                                            VerticalDivider(modifier = Modifier.height(24.dp))
                                         }
 
                                         if (!readOnly) {

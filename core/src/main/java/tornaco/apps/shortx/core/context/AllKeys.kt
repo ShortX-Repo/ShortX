@@ -5,6 +5,7 @@ val allKeysWithDefaultValue by lazy {
 }
 
 val allKeys: List<String> = listOf(
+    enumValues<ContextDataMapping.AppHasNotification>().map { it.name },
     enumValues<ContextDataMapping.Notification>().map { it.name },
     enumValues<ContextDataMapping.ExecuteMVEL>().map { it.name },
     enumValues<ContextDataMapping.HttpRequest>().map { it.name },

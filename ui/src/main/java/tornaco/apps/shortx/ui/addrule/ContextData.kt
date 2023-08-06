@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping.accessExample
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.RemixIcon
 import kotlin.reflect.KClass
@@ -151,6 +152,18 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
 
         Action.HttpRequest::class -> {
             dats<ContextDataMapping.HttpRequest>()
+        }
+
+        else -> {
+            emptyList()
+        }
+    }
+}
+
+fun KClass<out Condition>.conditionContextData(): List<ContextData> {
+    return when (this) {
+        Condition.AppHasNotification::class -> {
+            dats<ContextDataMapping.AppHasNotification>()
         }
 
         else -> {

@@ -33,6 +33,13 @@ class ContextData private constructor(initialData: Map<String, Any> = emptyMap()
         map[key] = value
     }
 
+    fun add(map: Map<String, Any?>) {
+        logger.p("add $map")
+        map.forEach { (s, any) ->
+            add(s, any)
+        }
+    }
+
     fun get(key: String): Any? = map[key]
 
     fun pop(key: String): Any? = map.remove(key)

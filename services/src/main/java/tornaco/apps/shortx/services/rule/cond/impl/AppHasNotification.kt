@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
+import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.rule.cond.Cond
@@ -32,8 +34,17 @@ object AppHasNotification : Cond {
                 logger.p("allN: ${allN.joinToString(System.lineSeparator())}")
 
                 if (data.op == ConditionOperator.ANY) {
-                    requiredPkgList.any {
-                        with(shortXContext.notification) { it.hasNotification(allN) }
+                    requiredPkgList.any { requiredPkg ->
+                        val matchedN = allN.firstOrNull { notification ->
+                            notification.appsList.any {
+                                it == requiredPkg
+                            }
+                        }
+
+                        if (matchedN != null) {
+                            contextData.add(matchedN.contextMap())
+                        }
+                        matchedN != null
                     }
                 } else {
                     var res = true
@@ -61,4 +72,12 @@ object AppHasNotification : Cond {
             )
         }
     }
+
+    private fun Notification.contextMap() = mapOf(
+        ContextDataMapping.AppHasNotification.matchedAppHasNotificationTitle.name to title,
+        ContextDataMapping.AppHasNotification.matchedAppHasNotificationContentText.name to contentText,
+        ContextDataMapping.AppHasNotification.matchedAppHasNotificationPkgName.name to appsList.first().pkgName,
+        ContextDataMapping.AppHasNotification.matchedAppHasNotificationUserId.name to appsList.first().userId,
+        ContextDataMapping.AppHasNotification.matchedAppHasNotificationNotificationTag.name to tag,
+    )
 }
