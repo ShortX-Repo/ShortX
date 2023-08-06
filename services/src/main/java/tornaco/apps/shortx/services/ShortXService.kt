@@ -13,6 +13,7 @@ import android.os.UserHandle
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextData
@@ -86,11 +87,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         val testRes = i18NIns["ui.common.delete"]
         logger.d("testRes: $testRes")
         serviceLifecycle.systemReady()
-
-        shortXContext.rule.publishFact(
-            "SystemReady",
-            SystemReady.newBuilder().build()
-        )
     }
 
     private fun publishBinderService() {
@@ -292,6 +288,15 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
+
+            systemServiceScope.launchSafety {
+                // DELAY
+                delay(3000)
+                shortXContext.rule.publishFact(
+                    "SystemReady",
+                    SystemReady.newBuilder().build()
+                )
+            }
         }
 
         override fun isInjectedShellEnabled(): Boolean {

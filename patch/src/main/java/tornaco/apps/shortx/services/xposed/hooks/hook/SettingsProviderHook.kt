@@ -25,7 +25,7 @@ object SettingsProviderHook {
                 val contentUri: Uri =
                     Reflections.getObjectField(it.thisObject, "mUri") as Uri
                 val name = it.args[1].toString()
-                val value = it.args[2].toString()
+                val value = it.result?.toString() ?: ""
                 logger.d("putStringForUser: $contentUri $name $value")
                 shortX.onWriteSettings("${contentUri}/$name", value)
             }
@@ -40,7 +40,7 @@ object SettingsProviderHook {
                 val contentUri: Uri =
                     Reflections.getObjectField(it.thisObject, "mUri") as Uri
                 val name = it.args[1].toString()
-                val value = it.result.toString()
+                val value = it.result?.toString() ?: ""
                 logger.d("getStringForUser: $contentUri $name $value")
                 shortX.onReadSettings("${contentUri}/$name", value)
             }
