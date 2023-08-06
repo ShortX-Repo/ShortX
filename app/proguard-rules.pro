@@ -140,3 +140,4 @@
 -dontwarn android.os.SystemProperties
 -dontwarn android.view.VelocityTracker$Estimator
 -dontwarn android.view.WindowManagerPolicyConstants$PointerEventListener
+-dontwarn android.provider.Settings$Config
