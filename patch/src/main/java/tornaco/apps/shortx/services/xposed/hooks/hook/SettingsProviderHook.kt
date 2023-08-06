@@ -1,6 +1,5 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.app.AndroidAppHelper
 import android.net.Uri
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.util.Logger
@@ -10,9 +9,6 @@ object SettingsProviderHook {
     private val logger = Logger("ShortXHook.SettingProviderHook")
 
     fun hookPutGetString() = runCatching {
-        val currentApp = AndroidAppHelper.currentPackageName()
-        logger.d("currentApp: $currentApp")
-
         // android.provider.Settings$NameValueCache
         val nameValueCacheClass = Reflections.findClass(
             "android.provider.Settings\$NameValueCache",
