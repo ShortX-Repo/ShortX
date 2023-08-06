@@ -73,9 +73,28 @@ import kotlin.math.roundToInt
  * @param colors [SwitchColors] that will be used to resolve the colors used for this switch in
  * different states. See [SwitchDefaults.colors].
  */
+
 @Composable
 @Suppress("ComposableLambdaParameterNaming", "ComposableLambdaParameterPosition")
 fun ShortXSwitch(
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    thumbContent: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
+) {
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier,
+        thumbContent,
+        enabled,
+    )
+}
+
+@Composable
+@Suppress("ComposableLambdaParameterNaming", "ComposableLambdaParameterPosition")
+fun ShortXSwitchImpl(
     checked: Boolean,
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
