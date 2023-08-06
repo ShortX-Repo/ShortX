@@ -121,6 +121,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .setTimeString(time)
+                .setUseAlarm(useAlarm)
                 .setNote(overrideNote ?: note)
                 .build()
         }

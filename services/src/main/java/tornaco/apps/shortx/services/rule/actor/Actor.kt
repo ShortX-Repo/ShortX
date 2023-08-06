@@ -33,6 +33,10 @@ interface Actor {
     fun actionsCanHandle(): Class<out Message>
     suspend fun handle(params: HandleParams)
 
+    fun init(androidContext: Context, shortXContext: ShortXContext) {
+        logger.i("Actor $this init")
+    }
+
     val logger get() = Logger("Actor-${actionsCanHandle().simpleName}")
 }
 

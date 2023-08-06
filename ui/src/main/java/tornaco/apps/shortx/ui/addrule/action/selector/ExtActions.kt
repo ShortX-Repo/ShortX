@@ -41,13 +41,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     InputTextSelector(state = inputTextSelectorState)
 
     val delaySelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.delay"],
-            message = LocalI18N.current["ui.action.delay.input.message"],
-            showSymbolButton = false,
+        rememberDelayState(
             onSelected = {
-                addAction(Action.Delay(time = it))
+                addAction(it)
             })
-    TextInputDialog(state = delaySelectionState)
+    DelaySelectorDialog(state = delaySelectionState)
 
     val mvelSelectorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
@@ -107,7 +105,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.Delay::class -> {
-                delaySelectionState.show(source.getActionAs<Action.Delay>()?.time)
+                delaySelectionState.show(source.getActionAs())
                 true
             }
 

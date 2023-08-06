@@ -361,6 +361,8 @@
   "ui.action.input.text": "Input text",
   "ui.action.delay": "Delay",
   "ui.action.delay.input.message": "Input milliseconds of delay time",
+  "ui.action.delay.input.use.alarm": "Use Alarm",
+  "ui.action.delay.input.use.alarm.summary": "A delay implemented without an Alarm may be inaccurate due to system hibernation after the screen is locked, and a delay implemented with an Alarm will wake up the system after the delay is completed, which may lead to increased power consumption. Please use this switch comprehensively",
   "ui.action.take.screenshot": "Take Screenshot",
   "ui.title.mvel": "MVEL expression",
   "ui.condition.invert": "Invert!",

@@ -92,6 +92,7 @@ message ShowToast {
 message Delay {
   int64 time = 1 [deprecated = true];
   string timeString = 2;
+  bool useAlarm = 3;
 
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

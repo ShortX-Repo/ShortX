@@ -40,6 +40,7 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
@@ -161,7 +162,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
         globalVarStore.readBlocking()
+
         installListeners()
+
+        PrebuiltActor.values().forEach {
+            it.actor.init(context, shortXContext)
+        }
 
         // Add guide DA
         if (getAllDirectAction().isEmpty()) {
@@ -393,8 +399,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
 
     fun cancelJobs(jobs: List<String>) {
-        engine.cancelJobs("User requested.") {
-            jobs.contains(it.id)
+        handler.postSafety {
+            engine.cancelJobs("User requested.") {
+                jobs.contains(it.id)
+            }
         }
     }
 
