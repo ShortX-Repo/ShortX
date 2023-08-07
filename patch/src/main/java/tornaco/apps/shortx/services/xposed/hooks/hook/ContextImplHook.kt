@@ -17,6 +17,7 @@ object ContextImplHook {
         ) { param ->
             if (param.args[0] == ManifestCompat.permission.MANAGE_MEDIA_PROJECTION
                 || param.args[0] == ManifestCompat.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT
+                || param.args[0] == ManifestCompat.permission.WRITE_SECURE_SETTINGS
             ) {
                 val result = param.result
                 if (result != PackageManager.PERMISSION_GRANTED && Binder.getCallingUid() == 1000) {
