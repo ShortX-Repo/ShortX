@@ -18,6 +18,12 @@ class SystemSettingsService(shortXContext: ShortXContext) :
         SystemSettingsAccessRecorder()
     }
 
+    override fun systemReady() {
+        super.systemReady()
+        // For better performance.
+        setSettingsCatcherEnabled(false)
+    }
+
     fun setPointerLocationEnabled(enable: Boolean) {
         runBlocking {
             systemServiceScope.launchSafety {

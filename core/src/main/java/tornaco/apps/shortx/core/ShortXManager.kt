@@ -812,6 +812,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun onReadSettings(url: String, value: String) {
+        invokeService(Unit) {
+            onReadSettings(url, value)
+        }
+    }
+
+    fun onWriteSettings(url: String, value: String) {
+        invokeService(Unit) {
+            onWriteSettings(url, value)
+        }
+    }
+
     fun getReadSettingsRecord(): List<SystemSettingsAccessRecord> {
         return invokeService(emptyList()) {
             readSettingsRecord.map {

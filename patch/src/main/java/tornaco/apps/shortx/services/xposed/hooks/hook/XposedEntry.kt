@@ -11,7 +11,7 @@ class XposedEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
         HookStub.handleLoadPackage(lpparam)
     }
 
-    override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam?) {
+    override fun initZygote(startupParam: IXposedHookZygoteInit.StartupParam) {
         HookStub.onPackageLoaded()
     }
 }

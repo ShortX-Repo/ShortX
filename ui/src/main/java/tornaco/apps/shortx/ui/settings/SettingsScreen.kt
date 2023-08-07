@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
@@ -682,27 +683,30 @@ private fun systemSettings(
                     subscribeDialogState.show()
                 }
             }
-        ),
-        Preference.SwitchPreference(
-            icon = Remix.System.settings_6_fill,
-            title = LocalI18N.current["ui.settings.settings.catcher"],
-            summary = LocalI18N.current["ui.settings.settings.catcher.summary"],
-            hasLongSummary = false,
-            badge = badge,
-            value = state.isSettingsCatcherEnabled,
-            onClick = {
-                mainState.isSubscribed.select({ goToSettingsCatcherRecord() },
-                    { subscribeDialogState.show() })
-            },
-            onCheckChanged = { enable ->
-                if (mainState.isSubscribed) {
-                    vm.setSystemSettingsCatcherEnabled(enable)
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
         )
-    )
+    ).apply {
+        onDebugBuild {
+            Preference.SwitchPreference(
+                icon = Remix.System.settings_6_fill,
+                title = LocalI18N.current["ui.settings.settings.catcher"],
+                summary = LocalI18N.current["ui.settings.settings.catcher.summary"],
+                hasLongSummary = false,
+                badge = badge,
+                value = state.isSettingsCatcherEnabled,
+                onClick = {
+                    mainState.isSubscribed.select({ goToSettingsCatcherRecord() },
+                        { subscribeDialogState.show() })
+                },
+                onCheckChanged = { enable ->
+                    if (mainState.isSubscribed) {
+                        vm.setSystemSettingsCatcherEnabled(enable)
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+            )
+        }
+    }
 }
 
 @Composable
