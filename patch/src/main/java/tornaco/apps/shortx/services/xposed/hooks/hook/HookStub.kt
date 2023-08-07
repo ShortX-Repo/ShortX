@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
@@ -23,10 +22,6 @@ object HookStub {
     fun onPackageLoaded() {
         RuntimeInitHook.hookUncaughtException()
         ContextImplHook.onPackageLoaded()
-        // Too much performance consume. consider make it a single mod.
-        onDebugBuild {
-            SettingsProviderHook.hookPutGetString()
-        }
     }
 
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {
