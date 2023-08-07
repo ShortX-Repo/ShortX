@@ -21,19 +21,22 @@ object FromDA : Actor {
             "Direct action not found: ${d.daId}"
         }
 
-        if (da.actionsList.isNullOrEmpty().not()) {
-            da.actionsList.forEach { actionProto ->
-                val evaRes = recursiveExecute(evaluateContext, actionProto, contextData, localVars)
-                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                    logger.e(evaRes.error, "evaluate fail")
-                    if (evaRes.shouldContinue) {
-                        logger.d("Action on error is continue execute.")
-                    } else {
-                        return@forEach
+        run loop@{
+            if (da.actionsList.isNullOrEmpty().not()) {
+                da.actionsList.forEach { actionProto ->
+                    val evaRes =
+                        recursiveExecute(evaluateContext, actionProto, contextData, localVars)
+                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                        logger.e(evaRes.error, "evaluate fail")
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
+                            return@loop
+                        }
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                        logger.w("evaluate break!")
+                        return@loop
                     }
-                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                    logger.w("evaluate break!")
-                    return@forEach
                 }
             }
         }

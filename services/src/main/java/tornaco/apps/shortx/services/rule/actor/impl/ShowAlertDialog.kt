@@ -92,52 +92,61 @@ object ShowAlertDialog : Actor {
             logger.d("handle result: $result")
             when (result) {
                 DialogAction.Positive -> {
-                    if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
-                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
-                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                            logger.e(evaRes.error, "evaluate fail")
-                            if (evaRes.shouldContinue) {
-                                logger.d("Action on error is continue execute.")
-                            } else {
-                                return@forEach
+                    run loop@{
+                        if (d.onPositiveList.isNullOrEmpty().not()) d.onPositiveList.forEach {
+                            val evaRes =
+                                recursiveExecute(evaluateContext, it, contextData, localVars)
+                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                logger.e(evaRes.error, "evaluate fail")
+                                if (evaRes.shouldContinue) {
+                                    logger.d("Action on error is continue execute.")
+                                } else {
+                                    return@loop
+                                }
+                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                logger.w("evaluate break!")
+                                return@loop
                             }
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@forEach
                         }
                     }
                 }
 
                 DialogAction.Negative -> {
-                    if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
-                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
-                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                            logger.e(evaRes.error, "evaluate fail")
-                            if (evaRes.shouldContinue) {
-                                logger.d("Action on error is continue execute.")
-                            } else {
-                                return@forEach
+                    run loop@{
+                        if (d.onNegativeList.isNullOrEmpty().not()) d.onNegativeList.forEach {
+                            val evaRes =
+                                recursiveExecute(evaluateContext, it, contextData, localVars)
+                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                logger.e(evaRes.error, "evaluate fail")
+                                if (evaRes.shouldContinue) {
+                                    logger.d("Action on error is continue execute.")
+                                } else {
+                                    return@loop
+                                }
+                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                logger.w("evaluate break!")
+                                return@loop
                             }
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@forEach
                         }
                     }
                 }
 
                 DialogAction.Neutral -> {
-                    if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
-                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
-                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                            logger.e(evaRes.error, "evaluate fail")
-                            if (evaRes.shouldContinue) {
-                                logger.d("Action on error is continue execute.")
-                            } else {
-                                return@forEach
+                    run loop@{
+                        if (d.onNeutralList.isNullOrEmpty().not()) d.onNeutralList.forEach {
+                            val evaRes =
+                                recursiveExecute(evaluateContext, it, contextData, localVars)
+                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                logger.e(evaRes.error, "evaluate fail")
+                                if (evaRes.shouldContinue) {
+                                    logger.d("Action on error is continue execute.")
+                                } else {
+                                    return@loop
+                                }
+                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                logger.w("evaluate break!")
+                                return@loop
                             }
-                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@forEach
                         }
                     }
                 }

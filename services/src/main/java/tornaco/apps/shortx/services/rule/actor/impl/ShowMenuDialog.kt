@@ -75,21 +75,23 @@ object ShowMenuDialog : Actor {
         withContext(Dispatchers.Default) {
             logger.d("handle result: $result")
             val actions = result?.clickActionsList
-            if (!actions.isNullOrEmpty()) actions.forEach {
-                val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
-                if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                    logger.e(evaRes.error, "evaluate fail")
-                    if (evaRes.shouldContinue) {
-                        logger.d("Action on error is continue execute.")
-                    } else {
-                        return@forEach
+            run loop@{
+                if (!actions.isNullOrEmpty()) actions.forEach {
+                    val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
+                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                        logger.e(evaRes.error, "evaluate fail")
+                        if (evaRes.shouldContinue) {
+                            logger.d("Action on error is continue execute.")
+                        } else {
+                            return@loop
+                        }
+                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                        logger.w("evaluate break!")
+                        return@loop
                     }
-                } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                    logger.w("evaluate break!")
-                    return@forEach
                 }
-            }
 
+            }
         }
     }
 }

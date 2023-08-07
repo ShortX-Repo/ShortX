@@ -15,6 +15,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.prebuiltActorFor
+import kotlin.coroutines.cancellation.CancellationException
 
 data class ActionAttrs(
     val id: String,
@@ -80,8 +81,12 @@ class ActionEvaluatorImpl(
             if (throwable is StopExecuteException) {
                 ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
             } else {
+                val isCanceledError = throwable is CancellationException
+                if (isCanceledError) {
+                    logger.i("Action is canceled, will not continue.")
+                }
                 ActionEvaluator.EvaluateResult.Fail(
-                    shouldContinue = shouldContinueOnError,
+                    shouldContinue = shouldContinueOnError && !isCanceledError,
                     action = action,
                     error = throwable,
                     evaluateContext = evaluateContext

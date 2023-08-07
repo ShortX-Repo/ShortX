@@ -299,6 +299,7 @@ class DefaultRuleEngine(
                                 kotlin.run loop@{
                                     logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
                                     rule.actionsList.forEach {
+                                        logger.d("about to execute action: ${it.typeUrl}")
                                         val evaRes = actionEvaluator.evaluate(
                                             evaluateContext = evaluateContext,
                                             action = it,

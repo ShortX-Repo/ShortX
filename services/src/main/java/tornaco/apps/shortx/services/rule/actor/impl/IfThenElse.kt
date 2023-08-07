@@ -28,40 +28,46 @@ object IfThenElse : Actor {
             )
         logger.d("IfThenElse, matchCond: $matchCond")
         if (matchCond) {
-            if (d.ifActionsList.isNullOrEmpty().not()) {
-                d.ifActionsList.forEach {
-                    val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@forEach
+            run loop@{
+                if (d.ifActionsList.isNullOrEmpty().not()) {
+                    d.ifActionsList.forEach {
+                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@loop
                         }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        logger.w("evaluate break!")
-                        return@forEach
                     }
                 }
             }
         } else {
-            if (d.elseActionsList.isNullOrEmpty().not()) {
-                d.elseActionsList.forEach {
-                    val evaRes =
-                        recursiveExecute(evaluateContext, it, contextData, localVars)
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
-                            return@forEach
+            run loop@{
+                if (d.elseActionsList.isNullOrEmpty().not()) {
+                    d.elseActionsList.forEach {
+                        logger.d("about to execute action: ${it.typeUrl}")
+                        val evaRes =
+                            recursiveExecute(evaluateContext, it, contextData, localVars)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@loop
                         }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        logger.w("evaluate break!")
-                        return@forEach
                     }
                 }
             }
+
         }
     }
 }
