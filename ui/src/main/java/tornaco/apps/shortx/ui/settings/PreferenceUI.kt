@@ -222,7 +222,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                         modifier = Modifier.padding(end = 36.dp),
                         text = preference.summary ?: preference.title,
                         style = MaterialTheme.typography.bodySmall,
-                        maxLines = 8
+                        maxLines = 20
                     )
                 }
                 AnimatedVisibility(visible = !showMoreLines) {

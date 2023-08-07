@@ -141,7 +141,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             Condition.CurrentForegroundApp::class -> {
                 currentPkgSelectorState.show(
                     source.getConditionAs<Condition.CurrentForegroundApp>()?.apps,
-                    source.getConditionAs<Condition.CurrentForegroundApp>()?.pkgSets
+                    source.getConditionAs<Condition.CurrentForegroundApp>()?.pkgSets,
+                    source.getConditionAs<Condition.CurrentForegroundApp>()?.op
                 )
                 true
             }
@@ -149,7 +150,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             Condition.AppIsRunning::class -> {
                 appIsRunningSelectorState.show(
                     source.getConditionAs<Condition.AppIsRunning>()?.apps,
-                    source.getConditionAs<Condition.AppIsRunning>()?.pkgSets
+                    source.getConditionAs<Condition.AppIsRunning>()?.pkgSets,
+                    source.getConditionAs<Condition.AppIsRunning>()?.op,
                 )
                 true
             }
@@ -157,7 +159,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             Condition.AppIsNotRunning::class -> {
                 appIsNotRunningSelectorState.show(
                     source.getConditionAs<Condition.AppIsNotRunning>()?.apps,
-                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.pkgSets,
+                    source.getConditionAs<Condition.AppIsNotRunning>()?.op,
                 )
                 true
             }
@@ -165,7 +168,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             Condition.AppHasNotification::class -> {
                 appHasNSelectorState.show(
                     source.getConditionAs<Condition.AppHasNotification>()?.apps,
-                    source.getConditionAs<Condition.AppHasNotification>()?.pkgSets
+                    source.getConditionAs<Condition.AppHasNotification>()?.pkgSets,
+                    source.getConditionAs<Condition.AppHasNotification>()?.op,
                 )
                 true
             }
@@ -181,7 +185,8 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
             Condition.AppHasAudioFocus::class -> {
                 appHasAudioFocusSelectorState.show(
                     source.getConditionAs<Condition.AppHasAudioFocus>()?.apps,
-                    source.getConditionAs<Condition.AppHasAudioFocus>()?.pkgSets
+                    source.getConditionAs<Condition.AppHasAudioFocus>()?.pkgSets,
+                    source.getConditionAs<Condition.AppHasAudioFocus>()?.op,
                 )
                 true
             }
