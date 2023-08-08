@@ -43,9 +43,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.selector.InputTextSelector
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -56,6 +55,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.WarningCard
 import tornaco.apps.shortx.ui.base.code.codeditor.initView
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.BrowserUtils
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 data class Code(val src: String, val note: String)
@@ -63,6 +63,7 @@ data class Code(val src: String, val note: String)
 class CodeEditorState(
     val title: String,
     val message: String?,
+    val guideTextAndLink: Pair<String, String>?,
     val scope: CoroutineScope,
     val execute: suspend (String) -> String,
     val onSelected: (Code) -> Unit
@@ -95,12 +96,13 @@ class CodeEditorState(
 fun rememberCodeEditorState(
     title: String,
     message: String? = null,
+    guideTextAndLink: Pair<String, String>? = null,
     execute: suspend (String) -> String,
     onSelected: (Code) -> Unit
 ): CodeEditorState {
     val scope = rememberCoroutineScope()
     return remember {
-        CodeEditorState(title, message, scope, execute, onSelected)
+        CodeEditorState(title, message, guideTextAndLink, scope, execute, onSelected)
     }
 }
 
@@ -117,13 +119,9 @@ fun CodeEditorDialog(state: CodeEditorState) {
 private fun CodeEditor(
     state: CodeEditorState
 ) {
-    val noteDialogState = rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
-        state.setNote(it)
-    }
-    InputTextSelector(state = noteDialogState)
-
     val outputDialogState = rememberOutputDialogState(title = state.title)
     OutputDialog(state = outputDialogState)
+    val context = LocalContext.current
 
     ShortXTheme {
         Surface(
@@ -132,7 +130,16 @@ private fun CodeEditor(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = state.note.ifBlank { state.title }) },
+                    title = {
+                        Column {
+                            Text(text = state.note.ifBlank { state.title })
+                            state.guideTextAndLink?.let {
+                                LinkText(text = it.first) {
+                                    BrowserUtils.launch(context, it.second)
+                                }
+                            }
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()

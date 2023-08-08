@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.rule.action.su.shellResToString
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
@@ -49,6 +50,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
     val mvelSelectorState = rememberCodeEditorState(
         title = LocalI18N.current["ui.title.mvel"],
+        guideTextAndLink = LocalI18N.current["ui.user.guide"] to BuildProp.WIKI_URL_MVEL,
         execute = {
             shortXManager.executeMVEL(it)
         }
