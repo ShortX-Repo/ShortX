@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
+import java.util.concurrent.Executors
 
 object SystemUIHook {
     private val logger = Logger("ShortXHook.SystemUIHook")
@@ -129,6 +130,7 @@ object SystemUIHook {
 
 object SystemUIShellImpl : ISu.Stub() {
     private val logger = Logger("SystemUIShellImpl")
+    private val executors = Executors.newFixedThreadPool(4)
 
     init {
         logger.d("Init shell")
@@ -144,22 +146,25 @@ object SystemUIShellImpl : ISu.Stub() {
         command: Array<out String>,
         receiver: SynchronousResultReceiver
     ) {
-        logger.i("execute: ${command.joinToString()}")
-        runCatching {
-            val shellResult: ByteArrayWrapper = Shell.cmd(*command)
-                .exec().apply {
-                    logger.i("Shell res: out: ${this.out} err: ${this.err}")
-                }.let {
-                    ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                        .addAllErr(it.err)
-                        .build()
-                }.let {
-                    ByteArrayWrapper(it.toByteArray())
-                }
+        logger.i("about to execute: ${command.joinToString()}")
+        executors.execute {
+            logger.i("execute: ${command.joinToString()}")
+            runCatching {
+                val shellResult: ByteArrayWrapper = Shell.cmd(*command)
+                    .exec().apply {
+                        logger.i("Shell res: out: ${this.out} err: ${this.err}")
+                    }.let {
+                        ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                            .addAllErr(it.err)
+                            .build()
+                    }.let {
+                        ByteArrayWrapper(it.toByteArray())
+                    }
 
-            receiver.send(shellResult)
-        }.onFailure {
-            receiver.propagateException(RuntimeException(it))
+                receiver.send(shellResult)
+            }.onFailure {
+                receiver.propagateException(RuntimeException(it))
+            }
         }
     }
 }

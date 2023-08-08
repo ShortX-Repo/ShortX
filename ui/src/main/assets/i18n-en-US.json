@@ -7,7 +7,7 @@
   "ui.search.title.search.n.items": "Search {count} items",
   "ui.fact.title": "Trigger",
   "ui.fact.select": "Add Trigger",
-  "ui.conditions.title": "Conditions",
+  "ui.conditions.title": "Conditions (optional)",
   "ui.conditions.add": "Add Conditions",
   "ui.conditions.true": "No Condition",
   "ui.conditions.true.desc": "Actions will always be performed when they are triggered.",

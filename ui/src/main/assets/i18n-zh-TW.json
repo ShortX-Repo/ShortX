@@ -7,7 +7,7 @@
   "ui.search.title.search.n.items": "蒐索 {count} 個項目",
   "ui.fact.title": "觸發器",
   "ui.fact.select": "添加觸發器",
-  "ui.conditions.title": "條件",
+  "ui.conditions.title": "條件（可选）",
   "ui.conditions.add": "添加條件",
   "ui.conditions.true": "無條件",
   "ui.conditions.true.desc": "觸發器觸發後，動作會無條件執行",
