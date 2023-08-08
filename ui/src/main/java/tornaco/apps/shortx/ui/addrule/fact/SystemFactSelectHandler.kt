@@ -255,12 +255,12 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     })
     SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
 
-    val callStateSelectState = rememberMenuDialogState<String>(title = LocalI18N.current[""],
+    val callStateSelectState = rememberMenuDialogState<String>(title = LocalI18N.current["ui.fact.call.state.changed"],
         menuItems =
         CallState.values().filterNot { it == CallState.UNRECOGNIZED }.map {
             MenuDialogItem(
                 it.name,
-                LocalI18N.current["ui.fact.call.state.changed.${it.name.lowercase()}"],
+                LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
             )
         }, onItemSelected = { _, id ->
             addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))

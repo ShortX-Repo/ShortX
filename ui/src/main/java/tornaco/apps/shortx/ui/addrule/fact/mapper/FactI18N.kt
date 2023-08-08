@@ -563,7 +563,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.CallStateChanged -> {
             listOf(
                 i18N["ui.fact.call.state.changed"],
-                i18N["ui.fact.call.state.changed.${fact.callState.name.lowercase()}"],
+                i18N["ui.fact.call.state.${fact.callState.name.lowercase()}"],
             )
         }
     }
