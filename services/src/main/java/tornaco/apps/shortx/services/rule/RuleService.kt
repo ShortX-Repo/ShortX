@@ -267,11 +267,16 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             false
         }
 
-        allTriggers.forEach {
+        allTriggers.forEach { trigger ->
             kotlin.runCatching {
-                logger.d("Register trigger: $it")
-                it.register()
-            }.onFailure { logger.e("Fail register trigger $it") }
+                logger.d("Register trigger: $trigger")
+                trigger.register()
+            }.onFailure {
+                shortXContext.watchDog.onFatalError(
+                    it,
+                    "Fail register trigger $trigger"
+                )
+            }
         }
     }
 
