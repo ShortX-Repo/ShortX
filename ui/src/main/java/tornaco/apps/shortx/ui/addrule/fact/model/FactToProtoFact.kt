@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.Broadcast
+import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
@@ -374,6 +375,12 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.SystemSettingsChanged -> {
             SystemSettingsChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setUrlAndExpectedValueRegex(urlAndValueRegex)
+                .build()
+        }
+
+        is Fact.CallStateChanged -> {
+            CallStateChanged.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCallState(callState)
                 .build()
         }
 

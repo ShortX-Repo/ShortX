@@ -61,6 +61,7 @@ fun SystemFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact)
         Fact.OnStartOp::class,
         Fact.OnFinishOp::class,
         Fact.SystemSettingsChanged::class,
+        Fact.CallStateChanged::class,
     ).map {
         SelectorItem(
             type = it,

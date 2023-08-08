@@ -427,3 +427,11 @@ message SystemSettingsChanged {
   string note = 99;
   string id = 100;
 }
+
+message CallStateChanged {
+  CallState callState = 1;
+  string incomingNumber = 2;
+
+  string note = 99;
+  string id = 100;
+}

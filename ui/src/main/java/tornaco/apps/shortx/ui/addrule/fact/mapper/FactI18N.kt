@@ -188,6 +188,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.system.settings.changed"] to null
         }
 
+        Fact.CallStateChanged::class -> {
+            i18n["ui.fact.call.state.changed"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -553,6 +557,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 i18N["ui.fact.system.settings.changed"],
                 fact.urlAndValueRegex.first,
                 fact.urlAndValueRegex.second,
+            )
+        }
+
+        is Fact.CallStateChanged -> {
+            listOf(
+                i18N["ui.fact.call.state.changed"],
+                i18N["ui.fact.call.state.changed.${fact.callState.name.lowercase()}"],
             )
         }
     }

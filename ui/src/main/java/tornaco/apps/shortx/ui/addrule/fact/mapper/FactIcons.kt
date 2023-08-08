@@ -58,6 +58,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.OnFinishOp::class -> Remix.System.check_line
         Fact.OnQSTileClick::class -> Remix.Media.equalizer_fill
         Fact.SystemSettingsChanged::class -> Remix.System.settings_6_fill
+        Fact.CallStateChanged::class -> Remix.Device.phone_fill
 
         else -> {
             Remix.Document.file_unknow_fill

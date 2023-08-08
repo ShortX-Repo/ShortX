@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.platform.PackageNames
+import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
@@ -32,7 +33,10 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelect
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import java.time.LocalTime
 
@@ -251,6 +255,19 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     })
     SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
 
+    val callStateSelectState = rememberMenuDialogState<String>(title = LocalI18N.current[""],
+        menuItems =
+        CallState.values().filterNot { it == CallState.UNRECOGNIZED }.map {
+            MenuDialogItem(
+                it.name,
+                LocalI18N.current["ui.fact.call.state.changed.${it.name.lowercase()}"],
+            )
+        }, onItemSelected = { _, id ->
+            addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))
+        }
+    )
+    MenuDialog(state = callStateSelectState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -444,6 +461,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 systemSettingsChangeDialogState.show(
                     source.getFactAs()
                 )
+                true
+            }
+
+            Fact.CallStateChanged::class -> {
+                callStateSelectState.show()
                 true
             }
 

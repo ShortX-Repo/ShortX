@@ -130,6 +130,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.SystemSettingsChanged>()
         }
 
+        Fact.CallStateChanged::class -> {
+            dats<ContextDataMapping.CallStateChanged>()
+        }
+
         else -> {
             emptyList()
         }

@@ -99,6 +99,12 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class CallStateChanged(val description: String) {
+        callState("The call state, maybe one of CallStateRinging, CallStateOffHook, CallStateIdle"),
+        incomingNumber("Incoming number"),
+    }
+
+    @DoNotStrip
     enum class ReadClipboard(val description: String) {
         text("Text read from clipboard"),
     }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.fact.model
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
+import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
@@ -569,6 +570,17 @@ sealed interface Fact {
         override val note: String = "",
         override val id: String = defaultNewFactId(),
         val urlAndValueRegex: StringPair
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
+
+    data class CallStateChanged(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+
+        val callState: CallState,
     ) : Fact {
         override fun clone(id: String, note: String): Fact {
             return copy(id = id, note = note)

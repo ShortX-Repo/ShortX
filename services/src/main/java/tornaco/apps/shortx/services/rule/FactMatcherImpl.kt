@@ -20,6 +20,7 @@ import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
 import tornaco.apps.shortx.core.proto.fact.Broadcast
+import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
@@ -404,6 +405,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
                 ruleN.urlAndExpectedValueRegex.second,
                 actualN.urlAndExpectedValueRegex.second
             )
+        }
+
+        register(CallStateChanged::class.java) { actual, rule ->
+            val actualN = (actual as CallStateChanged)
+            val ruleN = (rule as CallStateChanged)
+            ruleN.callState == actualN.callState
         }
 
         logger.i("Init complete.")

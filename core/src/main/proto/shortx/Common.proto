@@ -301,3 +301,9 @@ message SystemSettingsAccessRecord {
   string value = 2;
   int64 timeMillis = 3;
 }
+
+enum CallState {
+  CallStateIdle = 0;
+  CallStateRinging = 1;
+  CallStateOffHook = 2;
+}
