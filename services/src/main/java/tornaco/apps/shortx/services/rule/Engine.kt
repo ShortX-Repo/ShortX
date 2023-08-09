@@ -110,7 +110,7 @@ interface Engine {
     val conditionEvaluator: ConditionEvaluator
     val actionEvaluator: ActionEvaluator
     val factMatcher: FactMatcher
-    val scope: CoroutineScope
+    val coroutineScope: CoroutineScope
 
     fun shouldFire(
         rules: List<Rule>, fact: ProtoMessage
@@ -143,7 +143,7 @@ interface Engine {
 }
 
 class DefaultRuleEngine(
-    override val scope: CoroutineScope,
+    override val coroutineScope: CoroutineScope,
     override val factMatcher: FactMatcher,
     override val conditionEvaluator: ConditionEvaluator,
     override val actionEvaluator: ActionEvaluator,
@@ -293,7 +293,7 @@ class DefaultRuleEngine(
 
                     // Launch actions.
                     if (shouldExecuteActions) {
-                        val job = scope.launchSafety {
+                        val job = coroutineScope.launchSafety {
                             logger.d("job for rule: ${rule.title} start.")
                             val runActions: suspend () -> Unit = {
                                 kotlin.run loop@{
@@ -376,7 +376,7 @@ class DefaultRuleEngine(
                         .setSrcTitle(rule.title)
                         .build()
 
-                    scope.launchSafety {
+                    coroutineScope.launchSafety {
                         val conditionRes = if (quit.conditionsList.isEmpty()) {
                             logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
                             true
@@ -432,7 +432,7 @@ class DefaultRuleEngine(
             }
         }
 
-        val job = scope.launchSafety {
+        val job = coroutineScope.launchSafety {
             logger.d("evaluateActions, job for id: ${context.srcId} start.")
             kotlin.run loop@{
                 actions.forEach {

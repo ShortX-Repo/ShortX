@@ -57,7 +57,7 @@ object RuleEngineFactory {
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
         actionEvaluator = actionEvaluator,
-        scope = scope,
+        coroutineScope = scope,
         onJobStarted = onJobStarted,
         onJobCompleted = onJobCompleted,
         onJobCancelled = onJobCancelled,

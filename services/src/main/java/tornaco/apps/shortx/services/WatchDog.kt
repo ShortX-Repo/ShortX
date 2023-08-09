@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.services.ShortXService.shortXContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.cancellation.CancellationException
 
 class WatchDogService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WatchDogService") {
@@ -64,6 +65,10 @@ fun CoroutineScope.launchSafety(
     block: suspend CoroutineScope.() -> Unit,
 ): Job = launch(context = context, start = start, block = {
     kotlin.runCatching { block() }.onFailure {
-        shortXContext.watchDog.onFatalError(it)
+        if (it is CancellationException) {
+            // Ignore this error
+        } else {
+            shortXContext.watchDog.onFatalError(it)
+        }
     }
 })

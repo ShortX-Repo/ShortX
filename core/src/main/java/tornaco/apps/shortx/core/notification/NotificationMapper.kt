@@ -40,7 +40,7 @@ fun StatusBarNotification.androidSBNToNotification(): Notification? {
             )
             .apply {
                 if (OsUtils.isOOrAbove()) {
-                    notificationChannel = n.channelId
+                    notificationChannel = n.channelId ?: "Unknown"
                 }
             }
             .build()
