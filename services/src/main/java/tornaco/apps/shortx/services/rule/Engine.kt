@@ -1,10 +1,12 @@
 package tornaco.apps.shortx.services.rule
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -294,57 +296,61 @@ class DefaultRuleEngine(
                     // Launch actions.
                     if (shouldExecuteActions) {
                         val job = coroutineScope.launchSafety {
-                            logger.d("job for rule: ${rule.title} start.")
-                            val runActions: suspend () -> Unit = {
-                                kotlin.run loop@{
-                                    logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
-                                    rule.actionsList.forEach {
-                                        logger.d("about to execute action: ${it.typeUrl}")
-                                        val evaRes = actionEvaluator.evaluate(
-                                            evaluateContext = evaluateContext,
-                                            action = it,
-                                            contextData = contextData,
-                                            localVars = localVars,
-                                        )
-                                        logger.d("action evaluate res: $evaRes")
-                                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                            logger.e(evaRes.error, "evaluate fail")
-                                            if (evaRes.shouldContinue) {
-                                                logger.d("Action on error is continue execute.")
-                                            } else {
+                            // By default, execute action in IO
+                            withContext(Dispatchers.IO) {
+                                logger.d("job for rule: ${rule.title} start.")
+                                val runActions: suspend () -> Unit = {
+                                    kotlin.run loop@{
+                                        logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
+                                        rule.actionsList.forEach {
+                                            logger.d("about to execute action: ${it.typeUrl}")
+                                            val evaRes = actionEvaluator.evaluate(
+                                                evaluateContext = evaluateContext,
+                                                action = it,
+                                                contextData = contextData,
+                                                localVars = localVars,
+                                            )
+                                            logger.d("action evaluate res: $evaRes")
+                                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                                                logger.e(evaRes.error, "evaluate fail")
+                                                if (evaRes.shouldContinue) {
+                                                    logger.d("Action on error is continue execute.")
+                                                } else {
+                                                    return@loop
+                                                }
+                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                                                logger.w("evaluate break!")
                                                 return@loop
+                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                                                logger.d("action is disabled: ${evaRes.action.typeUrl}")
                                             }
-                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                            logger.w("evaluate break!")
-                                            return@loop
-                                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
+                                        }
+                                    }
+                                }
+
+                                when (rule.asyncMode) {
+                                    AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
+                                        logger.d("Run actions with Async")
+                                        runActions()
+                                    }
+
+                                    AsyncMode.AsyncMode_Sync_InRule -> {
+                                        val muteX = rule.muteX
+                                        logger.d("Run actions with Sync_InRule: $muteX")
+                                        muteX.withLock {
+                                            runActions()
+                                        }
+                                    }
+
+                                    else -> {
+                                        logger.d("Run actions with globalMuteX")
+                                        globalMuteX.withLock {
+                                            runActions()
                                         }
                                     }
                                 }
                             }
 
-                            when (rule.asyncMode) {
-                                AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
-                                    logger.d("Run actions with Async")
-                                    runActions()
-                                }
-
-                                AsyncMode.AsyncMode_Sync_InRule -> {
-                                    val muteX = rule.muteX
-                                    logger.d("Run actions with Sync_InRule: $muteX")
-                                    muteX.withLock {
-                                        runActions()
-                                    }
-                                }
-
-                                else -> {
-                                    logger.d("Run actions with globalMuteX")
-                                    globalMuteX.withLock {
-                                        runActions()
-                                    }
-                                }
-                            }
                         }
                         logger.d("Created job: $job for rule: ${rule.title}")
                         synchronized(jobs) {
@@ -433,27 +439,29 @@ class DefaultRuleEngine(
         }
 
         val job = coroutineScope.launchSafety {
-            logger.d("evaluateActions, job for id: ${context.srcId} start.")
-            kotlin.run loop@{
-                actions.forEach {
-                    val evaRes = actionEvaluator.evaluate(
-                        evaluateContext = context,
-                        action = it,
-                        contextData = contextData,
-                        localVars = localVars
-                    )
-                    if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                        logger.e(evaRes.error, "evaluate fail")
-                        if (evaRes.shouldContinue) {
-                            logger.d("Action on error is continue execute.")
-                        } else {
+            withContext(Dispatchers.IO) {
+                logger.d("evaluateActions, job for id: ${context.srcId} start.")
+                kotlin.run loop@{
+                    actions.forEach {
+                        val evaRes = actionEvaluator.evaluate(
+                            evaluateContext = context,
+                            action = it,
+                            contextData = contextData,
+                            localVars = localVars
+                        )
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
                             return@loop
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
                         }
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                        logger.w("evaluate break!")
-                        return@loop
-                    } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                        logger.d("action is disabled: ${evaRes.action.typeUrl}")
                     }
                 }
             }

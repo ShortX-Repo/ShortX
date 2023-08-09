@@ -50,28 +50,25 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
 
     private fun executeCommandByInjection(command: String): ShellRes? {
         if (!isInjectedShellEnabled()) return null
-        synchronized(shellStubs) {
-            val itemCount = shellStubs.beginBroadcast()
-            if (itemCount == 0) {
-                logger.d("executeCommand, no registered shell.")
-                return null
-            }
-            val first = shellStubs.getBroadcastItem(0)
-            logger.d("Using shell: $first")
-            val receiver = SynchronousResultReceiver.get()
-            kotlin.runCatching { first.exe(arrayOf(command), receiver) }.getOrElse {
-                logger.e(it, "Error call ISu")
-                null
-            }
-            val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
-            logger.d("receiver get res: $receiverRes")
-            val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
-            shellStubs.finishBroadcast()
-            return byteRes?.let {
-                ShellRes.parseFrom(
-                    byteRes.byteData
-                )
-            }
+        val itemCount = shellStubs.registeredCallbackCount
+        if (itemCount == 0) {
+            logger.d("executeCommand, no registered shell.")
+            return null
+        }
+        val first = shellStubs.getRegisteredCallbackItem(0)
+        logger.d("Using shell: $first")
+        val receiver = SynchronousResultReceiver.get()
+        kotlin.runCatching { first.exe(arrayOf(command), receiver) }.getOrElse {
+            logger.e(it, "Error call ISu")
+            null
+        }
+        val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
+        logger.d("receiver get res: $receiverRes")
+        val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+        return byteRes?.let {
+            ShellRes.parseFrom(
+                byteRes.byteData
+            )
         }
     }
 
