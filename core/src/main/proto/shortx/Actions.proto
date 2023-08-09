@@ -830,3 +830,13 @@ message TTS {
 
   string text = 1;
 }
+
+message SetWallpaper {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  // Content or File path
+  string fileUrl = 1;
+}

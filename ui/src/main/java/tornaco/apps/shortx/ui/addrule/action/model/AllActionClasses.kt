@@ -91,5 +91,6 @@ val allActionClasses = listOf(
     Action.EnableUniversalCopy::class,
     Action.ShowTextFieldDialog::class,
     Action.TTS::class,
+    Action.SetWallpaper::class,
     Action.NoAction::class,
 )

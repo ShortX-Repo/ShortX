@@ -116,6 +116,15 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         })
     SIMSlotSelectorDialog(state = switchMobileDataSelectorState)
 
+    val wallpaperFileSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.set.wallpaper"],
+        message = LocalI18N.current["ui.action.set.wallpaper.url"],
+        onSelected = {
+            addAction(Action.SetWallpaper(url = it))
+        }
+    )
+    TextInputDialog(state = wallpaperFileSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.WakeupScreen::class -> {
@@ -170,6 +179,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.SwitchMobileDataSlot::class -> {
                 switchMobileDataSelectorState.show()
+                true
+            }
+
+            Action.SetWallpaper::class -> {
+                wallpaperFileSelectorState.show(source.getActionAs<Action.SetWallpaper>()?.url)
                 true
             }
 
@@ -242,6 +256,7 @@ fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (A
         Action.Vibrate::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
         Action.SwitchMobileDataSlot::class,
+        Action.SetWallpaper::class,
     ).map {
         SelectorItem(
             type = it,

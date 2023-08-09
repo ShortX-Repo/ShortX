@@ -519,6 +519,8 @@
   "ui.action.system.settings": "系统",
   "ui.action.brk": "停止执行后续动作",
   "ui.action.tts": "朗读文本",
+  "ui.action.set.wallpaper": "设置壁纸",
+  "ui.action.set.wallpaper.url": "输入壁纸文件的文件路径或Content url \ne.g. /sdcard/Download/1.png \ne.g. content://image/1",
   "ui.action.show.dialog": "显示对话框",
   "ui.action.dialog.message": "对话框信息",
   "ui.action.dialog.title": "标题",

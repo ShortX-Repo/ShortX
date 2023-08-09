@@ -365,6 +365,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Communication.speak_line
         }
 
+        Action.SetWallpaper::class -> {
+            Remix.Media.landscape_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -520,6 +520,8 @@
   "ui.action.system.settings": "System",
   "ui.action.brk": "Stop execute next actions",
   "ui.action.tts": "Speech text",
+  "ui.action.set.wallpaper": "Set wallpaper",
+  "ui.action.set.wallpaper.url": "Input File or Content url the your wallpaper file. \ne.g. /sdcard/Download/1.png \ne.g. content://image/1",
   "ui.action.show.dialog": "Show dialog",
   "ui.action.dialog.message": "Message",
   "ui.action.dialog.title": "Title",

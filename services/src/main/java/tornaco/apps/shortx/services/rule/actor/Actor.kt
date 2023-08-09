@@ -365,6 +365,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.TTS
     },
+    SetWallpaper {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetWallpaper
+    },
 
 
     ;

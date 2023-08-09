@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
 import tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled
+import tornaco.apps.shortx.core.proto.action.SetWallpaper
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.action.ShowAlertDialog
@@ -925,6 +926,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setText(text)
+                .build()
+        }
+
+        is Action.SetWallpaper -> {
+            SetWallpaper.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setFileUrl(url)
                 .build()
         }
 

@@ -1073,6 +1073,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetWallpaper::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetWallpaper::class.java
+            Action.SetWallpaper(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                url = data.fileUrl
+            )
+        }
+
         else -> null
     }
 }
