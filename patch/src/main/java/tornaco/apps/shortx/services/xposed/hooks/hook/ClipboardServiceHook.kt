@@ -1,13 +1,8 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
-import android.content.ClipData
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceClass
-import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.ShortXService
-import util.Reflections
 
 object ClipboardServiceHook {
     private val logger = Logger("ShortXHook.ClipboardServiceHook")
@@ -15,17 +10,14 @@ object ClipboardServiceHook {
     fun hookClipboardService(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.clipboardServiceClass(),
-            "sendClipChangedBroadcast"
+            "clipboardAccessAllowed"
         ) { param ->
-            val clip: ClipData =
-                Reflections.getObjectField(param.args[0], "primaryClip") as ClipData
-            logger.d("sendClipChangedBroadcast: $clip")
-            val text = clip.getItemAt(0)?.text?.toString() ?: ""
-            ShortXService.shortXContext.rule.publishFact(
-                reason = "Clipboard",
-                fact = ClipboardContentChanged.newBuilder().setContent(text).build(),
-                initialContextData = mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to text)
-            )
+            //  private boolean clipboardAccessAllowed(int op, String callingPackage, int uid, @UserIdInt int userId, boolean shouldNoteOp)
+            val callingPackage = param.args[1]
+            if (callingPackage == "android") {
+                logger.d("Allow android to read clipboard")
+                param.result = true
+            }
         }
     }.onFailure {
         logger.e(it, "hookClipboardService")

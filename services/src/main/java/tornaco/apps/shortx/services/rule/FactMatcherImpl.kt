@@ -23,6 +23,7 @@ import tornaco.apps.shortx.core.proto.fact.Broadcast
 import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
+import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -411,6 +412,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as CallStateChanged)
             val ruleN = (rule as CallStateChanged)
             ruleN.callState == actualN.callState
+        }
+
+        register(ClipboardContentChanged::class.java) { actual, rule ->
+            val actualN = (actual as ClipboardContentChanged)
+            val ruleN = (rule as ClipboardContentChanged)
+            emptyOrRegexMatch(ruleN.content, actualN.content)
         }
 
         logger.i("Init complete.")
