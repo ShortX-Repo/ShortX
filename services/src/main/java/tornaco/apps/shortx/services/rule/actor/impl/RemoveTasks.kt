@@ -4,6 +4,7 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
+import tornaco.apps.shortx.services.rule.pkgSetIdsToPkgs
 
 
 object RemoveTasks : Actor {
@@ -14,8 +15,14 @@ object RemoveTasks : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
-        val data =
+        val d =
             action unpack_ tornaco.apps.shortx.core.proto.action.RemoveTasks::class.java
-        shortXContext.appState.removeTasksForPackage(data.appPkgList)
+
+        val pkgs = if (d.pkgSetsList.isNotEmpty()) {
+            d.pkgSetsList.pkgSetIdsToPkgs(shortXContext)
+        } else {
+            d.appPkgList
+        }
+        shortXContext.appState.removeTasksForPackage(pkgs)
     }
 }
