@@ -134,6 +134,10 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
             dats<ContextDataMapping.CallStateChanged>()
         }
 
+        Fact.ClipboardContentChanged::class -> {
+            dats<ContextDataMapping.ClipboardContentChanged>()
+        }
+
         else -> {
             emptyList()
         }

@@ -586,6 +586,17 @@ sealed interface Fact {
             return copy(id = id, note = note)
         }
     }
+
+    data class ClipboardContentChanged(
+        override val note: String = "",
+        override val id: String = defaultNewFactId(),
+
+        val content: String,
+    ) : Fact {
+        override fun clone(id: String, note: String): Fact {
+            return copy(id = id, note = note)
+        }
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()

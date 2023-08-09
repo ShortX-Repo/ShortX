@@ -192,6 +192,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.call.state.changed"] to null
         }
 
+        Fact.ClipboardContentChanged::class -> {
+            i18n["ui.fact.clipboard.content.changed"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -564,6 +568,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.call.state.changed"],
                 i18N["ui.fact.call.state.${fact.callState.name.lowercase()}"],
+            )
+        }
+
+        is Fact.ClipboardContentChanged -> {
+            listOf(
+                i18N["ui.fact.clipboard.content.changed"],
+                fact.content
             )
         }
     }

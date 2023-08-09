@@ -77,6 +77,8 @@
   "ui.fact.screen.on": "亮屏",
   "ui.fact.screen.user.present": "荧幕解鎖",
   "ui.fact.system.ready": "系統啟動完成",
+  "ui.fact.clipboard.content.changed": "剪贴板变化",
+  "ui.fact.clipboard.content.changed.regex": "输入你要匹配剪贴板内容的正则表达式，当剪贴板变化，且内容匹配表达式时，触发器触发",
   "ui.fact.call.state.changed": "电话状态改变",
   "ui.fact.call.state.callstateidle": "挂断",
   "ui.fact.call.state.callstateringing": "响铃",

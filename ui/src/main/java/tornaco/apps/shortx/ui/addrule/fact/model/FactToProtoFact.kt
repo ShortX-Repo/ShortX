@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.fact.Broadcast
 import tornaco.apps.shortx.core.proto.fact.CallStateChanged
 import tornaco.apps.shortx.core.proto.fact.ChargerPlug
 import tornaco.apps.shortx.core.proto.fact.ChargerUnplug
+import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.proto.fact.DNDStatusChanged
 import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
@@ -381,6 +382,12 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.CallStateChanged -> {
             CallStateChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCallState(callState)
+                .build()
+        }
+
+        is Fact.ClipboardContentChanged -> {
+            ClipboardContentChanged.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setContent(content)
                 .build()
         }
 

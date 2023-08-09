@@ -464,6 +464,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged::class.java
+
+            Fact.ClipboardContentChanged(
+                id = data.id,
+                note = data.note,
+                content = data.content
+            )
+        }
+
 
         else -> {
             null

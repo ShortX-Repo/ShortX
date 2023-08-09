@@ -62,6 +62,7 @@ fun SystemFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact)
         Fact.OnFinishOp::class,
         Fact.SystemSettingsChanged::class,
         Fact.CallStateChanged::class,
+        Fact.ClipboardContentChanged::class,
     ).map {
         SelectorItem(
             type = it,

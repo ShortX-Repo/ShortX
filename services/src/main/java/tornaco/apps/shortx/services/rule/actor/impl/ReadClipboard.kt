@@ -22,7 +22,10 @@ object ReadClipboard : Actor {
                     null
                 }?.let {
                     logger.d("add $it to contextData")
-                    params.contextData.add(ContextDataMapping.ReadClipboard.text.name, it)
+                    params.contextData.add(
+                        ContextDataMapping.ReadClipboard.clipboardContent.name,
+                        it
+                    )
                 }
         }
     }

@@ -435,3 +435,10 @@ message CallStateChanged {
   string note = 99;
   string id = 100;
 }
+
+message ClipboardContentChanged {
+  string content = 1;
+
+  string note = 99;
+  string id = 100;
+}

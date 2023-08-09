@@ -255,18 +255,28 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     })
     SystemSettingsUrlSelectorDialog(state = systemSettingsChangeDialogState)
 
-    val callStateSelectState = rememberMenuDialogState<String>(title = LocalI18N.current["ui.fact.call.state.changed"],
-        menuItems =
-        CallState.values().filterNot { it == CallState.UNRECOGNIZED }.map {
-            MenuDialogItem(
-                it.name,
-                LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
-            )
-        }, onItemSelected = { _, id ->
-            addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))
+    val callStateSelectState =
+        rememberMenuDialogState<String>(title = LocalI18N.current["ui.fact.call.state.changed"],
+            menuItems =
+            CallState.values().filterNot { it == CallState.UNRECOGNIZED }.map {
+                MenuDialogItem(
+                    it.name,
+                    LocalI18N.current["ui.fact.call.state.${it.name.lowercase()}"],
+                )
+            }, onItemSelected = { _, id ->
+                addFact(Fact.CallStateChanged(callState = CallState.valueOf(id)))
+            }
+        )
+    MenuDialog(state = callStateSelectState)
+
+    val clipboardRegexDialogState = rememberTextInputState(
+        title = LocalI18N.current["ui.fact.clipboard.content.changed"],
+        message = LocalI18N.current["ui.fact.clipboard.content.changed.regex"],
+        onSelected = {
+            addFact(Fact.ClipboardContentChanged(content = it))
         }
     )
-    MenuDialog(state = callStateSelectState)
+    TextInputDialog(state = clipboardRegexDialogState)
 
     return { source ->
         when (source.clazz) {
@@ -466,6 +476,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.CallStateChanged::class -> {
                 callStateSelectState.show()
+                true
+            }
+
+            Fact.ClipboardContentChanged::class -> {
+                clipboardRegexDialogState.show(
+                    source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: ".*"
+                )
                 true
             }
 

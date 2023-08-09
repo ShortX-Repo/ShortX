@@ -105,8 +105,13 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class ClipboardContentChanged(val description: String) {
+        clipboardContent("Text read from clipboard"),
+    }
+
+    @DoNotStrip
     enum class ReadClipboard(val description: String) {
-        text("Text read from clipboard"),
+        clipboardContent("Text read from clipboard"),
     }
 
     @DoNotStrip
