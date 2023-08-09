@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -332,7 +333,8 @@ private fun RuleItem2(
                 Text(
                     text = rule.description,
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                    maxLines = 8
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
                 MediumSpacer()
 

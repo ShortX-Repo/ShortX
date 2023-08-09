@@ -104,7 +104,7 @@ private fun DASelector(dialogState: DADialogState) {
                         DirectActionListContent(
                             state = mainState,
                             showOverflowMenu = false,
-                            onDirectActionClick = { da ->
+                            onEdit = { da ->
                                 dialogState.onSelected(da)
                                 dialogState.dismiss()
                             }

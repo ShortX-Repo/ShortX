@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -230,6 +231,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                         modifier = Modifier.padding(end = 36.dp),
                         text = preference.summary ?: preference.title,
                         style = MaterialTheme.typography.bodySmall,
+                        overflow = TextOverflow.Ellipsis,
                         maxLines = 2
                     )
                 }

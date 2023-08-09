@@ -55,6 +55,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -205,7 +206,7 @@ fun DirectActionListScreen() {
 
 
             },
-            onDirectActionClick = { da ->
+            run = { da ->
                 vm.executeDA(da)
             },
             stopAllJobs = {
@@ -223,7 +224,7 @@ fun DirectActionListContent(
     onDup: (DirectActionUM) -> Unit = {},
     onEdit: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
-    onDirectActionClick: (DirectActionUM) -> Unit = {},
+    run: (DirectActionUM) -> Unit = {},
     stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
     Box(
@@ -244,7 +245,7 @@ fun DirectActionListContent(
                 das = state.das,
                 isSubscribed = state.isSubscribed,
                 showOverflowMenu = showOverflowMenu,
-                onDirectActionClick = onDirectActionClick,
+                run = run,
                 onDup = onDup,
                 onDelete = onDelete,
                 onEdit = onEdit,
@@ -255,7 +256,7 @@ fun DirectActionListContent(
             DAListContentCompat(
                 state = state,
                 showOverflowMenu = showOverflowMenu,
-                onDirectActionClick = onDirectActionClick,
+                onDirectActionClick = run,
                 onDup = onDup,
                 onDelete = onDelete,
                 onEdit = onEdit,
@@ -271,7 +272,7 @@ private fun DAListContent(
     das: List<DirectActionUM>,
     isSubscribed: Boolean,
     showOverflowMenu: Boolean,
-    onDirectActionClick: (DirectActionUM) -> Unit,
+    run: (DirectActionUM) -> Unit,
     onDup: (DirectActionUM) -> Unit = {},
     onDelete: (DirectActionUM) -> Unit = {},
     onEdit: (DirectActionUM) -> Unit = {},
@@ -325,8 +326,8 @@ private fun DAListContent(
                         da = da,
                         isSubscribed = isSubscribed,
                         isLongClickEnabled = showOverflowMenu,
-                        onClick = {
-                            onDirectActionClick(da)
+                        run = {
+                            run(da)
                             colorAnimStarted = true
                             scaleAnimStarted = true
                         },
@@ -391,7 +392,7 @@ private fun DirectActionItem(
     da: DirectActionUM,
     isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
-    onClick: () -> Unit,
+    run: () -> Unit,
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
@@ -416,7 +417,7 @@ private fun DirectActionItem(
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
             edit = { onEdit(da) },
-            onClick = onClick,
+            run = run,
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
             stopAllJobs = {
                 stopAllJobs(da)
@@ -514,7 +515,7 @@ private fun DAListItem(
     icon: String,
     iconColor: Color,
     edit: () -> Unit,
-    onClick: () -> Unit,
+    run: () -> Unit,
     onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
 ) {
@@ -522,7 +523,7 @@ private fun DAListItem(
         .fillMaxWidth()
         .clip(ShortXCardRoundedCornerShape)
         .combinedClickable(onLongClick = onLongClick) {
-            onClick()
+            edit()
         }
         .padding(horizontal = 12.dp)
         .padding(top = 12.dp)) {
@@ -545,9 +546,9 @@ private fun DAListItem(
             }
 
             IconButton(onClick = {
-                edit()
+                run()
             }) {
-                RemixIcon(remixName = Remix.Document.file_edit_line, tint = NoteTextColor)
+                RemixIcon(remixName = Remix.Media.play_circle_line, tint = NoteTextColor)
             }
         }
 
@@ -563,7 +564,8 @@ private fun DAListItem(
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                maxLines = 8
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             MediumSpacer()
             TinySpacer()
@@ -747,7 +749,7 @@ private fun DAListItemPreview() {
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,
             edit = {},
-            onClick = {},
+            run = {},
             onLongClick = {},
             stopAllJobs = {}
         )
