@@ -35,5 +35,6 @@ object HookStub {
         ActivityRecordHook.hook(lpparam)
         VPNHook.hook(lpparam)
         PhoneWindowManagerHook.hook(lpparam)
+        ClipboardServiceHook.hookClipboardService(lpparam)
     }
 }

@@ -4,6 +4,7 @@ import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_AM
 import tornaco.apps.shortx.core.platform.ClassNames.ACTIVITY_RECORD_WM
 import tornaco.apps.shortx.core.platform.ClassNames.AMS
 import tornaco.apps.shortx.core.platform.ClassNames.ATMS
+import tornaco.apps.shortx.core.platform.ClassNames.CLIPBOARD_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.MEDIA_DOCUMENTS_PROVIDER
 import tornaco.apps.shortx.core.platform.ClassNames.NOTIFICATION_USAGE_STATS_SERVICE
 import tornaco.apps.shortx.core.platform.ClassNames.PHONE_WINDOW_MANAGER
@@ -119,6 +120,13 @@ object Classes {
     fun ClassLoader.phoneWindowManagerClass(): Class<*> =
         Reflections.findClass(
             PHONE_WINDOW_MANAGER,
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
+    fun ClassLoader.clipboardServiceClass(): Class<*> =
+        Reflections.findClass(
+            CLIPBOARD_SERVICE,
             this
         )
 

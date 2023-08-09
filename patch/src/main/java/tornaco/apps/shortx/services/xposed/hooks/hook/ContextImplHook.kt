@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Binder
 import tornaco.apps.shortx.core.compat.ManifestCompat
@@ -18,6 +19,7 @@ object ContextImplHook {
             if (param.args[0] == ManifestCompat.permission.MANAGE_MEDIA_PROJECTION
                 || param.args[0] == ManifestCompat.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT
                 || param.args[0] == ManifestCompat.permission.WRITE_SECURE_SETTINGS
+                || param.args[0] == Manifest.permission.READ_CLIPBOARD_IN_BACKGROUND
             ) {
                 val result = param.result
                 if (result != PackageManager.PERMISSION_GRANTED && Binder.getCallingUid() == 1000) {
