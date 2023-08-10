@@ -1,13 +1,10 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class
-)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,23 +21,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.CommonDialogState
-import tornaco.apps.shortx.ui.base.FieldTitle
-import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
-import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class PackageNameAndUserSelectorDialogState(
+class PkgAndUserListSelectorDialogState(
     val title: String,
     val onSelected: (List<StringPair>) -> Unit
 ) : CommonDialogState() {
@@ -65,26 +57,26 @@ class PackageNameAndUserSelectorDialogState(
 }
 
 @Composable
-fun rememberPackageNameAndUserSelectorDialogState(
+fun rememberPkgAndUserListSelectorDialogState(
     title: String,
     onSelected: (List<StringPair>) -> Unit
-): PackageNameAndUserSelectorDialogState {
+): PkgAndUserListSelectorDialogState {
     return remember {
-        PackageNameAndUserSelectorDialogState(title, onSelected)
+        PkgAndUserListSelectorDialogState(title, onSelected)
     }
 }
 
 @Composable
-fun PackageNameAndUserSelectorDialog(state: PackageNameAndUserSelectorDialogState) {
+fun PackageNameAndUserSelectorDialog(state: PkgAndUserListSelectorDialogState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            StartActivityIntentSelector(state)
+            DialogContent(state)
         }
     }
 }
 
 @Composable
-private fun StartActivityIntentSelector(dialogState: PackageNameAndUserSelectorDialogState) {
+private fun DialogContent(dialogState: PkgAndUserListSelectorDialogState) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -141,59 +133,16 @@ private fun StartActivityIntentSelector(dialogState: PackageNameAndUserSelectorD
                             })
                     }
 
-                    var inputPackage by remember {
-                        mutableStateOf("")
-                    }
-                    var inputUser by remember {
-                        mutableStateOf("$myUserId")
-                    }
-
-                    LargeSpacer()
-                    FieldTitle(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.select.pkg.and.user.package"]
+                    val singlePkgAndUserSelectState = rememberSinglePkgAndUserSelectorDialogState(
+                        title = dialogState.title,
+                        onSelected = {
+                            dialogState.addItem(it)
+                        }
                     )
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = inputPackage,
-                        onValueChange = {
-                            inputPackage = it
-                        })
-                    StandardSpacer()
-
-
-                    val userSelectDialogState = rememberUserSelectorDialogState(onSelected = {
-                        inputUser = it.userId.toString()
-                    })
-                    UserSelectorDialog(state = userSelectDialogState)
-                    FieldTitle(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.select.pkg.and.user.user"]
-                    )
-                    TipBody(text = LocalI18N.current["ui.action.select.pkg.and.user.user.summary"])
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = inputUser,
-                        showSymbolButton = false,
-                        trailingIcon = {
-                            IconButton(onClick = { userSelectDialogState.show() }) {
-                                RemixIcon(remixName = Remix.UserAndFaces.user_3_line)
-                            }
-                        },
-                        onValueChange = {
-                            inputUser = it.trim()
-                        })
-                    StandardSpacer()
+                    SinglePkgAndUserSelectorDialog(state = singlePkgAndUserSelectState)
 
                     androidx.compose.material3.Button(onClick = {
-                        dialogState.addItem(
-                            StringPair.newBuilder()
-                                .setFirst(inputPackage)
-                                .setSecond(inputUser)
-                                .build()
-                        )
-                        inputPackage = ""
-                        inputUser = "$myUserId"
+                        singlePkgAndUserSelectState.show()
                     }) {
                         Text(text = LocalI18N.current["ui.common.add"])
                     }

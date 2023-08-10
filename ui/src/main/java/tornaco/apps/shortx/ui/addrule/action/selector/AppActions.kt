@@ -44,21 +44,21 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = stopAppSelectorState)
 
-    val stopAppByPackageSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val stopAppByPackageSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.stop.app.by.pkg"],
         onSelected = {
             addAction(Action.StopAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = stopAppByPackageSelectorState)
 
-    val enableAppByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val enableAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.enable.app.by.pkg"],
         onSelected = {
             addAction(Action.EnableAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = enableAppByPkgSelectorState)
 
-    val disableAppByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val disableAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.disable.app.by.pkg"],
         onSelected = {
             addAction(Action.DisableAppByPkg(stringPairs = it))
@@ -89,7 +89,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = startAppProcessSelectorState)
 
-    val startAppProcessByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val startAppProcessByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.start.app.process.by.pkg"],
         onSelected = {
             addAction(Action.StartAppProcessByPkg(stringPairs = it))
@@ -108,7 +108,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = setAppInactiveSelectorState)
 
-    val setAppInactiveByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val setAppInactiveByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.set.app.inactive.by.pkg"],
         onSelected = {
             addAction(Action.SetAppInactiveByPkg(stringPairs = it))
@@ -163,14 +163,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = unsuspendAppSelectorState)
 
-    val suspendAppByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val suspendAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.suspend.app.by.pkg"],
         onSelected = {
             addAction(Action.SuspendAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = suspendAppByPkgSelectorState)
 
-    val unsuspendAppByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val unsuspendAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.unsuspend.app.by.pkg"],
         onSelected = {
             addAction(Action.UnSuspendAppByPkg(stringPairs = it))
@@ -189,7 +189,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = removeNotificationDialogState)
 
-    val removeNotificationByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+    val removeNotificationByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
         title = LocalI18N.current["ui.action.remove.notification.by.pkg"],
         onSelected = {
             addAction(Action.RemoveNotificationForPackageByPkg(stringPairs = it))

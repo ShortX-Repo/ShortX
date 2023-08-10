@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
@@ -38,7 +39,7 @@ fun List<StringPair>.toRealApps(params: HandleParams): List<AppPkg> {
                 .setUserId(stringPair.second.inflateContextMap(params.contextData)
                     .replaceGlobalVarValues { params.shortXContext.rule.getAllGlobalVars() }
                     .replaceLocalVarValues(params.localVars)
-                    .toInt())
+                    .toIntOrNull() ?: myUserId)
                 .build()
         )
         app?.pkg

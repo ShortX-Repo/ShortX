@@ -446,7 +446,7 @@
   "ui.action.from.da.not.found": "一键指令已经不存在，请重新设定",
   "ui.action.expand.notification": "展开通知栏",
   "ui.action.remove.notification": "移除应用通知",
-  "ui.action.remove.notification.by.pkg": "移除应用通知",
+  "ui.action.remove.notification.by.pkg": "移除应用通知（动态）",
   "ui.action.post.notification": "显示通知",
   "ui.action.post.notification.tag": "标签",
   "ui.action.post.notification.tag.description": "用于标记该通知，你可以通过标签来更新或取消该通知",
