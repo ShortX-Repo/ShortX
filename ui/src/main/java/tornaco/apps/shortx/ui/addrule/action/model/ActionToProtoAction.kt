@@ -936,6 +936,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .setFileUrl(url)
+                .setCrop(crop)
                 .build()
         }
 

@@ -6,7 +6,7 @@ import java.net.URL
 
 
 private const val taskName = "getI18nFromGithub"
-private const val i18NBaseUrl = "https://raw.githubusercontent.com/ShortX-Repo/ShortX-i8n/main"
+private const val i18NBaseUrl = "https://raw.githubusercontent.com/ShortX-Repo/ShortX-i18n/main"
 private val allFiles = arrayOf(
     "i18n-en-US.json",
     "i18n-zh-CN.json",

@@ -839,4 +839,5 @@ message SetWallpaper {
 
   // Content or File path
   string fileUrl = 1;
+  bool crop = 2;
 }

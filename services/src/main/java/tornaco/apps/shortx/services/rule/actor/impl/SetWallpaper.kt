@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.annotation.SuppressLint
+import android.app.WallpaperManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.webkit.URLUtil
 import com.google.protobuf.Message
@@ -52,8 +55,43 @@ object SetWallpaper : Actor {
 
         logger.d("Set with: $tmpFile")
         FileInputStream(tmpFile).use {
-            androidContext.wallpaperManager.setStream(it)
+            val wallpaperManager = androidContext.wallpaperManager
+            val rawBitmap = BitmapFactory.decodeStream(it)
+            val wallpaperBitmap = if (d.crop) {
+                logger.i("crop wallpaper image.")
+                cropBitmapToSize(
+                    rawBitmap,
+                    wallpaperManager.desiredMinimumWidth,
+                    wallpaperManager.desiredMinimumHeight
+                )
+            } else {
+                logger.i("using raw wallpaper image.")
+                rawBitmap
+            }
+
+            wallpaperManager.setBitmap(
+                wallpaperBitmap,
+                null,
+                true,
+                WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK
+            )
+
+            wallpaperBitmap.recycle()
+            rawBitmap.recycle()
         }
     }
 
+    private fun cropBitmapToSize(bitmap: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap {
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+
+        if (originalWidth <= targetWidth && originalHeight <= targetHeight) {
+            return bitmap
+        }
+
+        val left = (originalWidth - targetWidth) / 2
+        val top = (originalHeight - targetHeight) / 2
+
+        return Bitmap.createBitmap(bitmap, left, top, targetWidth, targetHeight)
+    }
 }

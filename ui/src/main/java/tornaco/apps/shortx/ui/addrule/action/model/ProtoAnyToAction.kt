@@ -1081,7 +1081,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 id = data.id,
                 note = data.note,
-                url = data.fileUrl
+                url = data.fileUrl,
+                crop = data.crop
             )
         }
 

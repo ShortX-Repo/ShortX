@@ -2148,7 +2148,8 @@ sealed interface Action : Parcelable {
         override val actionOnError: ActionOnError = defaultActionOnError,
         override val note: String = "",
 
-        val url: String
+        val url: String,
+        val crop: Boolean
     ) : Action {
         override fun clone(
             id: String,
