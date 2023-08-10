@@ -6,12 +6,30 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +46,16 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -111,14 +138,15 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                     }
                 }) { paddingValues ->
 
-                if (state.isLoading) {
-                    Loading(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                    )
-                } else {
-                    PkgSetContent(paddingValues, state, vm)
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    if (state.isLoading) {
+                        Loading(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    } else {
+                        PkgSetContent(PaddingValues(bottom = 128.dp), state, vm)
+                    }
                 }
 
             }
@@ -140,7 +168,7 @@ private fun PkgSetContent(
         contentPadding = paddingValues
     ) {
         if (!state.isPrebuilt) {
-            stickyHeader {
+            item {
                 Column {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),

@@ -8,13 +8,28 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,7 +44,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
@@ -111,48 +144,48 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                         Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                     }
                 }) { paddingValues ->
-                if (state.isLoading) {
-                    Loading(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                    )
-                } else {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
-                        contentPadding = paddingValues
-                    ) {
-                        items(state.pkgSets) {
-                            androidx.compose.material.Card(
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                backgroundColor = ColorDefaults.backgroundSurfaceColor(),
-                                shape = ShortXCardRoundedCornerShape,
-                                elevation = 0.dp
-                            ) {
-                                Box {
-                                    val popMenuState = listItemOverflowMenu(
-                                        pkgSet = it,
-                                        onDelete = {
-                                            vm.delete(it.label)
-                                        },
-                                    )
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    if (state.isLoading) {
+                        Loading(
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        LazyVerticalStaggeredGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                            contentPadding = PaddingValues(bottom = 128.dp)
+                        ) {
+                            items(state.pkgSets) {
+                                androidx.compose.material.Card(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    backgroundColor = ColorDefaults.backgroundSurfaceColor(),
+                                    shape = ShortXCardRoundedCornerShape,
+                                    elevation = 0.dp
+                                ) {
+                                    Box {
+                                        val popMenuState = listItemOverflowMenu(
+                                            pkgSet = it,
+                                            onDelete = {
+                                                vm.delete(it.label)
+                                            },
+                                        )
 
-                                    PkgSetListItem(modifier = Modifier,
-                                        title = it.label,
-                                        text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
-                                        badge = if (it.isPrebuilt) {
-                                            i18N["ui.pkg.set.prebuilt"]
-                                        } else null,
-                                        onClick = {
-                                            goToDetail(it.label)
-                                        },
-                                        onLongClick = {
-                                            if (!it.isPrebuilt) {
-                                                popMenuState.open()
-                                            }
-                                        })
+                                        PkgSetListItem(modifier = Modifier,
+                                            title = it.label,
+                                            text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                            badge = if (it.isPrebuilt) {
+                                                i18N["ui.pkg.set.prebuilt"]
+                                            } else null,
+                                            onClick = {
+                                                goToDetail(it.label)
+                                            },
+                                            onLongClick = {
+                                                if (!it.isPrebuilt) {
+                                                    popMenuState.open()
+                                                }
+                                            })
+                                    }
                                 }
                             }
                         }
