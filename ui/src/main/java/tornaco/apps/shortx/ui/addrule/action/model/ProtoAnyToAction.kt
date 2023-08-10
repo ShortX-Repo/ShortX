@@ -399,6 +399,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg::class.java
+            Action.StartAppProcessByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetAppInactive::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.SetAppInactive::class.java
@@ -410,6 +422,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 apps = models.first,
                 pkgSets = models.second
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.SetAppInactiveByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetAppInactiveByPkg::class.java
+            Action.SetAppInactiveByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
             )
         }
 
@@ -871,6 +895,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 apps = models.first,
                 pkgSets = models.second
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg::class.java
+            Action.RemoveNotificationForPackageByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
             )
         }
 

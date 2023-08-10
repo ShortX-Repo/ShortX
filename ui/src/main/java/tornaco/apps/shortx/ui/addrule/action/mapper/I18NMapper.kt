@@ -130,6 +130,8 @@ fun labelAndDescriptionForActionSelector(
         Action.StopAppByPkg::class -> i18N["ui.action.stop.app.by.pkg"] to null
         Action.StartAppProcess::class -> i18N["ui.action.start.app.process"] to null
         Action.SetAppInactive::class -> i18N["ui.action.set.app.inactive"] to null
+        Action.StartAppProcessByPkg::class -> i18N["ui.action.start.app.process.by.pkg"] to null
+        Action.SetAppInactiveByPkg::class -> i18N["ui.action.set.app.inactive.by.pkg"] to null
         Action.EnableApp::class -> i18N["ui.action.enable.app"] to null
         Action.DisableApp::class -> i18N["ui.action.disable.app"] to null
         Action.EnableAppByPkg::class -> i18N["ui.action.enable.app.by.pkg"] to null
@@ -145,6 +147,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowTextFieldDialog::class -> i18N["ui.action.show.text.field.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
         Action.RemoveNotificationForPackage::class -> i18N["ui.action.remove.notification"] to null
+        Action.RemoveNotificationForPackageByPkg::class -> i18N["ui.action.remove.notification.by.pkg"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.CreateGV::class -> i18N["ui.action.create.global.var"] to null
@@ -307,6 +310,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.pkgSets
         )
 
+        is Action.StartAppProcessByPkg -> listOf(i18N["ui.action.start.app.process.by.pkg"])
+
+        is Action.SetAppInactiveByPkg -> listOf(i18N["ui.action.set.app.inactive.by.pkg"])
+
         is Action.EnableApp -> mutableListOf(i18N["ui.action.enable.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
@@ -406,6 +413,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.RemoveNotificationForPackage -> {
             listOf(i18N["ui.action.remove.notification"])
+        }
+
+        is Action.RemoveNotificationForPackageByPkg -> {
+            listOf(i18N["ui.action.remove.notification.by.pkg"])
         }
 
         is Action.RemoteMVEL -> {

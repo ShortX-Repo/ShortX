@@ -89,6 +89,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = startAppProcessSelectorState)
 
+    val startAppProcessByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+        title = LocalI18N.current["ui.action.start.app.process.by.pkg"],
+        onSelected = {
+            addAction(Action.StartAppProcessByPkg(stringPairs = it))
+        })
+    PackageNameAndUserSelectorDialog(state = startAppProcessByPkgSelectorState)
+
     val setAppInactiveSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -100,6 +107,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 addAction(action)
             })
     AppPkgSelectorDialog(state = setAppInactiveSelectorState)
+
+    val setAppInactiveByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+        title = LocalI18N.current["ui.action.set.app.inactive.by.pkg"],
+        onSelected = {
+            addAction(Action.SetAppInactiveByPkg(stringPairs = it))
+        })
+    PackageNameAndUserSelectorDialog(state = setAppInactiveByPkgSelectorState)
 
     val enableAppSelectorState =
         rememberAppPkgSelectorState(
@@ -174,6 +188,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 addAction(action)
             })
     AppPkgSelectorDialog(state = removeNotificationDialogState)
+
+    val removeNotificationByPkgSelectorState = rememberPackageNameAndUserSelectorDialogState(
+        title = LocalI18N.current["ui.action.remove.notification.by.pkg"],
+        onSelected = {
+            addAction(Action.RemoveNotificationForPackageByPkg(stringPairs = it))
+        })
+    PackageNameAndUserSelectorDialog(state = removeNotificationByPkgSelectorState)
 
     val startActivityIntentSelectorState = rememberStartActivityIntentDialogState(onSelected = {
         addAction(it)
@@ -274,10 +295,24 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.StartAppProcessByPkg::class -> {
+                startAppProcessByPkgSelectorState.show(
+                    source.getActionAs<Action.StartAppProcessByPkg>()?.stringPairs
+                )
+                true
+            }
+
             Action.SetAppInactive::class -> {
                 setAppInactiveSelectorState.show(
                     source.getActionAs<Action.SetAppInactive>()?.apps,
                     source.getActionAs<Action.SetAppInactive>()?.pkgSets
+                )
+                true
+            }
+
+            Action.SetAppInactiveByPkg::class -> {
+                setAppInactiveByPkgSelectorState.show(
+                    source.getActionAs<Action.SetAppInactiveByPkg>()?.stringPairs
                 )
                 true
             }
@@ -370,6 +405,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.RemoveNotificationForPackageByPkg::class -> {
+                removeNotificationByPkgSelectorState.show(
+                    source.getActionAs<Action.RemoveNotificationForPackageByPkg>()?.stringPairs
+                )
+                true
+            }
+
             else -> false
         }
     }
@@ -388,7 +430,9 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.StopAppByPkg::class,
         Action.StopCurrentApp::class,
         Action.StartAppProcess::class,
+        Action.StartAppProcessByPkg::class,
         Action.SetAppInactive::class,
+        Action.SetAppInactiveByPkg::class,
         Action.EnableApp::class,
         Action.EnableAppByPkg::class,
         Action.DisableApp::class,
@@ -401,6 +445,7 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.RemoveTasks::class,
         Action.KillProcessByName::class,
         Action.RemoveNotificationForPackage::class,
+        Action.RemoveNotificationForPackageByPkg::class,
     ).map {
         SelectorItem(
             type = it,

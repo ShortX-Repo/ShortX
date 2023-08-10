@@ -145,11 +145,11 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.stop_fill
         }
 
-        Action.StartAppProcess::class -> {
+        Action.StartAppProcess::class, Action.StartAppProcessByPkg::class -> {
             Remix.Media.play_fill
         }
 
-        Action.SetAppInactive::class -> {
+        Action.SetAppInactive::class, Action.SetAppInactiveByPkg::class -> {
             Remix.HealthAndMedical.zzz_fill
         }
 
@@ -301,7 +301,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.close_circle_fill
         }
 
-        Action.RemoveNotificationForPackage::class -> {
+        Action.RemoveNotificationForPackage::class, Action.RemoveNotificationForPackageByPkg::class -> {
             Remix.System.notification_badge_fill
         }
 

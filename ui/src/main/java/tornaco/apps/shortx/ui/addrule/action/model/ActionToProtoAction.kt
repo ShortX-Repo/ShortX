@@ -31,10 +31,12 @@ import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
+import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
+import tornaco.apps.shortx.core.proto.action.SetAppInactiveByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
 import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetAutoBrightness
@@ -63,6 +65,7 @@ import tornaco.apps.shortx.core.proto.action.StartActivity
 import tornaco.apps.shortx.core.proto.action.StartActivityIntent
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.action.StartAppProcess
+import tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
@@ -356,11 +359,27 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note).build()
         }
 
+        is Action.StartAppProcessByPkg -> {
+            StartAppProcessByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .addAllPkgAndUsers(stringPairs)
+                .setNote(overrideNote ?: note).build()
+        }
+
         is Action.SetAppInactive -> {
             SetAppInactive.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.SetAppInactiveByPkg -> {
+            SetAppInactiveByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .addAllPkgAndUsers(stringPairs)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -737,6 +756,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .build()
+        }
+
+        is Action.RemoveNotificationForPackageByPkg -> {
+            RemoveNotificationForPackageByPkg.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .addAllPkgAndUsers(stringPairs)
                 .build()
         }
 
