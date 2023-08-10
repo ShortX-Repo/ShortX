@@ -436,6 +436,27 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg::class.java
+            data.enable.select(
+                Action.EnableAppByPkg(
+                    isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
+                    id = data.id,
+                    note = data.note,
+                    stringPairs = data.pkgAndUsersList
+                ),
+                Action.DisableAppByPkg(
+                    isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
+                    id = data.id,
+                    note = data.note,
+                    stringPairs = data.pkgAndUsersList
+                )
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetAppSuspend::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetAppSuspend::class.java
             val models = (data.appPkgList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
@@ -455,6 +476,27 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                     note = data.note,
                     apps = models.first,
                     pkgSets = models.second
+                )
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg::class.java
+            data.suspend.select(
+                Action.SuspendAppByPkg(
+                    isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
+                    id = data.id,
+                    note = data.note,
+                    stringPairs = data.pkgAndUsersList
+                ),
+                Action.UnSuspendAppByPkg(
+                    isEnabled = !data.isDisabled,
+                    actionOnError = data.actionOnError,
+                    id = data.id,
+                    note = data.note,
+                    stringPairs = data.pkgAndUsersList
                 )
             )
         }

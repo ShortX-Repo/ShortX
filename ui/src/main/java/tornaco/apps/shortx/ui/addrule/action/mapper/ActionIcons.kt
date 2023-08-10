@@ -153,19 +153,19 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.HealthAndMedical.zzz_fill
         }
 
-        Action.EnableApp::class -> {
+        Action.EnableApp::class, Action.EnableAppByPkg::class -> {
             Remix.System.toggle_fill
         }
 
-        Action.DisableApp::class -> {
+        Action.DisableApp::class, Action.DisableAppByPkg::class -> {
             Remix.System.toggle_fill
         }
 
-        Action.SuspendApp::class -> {
+        Action.SuspendApp::class, Action.SuspendAppByPkg::class -> {
             Remix.UserAndFaces.admin_fill
         }
 
-        Action.UnSuspendApp::class -> {
+        Action.UnSuspendApp::class, Action.UnSuspendAppByPkg::class -> {
             Remix.UserAndFaces.admin_fill
         }
 

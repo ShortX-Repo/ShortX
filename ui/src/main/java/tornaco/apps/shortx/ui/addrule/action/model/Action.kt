@@ -566,6 +566,29 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class EnableAppByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+        val stringPairs: List<StringPair>
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
     data class DisableApp(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
@@ -573,6 +596,29 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
+    data class DisableAppByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+        val stringPairs: List<StringPair>
     ) : Action {
         override fun clone(
             id: String,
@@ -614,6 +660,29 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class SuspendAppByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+        val stringPairs: List<StringPair>
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
     data class UnSuspendApp(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
@@ -621,6 +690,29 @@ sealed interface Action : Parcelable {
         override val note: String = "",
         val apps: List<App> = emptyList(),
         val pkgSets: List<PkgSet> = emptyList()
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
+    data class UnSuspendAppByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+        val stringPairs: List<StringPair>
     ) : Action {
         override fun clone(
             id: String,

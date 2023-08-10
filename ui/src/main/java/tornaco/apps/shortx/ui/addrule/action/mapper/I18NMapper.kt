@@ -132,8 +132,12 @@ fun labelAndDescriptionForActionSelector(
         Action.SetAppInactive::class -> i18N["ui.action.set.app.inactive"] to null
         Action.EnableApp::class -> i18N["ui.action.enable.app"] to null
         Action.DisableApp::class -> i18N["ui.action.disable.app"] to null
+        Action.EnableAppByPkg::class -> i18N["ui.action.enable.app.by.pkg"] to null
+        Action.DisableAppByPkg::class -> i18N["ui.action.disable.app.by.pkg"] to null
         Action.SuspendApp::class -> i18N["ui.action.suspend.app"] to null
         Action.UnSuspendApp::class -> i18N["ui.action.unsuspend.app"] to null
+        Action.SuspendAppByPkg::class -> i18N["ui.action.suspend.app.by.pkg"] to null
+        Action.UnSuspendAppByPkg::class -> i18N["ui.action.unsuspend.app.by.pkg"] to null
 
         Action.Brk::class -> i18N["ui.action.brk"] to null
         Action.ShowAlertDialog::class -> i18N["ui.action.show.dialog"] to null
@@ -313,6 +317,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.pkgSets
         )
 
+        is Action.EnableAppByPkg -> listOf(i18N["ui.action.enable.app.by.pkg"])
+
+        is Action.DisableAppByPkg -> listOf(i18N["ui.action.disable.app.by.pkg"])
+
         is Action.SuspendApp -> mutableListOf(i18N["ui.action.suspend.app"]).labelLinesFromAppsAndPkgSets(
             action.apps,
             action.pkgSets
@@ -322,6 +330,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             action.apps,
             action.pkgSets
         )
+
+        is Action.SuspendAppByPkg -> listOf(i18N["ui.action.suspend.app.by.pkg"])
+
+        is Action.UnSuspendAppByPkg -> listOf(i18N["ui.action.unsuspend.app.by.pkg"])
 
         is Action.Brk -> {
             listOf(i18N["ui.action.brk"])

@@ -24,9 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -37,15 +37,17 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class StopAppByPkgDialogState(
-    val onSelected: (Action.StopAppByPkg) -> Unit
+class PackageNameAndUserSelectorDialogState(
+    val title: String,
+    val onSelected: (List<StringPair>) -> Unit
 ) : CommonDialogState() {
     var selectedPairs by mutableStateOf(emptyList<StringPair>())
 
-    fun show(current: Action.StopAppByPkg? = null) {
-        selectedPairs = current?.stringPairs ?: emptyList()
+    fun show(current: List<StringPair>? = null) {
+        selectedPairs = current ?: emptyList()
         show()
     }
 
@@ -63,16 +65,17 @@ class StopAppByPkgDialogState(
 }
 
 @Composable
-fun rememberStopAppByPkgDialogState(
-    onSelected: (Action.StopAppByPkg) -> Unit
-): StopAppByPkgDialogState {
+fun rememberPackageNameAndUserSelectorDialogState(
+    title: String,
+    onSelected: (List<StringPair>) -> Unit
+): PackageNameAndUserSelectorDialogState {
     return remember {
-        StopAppByPkgDialogState(onSelected)
+        PackageNameAndUserSelectorDialogState(title, onSelected)
     }
 }
 
 @Composable
-fun StopAppByPkgDialog(state: StopAppByPkgDialogState) {
+fun PackageNameAndUserSelectorDialog(state: PackageNameAndUserSelectorDialogState) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             StartActivityIntentSelector(state)
@@ -81,7 +84,7 @@ fun StopAppByPkgDialog(state: StopAppByPkgDialogState) {
 }
 
 @Composable
-private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
+private fun StartActivityIntentSelector(dialogState: PackageNameAndUserSelectorDialogState) {
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -90,7 +93,7 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.stop.app.by.pkg"]) },
+                        title = { Text(dialogState.title) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -102,9 +105,7 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                             IconButton(onClick = {
                                 if (dialogState.selectedPairs.isNotEmpty()) {
                                     dialogState.onSelected(
-                                        Action.StopAppByPkg(
-                                            stringPairs = dialogState.selectedPairs
-                                        )
+                                        dialogState.selectedPairs
                                     )
                                     dialogState.dismiss()
                                 }
@@ -140,18 +141,17 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                             })
                     }
 
-
                     var inputPackage by remember {
                         mutableStateOf("")
                     }
                     var inputUser by remember {
-                        mutableStateOf("")
+                        mutableStateOf("$myUserId")
                     }
 
                     LargeSpacer()
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.stop.app.by.pkg.package"]
+                        text = LocalI18N.current["ui.action.select.pkg.and.user.package"]
                     )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -161,18 +161,29 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                         })
                     StandardSpacer()
 
+
+                    val userSelectDialogState = rememberUserSelectorDialogState(onSelected = {
+                        inputUser = it.userId.toString()
+                    })
+                    UserSelectorDialog(state = userSelectDialogState)
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.common.user.id"]
+                        text = LocalI18N.current["ui.action.select.pkg.and.user.user"]
                     )
+                    TipBody(text = LocalI18N.current["ui.action.select.pkg.and.user.user.summary"])
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = inputUser,
+                        showSymbolButton = false,
+                        trailingIcon = {
+                            IconButton(onClick = { userSelectDialogState.show() }) {
+                                RemixIcon(remixName = Remix.UserAndFaces.user_3_line)
+                            }
+                        },
                         onValueChange = {
-                            inputUser = it
+                            inputUser = it.trim()
                         })
                     StandardSpacer()
-
 
                     androidx.compose.material3.Button(onClick = {
                         dialogState.addItem(
@@ -182,7 +193,7 @@ private fun StartActivityIntentSelector(dialogState: StopAppByPkgDialogState) {
                                 .build()
                         )
                         inputPackage = ""
-                        inputUser = ""
+                        inputUser = "$myUserId"
                     }) {
                         Text(text = LocalI18N.current["ui.common.add"])
                     }

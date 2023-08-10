@@ -33,8 +33,10 @@ import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
+import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
 import tornaco.apps.shortx.core.proto.action.SetAppSuspend
+import tornaco.apps.shortx.core.proto.action.SetAppSuspendByPkg
 import tornaco.apps.shortx.core.proto.action.SetAutoBrightness
 import tornaco.apps.shortx.core.proto.action.SetBTEnabled
 import tornaco.apps.shortx.core.proto.action.SetBrightness
@@ -330,6 +332,22 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note).build()
         }
 
+        is Action.DisableAppByPkg -> {
+            SetAppEnabledByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setEnable(false)
+                .addAllPkgAndUsers(stringPairs)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.EnableAppByPkg -> {
+            SetAppEnabledByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setEnable(true)
+                .addAllPkgAndUsers(stringPairs)
+                .setNote(overrideNote ?: note).build()
+        }
+
         is Action.StartAppProcess -> {
             StartAppProcess.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
@@ -375,6 +393,22 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError).setSuspend(false)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.SuspendAppByPkg -> {
+            SetAppSuspendByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setSuspend(true)
+                .addAllPkgAndUsers(stringPairs)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.UnSuspendAppByPkg -> {
+            SetAppSuspendByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError).setSuspend(false)
+                .addAllPkgAndUsers(stringPairs)
                 .setNote(overrideNote ?: note).build()
         }
 
