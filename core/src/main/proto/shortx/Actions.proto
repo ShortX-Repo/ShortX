@@ -182,10 +182,30 @@ message SetAppEnabled {
   string id = 100;
 }
 
+message SetAppEnabledByPkg {
+  repeated StringPair pkgAndUsers = 1;
+  bool enable = 2;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetAppSuspend {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
   bool suspend = 3;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message SetAppSuspendByPkg {
+  repeated StringPair pkgAndUsers = 1;
+  bool suspend = 2;
 
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -203,9 +223,46 @@ message StartAppProcess {
   string id = 100;
 }
 
+message StartAppProcessByPkg {
+  repeated StringPair pkgAndUsers = 1;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SetAppInactive {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message SetAppInactiveByPkg {
+  repeated StringPair pkgAndUsers = 1;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message RemoveNotificationForPackage {
+  repeated AppPkg appPkg = 1;
+  repeated string pkgSets = 2;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message RemoveNotificationForPackageByPkg {
+  repeated StringPair pkgAndUsers = 1;
 
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
@@ -614,16 +671,6 @@ message RemoveTasks {
 
 message KillProcessByName {
   repeated ProcessName processes = 1;
-
-  ActionOnError actionOnError = 97;
-  bool isDisabled = 98;
-  string note = 99;
-  string id = 100;
-}
-
-message RemoveNotificationForPackage {
-  repeated AppPkg appPkg = 1;
-  repeated string pkgSets = 2;
 
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;

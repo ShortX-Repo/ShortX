@@ -125,17 +125,33 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StartAppProcess
     },
+    StartAppProcessByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StartAppProcessByPkg
+    },
     SetAppInactive {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppInactive
+    },
+    SetAppInactiveByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppInactiveByPkg
     },
     SetAppEnabled {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppEnabled
     },
+    SetAppEnabledByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppEnabledByPkg
+    },
     SetAppSuspend {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppSuspend
+    },
+    SetAppSuspendByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.SetAppSuspendByPkg
     },
     SetSensorOffEnabled {
         override val actor: Actor
@@ -284,6 +300,11 @@ enum class PrebuiltActor : ActorProvider {
     RemoveNotificationForPackage {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveNotificationForPackage
+    },
+
+    RemoveNotificationForPackageByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveNotificationForPackageByPkg
     },
     InjectKeyCode {
         override val actor: Actor
