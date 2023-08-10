@@ -8,7 +8,9 @@ import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.FileHelper
 import tornaco.apps.shortx.core.util.wallpaperManager
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import java.io.File
@@ -29,16 +31,27 @@ object SetWallpaper : Actor {
             .replaceLocalVarValues(localVars)
         logger.d("url: $url")
         val isContent = URLUtil.isContentUrl(url)
-        if (isContent) {
-            logger.d("setStream using contentResolver")
-            androidContext.contentResolver.openInputStream(Uri.parse(url)).use {
-                androidContext.wallpaperManager.setStream(it)
-            }
+        val realUrl = if (isContent) {
+            FileHelper.getRealPathFromURI(androidContext, Uri.parse(url))
         } else {
-            logger.d("setStream using FileInputStream")
-            FileInputStream(File(url)).use {
-                androidContext.wallpaperManager.setStream(it)
+            url
+        }
+        val tmpFile = File(Dirs.baseServerCacheDir(), "wallpaper.png")
+        tmpFile.parentFile.mkdir()
+
+        requireNotNull(shortXContext.shell.executeCommand("cp $realUrl $tmpFile"))
+            .also {
+                require(it.code == 0)
             }
+
+        val changeOwner = "chown system:system ${tmpFile.absolutePath}"
+        requireNotNull(shortXContext.shell.executeCommand(changeOwner)).also {
+            require(it.code == 0)
+        }
+
+        logger.d("Set with: $tmpFile")
+        FileInputStream(tmpFile).use {
+            androidContext.wallpaperManager.setStream(it)
         }
     }
 
