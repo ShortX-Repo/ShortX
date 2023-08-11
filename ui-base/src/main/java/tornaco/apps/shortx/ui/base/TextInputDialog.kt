@@ -4,12 +4,23 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.util.Logger
 
 class TextInputState(
@@ -88,7 +99,11 @@ fun TextInputDialog(state: TextInputState) {
                 Text(text = stringResource(id = android.R.string.ok))
             }
         }, content = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 state.message?.let {
                     DialogMessage(
                         text = it,
@@ -97,6 +112,7 @@ fun TextInputDialog(state: TextInputState) {
                 }
 
                 ShortXTextField(
+                    modifier = Modifier.heightIn(max = 400.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     ),

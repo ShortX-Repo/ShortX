@@ -36,10 +36,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     CodeEditorDialog(state = shellCommandSelectorState)
 
-    val inputTextSelectorState = rememberTextSelectorState(onSelected = {
-        addAction(Action.InputText(text = it))
-    })
-    InputTextSelector(state = inputTextSelectorState)
+    val inputTextSelectorState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.input.text"],
+        message = null,
+        onSelected = {
+            addAction(Action.InputText(text = it))
+        })
+    TextInputDialog(state = inputTextSelectorState)
 
     val delaySelectionState =
         rememberDelayState(

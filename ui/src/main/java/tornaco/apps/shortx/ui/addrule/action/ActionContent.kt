@@ -51,12 +51,10 @@ import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectSource
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.INTENT_EXTRA_ARG1_ACTION
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.toActionOrNull
-import tornaco.apps.shortx.ui.addrule.action.selector.InputTextSelector
 import tornaco.apps.shortx.ui.addrule.action.selector.appActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.extActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.lifeActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
-import tornaco.apps.shortx.ui.addrule.action.selector.rememberTextSelectorState
 import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.varActionSelectHandler
@@ -75,10 +73,12 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
@@ -244,10 +244,13 @@ private fun Actions(
                     }
 
                     val noteDialogState =
-                        rememberTextSelectorState(title = LocalI18N.current["ui.common.note"]) {
+                        rememberTextInputState(
+                            title = LocalI18N.current["ui.common.note"],
+                            message = null
+                        ) {
                             handler.setNote(currentAction.id, it)
                         }
-                    InputTextSelector(state = noteDialogState)
+                    TextInputDialog(state = noteDialogState)
 
                     val onErrorMenuState = rememberMenuDialogState<String>(
                         title = LocalI18N.current["ui.actions.on.error"],
