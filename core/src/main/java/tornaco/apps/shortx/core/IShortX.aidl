@@ -208,4 +208,5 @@ interface IShortX {
     List<ByteArrayWrapper> getWriteSettingsRecord();
     void clearWriteSettingsRecord();
     void clearReadSettingsRecord();
+
 }
