@@ -6,10 +6,8 @@ import android.os.Parcelable
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.annotations.DoNotStrip
@@ -20,7 +18,6 @@ import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalNavHostController
 import java.nio.charset.Charset
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -39,68 +36,65 @@ class ViewerActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        val navController = rememberAnimatedNavController()
-        CompositionLocalProvider(LocalNavHostController provides navController) {
-            val sharedData = remember {
-                parseIntent()
-            }
-            val context = LocalContext.current
-            if (sharedData == null) {
-                ToastUnknownContentAndFinish(context)
-            } else {
+        val sharedData = remember {
+            parseIntent()
+        }
+        val context = LocalContext.current
+        if (sharedData == null) {
+            ToastUnknownContentAndFinish(context)
+        } else {
 
-                when (sharedData.type) {
-                    "da" -> {
-                        val da = parseShareContentDA(sharedData.data)
-                        da?.let {
-                            AddDirectActionScreen(
-                                da = da,
-                                screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                                canSaveWithoutChanges = true
-                            ) {
-                                finish()
-                            }
-                        }
-                    }
-
-                    "daUrl" -> {
+            when (sharedData.type) {
+                "da" -> {
+                    val da = parseShareContentDA(sharedData.data)
+                    da?.let {
                         AddDirectActionScreen(
-                            da = null,
-                            url = sharedData.data,
-                            screenTitle = "URL",
+                            da = da,
+                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
                             canSaveWithoutChanges = true
                         ) {
                             finish()
                         }
                     }
+                }
 
-                    "rule" -> {
-                        val rule = parseShareContentRule(sharedData.data)
-                        rule?.let {
-                            AddRuleScreen(
-                                rule = rule,
-                                screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                                canSaveWithoutChanges = true
-                            ) {
-                                finish()
-                            }
-                        }
+                "daUrl" -> {
+                    AddDirectActionScreen(
+                        da = null,
+                        url = sharedData.data,
+                        screenTitle = "URL",
+                        canSaveWithoutChanges = true
+                    ) {
+                        finish()
                     }
+                }
 
-                    "ruleUrl" -> {
+                "rule" -> {
+                    val rule = parseShareContentRule(sharedData.data)
+                    rule?.let {
                         AddRuleScreen(
-                            rule = null,
-                            url = sharedData.data,
-                            screenTitle = "URL",
+                            rule = rule,
+                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
                             canSaveWithoutChanges = true
                         ) {
                             finish()
                         }
                     }
+                }
 
-                    else -> {
-                        ToastUnknownContentAndFinish(context)
+                "ruleUrl" -> {
+                    AddRuleScreen(
+                        rule = null,
+                        url = sharedData.data,
+                        screenTitle = "URL",
+                        canSaveWithoutChanges = true
+                    ) {
+                        finish()
                     }
+                }
+
+                else -> {
+                    ToastUnknownContentAndFinish(context)
                 }
             }
         }

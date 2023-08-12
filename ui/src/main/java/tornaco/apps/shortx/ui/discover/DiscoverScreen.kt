@@ -199,7 +199,11 @@ fun DiscoverScreen() {
             vm.acceptPrivacyStatement()
         }
     ) {
-        val pagerState = rememberPagerState(initialPage = initialPageIndex)
+        val pagerState = rememberPagerState(
+            initialPage = initialPageIndex,
+            pageCount = {
+                DiscoverTabItem.values().size
+            })
         val scope = rememberCoroutineScope()
 
         DisposableEffectWithLifeCycle(onResume = {
@@ -216,8 +220,7 @@ fun DiscoverScreen() {
             )
 
             HorizontalPager(
-                state = pagerState,
-                pageCount = DiscoverTabItem.values().size,
+                state = pagerState
             ) { index ->
                 when (index) {
                     DiscoverTabItem.DA.ordinal -> {
