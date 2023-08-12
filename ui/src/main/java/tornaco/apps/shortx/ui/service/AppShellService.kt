@@ -33,6 +33,7 @@ class ShellService : Service() {
     override fun onBind(intent: Intent?): IBinder {
         return object : ISu.Stub() {
             override fun exe(command: Array<out String>, receiver: SynchronousResultReceiver) {
+                logger.d("exe")
                 runCatching {
                     val shellRes = Shell.cmd(*command)
                         .exec().apply {

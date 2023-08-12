@@ -13,20 +13,27 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
     Trigger {
     private val logger = Logger("ClipboardTrigger")
     private val lastText = AtomicReference("")
+    private val lastTriggerTime = AtomicReference(0L)
 
     override fun register() {
         context.clipboardManager.addPrimaryClipChangedListener {
-            val it =
+            val clipText =
                 runCatching { context.clipboardManager.primaryClip?.getItemAt(0)?.text.toString() }.getOrElse { "" }
-            if (lastText.get() != it) {
-                logger.p("Clipboard change: $it")
+            logger.p("Clipboard change: $clipText")
+
+            if (System.currentTimeMillis() - lastTriggerTime.get() >= 1000
+                || lastText.get() != clipText
+            ) {
                 shortXContext.rule.publishFact(
                     reason = "Clipboard",
-                    fact = ClipboardContentChanged.newBuilder().setContent(it).build(),
-                    initialContextData = mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to it)
+                    fact = ClipboardContentChanged.newBuilder().setContent(clipText).build(),
+                    initialContextData = mapOf(ContextDataMapping.ClipboardContentChanged.clipboardContent.name to clipText)
                 )
+            } else {
+                logger.d("Ignore dup clipboard content request.")
             }
-            lastText.set(it)
+            lastTriggerTime.set(System.currentTimeMillis())
+            lastText.set(clipText)
         }
     }
 
