@@ -195,7 +195,8 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             val ruleUMs = withContext(Dispatchers.IO) {
                 content.rules.mapNotNull {
                     runCatching {
-                        ruleToRuleUM(it, emptyList())
+                        // Disable it, in-case it is enabled after import.
+                        ruleToRuleUM(it, emptyList()).copy(isEnabled = false)
                     }.getOrElse {
                         logger.e(it, "ruleToRuleUM")
                         null
