@@ -652,22 +652,7 @@ private fun systemSettings(
 
     return mutableListOf(
         Preference.Category(LocalI18N.current["ui.settings.system"]),
-
-        Preference.SwitchPreference(
-            icon = Remix.Editor.hashtag,
-            title = LocalI18N.current["ui.settings.injected.shell"],
-            summary = LocalI18N.current["ui.settings.injected.shell.description"],
-            hasLongSummary = true,
-            badge = badge,
-            value = state.isInjectedShellEnabled,
-            onCheckChanged = {
-                if (mainState.isSubscribed) {
-                    vm.toggleInjectedShell()
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-        ),
+        
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
             title = LocalI18N.current["ui.settings.sb.tile.opt"],
