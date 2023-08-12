@@ -233,6 +233,7 @@ class ShellImpl extends Shell {
 
     @Override
     public synchronized void execTask(@NonNull Task task) throws IOException {
+        Utils.log("execTask " + task);
         if (status < 0)
             throw new ShellTerminatedException();
 

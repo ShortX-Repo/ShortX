@@ -150,6 +150,11 @@ public abstract class Shell implements Closeable {
         MainShell.setBuilder(builder);
     }
 
+    public static void resetShell() throws IOException, InterruptedException {
+        getShell().waitAndClose(1, TimeUnit.SECONDS);
+        MainShell.setCached(null);
+    }
+
     /**
      * Get the main shell instance.
      * <p>

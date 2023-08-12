@@ -19,6 +19,7 @@ package com.topjohnwu.superuser.internal;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
+import android.security.identity.Util;
 
 import com.topjohnwu.superuser.NoShellException;
 import com.topjohnwu.superuser.Shell;
@@ -40,6 +41,7 @@ class PendingJob extends JobImpl {
     @NonNull
     @Override
     public Shell.Result exec() {
+        Utils.log("PendingJob exec.");
         try {
             shell = MainShell.get();
         } catch (NoShellException e) {

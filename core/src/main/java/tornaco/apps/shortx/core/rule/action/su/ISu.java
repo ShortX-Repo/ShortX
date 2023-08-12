@@ -10,6 +10,9 @@ public interface ISu extends android.os.IInterface
     @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
     {
     }
+    @Override public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -68,6 +71,19 @@ public interface ISu extends android.os.IInterface
           this.exe(_arg0, _arg1);
           return true;
         }
+        case TRANSACTION_close:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg0;
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
+          this.close(_arg0);
+          return true;
+        }
         default:
         {
           return super.onTransact(code, data, reply, flags);
@@ -112,9 +128,32 @@ public interface ISu extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          if ((receiver!=null)) {
+            _data.writeInt(1);
+            receiver.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          boolean _status = mRemote.transact(Stub.TRANSACTION_close, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().close(receiver);
+            return;
+          }
+        }
+        finally {
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.rule.action.su.ISu sDefaultImpl;
     }
     static final int TRANSACTION_exe = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+    static final int TRANSACTION_close = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.rule.action.su.ISu impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -133,4 +172,5 @@ public interface ISu extends android.os.IInterface
     }
   }
   public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
+  public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
 }

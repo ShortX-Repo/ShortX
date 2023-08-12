@@ -3,28 +3,24 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
-import com.topjohnwu.superuser.Shell
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
-import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_APP
 import tornaco.apps.shortx.core.platform.ClassNames.SYSTEM_UI_CUSTOM_TILE
 import tornaco.apps.shortx.core.platform.Methods.onCreate
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.action.PostNotification
-import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.rule.action.su.ISu
+import tornaco.apps.shortx.core.su.LibSuperuserShellImpl
 import tornaco.apps.shortx.core.util.Logger
 import util.Reflections
-import java.util.concurrent.Executors
 
 object SystemUIHook {
     private val logger = Logger("ShortXHook.SystemUIHook")
@@ -85,7 +81,7 @@ object SystemUIHook {
 
     private fun installShellImpl(shortx: IShortX) {
         logger.d("installShellImpl")
-        val shell = SystemUIShellImpl
+        val shell = LibSuperuserShellImpl
         shortx.attachSUImpl("SystemUI", shell)
         logger.i("installShellImpl success.")
     }
@@ -128,44 +124,4 @@ object SystemUIHook {
     }
 }
 
-object SystemUIShellImpl : ISu.Stub() {
-    private val logger = Logger("SystemUIShellImpl")
-    private val executors = Executors.newFixedThreadPool(4)
-
-    init {
-        logger.d("Init shell")
-        Shell.enableVerboseLogging = true
-        Shell.setDefaultBuilder(
-            Shell.Builder.create()
-                .setFlags(Shell.FLAG_REDIRECT_STDERR or Shell.FLAG_MOUNT_MASTER)
-                .setTimeout(10)
-        )
-    }
-
-    override fun exe(
-        command: Array<out String>,
-        receiver: SynchronousResultReceiver
-    ) {
-        logger.i("about to execute: ${command.joinToString()}")
-        executors.execute {
-            logger.i("execute: ${command.joinToString()}")
-            runCatching {
-                val shellResult: ByteArrayWrapper = Shell.cmd(*command)
-                    .exec().apply {
-                        logger.i("Shell res: out: ${this.out} err: ${this.err}")
-                    }.let {
-                        ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                            .addAllErr(it.err)
-                            .build()
-                    }.let {
-                        ByteArrayWrapper(it.toByteArray())
-                    }
-
-                receiver.send(shellResult)
-            }.onFailure {
-                receiver.propagateException(RuntimeException(it))
-            }
-        }
-    }
-}
 

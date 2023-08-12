@@ -59,6 +59,7 @@ class TaskImpl implements Shell.Task {
                     @NonNull InputStream stdout,
                     @NonNull InputStream stderr) throws IOException {
 
+        Utils.log("TaskImpl.run");
         Future<Integer> out = EXECUTOR.submit(new StreamGobbler.OUT(stdout, res.out));
         Future<Void> err = EXECUTOR.submit(new StreamGobbler.ERR(stderr, res.err));
 
@@ -70,6 +71,7 @@ class TaskImpl implements Shell.Task {
         try {
             res.code = out.get();
             err.get();
+            Utils.log("TaskImpl.run complete");
         } catch (ExecutionException | InterruptedException e) {
             throw (InterruptedIOException) new InterruptedIOException().initCause(e);
         }

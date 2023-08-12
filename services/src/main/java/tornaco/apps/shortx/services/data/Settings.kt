@@ -21,6 +21,7 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
         data object EnableKeyEventPrompt :
             BoolSettings(key = "EnableKeyEventPrompt", defaultValue = BuildProp.APP_IS_DEBUG)
 
+        @Deprecated("By default it is enabled")
         data object EnableInjectedShell :
             BoolSettings(key = "EnableInjectedShell", defaultValue = false)
 

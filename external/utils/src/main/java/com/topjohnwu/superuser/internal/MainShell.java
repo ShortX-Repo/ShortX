@@ -79,7 +79,7 @@ public final class MainShell {
         }
     }
 
-    static synchronized void setCached(ShellImpl shell) {
+    public static synchronized void setCached(ShellImpl shell) {
         if (isInitMain) {
             synchronized (mainShell) {
                 mainShell[0] = shell;

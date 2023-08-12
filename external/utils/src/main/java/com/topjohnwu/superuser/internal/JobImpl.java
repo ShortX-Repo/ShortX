@@ -47,6 +47,7 @@ class JobImpl extends Shell.Job implements Closeable {
     }
 
     private ResultImpl exec0() {
+        Utils.log("exec0");
         boolean redirect = !stderrSet && shell.redirect;
         if (redirect)
             err = out;
@@ -63,6 +64,7 @@ class JobImpl extends Shell.Job implements Closeable {
             result.err = err;
         }
         try {
+            Utils.log("exec0 call execTask");
             shell.execTask(new TaskImpl(sources, result));
         } catch (IOException e) {
             if (e instanceof ShellTerminatedException) {
