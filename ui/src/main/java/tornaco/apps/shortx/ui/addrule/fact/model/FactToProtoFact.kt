@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
+import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
@@ -388,6 +389,12 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
         is Fact.ClipboardContentChanged -> {
             ClipboardContentChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setContent(content)
+                .build()
+        }
+
+        is Fact.GlobalVarChanged -> {
+            GlobalVarChanged.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setGvId(gvId)
                 .build()
         }
 

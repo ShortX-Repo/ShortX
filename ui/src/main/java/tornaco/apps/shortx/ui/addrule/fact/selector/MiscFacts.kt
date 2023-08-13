@@ -19,6 +19,7 @@ fun MiscFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact) -
     val i18N = LocalI18N.current
     val items = listOf(
         Fact.OnQSTileClick::class,
+        Fact.GlobalVarChanged::class,
     ).map {
         SelectorItem(
             type = it,

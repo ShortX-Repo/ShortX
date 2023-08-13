@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
+import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
@@ -418,6 +419,13 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as ClipboardContentChanged)
             val ruleN = (rule as ClipboardContentChanged)
             emptyOrRegexMatch(ruleN.content, actualN.content)
+        }
+
+        register(GlobalVarChanged::class.java) { actual, rule ->
+            val actualN = (actual as GlobalVarChanged)
+            val ruleN = (rule as GlobalVarChanged)
+
+            actualN.gvId == ruleN.gvId
         }
 
         logger.i("Init complete.")

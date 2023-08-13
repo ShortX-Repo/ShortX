@@ -162,6 +162,7 @@
   "ui.fact.weekday.thursday.long": "周四",
   "ui.fact.weekday.friday.long": "周五",
   "ui.fact.weekday.saturday.long": "周六",
+  "ui.fact.global.var.changed": "全局变量变更",
   "ui.update.time": "更新时间：{date}",
   "ui.common.coming.soon": "功能完善中，请耐心等待",
   "ui.common.unselected": "请选择",

@@ -162,6 +162,7 @@
   "ui.fact.weekday.thursday.long": "Thu",
   "ui.fact.weekday.friday.long": "Fri",
   "ui.fact.weekday.saturday.long": "Sat",
+  "ui.fact.global.var.changed": "Globalvar changed",
   "ui.update.time": "Last update: {date}",
   "ui.common.coming.soon": "Coming soon~",
   "ui.common.note": "Note",

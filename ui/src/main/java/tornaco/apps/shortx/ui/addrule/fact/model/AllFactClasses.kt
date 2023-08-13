@@ -73,4 +73,5 @@ val allFactClasses = listOf(
     Fact.SystemSettingsChanged::class,
     Fact.CallStateChanged::class,
     Fact.ClipboardContentChanged::class,
+    Fact.GlobalVarChanged::class,
 )

@@ -475,6 +475,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.GlobalVarChanged::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.GlobalVarChanged::class.java
+
+            Fact.GlobalVarChanged(
+                id = data.id,
+                note = data.note,
+                gvId = data.gvId
+            )
+        }
+
 
         else -> {
             null
