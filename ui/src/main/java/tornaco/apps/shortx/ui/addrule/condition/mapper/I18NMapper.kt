@@ -151,6 +151,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.condition.is.incall"])
         }
 
+        Condition.IsRinging::class -> {
+            listOf(i18N["ui.condition.is.ringing"])
+        }
+
         else -> {
             emptyList()
         }
@@ -323,6 +327,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.IsInCall -> {
             listOf(
                 i18N["ui.condition.is.incall"]
+            )
+        }
+
+        is Condition.IsRinging -> {
+            listOf(
+                i18N["ui.condition.is.ringing"]
             )
         }
     }

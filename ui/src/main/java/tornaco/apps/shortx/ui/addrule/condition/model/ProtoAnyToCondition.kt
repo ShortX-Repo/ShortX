@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.IsInCall
+import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -269,6 +270,15 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ IsInCall::class.java -> {
             val data = this unpack_ IsInCall::class.java
             Condition.IsInCall(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+            )
+        }
+
+        this is_ IsRinging::class.java -> {
+            val data = this unpack_ IsRinging::class.java
+            Condition.IsRinging(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

@@ -375,6 +375,7 @@
   "ui.action.take.screenshot": "Take Screenshot",
   "ui.title.mvel": "MVEL expression",
   "ui.condition.is.incall": "Is incall",
+  "ui.condition.is.ringing": "Is ringing",
   "ui.condition.invert": "Invert!",
   "ui.condition.invert.description": "Invert the Condition match result",
   "ui.condition.op.mvel": "Use c1, c2, c3...cN order to express each condition. \nFor example: c1 && (c2 || c3)",

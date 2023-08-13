@@ -375,6 +375,7 @@
   "ui.action.take.screenshot": "截圖",
   "ui.title.mvel": "MVEL運算式",
   "ui.condition.is.incall": "在通话中",
+  "ui.condition.is.ringing": "正在响铃",
   "ui.condition.invert": "取反！",
   "ui.condition.invert.description": "對該條件的結果取反",
   "ui.condition.op.mvel": "使用 c1, c2, c3...cN 順序表示各個條件。\n例：c1 && (c2 || c3)",

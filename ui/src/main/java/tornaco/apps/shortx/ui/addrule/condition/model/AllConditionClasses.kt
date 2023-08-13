@@ -25,4 +25,5 @@ val allConditionClasses = listOf(
     Condition.KeyguardIsLocked::class,
     Condition.ScreenOrientationIsPort::class,
     Condition.IsInCall::class,
+    Condition.IsRinging::class,
 )
