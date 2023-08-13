@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
+import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -259,6 +260,15 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ ScreenOrientationIsPort::class.java -> {
             val data = this unpack_ ScreenOrientationIsPort::class.java
             Condition.ScreenOrientationIsPort(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+            )
+        }
+
+        this is_ IsInCall::class.java -> {
+            val data = this unpack_ IsInCall::class.java
+            Condition.IsInCall(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

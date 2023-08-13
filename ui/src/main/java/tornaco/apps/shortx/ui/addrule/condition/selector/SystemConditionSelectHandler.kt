@@ -164,6 +164,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.IsInCall::class -> {
+                addCondition(Condition.IsInCall())
+                true
+            }
+
             else -> false
         }
     }

@@ -374,6 +374,7 @@
   "ui.action.delay.input.use.alarm.summary": "A delay implemented without an Alarm may be inaccurate due to system hibernation after the screen is locked, and a delay implemented with an Alarm will wake up the system after the delay is completed, which may lead to increased power consumption. Please use this switch comprehensively",
   "ui.action.take.screenshot": "Take Screenshot",
   "ui.title.mvel": "MVEL expression",
+  "ui.condition.is.incall": "Is incall",
   "ui.condition.invert": "Invert!",
   "ui.condition.invert.description": "Invert the Condition match result",
   "ui.condition.op.mvel": "Use c1, c2, c3...cN order to express each condition. \nFor example: c1 && (c2 || c3)",

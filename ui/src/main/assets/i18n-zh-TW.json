@@ -374,6 +374,7 @@
   "ui.action.delay.input.use.alarm.summary": "不使用Alarm实现的延迟在屏幕锁定后由于系统休眠可能会不准确，使用Alarm实现的延迟会在延迟完成唤醒系统，因此可能会导致耗电增加。请综合使用场景选择本开关",
   "ui.action.take.screenshot": "截圖",
   "ui.title.mvel": "MVEL運算式",
+  "ui.condition.is.incall": "在通话中",
   "ui.condition.invert": "取反！",
   "ui.condition.invert.description": "對該條件的結果取反",
   "ui.condition.op.mvel": "使用 c1, c2, c3...cN 順序表示各個條件。\n例：c1 && (c2 || c3)",

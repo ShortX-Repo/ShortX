@@ -133,6 +133,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ScreenOrientationIsPort
     },
+    IsInCall {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.IsInCall
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

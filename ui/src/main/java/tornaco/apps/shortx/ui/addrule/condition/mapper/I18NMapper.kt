@@ -147,6 +147,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.IsInCall::class -> {
+            listOf(i18N["ui.condition.is.incall"])
+        }
+
         else -> {
             emptyList()
         }
@@ -313,6 +317,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                     )],
                     i18N["ui.conditions.mobile.data.enabled.any"]
                 )
+            )
+        }
+
+        is Condition.IsInCall -> {
+            listOf(
+                i18N["ui.condition.is.incall"]
             )
         }
     }

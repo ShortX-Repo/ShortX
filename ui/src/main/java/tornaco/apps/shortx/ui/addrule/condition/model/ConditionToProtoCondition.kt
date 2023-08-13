@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
+import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -283,6 +284,14 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.ScreenOrientationIsPort -> {
             ScreenOrientationIsPort.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .build()
+        }
+
+        is Condition.IsInCall -> {
+            IsInCall.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
