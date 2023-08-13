@@ -369,6 +369,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.landscape_fill
         }
 
+        Action.SetRuleEnabled::class -> {
+            Remix.System.toggle_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

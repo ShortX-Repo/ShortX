@@ -65,6 +65,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     FromDASelectorDialog(state = fromDASelectorState)
 
+    val setRuleEnabledState = rememberSetRuleEnabledDialogState(onSelected = {
+        addAction(it)
+    })
+    SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
+
     val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
         addAction(it)
     }
@@ -127,6 +132,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.SetRuleEnabled::class -> {
+                setRuleEnabledState.show(source.getActionAs())
+                true
+            }
+
             Action.IfThenElse::class -> {
                 ifThenElseDialogState.show(source.getActionAs())
                 true
@@ -160,6 +170,7 @@ fun ExtActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.FromDA::class,
+        Action.SetRuleEnabled::class,
         Action.ShellCommand::class,
         Action.InputText::class,
         Action.Delay::class,

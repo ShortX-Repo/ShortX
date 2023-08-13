@@ -50,6 +50,7 @@ import tornaco.apps.shortx.core.proto.action.SetHotSpotEnabled
 import tornaco.apps.shortx.core.proto.action.SetLocationEnabled
 import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
+import tornaco.apps.shortx.core.proto.action.SetRuleEnabled
 import tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled
 import tornaco.apps.shortx.core.proto.action.SetWallpaper
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
@@ -1000,6 +1001,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setFileUrl(url)
                 .setCrop(crop)
+                .build()
+        }
+
+        is Action.SetRuleEnabled -> {
+            SetRuleEnabled.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .setIsEnable(enableRule)
+                .setRuleId(ruleId)
                 .build()
         }
 
