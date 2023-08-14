@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.theme.NoteTextColor
+import tornaco.apps.shortx.ui.theme.WarningYellow
 
 
 @Composable
@@ -210,6 +211,27 @@ fun LinkText(
 
 @Composable
 fun ErrorTipRow(text: String, color: Color = MaterialTheme.colorScheme.error) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RemixIcon(
+            modifier = Modifier.size(14.dp),
+            remixName = Remix.System.error_warning_line,
+            tint = color
+        )
+        SmallSpacer()
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = color
+        )
+    }
+}
+
+
+@Composable
+fun WarnTipRow(text: String, color: Color = WarningYellow) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         RemixIcon(
             modifier = Modifier.size(14.dp),

@@ -17,6 +17,9 @@ object CreatePkgSet : Actor {
         params: HandleParams
     ): Unit = with(params) {
         val d = action unpack_ CreatePkgSet::class.java
+        require(shortXContext.pkgSet.getPkgSetByLabel(d.label) == null) {
+            "Pkg set: ${d.label} already exists."
+        }
         shortXContext.pkgSet.addPkgSet(
             PkgSet.newBuilder().setLabel(d.label).setDescription(d.description).build()
         )

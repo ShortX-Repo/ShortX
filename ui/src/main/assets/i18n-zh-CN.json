@@ -650,7 +650,7 @@
   "ui.pkg.set.desc": "把应用进行归类，方便快速选择一批应用",
   "ui.pkg.set.add.title": "创建应用集",
   "ui.pkg.set.add.input.label": "输入应用集的名称",
-  "ui.pkg.set.add.input.label.exists": "同名应用集已存在，请更换其他名称",
+  "ui.pkg.set.add.input.label.exists": "同名应用集已存在",
   "ui.pkg.set.items.count": "{count}个应用",
   "ui.pkg.set.prebuilt": "预置",
   "ui.active.dialog.message": "请在Xposed管理器中启用{app_name}",

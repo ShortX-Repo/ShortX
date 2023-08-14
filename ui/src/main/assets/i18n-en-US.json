@@ -651,7 +651,7 @@
   "ui.pkg.set.desc": "Classification of applications to make it easier to quickly select from a batch of applications",
   "ui.pkg.set.add.title": "Add Application Set",
   "ui.pkg.set.add.input.label": "Input label of the Application Set",
-  "ui.pkg.set.add.input.label.exists": "Label exists, please use another one",
+  "ui.pkg.set.add.input.label.exists": "Label exists",
   "ui.pkg.set.items.count": "{count} items",
   "ui.pkg.set.prebuilt": "Prebuilt",
   "ui.active.dialog.message": "Please enable {app_name} in Xposed Manager",

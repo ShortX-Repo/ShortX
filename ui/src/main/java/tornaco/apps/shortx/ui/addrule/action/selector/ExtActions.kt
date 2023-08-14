@@ -88,7 +88,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             message = i18N["ui.pkg.set.add.input.label"],
             showSymbolButton = false,
             inputValidator = {
-                vm.validateLabel(it, i18N)
+                vm.validateLabel(label = it, i18N = i18N, errorIfExists = false)
             },
             onSelected = {
                 addAction(Action.CreatePkgSet(label = it))
