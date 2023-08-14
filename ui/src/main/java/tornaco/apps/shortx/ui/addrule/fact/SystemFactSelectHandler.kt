@@ -291,7 +291,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.EdgeGesture::class -> {
-                edgeGestureSelectorState.show()
+                edgeGestureSelectorState.show(
+                    edge = source.getFactAs<Fact.EdgeGesture>()?.edge,
+                    gesture = source.getFactAs<Fact.EdgeGesture>()?.gesture
+                )
                 true
             }
 
