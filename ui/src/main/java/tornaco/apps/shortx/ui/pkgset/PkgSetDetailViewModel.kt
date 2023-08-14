@@ -18,7 +18,6 @@ data class PkgSetDetailState(
     val label: String = "",
     val description: String = "",
     val apps: List<App> = emptyList(),
-    val selectableApps: List<App> = emptyList(),
     val installedApps: List<App> = emptyList(),
     val isPrebuilt: Boolean = false,
     val isChanged: Boolean = false,
@@ -45,17 +44,11 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>({ PkgSetDetailSt
                         .sortedWith { o1, o2 ->
                             Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
                         }.sortedBy { it.category.ordinal }
-
-                    val selectableApps = installedApps.toMutableList().apply {
-                        removeAll(apps)
-                    }
-
                     updateState {
                         copy(
                             label = pkgSet.label,
                             description = pkgSet.description,
                             apps = apps,
-                            selectableApps = selectableApps,
                             installedApps = installedApps,
                             isPrebuilt = pkgSet.isPrebuilt,
                             isLoading = false
@@ -72,18 +65,11 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>({ PkgSetDetailSt
         }
     }
 
-    fun addApps(apps: List<App>) {
+    fun setApps(apps: List<App>) {
         viewModelScope.launch {
-            val newApps = state.value.apps.toMutableList().apply {
-                addAll(apps)
-            }
-            val selectableApps = state.value.installedApps.toMutableList().apply {
-                removeAll(newApps)
-            }
             updateState {
                 copy(
-                    apps = newApps,
-                    selectableApps = selectableApps,
+                    apps = apps,
                     isChanged = true
                 )
             }
@@ -95,13 +81,9 @@ class PkgSetDetailViewModel : StateViewModel<PkgSetDetailState>({ PkgSetDetailSt
             val newApps = state.value.apps.toMutableList().apply {
                 removeAll(apps)
             }
-            val selectableApps = state.value.installedApps.toMutableList().apply {
-                removeAll(newApps)
-            }
             updateState {
                 copy(
                     apps = newApps,
-                    selectableApps = selectableApps,
                     isChanged = true
                 )
             }

@@ -97,7 +97,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
         ) {
             val appSelectorDialogState = rememberAppPkgSelectorState(
                 onAppListSelected = {
-                    vm.addApps(it)
+                    vm.setApps(it)
                 }
             )
             AppPkgSelectorDialog(state = appSelectorDialogState)
@@ -131,7 +131,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                 floatingActionButton = {
                     if (!state.isPrebuilt) {
                         FloatingActionButton(onClick = {
-                            appSelectorDialogState.show()
+                            appSelectorDialogState.show(state.apps)
                         }) {
                             Icon(imageVector = Icons.Filled.Add, contentDescription = "add")
                         }
