@@ -218,7 +218,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             }
 
             // Check ADV rules.
-            if (singleKeyRuleTrigger.hasAny(it.keyCode)) {
+            if (singleKeyRuleTrigger.hasAny()) {
                 singleKeyGestureDetector.interceptKey(it, false)
                 if (singleKeyRuleTrigger.hasAnyWithInterceptMode(it.keyCode)
                     && singleKeyGestureDetector.isKeyIntercepted(
