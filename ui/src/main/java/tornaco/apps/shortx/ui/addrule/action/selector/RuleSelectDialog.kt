@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -83,7 +84,7 @@ private fun RuleSelectSelector(dialogState: RuleSelectDialogState) {
 
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize(),
-                    columns = StaggeredGridCells.Adaptive(minSize = adaptiveCardSizeMin),
+                    columns = dynamicStaggeredGridCells(),
                     contentPadding = paddingValues
                 ) {
                     items(allRules) {

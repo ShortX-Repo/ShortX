@@ -86,6 +86,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
+import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -281,7 +282,7 @@ private fun DAListContent(
 ) {
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Adaptive(minSize = adaptiveCardSizeMin),
+        columns = dynamicStaggeredGridCells(),
         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
     ) {
         items(items = das, key = { it.id }) { da ->
