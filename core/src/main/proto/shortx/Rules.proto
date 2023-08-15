@@ -82,6 +82,7 @@ message FactPublishRecord {
 message EvaluateContext {
   string srcId = 1;
   string srcTitle = 2;
+  int32 serialNumber = 3;
   ContextSrcEvent srcEvent = 8;
 }
 

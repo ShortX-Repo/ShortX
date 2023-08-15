@@ -491,6 +491,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         .setSrcId(UUID.randomUUID().toString())
                         .setSrcTitle("Testing MVEL")
                         .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                        .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build(),
                     action = tornaco.apps.shortx.core.proto.action.ExecuteMVEL.newBuilder()
                         .setExpression(expression).build().pack_()

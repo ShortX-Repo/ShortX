@@ -22,6 +22,10 @@ import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.launchSafety
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
+private val evaluateContextSerialNumber = AtomicInteger(2020)
+fun nextEvaluateContextSerialNumber() = evaluateContextSerialNumber.getAndIncrement()
 
 const val CONDITION_WAIT_TIMEOUT = 100L
 
@@ -173,6 +177,7 @@ class DefaultRuleEngine(
                 .setSrcId(it.id)
                 .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
                 .setSrcTitle(it.title)
+                .setSerialNumber(nextEvaluateContextSerialNumber())
                 .build()
             shouldFireRuleForFact(evaluateContext, fact, it) || shouldFireRuleZQuitForFact(
                 evaluateContext,
@@ -238,6 +243,7 @@ class DefaultRuleEngine(
                     .setSrcId(rule.id)
                     .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
                     .setSrcTitle(rule.title)
+                    .setSerialNumber(nextEvaluateContextSerialNumber())
                     .build()
 
                 val localVars = LocalVars.obtain()
@@ -380,6 +386,7 @@ class DefaultRuleEngine(
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)
                         .setSrcTitle(rule.title)
+                        .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build()
 
                     coroutineScope.launchSafety {
