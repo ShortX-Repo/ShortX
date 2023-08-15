@@ -38,6 +38,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
         Handler(Looper.getMainLooper())
     }
 
+    private var onAccessibilityEvent: ((AccessibilityEvent) -> Unit)? = null
+
+    fun setOnAccessibilityEvent(onAccessibilityEvent: ((AccessibilityEvent) -> Unit)?) {
+        this.onAccessibilityEvent = onAccessibilityEvent
+    }
+
     override fun systemReady() {
         super.systemReady()
         registerListeners()
@@ -245,11 +251,24 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         logger.p("OnAccessibilityEvent: $event")
+        onAccessibilityEvent?.invoke(event)
+    }
+
+    fun getAllTextsFromScreen(): List<TextViewNode> {
+        val screenTexts = mutableListOf<TextViewNode>()
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("rootInActiveWindow: $root")
+        val discoverStartTimeMillis = System.currentTimeMillis()
+        if (root != null) {
+            discoverTextFromAccessibilityNode(screenTexts, root)
+        }
+        logger.d("discoverTextFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+        return screenTexts
     }
 
     fun enableUniversalCopy() {
         disableUniversalCopy {
-            val screenTexts = mutableListOf<kotlin.Pair<RectF, String>>()
+            val screenTexts = mutableListOf<TextViewNode>()
 
             val guideLineView =
                 UniversalCopyView(
@@ -283,12 +302,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     private fun lookUpTextFromClick(
-        screenTexts: List<kotlin.Pair<RectF, String>>,
+        screenTexts: List<TextViewNode>,
         x: Float,
         y: Float
     ) {
         val matchText = screenTexts.firstOrNull {
-            it.first.contains(x, y)
+            it.position.contains(x, y)
         }
         logger.p("matchText [$x $y]: $matchText")
 
@@ -299,7 +318,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     i18NIns["ui.action.enable.universal.copy.text.not.found"]
                 )
             } else {
-                UniversalCopyEditDialog(context, matchText.second).show()
+                UniversalCopyEditDialog(context, matchText.text).show()
             }
         }
     }
@@ -317,19 +336,23 @@ class WindowManagerService(shortXContext: ShortXContext) :
     }
 
     private fun discoverTextFromAccessibilityNode(
-        list: MutableList<kotlin.Pair<RectF, String>>,
+        list: MutableList<TextViewNode>,
         root: AccessibilityNodeInfo
     ) {
         if (root.childCount <= 0) {
             if (root.isVisibleToUser && root.text != null) {
                 val rect = root.boundsInScreen
                 list.add(
-                    RectF(
-                        rect.left.toFloat(),
-                        rect.top.toFloat(),
-                        rect.right.toFloat(),
-                        rect.bottom.toFloat()
-                    ) to root.text.toString()
+                    TextViewNode(
+                        text = root.text.toString(),
+                        viewId = root.viewIdResourceName ?: "",
+                        position = RectF(
+                            rect.left.toFloat(),
+                            rect.top.toFloat(),
+                            rect.right.toFloat(),
+                            rect.bottom.toFloat()
+                        )
+                    )
                 )
             }
         } else {

@@ -28,4 +28,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     CallStateTrigger(context, shortXContext),
     ClipboardTrigger(context, shortXContext),
     GlobalVarTrigger(context, shortXContext),
+    AccessibilityNodeOnScreenTrigger(context, shortXContext),
 )

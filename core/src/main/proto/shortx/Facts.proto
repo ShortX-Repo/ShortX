@@ -449,3 +449,10 @@ message GlobalVarChanged {
   string note = 99;
   string id = 100;
 }
+
+message HasFoundTextOnScreen {
+  string textRegex = 1;
+
+  string note = 99;
+  string id = 100;
+}
