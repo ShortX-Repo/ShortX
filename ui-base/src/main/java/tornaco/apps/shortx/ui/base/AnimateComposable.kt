@@ -1,8 +1,7 @@
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.IntOffset
@@ -10,13 +9,12 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
+import androidx.navigation.compose.composable
 
 const val NAV_ANIM_DURATION = 300
 
 val animSpec = tween<IntOffset>(durationMillis = NAV_ANIM_DURATION)
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.animateComposable(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
@@ -27,7 +25,7 @@ fun NavGraphBuilder.animateComposable(
         route,
         enterTransition = {
             slideIntoContainer(
-                AnimatedContentScope.SlideDirection.Start,
+                AnimatedContentTransitionScope.SlideDirection.Start,
                 animationSpec = animSpec
             )
         },
@@ -41,7 +39,7 @@ fun NavGraphBuilder.animateComposable(
         },
         popExitTransition = {
             slideOutOfContainer(
-                AnimatedContentScope.SlideDirection.End,
+                AnimatedContentTransitionScope.SlideDirection.End,
                 animationSpec = animSpec
             )
         },

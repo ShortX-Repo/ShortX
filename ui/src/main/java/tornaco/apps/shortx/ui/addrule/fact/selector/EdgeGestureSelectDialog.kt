@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
@@ -33,16 +34,15 @@ import java.util.Locale
 class EdgeGestureSelectorState(
     val showEdgeHint: (Edge) -> Unit,
     val selected: (Pair<Edge, Gesture>) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
+) : CommonDialogState() {
+    var edge by mutableStateOf(Edge.BottomRight)
+    var gesture by mutableStateOf(Gesture.DoubleTap)
 
-    fun show() {
-        _isShow = true
-    }
+    fun show(edge: Edge?, gesture: Gesture?) {
+        this.edge = edge ?: Edge.BottomRight
+        this.gesture = gesture ?: Gesture.SingleTap
 
-    fun dismiss() {
-        _isShow = false
+        show()
     }
 }
 
@@ -58,18 +58,12 @@ fun rememberEdgeGestureSelectorState(
 
 @Composable
 fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
-    var edge by remember(state) {
-        mutableStateOf(Edge.BottomRight)
-    }
-    var gesture by remember(state) {
-        mutableStateOf(Gesture.DoubleTap)
-    }
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = "Edge Gesture")
         }, buttons = {
             TextButton(onClick = {
-                state.selected(edge to gesture)
+                state.selected(state.edge to state.gesture)
                 state.dismiss()
             }) {
                 Text(text = stringResource(id = android.R.string.ok))
@@ -85,7 +79,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             modifier = Modifier.padding(vertical = 12.dp),
                             text = i18N["ui.fact.edge.gesture.position"]
                         )
-                        ListItem(title = i18N[edge.displayNameKey()],
+                        ListItem(title = i18N[state.edge.displayNameKey()],
                             action1 = {
                                 IconButton(onClick = { dropdownState.open() }) {
                                     RemixIcon(remixName = Remix.Arrows.arrow_right_s_line)
@@ -102,7 +96,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             DropdownItem(labelLines = listOf(i18N[it.displayNameKey()]), data = it)
                         },
                         onSelect = {
-                            edge = it.data
+                            state.edge = it.data
                             state.showEdgeHint(it.data)
                         }
                     )
@@ -117,7 +111,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             modifier = Modifier.padding(vertical = 12.dp),
                             text = i18N["ui.fact.edge.gesture.gesture"]
                         )
-                        ListItem(title = i18N[gesture.displayNameKey()],
+                        ListItem(title = i18N[state.gesture.displayNameKey()],
                             action1 = {
                                 IconButton(onClick = { dropdownState.open() }) {
                                     RemixIcon(remixName = Remix.Arrows.arrow_right_s_line)
@@ -133,7 +127,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             DropdownItem(labelLines = listOf(i18N[it.displayNameKey()]), data = it)
                         },
                         onSelect = {
-                            gesture = it.data
+                            state.gesture = it.data
                         }
                     )
                 }

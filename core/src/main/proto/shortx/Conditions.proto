@@ -257,3 +257,15 @@ message ScreenOrientationIsPort {
   string note = 99;
   string id = 100;
 }
+
+message IsInCall {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message IsRinging {
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

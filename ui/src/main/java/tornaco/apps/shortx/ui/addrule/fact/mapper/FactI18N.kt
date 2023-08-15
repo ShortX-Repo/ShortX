@@ -196,6 +196,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.clipboard.content.changed"] to null
         }
 
+        Fact.GlobalVarChanged::class -> {
+            i18n["ui.fact.global.var.changed"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -575,6 +579,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             listOf(
                 i18N["ui.fact.clipboard.content.changed"],
                 fact.content
+            )
+        }
+
+        is Fact.GlobalVarChanged -> {
+            listOf(
+                i18N["ui.fact.global.var.changed"],
+                fact.gvId
             )
         }
     }

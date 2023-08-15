@@ -15,9 +15,9 @@ object Configs {
     val sxVersionNameSuffix: String get() = System.getProperty("versionNameSuffix", "")
     var sxIsDebugBuild: Boolean = false
 
-    const val compileSdkVersion = 33
+    const val compileSdkVersion = 34
     const val minSdkVersion = 26
-    const val targetSdkVersion = 33
+    const val targetSdkVersion = 34
 
     const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

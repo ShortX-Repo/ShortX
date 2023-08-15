@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.30.1"
+accompanist = "0.31.6-rc"
 activity-compose = "1.7.2"
 agp = "8.1.0"
 kotest-assertions-core = "5.6.2"
@@ -11,16 +11,16 @@ espresso-core = "3.5.1"
 androidx-junit = "1.1.5"
 xposed-api = "82"
 appcompat = "1.6.1"
-browser = "1.5.0"
+browser = "1.6.0"
 codeview = "1.3.8"
-compose-animation = "1.4.3"
-compose-bom = "2023.06.01"
+compose-animation = "1.5.0"
+compose-bom = "2023.08.00"
 compose-compiler = "1.5.1"
-compose-foundation = "1.4.3"
-compose-material = "1.4.3"
+compose-foundation = "1.5.0"
+compose-material = "1.5.0"
 compose-material3 = "1.1.1"
-compose-runtime = "1.4.3"
-compose-ui = "1.4.3"
+compose-runtime = "1.5.0"
+compose-ui = "1.5.0"
 converter-gson = "2.9.0"
 junit = "4.13.2"
 libchecker-rules-bundle = "32.1"
@@ -38,11 +38,11 @@ lifecycle-runtime-ktx = "2.6.1"
 material = "1.9.0"
 mockk = "1.13.5"
 mvel2 = "2.5.0.Final"
-navigation-compose = "2.6.0"
+navigation-compose = "2.7.0"
 glide = "4.15.1"
 okhttp = "4.11.0"
 dagger = "2.47"
-protobuf-java = "3.23.4"
+protobuf-java = "3.24.0"
 retrofit = "2.9.0"
 room = "2.5.2"
 swiperefreshlayout = "1.1.0"
@@ -128,7 +128,7 @@ compose-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", versio
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
-glide-landscapist = { module = "com.github.skydoves:landscapist-glide", version = "2.2.3" }
+glide-landscapist = { module = "com.github.skydoves:landscapist-glide", version = "2.2.6" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-reflect" }

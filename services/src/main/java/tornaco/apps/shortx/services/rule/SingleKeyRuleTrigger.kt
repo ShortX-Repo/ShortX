@@ -30,6 +30,7 @@ class SingleKeyRuleTrigger(
 
     fun hasAnyWithInterceptMode(keyCode: Int) = interceptModeKeyCodes.contains(keyCode)
     fun hasAny(keyCode: Int) = keycodes.contains(keyCode)
+    fun hasAny() = keycodes.isNotEmpty()
 
     private fun installKeyRules() {
         val keyEventRules =

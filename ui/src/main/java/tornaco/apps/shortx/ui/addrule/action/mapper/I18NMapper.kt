@@ -182,6 +182,7 @@ fun labelAndDescriptionForActionSelector(
         Action.EnableUniversalCopy::class -> i18N["ui.action.enable.universal.copy"] to null
         Action.TTS::class -> i18N["ui.action.tts"] to null
         Action.SetWallpaper::class -> i18N["ui.action.set.wallpaper"] to null
+        Action.SetRuleEnabled::class -> i18N["ui.action.set.rule.enabled"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -668,6 +669,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.SetWallpaper -> listOf(
             i18N["ui.action.set.wallpaper"],
             action.url
+        )
+
+        is Action.SetRuleEnabled -> listOf(
+            i18N["ui.action.set.rule.enabled"],
+            action.ruleLabel
         )
     }
 }

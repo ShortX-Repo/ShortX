@@ -34,6 +34,8 @@ fun SystemConditions(
         Condition.RequireBTConnected::class,
         Condition.RequireBTDisconnected::class,
         Condition.RequireMobileDataEnabled::class,
+        Condition.IsInCall::class,
+        Condition.IsRinging::class,
     ).map {
         SelectorItem(
             type = it,

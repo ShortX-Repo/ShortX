@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -62,7 +63,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val writeClipboardSelectorDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.action.write.clipboard"],
         message = null,
-        inputValidator = { true to "" },
+        inputValidator = { InputValidateResult.OK },
         onSelected = {
             addAction(Action.WriteClipboard(text = it))
         })

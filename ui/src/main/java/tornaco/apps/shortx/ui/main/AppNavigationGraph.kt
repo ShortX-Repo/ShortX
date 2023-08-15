@@ -1,8 +1,7 @@
 package tornaco.apps.shortx.ui.main
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import androidx.navigation.compose.NavHost
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.animateComposable
@@ -10,12 +9,11 @@ import tornaco.apps.shortx.ui.base.webview.WebViewScreen
 import tornaco.apps.shortx.ui.base.webview.WebViewTarget
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigationGraph(
 ) {
     val appNavController = LocalNavHostController.current
-    AnimatedNavHost(appNavController, startDestination = startDestination) {
+    NavHost(appNavController, startDestination = startDestination) {
         animateComposable(AppRoute.Home.name) {
             HomeScreen()
         }

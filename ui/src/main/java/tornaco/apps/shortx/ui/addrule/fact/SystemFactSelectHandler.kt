@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnOffAnyStateSelecto
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberRandomInPeriodSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberSystemSettingsUrlSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberWifiSSIDSelectorState
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -175,7 +177,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         title = LocalI18N.current["ui.fact.battery.level.changed"],
         message = LocalI18N.current["ui.fact.battery.level.changed.level"],
         inputValidator = {
-            (it.isNotEmpty() && it.isDigitsOnly() && ((it.toIntOrNull() ?: 0) <= 100)) to ""
+            val isOK = (it.isNotEmpty() && it.isDigitsOnly() && ((it.toIntOrNull() ?: 0) <= 100))
+            isOK.select(InputValidateResult.OK, InputValidateResult.Error(""))
         },
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -192,7 +195,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         title = LocalI18N.current["ui.fact.battery.temp.changed"],
         message = LocalI18N.current["ui.fact.battery.temp.changed.temp"],
         inputValidator = {
-            (it.isNotEmpty() && ((it.toFloatOrNull() ?: 0f) <= 100f)) to ""
+            (it.isNotEmpty() && ((it.toFloatOrNull() ?: 0f) <= 100f)).select(
+                InputValidateResult.OK,
+                InputValidateResult.Error("")
+            )
         },
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -208,9 +214,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val broadcastSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.fact.broadcast"],
         message = LocalI18N.current["ui.common.action"],
-        inputValidator = {
-            (it.isNotEmpty()) to ""
-        },
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { actionString ->
@@ -223,9 +226,6 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val mediaInsertSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.fact.media.insert"],
         message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProvider)]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
-        inputValidator = {
-            it.isNotEmpty() to ""
-        },
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString ->
@@ -291,7 +291,10 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.EdgeGesture::class -> {
-                edgeGestureSelectorState.show()
+                edgeGestureSelectorState.show(
+                    edge = source.getFactAs<Fact.EdgeGesture>()?.edge,
+                    gesture = source.getFactAs<Fact.EdgeGesture>()?.gesture
+                )
                 true
             }
 

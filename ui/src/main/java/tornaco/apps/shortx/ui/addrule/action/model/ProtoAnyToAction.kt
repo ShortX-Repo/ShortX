@@ -1164,6 +1164,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetRuleEnabled::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetRuleEnabled::class.java
+            Action.SetRuleEnabled(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                enableRule = data.isEnable,
+                ruleId = data.ruleId,
+                ruleLabel = shortXManager.getRuleById(data.ruleId)?.title ?: "N/A"
+            )
+        }
+
         else -> null
     }
 }

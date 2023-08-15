@@ -164,6 +164,16 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.IsInCall::class -> {
+                addCondition(Condition.IsInCall())
+                true
+            }
+
+            Condition.IsRinging::class -> {
+                addCondition(Condition.IsRinging())
+                true
+            }
+
             else -> false
         }
     }

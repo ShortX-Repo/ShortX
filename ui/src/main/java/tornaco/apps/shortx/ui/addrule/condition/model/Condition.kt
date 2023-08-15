@@ -319,6 +319,28 @@ sealed interface Condition : Parcelable {
             return copy(id = id, note = note, isInvert = isInvert)
         }
     }
+
+    @Parcelize
+    data class IsInCall(
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
+
+    @Parcelize
+    data class IsRinging(
+        override val isInvert: Boolean = false,
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+    ) : Condition {
+        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
+            return copy(id = id, note = note, isInvert = isInvert)
+        }
+    }
 }
 
 val Condition.contextData: List<ContextData> get() = this::class.conditionContextData()

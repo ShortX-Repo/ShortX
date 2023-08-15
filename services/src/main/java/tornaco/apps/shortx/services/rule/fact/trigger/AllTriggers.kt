@@ -27,4 +27,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     SystemSettingsTrigger(context, shortXContext),
     CallStateTrigger(context, shortXContext),
     ClipboardTrigger(context, shortXContext),
+    GlobalVarTrigger(context, shortXContext),
 )

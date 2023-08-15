@@ -888,3 +888,13 @@ message SetWallpaper {
   string fileUrl = 1;
   bool crop = 2;
 }
+
+message SetRuleEnabled {
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  string ruleId = 1;
+  bool isEnable = 2;
+}

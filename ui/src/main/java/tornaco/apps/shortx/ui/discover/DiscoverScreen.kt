@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -61,7 +60,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipRow
-import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
+import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
@@ -199,7 +198,11 @@ fun DiscoverScreen() {
             vm.acceptPrivacyStatement()
         }
     ) {
-        val pagerState = rememberPagerState(initialPage = initialPageIndex)
+        val pagerState = rememberPagerState(
+            initialPage = initialPageIndex,
+            pageCount = {
+                DiscoverTabItem.values().size
+            })
         val scope = rememberCoroutineScope()
 
         DisposableEffectWithLifeCycle(onResume = {
@@ -216,8 +219,7 @@ fun DiscoverScreen() {
             )
 
             HorizontalPager(
-                state = pagerState,
-                pageCount = DiscoverTabItem.values().size,
+                state = pagerState
             ) { index ->
                 when (index) {
                     DiscoverTabItem.DA.ordinal -> {
@@ -258,7 +260,7 @@ private fun DiscoverRule(discoverState: DiscoverState, refresh: () -> Unit) {
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                        columns = dynamicStaggeredGridCells(),
                         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
                         items(
@@ -400,7 +402,7 @@ private fun DiscoverDA(discoverState: DiscoverState, refresh: () -> Unit) {
                 } else {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Adaptive(adaptiveCardSizeMin),
+                        columns = dynamicStaggeredGridCells(),
                         contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                     ) {
                         items(items = discoverData.data.das, key = { it.id }) {

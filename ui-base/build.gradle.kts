@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.compose.material)
 
     implementation(libs.navigation.compose)
-    implementation(libs.accompanist.navigation.animation)
     implementation(libs.accompanist.placeholder.material)
     implementation(libs.accompanist.systemuicontroller)
 

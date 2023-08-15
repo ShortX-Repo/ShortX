@@ -96,6 +96,14 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.lock_line
         }
 
+        Condition.IsInCall::class -> {
+            Remix.Device.phone_line
+        }
+
+        Condition.IsRinging::class -> {
+            Remix.Media.volume_vibrate_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

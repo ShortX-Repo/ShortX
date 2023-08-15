@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.addrule.fact.selector.GVSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberGVSelectorState
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 
 @Composable
@@ -23,6 +25,11 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
         }
     )
 
+    val gvSelectorDialogState = rememberGVSelectorState(onSelected = { varName ->
+        addFact(Fact.GlobalVarChanged(gvId = varName))
+    })
+    GVSelectorDialog(state = gvSelectorDialogState)
+
     return { source ->
         when (source.clazz) {
             Fact.OnQSTileClick::class -> {
@@ -30,6 +37,10 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
                 true
             }
 
+            Fact.GlobalVarChanged::class -> {
+                gvSelectorDialogState.show(source.getFactAs<Fact.GlobalVarChanged>()?.gvId)
+                true
+            }
 
             else -> false
         }

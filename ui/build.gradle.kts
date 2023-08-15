@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     implementation(libs.navigation.compose)
-    implementation(libs.accompanist.navigation.animation)
     implementation(libs.accompanist.placeholder.material)
 
     implementation(libs.core.splashscreen)

@@ -99,5 +99,6 @@ val allActionClasses = listOf(
     Action.ShowTextFieldDialog::class,
     Action.TTS::class,
     Action.SetWallpaper::class,
+    Action.SetRuleEnabled::class,
     Action.NoAction::class,
 )

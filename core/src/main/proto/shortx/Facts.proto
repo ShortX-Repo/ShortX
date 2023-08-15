@@ -442,3 +442,10 @@ message ClipboardContentChanged {
   string note = 99;
   string id = 100;
 }
+
+message GlobalVarChanged {
+  string gvId = 1;
+
+  string note = 99;
+  string id = 100;
+}
