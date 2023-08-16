@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.window.DialogProperties
 
 class SelectionDialogState(
     val title: String,
@@ -28,10 +27,6 @@ fun rememberSelectionDialogState(
 fun SelectionDialog(state: SelectionDialogState) {
     if (state.isShowing) {
         ShortXDialog(
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false,
-            ),
             onDismissRequest = {
                 state.dismiss()
             },
