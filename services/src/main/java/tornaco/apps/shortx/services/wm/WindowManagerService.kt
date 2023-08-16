@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.wm
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ComponentName
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
@@ -17,18 +16,13 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
-import tornaco.apps.shortx.ui.ocr.Ocr
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
-import java.io.File
 
 class WindowManagerService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "ShortXWMS"), OnAccessibilityEventListener {
@@ -371,33 +365,6 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     )
                 }
             }
-        }
-    }
-
-    private fun installOcr() {
-        runCatching {
-            val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
-            val appContext = appResources.appContext
-            val assets = appContext.assets
-            val destDataDir = File(Dirs.baseServerCacheDir(), "tess${File.separator}tessdata")
-            require(destDataDir.exists() || destDataDir.mkdirs()) {
-                "Fail create tess destDataDir"
-            }
-            val engFile = File(destDataDir, "eng.traineddata")
-            assets.open("tess/eng.traineddata").use { input ->
-                engFile.outputStream().use { out -> input.copyTo(out) }
-            }
-            val imageFile = File(destDataDir, "sample.jpg")
-            assets.open("tess/sample.jpg").use { input ->
-                imageFile.outputStream().use { out -> input.copyTo(out) }
-            }
-            logger.d("Ocr engFile: $engFile")
-            val installSuccess = Ocr.install(destDataDir.parentFile.absolutePath)
-            logger.d("Ocr installSuccess: $installSuccess")
-            val text = Ocr.getText(BitmapFactory.decodeFile(imageFile.absolutePath))
-            logger.d("Ocr text: $text")
-        }.onFailure {
-            logger.e(it, "Ocr")
         }
     }
 }

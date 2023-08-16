@@ -50,7 +50,4 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":ui-base"))
-
-    // To use OpenMP variant:
-    implementation("cz.adaptech.tesseract4android:tesseract4android-openmp:4.5.0")
 }
