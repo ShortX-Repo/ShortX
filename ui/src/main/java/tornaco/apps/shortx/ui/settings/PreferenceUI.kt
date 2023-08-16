@@ -168,9 +168,7 @@ private fun PreferenceIcon(preference: Preference) {
 
 @Composable
 private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
-    var checkState by remember(preference) {
-        mutableStateOf(preference.value)
-    }
+
     var isShowMoreSummary by remember {
         mutableStateOf(false)
     }
@@ -186,8 +184,7 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                     if (preference.hasLongSummary) {
                         isShowMoreSummary = !isShowMoreSummary
                     } else {
-                        checkState = !checkState
-                        preference.onCheckChanged(checkState)
+                        preference.onCheckChanged(!preference.value)
                     }
                 }
             }, verticalAlignment = Alignment.CenterVertically,
@@ -232,19 +229,16 @@ private fun SwitchPreferenceUi(preference: Preference.SwitchPreference) {
                         text = preference.summary ?: preference.title,
                         style = MaterialTheme.typography.bodySmall,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = 2
+                        maxLines = 4
                     )
                 }
-
-
             }
         }
 
         ShortXSwitch(
             modifier = Modifier.padding(end = 16.dp),
-            checked = checkState,
+            checked = preference.value,
             onCheckedChange = {
-                checkState = it
                 preference.onCheckChanged(it)
             })
     }

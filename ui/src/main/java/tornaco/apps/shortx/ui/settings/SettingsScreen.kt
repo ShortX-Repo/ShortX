@@ -50,7 +50,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValueSelectorState
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
-import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LinkText
@@ -64,7 +64,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.SubscribeState
 import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
@@ -246,13 +246,13 @@ fun SettingsScreen(
                         }
                     }
 
-                    val deleteDialogState = rememberDeleteConfirmDialogState()
-                    DeleteConfirmDialog(
-                        titleKey = "ui.settings.data.reset.title",
+                    val deleteDialogState = rememberConfirmDialogState()
+                    ConfirmDialog(
+                        title = LocalI18N.current["ui.settings.data.reset.title"],
                         state = deleteDialogState,
                         data = "",
-                        messageHint = { i18N["ui.settings.data.reset.dialog.hint"] },
-                        onDelete = {
+                        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to i18N["ui.settings.data.reset.dialog.hint"])] },
+                        onConfirm = {
                             vm.resetData()
                         }
                     )
@@ -294,7 +294,13 @@ fun SettingsScreen(
                                 state = state,
                                 mainState = subscribeState,
                                 vm = vm,
-                                goToSettingsCatcherRecord = goToSettingsCatcherRecord
+                            )
+                        )
+                        addAll(
+                            engineSettings(
+                                state = state,
+                                mainState = subscribeState,
+                                vm = vm,
                             )
                         )
                         addAll(devSettings(state = state, vm = vm))
@@ -634,54 +640,107 @@ private fun devSettings(
     }
 }
 
+
 @Composable
 private fun systemSettings(
     state: SettingsState,
     mainState: SubscribeState,
     vm: SettingsViewModel,
-    goToSettingsCatcherRecord: () -> Unit
 ): List<Preference> {
+    val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else i18N["ui.subscription.subscribed.only"]
 
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
-
     return mutableListOf(
-        Preference.Category(LocalI18N.current["ui.settings.system"]),
+        Preference.Category(i18N["ui.settings.system"]),
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
-            title = LocalI18N.current["ui.settings.rule.engine.shell"],
-            summary = LocalI18N.current["ui.settings.rule.engine.shell.summary"],
-            hasLongSummary = true,
-            value = state.shellEngineEnabled,
-            onCheckChanged = { enable ->
-                vm.setShellEngineEnable(enable)
-            }
-        ),
-        Preference.SwitchPreference(
-            icon = Remix.Media.equalizer_fill,
-            title = LocalI18N.current["ui.settings.rule.engine.mvel"],
-            summary = LocalI18N.current["ui.settings.rule.engine.mvel.summary"],
-            hasLongSummary = true,
-            value = state.mvelEngineEnabled,
-            onCheckChanged = { enable ->
-                vm.setMVELEngineEnable(enable)
-            }
-        ),
-        Preference.SwitchPreference(
-            icon = Remix.Media.equalizer_fill,
-            title = LocalI18N.current["ui.settings.sb.tile.opt"],
-            summary = LocalI18N.current["ui.settings.sb.tile.opt.summary"],
+            title = i18N["ui.settings.sb.tile.opt"],
+            summary = i18N["ui.settings.sb.tile.opt.summary"],
             hasLongSummary = true,
             badge = badge,
             value = state.isQSTileOptEnabled,
-            onCheckChanged = { enable ->
+            onCheckChanged = {
                 if (mainState.isSubscribed) {
                     vm.toggleQSTileOpt()
                 } else {
                     subscribeDialogState.show()
+                }
+            }
+        )
+    )
+}
+
+@Composable
+private fun engineSettings(
+    state: SettingsState,
+    mainState: SubscribeState,
+    vm: SettingsViewModel,
+): List<Preference> {
+    val i18N = LocalI18N.current
+    val badge = if (mainState.isSubscribed) {
+        null
+    } else i18N["ui.subscription.subscribed.only"]
+
+    val subscribeDialogState = rememberCommonDialogState()
+    FeatureAccessDialog(subscribeDialogState)
+
+    val shellConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18N["ui.settings.rule.engine.shell.confirm.title"],
+        messageHint = {
+            i18N["ui.settings.rule.engine.shell.confirm.message"]
+        },
+        state = shellConfirmDialogState,
+        data = Unit,
+        onConfirm = {
+            vm.setShellEngineEnable(true)
+        }
+    )
+
+    val mvelConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18N["ui.settings.rule.engine.mvel.confirm.title"],
+        messageHint = {
+            i18N["ui.settings.rule.engine.mvel.confirm.message"]
+        },
+        state = mvelConfirmDialogState,
+        data = Unit,
+        onConfirm = {
+            vm.setMVELEngineEnable(true)
+        }
+    )
+
+    return mutableListOf(
+        Preference.Category(i18N["ui.settings.engine"]),
+        Preference.SwitchPreference(
+            icon = Remix.Media.equalizer_fill,
+            title = i18N["ui.settings.rule.engine.shell"],
+            summary = i18N["ui.settings.rule.engine.shell.summary"],
+            hasLongSummary = false,
+            value = state.shellEngineEnabled,
+            onCheckChanged = { enable ->
+                if (enable) {
+                    shellConfirmDialogState.show()
+                } else {
+                    vm.setShellEngineEnable(false)
+                }
+            }
+        ),
+        Preference.SwitchPreference(
+            icon = Remix.Media.equalizer_fill,
+            title = i18N["ui.settings.rule.engine.mvel"],
+            summary = i18N["ui.settings.rule.engine.mvel.summary"],
+            hasLongSummary = false,
+            value = state.mvelEngineEnabled,
+            onCheckChanged = { enable ->
+                if (enable) {
+                    mvelConfirmDialogState.show()
+                } else {
+                    vm.setMVELEngineEnable(false)
                 }
             }
         )

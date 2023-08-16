@@ -169,7 +169,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL, enable)
             updateState {
-                copy(shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL))
+                copy(mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL))
             }
         }
     }

@@ -29,7 +29,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
@@ -70,7 +69,7 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
@@ -84,11 +83,10 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
-import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
@@ -638,12 +636,15 @@ private fun listItemOverflowMenu(
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
-    val deleteDialogState = rememberDeleteConfirmDialogState()
-    DeleteConfirmDialog(
+    val deleteDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = LocalI18N.current["ui.common.delete"],
         state = deleteDialogState,
         data = da,
-        messageHint = { da.title },
-        onDelete = onDelete
+        messageHint = {
+            i18N["ui.delete.dialog.confirm", mapOf("wht" to da.title)]
+        },
+        onConfirm = onDelete
     )
 
     val menuState = rememberDropdownSelectorState()

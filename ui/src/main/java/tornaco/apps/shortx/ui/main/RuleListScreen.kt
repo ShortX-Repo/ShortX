@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +49,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.DeleteConfirmDialog
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
@@ -63,10 +62,9 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TinySpacer
-import tornaco.apps.shortx.ui.base.adaptiveCardSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.base.rememberDeleteConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
@@ -434,19 +432,21 @@ private fun listItemOverflowMenu(
     onShare: (RuleUM) -> Unit,
     onExecute: (RuleUM) -> Unit,
 ): DropdownSelectorState {
+    val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else i18N["ui.subscription.subscribed.only"]
 
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
-    val deleteDialogState = rememberDeleteConfirmDialogState()
-    DeleteConfirmDialog(
+    val deleteDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18N["ui.common.delete"],
         state = deleteDialogState,
         data = rule,
-        messageHint = { rule.title },
-        onDelete = onDelete
+        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to rule.title)] },
+        onConfirm = onDelete
     )
 
     val menuState = rememberDropdownSelectorState()
@@ -455,31 +455,31 @@ private fun listItemOverflowMenu(
         widthFraction = 0.3f,
         state = menuState,
         items = listOf(
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.execute.actions"]),
+            DropdownItem(labelLines = listOf(i18N["ui.common.execute.actions"]),
                 data = "execute",
                 icon = {
                     RemixIcon(Remix.Media.play_fill)
                 }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+            DropdownItem(labelLines = listOf(i18N["ui.common.dup"]),
                 data = "dup",
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
-            DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+            DropdownItem(labelLines = listOf(i18N["ui.common.edit"]),
                 data = "edit",
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                labelLines = listOf(i18N["ui.common.share"]),
                 data = "share",
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                labelLines = listOf(i18N["ui.common.delete"]),
                 data = "delete",
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)

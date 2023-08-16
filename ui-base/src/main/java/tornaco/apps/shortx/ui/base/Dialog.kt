@@ -69,7 +69,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.amrdeveloper.codeview.CodeView
-import tornaco.apps.shortx.core.I18NKey
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.code.codeditor.initView
@@ -193,7 +192,7 @@ fun ShortXDialog(
     }
 }
 
-class DeleteConfirmDialogState {
+class ConfirmDialogState {
     var isShowing by mutableStateOf(false)
 
     fun show() {
@@ -206,19 +205,19 @@ class DeleteConfirmDialogState {
 }
 
 @Composable
-fun rememberDeleteConfirmDialogState(): DeleteConfirmDialogState {
+fun rememberConfirmDialogState(): ConfirmDialogState {
     return remember {
-        DeleteConfirmDialogState()
+        ConfirmDialogState()
     }
 }
 
 @Composable
-fun <T> DeleteConfirmDialog(
-    titleKey: I18NKey = "ui.common.delete",
-    state: DeleteConfirmDialogState,
+fun <T> ConfirmDialog(
+    title: String,
+    state: ConfirmDialogState,
     data: T,
     messageHint: (T) -> String = { "" },
-    onDelete: (T) -> Unit
+    onConfirm: (T) -> Unit
 ) {
     if (state.isShowing) {
         val i18N = LocalI18N.current
@@ -228,7 +227,7 @@ fun <T> DeleteConfirmDialog(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onDelete(data)
+                    onConfirm(data)
                     state.dismiss()
                 }) {
                     Text(text = stringResource(id = android.R.string.ok))
@@ -240,10 +239,10 @@ fun <T> DeleteConfirmDialog(
                 }
             },
             title = {
-                Text(text = i18N[titleKey])
+                Text(text = i18N[title])
             },
             text = {
-                Text(text = i18N["ui.delete.dialog.confirm", mapOf("wht" to messageHint(data))])
+                Text(text = messageHint(data))
             })
     }
 }
