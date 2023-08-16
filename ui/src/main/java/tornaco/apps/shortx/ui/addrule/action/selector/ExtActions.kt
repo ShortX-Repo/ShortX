@@ -24,8 +24,10 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
     val shellCommandSelectorState =
         rememberCodeEditorState(title = LocalI18N.current["ui.action.shell"],
+            message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
             execute = {
                 shortXManager.executeShellCommand(it).shellResToString()
             },

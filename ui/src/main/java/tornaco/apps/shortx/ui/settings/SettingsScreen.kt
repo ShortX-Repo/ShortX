@@ -656,6 +656,22 @@ private fun systemSettings(
     FeatureAccessDialog(subscribeDialogState)
     return mutableListOf(
         Preference.Category(i18N["ui.settings.system"]),
+
+        Preference.SwitchPreference(
+            icon = Remix.Editor.hashtag,
+            title = i18N["ui.settings.injected.shell"],
+            summary = i18N["ui.settings.injected.shell.description"],
+            hasLongSummary = true,
+            badge = badge,
+            value = state.isInjectedShellEnabled,
+            onCheckChanged = {
+                if (mainState.isSubscribed) {
+                    vm.toggleInjectedShell()
+                } else {
+                    subscribeDialogState.show()
+                }
+            }
+        ),
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
             title = i18N["ui.settings.sb.tile.opt"],
