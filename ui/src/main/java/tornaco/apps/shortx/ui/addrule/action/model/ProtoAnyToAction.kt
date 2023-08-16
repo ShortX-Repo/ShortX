@@ -884,6 +884,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg::class.java
+            Action.RemoveTasksByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage::class.java

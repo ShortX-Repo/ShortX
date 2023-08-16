@@ -293,6 +293,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveTasks
     },
+    RemoveTasksByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.RemoveTasksByPkg
+    },
     KillProcessByName {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.KillProcessByName

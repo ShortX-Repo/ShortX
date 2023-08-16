@@ -1808,6 +1808,30 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class RemoveTasksByPkg(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val note: String = "",
+
+        val stringPairs: List<StringPair>
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError
+            )
+        }
+    }
+
+    @Parcelize
     data class KillProcessByName(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

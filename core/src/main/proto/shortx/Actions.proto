@@ -669,6 +669,15 @@ message RemoveTasks {
   string id = 100;
 }
 
+message RemoveTasksByPkg {
+  repeated StringPair pkgAndUsers = 1;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message KillProcessByName {
   repeated ProcessName processes = 1;
 

@@ -167,6 +167,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
+        Action.RemoveTasksByPkg::class -> i18N["ui.action.remove.tasks.by.pkg"] to null
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
         Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
@@ -587,6 +588,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.apps,
                 action.pkgSets
             )
+        }
+
+        is Action.RemoveTasksByPkg -> {
+            listOf(i18N["ui.action.remove.tasks.by.pkg"])
         }
 
         is Action.KillProcessByName -> {

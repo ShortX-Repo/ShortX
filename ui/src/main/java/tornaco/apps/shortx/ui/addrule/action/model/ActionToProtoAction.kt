@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
+import tornaco.apps.shortx.core.proto.action.RemoveTasksByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppEnabled
 import tornaco.apps.shortx.core.proto.action.SetAppEnabledByPkg
 import tornaco.apps.shortx.core.proto.action.SetAppInactive
@@ -747,6 +748,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setNote(overrideNote ?: note)
                 .addAllPkgSets(pkgSets.map { it.label }).addAllAppPkg(apps.map { it.pkg })
+                .build()
+        }
+
+        is Action.RemoveTasksByPkg -> {
+            RemoveTasksByPkg.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setNote(overrideNote ?: note)
+                .addAllPkgAndUsers(stringPairs)
                 .build()
         }
 

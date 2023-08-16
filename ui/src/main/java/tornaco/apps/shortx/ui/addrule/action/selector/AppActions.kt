@@ -77,6 +77,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             })
     AppPkgSelectorDialog(state = removeTasksSelectorState)
 
+    val removeTaskByPackageSelectorState = rememberPkgAndUserListSelectorDialogState(
+        title = LocalI18N.current["ui.action.remove.tasks.by.pkg"],
+        onSelected = {
+            addAction(Action.RemoveTasksByPkg(stringPairs = it))
+        })
+    PackageNameAndUserSelectorDialog(state = removeTaskByPackageSelectorState)
+
     val startAppProcessSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -287,6 +294,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.RemoveTasksByPkg::class -> {
+                removeTaskByPackageSelectorState.show(
+                    source.getActionAs<Action.RemoveTasksByPkg>()?.stringPairs,
+                )
+                true
+            }
+
             Action.StartAppProcess::class -> {
                 startAppProcessSelectorState.show(
                     source.getActionAs<Action.StartAppProcess>()?.apps,
@@ -443,6 +457,7 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.UnSuspendAppByPkg::class,
         Action.StopService::class,
         Action.RemoveTasks::class,
+        Action.RemoveTasksByPkg::class,
         Action.KillProcessByName::class,
         Action.RemoveNotificationForPackage::class,
         Action.RemoveNotificationForPackageByPkg::class,
