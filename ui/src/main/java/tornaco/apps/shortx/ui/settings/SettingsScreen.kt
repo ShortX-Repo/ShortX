@@ -656,22 +656,6 @@ private fun systemSettings(
     FeatureAccessDialog(subscribeDialogState)
     return mutableListOf(
         Preference.Category(i18N["ui.settings.system"]),
-
-        Preference.SwitchPreference(
-            icon = Remix.Editor.hashtag,
-            title = i18N["ui.settings.injected.shell"],
-            summary = i18N["ui.settings.injected.shell.description"],
-            hasLongSummary = true,
-            badge = badge,
-            value = state.isInjectedShellEnabled,
-            onCheckChanged = {
-                if (mainState.isSubscribed) {
-                    vm.toggleInjectedShell()
-                } else {
-                    subscribeDialogState.show()
-                }
-            }
-        ),
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
             title = i18N["ui.settings.sb.tile.opt"],
@@ -732,8 +716,9 @@ private fun engineSettings(
 
     return mutableListOf(
         Preference.Category(i18N["ui.settings.engine"]),
+
         Preference.SwitchPreference(
-            icon = Remix.Media.equalizer_fill,
+            icon = Remix.Editor.hashtag,
             title = i18N["ui.settings.rule.engine.shell"],
             summary = i18N["ui.settings.rule.engine.shell.summary"],
             hasLongSummary = false,
@@ -746,8 +731,27 @@ private fun engineSettings(
                 }
             }
         ),
+        state.shellEngineEnabled.select(
+            Preference.SwitchPreference(
+                icon = Remix.Editor.hashtag,
+                title = i18N["ui.settings.injected.shell"],
+                summary = i18N["ui.settings.injected.shell.description"],
+                hasLongSummary = true,
+                badge = badge,
+                value = state.isInjectedShellEnabled,
+                onCheckChanged = {
+                    if (mainState.isSubscribed) {
+                        vm.toggleInjectedShell()
+                    } else {
+                        subscribeDialogState.show()
+                    }
+                }
+            ),
+            null
+        ),
+
         Preference.SwitchPreference(
-            icon = Remix.Media.equalizer_fill,
+            icon = Remix.Development.code_fill,
             title = i18N["ui.settings.rule.engine.mvel"],
             summary = i18N["ui.settings.rule.engine.mvel.summary"],
             hasLongSummary = false,
@@ -760,7 +764,7 @@ private fun engineSettings(
                 }
             }
         )
-    )
+    ).filterNotNull()
 }
 
 @Composable

@@ -31,9 +31,6 @@ object ShellCommand : Actor {
             shortXContext.shell.executeCommand(command)
         logger.d("Shell command: $command")
         logger.d("Shell res: $res")
-        requireNotNull(res) {
-            "Fail execute shell: Can not connect to ShortX App. Pls allow ShortX start from background!!!"
-        }
         contextData.add(ContextDataMapping.ShellCommand.shellCode.name, res.code)
         contextData.add(ContextDataMapping.ShellCommand.shellErr.name, res.errList?.joinToString())
         contextData.add(ContextDataMapping.ShellCommand.shellOut.name, res.outList?.joinToString())
