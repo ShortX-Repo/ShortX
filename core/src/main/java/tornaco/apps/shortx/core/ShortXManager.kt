@@ -50,6 +50,11 @@ val IPC_CODE = "tornaco.apps.shortx.services.SHORTX_SERVER".hashCode()
 private val defaultServiceStub = IShortX.Default()
 private val logger = Logger("ShortXManager")
 
+object RuleEngineNames {
+    const val ENGINE_NAME_SHELL = "shell"
+    const val ENGINE_NAME_MVEL = "mvel"
+}
+
 val shortXManager by lazy {
     ShortXManager(
         (ShortXManagerNative.shortX
@@ -849,6 +854,18 @@ class ShortXManager(private val service: IShortX) {
     fun clearReadSettingsRecord() {
         invokeService(Unit) {
             clearReadSettingsRecord()
+        }
+    }
+
+    fun setRuleEngineEnabled(engine: String, enable: Boolean) {
+        invokeService(Unit) {
+            setRuleEngineEnabled(engine, enable)
+        }
+    }
+
+    fun isRuleEngineEnabled(engine: String): Boolean {
+        return invokeService(false) {
+            isRuleEngineEnabled(engine)
         }
     }
 

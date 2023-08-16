@@ -556,6 +556,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.systemSettings.clearReadSettingsRecord()
         }
 
+        override fun setRuleEngineEnabled(engine: String, enable: Boolean) {
+            shortXContext.rule.setRuleEngineEnabled(engine, enable)
+        }
+
+        override fun isRuleEngineEnabled(engine: String): Boolean {
+            return shortXContext.rule.isRuleEngineEnabled(engine)
+        }
+
         override fun directExecuteRuleActions(evaluateContext: ByteArrayWrapper, ruleId: String) {
             shortXContext.rule.directExecuteRuleActions(
                 context = EvaluateContext.parseFrom(evaluateContext.byteData),

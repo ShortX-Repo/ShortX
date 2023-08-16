@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -19,6 +20,7 @@ object ShellCommand : Actor {
     override suspend fun handle(
         params: HandleParams
     ): Unit = with(params) {
+        require(Interceptors.checkExecuteShell(params.shortXContext, params.androidContext))
         val sc = action unpack_ ShellCommand::class.java
         val command = sc.command.inflateContextMap(contextData)
             .replaceLocalVarValues(localVars)

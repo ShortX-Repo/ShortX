@@ -28,8 +28,12 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
         data object EnableQSTileOpt :
             BoolSettings(key = "EnableQSTileOpt", defaultValue = false)
 
+        @Deprecated("Remove since it affect device Performance")
         data object EnableSettingsCatcher :
             BoolSettings(key = "EnableSettingsCatcher", defaultValue = false)
+
+        data class EnableRuleEngine(val engineName: String) :
+            BoolSettings(key = "EnableRuleEngine_${engineName}", defaultValue = false)
     }
 
     sealed class StringSettings(key: String, defaultValue: String?) :

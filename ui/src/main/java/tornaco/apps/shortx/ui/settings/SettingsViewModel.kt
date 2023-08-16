@@ -7,10 +7,13 @@ import android.os.Environment
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -38,6 +41,8 @@ data class SettingsState(
     val hasAudioRecord: Boolean = false,
     val shareAuthor: Author? = null,
     val enableHttpChucker: Boolean = false,
+    val shellEngineEnabled: Boolean = false,
+    val mvelEngineEnabled: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -86,6 +91,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 isQSTileOptEnabled = shortXManager.isQSTileOptEnabled(),
                 isSettingsCatcherEnabled = shortXManager.isSettingsCatcherEnabled(),
                 isPointerLocationEnabled = shortXManager.isPointerLocationEnabled(),
+                shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL),
+                mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
             )
         }
@@ -139,6 +146,30 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setSettingsCatcherEnabled(enable)
             updateState {
                 copy(isSettingsCatcherEnabled = shortXManager.isSettingsCatcherEnabled())
+            }
+        }
+    }
+
+    fun setShellEngineEnable(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL, enable)
+            updateState {
+                copy(shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL))
+            }
+
+            if (enable) {
+                withContext(Dispatchers.Default) {
+                    shortXManager.executeShellCommand("whoami")
+                }
+            }
+        }
+    }
+
+    fun setMVELEngineEnable(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL, enable)
+            updateState {
+                copy(shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL))
             }
         }
     }

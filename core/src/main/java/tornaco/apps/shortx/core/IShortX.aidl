@@ -209,4 +209,6 @@ interface IShortX {
     void clearWriteSettingsRecord();
     void clearReadSettingsRecord();
 
+    void setRuleEngineEnabled(String engine, boolean enable);
+    boolean isRuleEngineEnabled(String engine);
 }

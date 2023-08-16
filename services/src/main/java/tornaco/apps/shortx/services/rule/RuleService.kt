@@ -615,4 +615,12 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun isKeyEventPromptEnabled(): Boolean {
         return store.read(Settings.BoolSettings.EnableKeyEventPrompt)
     }
+
+    fun setRuleEngineEnabled(engine: String, enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableRuleEngine(engine), enable)
+    }
+
+    fun isRuleEngineEnabled(engine: String): Boolean {
+        return store.read(Settings.BoolSettings.EnableRuleEngine(engine))
+    }
 }

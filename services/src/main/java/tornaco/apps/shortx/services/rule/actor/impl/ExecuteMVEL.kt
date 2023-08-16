@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
@@ -17,6 +18,7 @@ object ExecuteMVEL : Actor {
     override suspend fun handle(
         params: HandleParams
     ) {
+        require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d = params.action unpack_ ExecuteMVEL::class.java
         MVELExecutor(
             context = params.androidContext,

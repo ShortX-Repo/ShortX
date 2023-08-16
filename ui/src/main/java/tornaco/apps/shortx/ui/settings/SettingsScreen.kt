@@ -587,23 +587,21 @@ private fun devSettings(
             onCheckChanged = { enable ->
                 vm.togglePointerLocation()
             }
-        ),
-
-        Preference.SwitchPreference(
-            icon = Remix.Business.global_fill,
-            title = LocalI18N.current["ui.settings.http:chucker"],
-            summary = LocalI18N.current["ui.settings.http:chucker.description"],
-            value = state.enableHttpChucker,
-            onCheckChanged = { enable ->
-                vm.setEnableHttpChucker(enable)
-                if (enable && OsUtils.isTOrAbove()) {
-                    permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        ),
-
-        ).apply {
+        )
+    ).apply {
         if (BuildProp.APP_IS_DEBUG) {
+            add(Preference.SwitchPreference(
+                icon = Remix.Business.global_fill,
+                title = LocalI18N.current["ui.settings.http:chucker"],
+                summary = LocalI18N.current["ui.settings.http:chucker.description"],
+                value = state.enableHttpChucker,
+                onCheckChanged = { enable ->
+                    vm.setEnableHttpChucker(enable)
+                    if (enable && OsUtils.isTOrAbove()) {
+                        permissionRequester.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+            ))
             add(Preference.TextPreference(
                 icon = Remix.System.download_fill,
                 title = "Import prebuilt data",
@@ -652,7 +650,26 @@ private fun systemSettings(
 
     return mutableListOf(
         Preference.Category(LocalI18N.current["ui.settings.system"]),
-        
+        Preference.SwitchPreference(
+            icon = Remix.Media.equalizer_fill,
+            title = LocalI18N.current["ui.settings.rule.engine.shell"],
+            summary = LocalI18N.current["ui.settings.rule.engine.shell.summary"],
+            hasLongSummary = true,
+            value = state.shellEngineEnabled,
+            onCheckChanged = { enable ->
+                vm.setShellEngineEnable(enable)
+            }
+        ),
+        Preference.SwitchPreference(
+            icon = Remix.Media.equalizer_fill,
+            title = LocalI18N.current["ui.settings.rule.engine.mvel"],
+            summary = LocalI18N.current["ui.settings.rule.engine.mvel.summary"],
+            hasLongSummary = true,
+            value = state.mvelEngineEnabled,
+            onCheckChanged = { enable ->
+                vm.setMVELEngineEnable(enable)
+            }
+        ),
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
             title = LocalI18N.current["ui.settings.sb.tile.opt"],
