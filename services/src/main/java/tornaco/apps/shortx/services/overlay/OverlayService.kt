@@ -39,7 +39,7 @@ class OverlayService(shortXContext: ShortXContext) :
         localVars: LocalVars,
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
-        logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
+        logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }} local vars: ${localVars.all.joinToString { it.name }}")
 
         if (showingOverlays.any {
                 it.tag == action.tag
