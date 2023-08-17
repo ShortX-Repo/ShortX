@@ -20,7 +20,7 @@ object WriteLocalVar : Actor {
     ): Unit = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.WriteLocalVar::class.java
         val localVar = requireNotNull(localVars.getByName(d.varName)) {
-            "Local var: ${d.varName} not exists. pls create first."
+            "Local var: ${d.varName} not exists. pls create first.\nCurrent local vars: ${localVars.all.joinToString { it.name }}"
         }
         val newValue =
             d.valueAsString.inflateContextMap(contextData)
