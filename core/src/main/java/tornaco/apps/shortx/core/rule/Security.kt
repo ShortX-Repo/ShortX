@@ -3,6 +3,7 @@ package tornaco.apps.shortx.core.rule
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.IfThenElse
 import tornaco.apps.shortx.core.proto.action.ShellCommand
+import tornaco.apps.shortx.core.proto.action.WhileLoop
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -72,6 +73,14 @@ object Security {
             if (proto is_ IfThenElse::class.java) {
                 val ifThenElse = proto.unpack(IfThenElse::class.java)
                 if (!checkActions(ifThenElse.ifActionsList + ifThenElse.elseActionsList)) {
+                    result = false
+                    return@forEach
+                }
+            }
+
+            if (proto is_ WhileLoop::class.java) {
+                val wl = proto.unpack(WhileLoop::class.java)
+                if (!checkActions(wl.actionsList)) {
                     result = false
                     return@forEach
                 }
