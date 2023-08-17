@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.overlay
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -35,6 +36,7 @@ class OverlayService(shortXContext: ShortXContext) :
 
     fun postShowOverlay(
         evaluateContext: EvaluateContext,
+        localVars: LocalVars,
         action: ShowOverlayButton
     ) = mainHandler.postSafety {
         logger.d("showOverlay: ${action.tag}, current showing: ${showingOverlays.map { it.tag }}")
@@ -64,7 +66,8 @@ class OverlayService(shortXContext: ShortXContext) :
                 shortXContext.rule.executeActions(
                     context = evaluateContext,
                     actions = button.actionsList,
-                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
                 )
             },
             onButtonLongClick = {},

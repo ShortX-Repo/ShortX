@@ -132,6 +132,7 @@ interface Engine {
         context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
+        localVars: LocalVars = LocalVars.obtain(),
         conflictStrategy: ConflictStrategy
     )
 
@@ -420,13 +421,12 @@ class DefaultRuleEngine(
         context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any>,
+        localVars: LocalVars,
         conflictStrategy: ConflictStrategy
     ) {
         val contextData = ContextData.obtain(initialContextData)
         val isAlreadyRunning = synchronized(jobs) { jobs.any { it.id == context.srcId } }
         logger.d("evaluateActions, ${context.srcTitle} conflictStrategy: $conflictStrategy, isAlreadyRunning: $isAlreadyRunning")
-
-        val localVars = LocalVars.obtain()
 
         if (isAlreadyRunning) {
             when (conflictStrategy) {

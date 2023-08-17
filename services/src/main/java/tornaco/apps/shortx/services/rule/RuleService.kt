@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.action.StartActivityUrlSchema
 import tornaco.apps.shortx.core.proto.common.Author
@@ -309,13 +310,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         context: EvaluateContext,
         actions: List<ProtoAny>,
         initialContextData: Map<String, Any> = emptyMap(),
-        conflictStrategy: ConflictStrategy
+        localVars: LocalVars = LocalVars.obtain(),
+        conflictStrategy: ConflictStrategy,
     ) {
         logger.d("executeActions: ${context.srcEvent} ${context.srcTitle}")
         engine.evaluateActions(
             context = context,
             actions = actions,
             initialContextData = initialContextData,
+            localVars = localVars,
             conflictStrategy = conflictStrategy
         )
     }
@@ -342,10 +345,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
         registerJobStatusListener(listener)
         executeActions(
-            context,
-            actions,
-            initialContextData,
-            ConflictStrategy.ConflictStrategy_ExecuteBoth
+            context = context,
+            actions = actions,
+            initialContextData = initialContextData,
+            conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
         )
         latch.await(60, TimeUnit.SECONDS)
         unregisterJobStatusListener(listener)
