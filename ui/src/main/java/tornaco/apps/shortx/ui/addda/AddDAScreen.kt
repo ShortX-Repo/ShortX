@@ -43,6 +43,8 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
@@ -197,6 +199,19 @@ private fun DAContent(
     actionContentState: ActionContentState,
     actionContentStateHandler: ActionContentStateHandler
 ) {
+    AnimatedVisibility(visible = !addDirectActionState.securityCheckRes) {
+        Column {
+            ErrorCard(
+                modifier = Modifier
+                    .padding(vertical = 16.dp),
+                iconName = Remix.UserAndFaces.skull_2_fill,
+                title = "Suspicious Action found!!!",
+                warnings = listOf("Suspicious Action found in this Rule, please carefully review all Actions, especially for MVEL/Shell related Actions")
+            )
+            LargeSpacer()
+        }
+    }
+
     TitleAndDescription(state = addDirectActionState, vm = vm, readOnly = readOnly)
     Spacer(modifier = Modifier.size(24.dp))
 

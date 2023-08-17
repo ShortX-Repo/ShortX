@@ -341,8 +341,10 @@ private fun Actions(
                             AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
                                 actionWarning?.let {
                                     ErrorCard(
-                                        LocalI18N.current["ui.action.warning.message"],
-                                        it
+                                        modifier = Modifier
+                                            .padding(16.dp),
+                                        title = LocalI18N.current["ui.action.warning.message"],
+                                        warnings = it
                                     )
                                 }
                             }

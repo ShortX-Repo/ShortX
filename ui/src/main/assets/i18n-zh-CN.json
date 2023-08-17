@@ -504,6 +504,7 @@
   "ui.action.suspend.app.by.pkg": "挂起应用（动态）",
   "ui.action.unsuspend.app.by.pkg": "解除挂起应用（动态）",
   "ui.action.remove.tasks": "移除最近任务",
+  "ui.action.remove.tasks.by.pkg": "移除最近任务（动态）",
   "ui.action.http.request": "Http请求",
   "ui.action.http.request.adapter": "适配器",
   "ui.action.http.request.raw": "Raw",

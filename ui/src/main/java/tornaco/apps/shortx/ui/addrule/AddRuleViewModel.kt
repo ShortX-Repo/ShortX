@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.proto.rule.RuleQuit
+import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.DateUtils
@@ -58,7 +59,8 @@ data class AddRuleState(
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     // For online.
-    val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit)
+    val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
+    val securityCheckRes: Boolean = true
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -309,7 +311,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         showAdvancedOptions = hasAnyHookActions,
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode,
-                        conflictStrategy = r.conflictPolicy
+                        conflictStrategy = r.conflictPolicy,
+                        securityCheckRes = Security.checkSecurity(r)
                     )
                 }
             }

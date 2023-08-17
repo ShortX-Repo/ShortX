@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -43,7 +44,8 @@ data class AddDirectActionState(
     val showAdvancedOptions: Boolean = false,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     // For online.
-    val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit)
+    val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
+    val securityCheckRes: Boolean = true
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -141,7 +143,8 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         isEditDirectAction = true,
                         createTime = da.createTime,
                         versionCode = da.versionCode,
-                        conflictStrategy = da.conflictPolicy
+                        conflictStrategy = da.conflictPolicy,
+                        securityCheckRes = Security.checkSecurity(da)
                     )
                 }
             }

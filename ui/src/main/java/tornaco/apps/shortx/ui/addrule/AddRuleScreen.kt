@@ -59,8 +59,10 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.FieldTitleWithTip
+import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
@@ -281,6 +283,19 @@ private fun RuleContent(
     actionOnDeletedState: ActionContentState,
     actionOnDeletedHandler: ActionContentStateHandler
 ) {
+    AnimatedVisibility(visible = !addRuleState.securityCheckRes) {
+        Column {
+            ErrorCard(
+                modifier = Modifier
+                    .padding(vertical = 16.dp),
+                iconName = Remix.UserAndFaces.skull_2_fill,
+                title = "Suspicious Action found!!!",
+                warnings = listOf("Suspicious Action found in this Rule, please carefully review all Actions, especially for MVEL/Shell related Actions")
+            )
+            LargeSpacer()
+        }
+    }
+
     TitleAndDescription(state = addRuleState, vm = vm, readOnly = readOnly)
     SectionSpacer()
 

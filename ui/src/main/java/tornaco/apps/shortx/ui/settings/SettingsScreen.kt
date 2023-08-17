@@ -145,6 +145,8 @@ fun SettingsScreen(
                 ) {
                     AnimatedVisibility(visible = state.hasFatalError) {
                         ErrorCard(
+                            modifier = Modifier
+                                .padding(16.dp),
                             title = LocalI18N.current["ui.settings.fatal.error.title"],
                             warnings = listOf(
                                 LocalI18N.current["ui.settings.fatal.error.message", mapOf("dir" to state.logDir)]

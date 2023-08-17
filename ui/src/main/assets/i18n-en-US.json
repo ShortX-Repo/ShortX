@@ -505,6 +505,7 @@
   "ui.action.suspend.app.by.pkg": "Suspend app (Input)",
   "ui.action.unsuspend.app.by.pkg": "Unsuspend app (Input)",
   "ui.action.remove.tasks": "Remove recent tasks",
+  "ui.action.remove.tasks.by.pkg": "Remove recent tasks (Input)",
   "ui.action.http.request": "Http request",
   "ui.action.http.request.adapter": "Adapter",
   "ui.action.http.request.raw": "Raw",

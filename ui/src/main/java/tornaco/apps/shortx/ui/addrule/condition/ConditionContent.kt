@@ -237,8 +237,10 @@ fun ConditionList(
                                 AnimatedVisibility(visible = !conditionWarning.isNullOrEmpty()) {
                                     conditionWarning?.let {
                                         ErrorCard(
-                                            LocalI18N.current["ui.condition.warning.message"],
-                                            it
+                                            modifier = Modifier
+                                                .padding(16.dp),
+                                            title = LocalI18N.current["ui.condition.warning.message"],
+                                            warnings = it
                                         )
                                     }
                                 }

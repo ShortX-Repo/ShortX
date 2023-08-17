@@ -3,6 +3,12 @@
 package tornaco.apps.shortx.ui.base
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
@@ -14,7 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,10 +65,14 @@ fun WarningCard(
 }
 
 @Composable
-fun ErrorCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
+fun ErrorCard(
+    modifier: Modifier,
+    title: String,
+    iconName: String = Remix.System.error_warning_fill,
+    warnings: List<String>, onClick: () -> Unit = {}
+) {
     androidx.compose.material3.Card(
-        modifier = Modifier
-            .padding(16.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
         onClick = onClick
     ) {
@@ -69,9 +81,19 @@ fun ErrorCard(title: String, warnings: List<String>, onClick: () -> Unit = {}) {
                 .padding(16.dp)
         ) {
             Row {
+                val infiniteTransition = rememberInfiniteTransition()
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 0.6f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 1500, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = "scale"
+                )
+
                 RemixIcon(
-                    modifier = Modifier.offset(y = 2.dp),
-                    remixName = Remix.System.error_warning_fill
+                    modifier = Modifier.offset(y = 2.dp).scale(scale),
+                    remixName = iconName
                 )
                 MediumSpacer()
                 Column {
