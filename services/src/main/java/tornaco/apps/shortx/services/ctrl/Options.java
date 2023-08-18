@@ -18,7 +18,7 @@ public class Options {
     private List<CodecOption> codecOptions;
     private String encoderName;
     private boolean powerOffScreenOnClose;
-    private boolean clipboardAutosync = true;
+    private boolean clipboardAutosync = false;
     private boolean downsizeOnError = true;
     private boolean cleanup = true;
     private boolean powerOn = true;

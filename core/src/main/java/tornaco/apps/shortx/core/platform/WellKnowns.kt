@@ -124,9 +124,9 @@ object Classes {
         )
 
     @Throws(ClassNotFoundException::class)
-    fun ClassLoader.clipboardServiceClass(): Class<*> =
+    fun ClassLoader.clipboardServiceImplClass(): Class<*> =
         Reflections.findClass(
-            CLIPBOARD_SERVICE,
+            "$CLIPBOARD_SERVICE\$ClipboardImpl",
             this
         )
 

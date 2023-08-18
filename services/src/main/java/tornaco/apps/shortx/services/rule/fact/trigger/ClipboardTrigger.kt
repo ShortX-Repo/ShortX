@@ -4,7 +4,6 @@ import android.content.Context
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import java.util.concurrent.atomic.AtomicReference
 
@@ -16,9 +15,7 @@ class ClipboardTrigger(override val context: Context, override val shortXContext
     private val lastTriggerTime = AtomicReference(0L)
 
     override fun register() {
-        context.clipboardManager.addPrimaryClipChangedListener {
-            val clipText =
-                runCatching { context.clipboardManager.primaryClip?.getItemAt(0)?.text.toString() }.getOrElse { "" }
+        shortXContext.input.addOnClipboardListener { clipText ->
             logger.p("Clipboard change: $clipText")
 
             if (System.currentTimeMillis() - lastTriggerTime.get() >= 1000

@@ -4,11 +4,26 @@ import com.android.internal.view.IInputContext
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
+import tornaco.apps.shortx.services.postSafety
 import util.Reflections
 
 class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, "InputService") {
     private val imeService by lazy {
         ServiceRetriever(context.classLoader).getInputMethodManagerService()
+    }
+
+    private val _onClipboardListener = mutableListOf<(String) -> Unit>()
+
+    fun addOnClipboardListener(listener: (String) -> Unit) {
+        _onClipboardListener.add(listener)
+    }
+
+    fun onClipboardChange(text: String) {
+        postSafety {
+            _onClipboardListener.forEach {
+                it(text)
+            }
+        }
     }
 
     fun submitText(text: String) {
