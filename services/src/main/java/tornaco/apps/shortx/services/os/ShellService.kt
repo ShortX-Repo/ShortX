@@ -66,7 +66,7 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         return runCatching {
             val receiver = SynchronousResultReceiver.get()
             first.exe(arrayOf(command), receiver)
-            val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofSeconds(20))
+            val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(30))
             logger.d("receiver get res: $receiverRes")
             val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
             byteRes?.let { ShellRes.parseFrom(byteRes.byteData) }
