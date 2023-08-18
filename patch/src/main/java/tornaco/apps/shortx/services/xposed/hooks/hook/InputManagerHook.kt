@@ -18,8 +18,10 @@ object InputManagerHook {
 
     fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
+            logger.d("inputManagerService start.")
             ServiceHolder.inputManagerService = param.thisObject
             val nat = param.thisObject.fieldOrNull<Any>("mNative")
+            logger.d("nat: $nat")
             if (nat != null) {
                 Reflections.callMethod(nat, "setInputFilterEnabled", true)
             } else {
@@ -31,6 +33,7 @@ object InputManagerHook {
                     true
                 )
             }
+            logger.d("handle start complete.")
         }
 
         beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
