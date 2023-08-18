@@ -3,7 +3,9 @@ package tornaco.apps.shortx.core.rule
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toProto
+import tornaco.apps.shortx.core.util.Logger
 
+private val logger = Logger("Parser")
 
 fun parseShareContentDA(content: String): DirectAction? {
     return runCatching {
@@ -14,7 +16,10 @@ fun parseShareContentDA(content: String): DirectAction? {
                 requireNotNull(this.id) { "Id is null. invalid da?" }
                 requireNotNull(this.title) { "Title is null. invalid da?" }
             }).build()
-    }.getOrNull()
+    }.getOrElse {
+        logger.e(it, "parseShareContentDA")
+        null
+    }
 }
 
 
@@ -25,5 +30,8 @@ fun parseShareContentRule(content: String): Rule? {
                 requireNotNull(this.id) { "Id is null. invalid rule?" }
                 requireNotNull(this.title) { "Title is null. invalid rule?" }
             }).build()
-    }.getOrNull()
+    }.getOrElse {
+        logger.e(it, "parseShareContentRule")
+        null
+    }
 }
