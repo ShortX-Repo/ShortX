@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.overlay
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.util.TypedValue
@@ -103,10 +104,17 @@ class ComposeOverlay(
             LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
         )
         val appResources = AppResources(context, BuildProp.APP_PACKAGE_NAME)
+        val appContext = appResources.appContext
 
-        val composeView = ComposeView(context).apply {
+        val contextWrapper = object : ContextWrapper(context) {
+            override fun getResources(): Resources {
+                return appContext.resources
+            }
+        }
+
+        val composeView = ComposeView(contextWrapper).apply {
             setContent {
-                CompositionLocalProvider(LocalContext provides appResources.appContext) {
+                CompositionLocalProvider(LocalContext provides appContext) {
                     OverlayContent(
                         action = action,
                         motionEventSpy = {
