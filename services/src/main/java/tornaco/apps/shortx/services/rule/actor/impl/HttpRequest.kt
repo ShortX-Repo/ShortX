@@ -88,6 +88,9 @@ object HttpRequest : Actor {
         )
 
         handleResponseBody(
+            contextData = contextData,
+            globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
+            localVars = localVars,
             response = response,
             adapter = data.adapter
         ).apply {
@@ -116,6 +119,9 @@ object HttpRequest : Actor {
     }
 
     fun handleResponseBody(
+        contextData: ContextData,
+        globalVarsLazy: () -> List<GlobalVar>,
+        localVars: LocalVars,
         response: Response,
         adapter: ProtoAny
     ): List<String> {
@@ -159,7 +165,11 @@ object HttpRequest : Actor {
             logger.p("dataMap: $dataMap")
             jsonAdapter.expressionsList.map { expression ->
                 logger.d("expression: $expression")
-                val fixedExpression = expression.fixSpecialLetters()
+                val fixedExpression = expression
+                    .inflateContextMap(contextData)
+                    .replaceGlobalVarValues(globalVarsLazy)
+                    .replaceLocalVarValues(localVars)
+                    .fixSpecialLetters()
                 logger.d("fixedExpression: $expression")
                 val res = runCatching {
                     MVEL.executeExpression(

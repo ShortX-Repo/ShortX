@@ -411,7 +411,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     },
                     requestBody = requestBody,
                 ).let {
-                    handleResponseBody(it, data.adapter)
+                    handleResponseBody(
+                        contextData = ContextData.obtain(),
+                        globalVarsLazy = { shortXContext.rule.getAllGlobalVars() },
+                        localVars = LocalVars.obtain(),
+                        response = it, adapter = data.adapter
+                    )
                 }
             }.getOrElse {
                 listOf(Log.getStackTraceString(it))

@@ -9,6 +9,8 @@ import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
+import tornaco.apps.shortx.core.proto.gv.StringVar
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest
@@ -33,8 +35,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
+                contextData = ContextData.obtain(),
+                globalVarsLazy = { emptyList() },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("author"))
                     .build()
                     .pack_()
             )
@@ -51,9 +56,23 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
-                    .addAllExpressions(listOf("headers.content-type"))
+                contextData = ContextData.obtain(),
+                globalVarsLazy = {
+                    listOf(
+                        GlobalVar.newBuilder()
+                            .setType(StringVar.getDefaultInstance().pack_())
+                            .setName("exp_test")
+                            .setVar(
+                                StringVar.newBuilder().setValue("headers.content-type").build()
+                                    .pack_()
+                            )
+                            .build()
+                    )
+                },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
+                    .addAllExpressions(listOf("globalVarOf\$exp_test"))
                     .build()
                     .pack_()
             )
@@ -71,8 +90,12 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestJsonMapAdapter.newBuilder().addAllExpressions(listOf("colors.red"))
+                contextData = ContextData.obtain(),
+                globalVarsLazy = { emptyList() },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestJsonMapAdapter.newBuilder()
+                    .addAllExpressions(listOf("colors.red"))
                     .build()
                     .pack_()
             )
@@ -89,8 +112,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
+                contextData = ContextData.obtain(),
+                globalVarsLazy = { emptyList() },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestHeaderBodyJsonMapAdapter.newBuilder()
                     .addAllExpressions(listOf("body.colors.red"))
                     .build()
                     .pack_()
@@ -108,8 +134,11 @@ class HttpRequestTest {
             requestBody = null,
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestRawAdapter.newBuilder().build().pack_()
+                contextData = ContextData.obtain(),
+                globalVarsLazy = { emptyList() },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
         }
         Assert.assertEquals(
@@ -158,8 +187,11 @@ class HttpRequestTest {
                 .toHttpResponseBody(ContextData.obtain(), LocalVars.obtain()) { emptyList() },
         ).let {
             handleResponseBody(
-                it,
-                HttpRequestRawAdapter.newBuilder().build().pack_()
+                contextData = ContextData.obtain(),
+                globalVarsLazy = { emptyList() },
+                localVars = LocalVars.obtain(),
+                response = it,
+                adapter = HttpRequestRawAdapter.newBuilder().build().pack_()
             )
         }
 
