@@ -141,3 +141,5 @@
 -dontwarn android.view.VelocityTracker$Estimator
 -dontwarn android.view.WindowManagerPolicyConstants$PointerEventListener
 -dontwarn android.provider.Settings$Config
+-dontwarn android.view.IInputFilter$Stub
+-dontwarn android.view.IInputFilterHost

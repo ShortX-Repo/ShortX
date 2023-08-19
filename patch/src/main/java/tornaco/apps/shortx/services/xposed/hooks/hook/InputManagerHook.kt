@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.util.Log
+import android.view.IInputFilter
+import android.view.IInputFilterHost
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.onDebugBuild
@@ -11,7 +13,6 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.services.ShortXService
 import tornaco.apps.shortx.services.android.ServiceHolder
 import util.Reflections
-import util.fieldOrNull
 
 object InputManagerHook {
     private val logger = Logger("ShortXHook.InputManagerHook")
@@ -20,18 +21,20 @@ object InputManagerHook {
         afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
             logger.d("inputManagerService start.")
             ServiceHolder.inputManagerService = param.thisObject
-            val nat = param.thisObject.fieldOrNull<Any>("mNative")
-            logger.d("nat: $nat")
-            if (nat != null) {
-                Reflections.callMethod(nat, "setInputFilterEnabled", true)
-            } else {
-                val ptr = Reflections.getObjectField(param.thisObject, "mPtr") as Long
+
+            val inputFilter = Reflections.getObjectField(param.thisObject, "mInputFilter")
+            logger.d("inputFilter: $inputFilter")
+
+            // Not null means input filter is enabled.
+            if (inputFilter == null) {
                 Reflections.callMethod(
-                    param.thisObject,
-                    "nativeSetInputFilterEnabled",
-                    ptr,
-                    true
+                    ServiceHolder.inputManagerService,
+                    "setInputFilter",
+                    InputFilterImpl
                 )
+                logger.i("InputFilter installed.")
+                Reflections.setObjectField(ServiceHolder.inputManagerService, "mInputFilter", null)
+                logger.i("InputFilter removed.")
             }
             logger.d("handle start complete.")
         }
@@ -102,5 +105,21 @@ object InputManagerHook {
 
     }.onFailure {
         logger.e(it, "debugHooks")
+    }
+}
+
+object InputFilterImpl : IInputFilter.Stub() {
+    private val logger = Logger("InputFilterImpl")
+
+    override fun install(host: IInputFilterHost) {
+        logger.d("install: $host")
+    }
+
+    override fun uninstall() {
+        logger.d("uninstall")
+    }
+
+    override fun filterInputEvent(event: InputEvent, policyFlags: Int) {
+        throw IllegalStateException("filterInputEvent should not be called")
     }
 }
