@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IShortX
@@ -20,6 +21,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.su.LibSuperuserShellImpl
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.logAdapter
 import util.Reflections
 
 object SystemUIHook {
@@ -65,6 +67,11 @@ object SystemUIHook {
                 Reflections.findClass(SYSTEM_UI_APP, lpparam.classLoader),
                 onCreate
             ) { param ->
+                // Install log
+                logAdapter = { _: Int, tag: String, msg: String ->
+                    XposedBridge.log("$tag - $msg")
+                }
+
                 val app: Application = param.thisObject as Application
                 logger.d("After onCreate: $app")
                 val shortx = ShortXManagerNative.shortX
