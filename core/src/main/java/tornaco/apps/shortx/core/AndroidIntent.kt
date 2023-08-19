@@ -45,35 +45,41 @@ fun AndroidIntent.toIntent(
 
         this@toIntent.extrasList?.let { extras ->
             extras.forEach {
-                @Suppress("MoveVariableDeclarationIntoWhen")
                 val type: AndroidIntentExtraType = it.type
+                val realKey = it.key.inflateContextMap(contextData)
+                    .replaceGlobalVarValues(globalVarsLazy)
+                    .replaceLocalVarValues(localVars)
+                val realValue = it.value.inflateContextMap(contextData)
+                    .replaceGlobalVarValues(globalVarsLazy)
+                    .replaceLocalVarValues(localVars)
+
                 when (type) {
                     AndroidIntentExtraType.Int -> {
-                        putExtra(it.key, it.value.toInt())
+                        putExtra(realKey, realValue.toInt())
                     }
 
                     AndroidIntentExtraType.Long -> {
-                        putExtra(it.key, it.value.toLong())
+                        putExtra(realKey, realValue.toLong())
                     }
 
                     AndroidIntentExtraType.String -> {
-                        putExtra(it.key, it.value)
+                        putExtra(realKey, realValue)
                     }
 
                     AndroidIntentExtraType.Bool -> {
-                        putExtra(it.key, it.value.toBoolean())
+                        putExtra(realKey, realValue.toBoolean())
                     }
 
                     AndroidIntentExtraType.Float -> {
-                        putExtra(it.key, it.value.toFloat())
+                        putExtra(realKey, realValue.toFloat())
                     }
 
                     AndroidIntentExtraType.Double -> {
-                        putExtra(it.key, it.value.toDouble())
+                        putExtra(realKey, realValue.toDouble())
                     }
 
                     AndroidIntentExtraType.UNRECOGNIZED -> {
-                        putExtra(it.key, it.value)
+                        putExtra(realKey, realValue)
                     }
                 }
             }
