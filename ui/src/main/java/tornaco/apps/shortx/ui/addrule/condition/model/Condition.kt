@@ -20,8 +20,9 @@ sealed interface Condition : Parcelable {
     val id: String
     val note: String
     val isInvert: Boolean
+    val customContextDataKey: String
 
-    fun clone(id: String, note: String, isInvert: Boolean): Condition
+    fun clone(id: String, note: String, isInvert: Boolean, customContextDataKey: String): Condition
 
     @Parcelize
     data class CurrentForegroundApp(
@@ -30,10 +31,21 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -44,10 +56,21 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -58,10 +81,21 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -72,10 +106,21 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -83,10 +128,21 @@ sealed interface Condition : Parcelable {
     data class ScreenIsOn(
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -94,10 +150,21 @@ sealed interface Condition : Parcelable {
     data class VPNIsConnected(
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -109,10 +176,21 @@ sealed interface Condition : Parcelable {
         val op: Op,
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -124,10 +202,21 @@ sealed interface Condition : Parcelable {
 
         override val note: String = "",
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -135,22 +224,44 @@ sealed interface Condition : Parcelable {
     data class MVEL(
         val expression: String,
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class TRUE(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -161,11 +272,22 @@ sealed interface Condition : Parcelable {
         val payload: GlobalVarOpPayload,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -176,11 +298,22 @@ sealed interface Condition : Parcelable {
         val payload: GlobalVarOpPayload,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -190,11 +323,22 @@ sealed interface Condition : Parcelable {
         val op: IntOp,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -203,11 +347,22 @@ sealed interface Condition : Parcelable {
         val requireIsCharge: Boolean,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -216,11 +371,22 @@ sealed interface Condition : Parcelable {
         val requireIsPlug: Boolean,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -229,11 +395,22 @@ sealed interface Condition : Parcelable {
         val range: TimeOfADayRange,
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -242,22 +419,44 @@ sealed interface Condition : Parcelable {
         val requiredSSID: String = "*",
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class RequireWifiDisconnected(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
@@ -266,79 +465,156 @@ sealed interface Condition : Parcelable {
         val requiredDevice: String = "*",
 
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class RequireBTDisconnected(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId()
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class RequireMobileDataEnabled(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
 
         val slot: Int
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class KeyguardIsLocked(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class ScreenOrientationIsPort(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class IsInCall(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 
     @Parcelize
     data class IsRinging(
         override val isInvert: Boolean = false,
+        override val customContextDataKey: String = "",
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
     ) : Condition {
-        override fun clone(id: String, note: String, isInvert: Boolean): Condition {
-            return copy(id = id, note = note, isInvert = isInvert)
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: String
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
         }
     }
 }

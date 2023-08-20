@@ -13,6 +13,7 @@ import "shortx/Settings.proto";
 message NoAction {
   string icon = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -20,6 +21,7 @@ message NoAction {
 }
 message TakeScreenshot {
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -27,6 +29,7 @@ message TakeScreenshot {
 }
 message ExpandNotification {
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -36,6 +39,7 @@ message ExpandNotification {
 message StartActivity {
   string componentNameAsString = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -46,6 +50,7 @@ message StartActivityIntent {
   AndroidIntent intent = 1;
   int32 userId = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -56,6 +61,7 @@ message StartActivityUrlSchema {
   string urlSchema = 1;
   int32 userId = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -65,6 +71,7 @@ message StartActivityUrlSchema {
 message ShellCommand {
   string command = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -74,6 +81,7 @@ message ShellCommand {
 message InputText {
   string text = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -83,6 +91,7 @@ message InputText {
 message ShowToast {
   string message = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -94,6 +103,7 @@ message Delay {
   string timeString = 2;
   bool useAlarm = 3;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -103,6 +113,7 @@ message Delay {
 message ExecuteMVEL {
   string expression = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -115,6 +126,7 @@ message RemoteExecuteMVEL {
   string icon = 3;
   string expression = 4;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -123,6 +135,7 @@ message RemoteExecuteMVEL {
 
 message HideOverlayButton {
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -137,6 +150,7 @@ message ShowOverlayButton {
   string tag = 3;
   OverlayOrientation orientation = 4;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -146,6 +160,7 @@ message ShowOverlayButton {
 message LaunchApp {
   AppPkg appPkg = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -155,6 +170,7 @@ message LaunchApp {
 message LaunchAppByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -165,6 +181,7 @@ message StopApp {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -174,6 +191,7 @@ message StopApp {
 message StopAppByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -185,6 +203,7 @@ message SetAppEnabled {
   repeated string pkgSets = 2;
   bool enable = 3;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -195,6 +214,7 @@ message SetAppEnabledByPkg {
   repeated StringPair pkgAndUsers = 1;
   bool enable = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -206,6 +226,7 @@ message SetAppSuspend {
   repeated string pkgSets = 2;
   bool suspend = 3;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -216,6 +237,7 @@ message SetAppSuspendByPkg {
   repeated StringPair pkgAndUsers = 1;
   bool suspend = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -226,6 +248,7 @@ message StartAppProcess {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -235,6 +258,7 @@ message StartAppProcess {
 message StartAppProcessByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -245,6 +269,7 @@ message SetAppInactive {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -254,6 +279,7 @@ message SetAppInactive {
 message SetAppInactiveByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -264,6 +290,7 @@ message RemoveNotificationForPackage {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -273,6 +300,7 @@ message RemoveNotificationForPackage {
 message RemoveNotificationForPackageByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -282,6 +310,7 @@ message RemoveNotificationForPackageByPkg {
 message SetWifiEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -291,6 +320,7 @@ message SetWifiEnabled {
 message SetBTEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -300,6 +330,7 @@ message SetBTEnabled {
 message SetHotSpotEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -311,6 +342,7 @@ message SetDataEnabled {
   bool hasSpecificSlotId = 2;
   int32 slotId = 3;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -320,6 +352,7 @@ message SetDataEnabled {
 message SetNFCEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -329,6 +362,7 @@ message SetNFCEnabled {
 message SetDNDEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -338,6 +372,7 @@ message SetDNDEnabled {
 message SetDarkModeEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -347,6 +382,7 @@ message SetDarkModeEnabled {
 message SetFlashLightEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -356,6 +392,7 @@ message SetFlashLightEnabled {
 message SetLocationEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -365,6 +402,7 @@ message SetLocationEnabled {
 message SetSensorsOffEnabled {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -373,6 +411,7 @@ message SetSensorsOffEnabled {
 
 message BreakActionExecute {
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -400,6 +439,7 @@ message ShowAlertDialog {
   string message = 8;
   bool cancelable = 9;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -413,6 +453,7 @@ message ShowMenuDialog {
   string message = 8;
   bool cancelable = 9;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -429,6 +470,7 @@ message ShowDanmu {
   string text = 1;
   string icon = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -444,6 +486,7 @@ message WhileLoop {
   int32 delay = 5;
   int32 repeatTimes = 6;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -454,6 +497,7 @@ message CreatePkgSet {
   string label = 1;
   string description = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -465,6 +509,7 @@ message WriteGlobalVar {
   string valueAsString = 2;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -474,6 +519,7 @@ message WriteGlobalVar {
 message CreateGlobalVar {
   GlobalVar globalVar = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -483,6 +529,7 @@ message CreateGlobalVar {
 message DeleteGlobalVar {
   string varName = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -495,6 +542,7 @@ message AddToGlobalVar {
   string valueAsString = 2;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -507,6 +555,7 @@ message MapNav {
   MapApp app = 3;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -533,6 +582,7 @@ message PostNotification {
   AppPkg pkgToLaunchOnClick = 9;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -543,6 +593,7 @@ message FromDA {
   string daId = 1;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -555,6 +606,7 @@ message FindAndClickViewByText {
   int64 timeout = 3;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -565,6 +617,7 @@ message InputTap {
   int32 x = 1;
   int32 y = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -578,6 +631,7 @@ message InputSwipe {
   int32 endY = 4;
   int64 swipeTime = 5;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -586,6 +640,7 @@ message InputSwipe {
 
 message WaitForIdle {
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -601,6 +656,7 @@ message IfThenElse {
   repeated google.protobuf.Any _elseActions = 5;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -608,6 +664,7 @@ message IfThenElse {
 }
 
 message ReadClipboard {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -617,6 +674,7 @@ message ReadClipboard {
 message WriteClipboard {
   string text = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -626,6 +684,7 @@ message WriteClipboard {
 message SetRingerMode {
   RingerMode mode = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -644,6 +703,7 @@ enum RingerMode {
 message SetBrightness {
   int32 value = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -653,6 +713,7 @@ message SetBrightness {
 message SetAutoBrightness {
   bool enable = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -662,6 +723,7 @@ message SetAutoBrightness {
 message StopService {
   repeated AppComponent services = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -672,6 +734,7 @@ message RemoveTasks {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -681,6 +744,7 @@ message RemoveTasks {
 message RemoveTasksByPkg {
   repeated StringPair pkgAndUsers = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -690,6 +754,7 @@ message RemoveTasksByPkg {
 message KillProcessByName {
   repeated ProcessName processes = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -704,6 +769,7 @@ message HttpRequest {
   repeated HttpRequestHeader headers = 4;
   google.protobuf.Any requestBody = 5;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -723,6 +789,7 @@ message HttpRequestRawAdapter {}
 message InjectKeyCode {
   int32 keyCode = 1;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -730,6 +797,7 @@ message InjectKeyCode {
 }
 
 message WakeupScreen {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -737,6 +805,7 @@ message WakeupScreen {
 }
 
 message SleepScreen {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -745,6 +814,7 @@ message SleepScreen {
 
 // Backwards stack.
 message StartPreviousApp {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -753,6 +823,7 @@ message StartPreviousApp {
 
 // Forwards stack.
 message StartNextApp {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -761,6 +832,7 @@ message StartNextApp {
 
 // Two app loop.
 message StartLastApp {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -768,6 +840,7 @@ message StartLastApp {
 }
 
 message StopCurrentApp {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -778,6 +851,7 @@ message AdjustVolume {
   VolumeDirection direction = 1;
   bool showUI = 2;
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -785,6 +859,7 @@ message AdjustVolume {
 }
 
 message Vibrate {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -797,6 +872,7 @@ message Vibrate {
 
 
 message AudioRecording {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -807,6 +883,7 @@ message AudioRecording {
 }
 
 message SwitchMobileDataSlot {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -817,6 +894,7 @@ message SwitchMobileDataSlot {
 
 
 message CreateLocalVar {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -830,6 +908,7 @@ message WriteLocalVar {
   string valueAsString = 2;
 
 
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -837,6 +916,7 @@ message WriteLocalVar {
 }
 
 message StartGestureRecording {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -844,6 +924,7 @@ message StartGestureRecording {
 }
 
 message StopGestureRecording {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -851,6 +932,7 @@ message StopGestureRecording {
 }
 
 message ToggleGestureRecording {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -858,6 +940,7 @@ message ToggleGestureRecording {
 }
 
 message InjectGestureRecording {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -868,6 +951,7 @@ message InjectGestureRecording {
 }
 
 message EnableUniversalCopy {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -875,6 +959,7 @@ message EnableUniversalCopy {
 }
 
 message ShowTextFieldDialog {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -888,6 +973,7 @@ message ShowTextFieldDialog {
 
 
 message TTS {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -897,6 +983,7 @@ message TTS {
 }
 
 message SetWallpaper {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
@@ -908,6 +995,7 @@ message SetWallpaper {
 }
 
 message SetRuleEnabled {
+  string customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;

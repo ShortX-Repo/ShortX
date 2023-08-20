@@ -135,7 +135,8 @@ fun ConditionList(
                                     it.clone(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
-                                        isInvert = currentCondition.isInvert
+                                        isInvert = currentCondition.isInvert,
+                                        customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
                             },
@@ -144,7 +145,8 @@ fun ConditionList(
                                     it.clone(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
-                                        isInvert = currentCondition.isInvert
+                                        isInvert = currentCondition.isInvert,
+                                        customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
                             },
@@ -153,7 +155,8 @@ fun ConditionList(
                                     it.clone(
                                         id = currentCondition.id,
                                         note = currentCondition.note,
-                                        isInvert = currentCondition.isInvert
+                                        isInvert = currentCondition.isInvert,
+                                        customContextDataKey = currentCondition.customContextDataKey
                                     )
                                 )
                             },

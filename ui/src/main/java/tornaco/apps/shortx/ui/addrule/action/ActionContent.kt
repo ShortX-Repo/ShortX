@@ -223,7 +223,8 @@ private fun Actions(
                                 id = currentAction.id,
                                 note = currentAction.note,
                                 isEnabled = currentAction.isEnabled,
-                                actionOnError = currentAction.actionOnError
+                                actionOnError = currentAction.actionOnError,
+                                customContextDataKey = currentAction.customContextDataKey
                             )
                         )
                     }

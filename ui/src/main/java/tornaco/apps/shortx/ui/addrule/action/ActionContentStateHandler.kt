@@ -48,7 +48,8 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         id = it.id,
                         note = it.note,
                         actionOnError = it.actionOnError,
-                        isEnabled = !it.isEnabled
+                        isEnabled = !it.isEnabled,
+                        customContextDataKey = it.customContextDataKey
                     )
                 )
             }
@@ -61,7 +62,8 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         id = action.id,
                         note = action.note,
                         isEnabled = action.isEnabled,
-                        actionOnError = onError
+                        actionOnError = onError,
+                        customContextDataKey = action.customContextDataKey
                     )
                 )
             }

@@ -37,6 +37,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -57,6 +58,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -77,6 +79,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -98,6 +101,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setNote(note)
                 .setOp(op.toConditionOperator())
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllServices(services)
                 .build()
         }
@@ -107,6 +111,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -127,6 +132,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .addAllPkgs(
                     apps.map { app ->
                         AppPkg.newBuilder()
@@ -146,7 +152,8 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
             MatchMVEL.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
-                .setIsInvert(isInvert).setExpression(expression).build()
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey).setExpression(expression).build()
         }
 
         is Condition.TRUE -> {
@@ -154,6 +161,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -162,6 +170,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setVarName(varName)
                 .setOp(op)
                 .setPayload(payload)
@@ -173,6 +182,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setVarName(varName)
                 .setOp(op)
                 .setPayload(payload)
@@ -184,6 +194,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setValue(value)
                 .setOp(op)
                 .build()
@@ -194,6 +205,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setRequireIsCharge(requireIsCharge)
                 .build()
         }
@@ -203,6 +215,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setRequireIsPlug(requireIsPlug)
                 .build()
         }
@@ -212,6 +225,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -220,6 +234,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -228,6 +243,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setRange(range)
                 .build()
         }
@@ -237,6 +253,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setRequiredSSID(requiredSSID)
                 .build()
         }
@@ -246,6 +263,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -254,6 +272,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setDevice(requiredDevice)
                 .build()
         }
@@ -263,6 +282,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -271,6 +291,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .setSlotId(slot)
                 .build()
         }
@@ -280,6 +301,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -288,6 +310,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -296,6 +319,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
 
@@ -304,6 +328,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
                 .build()
         }
     }

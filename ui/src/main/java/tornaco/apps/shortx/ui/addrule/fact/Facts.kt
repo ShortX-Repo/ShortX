@@ -122,16 +122,33 @@ private fun FactItem(
     val currentFact by rememberUpdatedState(newValue = fact)
     val factHandlers = listOf(
         appFactSelectHandler { newFact ->
-            handler.addFact(newFact.clone(id = currentFact.id, note = currentFact.note))
+            handler.addFact(
+                newFact.clone(
+                    id = currentFact.id,
+                    note = currentFact.note,
+                    customContextDataKey = currentFact.customContextDataKey
+                )
+            )
         },
         systemFactSelectHandler { newFact ->
             composeLogger.d("systemFactSelectHandler: $newFact")
-            handler.addFact(newFact.clone(id = currentFact.id, note = currentFact.note).apply {
-                composeLogger.d("systemFactSelectHandler: $this")
-            })
+            handler.addFact(
+                newFact.clone(
+                    id = currentFact.id,
+                    note = currentFact.note,
+                    customContextDataKey = currentFact.customContextDataKey
+                ).apply {
+                    composeLogger.d("systemFactSelectHandler: $this")
+                })
         },
         miscFactSelectHandler { newFact ->
-            handler.addFact(newFact.clone(id = currentFact.id, note = currentFact.note))
+            handler.addFact(
+                newFact.clone(
+                    id = currentFact.id,
+                    note = currentFact.note,
+                    customContextDataKey = currentFact.customContextDataKey
+                )
+            )
         }
     )
 

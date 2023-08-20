@@ -14,7 +14,12 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
     return when {
         this is_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java
-            Fact.KeyEvent(keyCode = data.keyCode, id = data.id, note = data.note)
+            Fact.KeyEvent(
+                keyCode = data.keyCode,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent::class.java -> {
@@ -23,7 +28,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 keyCode = data.keyCode,
                 gesture = data.gesture,
                 isInterceptMode = data.isInterceptMode,
-                id = data.id,
+                id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note
             )
         }
@@ -33,29 +38,45 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.EdgeGesture(
                 edge = data.edge,
                 gesture = data.gesture,
-                id = data.id,
+                id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note
             )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.ScreenOff::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ScreenOff::class.java
-            Fact.ScreenOff(id = data.id, note = data.note)
+            Fact.ScreenOff(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.ScreenOn::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ScreenOn::class.java
-            Fact.ScreenOn(id = data.id, note = data.note)
+            Fact.ScreenOn(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.UserPresent::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.UserPresent::class.java
-            Fact.UserPresent(id = data.id, note = data.note)
+            Fact.UserPresent(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.SystemReady::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.SystemReady::class.java
-            Fact.SystemReady(id = data.id, note = data.note)
+            Fact.SystemReady(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.Alarm::class.java -> {
@@ -63,7 +84,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.Alarm(
                 timeOfADay = data.triggerAt,
                 repeatDays = data.repeat,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -73,7 +94,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 start = data.start,
                 end = data.end,
                 repeatDays = data.repeat,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -84,7 +105,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 end = data.end,
                 repeatDays = data.repeat,
                 fixedBy = data.fixedBy.toFixedBy() ?: FixedSetting.Times(0),
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -94,7 +115,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppBecomeForeground(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -104,13 +125,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppBecomeBackground(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AppAdded::class.java
-            Fact.AppAdded(id = data.id, note = data.note)
+            Fact.AppAdded(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.AppRemoved::class.java -> {
@@ -119,7 +144,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppRemoved(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -129,7 +154,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AppUpdated(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -137,85 +162,159 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
         this is_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.ActivityStarted::class.java
             if (data.componentsList.isEmpty()) {
-                Fact.AnyActivityStarted(id = data.id, note = data.note)
+                Fact.AnyActivityStarted(
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note
+                )
             } else {
-                Fact.ActivityStarted(data.componentsList, id = data.id, note = data.note)
+                Fact.ActivityStarted(
+                    data.componentsList,
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note
+                )
             }
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.WifiStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.WifiStatusChanged::class.java
-            Fact.WifiStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.WifiStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.WifiConnectedTo::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.WifiConnectedTo::class.java
-            Fact.WifiConnectedTo(ssidList = data.ssidListList, id = data.id, note = data.note)
+            Fact.WifiConnectedTo(
+                ssidList = data.ssidListList,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom::class.java
-            Fact.WifiDisconnectedFrom(ssidList = data.ssidListList, id = data.id, note = data.note)
+            Fact.WifiDisconnectedFrom(
+                ssidList = data.ssidListList,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.BTStatusChanged::class.java
-            Fact.BTStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.BTStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.BTConnectedTo::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BTConnectedTo::class.java
-            Fact.BTConnectedTo(devices = data.deviceList, id = data.id, note = data.note)
+            Fact.BTConnectedTo(
+                devices = data.deviceList,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom::class.java
-            Fact.BTDisconnectedFrom(devices = data.deviceList, id = data.id, note = data.note)
+            Fact.BTDisconnectedFrom(
+                devices = data.deviceList,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged::class.java
-            Fact.HotSpotStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.HotSpotStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NFCStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.NFCStatusChanged::class.java
-            Fact.NFCStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.NFCStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.LocationStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.LocationStatusChanged::class.java
-            Fact.LocationStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.LocationStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged::class.java
-            Fact.MobileDataStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.MobileDataStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged::class.java
-            Fact.FlashLightStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.FlashLightStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.DNDStatusChanged::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.DNDStatusChanged::class.java
-            Fact.DNDStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.DNDStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.DarkModeStatusChanged::class.java
-            Fact.DarkModeStatusChanged(data.ooa, id = data.id, note = data.note)
+            Fact.DarkModeStatusChanged(
+                data.ooa,
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
         }
 
         this is_ tornaco.apps.shortx.core.proto.fact.NotificationPosted::class.java -> {
@@ -231,7 +330,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentRegex = data.record.contentText,
                     tagRegex = data.record.tag
                 ),
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -248,7 +347,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentRegex = data.record.contentText,
                     tagRegex = data.record.tag
                 ),
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -265,7 +364,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                     contentRegex = data.new.contentText,
                     tagRegex = data.new.tag
                 ),
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -276,12 +375,16 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             if (models.first.isEmpty() && models.second.isEmpty()) {
-                Fact.TaskRemovedAny(id = data.id, note = data.note)
+                Fact.TaskRemovedAny(
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note
+                )
             } else {
                 Fact.TaskRemoved(
                     apps = models.first,
                     pkgSets = models.second,
-                    id = data.id, note = data.note
+                    id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
                 )
             }
         }
@@ -293,12 +396,16 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             if (models.first.isEmpty() && models.second.isEmpty()) {
-                Fact.PkgStopRunningAny(id = data.id, note = data.note)
+                Fact.PkgStopRunningAny(
+                    id = data.id,
+                    customContextDataKey = data.customContextDataKey,
+                    note = data.note
+                )
             } else {
                 Fact.PkgStopRunning(
                     apps = models.first,
                     pkgSets = models.second,
-                    id = data.id, note = data.note
+                    id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
                 )
             }
         }
@@ -313,7 +420,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AudioFocusGain(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -326,7 +433,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.AudioFocusLost(
                 apps = models.first,
                 pkgSets = models.second,
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -334,7 +441,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.AudioFocusChanged::class.java
             Fact.AudioFocusChanged(
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -342,7 +449,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BatteryLevelChanged::class.java
             Fact.BatteryLevelChanged(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 level = data.level
             )
         }
@@ -351,7 +458,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged::class.java
             Fact.BatteryTemperatureChanged(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 temp = data.temp
             )
         }
@@ -360,7 +467,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerPlug::class.java
             Fact.ChargerPlug(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
             )
         }
 
@@ -368,7 +475,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ChargerUnplug::class.java
             Fact.ChargerUnplug(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
             )
         }
 
@@ -376,7 +483,10 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.Broadcast::class.java
             Fact.Broadcast(
-                id = data.id, note = data.note, actions = data.actionsList
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                actions = data.actionsList
             )
         }
 
@@ -384,7 +494,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.VPNConnected::class.java
             Fact.VPNConnected(
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -392,7 +502,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.VPNDisconnected::class.java
             Fact.VPNDisconnected(
-                id = data.id, note = data.note
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note
             )
         }
 
@@ -400,7 +510,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.MediaStoreInsert::class.java
             Fact.MediaStoreInsert(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 filterPathRegex = data.filterPath
             )
         }
@@ -412,7 +522,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             Fact.OnStartOp(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 codes = data.opCodesList,
                 apps = models.first,
                 pkgSets = models.second,
@@ -426,7 +536,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 (data.appsList to data.pkgSetsList).protoPkgsAndPkgSetsToModels()
 
             Fact.OnFinishOp(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 codes = data.opCodesList,
                 apps = models.first,
                 pkgSets = models.second,
@@ -438,7 +548,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.OnQSTileClick::class.java
 
             Fact.OnQSTileClick(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 tile = StatusBarTile.forNumber(data.tileNumber)
             )
         }
@@ -448,7 +558,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged::class.java
 
             Fact.SystemSettingsChanged(
-                id = data.id, note = data.note,
+                id = data.id, customContextDataKey = data.customContextDataKey, note = data.note,
                 urlAndValueRegex = data.urlAndExpectedValueRegex
             )
         }
@@ -458,7 +568,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.CallStateChanged::class.java
 
             Fact.CallStateChanged(
-                id = data.id,
+                id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 callState = data.callState
             )
@@ -469,7 +579,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.ClipboardContentChanged::class.java
 
             Fact.ClipboardContentChanged(
-                id = data.id,
+                id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 content = data.content
             )
@@ -480,7 +590,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 this unpack_ tornaco.apps.shortx.core.proto.fact.GlobalVarChanged::class.java
 
             Fact.GlobalVarChanged(
-                id = data.id,
+                id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 gvId = data.gvId
             )

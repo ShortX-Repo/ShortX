@@ -46,7 +46,8 @@ fun ConditionContentStateHandler.asConditionHandler(): ConditionHandler {
                 currentCondition.clone(
                     id = currentCondition.id,
                     note = currentCondition.note,
-                    isInvert = !currentCondition.isInvert
+                    isInvert = !currentCondition.isInvert,
+                    customContextDataKey = currentCondition.customContextDataKey
                 )
             )
         }
