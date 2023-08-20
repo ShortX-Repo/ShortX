@@ -14,6 +14,7 @@ val allActionClasses = listOf(
     Action.HideAllOverlay::class,
     Action.HideOverlay::class,
     Action.LaunchApp::class,
+    Action.LaunchAppByPkg::class,
     Action.StopApp::class,
     Action.StopAppByPkg::class,
     Action.StartActivity::class,

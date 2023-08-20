@@ -152,6 +152,15 @@ message LaunchApp {
   string id = 100;
 }
 
+message LaunchAppByPkg {
+  repeated StringPair pkgAndUsers = 1;
+
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message StopApp {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;

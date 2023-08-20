@@ -53,7 +53,7 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Business.window_2_fill
         }
 
-        Action.LaunchApp::class -> {
+        Action.LaunchApp::class, Action.LaunchAppByPkg::class -> {
             Remix.Arrows.arrow_right_up_fill
         }
 

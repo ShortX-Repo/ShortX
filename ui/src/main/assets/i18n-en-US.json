@@ -415,6 +415,7 @@
   "ui.action.show.add.button": "Add button",
   "ui.action.category.app": "Apps",
   "ui.action.launch.app": "Launch app",
+  "ui.action.launch.app.by.pkg": "Launch app (Input)",
   "ui.action.start.activity": "Start activity",
   "ui.action.start.activity.intent": "Start activity (Intent)",
   "ui.action.start.activity.url.schema": "Start activity (URL Schema)",

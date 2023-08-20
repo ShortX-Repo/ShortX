@@ -113,6 +113,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.LaunchApp
     },
+    LaunchAppByPkg {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.LaunchAppByPkg
+    },
     StopApp {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.StopApp

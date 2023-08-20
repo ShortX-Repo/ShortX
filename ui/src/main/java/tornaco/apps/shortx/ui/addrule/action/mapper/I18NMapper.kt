@@ -90,6 +90,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.launch.app"] to null
         }
 
+        Action.LaunchAppByPkg::class -> {
+            i18N["ui.action.launch.app.by.pkg"] to null
+        }
+
         Action.StartActivity::class -> {
             i18N["ui.action.start.activity"] to null
         }
@@ -268,6 +272,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.LaunchApp -> listOf(
             i18N["ui.action.launch.app"],
             "${action.app.label}$PREFIX_APP_ICON${action.app.pkg.pkgName}"
+        )
+
+        is Action.LaunchAppByPkg -> listOf(
+            i18N["ui.action.launch.app.by.pkg"],
         )
 
         is Action.DisableBT -> listOf(i18N["ui.action.disable", mapOf("s" to i18N["ui.action.bt"])])

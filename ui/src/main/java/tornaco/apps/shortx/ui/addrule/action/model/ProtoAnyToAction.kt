@@ -186,6 +186,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.LaunchAppByPkg::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.LaunchAppByPkg::class.java
+            Action.LaunchAppByPkg(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                id = data.id,
+                note = data.note,
+                stringPairs = data.pkgAndUsersList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.SetWifiEnabled::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.SetWifiEnabled::class.java
             if (data.enable) {

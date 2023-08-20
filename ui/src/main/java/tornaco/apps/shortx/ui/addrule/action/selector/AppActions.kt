@@ -32,6 +32,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         })
     SingleAppSelectorDialog(state = launchAppSelectorState)
 
+    val launchAppByAppPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
+        title = LocalI18N.current["ui.action.launch.app.by.pkg"],
+        onSelected = {
+            addAction(Action.LaunchAppByPkg(stringPairs = it))
+        })
+    PackageNameAndUserSelectorDialog(state = launchAppByAppPkgSelectorState)
+
     val stopAppSelectorState =
         rememberAppPkgSelectorState(
             onAppListSelected = {
@@ -271,6 +278,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.LaunchAppByPkg::class -> {
+                launchAppByAppPkgSelectorState.show(
+                    source.getActionAs<Action.LaunchAppByPkg>()?.stringPairs
+                )
+                true
+            }
+
             Action.StopApp::class -> {
                 stopAppSelectorState.show(
                     source.getActionAs<Action.StopApp>()?.apps,
@@ -439,6 +453,7 @@ fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Acti
         Action.StartActivityIntent::class,
         Action.StartActivityUrlSchema::class,
         Action.LaunchApp::class,
+        Action.LaunchAppByPkg::class,
         Action.StartLastApp::class,
         Action.StopApp::class,
         Action.StopAppByPkg::class,

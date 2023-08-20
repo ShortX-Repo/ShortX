@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.pkgset
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,6 +59,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 @AndroidEntryPoint
 class PkgSetDetailActivity : BaseActivity() {
@@ -204,9 +207,19 @@ private fun AppItem(
     canRemove: Boolean,
     removeApp: (App) -> Unit
 ) {
+    val context = LocalContext.current
+    val i18N = LocalI18N.current
     Box(modifier = Modifier
         .clip(ShortXCardRoundedCornerShape)
         .clickable {
+            ClipboardUtils.copyToClipboard(context, "packageName", app.pkg.pkgName)
+            Toast
+                .makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                )
+                .show()
         }) {
         Row(
             modifier = Modifier

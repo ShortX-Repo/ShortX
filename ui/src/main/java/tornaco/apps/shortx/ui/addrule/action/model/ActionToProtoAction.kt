@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.proto.action.InputTap
 import tornaco.apps.shortx.core.proto.action.InputText
 import tornaco.apps.shortx.core.proto.action.KillProcessByName
 import tornaco.apps.shortx.core.proto.action.LaunchApp
+import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
@@ -194,6 +195,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
             LaunchApp.newBuilder().setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError).setAppPkg(app.pkg)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.LaunchAppByPkg -> {
+            LaunchAppByPkg.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .addAllPkgAndUsers(stringPairs)
                 .setNote(overrideNote ?: note).build()
         }
 

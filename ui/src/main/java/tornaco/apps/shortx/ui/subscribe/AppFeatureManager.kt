@@ -58,6 +58,9 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Condition.AppHasAudioFocus::class,
     Condition.RequireMobileDataEnabled::class,
 
+    Action.LaunchAppByPkg::class,
+    Action.StopAppByPkg::class,
+    Action.RemoveNotificationForPackageByPkg::class,
     Action.SuspendApp::class,
     Action.UnSuspendApp::class,
     Action.DisableApp::class,
