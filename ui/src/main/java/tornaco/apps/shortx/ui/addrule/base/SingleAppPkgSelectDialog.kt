@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,9 +36,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -46,21 +52,18 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 class SingleAppPkgSelectorState(
     val onAppSelected: (App) -> Unit,
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
+) : CommonDialogState() {
+    var selectedAppFilterPkgSetLabel by mutableStateOf(PrebuiltStablePkgSetLabel.All.name)
 
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
+    override fun show() {
+        selectedAppFilterPkgSetLabel = PrebuiltStablePkgSetLabel.All.name
+        super.show()
     }
 }
 
@@ -75,7 +78,7 @@ fun rememberSingleAppPkgSelectorState(
 
 @Composable
 fun SingleAppSelectorDialog(state: SingleAppPkgSelectorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
             SingleAppPkgSelector(state)
         }
@@ -132,8 +135,42 @@ private fun AppListContent(selectorState: SingleAppPkgSelectorState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
+                    .padding(top = 8.dp)
             )
         }
+
+        item {
+            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                val allPkgSets = shortXManager.getAllPkgSets(false)
+                val dropdownState = rememberDropdownSelectorState()
+                FilledTonalButton(onClick = {
+                    dropdownState.open()
+                }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.filter_line
+                        )
+                        SmallSpacer()
+                        Text(text = selectorState.selectedAppFilterPkgSetLabel)
+                    }
+
+                }
+
+                DropdownSelector(
+                    widthFraction = 0.6f,
+                    state = dropdownState,
+                    items = allPkgSets.map {
+                        DropdownItem(labelLines = listOf(it.label), data = it.label)
+                    },
+                    onSelect = {
+                        selectorState.selectedAppFilterPkgSetLabel = it.data
+                        vm.loadInstalledApps(selectorState.selectedAppFilterPkgSetLabel)
+                    })
+
+            }
+        }
+
         items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) {
             AppItem(
                 app = it,
