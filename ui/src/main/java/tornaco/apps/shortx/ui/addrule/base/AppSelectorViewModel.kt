@@ -33,13 +33,20 @@ data class AppStates(
 class AppSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<AppStates>(context, { AppStates() }) {
 
-    fun loadInstalledApps() {
+    fun loadInstalledApps(pkgSetLabel: String? = null) {
         viewModelScope.launch {
             val runningApps = withContext(Dispatchers.IO) {
                 shortXManager.getRunningAppPkgs("All")
             }
+            val pkgSetApps = pkgSetLabel?.let {
+                shortXManager.getPkgSetByLabel(it)
+            }
+
             val apps = withContext(Dispatchers.IO) {
                 shortXManager.getInstalledApps()
+                    .filter {
+                        pkgSetApps == null || pkgSetApps.appPkgsList.contains(it.pkg)
+                    }
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.label, o2.label)
                     }.sortedBy { it.category.ordinal }

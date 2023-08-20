@@ -3,11 +3,36 @@
 package tornaco.apps.shortx.ui.addrule.base
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,12 +40,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.Loading
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.OutlineBadge
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SearchBar
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -36,6 +75,8 @@ open class BaseAppPkgSelectorDialogState {
     private var _selectedPkgSets by mutableStateOf(emptyList<PkgSet>())
     val selectedPkgSets get() = _selectedPkgSets
 
+    var selectedAppFilterPkgSetLabel by mutableStateOf(PrebuiltStablePkgSetLabel.All.name)
+
     fun show(
         currentAppList: List<App>? = null,
         currentPkgSet: List<PkgSet>? = null
@@ -44,6 +85,7 @@ open class BaseAppPkgSelectorDialogState {
 
         _selectedApps = currentAppList ?: emptyList()
         _selectedPkgSets = currentPkgSet ?: emptyList()
+        selectedAppFilterPkgSetLabel = PrebuiltStablePkgSetLabel.All.name
 
         _isShow = true
     }
@@ -240,8 +282,43 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
+                    .padding(top = 8.dp)
             )
         }
+
+        item {
+            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                val allPkgSets = shortXManager.getAllPkgSets(false)
+                val dropdownState = rememberDropdownSelectorState()
+                FilledTonalButton(onClick = {
+                    dropdownState.open()
+                }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RemixIcon(
+                            modifier = Modifier.size(16.dp),
+                            remixName = Remix.System.filter_line
+                        )
+                        SmallSpacer()
+                        Text(text = dialogState.selectedAppFilterPkgSetLabel)
+                    }
+
+                }
+
+                DropdownSelector(
+                    widthFraction = 0.6f,
+                    state = dropdownState,
+                    items = allPkgSets.map {
+                        DropdownItem(labelLines = listOf(it.label), data = it.label)
+                    },
+                    onSelect = {
+                        dialogState.selectedAppFilterPkgSetLabel = it.data
+                        vm.loadInstalledApps(dialogState.selectedAppFilterPkgSetLabel)
+                    })
+
+            }
+        }
+
+
         items(state.installedApps.filterSearchKeyword(searchBarState.keyword)) { app ->
             AppItem(
                 app = app,
