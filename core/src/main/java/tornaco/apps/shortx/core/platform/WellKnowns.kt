@@ -124,11 +124,19 @@ object Classes {
         )
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.clipboardServiceClass(): Class<*> =
+        Reflections.findClass(
+            CLIPBOARD_SERVICE,
+            this
+        )
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.clipboardServiceImplClass(): Class<*> =
         Reflections.findClass(
             "$CLIPBOARD_SERVICE\$ClipboardImpl",
             this
         )
+
 
     fun Class<*>.activityStoppedMethod(): Method? {
         return declaredMethods.firstOrNull { it.name == Methods.activityStopped || it.name == Methods.activityStoppedLocked }

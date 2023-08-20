@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 import android.content.ClipData
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.platform.Classes.clipboardServiceClass
 import tornaco.apps.shortx.core.platform.Classes.clipboardServiceImplClass
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
@@ -13,11 +14,12 @@ object ClipboardServiceHook {
     fun hookClipboardService(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         hookSetPrimaryClip(lpparam)
         hookSetPrimaryClipAsPackage(lpparam)
+        hookCheckAccess(lpparam)
     }.onFailure {
         logger.e(it, "hookClipboardService")
     }
 
-    fun hookSetPrimaryClip(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookSetPrimaryClip(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         afterMethod(
             lpparam.classLoader.clipboardServiceImplClass(),
             "setPrimaryClip"
@@ -35,14 +37,32 @@ object ClipboardServiceHook {
         ShortXService.shortXContext.input.onClipboardChange(text)
     }
 
-    fun hookSetPrimaryClipAsPackage(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+    private fun hookSetPrimaryClipAsPackage(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            afterMethod(
+                lpparam.classLoader.clipboardServiceImplClass(),
+                "setPrimaryClipAsPackage"
+            ) { param ->
+                handleSetPrimary(param)
+            }
+        }.onFailure {
+            logger.e(it, "hookSetPrimaryClipAsPackage")
+        }
+
+    // ReadClipBoard Need this.
+    private fun hookCheckAccess(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         afterMethod(
-            lpparam.classLoader.clipboardServiceImplClass(),
-            "setPrimaryClipAsPackage"
+            lpparam.classLoader.clipboardServiceClass(),
+            "clipboardAccessAllowed"
         ) { param ->
-            handleSetPrimary(param)
+            //  private boolean clipboardAccessAllowed(int op, String callingPackage, int uid, @UserIdInt int userId, boolean shouldNoteOp)
+            val callingPackage = param.args[1]
+            if (callingPackage == "android") {
+                logger.d("Allow android to read clipboard")
+                param.result = true
+            }
         }
     }.onFailure {
-        logger.e(it, "hookSetPrimaryClipAsPackage")
+        logger.e(it, "hookClipboardService")
     }
 }

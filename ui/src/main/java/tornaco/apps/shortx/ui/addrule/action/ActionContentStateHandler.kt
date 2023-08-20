@@ -96,7 +96,7 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         contextData = action.contextData.toMutableList().apply {
                             val targetData = first { it.key == key.first }
                             val index = indexOf(targetData)
-                            add(index, targetData.copy(customKey = key.second))
+                            set(index, targetData.copy(customKey = key.second))
                         }
                     )
                 )
