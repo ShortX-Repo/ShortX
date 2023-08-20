@@ -593,6 +593,7 @@
   "ui.action.gesture.record.toggle": "开关手势录制",
   "ui.action.gesture.record.inject": "注入手势",
   "ui.action.gesture.record.inject.speed": "倍速",
+  "ui.action.gesture.record.inject.show.path": "显示路径",
   "ui.action.gesture.record.select": "选择手势",
   "ui.settings.action.record": "动作记录",
   "ui.settings.action.record.summary": "查看历史执行动作的记录",

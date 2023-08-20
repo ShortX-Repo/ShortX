@@ -594,6 +594,7 @@
   "ui.action.gesture.record.toggle": "Toggle gesture recording",
   "ui.action.gesture.record.inject": "Inject gesture recording",
   "ui.action.gesture.record.inject.speed": "Speed",
+  "ui.action.gesture.record.inject.show.path": "Show path",
   "ui.action.gesture.record.select": "Select gesture",
   "ui.settings.action.record": "Action record",
   "ui.settings.action.record.summary": "View action execute records",
