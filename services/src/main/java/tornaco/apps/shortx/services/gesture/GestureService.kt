@@ -166,6 +166,7 @@ class GestureService(shortXContext: ShortXContext) :
     suspend fun injectGestureRecord(
         id: String,
         speed: Float,
+        showGesturePathView: Boolean,
         onComplete: SynchronousResultReceiver?
     ) {
         logger.d("injectGestureRecord: $id $speed $onComplete")
@@ -173,7 +174,7 @@ class GestureService(shortXContext: ShortXContext) :
         logger.d("injectGestureRecord, gesture: $gesture")
         if (gesture != null) {
             runCatching {
-                gestureRecorder.injectGesture(gesture, speed)
+                gestureRecorder.injectGesture(gesture, speed, showGesturePathView)
             }.onFailure {
                 if (it is CancellationException) {
                     logger.i("injectGestureRecord canceled.")

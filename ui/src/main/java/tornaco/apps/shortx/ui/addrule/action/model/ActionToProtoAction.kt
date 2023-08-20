@@ -1100,6 +1100,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setSpeed(speed)
                 .setGestureId(gestureRecord.id)
+                .setShowGesturePathView(showGesturePathView)
                 .build()
         }
 

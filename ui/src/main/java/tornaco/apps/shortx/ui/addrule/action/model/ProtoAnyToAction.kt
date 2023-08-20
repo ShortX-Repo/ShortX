@@ -1245,7 +1245,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 speed = data.speed,
                 gestureRecord = shortXManager.getGestureRecordById(data.gestureId)
-                    ?: GestureRecord.newBuilder().setLabel("N/A").setId("NotExists").build()
+                    ?: GestureRecord.newBuilder().setLabel("N/A").setId("NotExists").build(),
+                showGesturePathView = data.showGesturePathView
             )
         }
 

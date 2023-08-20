@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -43,10 +44,12 @@ class InjectGestureRecordDialogState(
 ) : CommonDialogState() {
     var selectedGesture: GestureRecord? by mutableStateOf(null)
     var speed by mutableStateOf(1f)
+    var showGesturePathView by mutableStateOf(false)
 
     fun show(current: Action.InjectGestureRecording? = null) {
         this.selectedGesture = current?.gestureRecord
         this.speed = current?.speed ?: 1f
+        this.showGesturePathView = current?.showGesturePathView ?: false
         show()
     }
 }
@@ -93,7 +96,8 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
                                     dialogState.onSelected(
                                         Action.InjectGestureRecording(
                                             gestureRecord = dialogState.selectedGesture!!,
-                                            speed = dialogState.speed
+                                            speed = dialogState.speed,
+                                            showGesturePathView = dialogState.showGesturePathView
                                         )
                                     )
                                     dialogState.dismiss()
@@ -140,6 +144,14 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
                             dialogState.speed = BigDecimal(it.toString())
                                 .setScale(1, RoundingMode.HALF_DOWN)
                                 .toFloat()
+                        })
+
+                    StandardSpacer()
+                    SwitchRow(
+                        text = LocalI18N.current["ui.action.gesture.record.inject.show.path"],
+                        isChecked = dialogState.showGesturePathView,
+                        onCheckChange = {
+                            dialogState.showGesturePathView = it
                         })
                 }
             }

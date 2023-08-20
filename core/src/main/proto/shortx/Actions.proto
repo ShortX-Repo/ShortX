@@ -948,6 +948,7 @@ message InjectGestureRecording {
 
   string gestureId = 1;
   float speed = 2;
+  bool showGesturePathView = 3;
 }
 
 message EnableUniversalCopy {

@@ -2582,7 +2582,8 @@ sealed interface Action : Parcelable {
         override val note: String = "",
 
         val gestureRecord: GestureRecord,
-        val speed: Float
+        val speed: Float,
+        val showGesturePathView: Boolean
     ) : Action {
         override fun clone(
             id: String,

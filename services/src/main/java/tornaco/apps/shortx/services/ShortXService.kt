@@ -463,7 +463,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             onComplete: SynchronousResultReceiver?
         ) {
             systemServiceScope.launchSafety {
-                shortXContext.gesture.injectGestureRecord(id, speed, onComplete)
+                shortXContext.gesture.injectGestureRecord(
+                    id = id,
+                    speed = speed,
+                    showGesturePathView = true,
+                    onComplete = onComplete
+                )
             }
         }
 

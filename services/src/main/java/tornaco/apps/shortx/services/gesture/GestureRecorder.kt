@@ -90,9 +90,15 @@ class GestureRecorder(
         }
     }
 
-    suspend fun injectGesture(gesture: GestureRecord, speed: Float) {
+    suspend fun injectGesture(
+        gesture: GestureRecord,
+        speed: Float,
+        showGesturePathView: Boolean,
+    ) {
         stop()
-        enablePointerLocation()
+        if (showGesturePathView) {
+            enablePointerLocation()
+        }
 
         withContext(Dispatchers.IO) {
             val motionEvents = gesture.eventDataList.map {

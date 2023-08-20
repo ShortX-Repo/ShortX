@@ -28,7 +28,7 @@ object InjectGestureRecording : Actor {
             action unpack_ tornaco.apps.shortx.core.proto.action.InjectGestureRecording::class.java
         logger.d("InjectGestureRecording start.")
         val receiver = SynchronousResultReceiver.get()
-        shortXContext.gesture.injectGestureRecord(data.gestureId, data.speed, receiver)
+        shortXContext.gesture.injectGestureRecord(data.gestureId, data.speed,data.showGesturePathView, receiver)
 
         withContext(Dispatchers.IO) {
             receiver.awaitResultNoInterrupt(Duration.ofDays(1)).getValue(emptyByteArrayWrapper)
