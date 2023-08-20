@@ -29,6 +29,8 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXDialog
@@ -113,6 +115,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                         ).show()
                     },
                     canEditKey = state.canSetCustomKey,
+                    isCustomKey = contextData.customKey.isNotEmpty(),
                     setCustomKey = {
                         state.updateCustomKey((contextData.key to it).toStringPair())
                     }
@@ -130,6 +133,7 @@ private fun ContextDataItem(
     text2: String? = null,
     onClick: () -> Unit,
     canEditKey: Boolean,
+    isCustomKey: Boolean,
     setCustomKey: (String) -> Unit
 ) {
     Row(
@@ -151,12 +155,16 @@ private fun ContextDataItem(
         ) {
             Column(modifier = Modifier) {
                 title?.let {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 14.sp,
+                    Row {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontSize = 14.sp,
+                            )
                         )
-                    )
+                        MediumSpacer()
+                        if (isCustomKey) OutlineBadge(text = LocalI18N.current["ui.context.data.custom.hint"])
+                    }
                 }
                 TinySpacer()
                 text1?.let {
@@ -189,7 +197,7 @@ private fun ContextDataItem(
             IconButton(onClick = {
                 textInputDialogState.show()
             }) {
-                RemixIcon(remixName = Remix.Document.file_edit_fill)
+                RemixIcon(remixName = Remix.Document.file_edit_line)
             }
         }
     }
