@@ -10,7 +10,6 @@ import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
-import tornaco.apps.shortx.core.proto.action.HttpRequest
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
 import tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ShellCommand
@@ -184,10 +183,6 @@ fun KClass<out Message>.actionContextData(customContextDataKey: CustomContextDat
 
         ShellCommand::class -> {
             dats<ContextDataMapping.ShellCommand>(customContextDataKey)
-        }
-
-        HttpRequest::class -> {
-            dats<ContextDataMapping.HttpRequest>(customContextDataKey)
         }
 
         else -> {
