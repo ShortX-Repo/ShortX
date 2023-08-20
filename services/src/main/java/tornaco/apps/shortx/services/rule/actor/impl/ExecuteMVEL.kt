@@ -3,8 +3,10 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
@@ -32,7 +34,11 @@ object ExecuteMVEL : Actor {
                 logger.d("inflated expression: $this")
             }
         ).invoke(vars = params.contextData.map, localVars = params.localVars).apply {
-            params.contextData.add(ContextDataMapping.ExecuteMVEL.mvelRet.name, this)
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ExecuteMVEL.mvelRet.name)
+                    .fallbackOnEmpty(ContextDataMapping.ExecuteMVEL.mvelRet.name),
+                this
+            )
         }
     }
 }

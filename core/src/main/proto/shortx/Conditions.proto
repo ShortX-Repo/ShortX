@@ -18,14 +18,14 @@ message ConditionOperatorPayload {
 }
 
 message True {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message False {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -37,7 +37,7 @@ message CurrentPkgList {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -48,7 +48,7 @@ message CurrentActivity {
   string className = 2;
   int32 userId = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -57,7 +57,7 @@ message CurrentActivity {
 message MatchMVEL {
   string expression = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -67,7 +67,7 @@ message BatteryPercent {
   int32 value = 1;
   IntOp op = 2;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -79,7 +79,7 @@ message AppIsRunning {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -91,7 +91,7 @@ message AppIsNotRunning {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -104,7 +104,7 @@ message AppHasAudioFocus {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -116,7 +116,7 @@ message EvaluateLocalVar {
   string varName = 2;
   GlobalVarOpPayload payload = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -127,7 +127,7 @@ message EvaluateGlobalVar {
   string varName = 2;
   GlobalVarOpPayload payload = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -160,7 +160,7 @@ message ServiceIsRunning {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -169,21 +169,21 @@ message ServiceIsRunning {
 message ProcessIsRunning {
   repeated ProcessName processList = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message ScreenIsOn {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message VPNIsConnected {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -192,7 +192,7 @@ message VPNIsConnected {
 message TimeInRange {
   TimeOfADayRange range = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -201,7 +201,7 @@ message TimeInRange {
 message ChargeState {
   bool requireIsCharge = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -210,7 +210,7 @@ message ChargeState {
 message PlugState {
   bool requireIsPlug = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -220,14 +220,14 @@ message PlugState {
 message RequireWifiConnected {
   string requiredSSID = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message RequireWifiDisconnected {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -236,14 +236,14 @@ message RequireWifiDisconnected {
 message RequireBTConnected {
   string device = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message RequireBTDisconnected {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -252,7 +252,7 @@ message RequireBTDisconnected {
 message RequireMobileDataEnabled {
   int32 slotId = 1;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
@@ -264,35 +264,35 @@ message AppHasNotification {
   // Default is ALL.
   ConditionOperator op = 3;
 
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message KeyguardIsLocked {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message ScreenOrientationIsPort {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message IsInCall {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;
 }
 
 message IsRinging {
-  string customContextDataKey = 97;
+  CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
   string id = 100;

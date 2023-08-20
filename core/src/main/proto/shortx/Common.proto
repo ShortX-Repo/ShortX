@@ -307,3 +307,7 @@ enum CallState {
   CallStateRinging = 1;
   CallStateOffHook = 2;
 }
+
+message CustomContextDataKey {
+  repeated StringPair keys = 1;
+}

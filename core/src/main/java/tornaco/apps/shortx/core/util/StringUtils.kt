@@ -4,6 +4,10 @@ fun String?.fallbackOnEmpty(string: String): String {
     return if (this.isNullOrEmpty()) string else this
 }
 
+fun String?.fallbackOnEmpty(string: () -> String): String {
+    return if (this.isNullOrEmpty()) string() else this
+}
+
 
 fun String.replaceLazy(
     oldValue: String,

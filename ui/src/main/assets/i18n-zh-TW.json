@@ -690,6 +690,8 @@
   "ui.context.data.title": "上下文变量",
   "ui.context.data.message": "上下文变量是指某个事件触发时该事件所包含的一些变量；或者某个动作执行结果所表示的一些变量（例如：Shell命令的上下文变量包含了该命令的输出结果）。你可以在后续的条件或者动作中通过 {accessor} 来访问这些变量。\n\n{obj} 包含以下变量",
   "ui.context.data.example": "通过 {eg} 来访问该变量",
+  "ui.context.data.custom.key": "自定义上下文变量的key",
+  "ui.context.data.custom.hint": "已自定义",
   "ui.subscription.pay": "支付",
   "ui.subscription.subscribe.verify.code": "验证激活码",
   "ui.subscription.subscribe.verify.play": "验证Google Play",

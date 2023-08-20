@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.ActionOnError
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.ClipboardDialog
 import tornaco.apps.shortx.ui.UiClipboard
@@ -46,7 +47,6 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.model.contextData
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectSource
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.ActionSelectorActivity.Companion.INTENT_EXTRA_ARG1_ACTION
@@ -224,7 +224,7 @@ private fun Actions(
                                 note = currentAction.note,
                                 isEnabled = currentAction.isEnabled,
                                 actionOnError = currentAction.actionOnError,
-                                customContextDataKey = currentAction.customContextDataKey
+                                contextData = currentAction.contextData
                             )
                         )
                     }
@@ -303,14 +303,22 @@ private fun Actions(
                                     }
                                 },
                                 action1 = {
-                                    if (action.contextData.isNotEmpty()) {
+                                    if (action.contextData.isNotEmpty()
+                                    ) {
                                         IconButton(onClick = {
                                             contextDataInfoDialogState.show(
-                                                labelAndDescriptionForActionSelector(
+                                                objName = labelAndDescriptionForActionSelector(
                                                     i18N,
                                                     action::class
                                                 ).first,
-                                                action.contextData
+                                                contextData = currentAction.contextData,
+                                                canSetCustomKey = true,
+                                                setCustomKey = {
+                                                    handler.setCustomContextDataKey(
+                                                        currentAction.id,
+                                                        it
+                                                    )
+                                                }
                                             )
                                         }) {
                                             ContextDataIcon()
@@ -639,4 +647,5 @@ class ActionHandler(
     val setNote: (actionId: String, note: String) -> Unit = { _, _ -> run {} },
     val execute: suspend (actionId: String) -> Unit = { },
     val executeAll: suspend () -> Unit = { },
+    val setCustomContextDataKey: (actionId: String, StringPair) -> Unit = { _, _ -> run {} },
 )

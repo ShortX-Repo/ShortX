@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,29 +21,51 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import tornaco.apps.shortx.core.context.ContextDataMapping.asAccessExample
+import tornaco.apps.shortx.core.proto.common.StringPair
+import tornaco.apps.shortx.core.proto.toStringPair
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogMessage
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 
-class ContextDataInfoDialogState {
-    var isShowing by mutableStateOf(false)
-
-    var contextData: List<ContextData> = emptyList()
+class ContextDataInfoDialogState : CommonDialogState() {
+    var contextData: List<ContextData> by mutableStateOf(emptyList())
     var objName: String = ""
 
-    fun show(objName: String, contextData: List<ContextData>) {
+    private var setCustomKey: (StringPair) -> Unit = {}
+    var canSetCustomKey: Boolean = false
+
+    fun show(
+        objName: String,
+        contextData: List<ContextData>,
+        canSetCustomKey: Boolean = false,
+        setCustomKey: (StringPair) -> Unit = {}
+    ) {
         this.contextData = contextData
         this.objName = objName
-        isShowing = true
+        this.canSetCustomKey = canSetCustomKey
+        this.setCustomKey = setCustomKey
+
+        show()
     }
 
-    fun dismiss() {
-        isShowing = false
+    fun updateCustomKey(key: StringPair) {
+        contextData = contextData.toMutableList().apply {
+            val current = this.first { it.key == key.first }
+            val currentIndex = this.indexOf(current)
+            set(currentIndex, current.copy(customKey = key.second))
+        }
+        setCustomKey(key)
     }
 }
 
@@ -72,19 +95,28 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
             )
 
             val context = LocalContext.current
-            state.contextData.forEach {
+            state.contextData.forEach { contextData ->
                 ContextDataItem(
-                    title = it.key,
-                    text1 = it.description,
-                    text2 = i18N["ui.context.data.example", mapOf("eg" to it.accessExample)],
+                    title = contextData.selectedKey,
+                    text1 = contextData.description,
+                    text2 = i18N["ui.context.data.example", mapOf("eg" to contextData.selectedKey.asAccessExample())],
                     onClick = {
-                        ClipboardUtils.copyToClipboard(context, "context", it.accessExample)
+                        ClipboardUtils.copyToClipboard(
+                            context,
+                            "context",
+                            contextData.selectedKey.asAccessExample()
+                        )
                         Toast.makeText(
                             context,
                             i18N["ui.common.copied.to.clipboard"],
                             Toast.LENGTH_LONG
                         ).show()
-                    })
+                    },
+                    canEditKey = state.canSetCustomKey,
+                    setCustomKey = {
+                        state.updateCustomKey((contextData.key to it).toStringPair())
+                    }
+                )
             }
         }
     }
@@ -97,6 +129,8 @@ private fun ContextDataItem(
     text1: String? = null,
     text2: String? = null,
     onClick: () -> Unit,
+    canEditKey: Boolean,
+    setCustomKey: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -140,6 +174,22 @@ private fun ContextDataItem(
                         maxLines = 12
                     )
                 }
+            }
+        }
+
+        val textInputDialogState =
+            rememberTextInputState(
+                title = LocalI18N.current["ui.context.data.custom.key"],
+                message = null,
+                onSelected = {
+                    setCustomKey(it)
+                })
+        TextInputDialog(state = textInputDialogState)
+        if (canEditKey) {
+            IconButton(onClick = {
+                textInputDialogState.show()
+            }) {
+                RemixIcon(remixName = Remix.Document.file_edit_fill)
             }
         }
     }

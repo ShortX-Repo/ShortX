@@ -476,7 +476,7 @@ private fun ConditionRecordItem(
             it.actionIns
         ).toMutableList().apply {
             if (it.record.message.isNotBlank()) {
-                add(it.record.message)
+                add(it.record.message.substring(0, maxOf(it.record.message.length, 36)))
             }
             add(it.formattedTimeStr)
         }

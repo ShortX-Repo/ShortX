@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
@@ -25,7 +26,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.NoAction(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 icon = data.icon
@@ -37,7 +38,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ReadClipboard(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note
             )
@@ -48,7 +49,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WriteClipboard(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 text = data.text
@@ -60,7 +61,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.TakeScreenshot(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note
             )
@@ -71,7 +72,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShellCommand(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, command = data.command
             )
@@ -82,7 +83,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.InputText(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, text = data.text
             )
@@ -93,7 +94,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowToast(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, message = data.message
             )
@@ -104,7 +105,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowDanmu(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, text = data.text, icon = data.icon
             )
@@ -115,7 +116,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.Delay(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 time = data.timeString.fallbackOnEmpty(data.time.toString()),
@@ -128,7 +129,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.MVEL(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, expression = data.expression
             )
@@ -140,7 +141,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.RemoteMVEL(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, action = data.toModel()
             )
@@ -152,7 +153,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowOverlay(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 autoCollapse = data.autoCollapse,
@@ -169,14 +170,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.HideAllOverlay(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.HideOverlay(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     tags = data.overlayTagsList
@@ -190,7 +191,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.LaunchApp(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 app = App(
@@ -206,7 +207,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.LaunchAppByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -219,14 +220,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableWifi(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableWifi(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -239,14 +240,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableSensorsOff(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableSensorsOff(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -258,14 +259,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableBT(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableBT(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -277,14 +278,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableNFC(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableNFC(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -296,14 +297,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableDND(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableDND(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -316,14 +317,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableLocation(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableLocation(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -335,14 +336,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableData(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableData(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -355,14 +356,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableDarkMode(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableDarkMode(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -375,14 +376,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableFlashLight(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableFlashLight(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -395,14 +396,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableHotSpot(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             } else {
                 Action.DisableHotSpot(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id
                 )
             }
@@ -414,7 +415,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopApp(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -427,7 +428,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopAppByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -441,7 +442,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartAppProcess(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -455,7 +456,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartAppProcessByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -469,7 +470,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetAppInactive(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -483,7 +484,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetAppInactiveByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -497,7 +498,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableApp(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -506,7 +507,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableApp(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -522,7 +523,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableAppByPkg(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     stringPairs = data.pkgAndUsersList
@@ -530,7 +531,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.DisableAppByPkg(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     stringPairs = data.pkgAndUsersList
@@ -545,7 +546,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.SuspendApp(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -554,7 +555,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.UnSuspendApp(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     apps = models.first,
@@ -570,7 +571,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.SuspendAppByPkg(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     stringPairs = data.pkgAndUsersList
@@ -578,7 +579,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.UnSuspendAppByPkg(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                     stringPairs = data.pkgAndUsersList
@@ -592,7 +593,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.Brk(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id
             )
         }
@@ -603,7 +604,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowAlertDialog(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 title = data.title,
@@ -624,7 +625,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowTextFieldDialog(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 title = data.title,
@@ -640,7 +641,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ShowMenuDialog(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 title = data.title,
@@ -655,7 +656,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartActivity(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 componentNameAsString = data.componentNameAsString
@@ -668,7 +669,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartActivityIntent(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 userId = data.userId,
@@ -687,7 +688,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartActivityUrlSchema(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 userId = data.userId,
@@ -701,7 +702,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ExpandNotification(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id
             )
         }
@@ -711,7 +712,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WhileLoop(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 delay = data.delay.toLong(),
@@ -727,7 +728,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WriteGV(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
@@ -741,7 +742,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.CreateGV(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 globalVar = data.globalVar
@@ -754,7 +755,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.DeleteGV(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
@@ -766,7 +767,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.MapNav(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 longitude = data.loc.longitude,
@@ -782,7 +783,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.PostNotification(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 tag = data.tag,
@@ -802,7 +803,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.FromDA(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note, daId = data.daId,
                 title = da?.title,
@@ -816,7 +817,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.FindAndClickViewByText(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 text = data.text,
@@ -831,7 +832,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.InputTap(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 x = data.x,
@@ -845,7 +846,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.InputSwipe(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 startX = data.startX,
@@ -861,7 +862,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WaitForIdle(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note
             )
@@ -872,7 +873,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.IfThenElse(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 ifConditions = data.ifList.mapNotNull {
@@ -891,7 +892,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.CreatePkgSet(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 label = data.label,
@@ -904,7 +905,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetRingerMode(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 mode = data.mode
@@ -916,7 +917,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetBrightness(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 value = data.value
@@ -930,14 +931,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 Action.EnableAutoBrightness(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                 ),
                 Action.DisableAutoBrightness(
                     isEnabled = !data.isDisabled,
                     actionOnError = data.actionOnError,
-                    customContextDataKey = data.customContextDataKey,
+                    contextData = data::class.actionContextData(data.customContextDataKey),
                     id = data.id,
                     note = data.note,
                 )
@@ -950,7 +951,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopService(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 services = data.servicesList.distinct()
@@ -964,7 +965,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.RemoveTasks(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -978,7 +979,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.RemoveTasksByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -992,7 +993,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.RemoveNotificationForPackage(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 apps = models.first,
@@ -1006,7 +1007,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.RemoveNotificationForPackageByPkg(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 stringPairs = data.pkgAndUsersList
@@ -1019,7 +1020,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.KillProcessByName(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 processList = data.processesList.distinct()
@@ -1033,7 +1034,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.HttpRequest(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 url = data.url,
@@ -1060,7 +1061,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.InjectKeyCode(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 code = data.keyCode
@@ -1073,7 +1074,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WakeupScreen(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1085,7 +1086,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SleepScreen(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1097,7 +1098,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartLastApp(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1109,7 +1110,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopCurrentApp(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1121,7 +1122,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.AdjustVolume(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 direction = data.direction
@@ -1134,7 +1135,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.Vibrate(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 vib1 = data.vib1,
@@ -1149,7 +1150,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.AudioRecording(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 src = data.src,
@@ -1163,7 +1164,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SwitchMobileDataSlot(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 slotId = data.slotId
@@ -1176,7 +1177,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.CreateLocalVar(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 localVar = data.localVar,
@@ -1189,7 +1190,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.WriteLocalVar(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 varName = data.varName,
@@ -1203,7 +1204,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StartGestureRecording(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1215,7 +1216,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.StopGestureRecording(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1227,7 +1228,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.ToggleGestureRecording(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
             )
@@ -1239,7 +1240,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.InjectGestureRecording(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 speed = data.speed,
@@ -1254,7 +1255,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.EnableUniversalCopy(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note
             )
@@ -1266,7 +1267,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.TTS(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 text = data.text
@@ -1279,7 +1280,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetWallpaper(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 url = data.fileUrl,
@@ -1293,7 +1294,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             Action.SetRuleEnabled(
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
-                customContextDataKey = data.customContextDataKey,
+                contextData = data::class.actionContextData(data.customContextDataKey),
                 id = data.id,
                 note = data.note,
                 enableRule = data.isEnable,

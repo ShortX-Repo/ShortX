@@ -6,7 +6,7 @@ import tornaco.apps.shortx.core.annotations.DoNotStrip
 
 @DoNotStrip
 object ContextDataMapping {
-    inline fun <reified T : Enum<T>> T.accessExample() = "{${name}}"
+    fun String.asAccessExample() = "{${this}}"
 
     @DoNotStrip
     enum class Notification(val description: String) {

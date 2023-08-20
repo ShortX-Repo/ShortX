@@ -1,14 +1,24 @@
 package tornaco.apps.shortx.ui.addrule
 
+import android.os.Parcelable
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.protobuf.Message
+import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.context.ContextDataMapping
-import tornaco.apps.shortx.core.context.ContextDataMapping.accessExample
+import tornaco.apps.shortx.core.context.forKey
+import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
+import tornaco.apps.shortx.core.proto.action.HttpRequest
+import tornaco.apps.shortx.core.proto.action.ReadClipboard
+import tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL
+import tornaco.apps.shortx.core.proto.action.ShellCommand
+import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -16,126 +26,144 @@ import kotlin.reflect.KClass
 
 val logger = Logger("ContextData")
 
+@Parcelize
 data class ContextData(
-    val key: String, val description: String, val accessExample: String
-)
-
-private inline fun <reified T : Enum<T>> dats(): List<ContextData> = runCatching {
-    val values: Array<T> = enumValues()
-    val descriptionField =
-        values.first().javaClass.getDeclaredField("description").apply { isAccessible = true }
-    values.map {
-        ContextData(it.name, descriptionField.get(it) as String, it.accessExample())
-    }
-}.getOrElse {
-    logger.e(it, "get dat error")
-    emptyList()
+    val key: String, val description: String, val customKey: String
+) : Parcelable {
+    val selectedKey: String get() = customKey.fallbackOnEmpty(key)
 }
 
-fun KClass<out Fact>.factContextData(): List<ContextData> {
+fun List<ContextData>.toCustomContextDataKey(): CustomContextDataKey {
+    return CustomContextDataKey.newBuilder()
+        .addAllKeys(
+            this@toCustomContextDataKey.map {
+                (it.key to it.customKey).toStringPair()
+            }
+        )
+        .build()
+}
+
+private inline fun <reified T : Enum<T>> dats(customContextDataKey: CustomContextDataKey): List<ContextData> =
+    runCatching {
+        val values: Array<T> = enumValues()
+        val descriptionField =
+            values.first().javaClass.getDeclaredField("description").apply { isAccessible = true }
+        values.map {
+            ContextData(
+                it.name,
+                descriptionField.get(it) as String,
+                customContextDataKey.forKey(it.name) ?: ""
+            )
+        }
+    }.getOrElse {
+        logger.e(it, "get dat error")
+        emptyList()
+    }
+
+fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance()): List<ContextData> {
     return when (this) {
         Fact.NotificationPosted::class -> {
-            dats<ContextDataMapping.Notification>()
+            dats<ContextDataMapping.Notification>(customContextDataKey)
         }
 
         Fact.NotificationUpdated::class -> {
-            dats<ContextDataMapping.Notification>()
+            dats<ContextDataMapping.Notification>(customContextDataKey)
         }
 
         Fact.NotificationRemoved::class -> {
-            dats<ContextDataMapping.Notification>()
+            dats<ContextDataMapping.Notification>(customContextDataKey)
         }
 
         Fact.AppBecomeBackground::class -> {
-            dats<ContextDataMapping.AppBecomeBg>()
+            dats<ContextDataMapping.AppBecomeBg>(customContextDataKey)
         }
 
         Fact.AppBecomeForeground::class -> {
-            dats<ContextDataMapping.AppBecomeFg>()
+            dats<ContextDataMapping.AppBecomeFg>(customContextDataKey)
         }
 
         Fact.ActivityStarted::class -> {
-            dats<ContextDataMapping.ActivityStarted>()
+            dats<ContextDataMapping.ActivityStarted>(customContextDataKey)
         }
 
         Fact.AnyActivityStarted::class -> {
-            dats<ContextDataMapping.ActivityStarted>()
+            dats<ContextDataMapping.ActivityStarted>(customContextDataKey)
         }
 
         Fact.TaskRemoved::class, Fact.TaskRemovedAny::class -> {
-            dats<ContextDataMapping.TaskRemoved>()
+            dats<ContextDataMapping.TaskRemoved>(customContextDataKey)
         }
 
         Fact.PkgStopRunning::class, Fact.PkgStopRunningAny::class -> {
-            dats<ContextDataMapping.PkgStopRunning>()
+            dats<ContextDataMapping.PkgStopRunning>(customContextDataKey)
         }
 
         Fact.AppAdded::class -> {
-            dats<ContextDataMapping.AppAdded>()
+            dats<ContextDataMapping.AppAdded>(customContextDataKey)
         }
 
         Fact.AppUpdated::class -> {
-            dats<ContextDataMapping.AppUpdated>()
+            dats<ContextDataMapping.AppUpdated>(customContextDataKey)
         }
 
         Fact.AppRemoved::class -> {
-            dats<ContextDataMapping.AppRemoved>()
+            dats<ContextDataMapping.AppRemoved>(customContextDataKey)
         }
 
         Fact.AudioFocusChanged::class -> {
-            dats<ContextDataMapping.AudioFocusChanged>()
+            dats<ContextDataMapping.AudioFocusChanged>(customContextDataKey)
         }
 
         Fact.WifiConnectedTo::class -> {
-            dats<ContextDataMapping.WifiConnectedTo>()
+            dats<ContextDataMapping.WifiConnectedTo>(customContextDataKey)
         }
 
         Fact.WifiDisconnectedFrom::class -> {
-            dats<ContextDataMapping.WifiDisconnectedFrom>()
+            dats<ContextDataMapping.WifiDisconnectedFrom>(customContextDataKey)
         }
 
         Fact.BTConnectedTo::class -> {
-            dats<ContextDataMapping.BTDeviceConnected>()
+            dats<ContextDataMapping.BTDeviceConnected>(customContextDataKey)
         }
 
         Fact.BTDisconnectedFrom::class -> {
-            dats<ContextDataMapping.BTDeviceDisConnected>()
+            dats<ContextDataMapping.BTDeviceDisConnected>(customContextDataKey)
         }
 
         Fact.BatteryTemperatureChanged::class -> {
-            dats<ContextDataMapping.BatteryTemperatureChanged>()
+            dats<ContextDataMapping.BatteryTemperatureChanged>(customContextDataKey)
         }
 
         Fact.BatteryLevelChanged::class -> {
-            dats<ContextDataMapping.BatteryLevelChanged>()
+            dats<ContextDataMapping.BatteryLevelChanged>(customContextDataKey)
         }
 
         Fact.MediaStoreInsert::class -> {
-            dats<ContextDataMapping.MediaStoreInsert>()
+            dats<ContextDataMapping.MediaStoreInsert>(customContextDataKey)
         }
 
         Fact.AdvancedKeyEvent::class -> {
-            dats<ContextDataMapping.AdvancedKeyEvent>()
+            dats<ContextDataMapping.AdvancedKeyEvent>(customContextDataKey)
         }
 
         Fact.OnStartOp::class -> {
-            dats<ContextDataMapping.OnStartOp>()
+            dats<ContextDataMapping.OnStartOp>(customContextDataKey)
         }
 
         Fact.OnFinishOp::class -> {
-            dats<ContextDataMapping.OnFinishOp>()
+            dats<ContextDataMapping.OnFinishOp>(customContextDataKey)
         }
 
         Fact.SystemSettingsChanged::class -> {
-            dats<ContextDataMapping.SystemSettingsChanged>()
+            dats<ContextDataMapping.SystemSettingsChanged>(customContextDataKey)
         }
 
         Fact.CallStateChanged::class -> {
-            dats<ContextDataMapping.CallStateChanged>()
+            dats<ContextDataMapping.CallStateChanged>(customContextDataKey)
         }
 
         Fact.ClipboardContentChanged::class -> {
-            dats<ContextDataMapping.ClipboardContentChanged>()
+            dats<ContextDataMapping.ClipboardContentChanged>(customContextDataKey)
         }
 
         else -> {
@@ -144,22 +172,22 @@ fun KClass<out Fact>.factContextData(): List<ContextData> {
     }
 }
 
-fun KClass<out Action>.actionContextData(): List<ContextData> {
+fun KClass<out Message>.actionContextData(customContextDataKey: CustomContextDataKey): List<ContextData> {
     return when (this) {
-        Action.MVEL::class, Action.RemoteMVEL::class -> {
-            dats<ContextDataMapping.ExecuteMVEL>()
+        ExecuteMVEL::class, RemoteExecuteMVEL::class -> {
+            dats<ContextDataMapping.ExecuteMVEL>(customContextDataKey)
         }
 
-        Action.ReadClipboard::class -> {
-            dats<ContextDataMapping.ReadClipboard>()
+        ReadClipboard::class -> {
+            dats<ContextDataMapping.ReadClipboard>(customContextDataKey)
         }
 
-        Action.ShellCommand::class -> {
-            dats<ContextDataMapping.ShellCommand>()
+        ShellCommand::class -> {
+            dats<ContextDataMapping.ShellCommand>(customContextDataKey)
         }
 
-        Action.HttpRequest::class -> {
-            dats<ContextDataMapping.HttpRequest>()
+        HttpRequest::class -> {
+            dats<ContextDataMapping.HttpRequest>(customContextDataKey)
         }
 
         else -> {
@@ -168,10 +196,10 @@ fun KClass<out Action>.actionContextData(): List<ContextData> {
     }
 }
 
-fun KClass<out Condition>.conditionContextData(): List<ContextData> {
+fun KClass<out Condition>.conditionContextData(customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance()): List<ContextData> {
     return when (this) {
         Condition.AppHasNotification::class -> {
-            dats<ContextDataMapping.AppHasNotification>()
+            dats<ContextDataMapping.AppHasNotification>(customContextDataKey)
         }
 
         else -> {

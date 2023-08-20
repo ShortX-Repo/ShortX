@@ -49,7 +49,7 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         note = it.note,
                         actionOnError = it.actionOnError,
                         isEnabled = !it.isEnabled,
-                        customContextDataKey = it.customContextDataKey
+                        contextData = it.contextData
                     )
                 )
             }
@@ -63,7 +63,7 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
                         note = action.note,
                         isEnabled = action.isEnabled,
                         actionOnError = onError,
-                        customContextDataKey = action.customContextDataKey
+                        contextData = action.contextData
                     )
                 )
             }
@@ -84,6 +84,23 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         },
         executeAll = {
             this.executeAllAction()
+        },
+        setCustomContextDataKey = { actionId, key ->
+            actions.first { it.id == actionId }.let { action ->
+                addAction(
+                    action.clone(
+                        id = action.id,
+                        note = action.note,
+                        isEnabled = action.isEnabled,
+                        actionOnError = action.actionOnError,
+                        contextData = action.contextData.toMutableList().apply {
+                            val targetData = first { it.key == key.first }
+                            val index = indexOf(targetData)
+                            add(index, targetData.copy(customKey = key.second))
+                        }
+                    )
+                )
+            }
         }
     )
 }
