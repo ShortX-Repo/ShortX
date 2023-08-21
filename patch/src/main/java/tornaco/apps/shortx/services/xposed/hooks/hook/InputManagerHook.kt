@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.os.Build
 import android.util.Log
 import android.view.IInputFilter
 import android.view.IInputFilterHost
@@ -18,6 +19,12 @@ object InputManagerHook {
     private val logger = Logger("ShortXHook.InputManagerHook")
 
     fun hookInputManager(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        // Meizu android 9 volumn not work after active ShortX.
+        if (Build.MANUFACTURER == "meizu" && Build.ID == "PKQ1.190616.001") {
+            logger.w("Drop InputManagerHook.")
+            return@runCatching
+        }
+
         afterMethod(lpparam.classLoader.inputManagerService(), Methods.start) { param ->
             logger.d("inputManagerService start.")
             ServiceHolder.inputManagerService = param.thisObject
