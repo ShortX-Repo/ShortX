@@ -121,13 +121,14 @@ fun DialogMessage(text: String) {
 }
 
 @Composable
-fun TipBody(text: String) {
+fun TipBody(text: String, maxLines: Int = 100) {
     Text(
         modifier = Modifier.padding(vertical = 4.dp),
         text = text,
         style = MaterialTheme.typography.bodySmall.copy(
             fontSize = 11.sp
-        )
+        ),
+        maxLines = maxLines,
     )
 }
 
