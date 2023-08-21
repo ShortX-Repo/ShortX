@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
+import android.content.Intent
 import android.os.IBinder
 import android.os.UserHandle
 import de.robv.android.xposed.XC_MethodHook
@@ -45,7 +46,12 @@ object ActivityRecordHook {
             logger.e("activityResumedLocked, can not get intent or uid for activityRecord: $activityRecord")
             return
         }
-        logger.i("activityResumedLocked, user: $uid, intent: $intent")
+        val intentUri = runCatching {
+            intent.toUri(Intent.URI_INTENT_SCHEME)
+        }.getOrElse {
+            it.toString()
+        }
+        logger.i("activityResumedLocked, user: $uid, intent: $intent, intentUri: $intentUri")
 
         val componentName = intent.component
         if (componentName == null) {
@@ -53,7 +59,7 @@ object ActivityRecordHook {
             return
         }
         ShortXService.shortXContext.appState.onActivityResumed(
-            componentName, UserHandle.getUserId(uid)
+            componentName, UserHandle.getUserId(uid), intentUri
         )
     }
 

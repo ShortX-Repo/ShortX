@@ -128,8 +128,8 @@ class AppStateService(shortXContext: ShortXContext) :
         return activityState.isFront(this)
     }
 
-    fun onActivityResumed(componentName: ComponentName, userId: Int) {
-        activityState.onActivityResumed(componentName, userId)
+    fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
+        activityState.onActivityResumed(componentName, userId, intentUri)
     }
 
     fun onActivityStopped(componentName: ComponentName, userId: Int) {

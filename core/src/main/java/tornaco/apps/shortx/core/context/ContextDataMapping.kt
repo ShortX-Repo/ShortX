@@ -40,7 +40,8 @@ object ContextDataMapping {
     enum class ActivityStarted(val description: String) {
         pkgName("App package name of the started Activity"),
         componentName("Short string of the started Activity component name"),
-        appLabel("The app label")
+        appLabel("The app label"),
+        activityIntentUri("Intent to uri")
     }
 
     @DoNotStrip

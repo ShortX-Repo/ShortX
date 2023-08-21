@@ -45,8 +45,8 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         return topVisibleActivities.any { it.pkg == appPkg }
     }
 
-    fun onActivityResumed(componentName: ComponentName, userId: Int) {
-        logger.d("onActivityResumed: $componentName userId: $userId")
+    fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
+        logger.d("onActivityResumed: $componentName userId: $userId, intentUri: $intentUri")
 
         onActivityStateChanged()
 
@@ -57,6 +57,7 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
                 .addComponents(activity)
                 .build(),
             initialContextData = mapOf(
+                ContextDataMapping.ActivityStarted.activityIntentUri.name to intentUri,
                 ContextDataMapping.ActivityStarted.pkgName.name to activity.pkg.pkgName,
                 ContextDataMapping.ActivityStarted.componentName.name to componentName.flattenToShortString(),
                 ContextDataMapping.ActivityStarted.appLabel.name to (shortXContext.appState.getAppLabel(

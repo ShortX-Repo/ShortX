@@ -33,6 +33,11 @@ object Classes {
     }
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.activityStarterClass(): Class<*> {
+        return Reflections.findClass("com.android.server.wm.ActivityStarter", this)
+    }
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.inputManagerService(): Class<*> {
         return Reflections.findClass("com.android.server.input.InputManagerService", this)
     }

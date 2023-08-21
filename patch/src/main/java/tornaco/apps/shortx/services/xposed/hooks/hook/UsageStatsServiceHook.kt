@@ -31,10 +31,12 @@ object UsageStatsServiceHook {
             } else if (type == UsageEvents.Event.ACTIVITY_RESUMED) {
                 logger.d("ACTIVITY_RESUMED: $packageName $className")
                 ShortXService.shortXContext.appState.onActivityResumed(
-                    ComponentName(
+                    componentName = ComponentName(
                         packageName,
                         className
-                    ), userId
+                    ),
+                    userId = userId,
+                    intentUri = "TODO"
                 )
             }
         }
