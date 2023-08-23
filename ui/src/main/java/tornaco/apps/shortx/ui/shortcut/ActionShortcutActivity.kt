@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.LayerDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
@@ -26,14 +27,27 @@ import tornaco.apps.shortx.ui.main.DirectActionUM
 
 private const val KEY_ACTION_ID = "key_action_id"
 
+// For Deep link
+private const val KEY_ID = "id"
+
 class ActionShortcutActivity : Activity() {
 
     private val logger = Logger("ActionShortcutActivity")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val id: String? = intent.getStringExtra(KEY_ACTION_ID)
-        logger.i("ActionShortcutActivity, action: $id")
+        var id: String? = intent.getStringExtra(KEY_ACTION_ID)
+
+        if (id == null) {
+            val data: Uri? = intent.data
+            logger.d("data: $data")
+            if (data != null) {
+                id = data.getQueryParameter("id")
+            }
+        }
+
+        logger.i("ActionShortcutActivity, action id: $id")
+
         if (id == null) {
             Toast.makeText(this, "Id is null", Toast.LENGTH_SHORT).show()
             return

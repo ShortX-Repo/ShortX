@@ -33,8 +33,21 @@
         <activity
             android:name=".shortcut.ActionShortcutActivity"
             android:excludeFromRecents="true"
-            android:exported="false"
-            android:theme="@style/UiTheme.Shortcut" />
+            android:exported="true"
+            android:theme="@style/UiTheme.Shortcut">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="da"
+                    android:scheme="shortx" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name="tornaco.apps.shortx.ui.share.ViewerActivity"
