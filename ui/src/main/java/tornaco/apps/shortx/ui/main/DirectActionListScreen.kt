@@ -95,6 +95,7 @@ import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 const val EXECUTE_ANIM_DURATION = 600
@@ -186,8 +187,17 @@ fun DirectActionListScreen() {
             onDup = {
                 vm.dupDA(it.id)
             },
-            onEdit = {
+            onClick = {
                 AddDirectActionActivity.start(context, it.id)
+            },
+            onDeepLink = {
+                val uri = "shortx://run?id=${it.id}"
+                ClipboardUtils.copyToClipboard(context, "uri", uri)
+                Toast.makeText(
+                    context,
+                    i18N["ui.common.copied.to.clipboard"],
+                    Toast.LENGTH_LONG
+                ).show()
             },
             onShare = { um ->
                 if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
@@ -221,7 +231,8 @@ fun DirectActionListContent(
     showOverflowMenu: Boolean = false,
     onDelete: (DirectActionUM) -> Unit = {},
     onDup: (DirectActionUM) -> Unit = {},
-    onEdit: (DirectActionUM) -> Unit = {},
+    onClick: (DirectActionUM) -> Unit = {},
+    onDeepLink: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
     run: (DirectActionUM) -> Unit = {},
     stopAllJobs: (DirectActionUM) -> Unit = {}
@@ -247,7 +258,8 @@ fun DirectActionListContent(
                 run = run,
                 onDup = onDup,
                 onDelete = onDelete,
-                onEdit = onEdit,
+                onEdit = onClick,
+                onDeepLink = onDeepLink,
                 onShare = onShare,
                 stopAllJobs = stopAllJobs
             )
@@ -258,7 +270,8 @@ fun DirectActionListContent(
                 onDirectActionClick = run,
                 onDup = onDup,
                 onDelete = onDelete,
-                onEdit = onEdit,
+                onEdit = onClick,
+                onDeepLink = onDeepLink,
                 onShare = onShare,
                 stopAllJobs = stopAllJobs
             )
@@ -275,6 +288,7 @@ private fun DAListContent(
     onDup: (DirectActionUM) -> Unit = {},
     onDelete: (DirectActionUM) -> Unit = {},
     onEdit: (DirectActionUM) -> Unit = {},
+    onDeepLink: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
     stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
@@ -333,6 +347,7 @@ private fun DAListContent(
                         onDup = onDup,
                         onDelete = onDelete,
                         onEdit = onEdit,
+                        onDeepLink = onDeepLink,
                         onShare = onShare,
                         stopAllJobs = stopAllJobs
                     )
@@ -358,6 +373,7 @@ private fun DAListContentCompat(
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
@@ -378,6 +394,7 @@ private fun DAListContentCompat(
                 onDup = onDup,
                 onDelete = onDelete,
                 onEdit = onEdit,
+                onDeepLink = onDeepLink,
                 onShare = onShare,
                 stopAllJobs = stopAllJobs
             )
@@ -395,6 +412,7 @@ private fun DirectActionItem(
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
@@ -405,6 +423,7 @@ private fun DirectActionItem(
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
+            onDeepLink = onDeepLink,
             onShare = onShare
         )
         DAListItem(
@@ -435,6 +454,7 @@ private fun DirectActionItemCompat(
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
@@ -445,6 +465,7 @@ private fun DirectActionItemCompat(
             onDup = onDup,
             onDelete = onDelete,
             onEdit = onEdit,
+            onDeepLink = onDeepLink,
             onShare = onShare
         )
         DAListItemCompat(
@@ -622,6 +643,7 @@ private fun listItemOverflowMenu(
     onDup: (DirectActionUM) -> Unit,
     onDelete: (DirectActionUM) -> Unit,
     onEdit: (DirectActionUM) -> Unit,
+    onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
 ): DropdownSelectorState {
     val context = LocalContext.current
@@ -673,6 +695,11 @@ private fun listItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.System.share_line)
             }),
+        DropdownItem(labelLines = listOf("Deeplink"),
+            data = "deeplink",
+            icon = {
+                RemixIcon(Remix.System.external_link_line)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
             icon = {
@@ -717,6 +744,10 @@ private fun listItemOverflowMenu(
 
             "edit" -> {
                 onEdit(da)
+            }
+
+            "deeplink" -> {
+                onDeepLink(da)
             }
 
             "share" -> {

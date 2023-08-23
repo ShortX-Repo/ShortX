@@ -42,7 +42,7 @@ class ActionShortcutActivity : Activity() {
             val data: Uri? = intent.data
             logger.d("data: $data")
             if (data != null) {
-                id = data.getQueryParameter("id")
+                id = data.getQueryParameter(KEY_ID)
             }
         }
 
