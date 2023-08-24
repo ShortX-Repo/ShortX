@@ -93,6 +93,7 @@ import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -107,7 +108,6 @@ fun DirectActionListScreen() {
 
     LaunchedEffect(vm) {
         vm.loadDA(delay = true)
-        vm.refreshStates()
     }
 
     val context = LocalContext.current
@@ -250,10 +250,11 @@ fun DirectActionListContent(
     if (!state.isLoading && state.das.isEmpty()) {
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
+        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
         if (state.isShowDetailedDAItem) {
             DAListContent(
                 das = state.das,
-                isSubscribed = state.isSubscribed,
+                isSubscribed = subscribeState.isSubscribed,
                 showOverflowMenu = showOverflowMenu,
                 run = run,
                 onDup = onDup,
@@ -377,6 +378,7 @@ private fun DAListContentCompat(
     onShare: (DirectActionUM) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
+    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),
@@ -386,7 +388,7 @@ private fun DAListContentCompat(
             DirectActionItemCompat(
                 modifier = Modifier,
                 da = da,
-                isSubscribed = state.isSubscribed,
+                isSubscribed = subscribeState.isSubscribed,
                 isLongClickEnabled = showOverflowMenu,
                 onClick = {
                     onDirectActionClick(da)

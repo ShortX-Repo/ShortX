@@ -11,11 +11,11 @@ import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
 import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
-fun AppFacts(keyword: String, subscribeState: SubscribeState, setFact: (Fact) -> Unit) {
+fun AppFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
     val items = listOf(
         Fact.AnyActivityStarted::class,

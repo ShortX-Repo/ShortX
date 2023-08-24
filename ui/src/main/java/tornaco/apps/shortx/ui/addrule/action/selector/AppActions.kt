@@ -20,7 +20,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
@@ -446,7 +446,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun AppActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
+fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = arrayOf(
         Action.StartActivity::class,

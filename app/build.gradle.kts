@@ -117,6 +117,7 @@ dependencies {
     implementation(project(":services-ui"))
     implementation(project(":patch"))
     implementation(project(":core"))
+    implementation(project(":external:utils"))
 
     kover(project(":core"))
     kover(project(":services"))

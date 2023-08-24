@@ -42,7 +42,6 @@ import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.selector.initialPageIndex
 import tornaco.apps.shortx.ui.base.ColoredIcon
-import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
@@ -73,6 +72,7 @@ import tornaco.apps.shortx.ui.main.rememberDAViewerState
 import tornaco.apps.shortx.ui.main.rememberRuleViewerState
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
     DA("ui.feat.label.da", Remix.Development.command_line),
@@ -88,7 +88,6 @@ fun DiscoverScreen() {
     val discoverState by discoverModel.state.collectAsState()
 
     LaunchedEffect(vm) {
-        vm.refreshStates()
         discoverModel.loadDiscoverData()
     }
 
@@ -110,6 +109,8 @@ fun DiscoverScreen() {
 
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
+
+    val globalSubscribeState by LVLStateHolder.subscribeState.collectAsState()
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,
@@ -151,13 +152,13 @@ fun DiscoverScreen() {
         onItemSelected = { _, id ->
             when (id) {
                 "local" -> discoverModel.switchRepo(DiscoverRepo.PrebuiltLocal)
-                "officialOnline" -> discoverState.isSubscribed.select({
+                "officialOnline" -> globalSubscribeState.isSubscribed.select({
                     discoverModel.switchRepo(DiscoverRepo.OfficialOnline)
                 }, {
                     subscribeDialogState.show()
                 })
 
-                "new" -> discoverState.isSubscribed.select({
+                "new" -> globalSubscribeState.isSubscribed.select({
                     newRepoDialogState.show()
                 }, {
                     subscribeDialogState.show()
@@ -168,8 +169,10 @@ fun DiscoverScreen() {
         })
     MenuDialog(state = repoSelectState)
 
+
     MainScaffold(
         state = mainState,
+        subscribeState = globalSubscribeState,
         appBarTitleKey = "ui.feat.label.discover",
         enableMask = false,
         appBarActions = {
@@ -204,10 +207,6 @@ fun DiscoverScreen() {
                 DiscoverTabItem.values().size
             })
         val scope = rememberCoroutineScope()
-
-        DisposableEffectWithLifeCycle(onResume = {
-            discoverModel.loadSubscribeState()
-        })
 
         Column {
             ShortXTabRow(

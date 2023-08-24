@@ -10,9 +10,9 @@ import tornaco.apps.shortx.core.isSuccess
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import java.util.UUID
@@ -21,28 +21,29 @@ object EntryPoint {
     private val logger = Logger("EntryPoint")
 
     fun onCreate(context: Context) {
-        initLogger(context)
         initDeviceId(context)
         I18NCache.init(context)
+        LVLStateHolder.init(context)
         checkCB(context)
         LCRulesAdapter.initRules(context)
     }
 
     private fun checkCB(context: Context) {
         logger.d("check CB")
-        if (shortXManager.isInstalled && isLVLChecked(context)) {
-            val token = getLVLToken(context)
-            if (!token.isGPToken()) {
-                val deviceId = getDeviceId(context)
-                logger.p("check CB, $token $deviceId")
-                shortXManager.vb(token, deviceId) {
-                    logger.d("check CB res: $it")
-                    if (it.isSuccess) {
-                        S.c(token, it.k)
-                        logger.d("check CB success")
-                    } else {
-                        logger.d("check CB fail, uncheck")
-                        setLVLChecked(context, false)
+        if (shortXManager.isInstalled && LVLStateHolder.subscribeState.value.isSubscribed) {
+            getLVLToken(context) { token ->
+                if (!token.isGPToken()) {
+                    val deviceId = getDeviceId(context)
+                    logger.p("check CB, $token $deviceId")
+                    shortXManager.vb(token, deviceId) {
+                        logger.d("check CB res: $it")
+                        if (it.isSuccess) {
+                            S.c(token, it.k)
+                            logger.d("check CB success")
+                        } else {
+                            logger.d("check CB fail, uncheck")
+                            setLVLChecked(context, false)
+                        }
                     }
                 }
             }

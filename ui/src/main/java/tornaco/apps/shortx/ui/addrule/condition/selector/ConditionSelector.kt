@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,11 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.model.allConditionClasses
-import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -36,7 +33,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
-import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ConditionCategory(val i18NKey: String, val icon: String) {
@@ -113,18 +110,11 @@ private fun <ARGS> ConditionSelector(
                         state.dismiss()
                     }
 
-                    val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
-                    LaunchedEffect(subscribeStateViewModel) {
-                        subscribeStateViewModel.refreshStates()
-                    }
-                    DisposableEffectWithLifeCycle(onResume = {
-                        subscribeStateViewModel.refreshStates()
-                    })
-                    val subscribeState by subscribeStateViewModel.state.collectAsState()
+                    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
 
                     AppConditions(
-                        searchBarState.keyword,
-                        subscribeState,
+                        keyword = searchBarState.keyword,
+                        subscribeState = subscribeState,
                         setCondition = setCondition
                     )
                     StandardSpacer()

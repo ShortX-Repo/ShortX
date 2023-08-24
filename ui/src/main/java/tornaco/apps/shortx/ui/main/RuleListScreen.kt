@@ -70,6 +70,7 @@ import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 
@@ -80,7 +81,6 @@ fun RuleScreen() {
 
     LaunchedEffect(vm) {
         vm.loadRules(delay = true)
-        vm.refreshStates()
     }
 
     val context = LocalContext.current
@@ -209,8 +209,9 @@ private fun RuleContent(
     if (!state.isLoading && state.rules.isEmpty()) {
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
+        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
         RuleListContent(
-            isSubscribed = state.isSubscribed,
+            isSubscribed = subscribeState.isSubscribed,
             rules = state.rules,
             onRuleClick = onRuleClick,
             setRuleEnabled = setRuleEnabled,

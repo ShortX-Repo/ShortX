@@ -10,7 +10,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 
@@ -36,7 +36,11 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun LifeActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
+fun LifeActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
 
     val actionItems = listOf(

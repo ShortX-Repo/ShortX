@@ -17,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.addrule.actionContextData
-import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -38,7 +36,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
-import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ActionCategory(val i18NKey: String, val icon: String) {
@@ -132,22 +130,14 @@ private fun AllActions(
             keywordChanged = { })
         SearchBar(searchBarState = searchBarState)
 
-        val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
-        LaunchedEffect(subscribeStateViewModel) {
-            subscribeStateViewModel.refreshStates()
-        }
-        DisposableEffectWithLifeCycle(onResume = {
-            subscribeStateViewModel.refreshStates()
-        })
-
-        val subscribeState by subscribeStateViewModel.state.collectAsState()
+        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
 
         AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
             Column {
                 ActionCategoryTitle(ActionCategory.Recent)
                 RecentActions(
                     actions = selectorState,
-                    subscribeState,
+                    subscribeState = subscribeState,
                     addAction = addAction
                 )
                 StandardSpacer()

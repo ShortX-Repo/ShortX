@@ -10,13 +10,13 @@ import tornaco.apps.shortx.ui.addrule.condition.mapper.iconForCondition
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun AppConditions(
     keyword: String,
-    subscribeState: SubscribeState,
+    subscribeState: LVLStateHolder.State,
     setCondition: (Condition) -> Unit
 ) {
     val i18N = LocalI18N.current

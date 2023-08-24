@@ -19,7 +19,7 @@ import tornaco.apps.shortx.ui.gvar.rememberNewGlobalVarState
 import tornaco.apps.shortx.ui.gvar.rememberNewLocalVarState
 import tornaco.apps.shortx.ui.gvar.toGlobalVar
 import tornaco.apps.shortx.ui.gvar.toLocalVar
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
@@ -103,7 +103,7 @@ fun varActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 }
 
 @Composable
-fun VarActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
+fun VarActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
     val actionItems = listOf(
         Action.WriteGV::class,

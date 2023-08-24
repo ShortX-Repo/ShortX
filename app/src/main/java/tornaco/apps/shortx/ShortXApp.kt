@@ -17,13 +17,17 @@ class ShortXApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        initLogger(this)
         logger.d("onCreate.")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions("")
         }
 
         installFakeService()
+
+        val initStartTimeMillis = System.currentTimeMillis()
         EntryPoint.onCreate(this)
+        logger.w("EntryPoint.onCreate taken ${System.currentTimeMillis() - initStartTimeMillis}ms")
     }
 
     private fun installFakeService() {

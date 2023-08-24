@@ -34,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +81,7 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -95,6 +97,8 @@ fun MainScaffold(
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+
     var enableFabMask by remember {
         mutableStateOf(false)
     }
@@ -124,7 +128,7 @@ fun MainScaffold(
                 }
 
                 "file" -> {
-                    state.isSubscribed.select({
+                    subscribeState.isSubscribed.select({
                         onFileClick()
                     }, { subscribeDialogState.show() })
                 }
@@ -134,7 +138,7 @@ fun MainScaffold(
                 }
 
                 "url" -> {
-                    state.isSubscribed.select({
+                    subscribeState.isSubscribed.select({
                         urlInputState.show()
                     }, { subscribeDialogState.show() })
                 }
@@ -143,6 +147,7 @@ fun MainScaffold(
 
     MainScaffold(
         state = state,
+        subscribeState = subscribeState,
         appBarTitleKey = appBarTitleKey,
         enableMask = enableFabMask,
         appBarActions = appBarActions,
@@ -158,6 +163,7 @@ fun MainScaffold(
 @Composable
 fun MainScaffold(
     state: MainState,
+    subscribeState: LVLStateHolder.State,
     appBarTitleKey: String,
     enableMask: Boolean,
     appBarActions: @Composable () -> Unit = {},
@@ -169,6 +175,7 @@ fun MainScaffold(
     var isShowActiveDialog by remember {
         mutableStateOf(false)
     }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -237,7 +244,7 @@ fun MainScaffold(
                 val context = LocalContext.current
 
                 AnimatedVisibility(
-                    visible = !state.isSubscribed
+                    visible = !subscribeState.isSubscribed
                             && !state.isHideSubscribeInfo
                 ) {
                     Card(
@@ -312,7 +319,7 @@ fun MainScaffold(
                 }
 
                 AnimatedVisibility(
-                    visible = state.isSubscribed
+                    visible = subscribeState.isSubscribed
                             && state.isFrameworkUpdated
                             && !state.isIgnoreFrameworkUpdate
                 ) {

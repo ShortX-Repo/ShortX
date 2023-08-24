@@ -17,9 +17,7 @@ import tornaco.apps.shortx.ui.base.error
 import tornaco.apps.shortx.ui.subscribe.code.Repo
 import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.subscribe.code.VerifyResult
-import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
 import javax.inject.Inject
 
@@ -53,10 +51,12 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     val codeVerifyEvent = _codeVerifyEvent.asSharedFlow()
 
     fun loadState() {
-        val isSubscribed = isLVLChecked(context)
+        val subscribeState = LVLStateHolder.subscribeState.value
+        val isSubscribed = subscribeState.isSubscribed
+        val token = subscribeState.token
+
         var source: SubscriptionSource? = null
-        if (isSubscribed) {
-            val token = getLVLToken(context)
+        if (isSubscribed && token != null) {
             source = if (token.isGPToken()) {
                 SubscriptionSource.GooglePlay
             } else {

@@ -14,7 +14,7 @@ import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 
@@ -53,7 +53,11 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
 }
 
 @Composable
-fun MiscActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
+fun MiscActions(
+    keyword: String,
+    subscribeState: LVLStateHolder.State,
+    addAction: (Action) -> Unit
+) {
     val i18N = LocalI18N.current
 
     val actionItems = listOf(

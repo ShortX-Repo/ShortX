@@ -56,7 +56,6 @@ import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
 import java.util.*
@@ -108,7 +107,6 @@ data class DirectActionUM(
 ) : Parcelable
 
 data class MainState(
-    val isSubscribed: Boolean = false,
     val isHideSubscribeInfo: Boolean = false,
     val isActivated: Boolean = false,
     val isFrameworkUpdated: Boolean = false,
@@ -333,7 +331,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             copy(
                 isActivated = shortXManager.isInstalled,
                 isFrameworkUpdated = shortXManager.isFrameworkUpdated,
-                isSubscribed = isLVLChecked(context),
                 isAudioRecording = shortXManager.isAudioRecording()
             )
         }
@@ -384,14 +381,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
             pref.hideSubscribeInfoFlow.collectLatest {
                 updateState { copy(isHideSubscribeInfo = it) }
             }
-        }
-    }
-
-    fun refreshStates() {
-        updateState {
-            copy(
-                isSubscribed = isLVLChecked(context)
-            )
         }
     }
 

@@ -244,7 +244,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     fun exportLogs() {
         viewModelScope.launch {
             kotlin.runCatching {
-                val res = tornaco.apps.shortx.ui.exportLogs(context, shortXManager)
+                val res = exportLogs(context, shortXManager)
                 _logExportPerformed.emit(ExportLogResult.Success(Environment.DIRECTORY_DOWNLOADS + File.separator + res.name))
             }.onFailure {
                 logger.e(it, "exportLogs error")

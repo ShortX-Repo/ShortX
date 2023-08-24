@@ -39,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -82,6 +83,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchBar
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ActionRecordColor
 import tornaco.apps.shortx.ui.theme.ConditionRecordColor
 import tornaco.apps.shortx.ui.theme.ErrorRed
@@ -256,7 +258,8 @@ fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
             ) {
                 CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
 
-                if (state.isSubscribed) {
+                val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+                if (subscribeState.isSubscribed) {
                     if (state.onlyShowSrc != null) {
                         StandardSpacer()
                         ListItem(

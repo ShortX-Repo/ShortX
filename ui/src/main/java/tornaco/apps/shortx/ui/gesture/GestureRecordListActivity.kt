@@ -48,7 +48,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.Duration
 import java.util.Date
@@ -65,7 +65,7 @@ class GestureRecordListActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        require(isLVLChecked(this))
+        require(LVLStateHolder.subscribeState.value.isSubscribed)
         GestureRecordListScreen(
             back = {
                 finish()

@@ -1,9 +1,11 @@
 package tornaco.apps.shortx.ui.subscribe.util
 
 import android.content.Context
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.EntryPoint
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 private val logger = Logger()
 private var skipTimes = 0
@@ -13,37 +15,37 @@ const val LVL_SRC_GP = "GP"
 
 fun String.isGPToken() = LVL_SRC_GP == this
 
-fun isLVLChecked(context: Context): Boolean {
+inline fun isLVLChecked(context: Context, onRes: (Boolean) -> Unit) {
     val deviceId: String = EntryPoint.getDeviceId(context)
     val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
         .withEncryptionPassword(deviceId)
         .build()
-    return try {
+    try {
         val data = pref.getString(
             BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
             Nothing::class.java.name
         )
         val bool = data.split("-")[0]
-        java.lang.Boolean.parseBoolean(bool)
+        onRes(java.lang.Boolean.parseBoolean(bool))
     } catch (e: Throwable) {
-        false
+        onRes(false)
     }
 }
 
-fun getLVLToken(context: Context): String {
+inline fun getLVLToken(context: Context, onRes: (String) -> Unit) {
     val deviceId: String = EntryPoint.getDeviceId(context)
     val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
         .withEncryptionPassword(deviceId)
         .build()
-    return try {
+    try {
         val data = pref.getString(
             BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
             Nothing::class.java.name
         )
         val token = data.split("--------")[1]
-        token
+        onRes(token)
     } catch (e: Throwable) {
-        ""
+        onRes("")
     }
 }
 
@@ -54,10 +56,19 @@ fun setLVLChecked(context: Context, checked: Boolean, token: String = "") {
         .build()
     try {
         pref.edit()
-            .putString(BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon", "$checked--------$token")
+            .putString(
+                BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
+                "$checked--------$token"
+            )
             .apply()
     } catch (e: Throwable) {
         logger.e(e)
+    }
+
+    if (checked) {
+        runBlocking { LVLStateHolder.setSubscribed(token) }
+    } else {
+        runBlocking { LVLStateHolder.setNotSubscribed() }
     }
 }
 

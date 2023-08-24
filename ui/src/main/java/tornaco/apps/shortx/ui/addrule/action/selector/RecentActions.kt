@@ -10,14 +10,14 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 import kotlin.reflect.KClass
 
 @Composable
 fun RecentActions(
     actions: SelectorState,
-    subscribeState: SubscribeState,
+    subscribeState: LVLStateHolder.State,
     addAction: (Action) -> Unit
 ) {
     val i18N = LocalI18N.current

@@ -51,7 +51,6 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValue
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
-import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalAppName
@@ -66,9 +65,8 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.SubscribeState
-import tornaco.apps.shortx.ui.main.SubscribeStateViewModel
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.LottieLoadingView
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -95,14 +93,7 @@ fun SettingsScreen(
         vm.loadState()
     }
 
-    val subscribeStateViewModel = hiltViewModel<SubscribeStateViewModel>()
-    LaunchedEffect(subscribeStateViewModel) {
-        subscribeStateViewModel.refreshStates()
-    }
-    DisposableEffectWithLifeCycle(onResume = {
-        subscribeStateViewModel.refreshStates()
-    })
-    val subscribeState by subscribeStateViewModel.state.collectAsState()
+    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
 
     ShortXTheme {
         Surface(
@@ -323,7 +314,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SubscriptionStatus(mainState: SubscribeState) {
+private fun SubscriptionStatus(mainState: LVLStateHolder.State) {
     Box(modifier = Modifier) {
         val context = LocalContext.current
         if (mainState.isSubscribed) {
@@ -346,7 +337,7 @@ private fun SubscriptionStatus(mainState: SubscribeState) {
 @Composable
 private fun generalSettings(
     state: SettingsState,
-    mainState: SubscribeState,
+    mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
     goToPkgSetList: () -> Unit,
     goToGV: () -> Unit,
@@ -407,7 +398,7 @@ private fun generalSettings(
 @Composable
 private fun recordSettings(
     state: SettingsState,
-    mainState: SubscribeState,
+    mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
     goToEvaRecord: () -> Unit,
     goToAudioRecord: () -> Unit,
@@ -457,7 +448,7 @@ private fun recordSettings(
 @Composable
 private fun dataSettings(
     state: SettingsState,
-    mainState: SubscribeState,
+    mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
     pickRestoreFile: () -> Unit,
     resetData: () -> Unit,
@@ -646,7 +637,7 @@ private fun devSettings(
 @Composable
 private fun systemSettings(
     state: SettingsState,
-    mainState: SubscribeState,
+    mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
 ): List<Preference> {
     val i18N = LocalI18N.current
@@ -679,7 +670,7 @@ private fun systemSettings(
 @Composable
 private fun engineSettings(
     state: SettingsState,
-    mainState: SubscribeState,
+    mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
 ): List<Preference> {
     val i18N = LocalI18N.current

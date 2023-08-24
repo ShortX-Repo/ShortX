@@ -29,7 +29,6 @@ import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.i18NIns
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 import javax.inject.Inject
 
 sealed interface EvaRecord {
@@ -99,8 +98,6 @@ data class EvaRecordState(
         showError = true
     ),
 
-    val isSubscribed: Boolean = false,
-
     val isRecordEnabled: Boolean = false,
     val onlyShowSrc: EvaluateContext? = null
 )
@@ -152,7 +149,6 @@ class EvaRecordViewModel @Inject constructor(@ApplicationContext private val con
         reduce {
             state.copy(
                 isRecordEnabled = shortXManager.isEvaluateRecordEnabled(),
-                isSubscribed = isLVLChecked(context)
             )
         }
     }

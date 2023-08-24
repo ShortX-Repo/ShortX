@@ -13,7 +13,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.SubscribeState
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
@@ -140,7 +140,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 }
 
 @Composable
-fun UiActions(keyword: String, subscribeState: SubscribeState, addAction: (Action) -> Unit) {
+fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: (Action) -> Unit) {
     val i18N = LocalI18N.current
 
     val uiActionItems = listOf(
