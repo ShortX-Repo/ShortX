@@ -605,6 +605,7 @@
   "ui.settings.action.record.src.contextsrc_executeruleactions": "自动指令菜单 - 执行动作",
   "ui.settings.action.record.src.contextsrc_rule": "自动指令",
   "ui.settings.action.record.src.contextsrc_rulehook": "自动指令的钩子",
+  "ui.settings.action.record.src.contextsrc_rulequit": "退出指令",
   "ui.settings.action.record.src.unrecognized": "其他情况下执行",
   "ui.settings.condition.record": "条件记录",
   "ui.settings.condition.record.summary": "查看历史条件匹配的记录",

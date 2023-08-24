@@ -606,6 +606,7 @@
   "ui.settings.action.record.src.contextsrc_executeruleactions": "Rule menu - execute actions",
   "ui.settings.action.record.src.contextsrc_rule": "Rule",
   "ui.settings.action.record.src.contextsrc_rulehook": "Rule hooks",
+  "ui.settings.action.record.src.contextsrc_rulequit": "Rule quit",
   "ui.settings.action.record.src.unrecognized": "Unrecognized",
   "ui.settings.condition.record": "Condition record",
   "ui.settings.condition.record.summary": "View condition match records",
