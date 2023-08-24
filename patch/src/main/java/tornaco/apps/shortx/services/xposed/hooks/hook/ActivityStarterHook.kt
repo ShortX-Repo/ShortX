@@ -5,7 +5,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.os.IBinder
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.activityStarterClass
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
@@ -17,7 +17,9 @@ object ActivityStarterHook {
 
     fun hookEnqueueRequest(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (OsUtils.isROrAbove()) {
-            hookEnqueueRequest_30OrAbove(lpparam)
+            onDebugBuild {
+                hookEnqueueRequest_30OrAbove(lpparam)
+            }
         }
     }
 
@@ -55,11 +57,11 @@ object ActivityStarterHook {
             val suspended =
                 activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SUSPENDED != 0
             logger.d("ActivityStarter executeRequest, suspended: $suspended")
-            if (autoEnable) {
+            if (suspended && autoEnable) {
                 // Remove suspend flags
                 activityInfo.applicationInfo.flags =
                     activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SUSPENDED.inv()
-                logger.w("ActivityStarter executeRequest, Remove suspend flags to: " + activityInfo.applicationInfo.flags)
+                logger.i("ActivityStarter executeRequest, Remove suspend flags to: " + activityInfo.applicationInfo.flags)
             }
         }
     }
