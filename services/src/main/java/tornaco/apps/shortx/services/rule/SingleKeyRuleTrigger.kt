@@ -165,7 +165,9 @@ private class SingleKeyRuleImpl(
             .setGesture(KeyGesture.KeyPress)
             .build()
         val enabledRules = ruleService.getAllEnabledRules()
-        if (ruleService.shouldFire(enabledRules, fact)) {
+        val shouldFire = ruleService.shouldFire(enabledRules, fact)
+        logger.d("shouldFire: $shouldFire")
+        if (shouldFire) {
             ruleService.publishFact(
                 "onPress-$keycode",
                 fact,

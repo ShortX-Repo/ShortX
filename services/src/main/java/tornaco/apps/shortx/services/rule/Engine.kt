@@ -171,19 +171,24 @@ class DefaultRuleEngine(
 
     private val Rule.muteX get() = muteXMap.computeIfAbsent(this.id) { Mutex() }
 
+    private val preCheckContext = EvaluateContext.newBuilder()
+        .setSrcId("PreCheck")
+        .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+        .setSrcTitle("PreCheck")
+        .setSerialNumber(nextEvaluateContextSerialNumber())
+        .build()
+
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
         val startTimeMillis = System.currentTimeMillis()
         return rules.filterInvalid().any {
-            val evaluateContext = EvaluateContext.newBuilder()
-                .setSrcId(it.id)
-                .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
-                .setSrcTitle(it.title)
-                .setSerialNumber(nextEvaluateContextSerialNumber())
-                .build()
-            shouldFireRuleForFact(evaluateContext, fact, it) || shouldFireRuleZQuitForFact(
-                evaluateContext,
-                fact,
-                it
+            shouldFireRuleForFact(
+                context = preCheckContext,
+                fact = fact,
+                rule = it
+            ) || shouldFireRuleZQuitForFact(
+                context = preCheckContext,
+                fact = fact,
+                rule = it
             )
         }.also {
             logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
