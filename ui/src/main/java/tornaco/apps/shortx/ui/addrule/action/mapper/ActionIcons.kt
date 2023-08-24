@@ -345,6 +345,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.mic_2_fill
         }
 
+        Action.StopAudioRecording::class -> {
+            Remix.Media.stop_circle_fill
+        }
+
         Action.SwitchMobileDataSlot::class -> {
             Remix.Device.sim_card_2_fill
         }

@@ -176,6 +176,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.StopAudioRecording::class -> {
+                addAction(Action.StopAudioRecording())
+                true
+            }
+
             Action.SwitchMobileDataSlot::class -> {
                 switchMobileDataSelectorState.show()
                 true
@@ -254,6 +259,7 @@ fun SystemActions(keyword: String, subscribeState: SubscribeState, addAction: (A
         Action.AdjustVolume::class,
         Action.Vibrate::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
+        OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
     ).map {

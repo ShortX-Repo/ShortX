@@ -347,6 +347,7 @@
   "ui.action.vibrate": "振动",
   "ui.action.switch.mobile.data.slot": "更改默认上网卡",
   "ui.action.audio.recording": "录音",
+  "ui.action.audio.recording.stop": "停止录音",
   "ui.action.audio.recording.summary": "录制的音频暂存在shortx内部，你可以通过设置-我的录音，查看或导出录音文件",
   "ui.action.audio.recording.card.text": "正在进行录音动作，点击停止",
   "ui.action.audio.src": "音频源",

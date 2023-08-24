@@ -882,6 +882,14 @@ message AudioRecording {
   string fileNamePrefix = 2;
 }
 
+message StopAudioRecording {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message SwitchMobileDataSlot {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

@@ -354,6 +354,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.AudioRecording
     },
+    StopAudioRecording {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.StopAudioRecording
+    },
     SwitchMobileDataSlot {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SwitchMobileDataSlot

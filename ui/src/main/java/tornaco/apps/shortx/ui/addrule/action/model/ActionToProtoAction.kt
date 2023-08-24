@@ -73,6 +73,7 @@ import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
+import tornaco.apps.shortx.core.proto.action.StopAudioRecording
 import tornaco.apps.shortx.core.proto.action.StopCurrentApp
 import tornaco.apps.shortx.core.proto.action.StopGestureRecording
 import tornaco.apps.shortx.core.proto.action.StopService
@@ -1024,6 +1025,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setSrc(src)
                 .setFileNamePrefix(fileNamePrefix)
+                .build()
+        }
+
+        is Action.StopAudioRecording -> {
+            StopAudioRecording.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
                 .build()
         }
 

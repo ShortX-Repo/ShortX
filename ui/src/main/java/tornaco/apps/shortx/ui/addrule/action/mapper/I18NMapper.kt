@@ -179,6 +179,7 @@ fun labelAndDescriptionForActionSelector(
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
+        Action.StopAudioRecording::class -> i18N["ui.action.audio.recording.stop"] to null
         Action.SwitchMobileDataSlot::class -> i18N["ui.action.switch.mobile.data.slot"] to null
         Action.StartGestureRecording::class -> i18N["ui.action.gesture.record.start"] to null
         Action.StopGestureRecording::class -> i18N["ui.action.gesture.record.stop"] to null
@@ -647,6 +648,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.audio.recording"],
                 i18N[action.src.labelKey()]
             )
+        }
+
+        is Action.StopAudioRecording -> {
+            listOf(i18N["ui.action.audio.recording.stop"])
         }
 
         is Action.SwitchMobileDataSlot -> {
