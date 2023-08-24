@@ -302,63 +302,15 @@ class DefaultRuleEngine(
 
                     // Launch actions.
                     if (shouldExecuteActions) {
-                        val job = coroutineScope.launchSafety {
-                            // By default, execute action in IO
-                            withContext(Dispatchers.IO) {
-                                logger.d("job for rule: ${rule.title} start.")
-                                val runActions: suspend () -> Unit = {
-                                    kotlin.run loop@{
-                                        logger.d("about to execute ${rule.actionsList.size} actions for ${fact.javaClass} ${rule.title}")
-                                        rule.actionsList.forEach {
-                                            logger.d("about to execute action: ${it.typeUrl}")
-                                            val evaRes = actionEvaluator.evaluate(
-                                                evaluateContext = evaluateContext,
-                                                action = it,
-                                                contextData = contextData,
-                                                localVars = localVars,
-                                            )
-                                            logger.d("action evaluate res: $evaRes")
-                                            if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
-                                                logger.e(evaRes.error, "evaluate fail")
-                                                if (evaRes.shouldContinue) {
-                                                    logger.d("Action on error is continue execute.")
-                                                } else {
-                                                    return@loop
-                                                }
-                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                                                logger.w("evaluate break!")
-                                                return@loop
-                                            } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
-                                                logger.d("action is disabled: ${evaRes.action.typeUrl}")
-                                            }
-                                        }
-                                    }
-                                }
-
-                                when (rule.asyncMode) {
-                                    AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
-                                        logger.d("Run actions with Async")
-                                        runActions()
-                                    }
-
-                                    AsyncMode.AsyncMode_Sync_InRule -> {
-                                        val muteX = rule.muteX
-                                        logger.d("Run actions with Sync_InRule: $muteX")
-                                        muteX.withLock {
-                                            runActions()
-                                        }
-                                    }
-
-                                    else -> {
-                                        logger.d("Run actions with globalMuteX")
-                                        globalMuteX.withLock {
-                                            runActions()
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
+                        val job = runActionsJob(
+                            ruleTitleForLog = rule.title,
+                            asyncMode = rule.asyncMode,
+                            muteX = rule.muteX,
+                            actionsToRun = rule.actionsList,
+                            evaluateContext = evaluateContext,
+                            contextData = contextData,
+                            localVars = localVars
+                        )
                         logger.d("Created job: $job for rule: ${rule.title}")
                         synchronized(jobs) {
                             jobs.add(JobRecord(rule.id, job))
@@ -389,9 +341,10 @@ class DefaultRuleEngine(
                         .setSrcTitle(rule.title)
                         .setSerialNumber(nextEvaluateContextSerialNumber())
                         .build()
+                    val localVars = LocalVars.obtain()
 
-                    coroutineScope.launchSafety {
-                        val conditionRes = if (quit.conditionsList.isEmpty()) {
+                    val conditionRes = runBlocking {
+                        if (quit.conditionsList.isEmpty()) {
                             logger.d("$LOG_TAG_RULE_QUIT quit for rule: ${rule.title} has no condition, assume match!")
                             true
                         } else {
@@ -405,16 +358,92 @@ class DefaultRuleEngine(
                                 localVars = LocalVars.obtain()
                             )
                         }
-                        logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
-                        if (conditionRes) {
-                            logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
-                            cancelJobs("Rule quit") { it.id == rule.id }
-                        }
                     }
+                    logger.d("$LOG_TAG_RULE_QUIT conditionRes for  ${fact.javaClass} ${rule.title} is: $conditionRes")
+                    if (conditionRes) {
+                        logger.d("$LOG_TAG_RULE_QUIT about to quit ${rule.title}")
+                        cancelJobs("Rule quit") { it.id == rule.id }
+
+                        runActionsJob(
+                            ruleTitleForLog = "$LOG_TAG_RULE_QUIT-${rule.title}",
+                            asyncMode = rule.asyncMode,
+                            muteX = rule.muteX,
+                            actionsToRun = rule.quit.actionsList,
+                            evaluateContext = evaluateContext,
+                            contextData = contextData,
+                            localVars = localVars
+                        )
+                    }
+
                 }
             }
         }
         return anyMatch
+    }
+
+    private fun runActionsJob(
+        ruleTitleForLog: String,
+        asyncMode: AsyncMode,
+        muteX: Mutex,
+        actionsToRun: List<ProtoAny>,
+        evaluateContext: EvaluateContext,
+        contextData: ContextData,
+        localVars: LocalVars
+    ) = coroutineScope.launchSafety {
+        // By default, execute action in IO
+        withContext(Dispatchers.IO) {
+            logger.d("job for rule: $ruleTitleForLog start.")
+            val runActions: suspend () -> Unit = {
+                kotlin.run loop@{
+                    logger.d("about to execute ${actionsToRun.size} actions for $ruleTitleForLog")
+                    actionsToRun.forEach {
+                        logger.d("about to execute action: ${it.typeUrl}")
+                        val evaRes = actionEvaluator.evaluate(
+                            evaluateContext = evaluateContext,
+                            action = it,
+                            contextData = contextData,
+                            localVars = localVars,
+                        )
+                        logger.d("action evaluate res: $evaRes")
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            logger.w("evaluate break!")
+                            return@loop
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Disabled) {
+                            logger.d("action is disabled: ${evaRes.action.typeUrl}")
+                        }
+                    }
+                }
+            }
+
+            when (asyncMode) {
+                AsyncMode.AsyncMode_Async, AsyncMode.UNRECOGNIZED -> {
+                    logger.d("Run actions with Async")
+                    runActions()
+                }
+
+                AsyncMode.AsyncMode_Sync_InRule -> {
+                    logger.d("Run actions with Sync_InRule: $muteX")
+                    muteX.withLock {
+                        runActions()
+                    }
+                }
+
+                else -> {
+                    logger.d("Run actions with globalMuteX")
+                    globalMuteX.withLock {
+                        runActions()
+                    }
+                }
+            }
+        }
+
     }
 
     override fun evaluateActions(
@@ -526,6 +555,7 @@ class DefaultRuleEngine(
     }
 }
 
-private fun List<Rule>.filterInvalid() = filter { it.actionsList.isNotEmpty() }
+private fun List<Rule>.filterInvalid() =
+    filter { it.actionsList.isNotEmpty() || it.quit.actionsList.isNotEmpty() }
 
 data class JobRecord(val id: String, val job: Job)

@@ -49,6 +49,7 @@ message RuleQuit {
   bool isEnabled = 3;
   ConditionOperator condOp = 4;
   ConditionOperatorPayload condOpPayload = 5;
+  repeated google.protobuf.Any actions = 6;
 }
 
 message RuleList {

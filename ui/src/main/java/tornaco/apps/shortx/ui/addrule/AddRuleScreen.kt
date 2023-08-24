@@ -76,6 +76,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -159,7 +160,8 @@ fun AddRuleScreen(
     val quitFactContentState by quitFactHandler.state.collectAsState()
     val quitConditionHandler = remember(vm) { vm.quitConditionContentStateHandler }
     val quitConditionContentState by quitConditionHandler.state.collectAsState()
-
+    val quitActionHandler = remember(vm) { vm.quitActionStateHandler }
+    val quitActionState by quitActionHandler.state.collectAsState()
 
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
@@ -199,7 +201,8 @@ fun AddRuleScreen(
                                         || actionOnDisabledState.isChanged
                                         || actionOnDeletedState.isChanged
                                         || quitFactContentState.isChanged
-                                        || quitConditionContentState.isChanged,
+                                        || quitConditionContentState.isChanged
+                                        || quitActionState.isChanged,
                                 onClick = {
                                     vm.save()
                                     back(true)
@@ -232,25 +235,27 @@ fun AddRuleScreen(
 
                             is LoadState.Success -> {
                                 RuleContent(
-                                    addRuleState,
-                                    vm,
-                                    readOnly,
-                                    factContentState,
-                                    factHandler,
-                                    conditionContentState,
-                                    conditionHandler,
-                                    actionContentState,
-                                    actionHandler,
-                                    quitFactContentState,
-                                    quitFactHandler,
-                                    quitConditionContentState,
-                                    quitConditionHandler,
-                                    actionOnEnabledState,
-                                    actionOnEnabledHandler,
-                                    actionOnDisabledState,
-                                    actionOnDisabledHandler,
-                                    actionOnDeletedState,
-                                    actionOnDeletedHandler
+                                    addRuleState = addRuleState,
+                                    vm = vm,
+                                    readOnly = readOnly,
+                                    factContentState = factContentState,
+                                    factHandler = factHandler,
+                                    conditionContentState = conditionContentState,
+                                    conditionHandler = conditionHandler,
+                                    actionContentState = actionContentState,
+                                    actionHandler = actionHandler,
+                                    quitFactContentState = quitFactContentState,
+                                    quitFactHandler = quitFactHandler,
+                                    quitConditionContentState = quitConditionContentState,
+                                    quitConditionHandler = quitConditionHandler,
+                                    quitActionState = quitActionState,
+                                    quitActionHandler = quitActionHandler,
+                                    actionOnEnabledState = actionOnEnabledState,
+                                    actionOnEnabledHandler = actionOnEnabledHandler,
+                                    actionOnDisabledState = actionOnDisabledState,
+                                    actionOnDisabledHandler = actionOnDisabledHandler,
+                                    actionOnDeletedState = actionOnDeletedState,
+                                    actionOnDeletedHandler = actionOnDeletedHandler
                                 )
                             }
                         }
@@ -276,6 +281,8 @@ private fun RuleContent(
     quitFactHandler: FactContentStateHandler,
     quitConditionContentState: ConditionContentState,
     quitConditionHandler: ConditionContentStateHandler,
+    quitActionState: ActionContentState,
+    quitActionHandler: ActionContentStateHandler,
     actionOnEnabledState: ActionContentState,
     actionOnEnabledHandler: ActionContentStateHandler,
     actionOnDisabledState: ActionContentState,
@@ -412,6 +419,21 @@ private fun RuleContent(
                         state = quitConditionContentState,
                         readOnly = readOnly,
                         handler = quitConditionHandler.asConditionHandler()
+                    )
+
+                    SectionSpacer()
+
+                    ActionContent(
+                        header = {
+                            FieldTitle(
+                                modifier = Modifier.padding(bottom = 6.dp),
+                                text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                            )
+                            TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                        },
+                        actions = quitActionState.actions,
+                        warnings = emptyMap(),
+                        handler = quitActionHandler.asActionHandler()
                     )
 
                     SectionSpacer()

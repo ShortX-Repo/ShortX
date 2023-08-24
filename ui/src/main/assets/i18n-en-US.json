@@ -50,6 +50,7 @@
   "ui.actions.hook.on.deleted.description": "Actions called when this Rule is deleted",
   "ui.rule.quit.title": "Quit Rule",
   "ui.rule.quit.description": "When below fact trigger and conditions matched, Rule will quit, all the actions will be stopped",
+  "ui.rule.quit.action.description": "All actions of this Rule will be stopped, you can add extra Actions below",
   "ui.advanced.options": "Advanced options",
   "ui.actions.add": "Add Action",
   "ui.actions.on.error": "On error",

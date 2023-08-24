@@ -86,6 +86,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
 
     val quitFactContentStateHandler = FactContentStateHandler()
     val quitConditionContentStateHandler = ConditionContentStateHandler()
+    val quitActionStateHandler = ActionContentStateHandler()
 
     fun setTitle(title: String) {
         if (title != state.value.title) {
@@ -135,6 +136,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
             val quitFacts = quitFactContentStateHandler.facts
             val quitConditions = quitConditionContentStateHandler.conditions
             val quitCondOp = quitConditionContentStateHandler.conditionOp
+            val quitActions = quitActionStateHandler.actions
 
             val rule = Rule.newBuilder()
                 .setId(state.value.id)
@@ -194,6 +196,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                                         .build()
                             }
                         }
+                        .addAllActions(quitActions.map { it.toProtoAction().pack_() })
                         .setIsEnabled(state.value.isQuitEnabled)
                         .build()
                 )
@@ -290,6 +293,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                     },
                     conditionOp = r.quit.condOp.toOp(r.condOpPayload)
                 )
+                quitActionStateHandler.init(
+                    actions = r.quit.actionsList.mapNotNull {
+                        it.toAction(
+                            shortXManager
+                        )
+                    })
 
                 val hasAnyHookActions: Boolean =
                     actionOnEnabledStateHandler.actions.isNotEmpty()
