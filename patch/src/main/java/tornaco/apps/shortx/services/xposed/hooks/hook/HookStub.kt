@@ -36,5 +36,6 @@ object HookStub {
         VPNHook.hook(lpparam)
         PhoneWindowManagerHook.hook(lpparam)
         ClipboardServiceHook.hookClipboardService(lpparam)
+        ActivityStarterHook.hookEnqueueRequest(lpparam)
     }
 }
