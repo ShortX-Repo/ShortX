@@ -240,5 +240,5 @@ object HttpRequest : Actor {
 }
 
 fun String.fixSpecialLetters(): String {
-    return this.replace("-", "_").replace(" ", "_").replace(".", "_")
+    return this.replace("-", "_").replace(" ", "_")
 }
