@@ -29,6 +29,7 @@ import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.MapQueryBus
+import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
@@ -665,6 +666,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setApp(mapApp)
+                .setNavType(NavType.NavType_Car)
                 .setLoc(
                     Location.newBuilder()
                         .setLatitude(latitude)

@@ -98,7 +98,7 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
                     BTHelper._connectedDevices.value =
                         BTHelper._connectedDevices.value.toMutableList().apply {
-                            remove(device)
+                            removeIf { it.address == device.address }
                         }
 
                     shortXContext.rule.publishFact(
