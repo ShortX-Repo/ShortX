@@ -18,7 +18,7 @@ import tornaco.apps.shortx.ui.subscribe.code.Repo
 import tornaco.apps.shortx.ui.subscribe.code.SubscriptionConfig
 import tornaco.apps.shortx.ui.subscribe.code.VerifyResult
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
-import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
+import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import javax.inject.Inject
 
 sealed interface SubscriptionSource {
@@ -100,7 +100,7 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
 
                 is VerifyResult.Success -> {
                     S.c(code, res.data.k)
-                    setLVLChecked(context, true, code)
+                    setLVLToken(code)
                     _codeVerifyEvent.emit(CodeVerifyEvent.Success)
                     loadState()
                 }

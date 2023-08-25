@@ -4,16 +4,21 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elvishew.xlog.XLog
-import com.google.android.vending.licensing.*
+import com.google.android.vending.licensing.AESObfuscator
+import com.google.android.vending.licensing.LicenseChecker
+import com.google.android.vending.licensing.LicenseCheckerCallback
+import com.google.android.vending.licensing.Policy
+import com.google.android.vending.licensing.ServerManagedPolicy
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.ui.EntryPoint
-import tornaco.apps.shortx.ui.subscribe.util.LVL_SRC_GP
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.ui.DeviceId
+import tornaco.apps.shortx.ui.TOKEN_GOOGLE_PLAY
 import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
-import tornaco.apps.shortx.ui.subscribe.util.setLVLChecked
+import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.skipLicenseCheckOnce
 
 private val SALT = byteArrayOf(
@@ -31,6 +36,7 @@ enum class CheckState {
 data class LVLUiState(val checkState: CheckState)
 
 class LVLCheckViewModel : ViewModel() {
+    private val logger = Logger("ShortXApp")
     private val _uiState = MutableStateFlow(LVLUiState(CheckState.CHECKING))
     val uiState: StateFlow<LVLUiState> = _uiState
 
@@ -39,33 +45,28 @@ class LVLCheckViewModel : ViewModel() {
 
         val checkerCallback = object : LicenseCheckerCallback {
             override fun allow(reason: Int) {
-                XLog.v("LicenseCheckerCallback.allow: $reason")
-                setLVLChecked(
-                    context = context,
-                    checked = true,
-                    token = LVL_SRC_GP
-                )
+                logger.p("LicenseCheckerCallback.allow: $reason")
+                setLVLToken(TOKEN_GOOGLE_PLAY)
                 _uiState.value = _uiState.value.copy(checkState = CheckState.SUCCESS)
             }
 
             override fun dontAllow(policyReason: Int) {
-                XLog.v("LicenseCheckerCallback do not allow: $policyReason")
+                logger.p("LicenseCheckerCallback do not allow: $policyReason")
                 when (policyReason) {
                     Policy.RETRY -> {
                         _uiState.value = _uiState.value.copy(checkState = CheckState.FAIL_NETWORK)
                     }
+
                     Policy.NOT_LICENSED -> {
                         _uiState.value =
                             _uiState.value.copy(checkState = CheckState.FAIL_NOT_LICENSED)
                     }
+
                     else -> {
                         _uiState.value = _uiState.value.copy(checkState = CheckState.FAIL)
                     }
                 }
-                setLVLChecked(
-                    context = context,
-                    checked = false
-                )
+                setLVLToken(null)
             }
 
             override fun applicationError(errorCode: Int) {
@@ -76,7 +77,7 @@ class LVLCheckViewModel : ViewModel() {
 
 
         // Try to use more data here. ANDROID_ID is a single point of attack.
-        val deviceId = EntryPoint.getDeviceId(context)
+        val deviceId = DeviceId.requireDeviceId()
         // Library calls this when it's done.
         // Construct the LicenseChecker with a policy.
         val checker = LicenseChecker(
@@ -93,10 +94,10 @@ class LVLCheckViewModel : ViewModel() {
     }
 
     fun canSkip(context: Context): Boolean {
-        return hasAChanceToSkipLicenseCheck(context)
+        return hasAChanceToSkipLicenseCheck()
     }
 
     fun onSkip(context: Context) {
-        return skipLicenseCheckOnce(context)
+        return skipLicenseCheckOnce()
     }
 }

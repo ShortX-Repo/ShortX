@@ -1,81 +1,40 @@
 package tornaco.apps.shortx.ui.subscribe.util
 
-import android.content.Context
 import kotlinx.coroutines.runBlocking
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.EntryPoint
+import tornaco.apps.shortx.ui.DeviceId
+import tornaco.apps.shortx.ui.KEY_SUB_TOKEN
+import tornaco.apps.shortx.ui.MMKVExt
+import tornaco.apps.shortx.ui.TOKEN_GOOGLE_PLAY
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
-private val logger = Logger()
+val lvlLogger = Logger("ShortXApp")
 private var skipTimes = 0
 var isSkipping = false
 
-const val LVL_SRC_GP = "GP"
+fun String.isGPToken() = TOKEN_GOOGLE_PLAY == this
 
-fun String.isGPToken() = LVL_SRC_GP == this
-
-inline fun isLVLChecked(context: Context, onRes: (Boolean) -> Unit) {
-    val deviceId: String = EntryPoint.getDeviceId(context)
-    val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
-        .withEncryptionPassword(deviceId)
-        .build()
-    try {
-        val data = pref.getString(
-            BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
-            Nothing::class.java.name
-        )
-        val bool = data.split("-")[0]
-        onRes(java.lang.Boolean.parseBoolean(bool))
-    } catch (e: Throwable) {
-        onRes(false)
-    }
+inline fun getLVLToken(onRes: (String?) -> Unit) {
+    val token = MMKVExt.encMMKV(DeviceId.requireDeviceId()).decodeString(KEY_SUB_TOKEN)
+    lvlLogger.p("getLVLToken return: $token")
+    onRes(token)
 }
 
-inline fun getLVLToken(context: Context, onRes: (String) -> Unit) {
-    val deviceId: String = EntryPoint.getDeviceId(context)
-    val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
-        .withEncryptionPassword(deviceId)
-        .build()
-    try {
-        val data = pref.getString(
-            BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
-            Nothing::class.java.name
-        )
-        val token = data.split("--------")[1]
-        onRes(token)
-    } catch (e: Throwable) {
-        onRes("")
-    }
-}
-
-fun setLVLChecked(context: Context, checked: Boolean, token: String = "") {
-    val deviceId: String = EntryPoint.getDeviceId(context)
-    val pref: EncryptedPreferences = EncryptedPreferences.Builder(context)
-        .withEncryptionPassword(deviceId)
-        .build()
-    try {
-        pref.edit()
-            .putString(
-                BuildProp.APP_PACKAGE_NAME + "_lang.vertical.lemon",
-                "$checked--------$token"
-            )
-            .apply()
-    } catch (e: Throwable) {
-        logger.e(e)
-    }
-
-    if (checked) {
+fun setLVLToken(token: String?) {
+    val kv = MMKVExt.encMMKV(DeviceId.requireDeviceId())
+    kv.encode(KEY_SUB_TOKEN, token)
+    lvlLogger.p("setLVLToken token: $token")
+    if (token != null) {
         runBlocking { LVLStateHolder.setSubscribed(token) }
     } else {
         runBlocking { LVLStateHolder.setNotSubscribed() }
     }
 }
 
-fun skipLicenseCheckOnce(context: Context) {
+fun skipLicenseCheckOnce() {
     skipTimes += 1
 }
 
-fun hasAChanceToSkipLicenseCheck(context: Context): Boolean {
+fun hasAChanceToSkipLicenseCheck(): Boolean {
     return skipTimes <= 9
 }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.CommonApiResWrapper
 import tornaco.apps.shortx.core.isSuccess
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.ui.EntryPoint
+import tornaco.apps.shortx.ui.DeviceId
 import java.io.IOException
 
 const val MIN_LENGTH = 12
@@ -34,7 +34,7 @@ class Repo(private val context: Context) {
                 return@runCatching VerifyResult.Fail
             }
 
-            val binding = DeviceCodeBinding.from(code, EntryPoint.getDeviceId(context))
+            val binding = DeviceCodeBinding.from(code, DeviceId.requireDeviceId())
             val body = binding.toRequestBody()
             val res = CodeApi.create(context).verify(body)
             if (res.isSuccess) {

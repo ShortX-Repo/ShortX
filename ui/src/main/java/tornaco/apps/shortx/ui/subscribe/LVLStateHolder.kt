@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
 
 
 object LVLStateHolder {
@@ -26,14 +25,9 @@ object LVLStateHolder {
     fun init(context: Context) {
         runBlocking {
             setNotSubscribed()
-
-            isLVLChecked(context) { bool ->
-                if (bool) {
-                    getLVLToken(context) { token ->
-                        if (token.isNotEmpty()) {
-                            setSubscribed(token)
-                        }
-                    }
+            getLVLToken { token ->
+                if (!token.isNullOrEmpty()) {
+                    setSubscribed(token)
                 }
             }
         }
