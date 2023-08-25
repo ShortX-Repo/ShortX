@@ -3,10 +3,20 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.text.TextUtils
 import com.elvishew.xlog.XLog
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.OnOffAny
@@ -15,91 +25,32 @@ import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BTStatusChanged
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
-import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper._connectedDevices
-import tornaco.apps.shortx.services.util.bluetooth.BluetoothCallback
-import tornaco.apps.shortx.services.util.bluetooth.CachedBluetoothDevice
-import tornaco.apps.shortx.services.util.bluetooth.LocalBluetoothManager
+import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper.btDeviceToProtoDevice
+import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 
 
 class BTStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
     private val logger = Logger("BTStateTrigger")
-
-    private var btManager: LocalBluetoothManager? = null
-
-    private fun checkConnectionState() {
-        val eventConnectedDevices =
-            btManager?.cachedDeviceManager?.cachedDevicesCopy?.filter { it.isConnected }
-                ?.map { BTHelper.btDeviceToProtoDevice(it) }
-                ?: emptyList()
-        logger.d("eventConnectedDevices: ${eventConnectedDevices.map { it.deviceToString() }}")
-
-        val currentBoundDevices = _connectedDevices.value
-        logger.d("currentBoundDevices: ${currentBoundDevices.map { it.deviceToString() }}")
-
-        val newConnectedDevices = eventConnectedDevices.filter { ed ->
-            !currentBoundDevices.any { it.address == ed.address }
-        }
-        logger.d("newConnectedDevices ---->: ${newConnectedDevices.map { it.deviceToString() }}")
-
-        val disconnectedDevices = currentBoundDevices.filter { cd ->
-            !eventConnectedDevices.any { it.address == cd.address }
-        }
-        logger.d("disconnectedDevices ---->: ${disconnectedDevices.map { it.deviceToString() }}")
-
-        _connectedDevices.value = eventConnectedDevices
-
-        if (newConnectedDevices.isNotEmpty()) {
-            newConnectedDevices.forEach {
-                shortXContext.rule.publishFact(
-                    reason = "BT device connected",
-                    fact = BTConnectedTo.newBuilder().addAllDevice(
-                        listOf(it.alias)
-                    ).build(),
-                    mapOf(
-                        ContextDataMapping.BTDeviceConnected.btDeviceAlias.name to it.alias,
-                        ContextDataMapping.BTDeviceConnected.btDeviceAddress.name to it.address,
-                        ContextDataMapping.BTDeviceConnected.btDeviceBatteryLevel.name to it.batteryLevel
-                    )
-                )
-            }
-        }
-
-        if (disconnectedDevices.isNotEmpty()) {
-            disconnectedDevices.forEach {
-                shortXContext.rule.publishFact(
-                    reason = "BT device disconnected",
-                    fact = BTDisconnectedFrom.newBuilder().addAllDevice(
-                        listOf(it.alias)
-                    ).build(),
-                    mapOf(
-                        ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to it.alias,
-                        ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to it.address,
-                    )
-                )
-            }
-        }
-    }
-
-
     override fun register() {
-        LocalBluetoothManager.getInstance(
-            context
-        ) { _, bluetoothManager ->
-            logger.d("onBluetoothManagerInitialized: $bluetoothManager")
-            btManager = bluetoothManager
-            bluetoothManager.eventManager.registerCallback(object : BluetoothCallback {
-                override fun onBluetoothStateChanged(bluetoothState: Int) {
-                    logger.d("onBluetoothStateChanged: $bluetoothState")
-                    if (bluetoothState == BluetoothAdapter.STATE_OFF) {
+        val receiver = object : SafeBroadcastReceiver(shortXContext) {
+            @SuppressLint("MissingPermission")
+            override fun handleReceive(context: Context, intent: Intent) {
+                val action = intent.action
+                logger.d("handleReceive: $action")
+
+                if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                    val state =
+                        intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                    logger.d("btEventReceiver state: $state")
+                    if (state == BluetoothAdapter.STATE_OFF) {
                         shortXContext.rule.publishFact(
                             "btStateChanged to btStateOff",
                             BTStatusChanged.newBuilder()
                                 .setOoa(OnOffAny.Off)
                                 .build()
                         )
-                    }
-                    if (bluetoothState == BluetoothAdapter.STATE_ON) {
+                    } else if (state == BluetoothAdapter.STATE_ON) {
                         shortXContext.rule.publishFact(
                             "btStateChanged to btStateOn",
                             BTStatusChanged.newBuilder()
@@ -107,49 +58,64 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                                 .build()
                         )
                     }
+                } else if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
+                    val device =
+                        btDeviceToProtoDevice(
+                            intent.getParcelableExtra(
+                                BluetoothDevice.EXTRA_DEVICE
+                            )
+                        )
 
-                }
+                    logger.d("ACL connected: ${device.deviceToString()}")
 
-                override fun onScanningStateChanged(started: Boolean) {
-                    logger.d("onScanningStateChanged: $started")
-                }
+                    BTHelper._connectedDevices.value =
+                        BTHelper._connectedDevices.value.toMutableList().apply {
+                            add(device)
+                        }
 
-                override fun onDeviceAdded(cachedDevice: CachedBluetoothDevice?) {
-                    logger.d("onDeviceAdded: ${cachedDevice?.name}")
-                }
+                    shortXContext.rule.publishFact(
+                        reason = "BT device connected",
+                        fact = BTConnectedTo.newBuilder().addAllDevice(listOf(device.alias))
+                            .build(),
+                        mapOf(
+                            ContextDataMapping.BTDeviceConnected.btDeviceAlias.name to device.alias,
+                            ContextDataMapping.BTDeviceConnected.btDeviceAddress.name to device.address,
+                            ContextDataMapping.BTDeviceConnected.btDeviceBatteryLevel.name to device.batteryLevel
+                        )
+                    )
+                } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
+                    val device =
+                        btDeviceToProtoDevice(
+                            intent.getParcelableExtra(
+                                BluetoothDevice.EXTRA_DEVICE
+                            )
+                        )
+                    logger.d("ACL disconnected: ${device.deviceToString()}")
 
-                override fun onDeviceDeleted(cachedDevice: CachedBluetoothDevice?) {
-                    logger.d("onDeviceDeleted: ${cachedDevice?.name}")
-                }
+                    BTHelper._connectedDevices.value =
+                        BTHelper._connectedDevices.value.toMutableList().apply {
+                            remove(device)
+                        }
 
-                override fun onDeviceBondStateChanged(
-                    cachedDevice: CachedBluetoothDevice?,
-                    bondState: Int
-                ) {
-                    logger.d("onDeviceBondStateChanged: bondState: $bondState, ${cachedDevice?.name}")
+                    shortXContext.rule.publishFact(
+                        reason = "BT device disconnected",
+                        fact = BTDisconnectedFrom.newBuilder().addAllDevice(
+                            listOf(device.alias)
+                        ).build(),
+                        mapOf(
+                            ContextDataMapping.BTDeviceDisConnected.btDeviceAlias.name to device.alias,
+                            ContextDataMapping.BTDeviceDisConnected.btDeviceAddress.name to device.address,
+                        )
+                    )
                 }
-
-                override fun onConnectionStateChanged(
-                    cachedDevice: CachedBluetoothDevice?,
-                    state: Int
-                ) {
-                    logger.d("onConnectionStateChanged: state: $state, ${cachedDevice?.name}")
-                    checkConnectionState()
-                }
-
-                override fun onActiveDeviceChanged(
-                    activeDevice: CachedBluetoothDevice?,
-                    bluetoothProfile: Int
-                ) {
-                    logger.d("onActiveDeviceChanged: bluetoothProfile: $bluetoothProfile, ${activeDevice?.name}")
-                    checkConnectionState()
-                }
-
-                override fun onAudioModeChanged() {
-                    logger.d("onAudioModeChanged")
-                }
-            })
+            }
         }
+
+        val filter = IntentFilter()
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        context.registerReceiver(receiver, filter)
     }
 
     override fun unRegister() {
@@ -158,6 +124,8 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
 
 @SuppressLint("MissingPermission")
 object BTHelper {
+    private val logger = Logger("BTHelper")
+
     // Cache.
     val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
         MutableStateFlow(emptyList())
@@ -197,26 +165,69 @@ object BTHelper {
             .build()
     }
 
+    fun getAllConnectedDevices(context: Context): List<BluetoothDevice> {
+        val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+        val connectedDevices = mutableListOf<BluetoothDevice>()
 
-    @SuppressLint("NewApi")
-    fun btDeviceToProtoDevice(device: CachedBluetoothDevice): BTBondedDevice {
-        val address = runCatching { device.address }.getOrElse {
-            Logger("btDeviceToProtoDevice").e(it, "get BT address")
-            ""
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
+            return connectedDevices
         }
-        val alias = device.name
-        val batteryLevel = device.batteryLevel
 
-        val isConnected = device.isConnected
+        val profiles = intArrayOf(
+            BluetoothProfile.A2DP,
+            BluetoothProfile.HEADSET,
+            BluetoothProfile.HEALTH
+            // Add other Bluetooth profiles you're interested in
+        )
 
-        return BTBondedDevice.newBuilder()
-            .setAddress(address)
-            .setAlias(alias)
-            .setBatteryLevel(batteryLevel)
-            .setIsConnected(isConnected)
-            .build()
+        for (profileId in profiles) {
+            bluetoothAdapter.getProfileProxy(context, object : BluetoothProfile.ServiceListener {
+                override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                    if (profile == profileId) {
+                        connectedDevices.addAll(proxy.connectedDevices)
+                    }
+                }
+
+                override fun onServiceDisconnected(profile: Int) {
+                }
+            }, profileId)
+        }
+
+        return connectedDevices
+    }
+
+
+    fun <T> getProfileProxy(context: Context, profile: Int): T {
+        var proxy: BluetoothProfile?
+        runBlocking {
+            val bluetoothManager = context.getSystemService(BluetoothManager::class.java)!!
+            val bluetoothAdapter = bluetoothManager.adapter
+
+            val flow = callbackFlow {
+                val serviceListener =
+                    object : BluetoothProfile.ServiceListener {
+                        override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                            trySendBlocking(proxy)
+                        }
+
+                        override fun onServiceDisconnected(profile: Int) {}
+                    }
+
+                bluetoothAdapter.getProfileProxy(context, serviceListener, profile)
+
+                awaitClose {}
+            }
+            proxy = withTimeoutOrNull(5_000) { flow.first() }
+        }
+        if (proxy == null) {
+            logger.w("profile proxy $profile is null")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return proxy!! as T
     }
 }
 
 fun BTBondedDevice.deviceToString() =
     "${this.alias} - ${this.address} - connected: ${this.isConnected}"
+
+
