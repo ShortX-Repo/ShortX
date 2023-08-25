@@ -1,19 +1,16 @@
 package tornaco.apps.shortx.ui.main
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.subscribe.LVLCheckScreen
-import tornaco.apps.shortx.ui.subscribe.util.isLVLChecked
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 @Composable
 fun PreHomeScreen() {
-    val context = LocalContext.current
-    val isLVLChecked = remember {
-        isLVLChecked(context)
-    }
-    if (isLVLChecked) {
+    val state by LVLStateHolder.subscribeState.collectAsState()
+    if (state.isSubscribed) {
         HomeScreen()
     } else {
         val navHost = LocalNavHostController.current
