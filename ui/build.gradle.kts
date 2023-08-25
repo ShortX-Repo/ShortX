@@ -111,7 +111,7 @@ dependencies {
     implementation(project(":external:icons"))
     implementation(project(":external:sec_net"))
 
-    implementation("com.tencent:mmkv:1.3.1")
+    implementation(libs.mmkv)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

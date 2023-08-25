@@ -32,6 +32,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mvel/mvel2
     implementation(libs.mvel2)
 
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    // For HTML. mvel
+    implementation(libs.jsoup)
+
+
     testImplementation(libs.junit)
 }
 
