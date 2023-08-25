@@ -159,6 +159,7 @@ fun labelAndDescriptionForActionSelector(
         Action.CreateLocalVar::class -> i18N["ui.action.create.local.var"] to null
         Action.WriteLocalVar::class -> i18N["ui.action.write.local.var"] to null
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
+        Action.MapQueryBus::class -> i18N["ui.action.map.nav.bus.query"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
@@ -242,7 +243,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.Delay -> {
-            listOf(i18N["ui.action.delay"], action.time.toString())
+            listOf(i18N["ui.action.delay"], action.time)
         }
 
         is Action.TakeScreenshot -> {
@@ -497,6 +498,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     "N/A"
                 }
             }
+        )
+
+        is Action.MapQueryBus -> listOf(
+            i18N["ui.action.map.nav.bus.query"],
+            action.bus
         )
 
         is Action.PostNotification -> {

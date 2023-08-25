@@ -199,7 +199,9 @@ object MapUtils {
      *
      */
     fun openGaodeBusMap(
-        context: Context, appName: String, busName: String,
+        context: Context,
+        appName: String,
+        busName: String,
         city: String
     ) {
         val intent = Intent(

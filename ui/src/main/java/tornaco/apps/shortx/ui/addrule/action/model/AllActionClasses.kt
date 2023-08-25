@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.model
 
+import tornaco.apps.shortx.core.proto.action.MapQueryBus
+
 
 val allActionClasses = listOf(
     Action.TakeScreenshot::class,
@@ -62,6 +64,7 @@ val allActionClasses = listOf(
     Action.CreateGV::class,
     Action.DeleteGV::class,
     Action.MapNav::class,
+    MapQueryBus::class,
     Action.FromDA::class,
     Action.FindAndClickViewByText::class,
     Action.InputTap::class,

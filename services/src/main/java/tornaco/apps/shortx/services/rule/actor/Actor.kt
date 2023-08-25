@@ -241,6 +241,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.MapNav
     },
+    MapQueryBus {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.MapQueryBus
+    },
     PostNotification {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.PostNotification

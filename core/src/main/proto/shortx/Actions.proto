@@ -549,11 +549,24 @@ message AddToGlobalVar {
   string id = 100;
 }
 
+// Car nav
 message MapNav {
   Location loc = 1;
   string poi = 2;
   MapApp app = 3;
 
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message MapQueryBus {
+  string city = 1;
+  string bus = 2;
+  MapApp app = 3;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

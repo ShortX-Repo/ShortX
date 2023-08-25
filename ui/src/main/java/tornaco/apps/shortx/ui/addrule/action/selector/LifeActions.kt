@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -28,6 +29,11 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
                 true
             }
 
+            Action.MapQueryBus::class -> {
+                addAction(Action.MapQueryBus(city = "", bus = "251", mapApp = MapApp.Gaode))
+                true
+            }
+
             else -> {
                 false
             }
@@ -44,18 +50,22 @@ fun LifeActions(
     val i18N = LocalI18N.current
 
     val actionItems = listOf(
+        Action.MapNav::class,
+        Action.MapQueryBus::class,
+    ).map {
         SelectorItem(
-            type = Action.MapNav::class,
-            labelAndDescription = labelAndDescriptionForActionSelector(i18N, Action.MapNav::class),
-            icon = imageVectorForAction(Action.MapNav::class),
+            type = it,
+            labelAndDescription = labelAndDescriptionForActionSelector(i18N, it),
+            icon = imageVectorForAction(it),
             isForSubscribedOnly = remember(subscribeState) {
-                !subscribeState.isSubscribed && isForSubscribedOnly(Action.MapNav::class)
+                !subscribeState.isSubscribed && isForSubscribedOnly(it)
             },
-            iconColor = colorForAction(Action.MapNav::class)
-        ),
-    ).filter {
-        keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
+            iconColor = colorForAction(it)
+        )
     }
+        .filter {
+            keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
+        }
 
     if (actionItems.isNotEmpty()) {
         ActionCategoryTitle(ActionCategory.Life)

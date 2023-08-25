@@ -28,6 +28,7 @@ import tornaco.apps.shortx.core.proto.action.KillProcessByName
 import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
 import tornaco.apps.shortx.core.proto.action.MapNav
+import tornaco.apps.shortx.core.proto.action.MapQueryBus
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
@@ -671,6 +672,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                         .build()
                 )
                 .setPoi(poi)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.MapQueryBus -> {
+            MapQueryBus.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setApp(mapApp)
+                .setBus(bus)
+                .setCity(city)
                 .setNote(overrideNote ?: note).build()
         }
 

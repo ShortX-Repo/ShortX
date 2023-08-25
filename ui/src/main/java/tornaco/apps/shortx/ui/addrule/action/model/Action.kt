@@ -1660,6 +1660,34 @@ sealed interface Action : Parcelable {
     }
 
     @Parcelize
+    data class MapQueryBus(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+        val mapApp: MapApp,
+        val bus: String,
+        val city: String
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
     data class FromDA(
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,

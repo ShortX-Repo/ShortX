@@ -777,6 +777,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.MapQueryBus::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.MapQueryBus::class.java
+            Action.MapQueryBus(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                contextData = data::class.actionContextData(data.customContextDataKey),
+                id = data.id,
+                note = data.note,
+                mapApp = data.app,
+                bus = data.bus,
+                city = data.city
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.PostNotification::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.PostNotification::class.java

@@ -237,6 +237,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Map.navigation_fill
         }
 
+        Action.MapQueryBus::class -> {
+            Remix.Map.bus_2_fill
+        }
+
         Action.FromDA::class -> {
             Remix.Editor.link
         }
