@@ -4,6 +4,7 @@ import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AudioSource
@@ -758,4 +759,10 @@ fun ActionOnError.labelKey() = when (this) {
     ActionOnError.UNRECOGNIZED -> {
         ""
     }
+}
+
+fun NavType.labelKey() = when (this) {
+    NavType.NavType_Car -> "ui.action.map.nav.type.car"
+    NavType.NavType_Ride -> "ui.action.map.nav.type.ride"
+    NavType.UNRECOGNIZED -> "UNRECOGNIZED"
 }

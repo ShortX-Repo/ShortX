@@ -6,7 +6,6 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
-import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -775,7 +774,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 latitude = data.loc.latitude,
                 poi = data.poi,
                 mapApp = data.app,
-                navType = NavType.NavType_Car
+                navType = data.navType
             )
         }
 

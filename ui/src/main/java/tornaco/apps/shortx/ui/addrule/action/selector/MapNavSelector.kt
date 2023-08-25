@@ -3,6 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +28,11 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.DropdownItem
+import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -39,6 +43,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
@@ -58,6 +63,7 @@ class MapNavDialogState(
         this.longitude = currentSettings?.longitude ?: ""
         this.mapApp = currentSettings?.mapApp ?: MapApp.Gaode
         this.navType = currentSettings?.navType ?: NavType.NavType_Car
+        show()
     }
 }
 
@@ -189,6 +195,29 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         })
                     StandardSpacer()
                     StandardSpacer()
+
+                    FieldTitle(text = "Nav")
+                    val navTypeDropState = rememberDropdownSelectorState()
+                    Box {
+                        FilledTonalButton(onClick = {
+                            navTypeDropState.open()
+                        }) {
+                            Text(text = LocalI18N.current[dialogState.navType.labelKey()])
+                        }
+                        DropdownSelector(
+                            state = navTypeDropState,
+                            items = NavType.values().toMutableList().apply {
+                                remove(NavType.UNRECOGNIZED)
+                            }.map {
+                                DropdownItem(
+                                    labelLines = listOf(LocalI18N.current[it.labelKey()]),
+                                    data = it,
+                                )
+                            }
+                        ) {
+                            dialogState.navType = it.data
+                        }
+                    }
                 }
             }
         }

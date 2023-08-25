@@ -22,6 +22,8 @@ object MapNav : Actor {
         val d = action unpack_ MapNav::class.java
         val app = d.app
         val type = d.navType
+        logger.d("Nav: $app $type")
+
         if (app == MapApp.Baidu) {
             if (type == NavType.NavType_Car || type == NavType.UNRECOGNIZED) {
                 MapUtils.openBaiduNaviMap(

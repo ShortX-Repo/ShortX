@@ -666,7 +666,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setApp(mapApp)
-                .setNavType(NavType.NavType_Car)
+                .setNavType(navType)
                 .setLoc(
                     Location.newBuilder()
                         .setLatitude(latitude)
