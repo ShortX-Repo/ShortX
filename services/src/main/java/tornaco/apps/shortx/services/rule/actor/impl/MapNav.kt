@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.MapNav
+import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.MapUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -20,18 +21,20 @@ object MapNav : Actor {
     ): Unit = with(params) {
         val d = action unpack_ MapNav::class.java
         val app = d.app
+        val type = d.navType
         if (app == MapApp.Baidu) {
-            kotlin.runCatching {
+            if (type == NavType.NavType_Car || type == NavType.UNRECOGNIZED) {
                 MapUtils.openBaiduNaviMap(
                     context = androidContext,
                     longitude = d.loc.longitude.toString(),
                     latitude = d.loc.latitude.toString()
                 )
-            }.onFailure {
-                logger.e(it, "Baidu Nav error")
+            } else {
+                TODO("Baidu $type is not supported for now.")
             }
+
         } else if (app == MapApp.Gaode) {
-            kotlin.runCatching {
+            if (type == NavType.NavType_Car || type == NavType.UNRECOGNIZED) {
                 MapUtils.openGaodeNaviMap(
                     context = androidContext,
                     appName = "ShortX",
@@ -39,9 +42,17 @@ object MapNav : Actor {
                     latitude = d.loc.latitude.toString(),
                     longitude = d.loc.longitude.toString()
                 )
-            }.onFailure {
-                logger.e(it, "Gaode Nav error")
+            } else if (type == NavType.NavType_Ride) {
+                MapUtils.openGaodeRideNaviMap(
+                    context = androidContext,
+                    appName = "ShortX",
+                    latitude = d.loc.latitude.toString(),
+                    longitude = d.loc.longitude.toString()
+                )
+            } else {
+                TODO("Gaode $type is not supported for now.")
             }
+
         }
     }
 }

@@ -193,6 +193,25 @@ object MapUtils {
         context.startActivity(intent)
     }
 
+    // cat=android.intent.action.VIEW
+    //dat=amapuri://openFeature?featureName=OnRideNavi&rideType=elebike&sourceApplication=appname&lat=36.547901&lon=104.258354&dev=0
+    fun openGaodeRideNaviMap(
+        context: Context,
+        appName: String,
+        latitude: String,
+        longitude: String
+    ) {
+        val intent = Intent(
+            "android.intent.action.VIEW",
+            Uri.parse(
+                ("androidamap://openFeature?featureName=OnRideNavi&sourceApplication=$appName&rideType=elebike&lat=$latitude&lon=$longitude&dev=1")
+            )
+        )
+        intent.setPackage("com.autonavi.minimap")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
+
     /**
      * 调起高德客户端 公交线路查询
      * 输入公交线路名称，如 445，搜索该条线路经过的所有公交站点。支持版本 v4.2.1 起。

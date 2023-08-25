@@ -554,7 +554,7 @@ message MapNav {
   Location loc = 1;
   string poi = 2;
   MapApp app = 3;
-
+  NavType navType = 4;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -578,6 +578,11 @@ message MapQueryBus {
 enum MapApp {
   Baidu = 0;
   Gaode = 1;
+}
+
+enum NavType {
+  NavType_Car = 0;
+  NavType_Ride = 1;
 }
 
 message PostNotification {

@@ -2,22 +2,43 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.FieldTitle
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
 
@@ -26,18 +47,17 @@ const val GAODE_LOC_PICK_URL = "https://lbs.amap.com/tools/picker"
 
 class MapNavDialogState(
     val onSelected: (Action.MapNav) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-    var currentSettings: Action.MapNav? = null
+) : CommonDialogState() {
+    var latitude by mutableStateOf("")
+    var longitude by mutableStateOf("")
+    var mapApp by mutableStateOf(MapApp.Gaode)
+    var navType by mutableStateOf(NavType.NavType_Car)
 
     fun show(currentSettings: Action.MapNav? = null) {
-        Logger("MapNavDialogState").d("show: $currentSettings")
-        this.currentSettings = currentSettings
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+        this.latitude = currentSettings?.latitude ?: ""
+        this.longitude = currentSettings?.longitude ?: ""
+        this.mapApp = currentSettings?.mapApp ?: MapApp.Gaode
+        this.navType = currentSettings?.navType ?: NavType.NavType_Car
     }
 }
 
@@ -61,19 +81,6 @@ fun MapNavDialog(state: MapNavDialogState) {
 
 @Composable
 private fun MapNavSelector(dialogState: MapNavDialogState) {
-    var latitude by remember(dialogState.currentSettings) {
-        mutableStateOf(dialogState.currentSettings?.latitude ?: "")
-    }
-    var longitude by remember(dialogState.currentSettings) {
-        mutableStateOf(dialogState.currentSettings?.longitude ?: "")
-    }
-    var poi by remember(dialogState.currentSettings) {
-        mutableStateOf(dialogState.currentSettings?.poi ?: "")
-    }
-    var mapApp by remember((dialogState.currentSettings)) {
-        mutableStateOf(dialogState.currentSettings?.mapApp ?: MapApp.Gaode)
-    }
-
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -94,16 +101,19 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         },
                         actions = {
                             IconButton(onClick = {
-                                if (longitude.isNotBlank() && latitude.isNotBlank()) {
-                                    dialogState.onSelected(
-                                        Action.MapNav(
-                                            latitude = latitude,
-                                            longitude = longitude,
-                                            poi = poi,
-                                            mapApp = mapApp
+                                with(dialogState) {
+                                    if (longitude.isNotBlank() && latitude.isNotBlank()) {
+                                        dialogState.onSelected(
+                                            Action.MapNav(
+                                                latitude = latitude,
+                                                longitude = longitude,
+                                                poi = "",
+                                                mapApp = mapApp,
+                                                navType = navType
+                                            )
                                         )
-                                    )
-                                    dialogState.dismiss()
+                                        dialogState.dismiss()
+                                    }
                                 }
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
@@ -121,20 +131,22 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav"])
-
-                    ListItem(title = when (mapApp) {
+                    FieldTitle(text = "Map")
+                    SmallSpacer()
+                    ListItem(title = when (dialogState.mapApp) {
                         MapApp.Gaode -> {
                             i18N["ui.action.map.gaode"]
                         }
+
                         MapApp.Baidu -> {
                             i18N["ui.action.map.baidu"]
                         }
+
                         else -> {
                             "N/A"
                         }
                     }, onClick = {
-                        mapApp = if (mapApp == MapApp.Baidu) {
+                        dialogState.mapApp = if (dialogState.mapApp == MapApp.Baidu) {
                             MapApp.Gaode
                         } else {
                             MapApp.Baidu
@@ -142,7 +154,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     }, action1 = {
                         val context = LocalContext.current
                         FilledTonalButton(onClick = {
-                            if (mapApp == MapApp.Gaode) {
+                            if (dialogState.mapApp == MapApp.Gaode) {
                                 BrowserUtils.launch(context, GAODE_LOC_PICK_URL)
                             } else {
                                 BrowserUtils.launch(context, BAIDU_LOC_PICK_URL)
@@ -155,49 +167,29 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     StandardSpacer()
                     StandardSpacer()
 
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav.latitude"])
+                    FieldTitle(text = "Loc")
+                    SmallSpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
-                        
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color.Transparent
-                        ),
-                        value = latitude,
+                        value = dialogState.latitude,
+                        label = {
+                            Text(text = i18N["ui.action.map.nav.latitude"])
+                        },
                         onValueChange = {
-                            latitude = it
+                            dialogState.latitude = it
+                        })
+                    MediumSpacer()
+
+                    ShortXTextField(modifier = Modifier.fillMaxWidth(),
+                        value = dialogState.longitude,
+                        label = {
+                            Text(text = i18N["ui.action.map.nav.longitude"])
+                        },
+                        onValueChange = {
+                            dialogState.longitude = it
                         })
                     StandardSpacer()
-
-                    SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.nav.longitude"])
-                    ShortXTextField(modifier = Modifier.fillMaxWidth(),
-                        
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color.Transparent
-                        ),
-                        value = longitude,
-                        onValueChange = {
-                            longitude = it
-                        })
                     StandardSpacer()
-                    StandardSpacer()
-
-                    AnimatedVisibility(visible = mapApp == MapApp.Gaode) {
-                        Column {
-                            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),i18N["ui.action.map.poi"])
-                            ShortXTextField(modifier = Modifier.fillMaxWidth(),
-                                
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = Color.Transparent
-                                ),
-                                value = poi,
-                                onValueChange = {
-                                    poi = it
-                                })
-                            StandardSpacer()
-                            StandardSpacer()
-                        }
-                    }
                 }
-
             }
         }
     }

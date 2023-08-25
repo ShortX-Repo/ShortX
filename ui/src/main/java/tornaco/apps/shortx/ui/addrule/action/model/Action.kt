@@ -5,6 +5,7 @@ import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
@@ -1640,7 +1641,8 @@ sealed interface Action : Parcelable {
         val latitude: String,
         val longitude: String,
         val poi: String,
-        val mapApp: MapApp
+        val mapApp: MapApp,
+        val navType: NavType
     ) : Action {
         override fun clone(
             id: String,
