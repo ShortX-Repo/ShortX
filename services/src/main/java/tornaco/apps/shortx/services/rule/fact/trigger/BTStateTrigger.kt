@@ -44,6 +44,8 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                         intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
                     logger.d("btEventReceiver state: $state")
                     if (state == BluetoothAdapter.STATE_OFF) {
+                        logger.d("State off")
+                        BTHelper._connectedDevices.value = emptyList()
                         shortXContext.rule.publishFact(
                             "btStateChanged to btStateOff",
                             BTStatusChanged.newBuilder()
@@ -51,6 +53,8 @@ class BTStateTrigger(override val context: Context, override val shortXContext: 
                                 .build()
                         )
                     } else if (state == BluetoothAdapter.STATE_ON) {
+                        logger.d("State on")
+                        BTHelper._connectedDevices.value = emptyList()
                         shortXContext.rule.publishFact(
                             "btStateChanged to btStateOn",
                             BTStatusChanged.newBuilder()
@@ -129,6 +133,12 @@ object BTHelper {
     // Cache.
     val _connectedDevices: MutableStateFlow<List<BTBondedDevice>> =
         MutableStateFlow(emptyList())
+
+    fun getCurrentConnectedDevices(): List<BTBondedDevice> {
+        return _connectedDevices.value
+    }
+
+    fun isBTEnabled() = BluetoothAdapter.getDefaultAdapter().isEnabled
 
     fun getBTBondedDevices() = BluetoothAdapter.getDefaultAdapter().bondedDevices.toList()
         .map { device ->
