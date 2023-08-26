@@ -507,6 +507,7 @@ message CreatePkgSet {
 message WriteGlobalVar {
   string varName = 1;
   string valueAsString = 2;
+  WriteGlobalVarOp op = 3;
 
 
   CustomContextDataKey customContextDataKey = 96;
@@ -514,6 +515,18 @@ message WriteGlobalVar {
   bool isDisabled = 98;
   string note = 99;
   string id = 100;
+}
+
+enum WriteGlobalVarOp {
+  WriteGlobalVarOp_AppendToLast = 0;
+  WriteGlobalVarOp_AppendToFirst = 1;
+  WriteGlobalVarOp_Override = 2;
+  WriteGlobalVarOp_DeleteValue = 3;
+  WriteGlobalVarOp_DeleteLast = 4;
+  WriteGlobalVarOp_DeleteFirst = 5;
+  WriteGlobalVarOp_Clear = 6;
+  WriteGlobalVarOp_Reverse = 7;
+  WriteGlobalVarOp_Shuffle = 8;
 }
 
 message CreateGlobalVar {
