@@ -147,7 +147,9 @@ private fun MapQueryBusSelector(dialogState: MapQueryBusDialogState) {
                     StandardSpacer()
 
                     FieldTitle(text = LocalI18N.current["ui.action.map.nav.bus.query.city"] + " & " + LocalI18N.current["ui.action.map.nav.bus.query.bus"])
+                    SmallSpacer()
                     TipRow(text = LocalI18N.current["ui.action.map.nav.bus.query.city.placeholder"])
+                    SmallSpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.city,
                         label = {
