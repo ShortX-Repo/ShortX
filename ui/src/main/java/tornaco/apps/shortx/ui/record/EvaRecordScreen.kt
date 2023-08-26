@@ -640,4 +640,4 @@ private fun CommonRecordListItem(
     }
 }
 
-private const val RECORD_BG_ALPHA = 0.048f
+private const val RECORD_BG_ALPHA = 0.1f
