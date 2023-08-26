@@ -91,13 +91,13 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            val i18N = LocalI18N.current
+            val i18n = LocalI18N.current
             Scaffold(
                 modifier = Modifier,
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(i18N["ui.action.map.nav"]) },
+                        title = { Text(i18n["ui.action.map.nav"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -137,15 +137,15 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = "Map")
+                    FieldTitle(text = i18n["ui.action.map"])
                     SmallSpacer()
                     ListItem(title = when (dialogState.mapApp) {
                         MapApp.Gaode -> {
-                            i18N["ui.action.map.gaode"]
+                            i18n["ui.action.map.gaode"]
                         }
 
                         MapApp.Baidu -> {
-                            i18N["ui.action.map.baidu"]
+                            i18n["ui.action.map.baidu"]
                         }
 
                         else -> {
@@ -167,18 +167,18 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                             }
 
                         }) {
-                            Text(i18N["ui.action.map.nav.pick.loc"])
+                            Text(i18n["ui.action.map.nav.pick.loc"])
                         }
                     })
                     StandardSpacer()
                     StandardSpacer()
 
-                    FieldTitle(text = "Loc")
+                    FieldTitle(text = i18n["ui.action.map.nav.latitude"] + " & " + i18n["ui.action.map.nav.longitude"])
                     SmallSpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.latitude,
                         label = {
-                            Text(text = i18N["ui.action.map.nav.latitude"])
+                            Text(text = i18n["ui.action.map.nav.latitude"])
                         },
                         onValueChange = {
                             dialogState.latitude = it
@@ -188,7 +188,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.longitude,
                         label = {
-                            Text(text = i18N["ui.action.map.nav.longitude"])
+                            Text(text = i18n["ui.action.map.nav.longitude"])
                         },
                         onValueChange = {
                             dialogState.longitude = it
@@ -202,7 +202,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         FilledTonalButton(onClick = {
                             navTypeDropState.open()
                         }) {
-                            Text(text = LocalI18N.current[dialogState.navType.labelKey()])
+                            Text(text = i18n[dialogState.navType.labelKey()])
                         }
                         DropdownSelector(
                             state = navTypeDropState,
@@ -210,7 +210,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                                 remove(NavType.UNRECOGNIZED)
                             }.map {
                                 DropdownItem(
-                                    labelLines = listOf(LocalI18N.current[it.labelKey()]),
+                                    labelLines = listOf(i18n[it.labelKey()]),
                                     data = it,
                                 )
                             }

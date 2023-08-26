@@ -3,7 +3,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
@@ -22,6 +21,11 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     })
     MapNavDialog(state = mapNavDialogState)
 
+    val busQuerySelectorDialogState = rememberMapQueryBusDialogState {
+        addAction(it)
+    }
+    MapQueryBusDialog(state = busQuerySelectorDialogState)
+
     return { source ->
         when (source.clazz) {
             Action.MapNav::class -> {
@@ -30,7 +34,7 @@ fun lifeActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
             }
 
             Action.MapQueryBus::class -> {
-                addAction(Action.MapQueryBus(city = "", bus = "251", mapApp = MapApp.Gaode))
+                busQuerySelectorDialogState.show(source.getActionAs())
                 true
             }
 

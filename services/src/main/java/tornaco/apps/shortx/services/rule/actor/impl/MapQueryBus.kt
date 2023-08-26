@@ -21,8 +21,10 @@ object MapQueryBus : Actor {
         require(app == MapApp.Gaode) {
             "Only support gaode"
         }
+        logger.p("Query: $app ${d.city} ${d.bus}")
         MapUtils.openGaodeBusMap(
-            context = androidContext, appName = "ShortX",
+            context = androidContext,
+            appName = "ShortX",
             busName = d.bus,
             city = d.city
         )
