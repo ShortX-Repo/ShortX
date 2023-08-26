@@ -12,6 +12,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Logos.android_fill
         }
 
+        Condition.CurrentForegroundAppByPkg::class -> {
+            Remix.Logos.android_fill
+        }
+
         Condition.AppIsRunning::class -> {
             Remix.System.refresh_fill
         }

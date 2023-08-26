@@ -22,6 +22,7 @@ fun AppConditions(
     val i18N = LocalI18N.current
     val items = listOf(
         Condition.CurrentForegroundApp::class,
+        Condition.CurrentForegroundAppByPkg::class,
         Condition.AppIsRunning::class,
         Condition.AppIsNotRunning::class,
         Condition.AppHasAudioFocus::class,

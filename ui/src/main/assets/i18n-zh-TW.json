@@ -2,6 +2,7 @@
   "ui.privacy.statement.title": "隐私与使用协议",
   "ui.framework.updated": "{app_name} 的覈心已經更新，請及時重啓設備； 當然你也可以繼續體驗，但是如果你遇到一些故障，建議你立刻重啓",
   "ui.dialog.title.current.app": "應用在前臺",
+  "ui.dialog.title.current.app.by.pkg": "應用在前臺（动态）",
   "ui.dialog.title.select.app": "選擇應用",
   "ui.dialog.title.select.slot": "选择SIM卡",
   "ui.search.title.search.n.items": "蒐索 {count} 個項目",

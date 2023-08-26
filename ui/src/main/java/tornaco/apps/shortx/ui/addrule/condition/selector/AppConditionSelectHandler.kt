@@ -9,6 +9,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberConditionAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.base.LocalI18N
 
 @Composable
 fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -33,6 +34,13 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 )
             })
     ConditionAppPkgSelectorDialog(currentPkgSelectorState)
+
+    val currentPkgByPkgSelectorState = rememberConditionPkgAndUserListSelectorDialogState(
+        title = LocalI18N.current["ui.dialog.title.current.app.by.pkg"],
+        onSelected = { pairs, op ->
+            addCondition(Condition.CurrentForegroundAppByPkg(stringPairs = pairs, op = op))
+        })
+    ConditionPackageNameAndUserSelectorDialog(state = currentPkgByPkgSelectorState)
 
     val appHasNSelectorState =
         rememberConditionAppPkgSelectorState(
@@ -143,6 +151,14 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                     source.getConditionAs<Condition.CurrentForegroundApp>()?.apps,
                     source.getConditionAs<Condition.CurrentForegroundApp>()?.pkgSets,
                     source.getConditionAs<Condition.CurrentForegroundApp>()?.op
+                )
+                true
+            }
+
+            Condition.CurrentForegroundAppByPkg::class -> {
+                currentPkgByPkgSelectorState.show(
+                    source.getConditionAs<Condition.CurrentForegroundAppByPkg>()?.stringPairs,
+                    source.getConditionAs<Condition.CurrentForegroundAppByPkg>()?.op
                 )
                 true
             }

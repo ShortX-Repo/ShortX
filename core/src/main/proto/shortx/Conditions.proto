@@ -43,6 +43,18 @@ message CurrentPkgList {
   string id = 100;
 }
 
+message CurrentPkgListByPkg {
+  repeated StringPair pkgAndUsers = 1;
+  // Default is ALL.
+  ConditionOperator op = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+
 message CurrentActivity {
   string pkgName = 1;
   string className = 2;

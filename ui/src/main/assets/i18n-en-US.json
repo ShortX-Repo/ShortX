@@ -4,6 +4,7 @@
   "ui.dialog.title.select.app": "Select app",
   "ui.dialog.title.select.slot": "Select SIM slot",
   "ui.dialog.title.current.app": "App in Foreground",
+  "ui.dialog.title.current.app.by.pkg": "App in Foreground (Input)",
   "ui.search.title.search.n.items": "Search {count} items",
   "ui.fact.title": "Trigger",
   "ui.fact.select": "Add Trigger",

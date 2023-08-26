@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
+import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.IsInCall
@@ -49,6 +50,17 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .addAllPkgSets(pkgSets.map {
                     it.label
                 })
+                .setOp(op.toConditionOperator())
+                .build()
+        }
+
+        is Condition.CurrentForegroundAppByPkg -> {
+            CurrentPkgListByPkg.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .addAllPkgAndUsers(stringPairs)
                 .setOp(op.toConditionOperator())
                 .build()
         }
