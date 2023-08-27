@@ -149,7 +149,7 @@ class WriteGlobalVarTest {
             WriteGlobalVar.handleGVOp(
                 originalStringGV,
                 WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast,
-                "Hell"
+                "Value will not be used"
             )
         }
     }
@@ -171,7 +171,7 @@ class WriteGlobalVarTest {
             WriteGlobalVar.handleGVOp(
                 originalStringGV,
                 WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst,
-                "Hell"
+                "Value will not be used"
             )
         }
     }

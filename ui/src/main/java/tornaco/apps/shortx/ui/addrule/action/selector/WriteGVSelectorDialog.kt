@@ -2,6 +2,7 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,18 +32,19 @@ import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.displayLabelKey
 import tornaco.apps.shortx.core.rule.isForListOnly
+import tornaco.apps.shortx.core.rule.needUserInputValue
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
@@ -152,7 +154,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
         FieldTitle(
             text = LocalI18N.current["ui.action.select.global.var"]
         )
-        SmallSpacer()
+        MediumSpacer()
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             value = dialogState.name,
@@ -166,30 +168,17 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                     RemixIcon(modifier = Modifier, remixName = Remix.System.search_2_line)
                 }
             })
-
-        StandardSpacer()
-
-        FieldTitle(
-            text = LocalI18N.current["ui.global.var.value"]
-        )
-        SmallSpacer()
-        ShortXTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = dialogState.valueString,
-            onValueChange = {
-                dialogState.valueString = it
-            })
         StandardSpacer()
 
         FieldTitle(text = "Operation")
         val opDropdownState = rememberDropdownSelectorState()
-        SmallSpacer()
+        MediumSpacer()
         Box(modifier = Modifier.fillMaxWidth()) {
             FilledTonalButton(onClick = {
                 opDropdownState.open()
             }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = dialogState.op.displayLabelKey())
+                    Text(text = LocalI18N.current[dialogState.op.displayLabelKey()])
                     StandardSpacer()
                     RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
                 }
@@ -201,7 +190,11 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                         DropdownItem(
                             labelLines = listOfNotNull(
                                 it.displayLabelKey(),
-                                if (it.isForListOnly()) "For List only" else null
+                                if (it.isForListOnly()) {
+                                    LocalI18N.current["ui.action.write.global.var.op.list.only"]
+                                } else {
+                                    null
+                                }
                             ),
                             data = it
                         )
@@ -210,8 +203,24 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                     dialogState.op = it.data
                 })
         }
+        StandardSpacer()
 
+        AnimatedVisibility(visible = dialogState.op.needUserInputValue()) {
+            Column {
+                FieldTitle(
+                    text = LocalI18N.current["ui.global.var.value"]
+                )
+                MediumSpacer()
+                ShortXTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = dialogState.valueString,
+                    onValueChange = {
+                        dialogState.valueString = it
+                    })
+            }
+        }
 
+        SectionSpacer()
         SectionSpacer()
         SuggestedNavEntry()
     }

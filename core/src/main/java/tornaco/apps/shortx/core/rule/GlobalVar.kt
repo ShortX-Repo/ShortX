@@ -292,93 +292,27 @@ fun GlobalVar.setValue(value: List<String>): GlobalVar {
 }
 
 fun WriteGlobalVarOp.displayLabelKey(): String {
-    return when (this) {
-        WriteGlobalVarOp.WriteGlobalVarOp_Auto -> {
-            "Auto (List: append to last, Primitive: override)"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast -> {
-            "Write append to last"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_AppendToFirst -> {
-            "Write append to last"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Override -> {
-            "Write override"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
-            "Delete specific value"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {
-            "Delete last"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst -> {
-            "Delete first"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Clear -> {
-            "Clear"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Reverse -> {
-            "Reverse"
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Shuffle -> {
-            "Shuffle"
-        }
-
-        WriteGlobalVarOp.UNRECOGNIZED -> "UNRECOGNIZED"
-    }
+    return "ui.action.write.global.var.op.${name.lowercase()}"
 }
 
 fun WriteGlobalVarOp.isForListOnly(): Boolean {
-    return when (this) {
-        WriteGlobalVarOp.WriteGlobalVarOp_Auto -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_AppendToFirst -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Override -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {
-            true
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst -> {
-            true
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Clear -> {
-            false
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Reverse -> {
-            true
-        }
-
-        WriteGlobalVarOp.WriteGlobalVarOp_Shuffle -> {
-            true
-        }
-
-        WriteGlobalVarOp.UNRECOGNIZED -> false
-    }
+    return listOnlyOps.contains(this)
 }
+
+fun WriteGlobalVarOp.needUserInputValue(): Boolean {
+    return needInputValueOps.contains(this)
+}
+
+private val listOnlyOps = listOf(
+    WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast,
+    WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst,
+    WriteGlobalVarOp.WriteGlobalVarOp_Reverse,
+    WriteGlobalVarOp.WriteGlobalVarOp_Shuffle,
+)
+private val needInputValueOps = listOf(
+    WriteGlobalVarOp.WriteGlobalVarOp_Auto,
+    WriteGlobalVarOp.WriteGlobalVarOp_AppendToFirst,
+    WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast,
+    WriteGlobalVarOp.WriteGlobalVarOp_Override,
+    WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue,
+)
