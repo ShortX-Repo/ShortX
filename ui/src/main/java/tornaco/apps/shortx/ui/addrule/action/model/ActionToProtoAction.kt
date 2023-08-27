@@ -634,6 +634,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setVarName(varName)
                 .setValueAsString(valueAsString)
+                .setOp(op)
                 .setNote(overrideNote ?: note).build()
         }
 

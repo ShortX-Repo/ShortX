@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.core.rule
 
+import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.gv.BoolListVar
 import tornaco.apps.shortx.core.proto.gv.BoolVar
@@ -8,7 +9,6 @@ import tornaco.apps.shortx.core.proto.gv.Int64ListVar
 import tornaco.apps.shortx.core.proto.gv.Int64Var
 import tornaco.apps.shortx.core.proto.gv.StringListVar
 import tornaco.apps.shortx.core.proto.gv.StringVar
-import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.replaceLazy
 
@@ -202,9 +202,8 @@ fun String.replaceGlobalVarValues(globalVarsLazy: () -> List<GlobalVar>): String
 }
 
 
-fun GlobalVar.addOrUpdateValue(value: List<String>) {
-    logger.d("addOrUpdateValue: $value")
-    if (this.isList()) {
+fun GlobalVar.addOrUpdateValue(value: List<String>): GlobalVar {
+    return if (this.isList()) {
         val newVarProtoAny: ProtoAny? = when (this.type.toType()) {
             GlobalVarType.IntList -> {
                 value.mapNotNull { kotlin.runCatching { it.toLong() }.getOrNull() }
@@ -245,21 +244,16 @@ fun GlobalVar.addOrUpdateValue(value: List<String>) {
             }
         }
 
-        shortXManager.addGlobalVar(
-            GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
-        )
+        GlobalVar.newBuilder(this).setVar(newVarProtoAny).build()
     } else {
-        shortXManager.addGlobalVar(
-            GlobalVar.newBuilder(this).setVar(
-                value.first().toVarValueNotList(this.type.toType())
-            ).build()
-        )
+        GlobalVar.newBuilder(this).setVar(
+            value.first().toVarValueNotList(this.type.toType())
+        ).build()
     }
 }
 
 
 fun GlobalVar.setValue(value: List<String>): GlobalVar {
-    logger.d("setValue: $value")
     return if (this.isList()) {
         val newVarProtoAny: ProtoAny? = when (this.type.toType()) {
             GlobalVarType.IntList -> {
@@ -294,5 +288,97 @@ fun GlobalVar.setValue(value: List<String>): GlobalVar {
                 value.first().toVarValueNotList(this.type.toType())
             ).build()
         }
+    }
+}
+
+fun WriteGlobalVarOp.displayLabelKey(): String {
+    return when (this) {
+        WriteGlobalVarOp.WriteGlobalVarOp_Auto -> {
+            "Auto (List: append to last, Primitive: override)"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast -> {
+            "Write append to last"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_AppendToFirst -> {
+            "Write append to last"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Override -> {
+            "Write override"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
+            "Delete"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {
+            "Delete last"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst -> {
+            "Delete first"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Clear -> {
+            "Clear"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Reverse -> {
+            "Reverse"
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Shuffle -> {
+            "Shuffle"
+        }
+
+        WriteGlobalVarOp.UNRECOGNIZED -> "UNRECOGNIZED"
+    }
+}
+
+fun WriteGlobalVarOp.isForListOnly(): Boolean {
+    return when (this) {
+        WriteGlobalVarOp.WriteGlobalVarOp_Auto -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_AppendToFirst -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Override -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {
+            true
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_DeleteFirst -> {
+            true
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Clear -> {
+            false
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Reverse -> {
+            true
+        }
+
+        WriteGlobalVarOp.WriteGlobalVarOp_Shuffle -> {
+            true
+        }
+
+        WriteGlobalVarOp.UNRECOGNIZED -> false
     }
 }

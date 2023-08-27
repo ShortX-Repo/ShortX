@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
+import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
@@ -1560,7 +1561,8 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val valueAsString: String,
-        val varName: String
+        val varName: String,
+        val op: WriteGlobalVarOp
     ) : Action {
         override fun clone(
             id: String,

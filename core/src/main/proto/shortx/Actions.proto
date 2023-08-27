@@ -518,15 +518,16 @@ message WriteGlobalVar {
 }
 
 enum WriteGlobalVarOp {
-  WriteGlobalVarOp_AppendToLast = 0;
-  WriteGlobalVarOp_AppendToFirst = 1;
-  WriteGlobalVarOp_Override = 2;
-  WriteGlobalVarOp_DeleteValue = 3;
-  WriteGlobalVarOp_DeleteLast = 4;
-  WriteGlobalVarOp_DeleteFirst = 5;
-  WriteGlobalVarOp_Clear = 6;
-  WriteGlobalVarOp_Reverse = 7;
-  WriteGlobalVarOp_Shuffle = 8;
+  WriteGlobalVarOp_Auto = 0;
+  WriteGlobalVarOp_AppendToLast = 1;
+  WriteGlobalVarOp_AppendToFirst = 2;
+  WriteGlobalVarOp_Override = 3;
+  WriteGlobalVarOp_DeleteValue = 4;
+  WriteGlobalVarOp_DeleteLast = 5;
+  WriteGlobalVarOp_DeleteFirst = 6;
+  WriteGlobalVarOp_Clear = 7;
+  WriteGlobalVarOp_Reverse = 8;
+  WriteGlobalVarOp_Shuffle = 9;
 }
 
 message CreateGlobalVar {

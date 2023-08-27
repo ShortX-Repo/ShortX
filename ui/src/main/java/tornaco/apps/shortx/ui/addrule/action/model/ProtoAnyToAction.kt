@@ -733,6 +733,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 note = data.note,
                 varName = data.varName,
                 valueAsString = data.valueAsString,
+                op = data.op,
             )
         }
 
