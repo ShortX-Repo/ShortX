@@ -170,7 +170,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
             })
         StandardSpacer()
 
-        FieldTitle(text = "Operation")
+        FieldTitle(text = LocalI18N.current["ui.action.write.global.var.op"])
         val opDropdownState = rememberDropdownSelectorState()
         MediumSpacer()
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -189,7 +189,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                     .filterNot { it == WriteGlobalVarOp.UNRECOGNIZED }.map {
                         DropdownItem(
                             labelLines = listOfNotNull(
-                                it.displayLabelKey(),
+                                LocalI18N.current[it.displayLabelKey()],
                                 if (it.isForListOnly()) {
                                     LocalI18N.current["ui.action.write.global.var.op.list.only"]
                                 } else {

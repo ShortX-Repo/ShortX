@@ -488,6 +488,7 @@
   "ui.action.write.global.var.op.writeglobalvarop_reverse": "Reverse",
   "ui.action.write.global.var.op.writeglobalvarop_shuffle": "Shuffle",
   "ui.action.write.global.var.op.list.only": "List only",
+  "ui.action.write.global.var.op": "Operation",
   "ui.action.create.global.var": "Create global var",
   "ui.action.delete.global.var": "Delete global var",
   "ui.action.select.global.var": "Input var name or select",
