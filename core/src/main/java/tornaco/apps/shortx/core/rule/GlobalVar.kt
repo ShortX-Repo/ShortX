@@ -310,7 +310,7 @@ fun WriteGlobalVarOp.displayLabelKey(): String {
         }
 
         WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
-            "Delete"
+            "Delete specific value"
         }
 
         WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {

@@ -98,11 +98,19 @@ object WriteGlobalVar : Actor {
             }
 
             WriteGlobalVarOp.WriteGlobalVarOp_DeleteValue -> {
-                globalVar.throwIfNotList(op)
                 val currentValue = globalVar.valueList()
-                globalVar.setValue(currentValue.toMutableList().apply {
-                    remove(stringValueToWrite)
-                })
+                if (globalVar.isList()) {
+                    globalVar.setValue(currentValue.toMutableList().apply {
+                        remove(stringValueToWrite)
+                    })
+                } else {
+                    val newValueString = if (currentValue.isEmpty()) {
+                        ""
+                    } else {
+                        currentValue[0].replace(stringValueToWrite, "")
+                    }
+                    globalVar.setValue(listOf(newValueString))
+                }
             }
 
             WriteGlobalVarOp.WriteGlobalVarOp_DeleteLast -> {
