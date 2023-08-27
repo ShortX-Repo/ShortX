@@ -7,7 +7,8 @@ import tornaco.apps.shortx.services.ShortXContext
 object Interceptors {
     fun checkExecuteMVEL(shortXContext: ShortXContext, androidContext: Context): Boolean {
         require(shortXContext.rule.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL)) {
-            "MVEL engine is disabled, pls enable it in ShortX app Settings."
+            "MVEL engine is disabled, pls enable it in ShortX app Settings.\n" +
+                    "MVEL引擎未启用，请前往ShortX设置中阅读说明并开启"
         }
         require(!androidContext.packageManager.isSafeMode) {
             "Safe mode!"
@@ -17,7 +18,8 @@ object Interceptors {
 
     fun checkExecuteShell(shortXContext: ShortXContext, androidContext: Context): Boolean {
         require(shortXContext.rule.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL)) {
-            "Shell engine is disabled, pls enable it in ShortX app Settings."
+            "Shell engine is disabled, pls enable it in ShortX app Settings.\n" +
+                    "Shell引擎未启用，请前往ShortX设置中阅读说明并开启"
         }
         require(!androidContext.packageManager.isSafeMode) {
             "Safe mode!"
