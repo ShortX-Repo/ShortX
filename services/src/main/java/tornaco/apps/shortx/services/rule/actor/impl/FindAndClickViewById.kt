@@ -1,6 +1,9 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
+import tornaco.apps.shortx.core.rule.replaceLocalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -22,7 +25,9 @@ object FindAndClickViewById : Actor {
         }
         shortXContext.wm.withUiAutomation("WaitForIdle") {
             it.findAndClickViewByViewId(
-                viewId = d.viewId,
+                viewId = d.viewId.inflateContextMap(contextData)
+                    .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }
+                    .replaceLocalVarValues(localVars),
                 isRegex = d.isRegex,
                 timeout = maxOf(d.timeout, 1000L)
             )
