@@ -32,6 +32,11 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class ExecuteJS(val description: String) {
+        jsRet("The return value of the JS expression")
+    }
+
+    @DoNotStrip
     enum class HttpRequest(val description: String) {
         httpRequestRet("The return value of the Http request, as String")
     }

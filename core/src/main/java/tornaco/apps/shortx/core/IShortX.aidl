@@ -211,4 +211,6 @@ interface IShortX {
 
     void setRuleEngineEnabled(String engine, boolean enable);
     boolean isRuleEngineEnabled(String engine);
+
+    String executeJS(String expression);
 }

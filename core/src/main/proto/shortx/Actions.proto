@@ -120,6 +120,17 @@ message ExecuteMVEL {
   string id = 100;
 }
 
+
+message ExecuteJS {
+  string expression = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message RemoteExecuteMVEL {
   string title = 1;
   string description = 2;

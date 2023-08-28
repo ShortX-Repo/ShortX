@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":services-33"))
     implementation(project(":external:utils"))
     implementation(project(":external:picasso"))
+    implementation(project(":external:rhino-android"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
@@ -35,7 +36,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     // For HTML. mvel
     implementation(libs.jsoup)
-
 
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)

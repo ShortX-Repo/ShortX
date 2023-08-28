@@ -123,6 +123,17 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java
+            Action.ExecuteJS(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note, expression = data.expression
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.ExecuteMVEL::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.ExecuteMVEL::class.java
             Action.MVEL(

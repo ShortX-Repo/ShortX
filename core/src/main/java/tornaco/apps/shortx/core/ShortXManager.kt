@@ -303,6 +303,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun executeJS(expression: String): String {
+        return invokeService("") {
+            executeJS(expression)
+        }
+    }
+
     fun addPkgSet(pkgSet: PkgSet) {
         invokeService(Unit) {
             addPkgSet(ByteArrayWrapper(pkgSet.toByteArray()))

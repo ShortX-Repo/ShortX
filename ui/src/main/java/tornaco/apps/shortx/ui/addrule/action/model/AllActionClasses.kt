@@ -10,6 +10,7 @@ val allActionClasses = listOf(
     Action.Delay::class,
     Action.ShowToast::class,
     Action.ShowDanmu::class,
+    Action.ExecuteJS::class,
     Action.MVEL::class,
     Action.RemoteMVEL::class,
     Action.ShowOverlay::class,

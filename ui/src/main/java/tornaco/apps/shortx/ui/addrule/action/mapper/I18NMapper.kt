@@ -71,6 +71,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.take.screenshot"] to null
         }
 
+        Action.ExecuteJS::class -> {
+            i18N["ui.title.js"] to null
+        }
+
         Action.MVEL::class -> {
             i18N["ui.title.mvel"] to null
         }
@@ -255,6 +259,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.MVEL -> {
             listOf(i18N["ui.title.mvel"], action.expression)
+        }
+
+        is Action.ExecuteJS -> {
+            listOf(i18N["ui.title.js"], action.expression)
         }
 
         is Action.HideAllOverlay -> {

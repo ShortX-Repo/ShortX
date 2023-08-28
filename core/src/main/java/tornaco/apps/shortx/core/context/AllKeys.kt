@@ -8,6 +8,7 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.AppHasNotification>().map { it.name },
     enumValues<ContextDataMapping.Notification>().map { it.name },
     enumValues<ContextDataMapping.ExecuteMVEL>().map { it.name },
+    enumValues<ContextDataMapping.ExecuteJS>().map { it.name },
     enumValues<ContextDataMapping.HttpRequest>().map { it.name },
     enumValues<ContextDataMapping.ActivityStarted>().map { it.name },
     enumValues<ContextDataMapping.AppBecomeFg>().map { it.name },

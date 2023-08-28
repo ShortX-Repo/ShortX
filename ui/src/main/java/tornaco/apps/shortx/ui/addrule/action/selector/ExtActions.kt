@@ -62,6 +62,16 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     CodeEditorDialog(state = mvelSelectorState)
 
+    val jsSelectorState = rememberCodeEditorState(
+        title = LocalI18N.current["ui.title.js"],
+        execute = {
+            shortXManager.executeJS(it)
+        }
+    ) { expression ->
+        addAction(Action.ExecuteJS(expression = expression.src))
+    }
+    CodeEditorDialog(state = jsSelectorState)
+
     val fromDASelectorState = rememberFromDADialogState {
         addAction(it)
     }
@@ -124,6 +134,11 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.ExecuteJS::class -> {
+                jsSelectorState.show(source.getActionAs<Action.ExecuteJS>()?.expression)
+                true
+            }
+
             Action.Brk::class -> {
                 addAction(Action.Brk())
                 true
@@ -182,6 +197,7 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.IfThenElse::class,
         Action.WhileLoop::class,
         Action.HttpRequest::class,
+        Action.ExecuteJS::class,
     ).map {
         SelectorItem(
             type = it,

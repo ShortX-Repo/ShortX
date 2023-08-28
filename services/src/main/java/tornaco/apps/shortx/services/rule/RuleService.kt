@@ -512,6 +512,35 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return res
     }
 
+    fun executeJS(expression: String): String {
+        var res = ""
+        runBlocking {
+            systemServiceScope.launchSafety {
+                val handleParams = dummyHandlerParamsForAction(
+                    androidContext = context,
+                    shortXContext = shortXContext,
+                    evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(UUID.randomUUID().toString())
+                        .setSrcTitle("Testing JS")
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                        .setSerialNumber(nextEvaluateContextSerialNumber())
+                        .build(),
+                    action = tornaco.apps.shortx.core.proto.action.ExecuteJS.newBuilder()
+                        .setExpression(expression).build().pack_()
+                )
+                runCatching {
+                    tornaco.apps.shortx.services.rule.actor.impl.ExecuteJS.handle(handleParams)
+                    res =
+                        handleParams.contextData.get(ContextDataMapping.ExecuteJS.jsRet.name)
+                            .toString()
+                }.onFailure {
+                    res = Log.getStackTraceString(it)
+                }
+            }.join()
+        }
+        return res
+    }
+
     fun evaluateCondition(
         context: EvaluateContext,
         condition: ProtoAny,

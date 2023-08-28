@@ -41,6 +41,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Development.code_fill
         }
 
+        Action.ExecuteJS::class -> {
+            Remix.Development.javascript_fill
+        }
+
         Action.HideAllOverlay::class -> {
             Remix.Business.window_fill
         }

@@ -672,7 +672,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun executeMVEL(expression: String): String {
+            enforceCallingPermissions()
             return shortXContext.rule.executeMVEL(expression)
+        }
+
+        override fun executeJS(expression: String): String {
+            enforceCallingPermissions()
+            return shortXContext.rule.executeJS(expression)
         }
 
         override fun vb(code: String, deviceId: String, cb: ICallback) {

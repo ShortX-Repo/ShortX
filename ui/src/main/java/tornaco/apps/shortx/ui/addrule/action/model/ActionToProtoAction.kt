@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.EnableViewIdViewer
+import tornaco.apps.shortx.core.proto.action.ExecuteJS
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ExpandNotification
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
@@ -165,6 +166,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                         icon = it
                     }
                 }.setNote(overrideNote ?: note).build()
+        }
+
+        is Action.ExecuteJS -> {
+            ExecuteJS.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setExpression(expression)
+                .setNote(overrideNote ?: note)
+                .build()
         }
 
         is Action.MVEL -> {
