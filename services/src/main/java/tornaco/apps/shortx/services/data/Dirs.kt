@@ -10,6 +10,7 @@ object Dirs {
     fun baseServerCacheDir() = File(baseServerDir(), "cache")
     fun baseServerRecordingDir() = File(baseServerDir(), "record")
     fun picassoCacheDir() = File(baseServerCacheDir(), "picasso")
+    fun jsCacheDir() = File(baseServerCacheDir(), "js")
 
     fun baseServerDataDir(userId: Int = UserHandle.USER_SYSTEM) =
         File(baseServerDir(), "data/u/$userId")

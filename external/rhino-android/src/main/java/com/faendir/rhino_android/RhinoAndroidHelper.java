@@ -32,41 +32,8 @@ public class RhinoAndroidHelper {
 
     private final File cacheDirectory;
 
-    /**
-     * Constructs a new helper using the default temporary directory.
-     *
-     * @deprecated permission issues may occur.
-     */
-    @Deprecated
-    public RhinoAndroidHelper() {
-        this(new File(System.getProperty("java.io.tmpdir", "."), "classes"));
-    }
-
-    /**
-     * Constructs a new helper using a directory in the applications cache.
-     *
-     * @param context any context
-     */
-    public RhinoAndroidHelper(android.content.Context context) {
-        this(new File(context.getCacheDir(), "classes"));
-    }
-
-    /**
-     * Constructs a helper using the specified directory as cache.
-     *
-     * @param cacheDirectory the cache directory to use
-     */
     public RhinoAndroidHelper(File cacheDirectory) {
         this.cacheDirectory = cacheDirectory;
-    }
-
-    /**
-     * @return a context prepared for android
-     * @deprecated use {@link #enterContext()} instead
-     */
-    @Deprecated
-    public static Context prepareContext() {
-        return new RhinoAndroidHelper().enterContext();
     }
 
     /**
