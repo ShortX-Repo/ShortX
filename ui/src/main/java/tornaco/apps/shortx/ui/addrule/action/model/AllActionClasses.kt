@@ -67,6 +67,7 @@ val allActionClasses = listOf(
     Action.MapQueryBus::class,
     Action.FromDA::class,
     Action.FindAndClickViewByText::class,
+    Action.FindAndClickViewById::class,
     Action.InputTap::class,
     Action.InputSwipe::class,
     Action.WaitForIdle::class,

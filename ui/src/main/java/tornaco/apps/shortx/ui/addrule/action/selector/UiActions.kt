@@ -89,6 +89,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.FindAndClickViewById::class -> {
+                subSelectorStates.findAndClickViewByIdSelectorState.show(source.getActionAs())
+                true
+            }
+
             Action.InputTap::class -> {
                 subSelectorStates.inputTapSelectorState.show(source.getActionAs())
                 true
@@ -161,6 +166,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ShowMenuDialog::class,
         Action.ShowTextFieldDialog::class,
         Action.FindAndClickViewByText::class,
+        Action.FindAndClickViewById::class,
         Action.InputTap::class,
         Action.InputSwipe::class,
         Action.WaitForIdle::class,
@@ -203,6 +209,7 @@ data class UiActionSubSelectorStates(
     val hideOverlayDialogState: HideOverlayDialogState,
     val postNotificationDialogState: PostNotificationDialogState,
     val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
+    val findAndClickViewByIdSelectorState: FindAndClickViewByIdSelectorState,
     val inputTapSelectorState: InputTapSelectorState,
     val inputSwipeSelectorState: InputSwipeSelectorState,
 )
@@ -254,6 +261,11 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     FindAndClickViewByTextSelectorDialog(state = findAndClickViewByTextSelectorState)
 
+    val findAndClickViewByIdSelectorState = rememberFindAndClickViewByIdSelectorState {
+        addAction(it)
+    }
+    FindAndClickViewByIdSelectorDialog(state = findAndClickViewByIdSelectorState)
+
     val inputTapSelectorState = rememberInputTapSelectorState {
         addAction(it)
     }
@@ -273,6 +285,7 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         hideOverlayDialogState = hideOverlayDialogState,
         postNotificationDialogState = postNotificationDialogState,
         findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
+        findAndClickViewByIdSelectorState = findAndClickViewByIdSelectorState,
         inputTapSelectorState = inputTapSelectorState,
         inputSwipeSelectorState = inputSwipeSelectorState,
     )

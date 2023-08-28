@@ -1,7 +1,6 @@
 package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
-import android.content.ComponentName
 import android.content.Context
 import android.graphics.Color
 import android.graphics.RectF
@@ -174,16 +173,16 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     fun findAndClickViewByViewId(
         viewId: String,
-        targetComponent: ComponentName,
+        isRegex: Boolean = false,
         timeout: Long,
     ): Boolean {
         synchronized(uiAutoLock) {
             if (!isSystemReady) return false
             if (!automationManager.isConnected) {
-                logger.w("findAndClickViewByViewIdInternal, not connected.")
+                logger.w("findAndClickViewByViewId, not connected.")
                 return false
             }
-            logger.d("findAndClickViewByViewIdInternal: $viewId")
+            logger.d("findAndClickViewByViewId: $viewId")
 
             val uiDevice = UiDevice.getInstance(
                 InstrumentationAdapter(
@@ -191,12 +190,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     automationManager
                 )
             )
-            val uiObject = uiDevice.findObject(
-                UiSelector().resourceId(viewId)
-            )
-            logger.d("findAndClickViewByViewIdInternal: $uiObject")
+            val uiObject = if (isRegex) {
+                uiDevice.findObject(UiSelector().resourceIdMatches(viewId))
+            } else {
+                uiDevice.findObject(UiSelector().resourceId(viewId))
+            }
+            logger.d("findAndClickViewByViewId: $uiObject")
             if (!uiObject.waitForExists(timeout)) {
-                logger.d("findAndClickViewByViewIdInternal: waitForExists timeout")
+                logger.d("findAndClickViewByViewId: waitForExists timeout")
                 return false
             }
             return uiObject.click()

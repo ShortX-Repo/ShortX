@@ -841,6 +841,21 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.FindAndClickViewById::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickViewById::class.java
+            Action.FindAndClickViewById(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                viewId = data.viewId,
+                isRegex = data.isRegex,
+                timeout = data.timeout
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.InputTap::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java

@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.EnableViewIdViewer
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ExpandNotification
+import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
 import tornaco.apps.shortx.core.proto.action.FromDA
 import tornaco.apps.shortx.core.proto.action.HideOverlayButton
@@ -723,6 +724,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setText(text)
+                .setIsRegex(isRegex)
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.FindAndClickViewById -> {
+            FindAndClickViewById.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setViewId(viewId)
                 .setIsRegex(isRegex)
                 .setNote(overrideNote ?: note).build()
         }

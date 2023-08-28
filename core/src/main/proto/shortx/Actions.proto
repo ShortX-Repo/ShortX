@@ -645,6 +645,18 @@ message FindAndClickViewByText {
   string id = 100;
 }
 
+message FindAndClickViewById {
+  string viewId = 1;
+  bool isRegex = 2;
+  int64 timeout = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message InputTap {
   int32 x = 1;
   int32 y = 2;

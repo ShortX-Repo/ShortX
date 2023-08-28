@@ -257,6 +257,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.FindAndClickViewByText
     },
+    FindAndClickViewById {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.FindAndClickViewById
+    },
     InputTap {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.InputTap

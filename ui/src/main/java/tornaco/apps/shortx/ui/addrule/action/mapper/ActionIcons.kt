@@ -249,6 +249,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Business.window_2_fill
         }
 
+        Action.FindAndClickViewById::class -> {
+            Remix.Business.window_2_fill
+        }
+
         Action.InputTap::class -> {
             Remix.System.touch_fill
         }
