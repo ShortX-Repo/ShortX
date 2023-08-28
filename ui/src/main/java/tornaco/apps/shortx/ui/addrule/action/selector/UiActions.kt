@@ -129,6 +129,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.EnableViewIdViewer::class -> {
+                addAction(Action.EnableViewIdViewer())
+                true
+            }
+
             Action.ShowTextFieldDialog::class -> {
                 showTextFieldSelectorState.show(source.getActionAs())
                 true
@@ -162,6 +167,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ToggleGestureRecording::class,
         Action.InjectGestureRecording::class,
         Action.EnableUniversalCopy::class,
+        Action.EnableViewIdViewer::class,
     ).map {
         SelectorItem(
             it,

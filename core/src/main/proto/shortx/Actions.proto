@@ -999,6 +999,14 @@ message EnableUniversalCopy {
   string id = 100;
 }
 
+message EnableViewIdViewer {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ShowTextFieldDialog {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

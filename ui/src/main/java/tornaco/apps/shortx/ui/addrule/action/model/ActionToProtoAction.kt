@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.action.CreatePkgSet
 import tornaco.apps.shortx.core.proto.action.Delay
 import tornaco.apps.shortx.core.proto.action.DeleteGlobalVar
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
+import tornaco.apps.shortx.core.proto.action.EnableViewIdViewer
 import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
 import tornaco.apps.shortx.core.proto.action.ExpandNotification
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewByText
@@ -29,7 +30,6 @@ import tornaco.apps.shortx.core.proto.action.LaunchApp
 import tornaco.apps.shortx.core.proto.action.LaunchAppByPkg
 import tornaco.apps.shortx.core.proto.action.MapNav
 import tornaco.apps.shortx.core.proto.action.MapQueryBus
-import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
@@ -1133,6 +1133,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.EnableUniversalCopy -> {
             EnableUniversalCopy.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.EnableViewIdViewer -> {
+            EnableViewIdViewer.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)

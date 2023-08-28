@@ -369,6 +369,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Document.file_copy_line
         }
 
+        Action.EnableViewIdViewer::class -> {
+            Remix.System.search_eye_fill
+        }
+
         Action.TTS::class -> {
             Remix.Communication.speak_line
         }

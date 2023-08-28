@@ -188,6 +188,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ToggleGestureRecording::class -> i18N["ui.action.gesture.record.toggle"] to null
         Action.InjectGestureRecording::class -> i18N["ui.action.gesture.record.inject"] to null
         Action.EnableUniversalCopy::class -> i18N["ui.action.enable.universal.copy"] to null
+        Action.EnableViewIdViewer::class -> i18N["ui.action.enable.view.id.viewer"] to null
         Action.TTS::class -> i18N["ui.action.tts"] to null
         Action.SetWallpaper::class -> i18N["ui.action.set.wallpaper"] to null
         Action.SetRuleEnabled::class -> i18N["ui.action.set.rule.enabled"] to null
@@ -684,6 +685,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.EnableUniversalCopy -> listOf(
             i18N["ui.action.enable.universal.copy"]
+        )
+
+        is Action.EnableViewIdViewer -> listOf(
+            i18N["ui.action.enable.view.id.viewer"]
         )
 
         is Action.TTS -> listOf(

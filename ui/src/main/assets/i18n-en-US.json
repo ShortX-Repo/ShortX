@@ -364,6 +364,7 @@
   "ui.action.enable.universal.copy": "Universal copy",
   "ui.action.enable.universal.copy.text.not.found": "No text to copy",
   "ui.action.enable.universal.copy.edit.message": "Edit text and click copy to write it to clipboard",
+  "ui.action.enable.view.id.viewer": "View id lookup",
   "ui.action.read.clipboard": "Read clipboard",
   "ui.action.write.clipboard": "Write clipboard",
   "ui.action.show.danmu": "Show danmu",

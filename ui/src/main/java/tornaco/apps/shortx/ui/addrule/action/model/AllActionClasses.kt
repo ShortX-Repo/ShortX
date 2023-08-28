@@ -102,6 +102,7 @@ val allActionClasses = listOf(
     Action.ToggleGestureRecording::class,
     Action.InjectGestureRecording::class,
     Action.EnableUniversalCopy::class,
+    Action.EnableViewIdViewer::class,
     Action.ShowTextFieldDialog::class,
     Action.TTS::class,
     Action.SetWallpaper::class,
