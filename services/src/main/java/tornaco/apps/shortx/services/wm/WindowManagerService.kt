@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.wm
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Color
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
@@ -16,12 +17,15 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.ui.TextViewNode
+import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
 
 class WindowManagerService(shortXContext: ShortXContext) :
@@ -32,7 +36,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     private val uiAutoLock = "UiAutoLock"
 
-    private val showingHints: MutableSet<UniversalCopyView> = mutableSetOf()
+    private val showingUCHints: MutableSet<UniversalCopyView> = mutableSetOf()
+    private val showingIVHints: MutableSet<IdViewerView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -280,7 +285,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     }
                 )
 
-            showingHints.add(guideLineView)
+            showingUCHints.add(guideLineView)
             mainHandler.postSafety {
                 guideLineView.attach()
             }
@@ -296,6 +301,39 @@ class WindowManagerService(shortXContext: ShortXContext) :
             logger.p("enableUniversalCopy, screenTexts: $screenTexts")
 
             mainHandler.postSafety {
+                guideLineView.loadComplete()
+            }
+        }
+    }
+
+    fun enableIdViewer() {
+        disableIVViewer {
+            val idNodes = mutableListOf<ViewNode>()
+
+            val guideLineView =
+                IdViewerView(
+                    context = context,
+                    onClick = { x, y ->
+                        disableIVViewer {
+                            lookUpViewNodeFromClick(idNodes, x, y)
+                        }
+                    }
+                )
+
+            showingIVHints.add(guideLineView)
+
+            val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+            logger.d("rootInActiveWindow: $root")
+
+            val discoverStartTimeMillis = System.currentTimeMillis()
+            if (root != null) {
+                discoverViewIdFromAccessibilityNode(idNodes, root)
+            }
+            logger.p("enableIdViewer, time taken: ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+            logger.p("enableIdViewer, screenTexts: $idNodes")
+
+            mainHandler.postSafety {
+                guideLineView.attach(idNodes)
                 guideLineView.loadComplete()
             }
         }
@@ -323,12 +361,54 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+
+    private fun lookUpViewNodeFromClick(
+        nodes: List<ViewNode>,
+        x: Float,
+        y: Float
+    ) {
+        // Find child first.
+        val snapshotMatchNodes = nodes.filter {
+            it.position.contains(x, y)
+        }
+        val matchNodes = snapshotMatchNodes.toMutableList().apply {
+            removeIf { nodeToCheck ->
+                snapshotMatchNodes.any {
+                    nodeToCheck != it && nodeToCheck.position.contains(it.position)
+                }
+            }
+        }
+
+        logger.p("matchNode [$x $y]: $matchNodes")
+
+        systemServiceScope.launchSafety {
+            if (matchNodes.isEmpty()) {
+            } else {
+                ViewIdViewerNodeSelectorDialog(context, matchNodes).show()
+            }
+        }
+    }
+
     private fun disableUniversalCopy(action: suspend () -> Unit) {
         mainHandler.postSafety {
-            showingHints.forEach {
-                kotlin.runCatching { it.detach() }.onFailure { logger.e(it, "detach fail") }
+            showingUCHints.forEach {
+                kotlin.runCatching { it.detach() }
+                    .onFailure { logger.e(it, "disableUniversalCopy detach fail") }
             }
-            showingHints.clear()
+            showingUCHints.clear()
+            systemServiceScope.launchSafety {
+                action()
+            }
+        }
+    }
+
+    private fun disableIVViewer(action: suspend () -> Unit) {
+        mainHandler.postSafety {
+            showingIVHints.forEach {
+                kotlin.runCatching { it.detach() }
+                    .onFailure { logger.e(it, "disableIVViewer detach fail") }
+            }
+            showingIVHints.clear()
             systemServiceScope.launchSafety {
                 action()
             }
@@ -367,4 +447,80 @@ class WindowManagerService(shortXContext: ShortXContext) :
             }
         }
     }
+
+    private fun discoverViewIdFromAccessibilityNode(
+        list: MutableList<ViewNode>,
+        root: AccessibilityNodeInfo
+    ) {
+        if (root.isVisibleToUser) {
+            val viewId: String? = root.viewIdResourceName
+            viewId?.let {
+                val rect = root.boundsInScreen
+                val index = list.size
+                list.add(
+                    ViewNode(
+                        viewId = viewId,
+                        className = root.className.toString(),
+                        rootPackageName = root.packageName.toString(),
+                        position = RectF(
+                            rect.left.toFloat(),
+                            rect.top.toFloat(),
+                            rect.right.toFloat(),
+                            rect.bottom.toFloat()
+                        ),
+                        color = ColorPalette[index % ColorPalette.size]
+                    )
+                )
+            }
+
+            if (root.childCount > 0) {
+                for (i in 0 until root.childCount) {
+                    val child = root.getChild(i)
+                    if (child != null) {
+                        discoverViewIdFromAccessibilityNode(list, child)
+                    }
+                }
+            }
+        }
+    }
 }
+
+
+private val ColorPalette = arrayOf(
+    // MTR
+    Color(0xffAE213B),
+    Color(0xff11254A),
+    Color(0xffFF0000),
+    Color(0xff1A9431),
+    Color(0xff0860A8),
+    Color(0xffB5BD00),
+    Color(0xffFE7F1D),
+    Color(0xffF550A6),
+    Color(0xff1C7670),
+    Color(0xff5EB6E4),
+    Color(0xffA40084),
+    Color(0xff9A3B26),
+
+    // Nintendo Switch
+    Color(0xffFF5145),
+    Color(0xff00BBDF),
+    Color(0xffF8B62E),
+    Color(0xffBAD600),
+    Color(0xff19D719),
+    Color(0xffF02D7D),
+    Color(0xffFFDC00),
+    Color(0xffC88C32),
+
+    // Google
+    Color(0xff4586F3),
+    Color(0xffEB4334),
+    Color(0xffFBBD06),
+    Color(0xff35AA53),
+)
+
+private fun Color(colorValue: Long) = Color.argb(
+    (colorValue shr 24).toInt(),
+    ((colorValue shr 16) and 0xFF).toInt(),
+    ((colorValue shr 8) and 0xFF).toInt(),
+    (colorValue and 0xFF).toInt()
+)
