@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import android.os.Parcelable
 import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
+import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
@@ -13,6 +14,7 @@ import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
 import tornaco.apps.shortx.core.proto.common.AudioSource
+import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
@@ -29,6 +31,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.dats
 import tornaco.apps.shortx.ui.remote.RemoteExecuteMVELAction
 import java.util.UUID
 
@@ -40,6 +43,7 @@ sealed interface Action : Parcelable {
     val actionOnError: ActionOnError
     val note: String
 
+    val customContextDataKey: CustomContextDataKey
     val contextData: List<ContextData>
 
     fun clone(
@@ -55,6 +59,8 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -80,7 +86,10 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
-        override val contextData: List<ContextData> = emptyList(),
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.ShellCommand>(
+            customContextDataKey
+        ),
         override val note: String = "", val command: String
     ) : Action {
         override fun clone(
@@ -105,6 +114,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "", val text: String
     ) : Action {
@@ -130,6 +140,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val time: String,
@@ -157,6 +168,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "", val message: String
     ) : Action {
@@ -182,6 +194,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val text: String,
@@ -209,7 +222,10 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
-        override val contextData: List<ContextData> = emptyList(),
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.ExecuteMVEL>(
+            customContextDataKey
+        ),
         override val note: String = "", val expression: String
     ) : Action {
         override fun clone(
@@ -234,7 +250,10 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
-        override val contextData: List<ContextData> = emptyList(),
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.ExecuteMVEL>(
+            customContextDataKey
+        ),
         override val note: String = "",
         val action: RemoteExecuteMVELAction
     ) : Action {
@@ -260,6 +279,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val autoCollapse: Boolean,
@@ -289,6 +309,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -314,6 +335,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val tags: List<String>
@@ -340,6 +362,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val app: App,
@@ -367,6 +390,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -394,6 +418,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -421,6 +446,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -449,6 +475,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val componentNameAsString: String
@@ -475,6 +502,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val userId: Int,
@@ -507,6 +535,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val userId: Int,
@@ -534,6 +563,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -559,6 +589,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val tag: String,
@@ -592,6 +623,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -620,6 +652,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -646,6 +679,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -673,6 +707,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -699,6 +734,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -726,6 +762,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -752,6 +789,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -779,6 +817,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -805,6 +844,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -832,6 +872,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -858,6 +899,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val apps: List<App> = emptyList(),
@@ -885,6 +927,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -911,6 +954,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -936,6 +980,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -961,6 +1006,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -986,6 +1032,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1011,6 +1058,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1036,6 +1084,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1061,6 +1110,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1086,6 +1136,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1111,6 +1162,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1136,6 +1188,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1161,6 +1214,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1186,6 +1240,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1211,6 +1266,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1236,6 +1292,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1261,6 +1318,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1286,6 +1344,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1311,6 +1370,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1336,6 +1396,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1361,6 +1422,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1386,6 +1448,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1411,6 +1474,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = ""
     ) : Action {
@@ -1436,6 +1500,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val conditions: List<Condition>,
@@ -1466,6 +1531,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val title: String,
@@ -1500,6 +1566,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val title: String,
@@ -1529,6 +1596,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val title: String,
@@ -1558,6 +1626,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val valueAsString: String,
@@ -1586,6 +1655,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val globalVar: GlobalVar
@@ -1612,6 +1682,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val varName: String,
@@ -1638,6 +1709,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val latitude: String,
@@ -1668,6 +1740,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val mapApp: MapApp,
@@ -1696,6 +1769,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val daId: String,
@@ -1724,6 +1798,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val text: String,
@@ -1752,6 +1827,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -1780,6 +1856,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -1812,6 +1889,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -1837,6 +1915,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -1867,7 +1946,10 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
-        override val contextData: List<ContextData> = emptyList(),
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = dats<ContextDataMapping.ReadClipboard>(
+            customContextDataKey
+        ),
         override val note: String = "",
     ) : Action {
         override fun clone(
@@ -1892,6 +1974,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val text: String
@@ -1918,6 +2001,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -1946,6 +2030,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val mode: RingerMode
@@ -1972,6 +2057,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -1997,6 +2083,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2022,6 +2109,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         @IntRange(0, 255)
@@ -2049,6 +2137,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2076,6 +2165,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2104,6 +2194,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2131,6 +2222,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2158,6 +2250,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2187,6 +2280,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val stringPairs: List<StringPair>
@@ -2213,6 +2307,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2245,6 +2340,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2272,6 +2368,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2297,6 +2394,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2322,6 +2420,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2347,6 +2446,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2372,6 +2472,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val direction: VolumeDirection
@@ -2398,6 +2499,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val vib1: Int,
@@ -2426,6 +2528,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val src: AudioSource,
@@ -2453,6 +2556,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2478,6 +2582,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2505,6 +2610,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2533,6 +2639,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val valueAsString: String,
@@ -2560,6 +2667,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2585,6 +2693,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2610,6 +2719,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
     ) : Action {
@@ -2635,6 +2745,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2664,6 +2775,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2690,6 +2802,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2717,6 +2830,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2745,6 +2859,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
@@ -2774,6 +2889,7 @@ sealed interface Action : Parcelable {
         override val id: String = defaultNewActionId(),
         override val isEnabled: Boolean = true,
         override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
         val icon: String

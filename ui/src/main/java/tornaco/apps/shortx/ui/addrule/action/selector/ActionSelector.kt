@@ -23,12 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
-import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.addrule.actionContextData
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -93,19 +90,8 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                         val selectorVM = hiltViewModel<ActionSelectorViewModel>()
                         val selectorState by selectorVM.state.collectAsState()
                         val addAction: (Action) -> Unit = {
-                            val addContextData = it.toProtoAction()::class.actionContextData(
-                                CustomContextDataKey.getDefaultInstance()
-                            )
-                            val actionWithContextData = it.clone(
-                                id = it.id,
-                                note = it.note,
-                                isEnabled = it.isEnabled,
-                                actionOnError = it.actionOnError,
-                                contextData = addContextData
-                            )
-
-                            onSelected(actionWithContextData)
-                            selectorVM.onActionAdd(actionWithContextData)
+                            onSelected(it)
+                            selectorVM.onActionAdd(it)
                         }
                         AllActions(selectorState, addAction)
                     }

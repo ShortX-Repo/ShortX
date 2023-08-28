@@ -5,14 +5,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.protobuf.Message
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.forKey
-import tornaco.apps.shortx.core.proto.action.ExecuteMVEL
-import tornaco.apps.shortx.core.proto.action.ReadClipboard
-import tornaco.apps.shortx.core.proto.action.RemoteExecuteMVEL
-import tornaco.apps.shortx.core.proto.action.ShellCommand
 import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.res.Remix
@@ -27,7 +22,7 @@ val logger = Logger("ContextData")
 
 @Parcelize
 data class ContextData(
-    val key: String, val description: String, val customKey: String
+    val key: String, val description: String, val customKey: String?
 ) : Parcelable {
     val selectedKey: String get() = customKey.fallbackOnEmpty(key)
 }
@@ -35,23 +30,25 @@ data class ContextData(
 fun List<ContextData>.toCustomContextDataKey(): CustomContextDataKey {
     return CustomContextDataKey.newBuilder()
         .addAllKeys(
-            this@toCustomContextDataKey.map {
-                (it.key to it.customKey).toStringPair()
+            this@toCustomContextDataKey.mapNotNull { ctx ->
+                ctx.customKey?.let { customKey ->
+                    (ctx.key to customKey).toStringPair()
+                }
             }
         )
         .build()
 }
 
-private inline fun <reified T : Enum<T>> dats(customContextDataKey: CustomContextDataKey): List<ContextData> =
+inline fun <reified T : Enum<T>> dats(customContextDataKey: CustomContextDataKey): List<ContextData> =
     runCatching {
         val values: Array<T> = enumValues()
         val descriptionField =
             values.first().javaClass.getDeclaredField("description").apply { isAccessible = true }
         values.map {
             ContextData(
-                it.name,
-                descriptionField.get(it) as String,
-                customContextDataKey.forKey(it.name) ?: ""
+                key = it.name,
+                description = descriptionField.get(it) as String,
+                customKey = customContextDataKey.forKey(it.name)
             )
         }
     }.getOrElse {
@@ -163,26 +160,6 @@ fun KClass<out Fact>.factContextData(customContextDataKey: CustomContextDataKey 
 
         Fact.ClipboardContentChanged::class -> {
             dats<ContextDataMapping.ClipboardContentChanged>(customContextDataKey)
-        }
-
-        else -> {
-            emptyList()
-        }
-    }
-}
-
-fun KClass<out Message>.actionContextData(customContextDataKey: CustomContextDataKey): List<ContextData> {
-    return when (this) {
-        ExecuteMVEL::class, RemoteExecuteMVEL::class -> {
-            dats<ContextDataMapping.ExecuteMVEL>(customContextDataKey)
-        }
-
-        ReadClipboard::class -> {
-            dats<ContextDataMapping.ReadClipboard>(customContextDataKey)
-        }
-
-        ShellCommand::class -> {
-            dats<ContextDataMapping.ShellCommand>(customContextDataKey)
         }
 
         else -> {

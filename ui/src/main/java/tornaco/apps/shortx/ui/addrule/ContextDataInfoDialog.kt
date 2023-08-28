@@ -115,7 +115,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                         ).show()
                     },
                     canEditKey = state.canSetCustomKey,
-                    isCustomKey = contextData.customKey.isNotEmpty(),
+                    isCustomKey = !contextData.customKey.isNullOrEmpty(),
                     setCustomKey = {
                         state.updateCustomKey((contextData.key to it).toStringPair())
                     }
