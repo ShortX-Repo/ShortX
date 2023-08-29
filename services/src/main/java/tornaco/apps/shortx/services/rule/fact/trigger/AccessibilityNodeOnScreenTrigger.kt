@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
 import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
+import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
@@ -18,10 +19,38 @@ class AccessibilityNodeOnScreenTrigger(
 ) :
     Trigger {
     private val logger = Logger("AccessibilityNodeOnScreenTrigger")
+    private val nodeMatchers = mutableMapOf<String, Any>()
+
+    override fun onRuleEnabled(ruleId: String) {
+        super.onRuleEnabled(ruleId)
+        val rule = shortXContext.rule.getRuleById(ruleId)
+        if (rule != null && rule.factsList.any { it is_ HasFoundNodeOnScreen::class.java }) {
+            loadTriggerState()
+        }
+    }
+
+    override fun onRuleDisabled(ruleId: String) {
+        super.onRuleDisabled(ruleId)
+        val rule = shortXContext.rule.getRuleById(ruleId)
+        if (rule != null && rule.factsList.any { it is_ HasFoundNodeOnScreen::class.java }) {
+            loadTriggerState()
+        }
+    }
+
+    override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
+        super.onUpdateRule(oldRule, newRule)
+        if (oldRule.factsList.any { it is_ HasFoundNodeOnScreen::class.java }
+            || newRule.factsList.any { it is_ HasFoundNodeOnScreen::class.java }) {
+            loadTriggerState()
+        }
+    }
+
+    private fun loadTriggerState() {
+        logger.i("loadTriggerState")
+        register()
+    }
 
     override fun register() {
-        val nodeMatchers = mutableMapOf<String, Any>()
-
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
             rule.factsList.forEach { factProtoAny ->
                 if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
@@ -81,13 +110,13 @@ class AccessibilityNodeOnScreenTrigger(
     }
 }
 
-fun matchTextOrRegex(text: CharSequence?, matcher: NodeMatcherText): Boolean {
+private fun matchTextOrRegex(text: CharSequence?, matcher: NodeMatcherText): Boolean {
     if (text == null) return false
     if (matcher.isRegex && matcher.text.toRegex().matches(text.toString())) return true
     return !matcher.isRegex && matcher.text == text
 }
 
-fun HasFoundNodeOnScreen.extractMatchers(): List<Any> {
+private fun HasFoundNodeOnScreen.extractMatchers(): List<Any> {
     val matchers = mutableListOf<Any>()
     matchersList.forEach {
         val realMatcher = if (it is_ NodeMatcherText::class.java) {

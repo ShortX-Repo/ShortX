@@ -377,6 +377,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     fun deleteRule(ruleId: String) {
+        // Disable first.
+        setRuleEnabled(ruleId, false)
+
         val rules = ruleSettingsStore.deleteRule(ruleId)
         handler.postSafety {
             rules.forEach { r ->
