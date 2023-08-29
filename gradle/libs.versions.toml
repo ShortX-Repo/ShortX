@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.33.0-alpha"
+accompanist = "0.33.1-alpha"
 activity-compose = "1.7.2"
 agp = "8.1.1"
 dalvik-dx = "11.0.0_r3"
