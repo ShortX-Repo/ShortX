@@ -29,12 +29,15 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
+import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.core.proto.fact.MobileDataStatusChanged
 import tornaco.apps.shortx.core.proto.fact.NFCStatusChanged
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
 import tornaco.apps.shortx.core.proto.fact.NotificationRemoved
@@ -56,6 +59,7 @@ import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.pack_
 
 
 fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
@@ -449,6 +453,28 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             GlobalVarChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setGvId(gvId)
+                .build()
+        }
+
+        is Fact.HasFoundNodeOnScreen -> {
+            HasFoundNodeOnScreen.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCustomContextDataKey(customContextDataKey)
+                .setPackageName(packageName)
+                .addAllMatchers(matchers.mapNotNull {
+                    when (it) {
+                        is NodeMatcher.Text -> {
+                            NodeMatcherText.newBuilder().setText(it.text).setIsRegex(it.isRegex)
+                                .build()
+                                .pack_()
+                        }
+
+                        is NodeMatcher.ViewId -> {
+                            NodeMatcherViewId.newBuilder().setId(it.viewId).build().pack_()
+                        }
+
+                        else -> null
+                    }
+                })
                 .build()
         }
 

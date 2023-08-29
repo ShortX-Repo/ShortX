@@ -137,7 +137,7 @@ class GestureService(shortXContext: ShortXContext) :
         return onGestureEvent?.invoke(area to gestureEvent) ?: false
     }
 
-    fun getGestureAreaSize(): Int = store.read(Settings.IntSettings.GestureAreaSizeDp)
+    fun getGestureAreaSize(): Int = maxOf(store.read(Settings.IntSettings.GestureAreaSizeDp), 12)
 
     fun setGestureAreaSize(dp: Int) = store.write(Settings.IntSettings.GestureAreaSizeDp, dp)
 

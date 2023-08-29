@@ -74,4 +74,6 @@ val allFactClasses = listOf(
     Fact.CallStateChanged::class,
     Fact.ClipboardContentChanged::class,
     Fact.GlobalVarChanged::class,
+
+    Fact.HasFoundNodeOnScreen::class,
 )

@@ -503,7 +503,8 @@ message GlobalVarChanged {
 }
 
 message HasFoundNodeOnScreen {
-  repeated google.protobuf.Any matchers = 4;
+  string packageName = 1;
+  repeated google.protobuf.Any matchers = 2;
 
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;

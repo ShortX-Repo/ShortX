@@ -885,6 +885,41 @@ sealed interface Fact {
             return copy(id = id, note = note, customContextDataKey = customContextDataKey)
         }
     }
+
+    data class HasFoundNodeOnScreen(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+        val packageName: String,
+        val matchers: List<NodeMatcher>
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+}
+
+sealed interface NodeMatcher {
+    val displayLabel: String
+    val displayMessage: String
+
+    data class Text(val text: String, val isRegex: Boolean) : NodeMatcher {
+        override val displayLabel: String
+            get() = "ui.fact.has.found.node.on.screen.text"
+        override val displayMessage: String
+            get() = this.text
+    }
+
+    data class ViewId(val viewId: String) : NodeMatcher {
+        override val displayLabel: String
+            get() = "ui.fact.has.found.node.on.screen.view.id"
+        override val displayMessage: String
+            get() = this.viewId
+    }
 }
 
 val Fact.contextData: List<ContextData> get() = this::class.factContextData()

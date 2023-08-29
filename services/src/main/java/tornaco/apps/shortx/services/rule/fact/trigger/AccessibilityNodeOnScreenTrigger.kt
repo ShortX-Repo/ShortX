@@ -13,13 +13,15 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 
+private data class HasFoundNodeOnScreenBrief(val id: String, val packageName: String)
+
 class AccessibilityNodeOnScreenTrigger(
     override val context: Context,
     override val shortXContext: ShortXContext
 ) :
     Trigger {
     private val logger = Logger("AccessibilityNodeOnScreenTrigger")
-    private val nodeMatchers = mutableMapOf<String, Any>()
+    private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, Any>()
 
     override fun onRuleEnabled(ruleId: String) {
         super.onRuleEnabled(ruleId)
@@ -56,7 +58,7 @@ class AccessibilityNodeOnScreenTrigger(
                 if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
                     val fact = factProtoAny unpack_ HasFoundNodeOnScreen::class.java
                     fact.extractMatchers().forEach {
-                        nodeMatchers[fact.id] = it
+                        nodeMatchers[HasFoundNodeOnScreenBrief(fact.id, fact.packageName)] = it
                     }
                 }
             }
@@ -64,7 +66,7 @@ class AccessibilityNodeOnScreenTrigger(
                 if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
                     val fact = factProtoAny unpack_ HasFoundNodeOnScreen::class.java
                     fact.extractMatchers().forEach {
-                        nodeMatchers[fact.id] = it
+                        nodeMatchers[HasFoundNodeOnScreenBrief(fact.id, fact.packageName)] = it
                     }
                 }
             }
@@ -82,21 +84,33 @@ class AccessibilityNodeOnScreenTrigger(
 
             shortXContext.wm.setOnAccessibilityEvent { event ->
                 if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
-                    val allNodes = shortXContext.wm.getAllNodesFromScreen()
-                    onDebugBuild { logger.d("allNodes: $allNodes") }
+                    val rootPkgName = event.packageName
+                    val shouldCheckEvent = nodeMatchers.keys.any { it.packageName == rootPkgName }
+                    if (shouldCheckEvent) {
+                        val allNodes = shortXContext.wm.getAllNodesFromScreen()
+                        onDebugBuild { logger.d("allNodes: $allNodes") }
 
-                    nodeMatchers.forEach { factId, matcherAny ->
-                        if (matcherAny is NodeMatcherViewId) {
-                            val isMatch =
-                                allNodes.any { it.viewId == matcherAny.id || it.shortViewId == matcherAny.id }
-                            if (isMatch) {
-                                logger.d("Match viewId: ${matcherAny.id}")
-                            }
-                        } else if (matcherAny is NodeMatcherText) {
-                            val isMatch =
-                                allNodes.any { matchTextOrRegex(it.text, matcherAny) }
-                            if (isMatch) {
-                                logger.d("Match text: ${matcherAny.text} - regex? ${matcherAny.isRegex}")
+                        nodeMatchers.forEach { brief, matcherAny ->
+                            if (matcherAny is NodeMatcherViewId) {
+                                val isMatch =
+                                    allNodes.any { it.viewId == matcherAny.id || it.shortViewId == matcherAny.id }
+                                if (isMatch) {
+                                    logger.d("Match viewId: ${matcherAny.id}")
+                                    shortXContext.rule.publishFact(
+                                        "Match viewId",
+                                        HasFoundNodeOnScreen.newBuilder().setId(brief.id).build()
+                                    )
+                                }
+                            } else if (matcherAny is NodeMatcherText) {
+                                val isMatch =
+                                    allNodes.any { matchTextOrRegex(it.text, matcherAny) }
+                                if (isMatch) {
+                                    logger.d("Match text: ${matcherAny.text} - regex? ${matcherAny.isRegex}")
+                                    shortXContext.rule.publishFact(
+                                        "Match text",
+                                        HasFoundNodeOnScreen.newBuilder().setId(brief.id).build()
+                                    )
+                                }
                             }
                         }
                     }

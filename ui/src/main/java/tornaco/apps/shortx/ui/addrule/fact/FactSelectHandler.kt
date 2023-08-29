@@ -8,8 +8,10 @@ import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
+import tornaco.apps.shortx.ui.addrule.fact.selector.HasFoundNodeOnScreenDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.NotificationAppAndMatcherSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberHasFoundNodeOnScreenState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
 
@@ -129,6 +131,11 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
         }
     NotificationAppAndMatcherSelectorDialog(notificationRemovedSelectorState)
 
+    val hasNodeOnScreenState = rememberHasFoundNodeOnScreenState(onSelected = {
+        setFact(it)
+    })
+    HasFoundNodeOnScreenDialog(state = hasNodeOnScreenState)
+
     return { source ->
         when (source.clazz) {
             Fact.ActivityStarted::class -> {
@@ -245,6 +252,11 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
 
             Fact.AudioFocusChanged::class -> {
                 setFact(Fact.AudioFocusChanged())
+                true
+            }
+
+            Fact.HasFoundNodeOnScreen::class -> {
+                hasNodeOnScreenState.show(source.getFactAs())
                 true
             }
 

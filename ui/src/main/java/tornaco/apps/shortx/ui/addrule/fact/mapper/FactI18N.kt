@@ -200,6 +200,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.global.var.changed"] to null
         }
 
+        Fact.HasFoundNodeOnScreen::class -> {
+            i18n["ui.fact.has.found.node.on.screen"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -587,6 +591,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 i18N["ui.fact.global.var.changed"],
                 fact.gvId
             )
+        }
+
+        is Fact.HasFoundNodeOnScreen -> {
+            listOf(i18N["ui.fact.has.found.node.on.screen"])
         }
     }
 }

@@ -4,6 +4,8 @@ import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.toFixedBy
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
@@ -593,6 +595,27 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 gvId = data.gvId
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java
+
+            Fact.HasFoundNodeOnScreen(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                packageName = data.packageName,
+                matchers = data.matchersList.mapNotNull {
+                    if (it is_ NodeMatcherText::class.java) {
+                        val m = it unpack_ NodeMatcherText::class.java
+                        NodeMatcher.Text(m.text, m.isRegex)
+                    } else if (it is_ NodeMatcherViewId::class.java) {
+                        val m = it unpack_ NodeMatcherViewId::class.java
+                        NodeMatcher.ViewId(m.id)
+                    } else null
+                }
             )
         }
 
