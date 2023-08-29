@@ -263,13 +263,25 @@ class WindowManagerService(shortXContext: ShortXContext) :
     fun getAllTextsFromScreen(): List<TextViewNode> {
         val screenTexts = mutableListOf<TextViewNode>()
         val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
-        logger.d("rootInActiveWindow: $root")
+        logger.d("getAllTextsFromScreen rootInActiveWindow: $root")
         val discoverStartTimeMillis = System.currentTimeMillis()
         if (root != null) {
             discoverTextFromAccessibilityNode(screenTexts, root)
         }
         logger.d("discoverTextFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
         return screenTexts
+    }
+
+    fun getAllNodesFromScreen(): List<ViewNode> {
+        val nodes = mutableListOf<ViewNode>()
+        val root: AccessibilityNodeInfo? = automationManager.rootInActiveWindow
+        logger.d("getAllNodesFromScreen rootInActiveWindow: $root")
+        val discoverStartTimeMillis = System.currentTimeMillis()
+        if (root != null) {
+            discoverViewIdFromAccessibilityNode(nodes, root)
+        }
+        logger.d("discoverViewIdFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
+        return nodes
     }
 
     fun enableUniversalCopy() {
@@ -454,25 +466,24 @@ class WindowManagerService(shortXContext: ShortXContext) :
         root: AccessibilityNodeInfo
     ) {
         if (root.isVisibleToUser) {
-            val viewId: String? = root.viewIdResourceName
-            viewId?.let {
-                val rect = root.boundsInScreen
-                val index = list.size
-                list.add(
-                    ViewNode(
-                        viewId = viewId,
-                        className = root.className.toString(),
-                        rootPackageName = root.packageName.toString(),
-                        position = RectF(
-                            rect.left.toFloat(),
-                            rect.top.toFloat(),
-                            rect.right.toFloat(),
-                            rect.bottom.toFloat()
-                        ),
-                        color = ColorPalette[index % ColorPalette.size]
-                    )
+            val viewId: String = root.viewIdResourceName ?: ""
+            val rect = root.boundsInScreen
+            val index = list.size
+            list.add(
+                ViewNode(
+                    viewId = viewId,
+                    className = root.className.toString(),
+                    text = root.text ?: root.contentDescription,
+                    rootPackageName = root.packageName.toString(),
+                    position = RectF(
+                        rect.left.toFloat(),
+                        rect.top.toFloat(),
+                        rect.right.toFloat(),
+                        rect.bottom.toFloat()
+                    ),
+                    color = ColorPalette[index % ColorPalette.size]
                 )
-            }
+            )
 
             if (root.childCount > 0) {
                 for (i in 0 until root.childCount) {

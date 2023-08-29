@@ -6,6 +6,7 @@ data class ViewNode(
     val rootPackageName: String,
     val viewId: String,
     val className: String,
+    val text: CharSequence?,
     val position: RectF,
     val color: Int
 ) {

@@ -30,7 +30,7 @@ import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
-import tornaco.apps.shortx.core.proto.fact.HasFoundTextOnScreen
+import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
@@ -428,10 +428,10 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
 
             actualN.gvId == ruleN.gvId
         }
-        register(HasFoundTextOnScreen::class.java) { actual, rule ->
-            val actualN = (actual as HasFoundTextOnScreen)
-            val ruleN = (rule as HasFoundTextOnScreen)
-            emptyOrRegexMatch(ruleN.textRegex, actualN.textRegex)
+        register(HasFoundNodeOnScreen::class.java) { actual, rule ->
+            val actualN = (actual as HasFoundNodeOnScreen)
+            val ruleN = (rule as HasFoundNodeOnScreen)
+            actualN.id == ruleN.id
         }
 
         logger.i("Init complete.")
