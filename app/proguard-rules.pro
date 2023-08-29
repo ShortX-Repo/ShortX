@@ -146,3 +146,11 @@
 -dontwarn android.provider.Settings$Config
 -dontwarn android.view.IInputFilter$Stub
 -dontwarn android.view.IInputFilterHost
+
+# Inroduced by a lib update, not sure if it 55d1baecdbfe02c40a147d696d8a805f43906890
+-dontwarn java.beans.BeanDescriptor
+-dontwarn java.beans.BeanInfo
+-dontwarn java.beans.IntrospectionException
+-dontwarn java.beans.Introspector
+-dontwarn java.beans.PropertyDescriptor
+-dontwarn javax.lang.model.SourceVersion
