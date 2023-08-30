@@ -67,6 +67,7 @@ import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -163,6 +164,8 @@ fun AddRuleScreen(
     val quitActionHandler = remember(vm) { vm.quitActionStateHandler }
     val quitActionState by quitActionHandler.state.collectAsState()
 
+    val shortXProps = LocalShortXProps.current
+
     LaunchedEffect(vm) {
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
@@ -204,7 +207,7 @@ fun AddRuleScreen(
                                         || quitConditionContentState.isChanged
                                         || quitActionState.isChanged,
                                 onClick = {
-                                    vm.save()
+                                    vm.save(shortXProps.firstOrNull())
                                     back(true)
                                 }) {
                                 RemixIcon(remixName = saveIconName)

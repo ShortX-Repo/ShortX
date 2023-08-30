@@ -21,6 +21,11 @@ message DirectAction {
 
   int64 versionCode = 8;
   ConflictStrategy conflictPolicy = 9;
+
+  // Put some extras for ext
+  // Currently extras:
+  // 1. Subscribe token, key app package name
+  repeated StringPair extras = 10;
 }
 
 message DirectActionList {

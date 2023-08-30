@@ -44,7 +44,8 @@ fun FeatureAccessDialog(state: CommonDialogState) {
     }
 }
 
-private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
+// Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
+inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arrayOf(
     Fact.FixedInPeriod::class,
     Fact.VPNConnected::class,
     Fact.VPNDisconnected::class,
@@ -54,17 +55,24 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Fact.AdvancedKeyEvent::class,
     Fact.FixedInPeriod::class,
     Fact.OnQSTileClick::class,
+    Fact.HasFoundNodeOnScreen::class,
+    // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
     Condition.RequireMobileDataEnabled::class,
+    // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Action.LaunchAppByPkg::class,
     Action.StopAppByPkg::class,
     Action.RemoveNotificationForPackageByPkg::class,
     Action.SuspendApp::class,
+    Action.SuspendAppByPkg::class,
     Action.UnSuspendApp::class,
+    Action.UnSuspendAppByPkg::class,
     Action.DisableApp::class,
+    Action.DisableAppByPkg::class,
     Action.EnableApp::class,
+    Action.EnableAppByPkg::class,
     Action.AudioRecording::class,
     Action.ShowOverlay::class,
     Action.SwitchMobileDataSlot::class,
@@ -78,6 +86,11 @@ private val subscribedOnlyActions: Array<KClass<*>> = arrayOf(
     Action.StopGestureRecording::class,
     Action.EnableUniversalCopy::class,
     Action.TTS::class,
+    Action.FindAndClickViewById::class,
+    Action.FindAndClickMatchedView::class,
+    // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
-fun isForSubscribedOnly(clazz: KClass<*>): Boolean = subscribedOnlyActions.contains(clazz)
+
+inline fun isForSubscribedOnly(clazz: KClass<*>, onRes: () -> Unit = {}): Boolean =
+    subscribedOnlyModels().contains(clazz)

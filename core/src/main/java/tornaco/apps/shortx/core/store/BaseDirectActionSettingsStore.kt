@@ -1,6 +1,12 @@
 package tornaco.apps.shortx.core.store
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.util.Logger
@@ -23,6 +29,9 @@ open class BaseDirectActionSettingsStore(
     suspend fun read() = readInternal()
 
     fun addDirectAction(da: DirectAction) {
+        require(da.extrasList.isEmpty()) {
+            "DA extra must be cleared."
+        }
         dasCache.removeIf { it.id == da.id }
         dasCache.add(da)
         postWrite()

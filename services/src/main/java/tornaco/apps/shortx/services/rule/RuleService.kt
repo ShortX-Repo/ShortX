@@ -30,7 +30,9 @@ import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
@@ -354,7 +356,36 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         unregisterJobStatusListener(listener)
     }
 
-    fun addOrUpdateRule(rule: Rule) {
+    fun addOrUpdateRule(unMaskedRule: Rule) {
+        // Check Subscribe state.
+        val extras = unMaskedRule.extrasList
+        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        logger.p("addOrUpdateRule, token: ${token?.second?.maskAll()}")
+        // Check if has advanced action or facts
+
+        var canAddRule = true
+        val subOnlyModels = subscribedOnlyModels()
+
+        if ((unMaskedRule.factsList
+                    + unMaskedRule.conditionsList
+                    + unMaskedRule.actionsList).any { actionProto ->
+                subOnlyModels.any { actionProto is_ it.java }
+            }
+        ) {
+            logger.p("This rule contains sub only model.")
+            if (token == null || token.second.isNullOrEmpty()) {
+                canAddRule = false
+            }
+        }
+
+        if (!canAddRule) {
+            logger.p("Can not add rule.")
+            return
+        }
+
+        // Must clear rule extras!
+        val rule = Rule.newBuilder(unMaskedRule).clearExtras().build()
+
         val existing = getRuleById(rule.id)
         if (existing == null) {
             // Add
@@ -425,7 +456,34 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun getRuleCount() = ruleSettingsStore.getRuleCount()
 
-    fun addDirectAction(da: DirectAction) {
+    fun addDirectAction(unMaskedDA: DirectAction) {
+        // Check Subscribe state.
+        val extras = unMaskedDA.extrasList
+        val token = extras.firstOrNull { it.first == BuildProp.APP_PACKAGE_NAME }
+        logger.p("addDirectAction, token: ${token?.second?.maskAll()}")
+        // Check if has advanced action or facts
+
+        var canAddRule = true
+        val subOnlyModels = subscribedOnlyModels()
+
+        if ((unMaskedDA.actionsList).any { actionProto ->
+                subOnlyModels.any { actionProto is_ it.java }
+            }
+        ) {
+            logger.p("This DA contains sub only model.")
+            if (token == null || token.second.isNullOrEmpty()) {
+                canAddRule = false
+            }
+        }
+
+        if (!canAddRule) {
+            logger.p("Can not add DA.")
+            return
+        }
+
+        // Must clear rule extras!
+        val da = DirectAction.newBuilder(unMaskedDA).clearExtras().build()
+
         logger.d("addDirectAction: $da")
         dasSettingsStore.addDirectAction(da)
         daObs.broadcast {

@@ -6,11 +6,16 @@ import tornaco.apps.shortx.core.BuildProp
 
 const val MMKV_ID_ENC = "android.m"
 const val KEY_DEVICE_ID = "android.d"
-const val KEY_SUB_TOKEN = "android.t"
+
+const val KEY_SUB_TOKEN = "A772E654-1227-4565-839C-E9C4C9A22891"
+
+// Token key for ShortX server.
+const val KEY_SUB_TOKEN_SERVER = "71F53C88-C20C-491C-9A0E-4C81CBC6AAC1"
+
 const val TOKEN_GOOGLE_PLAY = "99ee2a07-2485-4b20-85bd-cc2331f74f59"
 
 object MMKVExt {
-    private val logger = tornaco.apps.shortx.core.util.Logger("ShortXApp")
+    private val logger = tornaco.apps.shortx.core.util.Logger(MMKVExt::class.java.simpleName)
 
     fun initMMKV(context: Context) {
         MMKV.initialize(context).apply {

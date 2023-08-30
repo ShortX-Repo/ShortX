@@ -40,6 +40,11 @@ val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
     noLocalProvidedFor("LocalSnackbarHostState")
 }
 
+val LocalShortXProps = staticCompositionLocalOf<List<String>> {
+    // LocalShortXProps
+    noLocalProvidedFor("ShortX")
+}
+
 private fun noLocalProvidedFor(name: String): Nothing {
     error("CompositionLocal $name not present")
 }

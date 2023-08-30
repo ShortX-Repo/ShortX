@@ -49,6 +49,7 @@ import tornaco.apps.shortx.ui.base.LoadError
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
@@ -119,6 +120,7 @@ fun AddDirectActionScreen(
         vm.actionContentStateHandler
     }
     val actionContentState by actionContentStateHandler.state.collectAsState()
+    val shortXProps = LocalShortXProps.current
 
     ShortXTheme {
         Surface(
@@ -142,7 +144,7 @@ fun AddDirectActionScreen(
                             IconButton(
                                 enabled = canSaveWithoutChanges || addDirectActionState.daChanged || actionContentState.isChanged,
                                 onClick = {
-                                    vm.save()
+                                    vm.save(shortXProps.firstOrNull())
                                     back(true)
                                 }) {
                                 RemixIcon(saveIconName)

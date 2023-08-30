@@ -1,6 +1,12 @@
 package tornaco.apps.shortx.core.store
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.util.Logger
@@ -31,6 +37,9 @@ open class BaseRuleSettingsStore(
     }
 
     fun addRule(rule: Rule) {
+        require(rule.extrasList.isEmpty()) {
+            "Rule extra must be cleared."
+        }
         rulesCache.removeIf { it.id == rule.id }
         rulesCache.add(rule)
         postWrite()

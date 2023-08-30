@@ -37,3 +37,7 @@ fun String.replaceLazy(
         return stringBuilder.append(this, i, length).toString()
     }
 }
+
+fun String.maskAll(): String {
+    return "*".repeat(this.length)
+}

@@ -35,6 +35,10 @@ message Rule {
 
   int64 versionCode = 17;
   ConflictStrategy conflictPolicy = 18;
+  // Put some extras for ext
+  // Currently extras:
+  // 1. Subscribe token, key app package name
+  repeated StringPair extras = 19;
 }
 
 message RuleHook {

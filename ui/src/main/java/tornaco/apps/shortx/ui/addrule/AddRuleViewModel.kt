@@ -14,16 +14,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleHook
 import tornaco.apps.shortx.core.proto.rule.RuleQuit
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
@@ -116,7 +119,9 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         updateState { copy(conflictStrategy = conflictStrategy, ruleChanged = true) }
     }
 
-    fun save() {
+    // Save with token to check subscribe state.
+    fun save(token: String?) {
+        logger.p("save with token: ${token?.maskAll()}")
         viewModelScope.launch {
             val authorPref = pref.shareAuthorInfo.first()
 
@@ -205,6 +210,11 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                 .setConflictPolicy(state.value.conflictStrategy)
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
                 .build()
 
             shortXManager.addRule(rule)

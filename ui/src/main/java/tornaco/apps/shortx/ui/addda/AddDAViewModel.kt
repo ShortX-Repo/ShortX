@@ -14,11 +14,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.Security
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -83,7 +86,9 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         updateState { copy(conflictStrategy = conflictStrategy, daChanged = true) }
     }
 
-    fun save() {
+    // Save with token to check subscribe state.
+    fun save(token: String?) {
+        logger.p("save with token: ${token?.maskAll()}")
         viewModelScope.launch {
             val actions = actionContentStateHandler.state.value.actions
 
@@ -106,6 +111,11 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
                 .build()
 
             shortXManager.addDirectAction(da)

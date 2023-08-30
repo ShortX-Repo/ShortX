@@ -110,6 +110,7 @@ dependencies {
     implementation(project(":external:compose-color-picker"))
     implementation(project(":external:icons"))
     implementation(project(":external:sec_net"))
+    implementation(project(":external:dex-maker"))
 
     implementation(libs.mmkv)
 
