@@ -160,6 +160,26 @@ object BTHelper {
         if (TextUtils.isEmpty(alias)) {
             alias = device.name
         }
+        // 2023-08-30 07:12:04.098 D/ShortX-Core: BTStateTrigger [main] handleReceive: android.bluetooth.device.action.ACL_CONNECTED
+        //2023-08-30 07:12:04.103 E/ShortX-Core: WatchDogService [main] FATAL: handleReceive error - Intent { act=android.bluetooth.device.action.ACL_CONNECTED flg=0x5000010 (has extras) } got error in SYSTEM PROCESS --- java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+        //	at tornaco.apps.shortx.core.proto.common.BTBondedDevice$Builder.setAlias(Unknown Source:0)
+        //	at tornaco.apps.shortx.services.rule.fact.trigger.g.a(Unknown Source:85)
+        //	at tornaco.apps.shortx.services.rule.fact.trigger.h.a(Unknown Source:168)
+        //	at fh.e.onReceive(Unknown Source:5)
+        //	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0$LoadedApk$ReceiverDispatcher$Args(LoadedApk.java:1805)
+        //	at android.app.LoadedApk$ReceiverDispatcher$Args$$ExternalSyntheticLambda0.run(Unknown Source:2)
+        //	at android.os.Handler.handleCallback(Handler.java:938)
+        //	at android.os.Handler.dispatchMessage(Handler.java:99)
+        //	at android.os.Looper.loopOnce(Looper.java:226)
+        //	at android.os.Looper.loop(Looper.java:313)
+        //	at com.android.server.SystemServer.run(SystemServer.java:1280)
+        //	at com.android.server.SystemServer.main(SystemServer.java:945)
+        //	at java.lang.reflect.Method.invoke(Native Method)
+        //	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:567)
+        //	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1113)
+        if (alias.isNullOrEmpty()) {
+            alias = ""
+        }
         // device.aliasName
         // No virtual method getAliasName()Ljava/lang/String; in class Landroid/bluetooth/BluetoothDevice
 
