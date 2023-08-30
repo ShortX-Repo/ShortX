@@ -867,6 +867,18 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView::class.java
+            Action.FindAndClickMatchedView(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.InputTap::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.InputTap::class.java

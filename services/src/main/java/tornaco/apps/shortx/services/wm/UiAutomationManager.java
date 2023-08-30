@@ -121,6 +121,10 @@ public class UiAutomationManager extends IAccessibilityServiceClient.Stub implem
         }
     }
 
+    public void performAccessibilityAction(long sourceNodeId, int windowId, int action) {
+        AccessibilityInteractionClient.getInstance().performAccessibilityAction(connectionId.get(), windowId, sourceNodeId, action, null);
+    }
+
     @Override
     public ParcelFileDescriptor executeShellCommand(String cmd) {
         return null;

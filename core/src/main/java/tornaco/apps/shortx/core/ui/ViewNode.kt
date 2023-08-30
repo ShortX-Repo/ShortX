@@ -7,6 +7,8 @@ data class ViewNode(
     val viewId: String,
     val className: String,
     val text: CharSequence?,
+    val sourceNodeId: Long,
+    val windowId: Int,
     val position: RectF,
     val color: Int
 ) {

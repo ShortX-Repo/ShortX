@@ -94,6 +94,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                 true
             }
 
+            Action.FindAndClickMatchedView::class -> {
+                addAction(Action.FindAndClickMatchedView())
+                true
+            }
+
             Action.InputTap::class -> {
                 subSelectorStates.inputTapSelectorState.show(source.getActionAs())
                 true
@@ -167,6 +172,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ShowTextFieldDialog::class,
         Action.FindAndClickViewByText::class,
         Action.FindAndClickViewById::class,
+        Action.FindAndClickMatchedView::class,
         Action.InputTap::class,
         Action.InputSwipe::class,
         Action.WaitForIdle::class,

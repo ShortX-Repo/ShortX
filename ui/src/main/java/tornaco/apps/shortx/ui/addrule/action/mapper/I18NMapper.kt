@@ -169,6 +169,7 @@ fun labelAndDescriptionForActionSelector(
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.FindAndClickViewById::class -> i18N["ui.action.find.click.view.by.id"] to null
+        Action.FindAndClickMatchedView::class -> i18N["ui.action.find.click.view.matched"] to i18N["ui.action.find.click.view.matched.description"]
         Action.InputTap::class -> i18N["ui.action.input.tap"] to null
         Action.InputSwipe::class -> i18N["ui.action.input.swipe"] to null
         Action.WaitForIdle::class -> i18N["ui.action.wait.for.idle"] to i18N["ui.action.wait.for.idle.description"]
@@ -552,6 +553,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 i18N["ui.action.find.click.view.by.id"],
                 action.viewId
             )
+        }
+
+        is Action.FindAndClickMatchedView -> {
+            listOf(i18N["ui.action.find.click.view.matched"])
         }
 
         is Action.InputTap -> {

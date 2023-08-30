@@ -23,7 +23,7 @@ object FindAndClickViewById : Actor {
         require(androidContext.powerManager.isInteractive) {
             "Can not FindAndClickViewByText when device is not interactive"
         }
-        shortXContext.wm.withUiAutomation("WaitForIdle") {
+        shortXContext.wm.withUiAutomation("FindAndClickViewById") {
             it.findAndClickViewByViewId(
                 viewId = d.viewId.inflateContextMap(contextData)
                     .replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() }

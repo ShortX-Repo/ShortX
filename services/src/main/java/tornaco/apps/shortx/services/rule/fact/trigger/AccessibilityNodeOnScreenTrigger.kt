@@ -99,25 +99,39 @@ class AccessibilityNodeOnScreenTrigger(
                             var matchViewIdContextData = ""
                             var matchTextContextData = ""
                             var matchIsRegexContextData = false
+                            var sourceNodeId = 0L
+                            var windowId = 0
                             val matchedOnThisFact = matcherList.matchers.any { matcherAny ->
                                 when (matcherAny) {
                                     is NodeMatcherViewId -> {
                                         val isMatch =
-                                            allNodes.any { it.viewId == matcherAny.id || it.shortViewId == matcherAny.id }
+                                            allNodes.any { viewNode ->
+                                                (viewNode.viewId == matcherAny.id || viewNode.shortViewId == matcherAny.id).also {
+                                                    if (it) {
+                                                        sourceNodeId = viewNode.sourceNodeId
+                                                        windowId = viewNode.windowId
+                                                        matchViewIdContextData = viewNode.viewId
+                                                    }
+                                                }
+                                            }
                                         if (isMatch) {
-                                            logger.d("Match viewId: ${matcherAny.id}")
-                                            matchViewIdContextData = matcherAny.id
+                                            logger.d("Match viewId: $matchViewIdContextData $sourceNodeId")
                                         }
                                         isMatch
                                     }
 
                                     is NodeMatcherText -> {
                                         val isMatch =
-                                            allNodes.any { matchTextOrRegex(it.text, matcherAny) }
+                                            allNodes.any { viewNode ->
+                                                matchTextOrRegex(viewNode.text, matcherAny).also {
+                                                    matchTextContextData = matcherAny.text
+                                                    matchIsRegexContextData = matcherAny.isRegex
+                                                    sourceNodeId = viewNode.sourceNodeId
+                                                    windowId = viewNode.windowId
+                                                }
+                                            }
                                         if (isMatch) {
-                                            logger.d("Match text: ${matcherAny.text}")
-                                            matchTextContextData = matcherAny.text
-                                            matchIsRegexContextData = matcherAny.isRegex
+                                            logger.d("Match text: $matchTextContextData $sourceNodeId")
                                         }
                                         isMatch
                                     }
@@ -135,6 +149,8 @@ class AccessibilityNodeOnScreenTrigger(
                                         ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchViewIdContextData,
                                         ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchTextContextData,
                                         ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchIsRegexContextData,
+                                        ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to sourceNodeId,
+                                        ContextDataMapping.HasFoundNodeOnScreen.windowId.name to windowId,
                                     )
                                 )
                             }

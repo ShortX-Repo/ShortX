@@ -28,14 +28,17 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -126,7 +129,10 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = "Package name")
+                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg"])
+                    SmallSpacer()
+                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg.description"])
+                    MediumSpacer()
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.packageName,
@@ -136,7 +142,10 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         })
                     StandardSpacer()
 
-                    FieldTitle(text = "Matchers")
+                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.matcher"])
+                    SmallSpacer()
+                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.matcher.description"])
+                    MediumSpacer()
                     dialogState.matchers.forEachIndexed { index, it ->
                         ListItem(
                             titleLines = listOf(
@@ -160,7 +169,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     StandardSpacer()
 
                     val textInputState = rememberTextInputState(
-                        title = "Text",
+                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
                         message = null,
                         onSelected = {
                             dialogState.addMatcher(NodeMatcher.Text(it, false))
@@ -169,7 +178,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     TextInputDialog(state = textInputState)
 
                     val viewIdInputState = rememberTextInputState(
-                        title = "View ID",
+                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"],
                         message = null,
                         onSelected = {
                             dialogState.addMatcher(NodeMatcher.ViewId(it))
@@ -180,8 +189,14 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     val matcherTypeMenuDialogState = rememberMenuDialogState<Unit>(
                         title = LocalI18N.current["ui.common.add"],
                         menuItems = listOf(
-                            MenuDialogItem(id = "id", title = "View ID"),
-                            MenuDialogItem(id = "text", title = "Text"),
+                            MenuDialogItem(
+                                id = "id",
+                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"]
+                            ),
+                            MenuDialogItem(
+                                id = "text",
+                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"]
+                            ),
                         ),
                         onItemSelected = { _: Unit?, s: String ->
                             if (s == "id") {

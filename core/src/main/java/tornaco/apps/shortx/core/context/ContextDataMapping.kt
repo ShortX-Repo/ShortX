@@ -212,5 +212,7 @@ object ContextDataMapping {
         matchedViewText("Matched text of the view"),
         matchedViewTextIsRegex("true if matched text is regex"),
         matchedViewId("Matched id of the view"),
+        sourceNodeId("sourceNodeId of the AccessibilityNodeInfo"),
+        windowId("windowId of the AccessibilityNodeInfo"),
     }
 }

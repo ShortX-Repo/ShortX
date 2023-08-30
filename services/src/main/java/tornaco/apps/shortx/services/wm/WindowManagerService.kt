@@ -57,6 +57,10 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     }
 
+    fun performAccessibilityAction(sourceNodeId: Long, windowId: Int, action: Int) {
+        automationManager.performAccessibilityAction(sourceNodeId, windowId, action)
+    }
+
     suspend fun withUiAutomation(reason: String, action: suspend (WindowManagerService) -> Unit) {
         ensureAutomationConnected(reason)
         waitUntilConnected()
@@ -475,6 +479,8 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     className = root.className.toString(),
                     text = root.text ?: root.contentDescription,
                     rootPackageName = root.packageName.toString(),
+                    sourceNodeId = root.sourceNodeId,
+                    windowId = root.windowId,
                     position = RectF(
                         rect.left.toFloat(),
                         rect.top.toFloat(),
