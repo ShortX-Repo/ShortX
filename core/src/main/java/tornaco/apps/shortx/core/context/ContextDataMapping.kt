@@ -206,4 +206,11 @@ object ContextDataMapping {
         settingsUrl("Url of the Settings"),
         settingsValue("Current value"),
     }
+
+    @DoNotStrip
+    enum class HasFoundNodeOnScreen(val description: String) {
+        matchedViewText("Matched text of the view"),
+        matchedViewTextIsRegex("true if matched text is regex"),
+        matchedViewId("Matched id of the view"),
+    }
 }
