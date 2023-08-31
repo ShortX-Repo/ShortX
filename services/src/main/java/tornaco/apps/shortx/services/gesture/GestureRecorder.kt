@@ -37,8 +37,9 @@ class GestureRecorder(
     val isRecording get() = isStart.get()
 
     suspend fun start() {
-        require(!isStart.get()) {
-            "Already started!"
+        if (isStart.get()) {
+            logger.e("Already started!")
+            return
         }
         eventCache.clear()
         isStart.set(true)
