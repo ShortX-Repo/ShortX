@@ -22,6 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.toComponentName
+import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
+import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.NodeMatcher
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -47,6 +50,7 @@ class HasFoundNodeOnScreenSelectorDialogState(
     val onSelected: (Fact.HasFoundNodeOnScreen) -> Unit
 ) : CommonDialogState() {
     var packageName: String by mutableStateOf("")
+    var componentName: String by mutableStateOf("")
     var matchers: List<NodeMatcher> by mutableStateOf(emptyList())
 
     fun addMatcher(matcher: NodeMatcher) {
@@ -139,6 +143,46 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         showSymbolButton = true,
                         onValueChange = { newValue ->
                             dialogState.packageName = newValue
+                        })
+                    StandardSpacer()
+
+                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component"])
+                    SmallSpacer()
+                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component.description"])
+                    MediumSpacer()
+
+                    val activityComponentSelectorState = rememberAppComponentSelectorState(
+                        types = listOf(ComponentType.Activity),
+                        maxItemCount = 1,
+                        onAppComponentSelected = { infoList ->
+                            if (infoList.isNotEmpty()) {
+                                dialogState.componentName = infoList[0].component.toComponentName()
+                                    .flattenToString()
+                            }
+                        }
+                    )
+                    AppComponentSelectorDialog(activityComponentSelectorState)
+
+                    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+                        activityComponentSelectorState.show(it.pkg)
+                    }
+                    SingleAppSelectorDialog(state = singleAppSelectorState)
+                    ShortXTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = dialogState.componentName,
+                        showSymbolButton = true,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                singleAppSelectorState.show()
+                            }) {
+                                RemixIcon(
+                                    modifier = Modifier,
+                                    remixName = Remix.System.search_2_line
+                                )
+                            }
+                        },
+                        onValueChange = { newValue ->
+                            dialogState.componentName = newValue
                         })
                     StandardSpacer()
 

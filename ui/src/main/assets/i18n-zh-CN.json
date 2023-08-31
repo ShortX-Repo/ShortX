@@ -81,6 +81,8 @@
   "ui.fact.has.found.node.on.screen": "发现页面视图",
   "ui.fact.has.found.node.on.screen.pkg": "目标应用包名",
   "ui.fact.has.found.node.on.screen.pkg.description": "留空或输入*表示检测所有应用，建议此处填写对应包名",
+  "ui.fact.has.found.node.on.screen.component": "目标活动（Activity）",
+  "ui.fact.has.found.node.on.screen.component.description": "留空表示检测所有活动，建议填写具体活动，减少不必要的页面扫描",
   "ui.fact.has.found.node.on.screen.matcher": "匹配器",
   "ui.fact.has.found.node.on.screen.matcher.description": "如果设置多个匹配器，则只要任意一个满足就会触发",
   "ui.fact.has.found.node.on.screen.view.id": "视图ID",

@@ -1,7 +1,11 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+import android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.onDebugBuild
@@ -14,7 +18,12 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 
-private data class HasFoundNodeOnScreenBrief(val id: String, val packageName: String)
+
+private data class HasFoundNodeOnScreenBrief(
+    val id: String,
+    val packageName: String,
+    val componentName: ComponentName?
+)
 
 class AccessibilityNodeOnScreenTrigger(
     override val context: Context,
@@ -23,6 +32,7 @@ class AccessibilityNodeOnScreenTrigger(
     Trigger {
     private val logger = Logger("AccessibilityNodeOnScreenTrigger")
     private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, MatcherList>()
+    private var currentClassName: String? = null
 
     override fun onRuleEnabled(ruleId: String) {
         super.onRuleEnabled(ruleId)
@@ -57,19 +67,17 @@ class AccessibilityNodeOnScreenTrigger(
         nodeMatchers.clear()
 
         shortXContext.rule.getAllEnabledRules().forEach { rule ->
-            rule.factsList.forEach { factProtoAny ->
+            (rule.factsList + rule.quit.factsList).forEach { factProtoAny ->
                 if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
                     val fact = factProtoAny unpack_ HasFoundNodeOnScreen::class.java
                     fact.extractMatchers().let {
-                        nodeMatchers[HasFoundNodeOnScreenBrief(fact.id, fact.packageName)] = it
-                    }
-                }
-            }
-            rule.quit.factsList.forEach { factProtoAny ->
-                if (factProtoAny is_ HasFoundNodeOnScreen::class.java) {
-                    val fact = factProtoAny unpack_ HasFoundNodeOnScreen::class.java
-                    fact.extractMatchers().let {
-                        nodeMatchers[HasFoundNodeOnScreenBrief(fact.id, fact.packageName)] = it
+                        val brief = HasFoundNodeOnScreenBrief(
+                            fact.id,
+                            fact.packageName,
+                            ComponentName.unflattenFromString(fact.componentName)
+                        )
+                        logger.d("brief: $brief")
+                        nodeMatchers[brief] = it
                     }
                 }
             }
@@ -86,10 +94,27 @@ class AccessibilityNodeOnScreenTrigger(
             }
 
             shortXContext.wm.setOnAccessibilityEvent { event ->
-                if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
+                if (event.eventType == TYPE_WINDOW_STATE_CHANGED) {
+                    val eventPackageName = event.packageName?.toString()
+                    val eventClassName = event.className?.toString()
+                    if (eventPackageName != null && eventClassName != null) {
+                        val componentName = ComponentName(eventPackageName, eventClassName)
+                        val activityInfo = tryGetActivity(context, componentName)
+                        val isActivity = activityInfo != null
+                        if (isActivity) {
+                            onDebugBuild { logger.d("isActivity, componentName: $componentName") }
+                            currentClassName = componentName.className
+                        }
+                    }
+                } else if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
                     val rootPkgName = event.packageName
+                    onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName") }
+
                     val matcherForThisPackage =
-                        nodeMatchers.filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
+                        nodeMatchers
+                            .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
+                            .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
+
                     val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
                     if (shouldCheckEvent) {
                         val allNodes = shortXContext.wm.getAllNodesFromScreen()
@@ -188,3 +213,11 @@ private fun HasFoundNodeOnScreen.extractMatchers(): MatcherList {
 }
 
 private data class MatcherList(val matchers: List<Any>)
+
+private fun tryGetActivity(context: Context, componentName: ComponentName): ActivityInfo? {
+    return try {
+        context.packageManager.getActivityInfo(componentName, 0)
+    } catch (e: PackageManager.NameNotFoundException) {
+        null
+    }
+}

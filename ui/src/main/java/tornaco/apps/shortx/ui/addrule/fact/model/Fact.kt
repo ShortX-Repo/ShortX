@@ -909,7 +909,7 @@ sealed interface NodeMatcher {
 
     data class Text(val text: String, val isRegex: Boolean) : NodeMatcher {
         override val displayLabel: String
-            get() = "ui.fact.has.found.node.on.screen.text"
+            get() = "ui.fact.has.found.node.on.screen.view.text"
         override val displayMessage: String
             get() = this.text
     }
