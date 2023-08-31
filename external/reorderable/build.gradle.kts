@@ -1,4 +1,4 @@
-import tornaco.project.android.shortx.Compose
+
 import tornaco.project.android.shortx.Configs.resPrefix
 
 plugins {
@@ -27,7 +27,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     resourcePrefix = resPrefix

@@ -1,4 +1,4 @@
-import tornaco.project.android.shortx.Compose
+
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.keyStoreAlias
 import tornaco.project.android.shortx.Configs.keyStorePassword
@@ -76,7 +76,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     packaging {

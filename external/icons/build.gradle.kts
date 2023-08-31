@@ -1,4 +1,4 @@
-import tornaco.project.android.shortx.Compose
+
 
 plugins {
     alias(libs.plugins.agp.lib)
@@ -26,7 +26,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 dependencies {

@@ -1,4 +1,4 @@
-import tornaco.project.android.shortx.Compose
+
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
 import tornaco.project.android.shortx.addI18NTask
@@ -41,7 +41,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     resourcePrefix = resPrefix
