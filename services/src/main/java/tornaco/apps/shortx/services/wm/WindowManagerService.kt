@@ -497,7 +497,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 ViewNode(
                     viewId = viewId,
                     className = root.className?.toString() ?: "",
-                    text = root.text ?: root.contentDescription,
+                    text = root.text ?: root.contentDescription ?: "",
                     rootPackageName = root.packageName?.toString() ?: "android",
                     sourceNodeId = root.sourceNodeId,
                     windowId = root.windowId,
