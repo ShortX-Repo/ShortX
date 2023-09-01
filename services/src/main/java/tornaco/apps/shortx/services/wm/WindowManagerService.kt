@@ -4,6 +4,7 @@ import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
@@ -490,14 +491,14 @@ class WindowManagerService(shortXContext: ShortXContext) :
     ) {
         if (root.isVisibleToUser) {
             val viewId: String = root.viewIdResourceName ?: ""
-            val rect = root.boundsInScreen
+            val rect = root.boundsInScreen ?: Rect(0, 0, 0, 0)
             val index = list.size
             list.add(
                 ViewNode(
                     viewId = viewId,
-                    className = root.className.toString(),
+                    className = root.className?.toString() ?: "",
                     text = root.text ?: root.contentDescription,
-                    rootPackageName = root.packageName.toString(),
+                    rootPackageName = root.packageName?.toString() ?: "android",
                     sourceNodeId = root.sourceNodeId,
                     windowId = root.windowId,
                     position = RectF(
