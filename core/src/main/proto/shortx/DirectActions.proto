@@ -7,6 +7,17 @@ option java_multiple_files = true;
 import "google/protobuf/any.proto";
 import "shortx/Common.proto";
 
+message DirectActionSet {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string icon = 4;
+}
+
+message DirectActionSetList {
+  repeated DirectActionSet directActionSet = 1;
+}
+
 message DirectAction {
   repeated google.protobuf.Any actions = 1;
 
@@ -26,6 +37,8 @@ message DirectAction {
   // Currently extras:
   // 1. Subscribe token, key app package name
   repeated StringPair extras = 10;
+
+  string directActionSetId = 11;
 }
 
 message DirectActionList {

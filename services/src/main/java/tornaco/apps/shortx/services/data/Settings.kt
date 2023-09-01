@@ -32,7 +32,7 @@ sealed class Settings<T>(val key: String, val defaultValue: T) {
             BoolSettings(key = "EnableSettingsCatcher", defaultValue = false)
 
         data class EnableRuleEngine(val engineName: String) :
-            BoolSettings(key = "EnableRuleEngine_${engineName}", defaultValue = false)
+            BoolSettings(key = "EnableRuleEngine_${engineName}", defaultValue = true)
     }
 
     sealed class StringSettings(key: String, defaultValue: String?) :

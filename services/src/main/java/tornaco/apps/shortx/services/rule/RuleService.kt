@@ -35,8 +35,10 @@ import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.maskAll
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
+import tornaco.apps.shortx.services.data.DirectActionSetsStore
 import tornaco.apps.shortx.services.data.DirectActionSettingsStore
 import tornaco.apps.shortx.services.data.GlobalVarStore
+import tornaco.apps.shortx.services.data.RuleSetsStore
 import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
@@ -61,6 +63,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
     private val dasSettingsStore: DirectActionSettingsStore by lazy {
         DirectActionSettingsStore(systemServiceScope)
+    }
+
+    private val ruleSetsStore by lazy {
+        RuleSetsStore(systemServiceScope)
+    }
+
+    private val daSetsStore by lazy {
+        DirectActionSetsStore(systemServiceScope)
     }
 
     private val globalVarStore: GlobalVarStore by lazy {
@@ -165,6 +175,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         ruleSettingsStore.readBlocking()
         dasSettingsStore.readBlocking()
         globalVarStore.readBlocking()
+        ruleSetsStore.readBlocking()
+        daSetsStore.readBlocking()
 
         installListeners()
 

@@ -8,6 +8,17 @@ import "google/protobuf/any.proto";
 import "shortx/Common.proto";
 import "shortx/Conditions.proto";
 
+message RuleSet {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string icon = 4;
+}
+
+message RuleSetList {
+  repeated RuleSet ruleSet = 1;
+}
+
 message Rule {
   repeated google.protobuf.Any facts = 1;
   repeated google.protobuf.Any conditions = 2;
@@ -39,6 +50,8 @@ message Rule {
   // Currently extras:
   // 1. Subscribe token, key app package name
   repeated StringPair extras = 19;
+
+  string ruleSetId = 20;
 }
 
 message RuleHook {
