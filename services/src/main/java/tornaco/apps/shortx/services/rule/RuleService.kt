@@ -400,12 +400,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         val existing = getRuleById(rule.id)
         if (existing == null) {
+            logger.d("onAddRule: ${rule.title}")
             // Add
             ruleSettingsStore.addRule(rule)
             handler.postSafety {
                 allTriggers.forEach { it.onAddRule(rule) }
             }
         } else {
+            logger.d("onUpdateRule: ${rule.title}")
             // Update
             ruleSettingsStore.addRule(rule)
             handler.postSafety {

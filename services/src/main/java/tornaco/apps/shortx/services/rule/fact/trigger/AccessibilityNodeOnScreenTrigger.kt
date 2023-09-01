@@ -189,6 +189,8 @@ class AccessibilityNodeOnScreenTrigger(
                                 )
                             }
                         }
+                    } else {
+                        logger.d("No need to check, shouldCheckEvent is false.")
                     }
                 }
             }

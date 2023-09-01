@@ -460,6 +460,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             HasFoundNodeOnScreen.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setPackageName(packageName)
+                .setComponentName(componentName)
                 .setDetectTimeout(detectTimeout)
                 .addAllMatchers(matchers.mapNotNull {
                     when (it) {

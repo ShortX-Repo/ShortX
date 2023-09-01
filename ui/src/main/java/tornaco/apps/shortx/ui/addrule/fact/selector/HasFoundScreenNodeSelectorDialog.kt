@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,7 +57,7 @@ class HasFoundNodeOnScreenSelectorDialogState(
 ) : CommonDialogState() {
     var packageName: String by mutableStateOf("")
     var componentName: String by mutableStateOf("")
-    var timeout: Long by mutableStateOf(DEFAULT_TIMEOUT)
+    var timeout: Long by mutableLongStateOf(DEFAULT_TIMEOUT)
     var matchers: List<NodeMatcher> by mutableStateOf(emptyList())
 
     fun addMatcher(matcher: NodeMatcher) {
@@ -73,6 +74,8 @@ class HasFoundNodeOnScreenSelectorDialogState(
 
     fun show(action: Fact.HasFoundNodeOnScreen? = null) {
         this.packageName = action?.packageName ?: ""
+        this.timeout = action?.detectTimeout ?: DEFAULT_TIMEOUT
+        this.componentName = action?.componentName ?: ""
         this.matchers = action?.matchers ?: emptyList()
 
         show()
@@ -122,6 +125,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                                     dialogState.onSelected.invoke(
                                         Fact.HasFoundNodeOnScreen(
                                             packageName = dialogState.packageName,
+                                            componentName = dialogState.componentName,
                                             detectTimeout = dialogState.timeout,
                                             matchers = dialogState.matchers
                                         )
