@@ -265,7 +265,11 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         logger.p("OnAccessibilityEvent: $event")
-        onAccessibilityEvent?.invoke(event)
+        runCatching {
+            onAccessibilityEvent?.invoke(event)
+        }.onFailure {
+            shortXContext.watchDog.onFatalError(it, "onAccessibilityEvent")
+        }
     }
 
     fun getAllTextsFromScreen(): List<TextViewNode> {
