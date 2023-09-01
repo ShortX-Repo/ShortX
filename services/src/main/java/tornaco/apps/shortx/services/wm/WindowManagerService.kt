@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.wm
 
 import android.app.UiAutomation.OnAccessibilityEventListener
+import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.graphics.RectF
@@ -11,6 +12,7 @@ import android.util.Pair
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.Toast
 import androidx.test.uiautomator.imp.UiDevice
 import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
@@ -18,6 +20,7 @@ import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
+import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
@@ -400,6 +403,22 @@ class WindowManagerService(shortXContext: ShortXContext) :
 
         systemServiceScope.launchSafety {
             if (matchNodes.isEmpty()) {
+                Toast.makeText(
+                    context,
+                    "Not found",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (matchNodes.size == 1) {
+                context.clipboardManager.primaryClip =
+                    ClipData.newPlainText(
+                        "ShortX-ViewId",
+                        matchNodes[0].viewId
+                    )
+                Toast.makeText(
+                    context,
+                    i18NIns["ui.common.copied.to.clipboard"] + "\t" + matchNodes[0].viewId,
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
                 ViewIdViewerNodeSelectorDialog(context, matchNodes).show()
             }

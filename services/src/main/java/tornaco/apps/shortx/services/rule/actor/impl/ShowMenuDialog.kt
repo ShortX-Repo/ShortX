@@ -3,7 +3,6 @@ package tornaco.apps.shortx.services.rule.actor.impl
 import android.app.AlertDialog
 import android.content.Context
 import android.view.WindowManager
-import android.widget.ArrayAdapter
 import com.google.protobuf.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -112,19 +111,14 @@ private class ShowDialog(
 
         var result: DialogMenuItem? = null
 
-        dialogBuilder.setAdapter(
-            ArrayAdapter(
-                context,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                menuItems.map {
-                    it.title.inflateContextMap(contextData)
-                        .replaceLocalVarValues(localVars)
-                        .replaceGlobalVarValues {
-                            shortXContext.rule.getAllGlobalVars()
-                        }
-                }
-            )
+        dialogBuilder.setItems(
+            menuItems.map {
+                it.title.inflateContextMap(contextData)
+                    .replaceLocalVarValues(localVars)
+                    .replaceGlobalVarValues {
+                        shortXContext.rule.getAllGlobalVars()
+                    }
+            }.toTypedArray()
         ) { _, which ->
             result = menuItems[which]
         }
