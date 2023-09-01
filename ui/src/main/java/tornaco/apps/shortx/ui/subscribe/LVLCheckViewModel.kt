@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
-import tornaco.apps.shortx.ui.TOKEN_GOOGLE_PLAY
 import tornaco.apps.shortx.ui.subscribe.util.hasAChanceToSkipLicenseCheck
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.skipLicenseCheckOnce
@@ -46,7 +45,7 @@ class LVLCheckViewModel : ViewModel() {
         val checkerCallback = object : LicenseCheckerCallback {
             override fun allow(reason: Int) {
                 logger.p("LicenseCheckerCallback.allow: $reason")
-                setLVLToken(TOKEN_GOOGLE_PLAY)
+                setLVLToken(DeviceId.requireGPToken())
                 _uiState.value = _uiState.value.copy(checkState = CheckState.SUCCESS)
             }
 

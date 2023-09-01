@@ -13,7 +13,7 @@ class Logger(private val tag: String = "-") {
             logAdapter(
                 LOG_LEVEL_P,
                 fullTag,
-                "[${Thread.currentThread().name}] $any"
+                "[${Thread.currentThread().name}] [DEBUG-LOG] $any"
             )
         }
     }

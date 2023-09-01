@@ -3,35 +3,35 @@ package tornaco.apps.shortx.ui.subscribe.util
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.DeviceId
-import tornaco.apps.shortx.ui.KEY_SUB_TOKEN
-import tornaco.apps.shortx.ui.KEY_SUB_TOKEN_SERVER
 import tornaco.apps.shortx.ui.MMKVExt
-import tornaco.apps.shortx.ui.TOKEN_GOOGLE_PLAY
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 
 val lvlLogger = Logger("ShortXApp")
 private var skipTimes = 0
 var isSkipping = false
 
-fun String.isGPToken() = TOKEN_GOOGLE_PLAY == this
+inline fun String.isGPToken(consumer: () -> Unit = {}) = DeviceId.requireGPToken() == this
 
 inline fun getLVLToken(onRes: (String?) -> Unit) {
-    val token = MMKVExt.encMMKV(DeviceId.requireDeviceId()).decodeString(KEY_SUB_TOKEN)
+    val token = MMKVExt.encMMKV().decodeString(DeviceId.requireTokenKey())
     lvlLogger.p("getLVLToken return: $token")
     onRes(token)
 }
 
 inline fun getLVLTokenForServer(onRes: (String?) -> Unit) {
-    val token = MMKVExt.encMMKV(DeviceId.requireDeviceId()).decodeString(KEY_SUB_TOKEN_SERVER)
-    lvlLogger.p("getLVLTokenForServer return: $token")
+    val key = DeviceId.requireTokenForServerKey()
+    lvlLogger.p("getLVLTokenForServer, using key:$key")
+    val token = MMKVExt.encMMKV().decodeString(key)
+    lvlLogger.p("getLVLTokenForServer, return: $token")
     onRes(token)
 }
 
 fun setLVLToken(token: String?) {
-    val kv = MMKVExt.encMMKV(DeviceId.requireDeviceId())
-    kv.encode(KEY_SUB_TOKEN, token)
-    kv.encode(KEY_SUB_TOKEN_SERVER, token)
-    lvlLogger.p("setLVLToken token: $token")
+    val kv = MMKVExt.encMMKV()
+    kv.encode(DeviceId.requireTokenKey(), token)
+    kv.encode(DeviceId.requireTokenForServerKey(), token)
+    lvlLogger.p("setLVLToken token: ${DeviceId.requireTokenKey()} $token")
+    lvlLogger.p("setLVLTokenForServer token: ${DeviceId.requireTokenForServerKey()} $token")
     if (token != null) {
         runBlocking { LVLStateHolder.setSubscribed(token) }
     } else {

@@ -87,6 +87,8 @@
   "ui.fact.has.found.node.on.screen.matcher.description": "如果设置多个匹配器，则只要任意一个满足就会触发",
   "ui.fact.has.found.node.on.screen.view.id": "视图ID",
   "ui.fact.has.found.node.on.screen.view.text": "视图文本",
+  "ui.fact.has.found.node.on.screen.timeout": "检测超时",
+  "ui.fact.has.found.node.on.screen.timeout.description": "设定一个页面内容检测的超时时间（毫秒），如果超过超时时间依然没有匹配到目标视图，则会停止检测；输入负数表示不设定超时时间，持续检测",
   "ui.fact.screen.off": "息屏",
   "ui.fact.screen.on": "亮屏",
   "ui.fact.screen.user.present": "屏幕解锁",
