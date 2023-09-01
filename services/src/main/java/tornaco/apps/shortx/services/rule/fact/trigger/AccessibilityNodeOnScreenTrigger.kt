@@ -116,7 +116,7 @@ class AccessibilityNodeOnScreenTrigger(
                     val timePassed = System.currentTimeMillis() - currentClassTimeMillis
 
                     val rootPkgName = event.packageName
-                    onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName") }
+                    onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName timePassed: $timePassed") }
 
                     val matcherForThisPackage =
                         nodeMatchers
@@ -190,7 +190,7 @@ class AccessibilityNodeOnScreenTrigger(
                             }
                         }
                     } else {
-                        logger.d("No need to check, shouldCheckEvent is false.")
+                        logger.p("No need to check, shouldCheckEvent is false.")
                     }
                 }
             }
