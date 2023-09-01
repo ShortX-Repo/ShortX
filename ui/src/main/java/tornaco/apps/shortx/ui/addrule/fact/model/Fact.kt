@@ -891,6 +891,7 @@ sealed interface Fact {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
         val packageName: String,
+        val detectTimeout: Long,
         val matchers: List<NodeMatcher>
     ) : Fact {
         override fun clone(

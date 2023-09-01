@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -20,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import okhttp3.internal.toLongOrDefault
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
@@ -46,11 +49,14 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
+private const val DEFAULT_TIMEOUT = 5000L
+
 class HasFoundNodeOnScreenSelectorDialogState(
     val onSelected: (Fact.HasFoundNodeOnScreen) -> Unit
 ) : CommonDialogState() {
     var packageName: String by mutableStateOf("")
     var componentName: String by mutableStateOf("")
+    var timeout: Long by mutableStateOf(DEFAULT_TIMEOUT)
     var matchers: List<NodeMatcher> by mutableStateOf(emptyList())
 
     fun addMatcher(matcher: NodeMatcher) {
@@ -116,6 +122,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                                     dialogState.onSelected.invoke(
                                         Fact.HasFoundNodeOnScreen(
                                             packageName = dialogState.packageName,
+                                            detectTimeout = dialogState.timeout,
                                             matchers = dialogState.matchers
                                         )
                                     )
@@ -183,6 +190,22 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         },
                         onValueChange = { newValue ->
                             dialogState.componentName = newValue
+                        })
+                    StandardSpacer()
+
+
+
+                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout"])
+                    SmallSpacer()
+                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout.description"])
+                    MediumSpacer()
+                    ShortXTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = dialogState.timeout.toString(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        showSymbolButton = false,
+                        onValueChange = { newValue ->
+                            dialogState.timeout = newValue.toLongOrDefault(DEFAULT_TIMEOUT)
                         })
                     StandardSpacer()
 

@@ -22,7 +22,8 @@ import tornaco.apps.shortx.services.ShortXContext
 private data class HasFoundNodeOnScreenBrief(
     val id: String,
     val packageName: String,
-    val componentName: ComponentName?
+    val componentName: ComponentName?,
+    val timeout: Long
 )
 
 class AccessibilityNodeOnScreenTrigger(
@@ -33,6 +34,7 @@ class AccessibilityNodeOnScreenTrigger(
     private val logger = Logger("AccessibilityNodeOnScreenTrigger")
     private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, MatcherList>()
     private var currentClassName: String? = null
+    private var currentClassTimeMillis: Long = 0L
 
     override fun onRuleEnabled(ruleId: String) {
         super.onRuleEnabled(ruleId)
@@ -74,7 +76,8 @@ class AccessibilityNodeOnScreenTrigger(
                         val brief = HasFoundNodeOnScreenBrief(
                             fact.id,
                             fact.packageName,
-                            ComponentName.unflattenFromString(fact.componentName)
+                            ComponentName.unflattenFromString(fact.componentName),
+                            fact.detectTimeout
                         )
                         logger.d("brief: $brief")
                         nodeMatchers[brief] = it
@@ -103,10 +106,15 @@ class AccessibilityNodeOnScreenTrigger(
                         val isActivity = activityInfo != null
                         if (isActivity) {
                             onDebugBuild { logger.d("isActivity, componentName: $componentName") }
-                            currentClassName = componentName.className
+                            if (currentClassName != componentName.className) {
+                                currentClassName = componentName.className
+                                currentClassTimeMillis = System.currentTimeMillis()
+                            }
                         }
                     }
                 } else if (event.eventType == TYPE_WINDOW_CONTENT_CHANGED) {
+                    val timePassed = System.currentTimeMillis() - currentClassTimeMillis
+
                     val rootPkgName = event.packageName
                     onDebugBuild { logger.d("TYPE_WINDOW_CONTENT_CHANGED currentClassName: $currentClassName") }
 
@@ -114,6 +122,7 @@ class AccessibilityNodeOnScreenTrigger(
                         nodeMatchers
                             .filterKeys { it.packageName == rootPkgName || it.packageName.isEmpty() || it.packageName == "*" }
                             .filterKeys { it.componentName == null || it.componentName.className == currentClassName }
+                            .filterKeys { it.timeout < 0 || it.timeout >= timePassed }
 
                     val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
                     if (shouldCheckEvent) {

@@ -607,6 +607,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 packageName = data.packageName,
+                detectTimeout = data.detectTimeout,
                 matchers = data.matchersList.mapNotNull {
                     if (it is_ NodeMatcherText::class.java) {
                         val m = it unpack_ NodeMatcherText::class.java
