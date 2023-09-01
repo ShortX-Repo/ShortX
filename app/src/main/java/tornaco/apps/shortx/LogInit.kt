@@ -5,6 +5,7 @@ import android.util.Log
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
+import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.LOG_LEVEL_P
@@ -18,6 +19,7 @@ fun initLogger(context: Context) {
             com.elvishew.xlog.printer.file.FilePrinter.Builder(logFolderPath)
                 .fileNameGenerator(DateFileNameGenerator())
                 .flattener(ClassicFlattener())
+                .cleanStrategy(FileLastModifiedCleanStrategy(60 * 1000 * 60 * 24 * 7 /* 7 Days */))
                 .build()
         XLog.init(
             com.elvishew.xlog.LogConfiguration.Builder()
