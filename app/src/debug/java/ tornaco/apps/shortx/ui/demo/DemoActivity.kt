@@ -107,6 +107,12 @@ class DemoActivity : BaseActivity() {
                             Text(text = "Tile")
                         }
 
+                        Button(onClick = {
+                            context.startActivity(Intent(context, ComposeDemoActivity::class.java))
+                        }) {
+                            Text(text = "Compose demo")
+                        }
+
 
                         Button(onClick = {
                             var tts: TextToSpeech? = null
