@@ -14,6 +14,8 @@ data class DirectActionUM(
     val icon: String,
     val iconColor: ULong,
     val runningInsCount: Int,
+
+    // For discover
     val directAction: DirectAction,
     val versionCode: Long,
 
@@ -22,5 +24,8 @@ data class DirectActionUM(
     val isOnlineItem: Boolean = false,
     val url: String? = null,
     val isInstalled: Boolean = false,
-    val hasUpdate: Boolean = false
+    val hasUpdate: Boolean = false,
+
+    // For Set
+    val isDirectActionSet: Boolean = false
 ) : Parcelable

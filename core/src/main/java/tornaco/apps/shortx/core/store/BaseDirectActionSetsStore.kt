@@ -28,7 +28,7 @@ open class BaseDirectActionSetsStore(
         readInternal()
     }
 
-    fun addAllDirectActionSets(directActionSets: List<DirectActionSet>, write: Boolean = true) {
+    fun addDirectActionSets(directActionSets: List<DirectActionSet>, write: Boolean = true) {
         directActionSets.forEach { pkgSet ->
             pkgSetsCache.removeIf { it.id == pkgSet.id }
             pkgSetsCache.add(pkgSet)
@@ -83,9 +83,8 @@ open class BaseDirectActionSetsStore(
 
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
-        val pkgSetList = DirectActionSetList.newBuilder().apply {
-            addAllDirectActionSets(pkgSetsCache)
-        }.build()
+        val pkgSetList =
+            DirectActionSetList.newBuilder().addAllDirectActionSet(pkgSetsCache).build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {
                 pkgSetList.writeDelimitedTo(it)

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -10,9 +11,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
@@ -46,6 +49,7 @@ import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
+import java.text.Collator
 import java.util.*
 import javax.inject.Inject
 
@@ -248,8 +252,35 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                             null
                         }
                     }
+
+                val sets = shortXManager.getAllDASets()
+                    .sortedWith { o1, o2 ->
+                        Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
+                    }
+                    .map {
+                        DirectActionUM(
+                            id = it.id,
+                            title = it.title,
+                            description = it.description,
+                            updateTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(it.lastUpdateTime)
+                            ),
+                            createTime = FuzzyDateTimeFormatter.getTimeAgo(
+                                context,
+                                Date(it.createTime)
+                            ),
+                            icon = it.icon,
+                            iconColor = Color.Red.value,
+                            runningInsCount = 0,
+                            directAction = DirectAction.getDefaultInstance(),
+                            versionCode = 0,
+                            isDirectActionSet = true
+                        )
+                    }
+
                 updateState {
-                    copy(das = das, isLoading = false)
+                    copy(das = sets + das, isLoading = false)
                 }
             }
 
@@ -508,5 +539,17 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         viewModelScope.launch {
             pref.setPrivacyStatementAccepted(true)
         }
+    }
+
+    fun createNewDASet(title: String) {
+        shortXManager.addOrUpdateDASet(
+            DirectActionSet
+                .newBuilder()
+                .setTitle(title).setId("DS-${UUID.randomUUID()}")
+                .setCreateTime(System.currentTimeMillis())
+                .setLastUpdateTime(System.currentTimeMillis())
+                .build()
+        )
+        loadDA()
     }
 }

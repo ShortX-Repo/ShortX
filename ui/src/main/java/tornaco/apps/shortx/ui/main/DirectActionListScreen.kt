@@ -169,7 +169,9 @@ fun DirectActionListScreen() {
         onUrlClick = {
             ViewerActivity.start(context, SharedData("daUrl", it))
         },
-        onNewSetClick = {},
+        onNewSetClick = {
+            vm.createNewDASet(it)
+        },
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
         }
@@ -559,7 +561,7 @@ private fun DAListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(
-                size = 42.dp,
+                size = 32.dp,
                 padding = 0.dp,
                 color = iconColor.copy(alpha = ActionColorBgAlpha)
             ) {

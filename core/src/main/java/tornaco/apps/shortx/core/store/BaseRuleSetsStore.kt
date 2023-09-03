@@ -28,7 +28,7 @@ open class BaseRuleSetsStore(
         readInternal()
     }
 
-    fun addAllRuleSets(ruleSets: List<RuleSet>, write: Boolean = true) {
+    fun addRuleSets(ruleSets: List<RuleSet>, write: Boolean = true) {
         ruleSets.forEach { pkgSet ->
             pkgSetsCache.removeIf { it.id == pkgSet.id }
             pkgSetsCache.add(pkgSet)
@@ -83,9 +83,7 @@ open class BaseRuleSetsStore(
 
     suspend fun write() = withContext(Dispatchers.IO) {
         logger.d("write.")
-        val pkgSetList = RuleSetList.newBuilder().apply {
-            addAllRuleSets(pkgSetsCache)
-        }.build()
+        val pkgSetList = RuleSetList.newBuilder().addAllRuleSet(pkgSetsCache).build()
         kotlin.runCatching {
             storeFile.apply { parentFile.mkdirs() }.outputStream().use {
                 pkgSetList.writeDelimitedTo(it)
