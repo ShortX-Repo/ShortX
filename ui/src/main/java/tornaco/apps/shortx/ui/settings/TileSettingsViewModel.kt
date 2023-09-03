@@ -15,8 +15,8 @@ import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.main.RuleUM
-import tornaco.apps.shortx.ui.main.ruleToRuleUM
+import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import javax.inject.Inject
 
 data class TileSettingsState(

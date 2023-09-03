@@ -19,10 +19,10 @@ import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.LoadState
 import tornaco.apps.shortx.ui.base.colorFromHex
-import tornaco.apps.shortx.ui.main.DirectActionUM
-import tornaco.apps.shortx.ui.main.RuleUM
-import tornaco.apps.shortx.ui.main.daToDirectActionUM
-import tornaco.apps.shortx.ui.main.ruleToRuleUM
+import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
+import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import tornaco.apps.shortx.ui.remote.OnlineRepo
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.settings.pref.Pref

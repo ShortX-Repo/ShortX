@@ -23,7 +23,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.base.remixResId
-import tornaco.apps.shortx.ui.main.DirectActionUM
+import tornaco.apps.shortx.ui.main.model.DirectActionUM
 
 private const val KEY_ACTION_ID = "key_action_id"
 

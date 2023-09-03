@@ -3,8 +3,6 @@ package tornaco.apps.shortx.ui.main
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.os.Parcelable
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,46 +10,36 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.parcelize.Parcelize
-import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
-import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
-import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.parseShareContentDA
 import tornaco.apps.shortx.core.rule.parseShareContentRule
-import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
-import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
-import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
-import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
-import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.condition.model.defaultNewConditionId
 import tornaco.apps.shortx.ui.addrule.condition.model.toCondition
 import tornaco.apps.shortx.ui.addrule.condition.model.toProtoCondition
 import tornaco.apps.shortx.ui.addrule.defaultNewRuleId
-import tornaco.apps.shortx.ui.addrule.fact.mapper.colorForFact
-import tornaco.apps.shortx.ui.addrule.fact.mapper.imageVectorForFact
-import tornaco.apps.shortx.ui.addrule.fact.mapper.labelAndDescriptionForFactSelector
-import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.model.MainState
+import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
+import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -60,196 +48,6 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
-
-
-data class RuleUM(
-    val id: String,
-    val title: String,
-    val description: String,
-    val updateTime: String,
-    val createTime: String,
-    val isEnabled: Boolean,
-    val factIcon: String,
-    val factIconColor: ULong,
-    val actionIcon: String,
-    val actionIconColor: ULong,
-    val runningInsCount: Int,
-    val rule: Rule,
-    val versionCode: Long,
-
-    // For online.
-    val author: String = "ShortX",
-    val isOnlineItem: Boolean = false,
-    val url: String? = null,
-    val isInstalled: Boolean = false,
-    val hasUpdate: Boolean = false
-)
-
-@Parcelize
-data class DirectActionUM(
-    val id: String,
-    val title: String,
-    val description: String,
-    val updateTime: String,
-    val createTime: String,
-    val icon: String,
-    val iconColor: ULong,
-    val runningInsCount: Int,
-    val directAction: DirectAction,
-    val versionCode: Long,
-
-    // For online.
-    val author: String = "ShortX",
-    val isOnlineItem: Boolean = false,
-    val url: String? = null,
-    val isInstalled: Boolean = false,
-    val hasUpdate: Boolean = false
-) : Parcelable
-
-data class MainState(
-    val isHideSubscribeInfo: Boolean = false,
-    val isActivated: Boolean = false,
-    val isFrameworkUpdated: Boolean = false,
-    val isIgnoreFrameworkUpdate: Boolean = false,
-    val isPrivacyStatementAccepted: Boolean = false,
-    val isShowRuleDescription: Boolean = true,
-    val rules: List<RuleUM> = emptyList(),
-    val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
-    val das: List<DirectActionUM> = emptyList(),
-    val daSortBy: DASortBy = DASortBy.CreateTime,
-    val isShowDetailedDAItem: Boolean = true,
-    val isLoading: Boolean = true,
-    val isAudioRecording: Boolean = false
-)
-
-fun <T> ContextViewModel<T>.daToDirectActionUM(
-    directAction: DirectAction,
-    activeJobs: List<String>
-): DirectActionUM {
-    val firstAction: Action? = directAction.actionsList?.let {
-        if (it.isEmpty()) {
-            null
-        } else {
-            it[0].toAction(shortXManager)
-        }
-    }
-
-    return DirectActionUM(
-        id = directAction.id,
-        title = directAction.title,
-        description = translateDA(directAction),
-        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-            context,
-            Date(directAction.lastUpdateTime)
-        ),
-        createTime = FuzzyDateTimeFormatter.getTimeAgo(
-            context,
-            Date(directAction.createTime)
-        ),
-        icon = firstAction?.let {
-            imageVectorForAction(it)
-        } ?: Remix.Weather.sparkling_line,
-        iconColor = firstAction?.let {
-            colorForAction(it::class).value
-        } ?: Color.Unspecified.value,
-        runningInsCount = activeJobs.count {
-            it == directAction.id
-        },
-        directAction = directAction,
-        versionCode = directAction.versionCode
-    )
-}
-
-private fun <T> ContextViewModel<T>.translateDA(da: DirectAction) =
-    da.description.fallbackOnEmpty(da.actionsList.mapNotNull {
-        it.toAction(shortXManager)
-    }.joinToString {
-        labelAndDescriptionForActionSelector(i18N, it::class).first
-    })
-
-fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule, activeJobs: List<String>): RuleUM {
-    val firstFact: Fact? =
-        if (rule.factsList.isEmpty()) null else rule.factsList[0]?.toFact(shortXManager)
-    val firstAction: Action? = rule.actionsList?.let {
-        if (it.isEmpty()) {
-            null
-        } else {
-            it[0].toAction(shortXManager)
-        }
-    }
-    return RuleUM(
-        id = rule.id,
-        title = rule.title,
-        description = rule.description.fallbackOnEmpty(
-            translateRule(rule)
-        ),
-        updateTime = FuzzyDateTimeFormatter.getTimeAgo(
-            context,
-            Date(rule.lastUpdateTime)
-        ),
-        createTime = FuzzyDateTimeFormatter.getTimeAgo(
-            context,
-            Date(rule.createTime)
-        ),
-        isEnabled = rule.isEnabled,
-        factIcon = firstFact?.let {
-            imageVectorForFact(
-                it::class
-            )
-        } ?: Remix.Weather.sparkling_line,
-        factIconColor = firstFact?.let {
-            colorForFact(it::class).value
-        } ?: Color.Unspecified.value,
-        actionIcon = firstAction?.let {
-            imageVectorForAction(it)
-        } ?: Remix.Weather.sparkling_line,
-        actionIconColor = firstAction?.let {
-            colorForAction(it::class).value
-        } ?: Color.Unspecified.value,
-        rule = rule,
-        runningInsCount = activeJobs.count {
-            it == rule.id
-        },
-        versionCode = rule.versionCode
-    )
-}
-
-fun <T> ContextViewModel<T>.translateRule(rule: Rule): String {
-    val fact: String = rule.factsList
-        .mapNotNull { factProto ->
-            factProto.toFact(shortXManager)?.let { fact ->
-                labelAndDescriptionForFactSelector(i18N, fact::class).first
-            }
-        }.joinToString(" / ")
-
-    val condition = rule.conditionsList
-        .filterNot { it is_ True::class.java }
-        .mapNotNull {
-            it.toCondition(shortXManager)
-        }.joinToString {
-            labelForConditionSelector(i18N, it::class).joinToString()
-        }
-
-    val action = rule.actionsList.mapNotNull {
-        it.toAction(shortXManager)
-    }.joinToString {
-        labelAndDescriptionForActionSelector(i18N, it::class).first
-    }
-
-    return if (condition.isNotBlank()) {
-        i18N["ui.rule.description.auto.template", mapOf(
-            "fact" to fact,
-            "condition" to condition,
-            "action" to action
-        )]
-    } else {
-        i18N["ui.rule.description.auto.no.condition.template", mapOf(
-            "fact" to fact,
-            "condition" to condition,
-            "action" to action
-        )]
-    }
-}
 
 sealed interface ImportResult {
     object Success : ImportResult

@@ -61,7 +61,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.RuleUM
+import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @AndroidEntryPoint
