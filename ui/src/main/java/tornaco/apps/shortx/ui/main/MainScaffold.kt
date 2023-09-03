@@ -94,6 +94,7 @@ fun MainScaffold(
     onFileClick: () -> Unit,
     onAddClick: () -> Unit,
     onUrlClick: (String) -> Unit,
+    onNewSetClick: (String) -> Unit,
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -114,6 +115,15 @@ fun MainScaffold(
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
+    val newSetDialogState =
+        rememberTextInputState(
+            title = LocalI18N.current["ui.common.new.set"],
+            message = null,
+            onSelected = {
+                onNewSetClick(it)
+            })
+    TextInputDialog(state = newSetDialogState)
+
     val fabState = rememberFabState(
         onCollapsed = {
             enableFabMask = false
@@ -122,24 +132,30 @@ fun MainScaffold(
             enableFabMask = true
         },
         onFabItemClicked = {
-            when (it.id) {
-                "clipboard" -> {
+            when (MainScaffoldFabOptions.valueOf(it.id)) {
+                MainScaffoldFabOptions.ImportClipboard -> {
                     onClipboardClick()
                 }
 
-                "file" -> {
+                MainScaffoldFabOptions.ImportFile -> {
                     subscribeState.isSubscribed.select({
                         onFileClick()
                     }, { subscribeDialogState.show() })
                 }
 
-                "new" -> {
+                MainScaffoldFabOptions.New -> {
                     onAddClick()
                 }
 
-                "url" -> {
+                MainScaffoldFabOptions.ImportUrl -> {
                     subscribeState.isSubscribed.select({
                         urlInputState.show()
+                    }, { subscribeDialogState.show() })
+                }
+
+                MainScaffoldFabOptions.NewSet -> {
+                    subscribeState.isSubscribed.select({
+                        newSetDialogState.show()
                     }, { subscribeDialogState.show() })
                 }
             }
@@ -460,24 +476,35 @@ private fun PrivacyStatementDialog(
 
 
 @Composable
-fun AddOptionsFab(
+private fun AddOptionsFab(
     fabState: FabState
 ) {
     val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
         MultiFabItem(
-            id = "file", icon = Remix.Document.file_line, label = "File"
+            id = MainScaffoldFabOptions.ImportFile.name,
+            icon = Remix.Document.file_line,
+            label = LocalI18N.current["ui.common.import.from.file"]
         ),
         MultiFabItem(
-            id = "clipboard",
+            id = MainScaffoldFabOptions.ImportClipboard.name,
             icon = Remix.Document.clipboard_line,
-            label = LocalI18N.current["ui.common.share.clipboard"]
+            label = LocalI18N.current["ui.common.import.from.clipboard"]
         ),
         MultiFabItem(
-            id = "url", icon = Remix.Business.global_line, label = "URL"
+            id = MainScaffoldFabOptions.ImportUrl.name,
+            icon = Remix.Business.global_line,
+            label = LocalI18N.current["ui.common.import.from.url"]
         ),
         MultiFabItem(
-            id = "new", icon = Remix.System.add_line, label = "New"
-        )
+            id = MainScaffoldFabOptions.NewSet.name,
+            icon = Remix.System.add_line,
+            label = LocalI18N.current["ui.common.new.set"]
+        ),
+        MultiFabItem(
+            id = MainScaffoldFabOptions.New.name,
+            icon = Remix.System.add_line,
+            label = LocalI18N.current["ui.common.new"]
+        ),
     )
 
     MultiFloatingActionButton(
@@ -488,3 +515,11 @@ fun AddOptionsFab(
     )
 }
 
+
+enum class MainScaffoldFabOptions {
+    ImportFile,
+    ImportClipboard,
+    ImportUrl,
+    New,
+    NewSet
+}

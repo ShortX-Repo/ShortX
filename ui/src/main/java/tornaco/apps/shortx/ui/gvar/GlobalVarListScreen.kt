@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +55,11 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
+import tornaco.apps.shortx.ui.base.FabState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MultiFabItem
+import tornaco.apps.shortx.ui.base.MultiFloatingActionButton
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -68,7 +73,6 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
-import tornaco.apps.shortx.ui.main.AddOptionsFab
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -133,16 +137,16 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 
             val fabState = rememberFabState(
                 onFabItemClicked = {
-                    when (it.id) {
-                        "clipboard" -> {
+                    when (GVFabOptions.valueOf(it.id)) {
+                        GVFabOptions.ImportClipboard -> {
                             vm.importFromClipboard()
                         }
 
-                        "file" -> {
+                        GVFabOptions.ImportFile -> {
                             pickFileLauncher.launch("text/plain")
                         }
 
-                        "new" -> {
+                        GVFabOptions.New -> {
                             addGlobalVarDialogState.show()
                         }
                     }
@@ -331,4 +335,42 @@ private fun listItemOverflowMenu(
     })
 
     return menuState
+}
+
+
+@Composable
+private fun AddOptionsFab(
+    fabState: FabState
+) {
+    val expandFbItemList: MutableList<MultiFabItem> = mutableListOf(
+        MultiFabItem(
+            id = GVFabOptions.ImportFile.name,
+            icon = Remix.Document.file_line,
+            label = LocalI18N.current["ui.common.import.from.file"]
+        ),
+        MultiFabItem(
+            id = GVFabOptions.ImportClipboard.name,
+            icon = Remix.Document.clipboard_line,
+            label = LocalI18N.current["ui.common.import.from.clipboard"]
+        ),
+        MultiFabItem(
+            id = GVFabOptions.New.name,
+            icon = Remix.System.add_line,
+            label = LocalI18N.current["ui.common.new"]
+        ),
+    )
+
+    MultiFloatingActionButton(
+        srcIcon = Icons.Outlined.Add,
+        showLabels = true,
+        items = expandFbItemList,
+        state = fabState
+    )
+}
+
+
+enum class GVFabOptions {
+    ImportFile,
+    ImportClipboard,
+    New,
 }

@@ -167,6 +167,7 @@ fun DirectActionListScreen() {
         onUrlClick = {
             ViewerActivity.start(context, SharedData("daUrl", it))
         },
+        onNewSetClick = {},
         acceptPrivacyStatement = {
             vm.acceptPrivacyStatement()
         }
