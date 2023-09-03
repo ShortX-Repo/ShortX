@@ -24,6 +24,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
@@ -32,6 +33,7 @@ import tornaco.apps.shortx.core.proto.rule.ConditionEvaluateRecord
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -872,6 +874,54 @@ class ShortXManager(private val service: IShortX) {
     fun isRuleEngineEnabled(engine: String): Boolean {
         return invokeService(false) {
             isRuleEngineEnabled(engine)
+        }
+    }
+
+    fun addOrUpdateRuleSet(rs: RuleSet) {
+        invokeService(Unit) {
+            addOrUpdateRuleSet(ByteArrayWrapper(rs.toByteArray()))
+        }
+    }
+
+    fun deleteRuleSet(id: String) {
+        invokeService(Unit) {
+            deleteRuleSet(id)
+        }
+    }
+
+    fun getRuleSetById(id: String): RuleSet? {
+        return invokeService(null) {
+            getRuleSetById(id)?.let { RuleSet.parseFrom(it.byteData) }
+        }
+    }
+
+    fun getAllRuleSets(): List<RuleSet> {
+        return invokeService(emptyList()) {
+            allRuleSets.map { RuleSet.parseFrom(it.byteData) }
+        }
+    }
+
+    fun addOrUpdateDASet(ds: DirectActionSet) {
+        invokeService(Unit) {
+            addOrUpdateDASet(ByteArrayWrapper(ds.toByteArray()))
+        }
+    }
+
+    fun deleteDASet(id: String) {
+        invokeService(Unit) {
+            deleteDASet(id)
+        }
+    }
+
+    fun getDASetById(id: String): DirectActionSet? {
+        return invokeService(null) {
+            getDASetById(id)?.let { DirectActionSet.parseFrom(it.byteData) }
+        }
+    }
+
+    fun getAllDASets(): List<DirectActionSet> {
+        return invokeService(emptyList()) {
+            allDASets.map { DirectActionSet.parseFrom(it.byteData) }
         }
     }
 

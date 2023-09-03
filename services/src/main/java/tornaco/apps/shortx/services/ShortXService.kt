@@ -29,12 +29,14 @@ import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.rule.IDAObserver
@@ -679,6 +681,46 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun executeJS(expression: String): String {
             enforceCallingPermissions()
             return shortXContext.rule.executeJS(expression)
+        }
+
+        override fun addOrUpdateRuleSet(rs: ByteArrayWrapper) {
+            shortXContext.rule.addOrUpdateRuleSet(RuleSet.parseFrom(rs.byteData))
+        }
+
+        override fun deleteRuleSet(id: String) {
+            shortXContext.rule.deleteRuleSet(id)
+        }
+
+        override fun getRuleSetById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getRuleSetById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllRuleSets(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllRuleSets().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun addOrUpdateDASet(ds: ByteArrayWrapper) {
+            shortXContext.rule.addOrUpdateDASet(DirectActionSet.parseFrom(ds.byteData))
+        }
+
+        override fun deleteDASet(id: String) {
+            shortXContext.rule.deleteDASet(id)
+        }
+
+        override fun getDASetById(id: String): ByteArrayWrapper? {
+            return shortXContext.rule.getDASetById(id)?.let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getAllDASets(): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllDASets().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
         override fun vb(code: String, deviceId: String, cb: ICallback) {

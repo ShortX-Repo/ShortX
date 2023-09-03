@@ -213,4 +213,15 @@ interface IShortX {
     boolean isRuleEngineEnabled(String engine);
 
     String executeJS(String expression);
+
+    // Rule Set
+    void addOrUpdateRuleSet(in ByteArrayWrapper rs);
+    void deleteRuleSet(String id);
+    ByteArrayWrapper getRuleSetById(String id);
+    List<ByteArrayWrapper> getAllRuleSets();
+
+    void addOrUpdateDASet(in ByteArrayWrapper ds);
+    void deleteDASet(String id);
+    ByteArrayWrapper getDASetById(String id);
+    List<ByteArrayWrapper> getAllDASets();
 }

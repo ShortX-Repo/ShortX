@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
@@ -25,6 +26,7 @@ import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
@@ -729,5 +731,51 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun isRuleEngineEnabled(engine: String): Boolean {
         return store.read(Settings.BoolSettings.EnableRuleEngine(engine))
+    }
+
+    fun addOrUpdateRuleSet(rs: RuleSet) {
+        val exists = ruleSetsStore.getRuleSet(rs.id)
+        if (exists == null) {
+            logger.d("Add RuleSet: ${rs.title}")
+            ruleSetsStore.addRuleSet(rs)
+        } else {
+            logger.d("Update RuleSet: ${rs.title}")
+            ruleSetsStore.addRuleSet(rs)
+        }
+    }
+
+    fun deleteRuleSet(id: String) {
+        ruleSetsStore.deleteRuleSet(id)
+    }
+
+    fun getRuleSetById(id: String): RuleSet? {
+        return ruleSetsStore.getRuleSet(id)
+    }
+
+    fun getAllRuleSets(): List<RuleSet> {
+        return ruleSetsStore.getAllRuleSets()
+    }
+
+    fun addOrUpdateDASet(ds: DirectActionSet) {
+        val exists = daSetsStore.getDirectActionSet(ds.id)
+        if (exists == null) {
+            logger.d("Add DirectActionSet: ${ds.title}")
+            daSetsStore.addDirectActionSet(ds)
+        } else {
+            logger.d("Update DirectActionSet: ${ds.title}")
+            daSetsStore.addDirectActionSet(ds)
+        }
+    }
+
+    fun deleteDASet(id: String) {
+        daSetsStore.deleteDirectActionSet(id)
+    }
+
+    fun getDASetById(id: String): DirectActionSet? {
+        return daSetsStore.getDirectActionSet(id)
+    }
+
+    fun getAllDASets(): List<DirectActionSet> {
+        return daSetsStore.getAllDirectActionSets()
     }
 }
