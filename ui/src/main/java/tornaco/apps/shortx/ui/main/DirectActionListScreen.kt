@@ -336,27 +336,42 @@ private fun DAListContent(
                     .animateContentSize(),
             ) {
                 Box {
-                    DirectActionItem(
-                        modifier = Modifier.onSizeChanged {
-                            itemSize = with(density) {
-                                it.width.toDp() to it.height.toDp()
-                            }
-                        },
-                        da = da,
-                        isSubscribed = isSubscribed,
-                        isLongClickEnabled = showOverflowMenu,
-                        run = {
-                            run(da)
-                            colorAnimStarted = true
-                            scaleAnimStarted = true
-                        },
-                        onDup = onDup,
-                        onDelete = onDelete,
-                        onEdit = onEdit,
-                        onDeepLink = onDeepLink,
-                        onShare = onShare,
-                        stopAllJobs = stopAllJobs
-                    )
+                    if (da.isDirectActionSet) {
+                        DirectActionSetItem(
+                            modifier = Modifier.onSizeChanged {
+                                itemSize = with(density) {
+                                    it.width.toDp() to it.height.toDp()
+                                }
+                            },
+                            da = da,
+                            isSubscribed = isSubscribed,
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onShare = onShare,
+                        )
+                    } else {
+                        DirectActionItem(
+                            modifier = Modifier.onSizeChanged {
+                                itemSize = with(density) {
+                                    it.width.toDp() to it.height.toDp()
+                                }
+                            },
+                            da = da,
+                            isSubscribed = isSubscribed,
+                            isLongClickEnabled = showOverflowMenu,
+                            run = {
+                                run(da)
+                                colorAnimStarted = true
+                                scaleAnimStarted = true
+                            },
+                            onDup = onDup,
+                            onDelete = onDelete,
+                            onEdit = onEdit,
+                            onDeepLink = onDeepLink,
+                            onShare = onShare,
+                            stopAllJobs = stopAllJobs
+                        )
+                    }
 
                     if (colorAnimStarted) Spacer(
                         modifier = Modifier
@@ -424,7 +439,7 @@ private fun DirectActionItem(
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     Box {
-        val popMenuState = listItemOverflowMenu(
+        val popMenuState = daListItemOverflowMenu(
             da = da,
             isSubscribed = isSubscribed,
             onDup = onDup,
@@ -466,7 +481,7 @@ private fun DirectActionItemCompat(
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     Box {
-        val popMenuState = listItemOverflowMenu(
+        val popMenuState = daListItemOverflowMenu(
             da = da,
             isSubscribed = isSubscribed,
             onDup = onDup,
@@ -644,7 +659,7 @@ fun RunningIndicator(modifier: Modifier = Modifier, runningInsCount: Int, stopAl
 }
 
 @Composable
-private fun listItemOverflowMenu(
+private fun daListItemOverflowMenu(
     da: DirectActionUM,
     isSubscribed: Boolean,
     onDup: (DirectActionUM) -> Unit,
