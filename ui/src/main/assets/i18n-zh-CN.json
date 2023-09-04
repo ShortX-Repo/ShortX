@@ -202,6 +202,7 @@
   "ui.common.import.from.clipboard": "从剪贴板导入",
   "ui.common.import.from.url": "从url导入",
   "ui.common.new": "新建指令",
+  "ui.common.sets": "集合",
   "ui.common.new.set": "新建指令集合",
   "ui.common.select.set": "选择集合",
   "ui.common.move.to.set": "移动到集合中",

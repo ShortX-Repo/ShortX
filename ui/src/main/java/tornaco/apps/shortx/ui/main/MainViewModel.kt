@@ -242,6 +242,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     logger.d("activeJobs: $this")
                 }
                 val das = shortXManager.getAllDirectAction()
+                    .filter {
+                        it.directActionSetId.isNullOrEmpty()
+                    }
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {

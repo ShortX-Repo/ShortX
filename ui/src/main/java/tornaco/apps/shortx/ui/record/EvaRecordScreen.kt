@@ -8,7 +8,6 @@ package tornaco.apps.shortx.ui.record
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,17 +26,15 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -125,14 +122,15 @@ fun EvaRecordScreen(back: () -> Unit) {
         vm.loadRecords()
     })
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = Modifier,
+            BottomSheetScaffold(modifier = Modifier,
+                scaffoldState = sheetState,
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
@@ -152,19 +150,23 @@ fun EvaRecordScreen(back: () -> Unit) {
                             }
                             IconButton(onClick = {
                                 scope.launch {
-                                    sheetState.expand()
+                                    if (sheetState.bottomSheetState.hasExpandedState) {
+                                        sheetState.bottomSheetState.partialExpand()
+                                    } else {
+                                        sheetState.bottomSheetState.expand()
+                                    }
                                 }
                             }) {
                                 RemixIcon(remixName = Remix.System.filter_2_line)
                             }
                         }
                     )
+                },
+                sheetContent = {
+                    BottomSheetMenu(vm)
                 }) { paddingValues ->
                 val pullRefreshState =
                     rememberPullRefreshState(state.isLoading, { vm.loadRecords() })
-
-                BottomSheetMenu(sheetState, vm)
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -236,171 +238,159 @@ fun EvaRecordScreen(back: () -> Unit) {
 }
 
 @Composable
-fun BottomSheetMenu(sheetState: SheetState, vm: EvaRecordViewModel) {
+fun BottomSheetMenu(vm: EvaRecordViewModel) {
     val scope = rememberCoroutineScope()
     val state by vm.collectAsState()
-    if (sheetState.isVisible) {
-        ModalBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = {
-                scope.launch {
-                    sheetState.hide()
-                }
-            },
+    Column {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            BackHandler {
-                scope.launch { sheetState.hide() }
-            }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
+            CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
 
-                val subscribeState by LVLStateHolder.subscribeState.collectAsState()
-                if (subscribeState.isSubscribed) {
-                    if (state.onlyShowSrc != null) {
-                        StandardSpacer()
-                        ListItem(
-                            modifier = Modifier
-                                .clip(ShortXCardRoundedCornerShape)
-                                .background(color = MaterialTheme.colorScheme.primaryContainer),
-                            title = LocalI18N.current["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
-                            action1 = {
-                                IconButton(onClick = {
-                                    vm.setOnlyShowSrcId(null)
-                                }) {
-                                    RemixIcon(remixName = Remix.System.close_line)
-                                }
-                            })
-                    }
-
-                    LargeSpacer()
-                    FieldTitle(text = LocalI18N.current["ui.fact.title"])
-                    SmallSpacer()
-                    FilterChip(
-                        selected = state.factSetting.show,
-                        label = {
-                            Text(text = LocalI18N.current["ui.common.filter.show"])
-                        },
-
-                        onClick = {
-                            vm.showFact(!state.factSetting.show)
-                        })
-
-                    LargeSpacer()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        FieldTitle(text = LocalI18N.current["ui.conditions.title"])
-                        LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
-                            val allOn =
-                                state.conditionSetting.showMatch && state.conditionSetting.showNotMatch
-                                        && state.conditionSetting.showError
-                            vm.showConditionMatch(!allOn)
-                            vm.showConditionNotMatch(!allOn)
-                            vm.showConditionError(!allOn)
-                        }
-                    }
-                    SmallSpacer()
-                    Row {
-                        FilterChip(
-                            selected = state.conditionSetting.showMatch,
-                            label = {
-                                Text(text = LocalI18N.current["ui.common.filter.matched"])
-                            },
-                            leadingIcon = {
-                                RemixIcon(
-                                    remixName = Remix.System.checkbox_circle_fill,
-                                )
-                            },
-                            onClick = {
-                                vm.showConditionMatch(!state.conditionSetting.showMatch)
-                            })
-                        StandardSpacer()
-                        FilterChip(
-                            selected = state.conditionSetting.showNotMatch,
-                            label = {
-                                Text(text = LocalI18N.current["ui.common.filter.unmatched"])
-                            },
-                            leadingIcon = {
-                                RemixIcon(
-                                    remixName = Remix.System.indeterminate_circle_fill,
-                                )
-                            },
-                            onClick = {
-                                vm.showConditionNotMatch(!state.conditionSetting.showNotMatch)
-                            })
-                        StandardSpacer()
-                        FilterChip(
-                            selected = state.conditionSetting.showError,
-                            label = {
-                                Text(text = LocalI18N.current["ui.common.filter.error"])
-                            },
-                            leadingIcon = {
-                                RemixIcon(
-                                    remixName = Remix.System.error_warning_fill,
-                                )
-                            },
-                            onClick = {
-                                vm.showConditionError(!state.conditionSetting.showError)
-                            })
-                    }
-
-                    LargeSpacer()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        FieldTitle(text = LocalI18N.current["ui.actions.title"])
-                        LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
-                            val allOn =
-                                state.actionSetting.showSuccess
-                                        && state.actionSetting.showError
-                            vm.showActionSuccess(!allOn)
-                            vm.showActionError(!allOn)
-                        }
-                    }
-                    SmallSpacer()
-                    Row {
-                        FilterChip(
-                            selected = state.actionSetting.showSuccess,
-                            label = {
-                                Text(text = LocalI18N.current["ui.common.filter.success"])
-                            },
-                            leadingIcon = {
-                                RemixIcon(
-                                    remixName = Remix.System.checkbox_circle_fill,
-                                )
-                            },
-                            onClick = {
-                                vm.showActionSuccess(!state.actionSetting.showSuccess)
-                            })
-                        StandardSpacer()
-                        FilterChip(
-                            selected = state.actionSetting.showError,
-                            label = {
-                                Text(text = LocalI18N.current["ui.common.filter.error"])
-                            },
-                            leadingIcon = {
-                                RemixIcon(
-                                    remixName = Remix.System.error_warning_fill,
-                                )
-                            },
-                            onClick = {
-                                vm.showActionError(!state.actionSetting.showError)
-                            })
-                    }
-
-                    LargeSpacer()
-                    LargeSpacer()
-                    LargeSpacer()
-                } else {
-
-                    Box(
+            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            if (subscribeState.isSubscribed) {
+                if (state.onlyShowSrc != null) {
+                    StandardSpacer()
+                    ListItem(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 64.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        OutlineBadge(text = LocalI18N.current["ui.subscription.subscribed.only"])
+                            .clip(ShortXCardRoundedCornerShape)
+                            .background(color = MaterialTheme.colorScheme.primaryContainer),
+                        title = LocalI18N.current["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
+                        action1 = {
+                            IconButton(onClick = {
+                                vm.setOnlyShowSrcId(null)
+                            }) {
+                                RemixIcon(remixName = Remix.System.close_line)
+                            }
+                        })
+                }
+
+                LargeSpacer()
+                FieldTitle(text = LocalI18N.current["ui.fact.title"])
+                SmallSpacer()
+                FilterChip(
+                    selected = state.factSetting.show,
+                    label = {
+                        Text(text = LocalI18N.current["ui.common.filter.show"])
+                    },
+
+                    onClick = {
+                        vm.showFact(!state.factSetting.show)
+                    })
+
+                LargeSpacer()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FieldTitle(text = LocalI18N.current["ui.conditions.title"])
+                    LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
+                        val allOn =
+                            state.conditionSetting.showMatch && state.conditionSetting.showNotMatch
+                                    && state.conditionSetting.showError
+                        vm.showConditionMatch(!allOn)
+                        vm.showConditionNotMatch(!allOn)
+                        vm.showConditionError(!allOn)
                     }
+                }
+                SmallSpacer()
+                Row {
+                    FilterChip(
+                        selected = state.conditionSetting.showMatch,
+                        label = {
+                            Text(text = LocalI18N.current["ui.common.filter.matched"])
+                        },
+                        leadingIcon = {
+                            RemixIcon(
+                                remixName = Remix.System.checkbox_circle_fill,
+                            )
+                        },
+                        onClick = {
+                            vm.showConditionMatch(!state.conditionSetting.showMatch)
+                        })
+                    StandardSpacer()
+                    FilterChip(
+                        selected = state.conditionSetting.showNotMatch,
+                        label = {
+                            Text(text = LocalI18N.current["ui.common.filter.unmatched"])
+                        },
+                        leadingIcon = {
+                            RemixIcon(
+                                remixName = Remix.System.indeterminate_circle_fill,
+                            )
+                        },
+                        onClick = {
+                            vm.showConditionNotMatch(!state.conditionSetting.showNotMatch)
+                        })
+                    StandardSpacer()
+                    FilterChip(
+                        selected = state.conditionSetting.showError,
+                        label = {
+                            Text(text = LocalI18N.current["ui.common.filter.error"])
+                        },
+                        leadingIcon = {
+                            RemixIcon(
+                                remixName = Remix.System.error_warning_fill,
+                            )
+                        },
+                        onClick = {
+                            vm.showConditionError(!state.conditionSetting.showError)
+                        })
+                }
+
+                LargeSpacer()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FieldTitle(text = LocalI18N.current["ui.actions.title"])
+                    LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
+                        val allOn =
+                            state.actionSetting.showSuccess
+                                    && state.actionSetting.showError
+                        vm.showActionSuccess(!allOn)
+                        vm.showActionError(!allOn)
+                    }
+                }
+                SmallSpacer()
+                Row {
+                    FilterChip(
+                        selected = state.actionSetting.showSuccess,
+                        label = {
+                            Text(text = LocalI18N.current["ui.common.filter.success"])
+                        },
+                        leadingIcon = {
+                            RemixIcon(
+                                remixName = Remix.System.checkbox_circle_fill,
+                            )
+                        },
+                        onClick = {
+                            vm.showActionSuccess(!state.actionSetting.showSuccess)
+                        })
+                    StandardSpacer()
+                    FilterChip(
+                        selected = state.actionSetting.showError,
+                        label = {
+                            Text(text = LocalI18N.current["ui.common.filter.error"])
+                        },
+                        leadingIcon = {
+                            RemixIcon(
+                                remixName = Remix.System.error_warning_fill,
+                            )
+                        },
+                        onClick = {
+                            vm.showActionError(!state.actionSetting.showError)
+                        })
+                }
+
+                LargeSpacer()
+                LargeSpacer()
+                LargeSpacer()
+            } else {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 64.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    OutlineBadge(text = LocalI18N.current["ui.subscription.subscribed.only"])
                 }
             }
         }
