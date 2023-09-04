@@ -45,27 +45,16 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 
 
 @Composable
-fun RuleItem2(
+fun RuleItem(
     rule: RuleUM,
     isSubscribed: Boolean,
     onClick: () -> Unit,
-    setRuleEnabled: (String, Boolean) -> Unit,
-    onDup: (RuleUM) -> Unit,
-    onDelete: (RuleUM) -> Unit,
-    onEdit: (RuleUM) -> Unit,
-    onShare: (RuleUM) -> Unit,
-    onExecute: (RuleUM) -> Unit,
-    stopAllJobs: (RuleUM) -> Unit
 ) {
+    val handler = LocalRuleItemHandler.current
     Box {
         val popMenuState = listItemOverflowMenu(
             rule = rule,
             isSubscribed = isSubscribed,
-            onDup = onDup,
-            onDelete = onDelete,
-            onEdit = onEdit,
-            onShare = onShare,
-            onExecute = onExecute,
         )
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +66,6 @@ fun RuleItem2(
             }
             .padding(16.dp)
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -88,7 +76,7 @@ fun RuleItem2(
                     modifier = Modifier,
                     checked = rule.isEnabled,
                     onCheckedChange = {
-                        setRuleEnabled(rule.id, it)
+                        handler.setRuleEnabled(rule, it)
                     },
                 )
             }
@@ -117,7 +105,7 @@ fun RuleItem2(
                     modifier = Modifier.padding(start = 12.dp),
                     runningInsCount = rule.runningInsCount,
                     stopAllJobs = {
-                        stopAllJobs(rule)
+                        handler.stopAllJobs(rule)
                     }
                 )
             }
@@ -128,7 +116,7 @@ fun RuleItem2(
 @Composable
 fun RuleIcon(rule: RuleUM) {
     ColoredIcon(
-        size = 32.dp,
+        size = 38.dp,
         padding = 0.dp,
         color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
     ) {
@@ -144,12 +132,9 @@ fun RuleIcon(rule: RuleUM) {
 private fun listItemOverflowMenu(
     rule: RuleUM,
     isSubscribed: Boolean,
-    onDup: (RuleUM) -> Unit,
-    onDelete: (RuleUM) -> Unit,
-    onEdit: (RuleUM) -> Unit,
-    onShare: (RuleUM) -> Unit,
-    onExecute: (RuleUM) -> Unit,
 ): DropdownSelectorState {
+    val handler = LocalRuleItemHandler.current
+
     val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
         null
@@ -164,7 +149,7 @@ private fun listItemOverflowMenu(
         state = deleteDialogState,
         data = rule,
         messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to rule.title)] },
-        onConfirm = onDelete
+        onConfirm = { handler.delete(rule) }
     )
 
     val menuState = rememberDropdownSelectorState()
@@ -207,7 +192,7 @@ private fun listItemOverflowMenu(
             when (it.data) {
                 "dup" -> {
                     if (isSubscribed) {
-                        onDup(rule)
+                        handler.dup(rule)
                     } else {
                         subscribeDialogState.show()
                     }
@@ -218,19 +203,19 @@ private fun listItemOverflowMenu(
                 }
 
                 "edit" -> {
-                    onEdit(rule)
+                    handler.edit(rule)
                 }
 
                 "share" -> {
                     if (isSubscribed) {
-                        onShare(rule)
+                        handler.share(rule)
                     } else {
                         subscribeDialogState.show()
                     }
                 }
 
                 "execute" -> {
-                    onExecute(rule)
+                    handler.run(rule)
                 }
 
                 else -> {}

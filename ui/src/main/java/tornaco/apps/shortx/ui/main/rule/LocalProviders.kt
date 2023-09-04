@@ -4,22 +4,22 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import tornaco.apps.shortx.ui.main.model.RuleUM
 
 interface RuleItemHandler {
-    fun run(rule: RuleUM) {}
-    fun dup(rule: RuleUM) {}
-    fun delete(rule: RuleUM) {}
-    fun edit(rule: RuleUM) {}
-    fun click(rule: RuleUM) {}
-    fun share(rule: RuleUM) {}
-    fun moveToSet(rule: RuleUM, setId: String) {}
-    fun stopAllJobs(rule: RuleUM) {}
-    fun setRuleEnabled(rule: RuleUM, enable: Boolean) {}
+    fun run(rule: RuleUM)
+    fun dup(rule: RuleUM)
+    fun delete(rule: RuleUM)
+    fun edit(rule: RuleUM)
+    fun click(rule: RuleUM)
+    fun share(rule: RuleUM)
+    fun moveToSet(rule: RuleUM, setId: String)
+    fun stopAllJobs(rule: RuleUM)
+    fun setRuleEnabled(rule: RuleUM, enable: Boolean)
 }
 
 interface RuleSetItemHandler {
-    fun delete(rule: RuleUM) {}
-    fun edit(rule: RuleUM) {}
-    fun click(rule: RuleUM) {}
-    fun share(rule: RuleUM) {}
+    fun delete(rule: RuleUM)
+    fun edit(rule: RuleUM)
+    fun click(rule: RuleUM)
+    fun share(rule: RuleUM)
 }
 
 val LocalRuleItemHandler = staticCompositionLocalOf<RuleItemHandler> {

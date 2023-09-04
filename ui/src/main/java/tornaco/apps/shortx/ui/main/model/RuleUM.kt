@@ -25,5 +25,5 @@ data class RuleUM(
     val hasUpdate: Boolean = false,
 
     // For Set
-    val isDirectActionSet: Boolean = false
+    val isRuleSet: Boolean = false
 )
