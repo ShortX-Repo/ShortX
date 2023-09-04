@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.compat.ManifestCompat
@@ -49,6 +50,7 @@ import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -62,6 +64,7 @@ import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
+import java.io.File
 
 const val EXECUTE_ANIM_DURATION = 600
 
@@ -120,7 +123,11 @@ fun DirectActionListScreen() {
             }
         },
         onClipboardClick = {
-            vm.importDAFromClipboard()
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                val file = File(context.cacheDir, "clipboard.content")
+                file.writeText(clip)
+                ViewerActivity.start(context, file.toUri())
+            }
         },
         onFileClick = {
             pickFileLauncher.launch("text/plain")
@@ -145,6 +152,8 @@ fun DirectActionListScreen() {
         val shareDialogState = rememberShareDialogState("share.shortx")
         ShareDialog(state = shareDialogState)
 
+        val props = LocalShortXProps.current
+
         DirectActionListContent(
             state = state,
             showOverflowMenu = true,
@@ -152,7 +161,7 @@ fun DirectActionListScreen() {
                 vm.deleteDA(da.id)
             },
             onDup = {
-                vm.dupDA(it.id)
+                vm.dupDA(it.id, props.firstOrNull())
             },
             onClick = {
                 AddDirectActionActivity.start(context, it.id)

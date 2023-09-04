@@ -2,7 +2,6 @@ package tornaco.apps.shortx.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,19 +11,20 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.IJobStatusListener
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.pack_
-import tornaco.apps.shortx.core.rule.parseShareContentDA
-import tornaco.apps.shortx.core.rule.parseShareContentRule
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -47,8 +47,6 @@ import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
-import tornaco.apps.shortx.ui.util.ClipboardUtils
-import java.nio.charset.Charset
 import java.text.Collator
 import java.util.*
 import javax.inject.Inject
@@ -329,10 +327,10 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
-    fun dupRule(ruleId: String) {
+    fun dupRule(ruleId: String, token: String?) {
         logger.d("dupRule: $ruleId")
         viewModelScope.launch {
-            shortXManager.getRuleById(ruleId)?.let { importRule(it, true) }
+            shortXManager.getRuleById(ruleId)?.let { importRule(it, true, token) }
         }
     }
 
@@ -343,10 +341,10 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
-    fun dupDA(daId: String) {
+    fun dupDA(daId: String, token: String?) {
         viewModelScope.launch {
             shortXManager.getDirectActionById(daId)?.let {
-                importDA(it, true)
+                importDA(it, true, token)
             }
         }
     }
@@ -384,84 +382,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     fun ruleToShareString(rule: RuleUM): String? =
         shortXManager.getRuleById(rule.id)?.toJson()?.addShareContentHeader(mapOf("type" to "rule"))
 
-    fun importRuleFromClipboard() {
-        viewModelScope.launch {
-            ClipboardUtils.readClipboard(context)?.let { clip ->
-                val rule = parseShareContentRule(clip)
-                if (rule != null) {
-                    importRule(rule, false)
-                    _importComplete.emit(ImportResult.Success)
-                } else {
-                    _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
-                }
-            }
-        }
-    }
-
-    fun importRuleFromUri(uri: Uri) {
-        viewModelScope.launch {
-            val rule = parseShareContentRuleFromUri(uri)
-            if (rule != null) {
-                importRule(rule, false)
-                _importComplete.emit(ImportResult.Success)
-            } else {
-                _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
-            }
-        }
-    }
-
-    private fun parseShareContentRuleFromUri(uri: Uri): Rule? {
-        val text = runCatching {
-            context.contentResolver.openInputStream(uri)?.use {
-                it.bufferedReader(Charset.defaultCharset()).readText()
-            }
-        }.getOrElse {
-            logger.e(it, "parseShareContentRuleFromUri")
-            null
-        }
-        return text?.let { parseShareContentRule(it) }
-    }
-
-    fun importDAFromClipboard() {
-        viewModelScope.launch {
-            ClipboardUtils.readClipboard(context)?.let { clip ->
-                val da = parseShareContentDA(clip)
-                if (da != null) {
-                    importDA(da, false)
-                    _importComplete.emit(ImportResult.Success)
-                } else {
-                    _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
-                }
-            }
-        }
-    }
-
-    fun importDAFromUri(uri: Uri) {
-        viewModelScope.launch {
-            val da = parseShareContentDAFromUri(uri)
-            if (da != null) {
-                importDA(da, false)
-                _importComplete.emit(ImportResult.Success)
-            } else {
-                _importComplete.emit(ImportResult.Fail(ImportResult.FailReason.ParseFail))
-            }
-        }
-    }
-
-    private fun parseShareContentDAFromUri(uri: Uri): DirectAction? {
-        val text = runCatching {
-            context.contentResolver.openInputStream(uri)?.use {
-                it.bufferedReader(Charset.defaultCharset()).readText()
-            }
-        }.getOrElse {
-            logger.e(it, "parseShareContentDAFromUri")
-            null
-        }
-        return text?.let { parseShareContentDA(it) }
-    }
-
-
-    fun importRule(rule: Rule, shouldChangeId: Boolean) {
+    fun importRule(rule: Rule, shouldChangeId: Boolean, token: String?) {
         logger.d("importRule: $rule")
         val ruleWithSameNameExists =
             state.value.rules.firstOrNull { it.title == rule.title } != null
@@ -496,6 +417,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     .setLastUpdateTime(rule.lastUpdateTime)
                     .setVersionCode(rule.versionCode)
                     .setIsEnabled(false)
+                    .addAllExtras(mutableListOf<StringPair>().apply {
+                        if (!token.isNullOrEmpty()) {
+                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        }
+                    })
                     .build()
             shortXManager.addRule(refined)
 
@@ -503,7 +429,7 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         }
     }
 
-    fun importDA(da: DirectAction, shouldChangeId: Boolean) {
+    fun importDA(da: DirectAction, shouldChangeId: Boolean, token: String?) {
         val daWithSameNameExists =
             state.value.das.firstOrNull { it.title == da.title } != null
         val copyInd = " (Copy)"
@@ -524,6 +450,11 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     .setCreateTime(da.createTime)
                     .setLastUpdateTime(da.lastUpdateTime)
                     .setVersionCode(da.versionCode)
+                    .addAllExtras(mutableListOf<StringPair>().apply {
+                        if (!token.isNullOrEmpty()) {
+                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                        }
+                    })
                     .build()
             shortXManager.addDirectAction(refined)
 

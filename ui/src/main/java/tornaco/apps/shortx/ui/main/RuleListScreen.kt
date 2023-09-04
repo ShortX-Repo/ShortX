@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.compat.ManifestCompat
@@ -55,6 +56,7 @@ import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShareDialog
@@ -73,7 +75,9 @@ import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
+import java.io.File
 
 
 @Composable
@@ -122,7 +126,11 @@ fun RuleScreen() {
         appBarActions = {
         },
         onClipboardClick = {
-            vm.importRuleFromClipboard()
+            ClipboardUtils.readClipboard(context)?.let { clip ->
+                val file = File(context.cacheDir, "clipboard.content")
+                file.writeText(clip)
+                ViewerActivity.start(context, file.toUri())
+            }
         },
         onFileClick = {
             pickFileLauncher.launch("text/plain")
@@ -145,10 +153,12 @@ fun RuleScreen() {
             contract = ActivityResultContracts.RequestMultiplePermissions(),
             onResult = {})
 
+        val props = LocalShortXProps.current
+
         RuleContent(
             state = state,
             onDup = {
-                vm.dupRule(it.id)
+                vm.dupRule(it.id, props.firstOrNull())
             },
             onDelete = { rule ->
                 vm.deleteRule(rule.id)
