@@ -552,4 +552,10 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
         )
         loadDA()
     }
+
+    fun addDAToDASet(da: DirectActionUM, setId: String) {
+        shortXManager.addDirectAction(
+            DirectAction.newBuilder(da.directAction).setDirectActionSetId(setId).build()
+        )
+    }
 }

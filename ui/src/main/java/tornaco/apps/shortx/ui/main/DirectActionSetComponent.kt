@@ -20,11 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -35,8 +33,6 @@ import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
-import tornaco.apps.shortx.ui.base.SmallSpacer
-import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -93,44 +89,31 @@ fun DASetListItem(
         .combinedClickable(onLongClick = onLongClick) {
             onClick()
         }
-        .padding(horizontal = 12.dp)
-        .padding(top = 12.dp)) {
+        .padding(12.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(
                 size = 32.dp,
                 padding = 0.dp,
-                color = iconColor.copy(alpha = ActionColorBgAlpha)
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
-                    remixName = icon,
+                    remixName = Remix.Document.folders_fill,
                     tint = iconColor
                 )
             }
-        }
 
-        MediumSpacer()
-
-        Column(modifier = Modifier) {
+            MediumSpacer()
             Text(
                 text = title, style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 16.sp
                 )
             )
-            SmallSpacer()
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-            MediumSpacer()
-            TinySpacer()
         }
     }
 }

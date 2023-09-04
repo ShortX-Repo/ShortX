@@ -70,6 +70,7 @@ fun DirectActionItem(
     onEdit: (DirectActionUM) -> Unit,
     onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
+    onMoveToSet: (DirectActionUM, String) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     Box {
@@ -80,7 +81,8 @@ fun DirectActionItem(
             onDelete = onDelete,
             onEdit = onEdit,
             onDeepLink = onDeepLink,
-            onShare = onShare
+            onShare = onShare,
+            onMoveToSet = onMoveToSet,
         )
         DAListItem(
             modifier = modifier,
@@ -112,6 +114,7 @@ fun DirectActionItemCompat(
     onEdit: (DirectActionUM) -> Unit,
     onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
+    onMoveToSet: (DirectActionUM, String) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     Box {
@@ -122,7 +125,8 @@ fun DirectActionItemCompat(
             onDelete = onDelete,
             onEdit = onEdit,
             onDeepLink = onDeepLink,
-            onShare = onShare
+            onShare = onShare,
+            onMoveToSet = onMoveToSet,
         )
         DAListItemCompat(
             modifier = modifier,
@@ -301,6 +305,7 @@ private fun daListItemOverflowMenu(
     onEdit: (DirectActionUM) -> Unit,
     onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
+    onMoveToSet: (da: DirectActionUM, setId: String) -> Unit,
 ): DropdownSelectorState {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -324,6 +329,11 @@ private fun daListItemOverflowMenu(
         },
         onConfirm = onDelete
     )
+
+    val daSetSelectDialogState = rememberDASetSelectorState(onDASetSelected = {
+        onMoveToSet(da, it.id)
+    })
+    DASetSelectorDialog(state = daSetSelectDialogState)
 
     val menuState = rememberDropdownSelectorState()
 
@@ -355,6 +365,11 @@ private fun daListItemOverflowMenu(
             data = "deeplink",
             icon = {
                 RemixIcon(Remix.System.external_link_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
+            data = "moveToSet",
+            icon = {
+                RemixIcon(Remix.Document.folders_fill)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = "delete",
@@ -409,6 +424,14 @@ private fun daListItemOverflowMenu(
             "share" -> {
                 if (isSubscribed) {
                     onShare(da)
+                } else {
+                    subscribeDialogState.show()
+                }
+            }
+
+            "moveToSet" -> {
+                if (isSubscribed) {
+                    daSetSelectDialogState.show()
                 } else {
                     subscribeDialogState.show()
                 }

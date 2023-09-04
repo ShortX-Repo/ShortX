@@ -393,7 +393,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
 
         if (!canAddRule) {
-            logger.p("Can not add rule.")
+            logger.pe("Can not add rule.")
             return
         }
 
@@ -493,7 +493,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
 
         if (!canAddRule) {
-            logger.p("Can not add DA.")
+            logger.pe("Can not add DA.")
             return
         }
 

@@ -7,8 +7,6 @@ import com.elvishew.xlog.flattener.ClassicFlattener
 import com.elvishew.xlog.printer.AndroidPrinter
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
-import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.util.LOG_LEVEL_P
 import tornaco.apps.shortx.core.util.logAdapter
 import tornaco.apps.shortx.ui.settings.logFolderPath
 
@@ -37,7 +35,6 @@ fun initLogger(context: Context) {
                 Log.INFO -> XLog.i("$tag $msg")
                 Log.WARN -> XLog.w("$tag $msg")
                 Log.ERROR -> XLog.e("$tag $msg")
-                LOG_LEVEL_P -> if (BuildProp.APP_IS_DEBUG) XLog.d("$tag $msg")
             }
         }
     }

@@ -187,6 +187,9 @@ fun DirectActionListScreen() {
             },
             stopAllJobs = {
                 vm.stopJobs(it)
+            },
+            onMoveToSet = {da, setId->
+                vm.addDAToDASet(da, setId)
             }
         )
     }
@@ -202,6 +205,7 @@ fun DirectActionListContent(
     onDeepLink: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
     run: (DirectActionUM) -> Unit = {},
+    onMoveToSet: (DirectActionUM, String) -> Unit = { _, _ -> },
     stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
     Box(
@@ -229,6 +233,7 @@ fun DirectActionListContent(
                 onEdit = onClick,
                 onDeepLink = onDeepLink,
                 onShare = onShare,
+                onMoveToSet = onMoveToSet,
                 stopAllJobs = stopAllJobs
             )
         } else {
@@ -241,9 +246,11 @@ fun DirectActionListContent(
                 onEdit = onClick,
                 onDeepLink = onDeepLink,
                 onShare = onShare,
+                onMoveToSet = onMoveToSet,
                 stopAllJobs = stopAllJobs
             )
         }
+
     }
 }
 
@@ -258,6 +265,7 @@ private fun DAListContent(
     onEdit: (DirectActionUM) -> Unit = {},
     onDeepLink: (DirectActionUM) -> Unit = {},
     onShare: (DirectActionUM) -> Unit = {},
+    onMoveToSet: (DirectActionUM, String) -> Unit = { _, _ -> },
     stopAllJobs: (DirectActionUM) -> Unit = {}
 ) {
     LazyVerticalStaggeredGrid(
@@ -331,6 +339,7 @@ private fun DAListContent(
                             onEdit = onEdit,
                             onDeepLink = onDeepLink,
                             onShare = onShare,
+                            onMoveToSet = onMoveToSet,
                             stopAllJobs = stopAllJobs
                         )
                     }
@@ -358,6 +367,7 @@ private fun DAListContentCompat(
     onEdit: (DirectActionUM) -> Unit,
     onDeepLink: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
+    onMoveToSet: (DirectActionUM, String) -> Unit,
     stopAllJobs: (DirectActionUM) -> Unit
 ) {
     val subscribeState by LVLStateHolder.subscribeState.collectAsState()
@@ -380,6 +390,7 @@ private fun DAListContentCompat(
                 onEdit = onEdit,
                 onDeepLink = onDeepLink,
                 onShare = onShare,
+                onMoveToSet = onMoveToSet,
                 stopAllJobs = stopAllJobs
             )
         }
