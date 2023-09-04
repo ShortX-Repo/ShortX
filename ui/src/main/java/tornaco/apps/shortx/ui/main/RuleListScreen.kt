@@ -91,7 +91,7 @@ fun RuleScreen() {
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            vm.importRuleFromUri(fileUri)
+            ViewerActivity.start(context, fileUri)
         }
     }
 

@@ -80,7 +80,7 @@ fun DirectActionListScreen() {
         ActivityResultContracts.GetContent()
     ) { fileUri ->
         if (fileUri != null) {
-            vm.importDAFromUri(fileUri)
+            ViewerActivity.start(context, fileUri)
         }
     }
 
@@ -188,7 +188,7 @@ fun DirectActionListScreen() {
             stopAllJobs = {
                 vm.stopJobs(it)
             },
-            onMoveToSet = {da, setId->
+            onMoveToSet = { da, setId ->
                 vm.addDAToDASet(da, setId)
             }
         )

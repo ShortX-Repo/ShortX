@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.share
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -30,6 +31,13 @@ class ViewerActivity : BaseActivity() {
         fun start(context: Context, data: SharedData) {
             val starter = Intent(context, ViewerActivity::class.java)
                 .putExtra("data", data)
+            context.startActivity(starter)
+        }
+
+        @JvmStatic
+        fun start(context: Context, fileUrl: Uri) {
+            val starter = Intent(context, ViewerActivity::class.java).setData(fileUrl)
+                .setAction(Intent.ACTION_VIEW)
             context.startActivity(starter)
         }
     }
@@ -117,8 +125,8 @@ class ViewerActivity : BaseActivity() {
             logger.d("uri: $uri")
             logger.d("scheme: ${uri?.scheme}")
             uri?.let { u ->
-                contentResolver.openInputStream(u)?.use {
-                    val text = it.reader(Charset.defaultCharset()).readText()
+                contentResolver.openInputStream(u)?.use { stream ->
+                    val text = stream.reader(Charset.defaultCharset()).readText()
                     logger.d("text: $text")
                     val header = text.getContentHeader()
                     logger.d("header: $header")
