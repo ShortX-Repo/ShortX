@@ -202,6 +202,7 @@
   "ui.common.import.from.clipboard": "Import from clipboard",
   "ui.common.import.from.url": "Import from url",
   "ui.common.new": "New",
+  "ui.common.sets": "Collection",
   "ui.common.new.set": "New Collection",
   "ui.common.select.set": "Select Collection",
   "ui.common.move.to.set": "Move to Collection",
