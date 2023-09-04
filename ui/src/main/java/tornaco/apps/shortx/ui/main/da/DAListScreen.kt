@@ -32,12 +32,10 @@ import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
-import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
@@ -104,7 +102,7 @@ fun DirectActionListScreen() {
             vm.acceptPrivacyStatement()
         }
     ) {
-        val bottomSheetState = rememberCommonDialogState()
+        val bottomSheetState = rememberShortXBottomSheetState()
         DABottomSheet(dialogState = bottomSheetState)
 
         val daHandler = getLocalDAItemHandler(vm = vm)
@@ -117,7 +115,7 @@ fun DirectActionListScreen() {
             }
 
             override fun click(da: DirectActionUM) {
-                bottomSheetState.show()
+                bottomSheetState.show(da.id)
             }
 
             override fun share(da: DirectActionUM) {

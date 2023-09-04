@@ -6,24 +6,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.ShortXBottomSheet
-import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
 
 @Composable
-fun DABottomSheet(dialogState: CommonDialogState) {
-    val vm = hiltViewModel<MainViewModel>()
-    val state by vm.state.collectAsState()
-
-    LaunchedEffect(vm) {
-        vm.loadDA(delay = true)
-    }
-
+fun DABottomSheet(dialogState: ShortXBottomSheetState) {
+    val vm = hiltViewModel<DASetViewModel>()
     val daHandler = getLocalDAItemHandler(vm = vm)
 
     CompositionLocalProvider(LocalDAItemHandler provides daHandler,
         LocalDASetItemHandler provides object : DASetItemHandler {}) {
         ShortXBottomSheet(state = dialogState) {
+            val state by vm.state.collectAsState()
+
+            LaunchedEffect(vm) {
+                vm.loadDASet(it)
+            }
+
             DirectActionListContent(
                 isLoading = false,
                 isShowDetailedDAItem = true,

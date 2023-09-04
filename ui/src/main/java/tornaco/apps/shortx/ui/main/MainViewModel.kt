@@ -61,7 +61,7 @@ sealed interface ImportResult {
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
+open class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     ContextViewModel<MainState>(context, { MainState() }) {
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
@@ -237,6 +237,9 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
                     logger.d("activeJobs: $this")
                 }
                 val das = shortXManager.getAllDirectAction()
+                    .filter {
+                        it.directActionSetId.isNullOrEmpty()
+                    }
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {
