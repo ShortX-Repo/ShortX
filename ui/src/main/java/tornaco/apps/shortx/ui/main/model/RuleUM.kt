@@ -22,5 +22,8 @@ data class RuleUM(
     val isOnlineItem: Boolean = false,
     val url: String? = null,
     val isInstalled: Boolean = false,
-    val hasUpdate: Boolean = false
+    val hasUpdate: Boolean = false,
+
+    // For Set
+    val isDirectActionSet: Boolean = false
 )
