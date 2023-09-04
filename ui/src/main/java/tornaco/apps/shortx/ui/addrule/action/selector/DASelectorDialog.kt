@@ -28,8 +28,8 @@ import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
+import tornaco.apps.shortx.ui.main.da.DAListViewModel
 import tornaco.apps.shortx.ui.main.da.DirectActionListContent
 import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
@@ -70,11 +70,11 @@ fun DASelectorDialog(state: DADialogState) {
 
 @Composable
 private fun DASelector(dialogState: DADialogState) {
-    val mainViewModel = hiltViewModel<MainViewModel>().apply { resetState() }
-    val mainState by mainViewModel.state.collectAsState()
+    val daListViewModel = hiltViewModel<DAListViewModel>().apply { resetState() }
+    val daListState by daListViewModel.state.collectAsState()
 
-    LaunchedEffect(mainViewModel) {
-        mainViewModel.loadDA()
+    LaunchedEffect(daListViewModel) {
+        daListViewModel.loadDAList()
     }
 
     ShortXTheme {
@@ -113,9 +113,9 @@ private fun DASelector(dialogState: DADialogState) {
                         LocalDAItemHandler provides daItemHandler
                     ) {
                         DirectActionListContent(
-                            isLoading = mainState.isLoading,
-                            isShowDetailedDAItem = mainState.isShowDetailedDAItem,
-                            das = mainState.das,
+                            isLoading = daListState.isLoading,
+                            isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                            das = daListState.das,
                             showOverflowMenu = false,
                         )
                     }

@@ -2,20 +2,17 @@ package tornaco.apps.shortx.ui.main.da
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
-import javax.inject.Inject
 
-@HiltViewModel
-class DASetViewModel @Inject constructor(@ApplicationContext context: Context) :
-    MainViewModel(context) {
-
-    fun loadDASet(setId: String) {
+class DASetDetailsViewModel constructor(
+    context: Context,
+    private val daSetId: String
+) :
+    BaseDAListViewModel(context) {
+    override fun loadDAList(delay: Boolean) {
         logger.d("loadDASet")
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
@@ -25,7 +22,7 @@ class DASetViewModel @Inject constructor(@ApplicationContext context: Context) :
                 }
                 val das = shortXManager.getAllDirectAction()
                     .filter {
-                        it.directActionSetId == setId
+                        it.directActionSetId == daSetId
                     }
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
@@ -40,7 +37,6 @@ class DASetViewModel @Inject constructor(@ApplicationContext context: Context) :
                     copy(das = das, isLoading = false)
                 }
             }
-
         }
     }
 }

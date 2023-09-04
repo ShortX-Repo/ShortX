@@ -83,11 +83,14 @@ import java.io.File
 
 @Composable
 fun RuleScreen() {
-    val vm = hiltViewModel<MainViewModel>()
-    val state by vm.state.collectAsState()
+    val mainViewModel = hiltViewModel<MainViewModel>()
+    val mainState by mainViewModel.state.collectAsState()
 
-    LaunchedEffect(vm) {
-        vm.loadRules(delay = true)
+    val ruleListViewModel = hiltViewModel<RuleListViewModel>()
+    val ruleListState by ruleListViewModel.state.collectAsState()
+
+    LaunchedEffect(mainViewModel) {
+        ruleListViewModel.loadRuleList(delay = true)
     }
 
     val context = LocalContext.current
@@ -101,7 +104,7 @@ fun RuleScreen() {
     }
 
     MainScaffold(
-        state = state,
+        state = mainState,
         appBarTitleKey = "ui.feat.label.rule",
         appBarActions = {
         },
@@ -123,7 +126,7 @@ fun RuleScreen() {
         },
         onNewSetClick = {},
         acceptPrivacyStatement = {
-            vm.acceptPrivacyStatement()
+            mainViewModel.acceptPrivacyStatement()
         }
     ) {
         val shareDialogState = rememberShareDialogState("share.shortx")
@@ -136,12 +139,13 @@ fun RuleScreen() {
         val props = LocalShortXProps.current
 
         RuleContent(
-            state = state,
+            state = mainState,
+            ruleListState = ruleListState,
             onDup = {
-                vm.dupRule(it.id, props.firstOrNull())
+                ruleListViewModel.dupRule(it.id, props.firstOrNull())
             },
             onDelete = { rule ->
-                vm.deleteRule(rule.id)
+                ruleListViewModel.deleteRule(rule.id)
             },
             onEdit = { rule ->
                 AddRuleActivity.start(context, rule.id)
@@ -155,7 +159,7 @@ fun RuleScreen() {
                         )
                     )
                 } else {
-                    vm.ruleToShareString(rule)?.let {
+                    ruleListViewModel.ruleToShareString(rule)?.let {
                         shareDialogState.show(rule.title, it)
                     }
                 }
@@ -164,13 +168,13 @@ fun RuleScreen() {
                 AddRuleActivity.start(context, rule.id)
             },
             setRuleEnabled = { id, enable ->
-                vm.setRuleEnabled(id, enable)
+                ruleListViewModel.setRuleEnabled(id, enable)
             },
             onExecute = {
-                vm.directExecuteRuleActions(it)
+                ruleListViewModel.directExecuteRuleActions(it)
             },
             stopAllJobs = {
-                vm.stopJobs(it)
+                ruleListViewModel.stopJobs(it)
             }
         )
     }
@@ -180,6 +184,7 @@ fun RuleScreen() {
 @Composable
 private fun RuleContent(
     state: MainState,
+    ruleListState: RuleListState,
     onDup: (RuleUM) -> Unit,
     onDelete: (RuleUM) -> Unit,
     onEdit: (RuleUM) -> Unit,
@@ -194,18 +199,18 @@ private fun RuleContent(
             .fillMaxWidth()
             .height(6.dp), contentAlignment = Alignment.Center
     ) {
-        if (state.isLoading) {
+        if (ruleListState.isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
     }
 
-    if (!state.isLoading && state.rules.isEmpty()) {
+    if (!ruleListState.isLoading && ruleListState.rules.isEmpty()) {
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
         val subscribeState by LVLStateHolder.subscribeState.collectAsState()
         RuleListContent(
             isSubscribed = subscribeState.isSubscribed,
-            rules = state.rules,
+            rules = ruleListState.rules,
             onRuleClick = onRuleClick,
             setRuleEnabled = setRuleEnabled,
             onDup = onDup,

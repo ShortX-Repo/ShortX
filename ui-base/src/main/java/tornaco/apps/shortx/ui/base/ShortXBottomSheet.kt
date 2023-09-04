@@ -9,16 +9,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import kotlinx.coroutines.launch
 
 class ShortXBottomSheetState : CommonDialogState() {
-    var args = ""
+    var args by mutableStateOf("")
     fun show(args: String) {
         this.args = args
         show()
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        ShortXBottomSheetStoreOwner.viewModelStore.clear()
     }
 }
 
@@ -51,9 +63,17 @@ fun ShortXBottomSheet(
                     }
                 }
             }
-            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-                content(state.args)
+
+            CompositionLocalProvider(value = LocalViewModelStoreOwner provides ShortXBottomSheetStoreOwner) {
+                Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                    content(state.args)
+                }
             }
         }
     }
+}
+
+object ShortXBottomSheetStoreOwner : ViewModelStoreOwner {
+    override val viewModelStore: ViewModelStore
+        get() = ViewModelStore()
 }

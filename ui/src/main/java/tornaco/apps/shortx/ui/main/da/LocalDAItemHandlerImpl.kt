@@ -11,13 +11,12 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.ShareDialog
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
-import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 @Composable
-fun getLocalDAItemHandler(vm: MainViewModel): DAItemHandler {
+fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
     val context = LocalContext.current
     val i18N = LocalI18N.current
 

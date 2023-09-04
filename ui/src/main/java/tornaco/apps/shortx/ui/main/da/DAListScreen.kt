@@ -30,7 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
-import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
@@ -47,15 +46,17 @@ import java.io.File
 
 @Composable
 fun DirectActionListScreen() {
-    val vm = hiltViewModel<MainViewModel>()
-    val state by vm.state.collectAsState()
+    val mainViewModel = hiltViewModel<MainViewModel>()
+    val mainState by mainViewModel.state.collectAsState()
 
-    LaunchedEffect(vm) {
-        vm.loadDA(delay = true)
+    val daListViewModel = hiltViewModel<DAListViewModel>()
+    val daListState by daListViewModel.state.collectAsState()
+
+    LaunchedEffect(daListViewModel) {
+        daListViewModel.loadDAList(delay = true)
     }
 
     val context = LocalContext.current
-    val i18N = LocalI18N.current
 
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -66,13 +67,13 @@ fun DirectActionListScreen() {
     }
 
     MainScaffold(
-        state = state,
+        state = mainState,
         appBarTitleKey = "ui.feat.label.da",
         appBarActions = {
             IconButton(onClick = {
-                vm.toggleShowDetailedDAItem()
+                daListViewModel.toggleShowDetailedDAItem()
             }) {
-                if (state.isShowDetailedDAItem) {
+                if (daListState.isShowDetailedDAItem) {
                     RemixIcon(remixName = Remix.Document.bill_line)
                 } else {
                     RemixIcon(remixName = Remix.Document.article_line)
@@ -96,16 +97,16 @@ fun DirectActionListScreen() {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_DA_URL, it))
         },
         onNewSetClick = {
-            vm.createNewDASet(it)
+            daListViewModel.createNewDASet(it)
         },
         acceptPrivacyStatement = {
-            vm.acceptPrivacyStatement()
+            mainViewModel.acceptPrivacyStatement()
         }
     ) {
         val bottomSheetState = rememberShortXBottomSheetState()
-        DABottomSheet(dialogState = bottomSheetState)
+        DADetailsBottomSheet(dialogState = bottomSheetState)
 
-        val daHandler = getLocalDAItemHandler(vm = vm)
+        val daHandler = getLocalDAItemHandler(vm = daListViewModel)
 
         val setHandler = object : DASetItemHandler {
             override fun delete(da: DirectActionUM) {
@@ -127,9 +128,9 @@ fun DirectActionListScreen() {
             LocalDASetItemHandler provides setHandler
         ) {
             DirectActionListContent(
-                isLoading = state.isLoading,
-                isShowDetailedDAItem = state.isShowDetailedDAItem,
-                das = state.das,
+                isLoading = daListState.isLoading,
+                isShowDetailedDAItem = daListState.isShowDetailedDAItem,
+                das = daListState.das,
                 showOverflowMenu = true
             )
         }
