@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
@@ -61,7 +62,7 @@ fun ShareDialog(state: ShareDialogState) {
             }
 
             ListItem(title = i18N["ui.common.share.save.file"]) {
-                saveAsFile(state.objectTitle, state.content).let {
+                saveAsFile(context, state.objectTitle, state.content).let {
                     Toast.makeText(
                         context,
                         i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
@@ -87,14 +88,27 @@ fun shareAsFile(context: Context, title: String, text: String) {
     context.startActivity(Intent.createChooser(shareIntent, "ShortX"))
 }
 
-fun saveAsFile(title: String, text: String): Pair<String, String> {
-    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val file = File(
-        dir,
-        generateShareFileName(title)
-    )
-    file.writeText(text)
-    return dir.name to file.name
+fun saveAsFile(context: Context, title: String, text: String): Pair<String, String> {
+    return runCatching {
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val file = File(
+            dir,
+            generateShareFileName(title)
+        )
+        file.writeText(text)
+        dir.name to file.name
+    }.getOrElse {
+        composeLogger.e(it, "saveAsFile to DIRECTORY_DOWNLOADS")
+        // Save to External cache
+        val extDir =
+            requireNotNull(context.getExternalFilesDir(null)) { "Can not getExternalFilesDir" }
+        val file = File(
+            extDir,
+            generateShareFileName(title)
+        )
+        file.writeText(text)
+        extDir.name to file.name
+    }
 }
 
 private fun generateShareFileName(title: String) =
