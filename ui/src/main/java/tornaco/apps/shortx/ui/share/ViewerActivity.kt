@@ -53,7 +53,7 @@ class ViewerActivity : BaseActivity() {
         } else {
 
             when (sharedData.type) {
-                "da" -> {
+                SharedData.TYPE_DA -> {
                     val da = parseShareContentDA(sharedData.data)
                     da?.let {
                         AddDirectActionScreen(
@@ -66,7 +66,7 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
 
-                "daUrl" -> {
+                SharedData.TYPE_DA_URL -> {
                     AddDirectActionScreen(
                         da = null,
                         url = sharedData.data,
@@ -77,7 +77,7 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
 
-                "rule" -> {
+                SharedData.TYPE_RULE -> {
                     val rule = parseShareContentRule(sharedData.data)
                     rule?.let {
                         AddRuleScreen(
@@ -90,7 +90,7 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
 
-                "ruleUrl" -> {
+                SharedData.TYPE_RULE_URL -> {
                     AddRuleScreen(
                         rule = null,
                         url = sharedData.data,
@@ -144,4 +144,11 @@ class ViewerActivity : BaseActivity() {
 
 @DoNotStrip
 @Parcelize
-data class SharedData(val type: String, val data: String) : Parcelable
+data class SharedData(val type: String, val data: String) : Parcelable {
+    companion object {
+        const val TYPE_DA = "da"
+        const val TYPE_DA_URL = "daUrl"
+        const val TYPE_RULE = "rule"
+        const val TYPE_RULE_URL = "ruleUrl"
+    }
+}

@@ -131,7 +131,7 @@ fun RuleScreen() {
             AddRuleActivity.start(context)
         },
         onUrlClick = {
-            ViewerActivity.start(context, SharedData("ruleUrl", it))
+            ViewerActivity.start(context, SharedData(SharedData.TYPE_RULE_URL, it))
         },
         onNewSetClick = {},
         acceptPrivacyStatement = {

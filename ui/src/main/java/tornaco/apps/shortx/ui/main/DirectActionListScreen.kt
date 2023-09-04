@@ -129,7 +129,7 @@ fun DirectActionListScreen() {
             AddDirectActionActivity.start(context)
         },
         onUrlClick = {
-            ViewerActivity.start(context, SharedData("daUrl", it))
+            ViewerActivity.start(context, SharedData(SharedData.TYPE_DA_URL, it))
         },
         onNewSetClick = {
             vm.createNewDASet(it)
