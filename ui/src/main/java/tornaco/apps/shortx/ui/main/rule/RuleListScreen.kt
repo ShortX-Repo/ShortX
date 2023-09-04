@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.main.rule
 
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -43,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.compat.ManifestCompat
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
@@ -69,7 +67,6 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
-import tornaco.apps.shortx.ui.main.ImportResult
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.da.RunningIndicator
@@ -100,27 +97,6 @@ fun RuleScreen() {
     ) { fileUri ->
         if (fileUri != null) {
             ViewerActivity.start(context, fileUri)
-        }
-    }
-
-    val i18N = LocalI18N.current
-    LaunchedEffect(vm) {
-        vm.importComplete.collectLatest {
-            when (it) {
-                is ImportResult.Success -> {
-                    Toast.makeText(context, i18N["ui.common.import.success"], Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is ImportResult.Fail -> {
-                    Toast.makeText(
-                        context,
-                        i18N["ui.common.import.fail", mapOf("why" to it.reason.description)],
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-            }
         }
     }
 

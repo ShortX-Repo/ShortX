@@ -7,8 +7,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.BuildProp
@@ -68,9 +66,6 @@ class MainViewModel @Inject constructor(@ApplicationContext context: Context) :
     private val pref by lazy { Pref(context) }
     private var loadDAJob: Job? = null
     private var loadRuleJob: Job? = null
-
-    private val _importComplete = MutableSharedFlow<ImportResult>()
-    val importComplete = _importComplete.asSharedFlow()
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
         override fun onJobStarted(id: String?) {

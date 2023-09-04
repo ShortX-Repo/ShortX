@@ -13,12 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
@@ -28,7 +25,6 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
@@ -43,29 +39,21 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 fun DirectActionSetItem(
     modifier: Modifier,
     da: DirectActionUM,
-    isSubscribed: Boolean,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
+    isSubscribed: Boolean
 ) {
     Box {
         val popMenuState = daSetListItemOverflowMenu(
             da = da,
-            isSubscribed = isSubscribed,
-            onDelete = onDelete,
-            onEdit = onEdit,
-            onShare = onShare
+            isSubscribed = isSubscribed
         )
+
+        val handler = LocalDASetItemHandler.current
         DASetListItem(
             modifier = modifier,
             title = da.title,
-            description = da.description,
-            updateTime = da.updateTime,
-            icon = da.icon,
-            iconColor = Color(da.iconColor),
             onLongClick = { popMenuState.open() },
             onClick = {
-
+                handler.click(da)
             }
         )
     }
@@ -75,10 +63,6 @@ fun DirectActionSetItem(
 fun DASetListItem(
     modifier: Modifier,
     title: String,
-    description: String,
-    updateTime: String,
-    icon: String,
-    iconColor: Color,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -103,7 +87,6 @@ fun DASetListItem(
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
                     remixName = Remix.Document.folders_fill,
-                    tint = iconColor
                 )
             }
 
@@ -121,14 +104,9 @@ fun DASetListItem(
 @Composable
 private fun daSetListItemOverflowMenu(
     da: DirectActionUM,
-    isSubscribed: Boolean,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
+    isSubscribed: Boolean
 ): DropdownSelectorState {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val snackbar = LocalSnackbarHostState.current
+    val handler = LocalDASetItemHandler.current
     val i18N = LocalI18N.current
 
     val badge = if (isSubscribed) {
@@ -146,7 +124,7 @@ private fun daSetListItemOverflowMenu(
         messageHint = {
             i18N["ui.delete.dialog.confirm", mapOf("wht" to da.title)]
         },
-        onConfirm = onDelete
+        onConfirm = { handler.delete(da) }
     )
 
     val menuState = rememberDropdownSelectorState()
@@ -175,12 +153,12 @@ private fun daSetListItemOverflowMenu(
             }
 
             "edit" -> {
-                onEdit(da)
+                handler.edit(da)
             }
 
             "share" -> {
                 if (isSubscribed) {
-                    onShare(da)
+                    handler.share(da)
                 } else {
                     subscribeDialogState.show()
                 }

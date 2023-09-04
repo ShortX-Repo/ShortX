@@ -28,8 +28,10 @@ import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.main.da.DirectActionListContent
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.da.DAItemHandler
+import tornaco.apps.shortx.ui.main.da.DirectActionListContent
+import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -100,14 +102,21 @@ private fun DASelector(dialogState: DADialogState) {
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    CompositionLocalProvider(LocalSnackbarHostState provides SnackbarHostState()) {
+                    val daItemHandler = object : DAItemHandler {
+                        override fun click(da: DirectActionUM) {
+                            dialogState.onSelected(da)
+                            dialogState.dismiss()
+                        }
+                    }
+                    CompositionLocalProvider(
+                        LocalSnackbarHostState provides SnackbarHostState(),
+                        LocalDAItemHandler provides daItemHandler
+                    ) {
                         DirectActionListContent(
-                            state = mainState,
+                            isLoading = mainState.isLoading,
+                            isShowDetailedDAItem = mainState.isShowDetailedDAItem,
+                            das = mainState.das,
                             showOverflowMenu = false,
-                            onClick = { da ->
-                                dialogState.onSelected(da)
-                                dialogState.dismiss()
-                            },
                         )
                     }
                 }

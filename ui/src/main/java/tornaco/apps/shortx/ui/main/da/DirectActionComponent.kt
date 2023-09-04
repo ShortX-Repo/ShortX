@@ -63,27 +63,15 @@ fun DirectActionItem(
     modifier: Modifier,
     da: DirectActionUM,
     isSubscribed: Boolean,
-    isLongClickEnabled: Boolean,
-    run: () -> Unit,
-    onDup: (DirectActionUM) -> Unit,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onDeepLink: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
-    onMoveToSet: (DirectActionUM, String) -> Unit,
-    stopAllJobs: (DirectActionUM) -> Unit
+    isLongClickEnabled: Boolean
 ) {
     Box {
         val popMenuState = daListItemOverflowMenu(
             da = da,
-            isSubscribed = isSubscribed,
-            onDup = onDup,
-            onDelete = onDelete,
-            onEdit = onEdit,
-            onDeepLink = onDeepLink,
-            onShare = onShare,
-            onMoveToSet = onMoveToSet,
+            isSubscribed = isSubscribed
         )
+
+        val handler = LocalDAItemHandler.current
         DAListItem(
             modifier = modifier,
             title = da.title,
@@ -92,11 +80,11 @@ fun DirectActionItem(
             icon = da.icon,
             iconColor = Color(da.iconColor),
             runningInsCount = da.runningInsCount,
-            edit = { onEdit(da) },
-            run = run,
+            onClick = { handler.click(da) },
+            run = { handler.run(da) },
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
             stopAllJobs = {
-                stopAllJobs(da)
+                handler.stopAllJobs(da)
             }
         )
     }
@@ -108,32 +96,19 @@ fun DirectActionItemCompat(
     da: DirectActionUM,
     isSubscribed: Boolean,
     isLongClickEnabled: Boolean,
-    onClick: () -> Unit,
-    onDup: (DirectActionUM) -> Unit,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onDeepLink: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
-    onMoveToSet: (DirectActionUM, String) -> Unit,
-    stopAllJobs: (DirectActionUM) -> Unit
 ) {
     Box {
         val popMenuState = daListItemOverflowMenu(
             da = da,
-            isSubscribed = isSubscribed,
-            onDup = onDup,
-            onDelete = onDelete,
-            onEdit = onEdit,
-            onDeepLink = onDeepLink,
-            onShare = onShare,
-            onMoveToSet = onMoveToSet,
+            isSubscribed = isSubscribed
         )
+        val handler = LocalDAItemHandler.current
         DAListItemCompat(
             modifier = modifier,
             title = da.title,
             icon = da.icon,
             iconColor = Color(da.iconColor),
-            onClick = onClick,
+            onClick = { handler.run(da) },
             onLongClick = { if (isLongClickEnabled) popMenuState.open() },
         )
     }
@@ -194,7 +169,7 @@ private fun DAListItem(
     runningInsCount: Int = 0,
     icon: String,
     iconColor: Color,
-    edit: () -> Unit,
+    onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
     stopAllJobs: () -> Unit
@@ -203,7 +178,7 @@ private fun DAListItem(
         .fillMaxWidth()
         .clip(ShortXCardRoundedCornerShape)
         .combinedClickable(onLongClick = onLongClick) {
-            edit()
+            onClick()
         }
         .padding(horizontal = 12.dp)
         .padding(top = 12.dp)) {
@@ -299,18 +274,13 @@ fun RunningIndicator(modifier: Modifier = Modifier, runningInsCount: Int, stopAl
 @Composable
 private fun daListItemOverflowMenu(
     da: DirectActionUM,
-    isSubscribed: Boolean,
-    onDup: (DirectActionUM) -> Unit,
-    onDelete: (DirectActionUM) -> Unit,
-    onEdit: (DirectActionUM) -> Unit,
-    onDeepLink: (DirectActionUM) -> Unit,
-    onShare: (DirectActionUM) -> Unit,
-    onMoveToSet: (da: DirectActionUM, setId: String) -> Unit,
+    isSubscribed: Boolean
 ): DropdownSelectorState {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbarHostState.current
     val i18N = LocalI18N.current
+    val handler = LocalDAItemHandler.current
 
     val badge = if (isSubscribed) {
         null
@@ -327,11 +297,11 @@ private fun daListItemOverflowMenu(
         messageHint = {
             i18N["ui.delete.dialog.confirm", mapOf("wht" to da.title)]
         },
-        onConfirm = onDelete
+        onConfirm = { handler.delete(da) }
     )
 
     val daSetSelectDialogState = rememberDASetSelectorState(onDASetSelected = {
-        onMoveToSet(da, it.id)
+        handler.moveToSet(da, it.id)
     })
     DASetSelectorDialog(state = daSetSelectDialogState)
 
@@ -403,7 +373,7 @@ private fun daListItemOverflowMenu(
 
             "dup" -> {
                 if (isSubscribed) {
-                    onDup(da)
+                    handler.dup(da)
                 } else {
                     subscribeDialogState.show()
                 }
@@ -414,16 +384,16 @@ private fun daListItemOverflowMenu(
             }
 
             "edit" -> {
-                onEdit(da)
+                handler.edit(da)
             }
 
             "deeplink" -> {
-                onDeepLink(da)
+                handler.deepLink(da)
             }
 
             "share" -> {
                 if (isSubscribed) {
-                    onShare(da)
+                    handler.share(da)
                 } else {
                     subscribeDialogState.show()
                 }
@@ -460,7 +430,7 @@ private fun DAListItemPreview() {
             runningInsCount = 2,
             icon = Remix.Media.broadcast_line,
             iconColor = VipColorGold,
-            edit = {},
+            onClick = {},
             run = {},
             onLongClick = {},
             stopAllJobs = {}
