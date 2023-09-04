@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package tornaco.apps.shortx.ui.main
+package tornaco.apps.shortx.ui.main.rule
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -69,6 +69,10 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.main.ImportResult
+import tornaco.apps.shortx.ui.main.MainScaffold
+import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.da.RunningIndicator
 import tornaco.apps.shortx.ui.main.model.MainState
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.share.SharedData

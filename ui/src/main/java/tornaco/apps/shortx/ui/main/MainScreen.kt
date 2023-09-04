@@ -41,6 +41,8 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
+import tornaco.apps.shortx.ui.main.da.DirectActionListScreen
+import tornaco.apps.shortx.ui.main.rule.RuleScreen
 import tornaco.apps.shortx.ui.pkgset.PkgSetListActivity
 import tornaco.apps.shortx.ui.record.AudioRecordActivity
 import tornaco.apps.shortx.ui.record.EvaRecordActivity

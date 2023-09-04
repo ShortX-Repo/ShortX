@@ -63,13 +63,13 @@ import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.DAViewerDialog
+import tornaco.apps.shortx.ui.main.da.DAViewerDialog
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.RuleViewerDialog
+import tornaco.apps.shortx.ui.main.rule.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.model.RuleUM
-import tornaco.apps.shortx.ui.main.rememberDAViewerState
-import tornaco.apps.shortx.ui.main.rememberRuleViewerState
+import tornaco.apps.shortx.ui.main.da.rememberDAViewerState
+import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder

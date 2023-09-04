@@ -28,7 +28,7 @@ import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
-import tornaco.apps.shortx.ui.main.DirectActionListContent
+import tornaco.apps.shortx.ui.main.da.DirectActionListContent
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme

@@ -1,6 +1,7 @@
-package tornaco.apps.shortx.ui.main
+package tornaco.apps.shortx.ui.main.rule
 
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.ui.main.RuleSortBy
 import java.text.Collator
 import java.util.Locale
 
