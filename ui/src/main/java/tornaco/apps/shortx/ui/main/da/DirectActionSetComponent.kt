@@ -126,6 +126,9 @@ private fun daSetListItemOverflowMenu(
     onEdit: (DirectActionUM) -> Unit,
     onShare: (DirectActionUM) -> Unit,
 ): DropdownSelectorState {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbar = LocalSnackbarHostState.current
     val i18N = LocalI18N.current
 
     val badge = if (isSubscribed) {
