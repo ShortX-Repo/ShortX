@@ -447,6 +447,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         logger.d("setRuleEnabled: $ruleId $enable")
         ruleSettingsStore.setRuleEnabled(ruleId, enable)
+        ruleObs.broadcast {
+            kotlin.runCatching {
+                if (enable) {
+                    it.onEnabled(ruleId)
+                } else {
+                    it.onDisabled(ruleId)
+                }
+            }.onFailure { logger.e("Call onEnabled/onDisabled") }
+        }
         handler.postSafety {
             allTriggers.forEach {
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)

@@ -71,6 +71,16 @@ abstract class BaseRuleListViewModel(context: Context) :
             logger.d("ruleObs, onDelete: $id")
             loadRuleList()
         }
+
+        override fun onEnabled(id: String?) {
+            logger.d("ruleObs, onEnabled: $id")
+            loadRuleList()
+        }
+
+        override fun onDisabled(id: String?) {
+            logger.d("ruleObs, onDisabled: $id")
+            loadRuleList()
+        }
     }
 
     init {

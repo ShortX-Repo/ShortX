@@ -13,6 +13,12 @@ public interface IRuleObserver extends android.os.IInterface
     @Override public void onDelete(java.lang.String id) throws android.os.RemoteException
     {
     }
+    @Override public void onEnabled(java.lang.String id) throws android.os.RemoteException
+    {
+    }
+    @Override public void onDisabled(java.lang.String id) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -72,6 +78,22 @@ public interface IRuleObserver extends android.os.IInterface
           this.onDelete(_arg0);
           return true;
         }
+        case TRANSACTION_onEnabled:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.onEnabled(_arg0);
+          return true;
+        }
+        case TRANSACTION_onDisabled:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.onDisabled(_arg0);
+          return true;
+        }
         default:
         {
           return super.onTransact(code, data, reply, flags);
@@ -125,10 +147,44 @@ public interface IRuleObserver extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void onEnabled(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onEnabled, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onEnabled(id);
+            return;
+          }
+        }
+        finally {
+          _data.recycle();
+        }
+      }
+      @Override public void onDisabled(java.lang.String id) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(id);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_onDisabled, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onDisabled(id);
+            return;
+          }
+        }
+        finally {
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.rule.IRuleObserver sDefaultImpl;
     }
     static final int TRANSACTION_onAddOrUpdate = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_onDelete = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+    static final int TRANSACTION_onEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+    static final int TRANSACTION_onDisabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.rule.IRuleObserver impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -148,4 +204,6 @@ public interface IRuleObserver extends android.os.IInterface
   }
   public void onAddOrUpdate(java.lang.String id) throws android.os.RemoteException;
   public void onDelete(java.lang.String id) throws android.os.RemoteException;
+  public void onEnabled(java.lang.String id) throws android.os.RemoteException;
+  public void onDisabled(java.lang.String id) throws android.os.RemoteException;
 }

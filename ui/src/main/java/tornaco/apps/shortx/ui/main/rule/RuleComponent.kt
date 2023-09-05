@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -120,7 +121,7 @@ fun RuleIcon(rule: RuleUM, onClick: (() -> Unit)) {
         onClick = onClick,
         size = Dimens.RuleIconSize,
         padding = 0.dp,
-        color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
+        color = Color(rule.factIconColor).copy(alpha = if (rule.isEnabled) ActionColorBgAlphaLarge else ActionColorBgAlpha)
     ) {
         RemixIcon(
             modifier = Modifier.size(16.dp),
