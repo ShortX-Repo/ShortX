@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
@@ -87,7 +88,7 @@ fun DelaySelectorDialog(state: DelayState) {
 
                 FieldTitle(text = LocalI18N.current["ui.action.delay.input.use.alarm"])
                 TipBody(text = LocalI18N.current["ui.action.delay.input.use.alarm.summary"])
-                Switch(checked = state.useAlarm, onCheckedChange = {
+                ShortXSwitch(checked = state.useAlarm, onCheckedChange = {
                     state.useAlarm = it
                 })
 

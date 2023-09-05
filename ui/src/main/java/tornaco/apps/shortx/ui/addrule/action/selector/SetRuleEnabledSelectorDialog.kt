@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -135,7 +136,7 @@ private fun SetRuleEnabledSelector(dialogState: SetRuleEnabledDialogState) {
 
                     FieldTitle(text = LocalI18N.current["ui.action.set.rule.enabled.toggle"])
                     SmallSpacer()
-                    Switch(checked = dialogState.isEnable, onCheckedChange = {
+                    ShortXSwitch(checked = dialogState.isEnable, onCheckedChange = {
                         dialogState.isEnable = it
                     })
                 }

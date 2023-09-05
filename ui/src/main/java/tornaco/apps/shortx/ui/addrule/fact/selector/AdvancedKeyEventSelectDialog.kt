@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
@@ -231,7 +232,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     FieldTitle(text = LocalI18N.current["ui.fact.key.event.adv.is.intercept.mode"])
-                    Switch(checked = state.isInterceptMode, onCheckedChange = {
+                    ShortXSwitch(checked = state.isInterceptMode, onCheckedChange = {
                         state.setIsInterceptMode(it)
                     })
                 }

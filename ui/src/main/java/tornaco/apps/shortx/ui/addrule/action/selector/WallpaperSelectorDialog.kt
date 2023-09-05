@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
@@ -84,7 +85,7 @@ fun SetWallpaperSelectorDialog(state: SetWallpaperState) {
 
                 FieldTitle(text = LocalI18N.current["ui.action.set.wallpaper.crop"])
                 TipBody(text = LocalI18N.current["ui.action.set.wallpaper.crop.summary"])
-                Switch(checked = state.crop, onCheckedChange = {
+                ShortXSwitch(checked = state.crop, onCheckedChange = {
                     state.crop = it
                 })
 

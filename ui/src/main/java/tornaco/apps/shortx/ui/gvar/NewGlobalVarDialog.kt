@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
@@ -186,7 +187,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     SmallTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
-                    Switch(checked = state.isSecret, onCheckedChange = {
+                    ShortXSwitch(checked = state.isSecret, onCheckedChange = {
                         state.isSecret = it
                     })
                 }

@@ -73,6 +73,7 @@ import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SplitLines
@@ -391,7 +392,7 @@ private fun RuleContent(
                     LocalI18N.current["ui.rule.quit.title"],
                     LocalI18N.current["ui.rule.quit.description"]
                 )
-                Switch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
+                ShortXSwitch(checked = addRuleState.isQuitEnabled, onCheckedChange = {
                     vm.toggleQuitEnable()
                 })
             }
