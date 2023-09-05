@@ -205,9 +205,15 @@ abstract class BaseDAListViewModel(context: Context) :
         loadDAList()
     }
 
-    fun addDAToDASet(da: DirectActionUM, setId: String) {
+    fun moveToSet(da: DirectActionUM, setId: String, token: String?) {
         shortXManager.addDirectAction(
-            DirectAction.newBuilder(da.directAction).setDirectActionSetId(setId).build()
+            DirectAction.newBuilder(da.directAction).setDirectActionSetId(setId)
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
+                .build()
         )
     }
 }

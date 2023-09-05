@@ -8,8 +8,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
@@ -77,5 +80,17 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 .build()
         )
         loadRuleList()
+    }
+
+    fun moveToSet(rule: RuleUM, id: String, token: String?) {
+        shortXManager.addRule(
+            Rule.newBuilder(rule.rule).setRuleSetId(id)
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
+                .build()
+        )
     }
 }

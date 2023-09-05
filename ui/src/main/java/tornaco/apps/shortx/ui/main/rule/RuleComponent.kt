@@ -152,6 +152,11 @@ private fun listItemOverflowMenu(
         onConfirm = { handler.delete(rule) }
     )
 
+    val ruleSetSelectDialogState = rememberRuleSetSelectorState(onRuleSetSelected = {
+        handler.moveToSet(rule, it.id)
+    })
+    RuleSetSelectorDialog(state = ruleSetSelectDialogState)
+
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(
@@ -159,38 +164,45 @@ private fun listItemOverflowMenu(
         state = menuState,
         items = listOf(
             DropdownItem(labelLines = listOf(i18N["ui.common.execute.actions"]),
-                data = "execute",
+                data = RuleItemMenuOptions.Execute,
                 icon = {
                     RemixIcon(Remix.Media.play_fill)
                 }),
             DropdownItem(labelLines = listOf(i18N["ui.common.dup"]),
-                data = "dup",
+                data = RuleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
             DropdownItem(labelLines = listOf(i18N["ui.common.edit"]),
-                data = "edit",
+                data = RuleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }),
             DropdownItem(
                 labelLines = listOf(i18N["ui.common.share"]),
-                data = "share",
+                data = RuleItemMenuOptions.Share,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
             DropdownItem(
+                labelLines = listOf(i18N["ui.common.move.to.set"]),
+                data = RuleItemMenuOptions.MoveToSet,
+                badge = badge,
+                icon = {
+                    RemixIcon(Remix.Document.folders_fill)
+                }),
+            DropdownItem(
                 labelLines = listOf(i18N["ui.common.delete"]),
-                data = "delete",
+                data = RuleItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
                 })
         ), onSelect = {
             Logger("RuleMenu").d("onSelect: ${it.data}")
             when (it.data) {
-                "dup" -> {
+                RuleItemMenuOptions.Dup -> {
                     if (isSubscribed) {
                         handler.dup(rule)
                     } else {
@@ -198,15 +210,15 @@ private fun listItemOverflowMenu(
                     }
                 }
 
-                "delete" -> {
+                RuleItemMenuOptions.Delete -> {
                     deleteDialogState.show()
                 }
 
-                "edit" -> {
+                RuleItemMenuOptions.Edit -> {
                     handler.edit(rule)
                 }
 
-                "share" -> {
+                RuleItemMenuOptions.Share -> {
                     if (isSubscribed) {
                         handler.share(rule)
                     } else {
@@ -214,12 +226,18 @@ private fun listItemOverflowMenu(
                     }
                 }
 
-                "execute" -> {
+                RuleItemMenuOptions.Execute -> {
                     handler.run(rule)
                 }
 
-                else -> {}
+                RuleItemMenuOptions.MoveToSet -> {
+                    ruleSetSelectDialogState.show()
+                }
             }
         })
     return menuState
+}
+
+enum class RuleItemMenuOptions {
+    Dup, Delete, Edit, Share, Execute, MoveToSet
 }

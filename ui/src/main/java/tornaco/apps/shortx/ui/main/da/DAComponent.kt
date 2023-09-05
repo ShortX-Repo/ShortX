@@ -309,46 +309,46 @@ private fun daListItemOverflowMenu(
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
-            data = "shortcut",
+            data = DAItemMenuOptions.Shortcut,
             badge = badge,
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dup"]),
-            data = "dup",
+            data = DAItemMenuOptions.Dup,
             badge = badge,
             icon = {
                 RemixIcon(Remix.Document.file_copy_2_fill)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-            data = "edit",
+            data = DAItemMenuOptions.Edit,
             icon = {
                 RemixIcon(Remix.Design.edit_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
-            data = "share",
+            data = DAItemMenuOptions.Share,
             badge = badge,
             icon = {
                 RemixIcon(Remix.System.share_line)
             }),
         DropdownItem(labelLines = listOf("Deeplink"),
-            data = "deeplink",
+            data = DAItemMenuOptions.DeepLink,
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
-            data = "moveToSet",
+            data = DAItemMenuOptions.MoveToSet,
             icon = {
                 RemixIcon(Remix.Document.folders_fill)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-            data = "delete",
+            data = DAItemMenuOptions.Delete,
             icon = {
                 RemixIcon(Remix.System.delete_bin_4_line)
             })
     ), onSelect = {
         when (it.data) {
-            "shortcut" -> {
+            DAItemMenuOptions.Shortcut -> {
                 if (isSubscribed) {
                     ActionShortcutActivity.addShortcut(context, da)
                     scope.launch {
@@ -371,7 +371,7 @@ private fun daListItemOverflowMenu(
                 }
             }
 
-            "dup" -> {
+            DAItemMenuOptions.Dup -> {
                 if (isSubscribed) {
                     handler.dup(da)
                 } else {
@@ -379,19 +379,19 @@ private fun daListItemOverflowMenu(
                 }
             }
 
-            "delete" -> {
+            DAItemMenuOptions.Delete -> {
                 deleteDialogState.show()
             }
 
-            "edit" -> {
+            DAItemMenuOptions.Edit -> {
                 handler.edit(da)
             }
 
-            "deeplink" -> {
+            DAItemMenuOptions.DeepLink -> {
                 handler.deepLink(da)
             }
 
-            "share" -> {
+            DAItemMenuOptions.Share -> {
                 if (isSubscribed) {
                     handler.share(da)
                 } else {
@@ -399,7 +399,7 @@ private fun daListItemOverflowMenu(
                 }
             }
 
-            "moveToSet" -> {
+            DAItemMenuOptions.MoveToSet -> {
                 if (isSubscribed) {
                     daSetSelectDialogState.show()
                 } else {
@@ -412,6 +412,11 @@ private fun daListItemOverflowMenu(
     })
 
     return menuState
+}
+
+
+enum class DAItemMenuOptions {
+    Dup, DeepLink, Delete, Edit, Share, Shortcut, MoveToSet
 }
 
 @Composable
