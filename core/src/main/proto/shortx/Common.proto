@@ -59,6 +59,10 @@ message CommonApiRes {
   int32 result = 1;
   string msg = 2;
   string k = 3;
+  string i = 4;
+  string j = 5;
+  string l = 6;
+  string m = 7;
 }
 
 message AndroidIntent {

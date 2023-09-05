@@ -11,6 +11,7 @@ import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 import tornaco.apps.shortx.ui.subscribe.util.isGPToken
 import tornaco.apps.shortx.ui.subscribe.util.setLVLToken
 import tornaco.apps.shortx.ui.util.LCRulesAdapter
+import tornaco.apps.shortx.ui.util.verifyOtp
 
 
 object EntryPoint {
@@ -26,26 +27,34 @@ object EntryPoint {
     }
 
     private fun checkCB(context: Context) {
-        logger.d("check CB")
+        logger.p("check CB")
         if (shortXManager.isInstalled) {
             getLVLToken { token ->
                 if (!token.isNullOrEmpty() && !token.isGPToken()) {
                     val deviceId = DeviceId.requireDeviceId()
                     logger.p("check CB, $token $deviceId")
                     shortXManager.vb(token, deviceId) {
-                        logger.d("check CB res: $it")
+                        logger.p("check CB res: $it")
                         if (it.isSuccess) {
                             S.c(token, it.k)
-                            logger.d("check CB success")
+                            logger.p("check CB success")
+                            verifyOtp(token, it.i,
+                                onRes = {
+                                    logger.p("check OTP success")
+                                },
+                                onError = {
+                                    logger.p("check OTP fail, uncheck")
+                                    setLVLToken(null)
+                                })
                         } else {
-                            logger.d("check CB fail, uncheck")
+                            logger.p("check CB fail, uncheck")
                             setLVLToken(null)
                         }
                     }
                 }
             }
         } else {
-            logger.d("check CB skip")
+            logger.p("check CB skip")
         }
     }
 

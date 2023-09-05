@@ -100,9 +100,19 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
 
                 is VerifyResult.Success -> {
                     S.c(code, res.data.k)
-                    setLVLToken(code)
-                    _codeVerifyEvent.emit(CodeVerifyEvent.Success)
-                    loadState()
+                    tornaco.apps.shortx.ui.util.verifyOtp(code, requireNotNull(res.data.i),
+                        onRes = {
+                            setLVLToken(code)
+                            viewModelScope.launch {
+                                _codeVerifyEvent.emit(CodeVerifyEvent.Success)
+                                loadState()
+                            }
+                        },
+                        onError = {
+                            viewModelScope.launch {
+                                _codeVerifyEvent.emit(CodeVerifyEvent.Error)
+                            }
+                        })
                 }
             }
         }

@@ -15,9 +15,9 @@ const val MIN_LENGTH = 12
 
 sealed class VerifyResult {
     data class Success(val data: CommonApiResWrapper) : VerifyResult()
-    object Fail : VerifyResult()
+    data object Fail : VerifyResult()
     data class Error(val msg: String) : VerifyResult()
-    object NetworkError : VerifyResult()
+    data object NetworkError : VerifyResult()
 }
 
 private var cachedSubscriptionConfig: SubscriptionConfig? = null

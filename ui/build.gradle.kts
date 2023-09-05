@@ -113,6 +113,7 @@ dependencies {
     implementation(project(":external:dex-maker"))
 
     implementation(libs.mmkv)
+    implementation(libs.jotp)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)

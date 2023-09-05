@@ -110,6 +110,10 @@ suspend fun vb(
                     onSuccess(CommonApiRes.newBuilder().setResult(wrapper.result).apply {
                         wrapper.msg?.let { msg = it }
                         wrapper.k?.let { k = it }
+                        wrapper.i?.let { i = it }
+                        wrapper.j?.let { j = it }
+                        wrapper.l?.let { l = it }
+                        wrapper.m?.let { m = it }
                     }.build())
 
                 }

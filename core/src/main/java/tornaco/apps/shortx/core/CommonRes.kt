@@ -13,5 +13,10 @@ val CommonApiResWrapper.isSuccess get() = result == SUCCESS
 data class CommonApiResWrapper(
     val result: Int,
     val msg: String?,
-    val k: String?
+    val k: String?,
+    val i: String?,
+    // Dummy
+    val j: String?,
+    val l: String?,
+    val m: String?,
 )
