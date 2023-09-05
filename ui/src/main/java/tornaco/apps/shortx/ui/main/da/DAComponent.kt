@@ -341,6 +341,11 @@ private fun daListItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.System.external_link_line)
             }),
+        DropdownItem(labelLines = listOf("Shell cmd"),
+            data = DAItemMenuOptions.ShellCommand,
+            icon = {
+                RemixIcon(Remix.Editor.hashtag)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
             data = DAItemMenuOptions.MoveToSet,
             badge = badge,
@@ -402,6 +407,10 @@ private fun daListItemOverflowMenu(
                 handler.deepLink(da)
             }
 
+            DAItemMenuOptions.ShellCommand -> {
+                handler.shellCommand(da)
+            }
+
             DAItemMenuOptions.Share -> {
                 if (isSubscribed) {
                     handler.share(da)
@@ -429,7 +438,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet
+    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet
 }
 
 @Composable

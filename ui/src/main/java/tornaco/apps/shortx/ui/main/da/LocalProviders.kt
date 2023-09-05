@@ -10,6 +10,7 @@ interface DAItemHandler {
     fun edit(da: DirectActionUM) {}
     fun click(da: DirectActionUM) {}
     fun deepLink(da: DirectActionUM) {}
+    fun shellCommand(da: DirectActionUM) {}
     fun share(da: DirectActionUM) {}
     fun moveToSet(da: DirectActionUM, setId: String) {}
     fun moveOutSet(da: DirectActionUM) {}

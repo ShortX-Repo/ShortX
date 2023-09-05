@@ -60,6 +60,16 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
             ).show()
         }
 
+        override fun shellCommand(da: DirectActionUM) {
+            val cmd = "am shortx run ${da.id}"
+            ClipboardUtils.copyToClipboard(context, "cmd", cmd)
+            Toast.makeText(
+                context,
+                i18N["ui.common.copied.to.clipboard"],
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
         override fun share(da: DirectActionUM) {
             if (context.shouldCheckStoragePermissionBeforeWriteDownloads()) {
                 permissionRequest.launch(

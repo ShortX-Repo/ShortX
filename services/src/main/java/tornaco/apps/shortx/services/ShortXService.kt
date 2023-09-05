@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
+import android.os.ShellCommand
 import android.os.UserHandle
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
@@ -34,6 +35,7 @@ import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
@@ -60,6 +62,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
+import tornaco.apps.shortx.services.rule.nextEvaluateContextSerialNumber
 import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.v.v
@@ -124,6 +127,48 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     return null
                 }
             })
+    }
+
+    fun onCommand(shellCommand: ShellCommand): Int {
+        enforceCallingPermissions()
+
+        val pw = shellCommand.outPrintWriter
+        val nextArgs: String? = shellCommand.nextArg
+        if (nextArgs == null) {
+            pw.println("Welcome to ShortX(${BuildProp.APP_VERSION_NAME}). Command usage:")
+            pw.println("shortx run [ID]")
+            pw.println("      Run a Rule.")
+            pw.flush()
+            return 0
+        } else if (nextArgs == "run") {
+            val id: String? = shellCommand.nextArg
+            if (id == null) {
+                pw.println("Missing id argument")
+                pw.flush()
+                return 1
+            }
+            pw.println("Checking id: $id")
+            val da = shortXContext.rule.getDirectActionById(id)
+            if (da == null) {
+                pw.println("Rule not exists.")
+                pw.flush()
+                return 1
+            }
+            pw.println("About to run: ${da.title}")
+            pw.flush()
+            shortXContext.rule.executeDirectionActionById(
+                context = EvaluateContext.newBuilder()
+                    .setSrcId(id)
+                    .setSrcTitle("Shell command")
+                    .setSrcEvent(ContextSrcEvent.ContextSrc_DirectAction)
+                    .setSerialNumber(nextEvaluateContextSerialNumber())
+                    .build(),
+                id = id
+            )
+            return 0
+        }
+
+        return 1
     }
 
     val serviceBinder = object : IShortX.Stub() {

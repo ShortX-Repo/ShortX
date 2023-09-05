@@ -35,9 +35,7 @@ object AMSHook {
             logger.d("onCommand: $command")
             if (command.startsWith("shortx")) {
                 val shellCommand = param.thisObject as ShellCommand
-                logger.d("shellCommand: $shellCommand")
-                logger.d("outPrintWriter: ${shellCommand.outPrintWriter}")
-                shellCommand.outPrintWriter.println("Hello Shortx!")
+                param.result = ShortXService.onCommand(shellCommand)
             }
         }
     }.onFailure {
