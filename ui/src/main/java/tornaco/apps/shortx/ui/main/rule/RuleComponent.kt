@@ -196,6 +196,12 @@ private fun listItemOverflowMenu(
                     RemixIcon(Remix.Document.folders_fill)
                 }),
             DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
+                data = RuleItemMenuOptions.MoveOutSet,
+                icon = {
+                    RemixIcon(Remix.Document.folder_reduce_fill)
+                }),
+            DropdownItem(
                 labelLines = listOf(i18N["ui.common.delete"]),
                 data = RuleItemMenuOptions.Delete,
                 icon = {
@@ -235,11 +241,15 @@ private fun listItemOverflowMenu(
                 RuleItemMenuOptions.MoveToSet -> {
                     ruleSetSelectDialogState.show()
                 }
+
+                RuleItemMenuOptions.MoveOutSet -> {
+                    handler.moveOutSet(rule)
+                }
             }
         })
     return menuState
 }
 
 enum class RuleItemMenuOptions {
-    Dup, Delete, Edit, Share, Execute, MoveToSet
+    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet
 }

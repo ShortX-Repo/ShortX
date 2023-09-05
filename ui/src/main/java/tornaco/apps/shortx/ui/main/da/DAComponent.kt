@@ -343,8 +343,14 @@ private fun daListItemOverflowMenu(
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
             data = DAItemMenuOptions.MoveToSet,
+            badge = badge,
             icon = {
                 RemixIcon(Remix.Document.folders_fill)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
+            data = DAItemMenuOptions.MoveOutSet,
+            icon = {
+                RemixIcon(Remix.Document.folder_reduce_fill)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = DAItemMenuOptions.Delete,
@@ -411,6 +417,10 @@ private fun daListItemOverflowMenu(
                     subscribeDialogState.show()
                 }
             }
+
+            DAItemMenuOptions.MoveOutSet -> {
+                handler.moveOutSet(da)
+            }
         }
     })
 
@@ -419,7 +429,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, Delete, Edit, Share, Shortcut, MoveToSet
+    Dup, DeepLink, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet
 }
 
 @Composable

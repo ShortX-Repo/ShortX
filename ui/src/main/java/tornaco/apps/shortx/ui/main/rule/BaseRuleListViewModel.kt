@@ -210,4 +210,16 @@ abstract class BaseRuleListViewModel(context: Context) :
                 .build()
         )
     }
+
+    fun moveOutSet(rule: RuleUM, token: String?) {
+        shortXManager.addRule(
+            Rule.newBuilder(rule.rule).setRuleSetId("")
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
+                .build()
+        )
+    }
 }

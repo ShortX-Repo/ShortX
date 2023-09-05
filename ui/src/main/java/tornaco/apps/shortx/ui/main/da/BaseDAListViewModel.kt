@@ -213,4 +213,16 @@ abstract class BaseDAListViewModel(context: Context) :
                 .build()
         )
     }
+
+    fun moveOutSet(da: DirectActionUM, token: String?) {
+        shortXManager.addDirectAction(
+            DirectAction.newBuilder(da.directAction).setDirectActionSetId("")
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
+                .build()
+        )
+    }
 }

@@ -79,6 +79,10 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
             vm.moveToSet(da, setId, props.firstOrNull())
         }
 
+        override fun moveOutSet(da: DirectActionUM) {
+            vm.moveOutSet(da, props.firstOrNull())
+        }
+
         override fun stopAllJobs(da: DirectActionUM) {
             vm.stopJobs(da)
         }

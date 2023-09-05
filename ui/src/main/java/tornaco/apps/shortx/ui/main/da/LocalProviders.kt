@@ -12,6 +12,7 @@ interface DAItemHandler {
     fun deepLink(da: DirectActionUM) {}
     fun share(da: DirectActionUM) {}
     fun moveToSet(da: DirectActionUM, setId: String) {}
+    fun moveOutSet(da: DirectActionUM) {}
     fun stopAllJobs(da: DirectActionUM) {}
 }
 

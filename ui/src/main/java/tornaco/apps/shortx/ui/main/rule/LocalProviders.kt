@@ -11,6 +11,7 @@ interface RuleItemHandler {
     fun click(rule: RuleUM)
     fun share(rule: RuleUM)
     fun moveToSet(rule: RuleUM, setId: String)
+    fun moveOutSet(rule: RuleUM)
     fun stopAllJobs(rule: RuleUM)
     fun setRuleEnabled(rule: RuleUM, enable: Boolean)
 }
