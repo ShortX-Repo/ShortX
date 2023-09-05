@@ -16,10 +16,13 @@ interface RuleItemHandler {
 }
 
 interface RuleSetItemHandler {
-    fun delete(rule: RuleUM)
-    fun edit(rule: RuleUM)
-    fun click(rule: RuleUM)
-    fun share(rule: RuleUM)
+    fun delete(rule: RuleUM) {}
+    fun edit(rule: RuleUM) {}
+    fun click(rule: RuleUM) {}
+    fun share(rule: RuleUM) {}
+
+    // Batch op
+    fun setRuleEnabled(rule: RuleUM, enable: Boolean) {}
 }
 
 val LocalRuleItemHandler = staticCompositionLocalOf<RuleItemHandler> {

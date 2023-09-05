@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.RuleUM
@@ -86,38 +87,65 @@ fun RuleScreen() {
             mainViewModel.acceptPrivacyStatement()
         }
     ) {
+        val bottomSheetState = rememberShortXBottomSheetState()
+        RuleDetailsBottomSheet(dialogState = bottomSheetState)
+
+        val setHandler = object : RuleSetItemHandler {
+            override fun delete(rule: RuleUM) {
+
+            }
+
+            override fun edit(rule: RuleUM) {
+
+            }
+
+            override fun click(rule: RuleUM) {
+                bottomSheetState.show(rule.id)
+            }
+
+            override fun share(rule: RuleUM) {
+
+            }
+
+            override fun setRuleEnabled(rule: RuleUM, enable: Boolean) {
+
+            }
+        }
+        val ruleHandler = getLocalRuleItemHandler(
+            vm = ruleListViewModel
+        )
         CompositionLocalProvider(
-            LocalRuleItemHandler provides getLocalRuleItemHandler(
-                ruleListViewModel = ruleListViewModel
-            )
+            LocalRuleItemHandler provides ruleHandler,
+            LocalRuleSetItemHandler provides setHandler,
         ) {
-            RuleContent(ruleListState = ruleListState)
+            RuleContent(ruleListState.isLoading, ruleListState.rules)
         }
     }
 
 }
 
 @Composable
-private fun RuleContent(
-    ruleListState: RuleListState,
+fun RuleContent(
+    isLoading: Boolean,
+    rules: List<RuleUM>
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(6.dp), contentAlignment = Alignment.Center
     ) {
-        if (ruleListState.isLoading) {
+        if (isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
     }
 
-    if (!ruleListState.isLoading && ruleListState.rules.isEmpty()) {
+    if (!isLoading && rules.isEmpty()) {
         EmptyList(modifier = Modifier.fillMaxSize())
     } else {
         val subscribeState by LVLStateHolder.subscribeState.collectAsState()
         RuleListContent(
             isSubscribed = subscribeState.isSubscribed,
-            rules = ruleListState.rules
+            rules = rules
         )
     }
 }
@@ -139,14 +167,17 @@ private fun RuleListContent(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
-                val handler = LocalRuleItemHandler.current
-                RuleItem(
-                    rule = rule,
-                    isSubscribed = isSubscribed,
-                    onClick = {
-                        handler.click(rule)
-                    }
-                )
+                if (rule.isRuleSet) {
+                    RuleSetItem(
+                        rule = rule,
+                        isSubscribed = isSubscribed
+                    )
+                } else {
+                    RuleItem(
+                        rule = rule,
+                        isSubscribed = isSubscribed,
+                    )
+                }
             }
         }
     }

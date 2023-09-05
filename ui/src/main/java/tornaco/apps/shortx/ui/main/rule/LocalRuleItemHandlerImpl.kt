@@ -13,7 +13,7 @@ import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
 
 @Composable
-fun getLocalRuleItemHandler(ruleListViewModel: RuleListViewModel): RuleItemHandler {
+fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
     val context = LocalContext.current
     val shareDialogState = rememberShareDialogState("share.shortx")
     ShareDialog(state = shareDialogState)
@@ -26,15 +26,15 @@ fun getLocalRuleItemHandler(ruleListViewModel: RuleListViewModel): RuleItemHandl
 
     val handler = object : RuleItemHandler {
         override fun run(rule: RuleUM) {
-            ruleListViewModel.directExecuteRuleActions(rule)
+            vm.directExecuteRuleActions(rule)
         }
 
         override fun dup(rule: RuleUM) {
-            ruleListViewModel.dupRule(rule.id, props.firstOrNull())
+            vm.dupRule(rule.id, props.firstOrNull())
         }
 
         override fun delete(rule: RuleUM) {
-            ruleListViewModel.deleteRule(rule.id)
+            vm.deleteRule(rule.id)
         }
 
         override fun edit(rule: RuleUM) {
@@ -54,22 +54,22 @@ fun getLocalRuleItemHandler(ruleListViewModel: RuleListViewModel): RuleItemHandl
                     )
                 )
             } else {
-                ruleListViewModel.ruleToShareString(rule)?.let {
+                vm.ruleToShareString(rule)?.let {
                     shareDialogState.show(rule.title, it)
                 }
             }
         }
 
         override fun moveToSet(rule: RuleUM, setId: String) {
-            ruleListViewModel.moveToSet(rule, setId, props.firstOrNull())
+            vm.moveToSet(rule, setId, props.firstOrNull())
         }
 
         override fun stopAllJobs(rule: RuleUM) {
-            ruleListViewModel.stopJobs(rule)
+            vm.stopJobs(rule)
         }
 
         override fun setRuleEnabled(rule: RuleUM, enable: Boolean) {
-            ruleListViewModel.setRuleEnabled(rule.id, enable)
+            vm.setRuleEnabled(rule.id, enable)
         }
     }
     return handler

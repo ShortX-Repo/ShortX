@@ -204,4 +204,16 @@ abstract class BaseRuleListViewModel(context: Context) :
             shortXManager.directExecuteRuleActions(evaluateContext, ruleUM.id)
         }
     }
+
+    fun moveToSet(rule: RuleUM, id: String, token: String?) {
+        shortXManager.addRule(
+            Rule.newBuilder(rule.rule).setRuleSetId(id)
+                .addAllExtras(mutableListOf<StringPair>().apply {
+                    if (!token.isNullOrEmpty()) {
+                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                    }
+                })
+                .build()
+        )
+    }
 }

@@ -47,8 +47,7 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 @Composable
 fun RuleItem(
     rule: RuleUM,
-    isSubscribed: Boolean,
-    onClick: () -> Unit,
+    isSubscribed: Boolean
 ) {
     val handler = LocalRuleItemHandler.current
     Box {
@@ -62,7 +61,7 @@ fun RuleItem(
             .combinedClickable(onLongClick = {
                 popMenuState.open()
             }) {
-                onClick()
+                handler.click(rule)
             }
             .padding(16.dp)
         ) {

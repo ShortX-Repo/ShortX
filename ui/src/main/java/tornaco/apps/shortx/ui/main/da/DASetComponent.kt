@@ -131,32 +131,32 @@ private fun daSetListItemOverflowMenu(
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.edit"]),
-            data = "edit",
+            data = RuleSetItemMenuOptions.Edit,
             icon = {
                 RemixIcon(Remix.Design.edit_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
-            data = "share",
+            data = RuleSetItemMenuOptions.Share,
             badge = badge,
             icon = {
                 RemixIcon(Remix.System.share_line)
             }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
-            data = "delete",
+            data = RuleSetItemMenuOptions.Delete,
             icon = {
                 RemixIcon(Remix.System.delete_bin_4_line)
             })
     ), onSelect = {
         when (it.data) {
-            "delete" -> {
+            RuleSetItemMenuOptions.Delete -> {
                 deleteDialogState.show()
             }
 
-            "edit" -> {
+            RuleSetItemMenuOptions.Edit -> {
                 handler.edit(da)
             }
 
-            "share" -> {
+            RuleSetItemMenuOptions.Share -> {
                 if (isSubscribed) {
                     handler.share(da)
                 } else {
@@ -169,4 +169,8 @@ private fun daSetListItemOverflowMenu(
     })
 
     return menuState
+}
+
+enum class RuleSetItemMenuOptions {
+    Delete, Edit, Share
 }
