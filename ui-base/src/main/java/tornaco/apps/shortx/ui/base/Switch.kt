@@ -17,6 +17,7 @@
 
 package tornaco.apps.shortx.ui.base
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -127,14 +128,13 @@ private fun CustomSwitch(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 private fun animateAlignmentAsState(
     targetBiasValue: Float
 ): State<BiasAlignment> {
     val bias by animateFloatAsState(targetBiasValue, label = "animateAlignmentAsState")
-    return remember {
-        derivedStateOf { BiasAlignment(horizontalBias = bias, verticalBias = 0f) }
-    }
+    return derivedStateOf { BiasAlignment(horizontalBias = bias, verticalBias = 0f) }
 }
 
 @Preview
