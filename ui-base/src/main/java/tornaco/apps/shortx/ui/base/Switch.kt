@@ -58,9 +58,9 @@ private fun CustomSwitch(
     modifier: Modifier = Modifier,
     switchOn: Boolean,
     onCheckedChange: ((Boolean) -> Unit),
-    width: Dp = 32.dp,
-    height: Dp = 20.dp,
-    thumbSize: Dp = 12.dp
+    width: Dp = 36.dp,
+    height: Dp = 23.dp,
+    thumbSize: Dp = 14.dp
 ) {
     // this is to disable the ripple effect
     val interactionSource = remember {
