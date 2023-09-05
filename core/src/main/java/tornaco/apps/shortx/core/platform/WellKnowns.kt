@@ -23,6 +23,11 @@ object Classes {
     }
 
     @Throws(ClassNotFoundException::class)
+    fun ClassLoader.amsShellCommandClass(): Class<*> {
+        return Reflections.findClass("com.android.server.am.ActivityManagerShellCommand", this)
+    }
+
+    @Throws(ClassNotFoundException::class)
     fun ClassLoader.atmsClass(): Class<*> {
         return Reflections.findClass(ATMS, this)
     }

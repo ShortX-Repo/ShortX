@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.content.Context
+import android.os.ShellCommand
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.amsClass
+import tornaco.apps.shortx.core.platform.Classes.amsShellCommandClass
 import tornaco.apps.shortx.core.platform.Fields
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
@@ -25,5 +27,20 @@ object AMSHook {
         }
     }.onFailure {
         logger.e(it, "hookAMS")
+    }
+
+    fun hookAMSShellCommand(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        beforeMethod(lpparam.classLoader.amsShellCommandClass(), "onCommand") { param ->
+            val command = param.args[0].toString()
+            logger.d("onCommand: $command")
+            if (command.startsWith("shortx")) {
+                val shellCommand = param.thisObject as ShellCommand
+                logger.d("shellCommand: $shellCommand")
+                logger.d("outPrintWriter: ${shellCommand.outPrintWriter}")
+                shellCommand.outPrintWriter.println("Hello Shortx!")
+            }
+        }
+    }.onFailure {
+        logger.e(it, "hookAMSShellCommand")
     }
 }

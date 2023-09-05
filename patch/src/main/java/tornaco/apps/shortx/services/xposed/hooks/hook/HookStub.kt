@@ -27,6 +27,7 @@ object HookStub {
     private fun androidHooks(lpparam: XC_LoadPackage.LoadPackageParam) {
         ShortXService.main()
         AMSHook.hookAMS(lpparam)
+        AMSHook.hookAMSShellCommand(lpparam)
         InputManagerHook.hookInputManager(lpparam)
         AppWidgetServiceHook.hookAppWidgetService(lpparam)
         NotificationUsageStatsHook.hookNotificationUsageStats(lpparam)
