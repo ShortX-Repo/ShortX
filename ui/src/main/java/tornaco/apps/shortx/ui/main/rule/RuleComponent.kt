@@ -96,7 +96,6 @@ fun RuleItem(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
-                MediumSpacer()
             }
 
             AnimatedVisibility(visible = rule.runningInsCount > 0) {
