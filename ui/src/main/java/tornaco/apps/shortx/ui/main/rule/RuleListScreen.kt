@@ -90,30 +90,9 @@ fun RuleScreen() {
         val bottomSheetState = rememberShortXBottomSheetState()
         RuleDetailsBottomSheet(dialogState = bottomSheetState)
 
-        val setHandler = object : RuleSetItemHandler {
-            override fun delete(rule: RuleUM) {
-
-            }
-
-            override fun edit(rule: RuleUM) {
-
-            }
-
-            override fun click(rule: RuleUM) {
-                bottomSheetState.show(rule.id)
-            }
-
-            override fun share(rule: RuleUM) {
-
-            }
-
-            override fun setRuleEnabled(rule: RuleUM, enable: Boolean) {
-
-            }
-        }
-        val ruleHandler = getLocalRuleItemHandler(
-            vm = ruleListViewModel
-        )
+        val setHandler =
+            getLocalRuleSetItemHandler(bottomSheetState = bottomSheetState, vm = ruleListViewModel)
+        val ruleHandler = getLocalRuleItemHandler(vm = ruleListViewModel)
         CompositionLocalProvider(
             LocalRuleItemHandler provides ruleHandler,
             LocalRuleSetItemHandler provides setHandler,

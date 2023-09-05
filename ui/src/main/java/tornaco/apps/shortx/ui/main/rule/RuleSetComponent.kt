@@ -27,6 +27,7 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXColorSchema
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
@@ -77,6 +78,9 @@ fun RuleSetItem(
                 ShortXSwitch(
                     modifier = Modifier,
                     checked = rule.isEnabled,
+                    uncheckedTrackColor = if (rule.hasAnyEnabled) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else LocalShortXColorSchema.current.uncheckedTrack,
                     onCheckedChange = {
                         handler.setRuleEnabled(rule, it)
                     },

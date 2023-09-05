@@ -30,7 +30,8 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
-                val rules = shortXManager.getAllRules()
+                val allRules = shortXManager.getAllRules()
+                val rules = allRules
                     .filter { it.ruleSetId.isNullOrEmpty() }
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
@@ -44,7 +45,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val sets = shortXManager.getAllRuleSets()
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
-                    }.map {
+                    }.map { ruleSet ->
                         RuleUM(
                             updateTime = "",
                             createTime = "",
@@ -55,11 +56,14 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             factIconColor = Color.Red.value,
                             actionIcon = "",
                             actionIconColor = Color.Red.value,
-                            id = it.id,
-                            title = it.title,
-                            description = it.description,
+                            id = ruleSet.id,
+                            title = ruleSet.title,
+                            description = ruleSet.description,
                             isRuleSet = true,
-                            isEnabled = false,
+                            isEnabled = allRules.filter { it.ruleSetId == ruleSet.id }
+                                .all { it.isEnabled },
+                            hasAnyEnabled = allRules.filter { it.ruleSetId == ruleSet.id }
+                                .any { it.isEnabled },
                         )
                     }
                 updateState {
@@ -77,5 +81,13 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 .build()
         )
         loadRuleList()
+    }
+
+    fun setRuleSetEnabled(id: String, enable: Boolean) {
+        shortXManager.getAllRules().filter {
+            it.ruleSetId == id
+        }.forEach {
+            shortXManager.setRuleEnabled(it.id, enable)
+        }
     }
 }

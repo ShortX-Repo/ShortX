@@ -45,11 +45,15 @@ fun ShortXSwitch(
     checked: Boolean,
     onCheckedChange: ((Boolean) -> Unit),
     modifier: Modifier = Modifier,
+    uncheckedTrackColor: Color = LocalShortXColorSchema.current.uncheckedTrack,
+    uncheckedThumbColor: Color = LocalShortXColorSchema.current.uncheckedThumb,
 ) {
     CustomSwitch(
         modifier = modifier,
         switchOn = checked,
         onCheckedChange = onCheckedChange,
+        uncheckedTrackColor = uncheckedTrackColor,
+        uncheckedThumbColor = uncheckedThumbColor,
     )
 }
 
@@ -58,9 +62,11 @@ private fun CustomSwitch(
     modifier: Modifier = Modifier,
     switchOn: Boolean,
     onCheckedChange: ((Boolean) -> Unit),
+    uncheckedTrackColor: Color,
+    uncheckedThumbColor: Color,
     width: Dp = 36.dp,
     height: Dp = 23.dp,
-    thumbSize: Dp = 14.dp
+    thumbSize: Dp = 14.dp,
 ) {
     // this is to disable the ripple effect
     val interactionSource = remember {
@@ -73,7 +79,7 @@ private fun CustomSwitch(
         modifier = modifier
             .size(width = width, height = height)
             .background(
-                color = if (switchOn) MaterialTheme.colorScheme.primary else LocalShortXColorSchema.current.uncheckedTrack,
+                color = if (switchOn) MaterialTheme.colorScheme.primary else uncheckedTrackColor,
                 shape = CircleShape
             )
             .clickable(
@@ -106,7 +112,7 @@ private fun CustomSwitch(
                     modifier = Modifier
                         .size(size = thumbSize)
                         .background(
-                            color = LocalShortXColorSchema.current.uncheckedThumb,
+                            color = uncheckedThumbColor,
                             shape = CircleShape
                         )
                         .padding(2.dp)
@@ -115,7 +121,7 @@ private fun CustomSwitch(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
-                                LocalShortXColorSchema.current.uncheckedTrack,
+                                uncheckedTrackColor,
                                 shape = CircleShape
                             )
                     )
