@@ -54,6 +54,8 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.theme.Dimens
+import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 
@@ -189,9 +191,12 @@ private fun DAListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(
-                size = 32.dp,
+                size = Dimens.DAIconSize,
                 padding = 0.dp,
-                color = iconColor.copy(alpha = ActionColorBgAlpha)
+                color = iconColor.copy(alpha = ActionColorBgAlpha),
+                onClick = {
+                    onLongClick()
+                }
             ) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),
@@ -307,7 +312,7 @@ private fun daListItemOverflowMenu(
 
     val menuState = rememberDropdownSelectorState()
 
-    DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
+    DropdownSelector(widthFraction = menuDropdownFraction, state = menuState, items = listOf(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
             data = DAItemMenuOptions.Shortcut,
             badge = badge,
@@ -406,8 +411,6 @@ private fun daListItemOverflowMenu(
                     subscribeDialogState.show()
                 }
             }
-
-            else -> {}
         }
     })
 

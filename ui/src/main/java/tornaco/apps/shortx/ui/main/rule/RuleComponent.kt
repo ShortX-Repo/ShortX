@@ -31,7 +31,6 @@ import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.DropdownSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
@@ -42,6 +41,8 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.main.da.RunningIndicator
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.theme.Dimens
+import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 
 
 @Composable
@@ -70,7 +71,9 @@ fun RuleItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RuleIcon(rule)
+                RuleIcon(rule) {
+                    popMenuState.open()
+                }
                 ShortXSwitch(
                     modifier = Modifier,
                     checked = rule.isEnabled,
@@ -112,9 +115,10 @@ fun RuleItem(
 }
 
 @Composable
-fun RuleIcon(rule: RuleUM) {
+fun RuleIcon(rule: RuleUM, onClick: (() -> Unit)) {
     ColoredIcon(
-        size = 38.dp,
+        onClick = onClick,
+        size = Dimens.RuleIconSize,
         padding = 0.dp,
         color = Color(rule.factIconColor).copy(alpha = ActionColorBgAlpha)
     ) {
@@ -158,7 +162,7 @@ private fun listItemOverflowMenu(
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(
-        widthFraction = 0.3f,
+        widthFraction = menuDropdownFraction,
         state = menuState,
         items = listOf(
             DropdownItem(labelLines = listOf(i18N["ui.common.execute.actions"]),

@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import tornaco.apps.shortx.ui.base.LocalShortXColorSchema
 
@@ -137,4 +138,10 @@ fun ShortXTheme(
             content = content
         )
     }
+}
+
+object Dimens {
+    val DAIconSize = 32.dp
+    val RuleIconSize = 36.dp
+    val menuDropdownFraction = 0.5f
 }

@@ -35,6 +35,7 @@ import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.theme.Dimens
 
 
 @Composable
@@ -64,7 +65,7 @@ fun RuleSetItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ColoredIcon(
-                    size = 38.dp,
+                    size = Dimens.RuleIconSize,
                     padding = 0.dp,
                     color = MaterialTheme.colorScheme.primaryContainer
                 ) {

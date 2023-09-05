@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
+import tornaco.apps.shortx.ui.theme.Dimens
 
 
 @Composable
@@ -80,7 +81,7 @@ fun DASetListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ColoredIcon(
-                size = 32.dp,
+                size = Dimens.DAIconSize,
                 padding = 0.dp,
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
