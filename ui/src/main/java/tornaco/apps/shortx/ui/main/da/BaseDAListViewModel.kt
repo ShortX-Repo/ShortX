@@ -123,7 +123,6 @@ abstract class BaseDAListViewModel(context: Context) :
     fun deleteDA(daId: String) {
         viewModelScope.launch {
             shortXManager.deleteDirectAction(daId)
-            loadDAList()
         }
     }
 
@@ -188,8 +187,6 @@ abstract class BaseDAListViewModel(context: Context) :
                     })
                     .build()
             shortXManager.addDirectAction(refined)
-
-            loadDAList()
         }
     }
 

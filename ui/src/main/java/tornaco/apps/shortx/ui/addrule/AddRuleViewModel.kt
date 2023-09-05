@@ -61,6 +61,7 @@ data class AddRuleState(
     val isQuitEnabled: Boolean = false,
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+    val ruleSetId: String = "",
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true
@@ -215,6 +216,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
                     }
                 })
+                .setRuleSetId(state.value.ruleSetId)
                 .build()
 
             shortXManager.addRule(rule)
@@ -331,6 +333,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
+                        ruleSetId = r.ruleSetId,
                         securityCheckRes = Security.checkSecurity(r)
                     )
                 }

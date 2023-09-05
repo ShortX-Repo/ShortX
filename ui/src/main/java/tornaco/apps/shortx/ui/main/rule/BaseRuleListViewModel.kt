@@ -29,7 +29,6 @@ import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
-import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import java.util.*
 
@@ -43,7 +42,6 @@ data class RuleListState(
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :
     ContextViewModel<RuleListState>(context, { RuleListState() }) {
-    private val pref by lazy { Pref(context) }
     private var loadRuleJob: Job? = null
 
     private val jobStatusListener = object : IJobStatusListener.Stub() {
@@ -118,7 +116,6 @@ abstract class BaseRuleListViewModel(context: Context) :
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         viewModelScope.launch {
             shortXManager.setRuleEnabled(ruleId, enable)
-            loadRuleList()
         }
     }
 
@@ -126,7 +123,6 @@ abstract class BaseRuleListViewModel(context: Context) :
     fun deleteRule(ruleId: String) {
         viewModelScope.launch {
             shortXManager.deleteRule(ruleId)
-            loadRuleList()
         }
     }
 
@@ -188,8 +184,6 @@ abstract class BaseRuleListViewModel(context: Context) :
                     })
                     .build()
             shortXManager.addRule(refined)
-
-            loadRuleList()
         }
     }
 

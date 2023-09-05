@@ -46,6 +46,7 @@ data class AddDirectActionState(
     val copiedAction: Action? = null,
     val showAdvancedOptions: Boolean = false,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+    val daSetId: String = "",
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true
@@ -111,6 +112,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                 .setAuthor(authorPref)
                 .setVersionCode(state.value.versionCode)
                 .setConflictPolicy(state.value.conflictStrategy)
+                .setDirectActionSetId(state.value.daSetId)
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
@@ -154,6 +156,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         createTime = da.createTime,
                         versionCode = da.versionCode,
                         conflictStrategy = da.conflictPolicy,
+                        daSetId = da.directActionSetId,
                         securityCheckRes = Security.checkSecurity(da)
                     )
                 }
