@@ -65,7 +65,7 @@ fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
         }
 
         override fun moveOutSet(rule: RuleUM) {
-            vm.moveOutSet(rule,props.firstOrNull() )
+            vm.moveOutSet(rule.rule, props.firstOrNull())
         }
 
         override fun stopAllJobs(rule: RuleUM) {

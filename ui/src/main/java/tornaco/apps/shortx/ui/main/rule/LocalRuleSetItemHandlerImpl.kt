@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.main.rule
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.model.RuleUM
 
@@ -9,13 +10,14 @@ fun getLocalRuleSetItemHandler(
     vm: RuleListViewModel,
     bottomSheetState: ShortXBottomSheetState
 ): RuleSetItemHandler {
+    val props = LocalShortXProps.current
     val handler = object : RuleSetItemHandler {
-        override fun delete(rule: RuleUM) {
-
+        override fun dismiss(rule: RuleUM) {
+            vm.dismissRuleSet(rule, props.firstOrNull())
         }
 
-        override fun edit(rule: RuleUM) {
-
+        override fun rename(rule: RuleUM, newName: String) {
+            vm.rename(rule, newName, props.firstOrNull())
         }
 
         override fun click(rule: RuleUM) {

@@ -17,8 +17,8 @@ interface RuleItemHandler {
 }
 
 interface RuleSetItemHandler {
-    fun delete(rule: RuleUM) {}
-    fun edit(rule: RuleUM) {}
+    fun dismiss(rule: RuleUM) {}
+    fun rename(rule: RuleUM, newName: String) {}
     fun click(rule: RuleUM) {}
     fun share(rule: RuleUM) {}
 

@@ -751,10 +751,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("Update RuleSet: ${rs.title}")
             ruleSetsStore.addRuleSet(rs)
         }
+        ruleObs.broadcast {
+            kotlin.runCatching {
+                it.onSetAddOrUpdate(rs.id)
+            }.onFailure { logger.e("Call onSetAddOrUpdate") }
+        }
     }
 
     fun deleteRuleSet(id: String) {
         ruleSetsStore.deleteRuleSet(id)
+        ruleObs.broadcast {
+            kotlin.runCatching {
+                it.onSetDelete(id)
+            }.onFailure { logger.e("Call onSetDelete") }
+        }
     }
 
     fun getRuleSetById(id: String): RuleSet? {
@@ -774,10 +784,20 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("Update DirectActionSet: ${ds.title}")
             daSetsStore.addDirectActionSet(ds)
         }
+        daObs.broadcast {
+            kotlin.runCatching {
+                it.onSetAddOrUpdate(ds.id)
+            }.onFailure { logger.e("Call onSetAddOrUpdate") }
+        }
     }
 
     fun deleteDASet(id: String) {
         daSetsStore.deleteDirectActionSet(id)
+        daObs.broadcast {
+            kotlin.runCatching {
+                it.onSetDelete(id)
+            }.onFailure { logger.e("Call onSetDelete") }
+        }
     }
 
     fun getDASetById(id: String): DirectActionSet? {

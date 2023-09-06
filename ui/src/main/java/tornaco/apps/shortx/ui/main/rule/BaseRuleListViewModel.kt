@@ -12,7 +12,7 @@ import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toStringPair
-import tornaco.apps.shortx.core.rule.IRuleObserver
+import tornaco.apps.shortx.core.rule.RuleObserver
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
@@ -61,24 +61,16 @@ abstract class BaseRuleListViewModel(context: Context) :
         }
     }
 
-    private val ruleObs = object : IRuleObserver.Stub() {
-        override fun onAddOrUpdate(id: String?) {
-            logger.d("ruleObs, onAddOrUpdate: $id")
+    private val ruleObs = object : RuleObserver() {
+        override fun onRuleChanged(id: String) {
+            super.onRuleChanged(id)
+            logger.d("ruleObs, onRuleChanged: $id")
             loadRuleList()
         }
 
-        override fun onDelete(id: String?) {
-            logger.d("ruleObs, onDelete: $id")
-            loadRuleList()
-        }
-
-        override fun onEnabled(id: String?) {
-            logger.d("ruleObs, onEnabled: $id")
-            loadRuleList()
-        }
-
-        override fun onDisabled(id: String?) {
-            logger.d("ruleObs, onDisabled: $id")
+        override fun onRuleSetChanged(id: String) {
+            super.onRuleSetChanged(id)
+            logger.d("ruleObs, onRuleSetChanged: $id")
             loadRuleList()
         }
     }
@@ -221,9 +213,9 @@ abstract class BaseRuleListViewModel(context: Context) :
         )
     }
 
-    fun moveOutSet(rule: RuleUM, token: String?) {
+    fun moveOutSet(rule: Rule, token: String?) {
         shortXManager.addRule(
-            Rule.newBuilder(rule.rule).setRuleSetId("")
+            Rule.newBuilder(rule).setRuleSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())

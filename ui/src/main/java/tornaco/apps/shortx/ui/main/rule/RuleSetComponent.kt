@@ -31,9 +31,11 @@ import tornaco.apps.shortx.ui.base.LocalShortXColorSchema
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
+import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
@@ -105,7 +107,7 @@ private fun listItemOverflowMenu(
     rule: RuleUM,
     isSubscribed: Boolean,
 ): DropdownSelectorState {
-    val handler = LocalRuleItemHandler.current
+    val handler = LocalRuleSetItemHandler.current
 
     val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
@@ -115,14 +117,20 @@ private fun listItemOverflowMenu(
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
-    val deleteDialogState = rememberConfirmDialogState()
+    val dismissDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.common.delete"],
-        state = deleteDialogState,
+        title = i18N["ui.common.dismiss"],
+        state = dismissDialogState,
         data = rule,
-        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to rule.title)] },
-        onConfirm = { handler.delete(rule) }
+        messageHint = { i18N["ui.dismiss.dialog.confirm", mapOf("wht" to rule.title)] },
+        onConfirm = { handler.dismiss(rule) }
     )
+
+    val renameDialogState =
+        rememberTextInputState(title = "ui.common.rename", message = null, onSelected = {
+            handler.rename(rule, it)
+        })
+    TextInputDialog(state = renameDialogState)
 
     val menuState = rememberDropdownSelectorState()
 
@@ -130,8 +138,8 @@ private fun listItemOverflowMenu(
         widthFraction = 0.3f,
         state = menuState,
         items = listOf(
-            DropdownItem(labelLines = listOf(i18N["ui.common.edit"]),
-                data = RuleSetItemMenuOptions.Edit,
+            DropdownItem(labelLines = listOf(i18N["ui.common.rename"]),
+                data = RuleSetItemMenuOptions.Rename,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }),
@@ -143,21 +151,20 @@ private fun listItemOverflowMenu(
                     RemixIcon(Remix.System.share_line)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.delete"]),
-                data = RuleSetItemMenuOptions.Delete,
+                labelLines = listOf(i18N["ui.common.dismiss"]),
+                data = RuleSetItemMenuOptions.Dismiss,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
                 })
         ), onSelect = {
             Logger("RuleMenu").d("onSelect: ${it.data}")
             when (it.data) {
-
-                RuleSetItemMenuOptions.Delete -> {
-                    deleteDialogState.show()
+                RuleSetItemMenuOptions.Dismiss -> {
+                    dismissDialogState.show()
                 }
 
-                RuleSetItemMenuOptions.Edit -> {
-                    handler.edit(rule)
+                RuleSetItemMenuOptions.Rename -> {
+                    renameDialogState.show(rule.title)
                 }
 
                 RuleSetItemMenuOptions.Share -> {
@@ -173,5 +180,5 @@ private fun listItemOverflowMenu(
 }
 
 enum class RuleSetItemMenuOptions {
-    Delete, Edit, Share
+    Dismiss, Rename, Share
 }

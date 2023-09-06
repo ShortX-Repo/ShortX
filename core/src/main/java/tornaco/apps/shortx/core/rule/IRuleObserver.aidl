@@ -5,4 +5,8 @@ interface IRuleObserver {
     oneway void onDelete(String id);
     oneway void onEnabled(String id);
     oneway void onDisabled(String id);
+
+
+    oneway void onSetAddOrUpdate(String id);
+    oneway void onSetDelete(String id);
 }

@@ -14,7 +14,7 @@ import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.toJson
 import tornaco.apps.shortx.core.proto.toStringPair
-import tornaco.apps.shortx.core.rule.IDAObserver
+import tornaco.apps.shortx.core.rule.DAObserver
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addda.defaultNewDAId
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -59,14 +59,16 @@ abstract class BaseDAListViewModel(context: Context) :
         }
     }
 
-    private val daObs = object : IDAObserver.Stub() {
-        override fun onAddOrUpdate(id: String?) {
-            logger.d("daObs, onAddOrUpdate: $id")
+    private val daObs = object : DAObserver() {
+        override fun onDAChanged(id: String) {
+            super.onDAChanged(id)
+            logger.d("daObs, onDAChanged: $id")
             loadDAList()
         }
 
-        override fun onDelete(id: String?) {
-            logger.d("daObs, onDelete: $id")
+        override fun onDASetChanged(id: String) {
+            super.onDASetChanged(id)
+            logger.d("daObs, onDASetChanged: $id")
             loadDAList()
         }
     }
@@ -199,7 +201,6 @@ abstract class BaseDAListViewModel(context: Context) :
                 .setLastUpdateTime(System.currentTimeMillis())
                 .build()
         )
-        loadDAList()
     }
 
     fun moveToSet(da: DirectActionUM, setId: String, token: String?) {

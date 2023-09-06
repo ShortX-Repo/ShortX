@@ -46,6 +46,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
                     }.map { ruleSet ->
+                        val subRules = allRules.filter { it.ruleSetId == ruleSet.id }
                         RuleUM(
                             updateTime = "",
                             createTime = "",
@@ -60,10 +61,8 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             title = ruleSet.title,
                             description = ruleSet.description,
                             isRuleSet = true,
-                            isEnabled = allRules.filter { it.ruleSetId == ruleSet.id }
-                                .all { it.isEnabled },
-                            hasAnyEnabled = allRules.filter { it.ruleSetId == ruleSet.id }
-                                .any { it.isEnabled },
+                            isEnabled = subRules.isNotEmpty() && subRules.all { it.isEnabled },
+                            hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
                         )
                     }
                 updateState {
@@ -80,7 +79,6 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 .setTitle(title)
                 .build()
         )
-        loadRuleList()
     }
 
     fun setRuleSetEnabled(id: String, enable: Boolean) {
@@ -88,6 +86,23 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
             it.ruleSetId == id
         }.forEach {
             shortXManager.setRuleEnabled(it.id, enable)
+        }
+    }
+
+    fun dismissRuleSet(ruleSet: RuleUM, token: String?) {
+        shortXManager.getAllRules().filter {
+            it.ruleSetId == ruleSet.id
+        }.forEach {
+            moveOutSet(it, token)
+        }
+    }
+
+    fun rename(rule: RuleUM, newName: String, token: String?) {
+        val originalSet = shortXManager.getRuleSetById(rule.id)
+        originalSet?.let {
+            shortXManager.addOrUpdateRuleSet(
+                RuleSet.newBuilder(originalSet).setTitle(newName).build()
+            )
         }
     }
 }
