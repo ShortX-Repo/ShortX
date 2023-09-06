@@ -101,7 +101,7 @@ fun DirectActionListScreen() {
             pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
-            AddDirectActionActivity.create(context)
+            AddDirectActionActivity.create(context, daListState.selectedDASetFilter?.id)
         },
         onUrlClick = {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_DA_URL, it))

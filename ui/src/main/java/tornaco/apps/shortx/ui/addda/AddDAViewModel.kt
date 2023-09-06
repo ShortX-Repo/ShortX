@@ -137,6 +137,12 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
         }
     }
 
+    fun initDASetIdIfNonNull(daSetId: String?) {
+        daSetId?.let {
+            updateState { copy(daSetId = daSetId) }
+        }
+    }
+
     fun initFromDirectAction(action: DirectAction?) {
         viewModelScope.launch {
             action?.let { da ->

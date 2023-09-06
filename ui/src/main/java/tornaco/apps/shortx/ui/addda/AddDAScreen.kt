@@ -87,7 +87,9 @@ class AddDirectActionActivity : BaseActivity() {
         } else {
             LocalI18N.current["ui.title.edit.da"]
         }
-        AddDirectActionScreen(daId = daId, screenTitle = screenTitle) {
+        // For create from a set chip.
+        val daSetId = intent.getStringExtra(KEY_DA_SET_ID)
+        AddDirectActionScreen(daId = daId, daSetId = daSetId, screenTitle = screenTitle) {
             setResult(it.select(RESULT_OK, RESULT_CANCELED))
             finish()
         }
@@ -98,6 +100,7 @@ class AddDirectActionActivity : BaseActivity() {
 @Composable
 fun AddDirectActionScreen(
     daId: String? = null,
+    daSetId: String? = null,
     da: DirectAction? = null,
     url: String? = null,
     screenTitle: String,
@@ -116,6 +119,7 @@ fun AddDirectActionScreen(
     }
 
     LaunchedEffect(vm) {
+        vm.initDASetIdIfNonNull(daSetId)
         vm.initFromDirectActionId(daId)
         vm.initFromDirectAction(da)
         vm.initFromUrl(url)
