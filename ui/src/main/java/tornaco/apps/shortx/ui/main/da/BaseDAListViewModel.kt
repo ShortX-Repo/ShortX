@@ -215,9 +215,9 @@ abstract class BaseDAListViewModel(context: Context) :
         )
     }
 
-    fun moveOutSet(da: DirectActionUM, token: String?) {
+    fun moveOutSet(da: DirectAction, token: String?) {
         shortXManager.addDirectAction(
-            DirectAction.newBuilder(da.directAction).setDirectActionSetId("")
+            DirectAction.newBuilder(da).setDirectActionSetId("")
                 .addAllExtras(mutableListOf<StringPair>().apply {
                     if (!token.isNullOrEmpty()) {
                         add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())

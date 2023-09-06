@@ -18,8 +18,8 @@ interface DAItemHandler {
 }
 
 interface DASetItemHandler {
-    fun delete(da: DirectActionUM) {}
-    fun edit(da: DirectActionUM) {}
+    fun dismiss(da: DirectActionUM) {}
+    fun rename(da: DirectActionUM, newName: String) {}
     fun click(da: DirectActionUM) {}
     fun share(da: DirectActionUM) {}
 }

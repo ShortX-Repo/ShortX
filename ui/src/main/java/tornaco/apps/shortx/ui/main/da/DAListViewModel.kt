@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
@@ -75,6 +76,23 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 }
             }
 
+        }
+    }
+
+    fun dismissDASet(daSet: DirectActionUM, token: String?) {
+        shortXManager.getAllDirectAction().filter {
+            it.directActionSetId == daSet.id
+        }.forEach {
+            moveOutSet(it, token)
+        }
+    }
+
+    fun rename(daSet: DirectActionUM, newName: String, token: String?) {
+        val originalSet = shortXManager.getDASetById(daSet.id)
+        originalSet?.let {
+            shortXManager.addOrUpdateDASet(
+                DirectActionSet.newBuilder(originalSet).setTitle(newName).build()
+            )
         }
     }
 }

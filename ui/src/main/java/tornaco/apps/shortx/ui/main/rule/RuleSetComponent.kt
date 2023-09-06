@@ -127,7 +127,7 @@ private fun listItemOverflowMenu(
     )
 
     val renameDialogState =
-        rememberTextInputState(title = "ui.common.rename", message = null, onSelected = {
+        rememberTextInputState(title = i18N["ui.common.rename"], message = null, onSelected = {
             handler.rename(rule, it)
         })
     TextInputDialog(state = renameDialogState)

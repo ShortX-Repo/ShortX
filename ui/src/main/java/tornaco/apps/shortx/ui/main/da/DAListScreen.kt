@@ -107,21 +107,8 @@ fun DirectActionListScreen() {
         DADetailsBottomSheet(dialogState = bottomSheetState)
 
         val daHandler = getLocalDAItemHandler(vm = daListViewModel)
-
-        val setHandler = object : DASetItemHandler {
-            override fun delete(da: DirectActionUM) {
-            }
-
-            override fun edit(da: DirectActionUM) {
-            }
-
-            override fun click(da: DirectActionUM) {
-                bottomSheetState.show(da.id)
-            }
-
-            override fun share(da: DirectActionUM) {
-            }
-        }
+        val setHandler =
+            getLocalDASetItemHandler(bottomSheetState = bottomSheetState, vm = daListViewModel)
 
         CompositionLocalProvider(
             LocalDAItemHandler provides daHandler,
