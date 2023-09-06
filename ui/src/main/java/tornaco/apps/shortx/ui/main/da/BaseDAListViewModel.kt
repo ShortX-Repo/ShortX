@@ -32,10 +32,15 @@ import java.util.*
 
 data class DAListState(
     val das: List<DirectActionUM> = emptyList(),
+    val daSetFilters: List<DaSetFilter> = emptyList(),
+    // Null means all.
+    val selectedDASetFilter: DaSetFilter? = null,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val isLoading: Boolean = true,
 )
+
+data class DaSetFilter(val id: String, val title: String)
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseDAListViewModel(context: Context) :

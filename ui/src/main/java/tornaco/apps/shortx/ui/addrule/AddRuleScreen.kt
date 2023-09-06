@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -89,14 +88,14 @@ class AddRuleActivity : BaseActivity() {
         private const val KEY_RULE_ID = "ruleId"
 
         @JvmStatic
-        fun start(context: Context, ruleId: String?) {
+        fun edit(context: Context, ruleId: String) {
             val starter = Intent(context, AddRuleActivity::class.java)
                 .putExtra(KEY_RULE_ID, ruleId)
             context.startActivity(starter)
         }
 
         @JvmStatic
-        fun start(context: Context) {
+        fun create(context: Context) {
             val starter = Intent(context, AddRuleActivity::class.java)
             context.startActivity(starter)
         }

@@ -75,7 +75,7 @@ fun RuleScreen() {
             pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
-            AddRuleActivity.start(context)
+            AddRuleActivity.create(context)
         },
         onUrlClick = {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_RULE_URL, it))
@@ -137,7 +137,7 @@ private fun RuleListContent(
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
         columns = dynamicStaggeredGridCells(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+        contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
     ) {
         items(
             items = rules,

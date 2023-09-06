@@ -197,6 +197,7 @@
   "ui.common.edit": "編輯",
   "ui.common.copy": "複製",
   "ui.common.add": "添加",
+  "ui.common.all": "全部",
   "ui.common.saved": "已保存",
   "ui.common.done": "完成",
   "ui.common.import.from.file": "从文件导入",

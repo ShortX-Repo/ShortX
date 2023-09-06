@@ -62,11 +62,19 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class AddDirectActionActivity : BaseActivity() {
     companion object {
         private const val KEY_DA_ID = "daId"
+        private const val KEY_DA_SET_ID = "daSetId"
 
         @JvmStatic
-        fun start(context: Context, daId: String? = null) {
+        fun edit(context: Context, daId: String) {
             val starter = Intent(context, AddDirectActionActivity::class.java)
                 .putExtra(KEY_DA_ID, daId)
+            context.startActivity(starter)
+        }
+
+        @JvmStatic
+        fun create(context: Context, daSetId: String? = null) {
+            val starter = Intent(context, AddDirectActionActivity::class.java)
+                .putExtra(KEY_DA_SET_ID, daSetId)
             context.startActivity(starter)
         }
     }

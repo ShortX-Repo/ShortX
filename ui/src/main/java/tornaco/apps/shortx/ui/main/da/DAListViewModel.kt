@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DAListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseDAListViewModel(context) {
+
     override fun loadDAList(delay: Boolean) {
         logger.d("loadDAList")
         viewModelScope.launch {
@@ -31,9 +32,15 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
+                val selectedDASetFilter = state.value.selectedDASetFilter
                 val das = shortXManager.getAllDirectAction()
                     .filter {
-                        it.directActionSetId.isNullOrEmpty()
+                        if (selectedDASetFilter == null) {
+                            // No filter, show items belong to no set.
+                            it.directActionSetId.isNullOrEmpty()
+                        } else {
+                            it.directActionSetId == selectedDASetFilter.id
+                        }
                     }
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
@@ -71,11 +78,21 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         )
                     }
 
+                val daSetFilters = sets.map { DaSetFilter(it.id, it.title) }
+
                 updateState {
-                    copy(das = sets + das, isLoading = false)
+                    copy(
+                        das = if (selectedDASetFilter == null) {
+                            // No filter, show set and das.
+                            sets + das
+                        } else {
+                            das
+                        },
+                        daSetFilters = daSetFilters,
+                        isLoading = false
+                    )
                 }
             }
-
         }
     }
 
@@ -94,5 +111,11 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 DirectActionSet.newBuilder(originalSet).setTitle(newName).build()
             )
         }
+    }
+
+    // null means all.
+    fun selectDASetFilter(daSetFilter: DaSetFilter?) {
+        updateState { copy(selectedDASetFilter = daSetFilter) }
+        loadDAList()
     }
 }

@@ -195,9 +195,9 @@ fun EvaRecordScreen(back: () -> Unit) {
                                         it = record,
                                         viewSrc = {
                                             if (record.record.context.srcEvent.isFromRule) {
-                                                AddRuleActivity.start(context, it)
+                                                AddRuleActivity.edit(context, it)
                                             } else {
-                                                AddDirectActionActivity.start(context, it)
+                                                AddDirectActionActivity.edit(context, it)
                                             }
                                         },
                                         onShowThisSrc = {
@@ -211,9 +211,9 @@ fun EvaRecordScreen(back: () -> Unit) {
                                         it = record,
                                         viewSrc = {
                                             if (record.record.context.srcEvent.isFromRule) {
-                                                AddRuleActivity.start(context, it)
+                                                AddRuleActivity.edit(context, it)
                                             } else {
-                                                AddDirectActionActivity.start(context, it)
+                                                AddDirectActionActivity.edit(context, it)
                                             }
                                         },
                                         onShowThisSrc = {

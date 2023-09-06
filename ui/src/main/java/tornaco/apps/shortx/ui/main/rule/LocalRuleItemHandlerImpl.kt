@@ -38,7 +38,7 @@ fun getLocalRuleItemHandler(vm: BaseRuleListViewModel): RuleItemHandler {
         }
 
         override fun edit(rule: RuleUM) {
-            AddRuleActivity.start(context, rule.id)
+            AddRuleActivity.edit(context, rule.id)
         }
 
         override fun click(rule: RuleUM) {

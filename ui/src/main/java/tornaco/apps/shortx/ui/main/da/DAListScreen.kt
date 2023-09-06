@@ -1,9 +1,15 @@
+@file:OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+
 package tornaco.apps.shortx.ui.main.da
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,8 +20,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -30,8 +38,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
@@ -91,7 +101,7 @@ fun DirectActionListScreen() {
             pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
-            AddDirectActionActivity.start(context)
+            AddDirectActionActivity.create(context)
         },
         onUrlClick = {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_DA_URL, it))
@@ -118,6 +128,9 @@ fun DirectActionListScreen() {
                 isLoading = daListState.isLoading,
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 das = daListState.das,
+                daSetFilters = daListState.daSetFilters,
+                selectedDASetFilter = daListState.selectedDASetFilter,
+                selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                 showOverflowMenu = true
             )
         }
@@ -130,6 +143,9 @@ fun DirectActionListContent(
     isShowDetailedDAItem: Boolean,
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean = false,
+    daSetFilters: List<DaSetFilter> = emptyList(),
+    selectedDASetFilter: DaSetFilter? = null,
+    selectDASetFilter: (DaSetFilter?) -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -141,23 +157,56 @@ fun DirectActionListContent(
         }
     }
 
-    if (!isLoading && das.isEmpty()) {
-        EmptyList(modifier = Modifier.fillMaxSize())
-    } else {
-        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
-        if (isShowDetailedDAItem) {
-            DAListContent(
-                das = das,
-                isSubscribed = subscribeState.isSubscribed,
-                showOverflowMenu = showOverflowMenu,
-            )
-        } else {
-            DAListContentCompat(
-                das = das,
-                showOverflowMenu = showOverflowMenu,
-            )
+    Column {
+        if (daSetFilters.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                // All
+                ShortXFilterChip(
+                    modifier = Modifier.padding(start = 16.dp),
+                    selected = selectedDASetFilter == null,
+                    label = {
+                        Text(text = LocalI18N.current["ui.common.all"])
+                    },
+
+                    onClick = {
+                        selectDASetFilter(null)
+                    })
+
+                daSetFilters.forEach {
+                    ShortXFilterChip(
+                        modifier = Modifier.padding(start = 16.dp),
+                        selected = selectedDASetFilter == it,
+                        label = {
+                            Text(text = it.title)
+                        },
+                        onClick = {
+                            selectDASetFilter(it)
+                        })
+                }
+            }
         }
 
+        if (!isLoading && das.isEmpty()) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
+            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            if (isShowDetailedDAItem) {
+                DAListContent(
+                    das = das,
+                    isSubscribed = subscribeState.isSubscribed,
+                    showOverflowMenu = showOverflowMenu,
+                )
+            } else {
+                DAListContentCompat(
+                    das = das,
+                    showOverflowMenu = showOverflowMenu,
+                )
+            }
+
+        }
     }
 }
 
@@ -170,7 +219,7 @@ private fun DAListContent(
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxSize(),
         columns = dynamicStaggeredGridCells(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
+        contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)
     ) {
         items(items = das, key = { it.id }) { da ->
             ShortXCard(

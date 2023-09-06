@@ -43,7 +43,7 @@ fun getLocalDAItemHandler(vm: BaseDAListViewModel): DAItemHandler {
         }
 
         override fun edit(da: DirectActionUM) {
-            AddDirectActionActivity.start(context, da.id)
+            AddDirectActionActivity.edit(context, da.id)
         }
 
         override fun click(da: DirectActionUM) {

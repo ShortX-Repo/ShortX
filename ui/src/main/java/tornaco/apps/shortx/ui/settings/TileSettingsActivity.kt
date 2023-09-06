@@ -242,7 +242,7 @@ private fun TileItem(
                         } else {
                             usage.forEach {
                                 LinkText(text = LocalI18N.current["ui.settings.sb.used", mapOf("title" to it.title)]) {
-                                    AddRuleActivity.start(context, it.id)
+                                    AddRuleActivity.edit(context, it.id)
                                 }
                             }
                         }
