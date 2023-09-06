@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -38,7 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
-import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
@@ -101,7 +102,10 @@ fun DirectActionListScreen() {
             pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
-            AddDirectActionActivity.create(context, daListState.selectedDASetFilter?.id)
+            AddDirectActionActivity.create(
+                context = context,
+                daSetId = if (daListState.selectedDASetFilter.isAll || daListState.selectedDASetFilter.isAllFlat) null else daListState.selectedDASetFilter.id
+            )
         },
         onUrlClick = {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_DA_URL, it))
@@ -120,11 +124,14 @@ fun DirectActionListScreen() {
         val setHandler =
             getLocalDASetItemHandler(bottomSheetState = bottomSheetState, vm = daListViewModel)
 
+        val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+
         CompositionLocalProvider(
             LocalDAItemHandler provides daHandler,
             LocalDASetItemHandler provides setHandler
         ) {
             DirectActionListContent(
+                lazyStaggeredGridState = lazyStaggeredGridState,
                 isLoading = daListState.isLoading,
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 das = daListState.das,
@@ -139,13 +146,14 @@ fun DirectActionListScreen() {
 
 @Composable
 fun DirectActionListContent(
+    lazyStaggeredGridState: LazyStaggeredGridState,
     isLoading: Boolean,
     isShowDetailedDAItem: Boolean,
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean = false,
     daSetFilters: List<DaSetFilter> = emptyList(),
-    selectedDASetFilter: DaSetFilter? = null,
-    selectDASetFilter: (DaSetFilter?) -> Unit = {},
+    selectedDASetFilter: DaSetFilter = daSetAll,
+    selectDASetFilter: (DaSetFilter) -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -163,19 +171,7 @@ fun DirectActionListContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                // All
-                ShortXFilterChip(
-                    modifier = Modifier.padding(start = 16.dp),
-                    selected = selectedDASetFilter == null,
-                    label = {
-                        Text(text = LocalI18N.current["ui.common.all"])
-                    },
-
-                    onClick = {
-                        selectDASetFilter(null)
-                    })
-
-                daSetFilters.forEach {
+                (listOf(daSetAll, daSetAllFlat) + daSetFilters).forEach {
                     ShortXFilterChip(
                         modifier = Modifier.padding(start = 16.dp),
                         selected = selectedDASetFilter == it,
@@ -195,6 +191,7 @@ fun DirectActionListContent(
             val subscribeState by LVLStateHolder.subscribeState.collectAsState()
             if (isShowDetailedDAItem) {
                 DAListContent(
+                    lazyStaggeredGridState = lazyStaggeredGridState,
                     das = das,
                     isSubscribed = subscribeState.isSubscribed,
                     showOverflowMenu = showOverflowMenu,
@@ -212,11 +209,13 @@ fun DirectActionListContent(
 
 @Composable
 private fun DAListContent(
+    lazyStaggeredGridState: LazyStaggeredGridState,
     das: List<DirectActionUM>,
     isSubscribed: Boolean,
     showOverflowMenu: Boolean,
 ) {
     LazyVerticalStaggeredGrid(
+        state = lazyStaggeredGridState,
         modifier = Modifier.fillMaxSize(),
         columns = dynamicStaggeredGridCells(),
         contentPadding = PaddingValues(top = 8.dp, bottom = 72.dp)

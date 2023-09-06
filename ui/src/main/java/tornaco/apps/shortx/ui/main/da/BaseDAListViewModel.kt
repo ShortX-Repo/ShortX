@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
+import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.main.DASortBy
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
@@ -33,14 +34,18 @@ import java.util.*
 data class DAListState(
     val das: List<DirectActionUM> = emptyList(),
     val daSetFilters: List<DaSetFilter> = emptyList(),
-    // Null means all.
-    val selectedDASetFilter: DaSetFilter? = null,
+    val selectedDASetFilter: DaSetFilter = daSetAll,
     val daSortBy: DASortBy = DASortBy.CreateTime,
     val isShowDetailedDAItem: Boolean = true,
     val isLoading: Boolean = true,
 )
 
 data class DaSetFilter(val id: String, val title: String)
+
+val daSetAllFlat = DaSetFilter("daSetAllFlat", i18NIns["ui.common.flat"])
+val daSetAll = DaSetFilter("daSetAll", i18NIns["ui.common.all"])
+val DaSetFilter.isAll get() = this == daSetAll
+val DaSetFilter.isAllFlat get() = this == daSetAllFlat
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseDAListViewModel(context: Context) :

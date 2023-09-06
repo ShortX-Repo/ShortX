@@ -35,11 +35,19 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val selectedDASetFilter = state.value.selectedDASetFilter
                 val das = shortXManager.getAllDirectAction()
                     .filter {
-                        if (selectedDASetFilter == null) {
-                            // No filter, show items belong to no set.
-                            it.directActionSetId.isNullOrEmpty()
-                        } else {
-                            it.directActionSetId == selectedDASetFilter.id
+                        when (selectedDASetFilter) {
+                            daSetAll -> {
+                                // No filter, show items belong to no set.
+                                it.directActionSetId.isNullOrEmpty()
+                            }
+
+                            daSetAllFlat -> {
+                                true
+                            }
+
+                            else -> {
+                                it.directActionSetId == selectedDASetFilter.id
+                            }
                         }
                     }
                     .sortedByDescending { it.createTime }
@@ -82,11 +90,19 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
 
                 updateState {
                     copy(
-                        das = if (selectedDASetFilter == null) {
-                            // No filter, show set and das.
-                            sets + das
-                        } else {
-                            das
+                        das = when (selectedDASetFilter) {
+                            daSetAll -> {
+                                // No filter, show set and das.
+                                sets + das
+                            }
+
+                            daSetAllFlat -> {
+                                das
+                            }
+
+                            else -> {
+                                das
+                            }
                         },
                         daSetFilters = daSetFilters,
                         isLoading = false
@@ -114,7 +130,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
     }
 
     // null means all.
-    fun selectDASetFilter(daSetFilter: DaSetFilter?) {
+    fun selectDASetFilter(daSetFilter: DaSetFilter) {
         updateState { copy(selectedDASetFilter = daSetFilter) }
         loadDAList()
     }

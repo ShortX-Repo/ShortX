@@ -198,6 +198,7 @@
   "ui.common.copy": "Copy",
   "ui.common.add": "Add",
   "ui.common.all": "All",
+  "ui.common.flat": "Flat",
   "ui.common.saved": "Saved",
   "ui.common.done": "Done",
   "ui.common.import.from.file": "Import from file",
