@@ -104,11 +104,15 @@ fun ShortXTheme(
     }
     val shortXColorScheme = when {
         darkTheme -> ShortXColorScheme(
+            checkedThumb = Color.White,
+            checkedTrack = colorScheme.primaryContainer,
             uncheckedThumb = Color(0xFFEAEAEA),
-            uncheckedTrack = Color(0xFF9e9e9e),
+            uncheckedTrack = Color(0xFFAAAAAA),
         )
 
         else -> ShortXColorScheme(
+            checkedThumb = Color.White,
+            checkedTrack = colorScheme.primary,
             uncheckedThumb = Color(0xFFfafafa),
             uncheckedTrack = Color(0xFFdddddd),
         )

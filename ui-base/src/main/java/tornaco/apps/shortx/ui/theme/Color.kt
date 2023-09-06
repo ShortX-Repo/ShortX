@@ -89,6 +89,8 @@ val ActionRecordColor = Color(0xFFF8B62E)
 
 @Stable
 data class ShortXColorScheme(
+    val checkedTrack: Color,
+    val checkedThumb: Color,
     val uncheckedTrack: Color,
     val uncheckedThumb: Color,
 )

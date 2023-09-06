@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -79,7 +78,7 @@ private fun CustomSwitch(
         modifier = modifier
             .size(width = width, height = height)
             .background(
-                color = if (switchOn) MaterialTheme.colorScheme.primary else uncheckedTrackColor,
+                color = if (switchOn) LocalShortXColorSchema.current.checkedTrack else uncheckedTrackColor,
                 shape = CircleShape
             )
             .clickable(
@@ -103,7 +102,7 @@ private fun CustomSwitch(
                     modifier = Modifier
                         .size(size = thumbSize)
                         .background(
-                            color = Color.White,
+                            color = LocalShortXColorSchema.current.checkedThumb,
                             shape = CircleShape
                         )
                 )
