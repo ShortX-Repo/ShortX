@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionList
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
@@ -26,6 +27,7 @@ import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.rule.IDAObserver
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver
@@ -767,11 +769,23 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
-    fun getRuleSetById(id: String): RuleSet? {
-        return ruleSetsStore.getRuleSet(id)
+    fun getRuleSetById(id: String, withRules: Boolean): RuleSet? {
+        return ruleSetsStore.getRuleSet(id)?.let { ruleSet ->
+            if (withRules) {
+                RuleSet
+                    .newBuilder(ruleSet)
+                    .setRuleList(
+                        RuleList.newBuilder()
+                            .addAllRules(getAllRules().filter { it.ruleSetId == id })
+                            .build()
+                    ).build()
+            } else {
+                ruleSet
+            }
+        }
     }
 
-    fun getAllRuleSets(): List<RuleSet> {
+    fun getAllRuleSets(withRules: Boolean): List<RuleSet> {
         return ruleSetsStore.getAllRuleSets()
     }
 
@@ -800,8 +814,21 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         }
     }
 
-    fun getDASetById(id: String): DirectActionSet? {
-        return daSetsStore.getDirectActionSet(id)
+    fun getDASetById(id: String, withDAs: Boolean): DirectActionSet? {
+        return daSetsStore.getDirectActionSet(id)?.let { directActionSet ->
+            if (withDAs) {
+                DirectActionSet.newBuilder(directActionSet)
+                    .setDaList(
+                        DirectActionList
+                            .newBuilder()
+                            .addAllDirectActions(getAllDirectAction().filter { it.directActionSetId == id })
+                            .build()
+                    )
+                    .build()
+            } else {
+                directActionSet
+            }
+        }
     }
 
     fun getAllDASets(): List<DirectActionSet> {

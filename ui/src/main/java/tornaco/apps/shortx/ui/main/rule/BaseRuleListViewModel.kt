@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
+import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import java.util.*
 
@@ -142,7 +143,12 @@ abstract class BaseRuleListViewModel(context: Context) :
     }
 
     fun ruleToShareString(rule: RuleUM): String? =
-        shortXManager.getRuleById(rule.id)?.toJson()?.addShareContentHeader(mapOf("type" to "rule"))
+        shortXManager.getRuleById(rule.id)?.toJson()
+            ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE))
+
+    fun ruleSetToShareString(rule: RuleUM): String? =
+        shortXManager.getRuleSetById(id = rule.id, withRules = true)?.toJson()
+            ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_RULE_SET))
 
     fun importRule(rule: Rule, shouldChangeId: Boolean, token: String?) {
         logger.d("importRule: $rule")

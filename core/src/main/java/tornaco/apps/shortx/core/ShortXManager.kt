@@ -889,15 +889,15 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun getRuleSetById(id: String): RuleSet? {
+    fun getRuleSetById(id: String, withRules: Boolean = false): RuleSet? {
         return invokeService(null) {
-            getRuleSetById(id)?.let { RuleSet.parseFrom(it.byteData) }
+            getRuleSetById(id, withRules)?.let { RuleSet.parseFrom(it.byteData) }
         }
     }
 
-    fun getAllRuleSets(): List<RuleSet> {
+    fun getAllRuleSets(withRules: Boolean = false): List<RuleSet> {
         return invokeService(emptyList()) {
-            allRuleSets.map { RuleSet.parseFrom(it.byteData) }
+            getAllRuleSets(withRules).map { RuleSet.parseFrom(it.byteData) }
         }
     }
 
@@ -913,15 +913,15 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun getDASetById(id: String): DirectActionSet? {
+    fun getDASetById(id: String, withDAs: Boolean = false): DirectActionSet? {
         return invokeService(null) {
-            getDASetById(id)?.let { DirectActionSet.parseFrom(it.byteData) }
+            getDASetById(id, withDAs)?.let { DirectActionSet.parseFrom(it.byteData) }
         }
     }
 
-    fun getAllDASets(): List<DirectActionSet> {
+    fun getAllDASets(withDAs: Boolean = false): List<DirectActionSet> {
         return invokeService(emptyList()) {
-            allDASets.map { DirectActionSet.parseFrom(it.byteData) }
+            getAllDASets(withDAs).map { DirectActionSet.parseFrom(it.byteData) }
         }
     }
 

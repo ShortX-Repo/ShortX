@@ -149,6 +149,7 @@ data class SharedData(val type: String, val data: String) : Parcelable {
         const val TYPE_DA = "da"
         const val TYPE_DA_URL = "daUrl"
         const val TYPE_RULE = "rule"
+        const val TYPE_RULE_SET = "ruleSet"
         const val TYPE_RULE_URL = "ruleUrl"
     }
 }

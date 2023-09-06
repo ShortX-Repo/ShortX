@@ -217,11 +217,11 @@ interface IShortX {
     // Rule Set
     void addOrUpdateRuleSet(in ByteArrayWrapper rs);
     void deleteRuleSet(String id);
-    ByteArrayWrapper getRuleSetById(String id);
-    List<ByteArrayWrapper> getAllRuleSets();
+    ByteArrayWrapper getRuleSetById(String id, boolean withRules);
+    List<ByteArrayWrapper> getAllRuleSets(boolean withRules);
 
     void addOrUpdateDASet(in ByteArrayWrapper ds);
     void deleteDASet(String id);
-    ByteArrayWrapper getDASetById(String id);
-    List<ByteArrayWrapper> getAllDASets();
+    ByteArrayWrapper getDASetById(String id, boolean withDAs);
+    List<ByteArrayWrapper> getAllDASets(boolean withDAs);
 }

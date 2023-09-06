@@ -495,11 +495,11 @@ public interface IShortX extends android.os.IInterface
     @Override public void deleteRuleSet(java.lang.String id) throws android.os.RemoteException
     {
     }
-    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id) throws android.os.RemoteException
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id, boolean withRules) throws android.os.RemoteException
     {
       return null;
     }
-    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets() throws android.os.RemoteException
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets(boolean withRules) throws android.os.RemoteException
     {
       return null;
     }
@@ -509,11 +509,11 @@ public interface IShortX extends android.os.IInterface
     @Override public void deleteDASet(java.lang.String id) throws android.os.RemoteException
     {
     }
-    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id) throws android.os.RemoteException
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException
     {
       return null;
     }
-    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets() throws android.os.RemoteException
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException
     {
       return null;
     }
@@ -1965,7 +1965,9 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getRuleSetById(_arg0);
+          boolean _arg1;
+          _arg1 = (0!=data.readInt());
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getRuleSetById(_arg0, _arg1);
           reply.writeNoException();
           if ((_result!=null)) {
             reply.writeInt(1);
@@ -1979,7 +1981,9 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_getAllRuleSets:
         {
           data.enforceInterface(descriptor);
-          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllRuleSets();
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllRuleSets(_arg0);
           reply.writeNoException();
           reply.writeTypedList(_result);
           return true;
@@ -2012,7 +2016,9 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDASetById(_arg0);
+          boolean _arg1;
+          _arg1 = (0!=data.readInt());
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDASetById(_arg0, _arg1);
           reply.writeNoException();
           if ((_result!=null)) {
             reply.writeInt(1);
@@ -2026,7 +2032,9 @@ public interface IShortX extends android.os.IInterface
         case TRANSACTION_getAllDASets:
         {
           data.enforceInterface(descriptor);
-          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDASets();
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDASets(_arg0);
           reply.writeNoException();
           reply.writeTypedList(_result);
           return true;
@@ -4854,7 +4862,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id) throws android.os.RemoteException
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id, boolean withRules) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -4862,9 +4870,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
+          _data.writeInt(((withRules)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleSetById, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getRuleSetById(id);
+            return getDefaultImpl().getRuleSetById(id, withRules);
           }
           _reply.readException();
           if ((0!=_reply.readInt())) {
@@ -4880,16 +4889,17 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets() throws android.os.RemoteException
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets(boolean withRules) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((withRules)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllRuleSets, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllRuleSets();
+            return getDefaultImpl().getAllRuleSets(withRules);
           }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
@@ -4944,7 +4954,7 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id) throws android.os.RemoteException
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -4952,9 +4962,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
+          _data.writeInt(((withDAs)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDASetById, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getDASetById(id);
+            return getDefaultImpl().getDASetById(id, withDAs);
           }
           _reply.readException();
           if ((0!=_reply.readInt())) {
@@ -4970,16 +4981,17 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
-      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets() throws android.os.RemoteException
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((withDAs)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllDASets, _data, _reply, 0);
           if (!_status && getDefaultImpl() != null) {
-            return getDefaultImpl().getAllDASets();
+            return getDefaultImpl().getAllDASets(withDAs);
           }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
@@ -5319,10 +5331,10 @@ public interface IShortX extends android.os.IInterface
 
   public void addOrUpdateRuleSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rs) throws android.os.RemoteException;
   public void deleteRuleSet(java.lang.String id) throws android.os.RemoteException;
-  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id) throws android.os.RemoteException;
-  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets() throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id, boolean withRules) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRuleSets(boolean withRules) throws android.os.RemoteException;
   public void addOrUpdateDASet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper ds) throws android.os.RemoteException;
   public void deleteDASet(java.lang.String id) throws android.os.RemoteException;
-  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id) throws android.os.RemoteException;
-  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets() throws android.os.RemoteException;
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException;
 }

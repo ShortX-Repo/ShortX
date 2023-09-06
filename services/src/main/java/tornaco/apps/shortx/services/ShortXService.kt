@@ -736,14 +736,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.deleteRuleSet(id)
         }
 
-        override fun getRuleSetById(id: String): ByteArrayWrapper? {
-            return shortXContext.rule.getRuleSetById(id)?.let {
+        override fun getRuleSetById(id: String, withRules: Boolean): ByteArrayWrapper? {
+            return shortXContext.rule.getRuleSetById(id, withRules)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
 
-        override fun getAllRuleSets(): List<ByteArrayWrapper> {
-            return shortXContext.rule.getAllRuleSets().map {
+        override fun getAllRuleSets(withRules: Boolean): List<ByteArrayWrapper> {
+            return shortXContext.rule.getAllRuleSets(withRules).map {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
@@ -756,13 +756,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.deleteDASet(id)
         }
 
-        override fun getDASetById(id: String): ByteArrayWrapper? {
-            return shortXContext.rule.getDASetById(id)?.let {
+        override fun getDASetById(id: String, withDAs: Boolean): ByteArrayWrapper? {
+            return shortXContext.rule.getDASetById(id, withDAs)?.let {
                 ByteArrayWrapper(it.toByteArray())
             }
         }
 
-        override fun getAllDASets(): List<ByteArrayWrapper> {
+        override fun getAllDASets(withDAs: Boolean): List<ByteArrayWrapper> {
             return shortXContext.rule.getAllDASets().map {
                 ByteArrayWrapper(it.toByteArray())
             }

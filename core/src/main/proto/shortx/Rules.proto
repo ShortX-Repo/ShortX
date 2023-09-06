@@ -13,6 +13,10 @@ message RuleSet {
   string title = 2;
   string description = 3;
   string icon = 4;
+  int64 lastUpdateTime = 5;
+  int64 createTime = 6;
+
+  RuleList ruleList = 7;
 }
 
 message RuleSetList {
