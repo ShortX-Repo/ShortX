@@ -230,6 +230,12 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
+    fun initRuleSetIdIfNonNull(ruleSetId: String?) {
+        ruleSetId?.let {
+            updateState { copy(ruleSetId = it) }
+        }
+    }
+
     fun initFromRuleId(ruleId: String?) {
         ruleId?.let { id ->
             viewModelScope.launch {

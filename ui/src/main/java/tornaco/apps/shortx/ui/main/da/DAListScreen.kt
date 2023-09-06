@@ -77,6 +77,7 @@ fun DirectActionListScreen() {
         }
     }
 
+    val selectedDASetFilter = daListState.selectedDASetFilter
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.da",
@@ -104,7 +105,7 @@ fun DirectActionListScreen() {
         onAddClick = {
             AddDirectActionActivity.create(
                 context = context,
-                daSetId = if (daListState.selectedDASetFilter.isAll || daListState.selectedDASetFilter.isAllFlat) null else daListState.selectedDASetFilter.id
+                daSetId = if (selectedDASetFilter.isAll || selectedDASetFilter.isAllFlat) null else selectedDASetFilter.id
             )
         },
         onUrlClick = {
@@ -136,7 +137,7 @@ fun DirectActionListScreen() {
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 das = daListState.das,
                 daSetFilters = daListState.daSetFilters,
-                selectedDASetFilter = daListState.selectedDASetFilter,
+                selectedDASetFilter = selectedDASetFilter,
                 selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                 showOverflowMenu = true
             )
@@ -146,7 +147,7 @@ fun DirectActionListScreen() {
 
 @Composable
 fun DirectActionListContent(
-    lazyStaggeredGridState: LazyStaggeredGridState,
+    lazyStaggeredGridState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     isLoading: Boolean,
     isShowDetailedDAItem: Boolean,
     das: List<DirectActionUM>,

@@ -21,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RuleListViewModel @Inject constructor(@ApplicationContext context: Context) :
     BaseRuleListViewModel(context) {
+
     override fun loadRuleList(delay: Boolean) {
         logger.d("loadRuleList")
         viewModelScope.launch {
@@ -31,8 +32,23 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     logger.d("activeJobs: $this")
                 }
                 val allRules = shortXManager.getAllRules()
+                val selectedDASetFilter = state.value.selectedRuleSetFilter
                 val rules = allRules
-                    .filter { it.ruleSetId.isNullOrEmpty() }
+                    .filter {
+                        when (selectedDASetFilter) {
+                            ruleSetAll -> {
+                                it.ruleSetId.isNullOrEmpty()
+                            }
+
+                            ruleSetAllFlat -> {
+                                true
+                            }
+
+                            else -> {
+                                it.ruleSetId == selectedDASetFilter.id
+                            }
+                        }
+                    }
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
                         runCatching {
@@ -65,8 +81,26 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
                         )
                     }
+                val ruleSetFilters = sets.map { RuleSetFilter(it.id, it.title) }
+
                 updateState {
-                    copy(rules = sets + rules, isLoading = false)
+                    copy(
+                        rules = when {
+                            selectedRuleSetFilter == ruleSetAll -> {
+                                sets + rules
+                            }
+
+                            selectedDASetFilter == ruleSetAllFlat -> {
+                                rules
+                            }
+
+                            else -> {
+                                rules
+                            }
+                        },
+                        ruleSetFilters = ruleSetFilters,
+                        isLoading = false
+                    )
                 }
             }
         }
@@ -104,5 +138,10 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 RuleSet.newBuilder(originalSet).setTitle(newName).build()
             )
         }
+    }
+
+    fun selectRuleSetFilter(filter: RuleSetFilter) {
+        updateState { copy(selectedRuleSetFilter = filter) }
+        loadRuleList()
     }
 }

@@ -129,7 +129,6 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         }
     }
 
-    // null means all.
     fun selectDASetFilter(daSetFilter: DaSetFilter) {
         updateState { copy(selectedDASetFilter = daSetFilter) }
         loadDAList()

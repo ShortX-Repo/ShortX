@@ -86,6 +86,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 class AddRuleActivity : BaseActivity() {
     companion object {
         private const val KEY_RULE_ID = "ruleId"
+        private const val KEY_RULE_SET_ID = "ruleSetId"
 
         @JvmStatic
         fun edit(context: Context, ruleId: String) {
@@ -95,8 +96,9 @@ class AddRuleActivity : BaseActivity() {
         }
 
         @JvmStatic
-        fun create(context: Context) {
+        fun create(context: Context, ruleSetId: String? = null) {
             val starter = Intent(context, AddRuleActivity::class.java)
+                .putExtra(KEY_RULE_SET_ID, ruleSetId)
             context.startActivity(starter)
         }
     }
@@ -104,8 +106,10 @@ class AddRuleActivity : BaseActivity() {
     @Composable
     override fun Content() {
         val ruleId = intent.getStringExtra(KEY_RULE_ID)
+        val ruleSetId = intent.getStringExtra(KEY_RULE_SET_ID)
         AddRuleScreen(
             ruleId = ruleId,
+            ruleSetId = ruleSetId,
             screenTitle = if (ruleId != null) {
                 LocalI18N.current["ui.title.edit.rule"]
             } else {
@@ -122,6 +126,7 @@ class AddRuleActivity : BaseActivity() {
 @Composable
 fun AddRuleScreen(
     ruleId: String? = null,
+    ruleSetId: String? = null,
     rule: Rule? = null,
     url: String? = null,
     screenTitle: String,
@@ -167,6 +172,7 @@ fun AddRuleScreen(
     val shortXProps = LocalShortXProps.current
 
     LaunchedEffect(vm) {
+        vm.initRuleSetIdIfNonNull(ruleSetId)
         vm.initFromRuleId(ruleId)
         vm.initFromRule(rule)
         vm.initFromUrl(url)

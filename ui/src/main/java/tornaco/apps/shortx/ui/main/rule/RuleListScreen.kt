@@ -1,8 +1,14 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package tornaco.apps.shortx.ui.main.rule
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.MainScaffold
@@ -58,7 +66,7 @@ fun RuleScreen() {
             ViewerActivity.start(context, fileUri)
         }
     }
-
+    val selectedRuleSetFilter = ruleListState.selectedRuleSetFilter
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.rule",
@@ -75,7 +83,10 @@ fun RuleScreen() {
             pickFileLauncher.launch("text/plain")
         },
         onAddClick = {
-            AddRuleActivity.create(context)
+            AddRuleActivity.create(
+                context,
+                ruleSetId = if (selectedRuleSetFilter.isAll || selectedRuleSetFilter.isAllFlat) null else selectedRuleSetFilter.id
+            )
         },
         onUrlClick = {
             ViewerActivity.start(context, SharedData(SharedData.TYPE_RULE_URL, it))
@@ -97,7 +108,15 @@ fun RuleScreen() {
             LocalRuleItemHandler provides ruleHandler,
             LocalRuleSetItemHandler provides setHandler,
         ) {
-            RuleContent(ruleListState.isLoading, ruleListState.rules)
+            RuleContent(
+                isLoading = ruleListState.isLoading,
+                rules = ruleListState.rules,
+                ruleSetFilters = ruleListState.ruleSetFilters,
+                selectedRuleSetFilter = selectedRuleSetFilter,
+                selectRuleSetFilter = {
+                    ruleListViewModel.selectRuleSetFilter(it)
+                }
+            )
         }
     }
 
@@ -106,7 +125,10 @@ fun RuleScreen() {
 @Composable
 fun RuleContent(
     isLoading: Boolean,
-    rules: List<RuleUM>
+    rules: List<RuleUM>,
+    ruleSetFilters: List<RuleSetFilter> = emptyList(),
+    selectedRuleSetFilter: RuleSetFilter = ruleSetAll,
+    selectRuleSetFilter: (RuleSetFilter) -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -118,14 +140,35 @@ fun RuleContent(
         }
     }
 
-    if (!isLoading && rules.isEmpty()) {
-        EmptyList(modifier = Modifier.fillMaxSize())
-    } else {
-        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
-        RuleListContent(
-            isSubscribed = subscribeState.isSubscribed,
-            rules = rules
-        )
+    Column {
+        if (ruleSetFilters.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                (listOf(ruleSetAll, ruleSetAllFlat) + ruleSetFilters).forEach {
+                    ShortXFilterChip(
+                        modifier = Modifier.padding(start = 16.dp),
+                        selected = selectedRuleSetFilter == it,
+                        label = {
+                            Text(text = it.title)
+                        },
+                        onClick = {
+                            selectRuleSetFilter(it)
+                        })
+                }
+            }
+        }
+
+        if (!isLoading && rules.isEmpty()) {
+            EmptyList(modifier = Modifier.fillMaxSize())
+        } else {
+            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            RuleListContent(
+                isSubscribed = subscribeState.isSubscribed,
+                rules = rules
+            )
+        }
     }
 }
 
