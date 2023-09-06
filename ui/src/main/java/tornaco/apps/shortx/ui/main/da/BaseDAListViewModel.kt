@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import java.util.*
 
@@ -159,7 +160,11 @@ abstract class BaseDAListViewModel(context: Context) :
 
     fun daToShareString(da: DirectActionUM): String? =
         shortXManager.getDirectActionById(da.id)?.toJson()
-            ?.addShareContentHeader(mapOf("type" to "da"))
+            ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_DA))
+
+    fun daSetToShareString(da: DirectActionUM): String? =
+        shortXManager.getDASetById(da.id, true)?.toJson()
+            ?.addShareContentHeader(mapOf("type" to SharedData.TYPE_DA_SET))
 
     fun importDA(da: DirectAction, shouldChangeId: Boolean, token: String?) {
         val daWithSameNameExists =

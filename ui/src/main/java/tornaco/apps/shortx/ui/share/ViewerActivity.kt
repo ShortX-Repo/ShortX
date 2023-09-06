@@ -147,6 +147,7 @@ class ViewerActivity : BaseActivity() {
 data class SharedData(val type: String, val data: String) : Parcelable {
     companion object {
         const val TYPE_DA = "da"
+        const val TYPE_DA_SET = "daSet"
         const val TYPE_DA_URL = "daUrl"
         const val TYPE_RULE = "rule"
         const val TYPE_RULE_SET = "ruleSet"
