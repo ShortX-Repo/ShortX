@@ -193,10 +193,10 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    fun restoreFrom(fileUri: Uri) {
+    fun restoreFrom(fileUri: Uri, token: String?) {
         viewModelScope.launch {
             kotlin.runCatching {
-                BackupAgent(context).restore(fileUri)
+                BackupAgent(context).restore(fileUri, token)
                 RestoreEventRegistry.dataHasBeenRestore()
                 _restorePerformed.emit(RestoreResult.Success)
             }.onFailure {
@@ -206,10 +206,10 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    fun importPrebuilts() {
+    fun importPrebuilts(token: String?) {
         viewModelScope.launch {
             kotlin.runCatching {
-                BackupAgent(context).restore("dev/dev-all.zip")
+                BackupAgent(context).restore("dev/dev-all.zip", token)
                 RestoreEventRegistry.dataHasBeenRestore()
                 _restorePerformed.emit(RestoreResult.Success)
             }.onFailure {

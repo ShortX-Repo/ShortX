@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LinkText
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -230,12 +231,12 @@ fun SettingsScreen(
                         }
                     }
 
-
+                    val props = LocalShortXProps.current
                     val pickFileLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.GetContent()
                     ) { fileUri ->
                         if (fileUri != null) {
-                            vm.restoreFrom(fileUri)
+                            vm.restoreFrom(fileUri, props.firstOrNull())
                         }
                     }
 
@@ -546,8 +547,7 @@ private fun devSettings(
         ActivityResultContracts.RequestPermission()
     ) { _: Boolean ->
     }
-
-
+    val props = LocalShortXProps.current
     return mutableListOf(
         Preference.Category(LocalI18N.current["ui.settings.dev"]),
 
@@ -606,7 +606,7 @@ private fun devSettings(
                 title = "Import prebuilt data",
                 summary = "Include prebuilt direct actions and rules.",
                 onClick = {
-                    vm.importPrebuilts()
+                    vm.importPrebuilts(props.firstOrNull())
                 }
             ))
 

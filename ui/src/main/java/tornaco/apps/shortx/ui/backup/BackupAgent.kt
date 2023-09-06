@@ -11,10 +11,12 @@ import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
+import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGlobalVarStore
@@ -80,18 +82,18 @@ class BackupAgent(private val context: Context) {
         }
     }
 
-    suspend fun restore(uri: Uri) {
+    suspend fun restore(uri: Uri, token: String?) {
         logger.d("restore, uri: $uri")
         context.contentResolver.openInputStream(uri).use { input ->
             if (input == null) throw FileNotFoundException("openInputStream failed")
-            restore(input)
+            restore(input, token)
         }
     }
 
-    suspend fun restore(assetName: String) {
+    suspend fun restore(assetName: String, token: String?) {
         logger.d("restore, assetName: $assetName")
         context.assets.open(assetName).use { input ->
-            restore(input)
+            restore(input, token)
         }
     }
 
@@ -118,18 +120,34 @@ class BackupAgent(private val context: Context) {
         }
     }
 
-    suspend fun restore(input: InputStream) {
+    suspend fun restore(input: InputStream, token: String?) {
         logger.d("restore: $input")
         withContext(Dispatchers.IO) {
             val content = readBackupPackageContent(input)
             content.rules.forEach {
                 logger.d("restore, add rule: ${it.title}")
                 // Disable this rule.
-                shortXManager.addRule(Rule.newBuilder(it).setIsEnabled(false).build())
+                shortXManager.addRule(
+                    Rule.newBuilder(it).setIsEnabled(false)
+                        .addAllExtras(mutableListOf<StringPair>().apply {
+                            if (!token.isNullOrEmpty()) {
+                                add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                            }
+                        })
+                        .build()
+                )
             }
             content.das.forEach {
                 logger.d("restore, add da: ${it.title}")
-                shortXManager.addDirectAction(it)
+                shortXManager.addDirectAction(
+                    DirectAction.newBuilder(it)
+                        .addAllExtras(mutableListOf<StringPair>().apply {
+                            if (!token.isNullOrEmpty()) {
+                                add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                            }
+                        })
+                        .build()
+                )
             }
             content.pkgSets.forEach {
                 logger.d("restore, add pkgset: ${it.label}")
