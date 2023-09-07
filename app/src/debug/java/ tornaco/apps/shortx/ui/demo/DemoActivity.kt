@@ -72,6 +72,12 @@ class DemoActivity : BaseActivity() {
                             Text(text = "Crash System")
                         }
 
+                        FilledTonalButton(onClick = {
+                            ShortXManagerNative.shortX?.testFATALError()
+                        }) {
+                            Text(text = "Test fatal error")
+                        }
+
                         val context = LocalContext.current
                         FilledTonalButton(onClick = {
                             AlertDialog.Builder(context)

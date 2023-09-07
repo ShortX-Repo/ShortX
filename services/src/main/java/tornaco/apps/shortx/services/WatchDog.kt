@@ -5,7 +5,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.services.ShortXService.shortXContext
+import tornaco.apps.shortx.services.data.Dirs
+import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
@@ -19,8 +22,15 @@ class WatchDogService(shortXContext: ShortXContext) :
     }
 
     fun onFatalError(error: Throwable, method: String = "") {
-        logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
         fatalErrors.add(error)
+        logger.e(error, "FATAL: $method got error in SYSTEM PROCESS")
+        // Write to file
+        val logFile = File(
+            File(Dirs.baseServerLogDir(), "fatal"),
+            "$method-${DateUtils.formatForFileName(System.currentTimeMillis())}.log"
+        )
+        logFile.parentFile.mkdirs()
+        logFile.writeText(error.stackTraceToString())
     }
 
     fun hasFatalError() = fatalErrors.isNotEmpty()

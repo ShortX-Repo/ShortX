@@ -224,4 +224,6 @@ interface IShortX {
     void deleteDASet(String id);
     ByteArrayWrapper getDASetById(String id, boolean withDAs);
     List<ByteArrayWrapper> getAllDASets(boolean withDAs);
+
+    void testFATALError();
 }

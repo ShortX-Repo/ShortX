@@ -432,6 +432,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun testFATALError() {
+            shortXContext.watchDog.onFatalError(java.lang.IllegalStateException(), "testFATALError")
+        }
+
         override fun executeHttpRequest(request: ByteArrayWrapper): List<String> {
             val localVars = LocalVars.obtain()
             val data = HttpRequest.parseFrom(request.byteData)

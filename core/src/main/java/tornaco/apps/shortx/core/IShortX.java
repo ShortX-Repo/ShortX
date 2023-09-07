@@ -517,6 +517,9 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public void testFATALError() throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2037,6 +2040,13 @@ public interface IShortX extends android.os.IInterface
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDASets(_arg0);
           reply.writeNoException();
           reply.writeTypedList(_result);
+          return true;
+        }
+        case TRANSACTION_testFATALError:
+        {
+          data.enforceInterface(descriptor);
+          this.testFATALError();
+          reply.writeNoException();
           return true;
         }
         default:
@@ -5002,6 +5012,24 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void testFATALError() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_testFATALError, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().testFATALError();
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5136,6 +5164,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_deleteDASet = (android.os.IBinder.FIRST_CALL_TRANSACTION + 129);
     static final int TRANSACTION_getDASetById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 130);
     static final int TRANSACTION_getAllDASets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 131);
+    static final int TRANSACTION_testFATALError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 132);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5337,4 +5366,5 @@ public interface IShortX extends android.os.IInterface
   public void deleteDASet(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException;
+  public void testFATALError() throws android.os.RemoteException;
 }
