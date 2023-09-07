@@ -7,20 +7,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.backup.DA_FILE_NAME
+import tornaco.apps.shortx.core.backup.DA_SET_FILE_NAME
 import tornaco.apps.shortx.core.backup.GV_FILE_NAME
 import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.PKGSET_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
+import tornaco.apps.shortx.core.backup.RULE_SET_FILE_NAME
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toStringPair
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.store.BaseDirectActionSetsStore
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseGlobalVarStore
 import tornaco.apps.shortx.core.store.BasePkgSetsStore
+import tornaco.apps.shortx.core.store.BaseRuleSetsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
@@ -63,6 +69,19 @@ class BackupAgent(private val context: Context) {
             val gvStore = BaseGlobalVarStore(this, File(backupTempDir, GV_FILE_NAME))
             gvStore.addAllGlobalVars(globalVars = allGV, write = false)
             gvStore.write()
+
+            // DA Sets
+            val allDASets = shortXManager.getAllDASets(false)
+            val daSetsStore =
+                BaseDirectActionSetsStore(this, File(backupTempDir, DA_SET_FILE_NAME))
+            daSetsStore.addDirectActionSets(directActionSets = allDASets, write = false)
+            daSetsStore.write()
+
+            // Rule Sets
+            val allRuleSets = shortXManager.getAllRuleSets(false)
+            val ruleSetStore = BaseRuleSetsStore(this, File(backupTempDir, RULE_SET_FILE_NAME))
+            ruleSetStore.addRuleSets(ruleSets = allRuleSets, write = false)
+            ruleSetStore.write()
 
             // Meta
             val metaFile = File(backupTempDir, META_FILE_NAME)
@@ -116,6 +135,14 @@ class BackupAgent(private val context: Context) {
                 logger.w("Delete pkg set: ${it.label}")
                 shortXManager.deletePkgSet(it.label)
             }
+            shortXManager.getAllRuleSets(false).forEach {
+                logger.w("Delete rule set: ${it.title}")
+                shortXManager.deleteRuleSet(it.id)
+            }
+            shortXManager.getAllDASets(false).forEach {
+                logger.w("Delete da set: ${it.title}")
+                shortXManager.deleteDASet(it.id)
+            }
             shortXManager.clearEvaluateRecords()
         }
     }
@@ -156,6 +183,14 @@ class BackupAgent(private val context: Context) {
             content.gvs.forEach {
                 logger.d("restore, add gv: ${it.name}")
                 shortXManager.addGlobalVar(it)
+            }
+            content.daSets.forEach {
+                logger.d("restore, add daSet: ${it.title}")
+                shortXManager.addOrUpdateDASet(it)
+            }
+            content.ruleSets.forEach {
+                logger.d("restore, add ruleSets: ${it.title}")
+                shortXManager.addOrUpdateRuleSet(it)
             }
         }
     }
@@ -209,11 +244,30 @@ class BackupAgent(private val context: Context) {
             gvStore.read()
             val gvs = gvStore.getAllGlobalVars().filterNot { it.isSecret }
 
+            // DA Sets
+            val daSetsPb = File(tmpExtractedFile, DA_SET_FILE_NAME)
+            val daSetsStore = BaseDirectActionSetsStore(this, daSetsPb)
+            daSetsStore.read()
+            val daSets = daSetsStore.getAllDirectActionSets()
+
+            // Rule Sets
+            val ruleSetsPb = File(tmpExtractedFile, RULE_SET_FILE_NAME)
+            val ruleSetsStore = BaseRuleSetsStore(this, ruleSetsPb)
+            ruleSetsStore.read()
+            val ruleSets = ruleSetsStore.getAllRuleSets()
+
             // Clean up.
             tmpExtractedFile.deleteRecursively()
             tmpZipFile.deleteRecursively()
 
-            BackupPackageContent(das, rules, pkgSets, gvs)
+            BackupPackageContent(
+                das = das,
+                rules = rules,
+                pkgSets = pkgSets,
+                gvs = gvs,
+                daSets = daSets,
+                ruleSets = ruleSets
+            )
         }
     }
 
@@ -237,5 +291,7 @@ data class BackupPackageContent(
     val das: List<DirectAction>,
     val rules: List<Rule>,
     val pkgSets: List<PkgSet>,
-    val gvs: List<GlobalVar>
+    val gvs: List<GlobalVar>,
+    val daSets: List<DirectActionSet>,
+    val ruleSets: List<RuleSet>,
 )
