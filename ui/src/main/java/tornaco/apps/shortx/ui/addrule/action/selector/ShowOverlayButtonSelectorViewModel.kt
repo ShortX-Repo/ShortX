@@ -27,6 +27,7 @@ data class OverlayButtonSelectorState(
     val tag: String = "",
     val maxWidth: Int = 500,
     val maxHeight: Int = 500,
+    val buttonMinWidth: Int = 64,
     val backgroundColor: String = "",
     val backgroundAlpha: Float = 0.8f,
     val id: String = defaultNewActionId()
@@ -60,6 +61,20 @@ fun OverlayButtonSetting.toButton(): Button {
         })
 }
 
+fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
+    return Action.ShowOverlay(
+        id = this.id,
+        autoCollapse = this.autoCollapse,
+        tag = this.tag,
+        settings = this.buttons.map { it.toOverlayButtonSetting() },
+        maxHeight = this.maxHeight,
+        maxWidth = this.maxWidth,
+        buttonMinWidth = this.buttonMinWidth,
+        backgroundColor = this.backgroundColor,
+        backgroundAlpha = this.backgroundAlpha
+    )
+}
+
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext context: Context) :
@@ -77,6 +92,7 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 tag = settings.tag,
                 maxWidth = settings.maxWidth,
                 maxHeight = settings.maxHeight,
+                buttonMinWidth = settings.buttonMinWidth,
                 backgroundAlpha = settings.backgroundAlpha,
                 backgroundColor = settings.backgroundColor
             )
@@ -127,6 +143,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setMaxHeight(max: Int) {
         updateState { copy(maxHeight = max) }
+    }
+
+    fun setButtonMinWidth(max: Int) {
+        updateState { copy(buttonMinWidth = max) }
     }
 
     fun addButton() {

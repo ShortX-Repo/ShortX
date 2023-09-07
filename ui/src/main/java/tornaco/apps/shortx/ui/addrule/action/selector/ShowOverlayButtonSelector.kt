@@ -128,16 +128,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                         },
                         actions = {
                             IconButton(onClick = {
-                                val action = Action.ShowOverlay(
-                                    id = selectorState.id,
-                                    autoCollapse = selectorState.autoCollapse,
-                                    tag = selectorState.tag,
-                                    settings = selectorState.buttons.map { it.toOverlayButtonSetting() },
-                                    maxHeight = selectorState.maxHeight,
-                                    maxWidth = selectorState.maxWidth,
-                                    backgroundColor = selectorState.backgroundColor,
-                                    backgroundAlpha = selectorState.backgroundAlpha
-                                )
+                                val action = selectorState.toAction()
 
                                 dialogState.onSelected(action)
                                 dialogState.dismiss()
@@ -245,7 +236,7 @@ private fun Content(
 
         StandardSpacer()
         Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.max.width"])
+            FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
             Text(text = state.maxWidth.toString())
             Slider(
                 valueRange = 60f..500f,
@@ -256,7 +247,7 @@ private fun Content(
         }
         StandardSpacer()
         Column(modifier = Modifier.fillMaxWidth()) {
-            FieldTitle(text = LocalI18N.current["ui.common.max.height"])
+            FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
             Text(text = state.maxHeight.toString())
             Slider(
                 valueRange = 60f..500f,
@@ -265,21 +256,23 @@ private fun Content(
                     vm.setMaxHeight(it.roundToInt())
                 })
         }
+        StandardSpacer()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
+            Text(text = state.buttonMinWidth.toString())
+            Slider(
+                valueRange = 60f..500f,
+                value = state.buttonMinWidth.toFloat(),
+                onValueChange = {
+                    vm.setButtonMinWidth(it.roundToInt())
+                })
+        }
 
 
         SectionSpacer()
         val action = remember(state) {
             derivedStateOf {
-                Action.ShowOverlay(
-                    id = state.id,
-                    autoCollapse = false,
-                    tag = state.tag,
-                    settings = state.buttons.map { it.toOverlayButtonSetting() },
-                    maxHeight = state.maxHeight,
-                    maxWidth = state.maxWidth,
-                    backgroundColor = state.backgroundColor,
-                    backgroundAlpha = state.backgroundAlpha
-                ).toProtoAction()
+                state.toAction().copy(autoCollapse = false).toProtoAction()
             }
         }
         OverlayContent(

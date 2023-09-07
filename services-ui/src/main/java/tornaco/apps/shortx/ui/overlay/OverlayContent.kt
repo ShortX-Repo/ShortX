@@ -128,7 +128,8 @@ fun OverlayContent(
     }) {
         Card(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = 12.dp)
+                .padding(bottom = 12.dp),
             colors = CardDefaults.cardColors(
                 containerColor = ColorDefaults.backgroundSurfaceColor().copy(
                     alpha = if (expandState.isExpand) {
@@ -176,18 +177,17 @@ fun OverlayContent(
                                 }
                                 .widthIn(
                                     max = (maxOf(
-                                        64,
+                                        72,
                                         action.maxWidthInDp
                                     ).dp)
                                 )
                                 .heightIn(
                                     max = (maxOf(
-                                        66,
+                                        72,
                                         action.maxHeightInDp
                                     ).dp)
-                                )
-                                .padding(8.dp),
-                            columns = GridCells.Adaptive(64.dp),
+                                ),
+                            columns = GridCells.Adaptive(maxOf(action.buttonMinWidth.dp, 64.dp)),
                             content = {
                                 overlayButtons(state, onButtonClick, onButtonLongClick)
                             })
@@ -208,7 +208,7 @@ private fun LazyGridScope.overlayButtons(
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
-                .padding(6.dp)
+                .padding(bottom = 8.dp)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {

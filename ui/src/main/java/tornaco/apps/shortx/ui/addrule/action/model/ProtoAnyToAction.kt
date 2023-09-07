@@ -171,6 +171,7 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 tag = data.tag,
                 maxWidth = data.maxWidthInDp,
                 maxHeight = data.maxHeightInDp,
+                buttonMinWidth = data.buttonMinWidth,
                 backgroundAlpha = data.backgroundAlpha,
                 backgroundColor = data.backgroundColor
             )

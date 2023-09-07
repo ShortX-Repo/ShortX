@@ -316,6 +316,7 @@ sealed interface Action : Parcelable {
         val tag: String,
         val maxWidth: Int,
         val maxHeight: Int,
+        val buttonMinWidth: Int,
         val backgroundColor: String,
         val backgroundAlpha: Float,
     ) : Action {

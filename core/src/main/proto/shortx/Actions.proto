@@ -164,6 +164,7 @@ message ShowOverlayButton {
   int32 maxWidthInDp = 6;
   float backgroundAlpha = 7;
   string backgroundColor = 8;
+  int32 buttonMinWidth = 9;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

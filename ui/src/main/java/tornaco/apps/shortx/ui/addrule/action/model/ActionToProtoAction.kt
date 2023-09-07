@@ -222,6 +222,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .addAllButtonSettings(settings)
                 .setMaxHeightInDp(maxHeight)
                 .setMaxWidthInDp(maxWidth)
+                .setButtonMinWidth(buttonMinWidth)
                 .setBackgroundAlpha(backgroundAlpha)
                 .setBackgroundColor(backgroundColor)
                 .setNote(overrideNote ?: note).build()
