@@ -153,6 +153,16 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
 @Composable
 private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorViewModel) {
     val state by vm.state.collectAsState()
+
+    val sortDialogState = rememberShowOverlayButtonSortState(buttons = {
+        state.buttons.map {
+            it.toOverlayButtonSetting()
+        }
+    }, apply = { overlayButtonSettings ->
+        vm.applySort(overlayButtonSettings.map { it.toButton() })
+    })
+    ShowOverlayButtonSortDialog(state = sortDialogState)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -161,97 +171,31 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
             .animateContentSize()
             .verticalScroll(rememberScrollState())
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
+            IconButton(onClick = {
+                sortDialogState.show()
+            }) {
+                RemixIcon(remixName = Remix.Editor.sort_desc)
+            }
+        }
+        SmallSpacer()
         state.buttons.forEachIndexed { index, button ->
-            val iconSelector = rememberMDIconSelectorState {
-                vm.updateIcon(index, it)
-            }
-            MDIconSelectorDialog(state = iconSelector)
-
-            ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
-                        MediumTitle(
-                            text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
-                                "index" to "${index + 1}"
-                            )]
-                        )
-                        IconButton(onClick = {
-                            vm.removeButton(index)
-                        }) {
-                            RemixIcon(remixName = Remix.System.close_line)
-                        }
-                    }
-
-                    StandardSpacer()
-
-                    Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.action.show.overlay.text"]
-                        )
-                        ShortXTextField(value = button.label, onValueChange = {
-                            vm.updateLabel(index, it)
-                        })
-                    }
-                    StandardSpacer()
-
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            SmallTitle(
-                                modifier = Modifier.padding(vertical = 12.dp),
-                                LocalI18N.current["ui.action.show.overlay.icon"]
-                            )
-                            IconButton(onClick = {
-                                vm.updateIcon(index, "")
-                            }) {
-                                RemixIcon(
-                                    modifier = Modifier.size(18.dp),
-                                    remixName = Remix.Device.restart_line
-                                )
-                            }
-                        }
-                        if (button.icon.isBlank()) {
-                            TextButton(onClick = {
-                                iconSelector.show()
-                            }) {
-                                Text(text = "No")
-                            }
-                        } else {
-                            IconButton(onClick = {
-                                iconSelector.show()
-                            }) {
-                                RemixIcon(button.icon)
-                            }
-                        }
-                    }
-
-                    val actionStateHandle = remember(button) { button.actionHandle }
-                    val actionState by actionStateHandle.state.collectAsState()
-
-                    ActionContent(
-                        header = {
-                            SmallTitle(
-                                modifier = Modifier.padding(vertical = 12.dp),
-                                text = LocalI18N.current["ui.actions.title"]
-                            )
-                        },
-                        actions = actionState.actions,
-                        warnings = actionState.actionWarningMessages,
-                        handler = actionStateHandle.asActionHandler()
-                    )
-                }
-            }
+            ButtonListItem(vm, index, button)
         }
         StandardSpacer()
 
         // Add icon
-        Button(onClick = {
-            vm.addButton()
-        }) {
+        Button(
+            modifier = Modifier.fillMaxSize(),
+            onClick = {
+                vm.addButton()
+            }) {
             Text(text = LocalI18N.current["ui.action.show.add.button"])
         }
 
@@ -296,3 +240,93 @@ private fun Content(paddingValues: PaddingValues, vm: ShowOverlayButtonSelectorV
         SuggestedNavEntry()
     }
 }
+
+@Composable
+private fun ButtonListItem(
+    vm: ShowOverlayButtonSelectorViewModel,
+    index: Int,
+    button: Button
+) {
+    val iconSelector = rememberMDIconSelectorState {
+        vm.updateIcon(index, it)
+    }
+    MDIconSelectorDialog(state = iconSelector)
+
+    ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
+                MediumTitle(
+                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                        "index" to "${index + 1}"
+                    )]
+                )
+                IconButton(onClick = {
+                    vm.removeButton(index)
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
+                }
+            }
+
+            StandardSpacer()
+
+            Column(verticalArrangement = Arrangement.Center) {
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    LocalI18N.current["ui.action.show.overlay.text"]
+                )
+                ShortXTextField(value = button.label, onValueChange = {
+                    vm.updateLabel(index, it)
+                })
+            }
+            StandardSpacer()
+
+            Column(verticalArrangement = Arrangement.Center) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        LocalI18N.current["ui.action.show.overlay.icon"]
+                    )
+                    IconButton(onClick = {
+                        vm.updateIcon(index, "")
+                    }) {
+                        RemixIcon(
+                            modifier = Modifier.size(18.dp),
+                            remixName = Remix.Device.restart_line
+                        )
+                    }
+                }
+                if (button.icon.isBlank()) {
+                    TextButton(onClick = {
+                        iconSelector.show()
+                    }) {
+                        Text(text = "No")
+                    }
+                } else {
+                    IconButton(onClick = {
+                        iconSelector.show()
+                    }) {
+                        RemixIcon(button.icon)
+                    }
+                }
+            }
+
+            val actionStateHandle = remember(button) { button.actionHandle }
+            val actionState by actionStateHandle.state.collectAsState()
+
+            ActionContent(
+                header = {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.actions.title"]
+                    )
+                },
+                actions = actionState.actions,
+                warnings = actionState.actionWarningMessages,
+                handler = actionStateHandle.asActionHandler()
+            )
+        }
+    }
+}
+

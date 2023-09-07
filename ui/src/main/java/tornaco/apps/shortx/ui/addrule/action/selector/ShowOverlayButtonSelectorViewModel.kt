@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
@@ -17,6 +18,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ContextViewModel
 import java.util.*
 import javax.inject.Inject
+
+private fun newButtonId() = "BTN-${UUID.randomUUID()}"
 
 data class OverlayButtonSelectorState(
     val buttons: List<Button> = emptyList(),
@@ -28,18 +31,22 @@ data class OverlayButtonSelectorState(
 )
 
 data class Button(
+    val id: String = newButtonId(),
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,
     val label: String = "",
     val actionHandle: ActionContentStateHandler = ActionContentStateHandler()
 )
 
 fun Button.toOverlayButtonSetting(): OverlayButtonSetting {
-    return OverlayButtonSetting.newBuilder().setIcon(icon).setLabel(label)
+    return OverlayButtonSetting.newBuilder()
+        .setId(id.fallbackOnEmpty { newButtonId() })
+        .setIcon(icon).setLabel(label)
         .addAllActions(actionHandle.state.value.actions.map { it.toProtoAction().pack_() }).build()
 }
 
 fun OverlayButtonSetting.toButton(): Button {
     return Button(
+        id = id.fallbackOnEmpty { newButtonId() },
         icon = icon,
         label = label,
         actionHandle = ActionContentStateHandler().apply {
@@ -127,5 +134,9 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
             copy(buttons = buttons.toMutableList().apply { removeAt(index) })
         }
         logger.d("removeButton after, items size: ${state.value.buttons.size}")
+    }
+
+    fun applySort(sorted: List<Button>) {
+        updateState { copy(buttons = sorted) }
     }
 }
