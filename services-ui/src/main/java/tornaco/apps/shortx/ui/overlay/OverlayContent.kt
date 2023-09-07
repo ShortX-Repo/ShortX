@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package tornaco.apps.shortx.ui.overlay
 
 import android.view.MotionEvent
@@ -8,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -37,8 +34,12 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,14 +51,14 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.ColorDefaults
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
 
-const val MIN_WIDTH = 48
-private val minWidthDp = MIN_WIDTH.dp
+private val logger = Logger("ShortXOverlay")
 
 private class ExpandState(private val scope: CoroutineScope) {
     private var _isExpand by mutableStateOf(true)
@@ -112,8 +113,15 @@ fun OverlayContent(
         }
     }
 
+    var lazyGridBounds by remember {
+        mutableStateOf(Rect.Zero)
+    }
     Box(modifier = Modifier.motionEventSpy {
-        motionEventSpy(it)
+        val isInGridBounds = lazyGridBounds.contains(Offset(it.x, it.y))
+        logger.p("(${it.x} ${it.y}) $lazyGridBounds isInGridBounds: $isInGridBounds")
+        if (!isInGridBounds) {
+            motionEventSpy(it)
+        }
 
         if (action.autoCollapse) {
             if (it.action == MotionEvent.ACTION_UP) {
@@ -138,7 +146,7 @@ fun OverlayContent(
             Column(modifier = Modifier) {
                 AnimatedVisibility(visible = !expandState.isExpand) {
                     Box(modifier = Modifier
-                        .width(minWidthDp)
+                        .width(48.dp)
                         .height(24.dp)
                         .clickable {
                             expandState.expand()
@@ -156,20 +164,25 @@ fun OverlayContent(
                 AnimatedVisibility(visible = expandState.isExpand) {
                     LazyVerticalGrid(
                         modifier = Modifier
+                            .onGloballyPositioned {
+                                val rect = it.boundsInWindow()
+                                logger.p("onGloballyPositioned $rect")
+                                lazyGridBounds = rect
+                            }
                             .widthIn(
                                 max = (maxOf(
-                                    MIN_WIDTH,
+                                    50,
                                     action.maxWidthInDp
                                 ).dp)
                             )
                             .heightIn(
                                 max = (maxOf(
-                                    MIN_WIDTH,
+                                    60,
                                     action.maxHeightInDp
                                 ).dp)
                             )
                             .padding(8.dp),
-                        columns = GridCells.Adaptive(minWidthDp),
+                        columns = GridCells.Adaptive(50.dp),
                         content = {
                             overlayButtons(state, onButtonClick, onButtonLongClick)
                         })
@@ -189,6 +202,7 @@ private fun LazyGridScope.overlayButtons(
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
+                .padding(6.dp)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {
@@ -229,6 +243,11 @@ private fun LazyGridScope.overlayButtons(
 
 
 private val ColorPalette = arrayOf(
+    // Google
+    Color(0xff4586F3),
+    Color(0xffEB4334),
+    Color(0xffFBBD06),
+    Color(0xff35AA53),
     // MTR
     Color(0xffAE213B),
     Color(0xff11254A),
@@ -239,25 +258,17 @@ private val ColorPalette = arrayOf(
     Color(0xff6B208B),
     Color(0xffFE7F1D),
     Color(0xffF550A6),
-    Color(0xff1C7670),
     Color(0xff5EB6E4),
     Color(0xffA40084),
-    Color(0xff9A3B26),
 
     // Nintendo Switch
-    Color(0xffFF5145),
-    Color(0xff00BBDF),
-    Color(0xff8B26A6),
     Color(0xffF8B62E),
     Color(0xffBAD600),
     Color(0xff19D719),
     Color(0xffF02D7D),
     Color(0xffFFDC00),
+    Color(0xffFF5145),
+    Color(0xff00BBDF),
+    Color(0xff8B26A6),
     Color(0xffC88C32),
-
-    // Google
-    Color(0xff4586F3),
-    Color(0xffEB4334),
-    Color(0xffFBBD06),
-    Color(0xff35AA53),
 )
