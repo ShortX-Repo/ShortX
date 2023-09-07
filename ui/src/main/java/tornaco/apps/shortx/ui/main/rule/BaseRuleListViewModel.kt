@@ -25,7 +25,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.defaultNewFactId
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.addrule.fact.model.toProtoFact
 import tornaco.apps.shortx.ui.base.ContextViewModel
-import tornaco.apps.shortx.ui.base.i18NIns
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.RuleSortBy
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.settings.ResetEventRegistry
@@ -37,18 +37,11 @@ import java.util.*
 data class RuleListState(
     val isShowRuleDescription: Boolean = true,
     val rules: List<RuleUM> = emptyList(),
-    val ruleSetFilters: List<RuleSetFilter> = emptyList(),
-    val selectedRuleSetFilter: RuleSetFilter = ruleSetAll,
+    val ruleSetFilters: List<CommonSetFilter> = emptyList(),
+    val selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
     val ruleSortBy: RuleSortBy = RuleSortBy.CreateTime,
     val isLoading: Boolean = true,
 )
-
-data class RuleSetFilter(val id: String, val title: String)
-
-val ruleSetAllFlat = RuleSetFilter("RuleSetAllFlat", i18NIns["ui.common.flat"])
-val ruleSetAll = RuleSetFilter("RuleSetAll", i18NIns["ui.common.all"])
-val RuleSetFilter.isAll get() = this == ruleSetAll
-val RuleSetFilter.isAllFlat get() = this == ruleSetAllFlat
 
 @SuppressLint("StaticFieldLeak")
 abstract class BaseRuleListViewModel(context: Context) :

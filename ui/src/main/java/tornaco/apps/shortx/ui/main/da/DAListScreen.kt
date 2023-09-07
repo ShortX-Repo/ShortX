@@ -46,8 +46,10 @@ import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
@@ -76,8 +78,6 @@ fun DirectActionListScreen() {
             ViewerActivity.start(context, fileUri)
         }
     }
-
-    val selectedDASetFilter = daListState.selectedDASetFilter
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.da",
@@ -105,7 +105,7 @@ fun DirectActionListScreen() {
         onAddClick = {
             AddDirectActionActivity.create(
                 context = context,
-                daSetId = if (selectedDASetFilter.isAll || selectedDASetFilter.isAllFlat) null else selectedDASetFilter.id
+                daSetId = daListState.selectedDASetFilter.id
             )
         },
         onUrlClick = {
@@ -137,7 +137,7 @@ fun DirectActionListScreen() {
                 isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                 das = daListState.das,
                 daSetFilters = daListState.daSetFilters,
-                selectedDASetFilter = selectedDASetFilter,
+                selectedDASetFilter = daListState.selectedDASetFilter,
                 selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                 showOverflowMenu = true
             )
@@ -152,9 +152,9 @@ fun DirectActionListContent(
     isShowDetailedDAItem: Boolean,
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean = false,
-    daSetFilters: List<DaSetFilter> = emptyList(),
-    selectedDASetFilter: DaSetFilter = daSetAll,
-    selectDASetFilter: (DaSetFilter) -> Unit = {},
+    daSetFilters: List<CommonSetFilter> = emptyList(),
+    selectedDASetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
+    selectDASetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -172,7 +172,7 @@ fun DirectActionListContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                (listOf(daSetAll, daSetAllFlat) + daSetFilters).forEach {
+                daSetFilters.forEach {
                     ShortXFilterChip(
                         modifier = Modifier.padding(start = 16.dp),
                         selected = selectedDASetFilter == it,

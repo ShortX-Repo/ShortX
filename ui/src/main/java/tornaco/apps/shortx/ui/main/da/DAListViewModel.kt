@@ -12,6 +12,7 @@ import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import java.text.Collator
@@ -33,20 +34,20 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     logger.d("activeJobs: $this")
                 }
                 val selectedDASetFilter = state.value.selectedDASetFilter
+                val allDASets = shortXManager.getAllDASets()
                 val das = shortXManager.getAllDirectAction()
-                    .filter {
+                    .filter { directAction ->
                         when (selectedDASetFilter) {
-                            daSetAll -> {
-                                // No filter, show items belong to no set.
-                                it.directActionSetId.isNullOrEmpty()
+                            CommonSetFilter.PinnedAll -> {
+                                allDASets.none { set -> set.id == directAction.directActionSetId }
                             }
 
-                            daSetAllFlat -> {
+                            CommonSetFilter.PinnedAllFlat -> {
                                 true
                             }
 
-                            else -> {
-                                it.directActionSetId == selectedDASetFilter.id
+                            is CommonSetFilter.UserSet -> {
+                                directAction.directActionSetId == selectedDASetFilter.id
                             }
                         }
                     }
@@ -60,7 +61,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         }
                     }
 
-                val sets = shortXManager.getAllDASets()
+                val sets = allDASets
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
                     }
@@ -86,17 +87,20 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                         )
                     }
 
-                val daSetFilters = sets.map { DaSetFilter(it.id, it.title) }
+                val daSetFilters = listOf(
+                    CommonSetFilter.PinnedAll,
+                    CommonSetFilter.PinnedAllFlat
+                ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
 
                 updateState {
                     copy(
                         das = when (selectedDASetFilter) {
-                            daSetAll -> {
+                            CommonSetFilter.PinnedAll -> {
                                 // No filter, show set and das.
                                 sets + das
                             }
 
-                            daSetAllFlat -> {
+                            CommonSetFilter.PinnedAllFlat -> {
                                 das
                             }
 
@@ -129,7 +133,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         }
     }
 
-    fun selectDASetFilter(daSetFilter: DaSetFilter) {
+    fun selectDASetFilter(daSetFilter: CommonSetFilter) {
         updateState { copy(selectedDASetFilter = daSetFilter) }
         loadDAList()
     }

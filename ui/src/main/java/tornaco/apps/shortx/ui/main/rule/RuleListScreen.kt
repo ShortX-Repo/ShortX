@@ -35,8 +35,10 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
+import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.ViewerActivity
@@ -66,7 +68,6 @@ fun RuleScreen() {
             ViewerActivity.start(context, fileUri)
         }
     }
-    val selectedRuleSetFilter = ruleListState.selectedRuleSetFilter
     MainScaffold(
         state = mainState,
         appBarTitleKey = "ui.feat.label.rule",
@@ -84,8 +85,8 @@ fun RuleScreen() {
         },
         onAddClick = {
             AddRuleActivity.create(
-                context,
-                ruleSetId = if (selectedRuleSetFilter.isAll || selectedRuleSetFilter.isAllFlat) null else selectedRuleSetFilter.id
+                context = context,
+                ruleSetId = ruleListState.selectedRuleSetFilter.id
             )
         },
         onUrlClick = {
@@ -112,7 +113,7 @@ fun RuleScreen() {
                 isLoading = ruleListState.isLoading,
                 rules = ruleListState.rules,
                 ruleSetFilters = ruleListState.ruleSetFilters,
-                selectedRuleSetFilter = selectedRuleSetFilter,
+                selectedRuleSetFilter = ruleListState.selectedRuleSetFilter,
                 selectRuleSetFilter = {
                     ruleListViewModel.selectRuleSetFilter(it)
                 }
@@ -126,9 +127,9 @@ fun RuleScreen() {
 fun RuleContent(
     isLoading: Boolean,
     rules: List<RuleUM>,
-    ruleSetFilters: List<RuleSetFilter> = emptyList(),
-    selectedRuleSetFilter: RuleSetFilter = ruleSetAll,
-    selectRuleSetFilter: (RuleSetFilter) -> Unit = {},
+    ruleSetFilters: List<CommonSetFilter> = emptyList(),
+    selectedRuleSetFilter: CommonSetFilter = CommonSetFilter.PinnedAll,
+    selectRuleSetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -146,7 +147,7 @@ fun RuleContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                (listOf(ruleSetAll, ruleSetAllFlat) + ruleSetFilters).forEach {
+                ruleSetFilters.forEach {
                     ShortXFilterChip(
                         modifier = Modifier.padding(start = 16.dp),
                         selected = selectedRuleSetFilter == it,

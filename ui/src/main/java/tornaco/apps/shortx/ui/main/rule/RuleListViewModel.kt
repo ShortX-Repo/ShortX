@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import java.text.Collator
@@ -32,20 +33,21 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     logger.d("activeJobs: $this")
                 }
                 val allRules = shortXManager.getAllRules()
+                val allRuleSets = shortXManager.getAllRuleSets()
                 val selectedDASetFilter = state.value.selectedRuleSetFilter
                 val rules = allRules
-                    .filter {
+                    .filter { rule ->
                         when (selectedDASetFilter) {
-                            ruleSetAll -> {
-                                it.ruleSetId.isNullOrEmpty()
+                            CommonSetFilter.PinnedAll -> {
+                                allRuleSets.none { set -> rule.ruleSetId == set.id }
                             }
 
-                            ruleSetAllFlat -> {
+                            CommonSetFilter.PinnedAllFlat -> {
                                 true
                             }
 
-                            else -> {
-                                it.ruleSetId == selectedDASetFilter.id
+                            is CommonSetFilter.UserSet -> {
+                                rule.ruleSetId == selectedDASetFilter.id
                             }
                         }
                     }
@@ -58,7 +60,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             null
                         }
                     }
-                val sets = shortXManager.getAllRuleSets()
+                val sets = allRuleSets
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
                     }.map { ruleSet ->
@@ -81,16 +83,19 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
                         )
                     }
-                val ruleSetFilters = sets.map { RuleSetFilter(it.id, it.title) }
+                val ruleSetFilters = listOf(
+                    CommonSetFilter.PinnedAll,
+                    CommonSetFilter.PinnedAllFlat
+                ) + sets.map { CommonSetFilter.UserSet(it.id, it.title) }
 
                 updateState {
                     copy(
                         rules = when {
-                            selectedRuleSetFilter == ruleSetAll -> {
+                            selectedRuleSetFilter == CommonSetFilter.PinnedAll -> {
                                 sets + rules
                             }
 
-                            selectedDASetFilter == ruleSetAllFlat -> {
+                            selectedDASetFilter == CommonSetFilter.PinnedAllFlat -> {
                                 rules
                             }
 
@@ -140,7 +145,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
-    fun selectRuleSetFilter(filter: RuleSetFilter) {
+    fun selectRuleSetFilter(filter: CommonSetFilter) {
         updateState { copy(selectedRuleSetFilter = filter) }
         loadRuleList()
     }
