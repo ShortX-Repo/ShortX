@@ -114,7 +114,6 @@ dependencies {
     implementation(project(":ui"))
     implementation(project(":ui-base"))
     implementation(project(":services"))
-    implementation(project(":services-ui"))
     implementation(project(":patch"))
     implementation(project(":core"))
     implementation(project(":external:utils"))

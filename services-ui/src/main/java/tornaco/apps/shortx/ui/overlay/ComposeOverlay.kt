@@ -117,7 +117,7 @@ class ComposeOverlay(
                 CompositionLocalProvider(LocalContext provides appContext) {
                     OverlayContent(
                         action = action,
-                        motionEventSpy = {
+                        dragHandleMotionEvent = {
                             touchListener.onTouch(
                                 this@ComposeOverlay, it
                             )

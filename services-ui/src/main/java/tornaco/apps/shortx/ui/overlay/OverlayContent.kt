@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,13 +35,15 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.layout.boundsInWindow
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -93,7 +96,7 @@ fun OverlayContent(
     action: ShowOverlayButton,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
-    motionEventSpy: (MotionEvent) -> Unit
+    dragHandleMotionEvent: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
     LaunchedEffect(action) {
@@ -113,16 +116,7 @@ fun OverlayContent(
         }
     }
 
-    var lazyGridBounds by remember {
-        mutableStateOf(Rect.Zero)
-    }
     Box(modifier = Modifier.motionEventSpy {
-        val isInGridBounds = lazyGridBounds.contains(Offset(it.x, it.y))
-        logger.p("(${it.x} ${it.y}) $lazyGridBounds isInGridBounds: $isInGridBounds")
-        if (!isInGridBounds) {
-            motionEventSpy(it)
-        }
-
         if (action.autoCollapse) {
             if (it.action == MotionEvent.ACTION_UP) {
                 expandState.scheduleCollapse()
@@ -162,30 +156,42 @@ fun OverlayContent(
 
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
-                    LazyVerticalGrid(
-                        modifier = Modifier
-                            .onGloballyPositioned {
-                                val rect = it.boundsInWindow()
-                                logger.p("onGloballyPositioned $rect")
-                                lazyGridBounds = rect
-                            }
-                            .widthIn(
-                                max = (maxOf(
-                                    50,
-                                    action.maxWidthInDp
-                                ).dp)
-                            )
-                            .heightIn(
-                                max = (maxOf(
-                                    66,
-                                    action.maxHeightInDp
-                                ).dp)
-                            )
-                            .padding(8.dp),
-                        columns = GridCells.Adaptive(56.dp),
-                        content = {
-                            overlayButtons(state, onButtonClick, onButtonLongClick)
-                        })
+                    Column {
+                        var gridWidth by remember {
+                            mutableStateOf(32.dp)
+                        }
+                        val density = LocalDensity.current
+                        Box(modifier = Modifier
+                            .width(gridWidth)
+                            .height(16.dp)
+                            .motionEventSpy {
+                                dragHandleMotionEvent(it)
+                            })
+                        LazyVerticalGrid(
+                            modifier = Modifier
+                                .onSizeChanged {
+                                    gridWidth = with(density) {
+                                        it.width.toDp()
+                                    }
+                                }
+                                .widthIn(
+                                    max = (maxOf(
+                                        64,
+                                        action.maxWidthInDp
+                                    ).dp)
+                                )
+                                .heightIn(
+                                    max = (maxOf(
+                                        66,
+                                        action.maxHeightInDp
+                                    ).dp)
+                                )
+                                .padding(8.dp),
+                            columns = GridCells.Adaptive(64.dp),
+                            content = {
+                                overlayButtons(state, onButtonClick, onButtonLongClick)
+                            })
+                    }
                 }
             }
         }
@@ -241,6 +247,31 @@ private fun LazyGridScope.overlayButtons(
     }
 }
 
+@Composable
+private fun DragHandle(
+    modifier: Modifier = Modifier,
+    width: Dp = 32.dp,
+    height: Dp = 4.dp,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.4f),
+) {
+    val dragHandleDescription = "DragHandle"
+    Surface(
+        modifier = modifier
+            .padding(vertical = 22.dp)
+            .semantics { contentDescription = dragHandleDescription },
+        color = color,
+        shape = shape
+    ) {
+        Box(
+            Modifier
+                .size(
+                    width = width,
+                    height = height
+                )
+        )
+    }
+}
 
 private val ColorPalette = arrayOf(
     // Google

@@ -104,6 +104,7 @@ dependencies {
     implementation(project(":binder-retriever"))
     implementation(project(":ui-base"))
     implementation(project(":core"))
+    implementation(project(":services-ui"))
     implementation(project(":external:dateformatter"))
     implementation(project(":external:utils"))
     implementation(project(":external:reorderable"))

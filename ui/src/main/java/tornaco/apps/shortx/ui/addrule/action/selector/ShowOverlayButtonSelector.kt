@@ -27,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
@@ -57,6 +60,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
+import tornaco.apps.shortx.ui.overlay.OverlayContent
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
@@ -261,6 +265,29 @@ private fun Content(
                     vm.setMaxHeight(it.roundToInt())
                 })
         }
+
+
+        SectionSpacer()
+        val action = remember(state) {
+            derivedStateOf {
+                Action.ShowOverlay(
+                    id = state.id,
+                    autoCollapse = false,
+                    tag = state.tag,
+                    settings = state.buttons.map { it.toOverlayButtonSetting() },
+                    maxHeight = state.maxHeight,
+                    maxWidth = state.maxWidth,
+                    backgroundColor = state.backgroundColor,
+                    backgroundAlpha = state.backgroundAlpha
+                ).toProtoAction()
+            }
+        }
+        OverlayContent(
+            action = action.value as ShowOverlayButton,
+            onButtonClick = {},
+            onButtonLongClick = {},
+            dragHandleMotionEvent = {}
+        )
 
         SectionSpacer()
         SuggestedNavEntry()
