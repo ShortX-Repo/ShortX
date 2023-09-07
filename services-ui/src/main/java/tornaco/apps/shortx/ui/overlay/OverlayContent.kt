@@ -134,7 +134,7 @@ fun OverlayContent(
     }) {
         Card(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = ColorDefaults.backgroundSurfaceColor().copy(
                     alpha = if (expandState.isExpand) {
@@ -177,12 +177,12 @@ fun OverlayContent(
                             )
                             .heightIn(
                                 max = (maxOf(
-                                    60,
+                                    66,
                                     action.maxHeightInDp
                                 ).dp)
                             )
                             .padding(8.dp),
-                        columns = GridCells.Adaptive(50.dp),
+                        columns = GridCells.Adaptive(56.dp),
                         content = {
                             overlayButtons(state, onButtonClick, onButtonLongClick)
                         })
