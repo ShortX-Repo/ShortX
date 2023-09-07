@@ -35,9 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.res.Remix
-import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -131,7 +129,6 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                                     autoCollapse = selectorState.autoCollapse,
                                     tag = selectorState.tag,
                                     settings = selectorState.buttons.map { it.toOverlayButtonSetting() },
-                                    orientation = selectorState.orientation,
                                     maxHeight = selectorState.maxHeight,
                                     maxWidth = selectorState.maxWidth,
                                     backgroundColor = selectorState.backgroundColor,
@@ -243,41 +240,26 @@ private fun Content(
         }
 
         StandardSpacer()
-        Column(verticalArrangement = Arrangement.Center) {
-            FieldTitle(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.show.orientation.land"]
-            )
-            SmallSpacer()
-            ShortXSwitch(checked = state.orientation == OverlayOrientation.Land, onCheckedChange = {
-                vm.setOrientation(it.select(OverlayOrientation.Land, OverlayOrientation.Port))
-            })
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FieldTitle(text = LocalI18N.current["ui.common.max.width"])
+            Text(text = state.maxWidth.toString())
+            Slider(
+                valueRange = 60f..500f,
+                value = state.maxWidth.toFloat(),
+                onValueChange = {
+                    vm.setMaxWidth(it.roundToInt())
+                })
         }
-
         StandardSpacer()
-        AnimatedVisibility(visible = state.orientation == OverlayOrientation.Land) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.max.width"])
-                Text(text = state.maxWidth.toString())
-                Slider(
-                    valueRange = 60f..500f,
-                    value = state.maxWidth.toFloat(),
-                    onValueChange = {
-                        vm.setMaxWidth(it.roundToInt())
-                    })
-            }
-        }
-        AnimatedVisibility(visible = state.orientation == OverlayOrientation.Port) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.max.height"])
-                Text(text = state.maxHeight.toString())
-                Slider(
-                    valueRange = 60f..500f,
-                    value = state.maxHeight.toFloat(),
-                    onValueChange = {
-                        vm.setMaxHeight(it.roundToInt())
-                    })
-            }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FieldTitle(text = LocalI18N.current["ui.common.max.height"])
+            Text(text = state.maxHeight.toString())
+            Slider(
+                valueRange = 60f..500f,
+                value = state.maxHeight.toFloat(),
+                onValueChange = {
+                    vm.setMaxHeight(it.roundToInt())
+                })
         }
 
         SectionSpacer()

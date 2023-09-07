@@ -9,24 +9,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,11 +37,9 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,13 +49,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
-import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
-import tornaco.apps.shortx.ui.base.thenIf
 
 const val MIN_WIDTH = 48
 private val minWidthDp = MIN_WIDTH.dp
@@ -140,85 +135,60 @@ fun OverlayContent(
                 )
             )
         ) {
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                // Expand tool.
-                val expandSizeDp: MutableState<Dp> = remember {
-                    mutableStateOf(minWidthDp)
-                }
-                val density = LocalDensity.current
+            Column(modifier = Modifier) {
                 AnimatedVisibility(visible = !expandState.isExpand) {
                     Box(modifier = Modifier
-                        .width(expandSizeDp.value)
+                        .width(minWidthDp)
                         .height(24.dp)
                         .clickable {
                             expandState.expand()
                         }) {
-                        IconForButton(
+                        RemixIcon(
                             modifier = Modifier
                                 .size(16.dp)
                                 .align(Alignment.Center),
-                            icon = Remix.Arrows.arrow_drop_down_line,
+                            remixName = Remix.Arrows.arrow_drop_down_line,
                         )
                     }
                 }
 
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
-                    if (action.orientation == OverlayOrientation.Land) {
-                        FlowRow(
-                            modifier = Modifier
-                                .widthIn(
-                                    min = minWidthDp,
-                                    max = (maxOf(MIN_WIDTH, action.maxWidthInDp).dp)
-                                )
-                                .padding(horizontal = 8.dp)
-                                .onSizeChanged {
-                                    expandSizeDp.value = with(density) { it.height.toDp() }
-                                },
-                            verticalArrangement = Arrangement.Center,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            OverlayButtons(state, false, onButtonClick, onButtonLongClick)
-                        }
-                    } else {
-                        FlowColumn(
-                            modifier = Modifier
-                                .widthIn(min = minWidthDp)
-                                .heightIn(max = (maxOf(MIN_WIDTH, action.maxHeightInDp).dp))
-                                .padding(vertical = 8.dp)
-                                .onSizeChanged {
-                                    expandSizeDp.value = with(density) { it.width.toDp() }
-                                },
-                            verticalArrangement = Arrangement.Center,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            OverlayButtons(state, true, onButtonClick, onButtonLongClick)
-                        }
-                    }
-
-
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .widthIn(
+                                max = (maxOf(
+                                    MIN_WIDTH,
+                                    action.maxWidthInDp
+                                ).dp)
+                            )
+                            .heightIn(
+                                max = (maxOf(
+                                    MIN_WIDTH,
+                                    action.maxHeightInDp
+                                ).dp)
+                            )
+                            .padding(8.dp),
+                        columns = GridCells.Adaptive(minWidthDp),
+                        content = {
+                            overlayButtons(state, onButtonClick, onButtonLongClick)
+                        })
                 }
             }
         }
     }
 }
 
-@Composable
-private fun OverlayButtons(
+private fun LazyGridScope.overlayButtons(
     state: OverlayState,
-    addPaddingToChild: Boolean,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
 ) {
-    state.buttons.forEachIndexed { index, button ->
+    itemsIndexed(state.buttons) { index, button ->
+        val color = ColorPalette[index % ColorPalette.size]
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
-                .thenIf(Modifier.padding(top = 6.dp), addPaddingToChild && index != 0)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {
@@ -228,13 +198,18 @@ private fun OverlayButtons(
                         onButtonClick(updateButton.setting)
                     }),
             horizontalAlignment = CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Center
         ) {
             val icon = updateButton.setting.icon
 
             if (icon.isNotBlank()) {
-                IconButtonContainer {
-                    IconForButton(icon = icon)
+                ColoredIcon(size = 26.dp, color = color) {
+                    RemixIcon(
+                        modifier = Modifier
+                            .size(12.dp),
+                        remixName = icon,
+                        tint = Color.White
+                    )
                 }
             }
 
@@ -252,14 +227,37 @@ private fun OverlayButtons(
     }
 }
 
-@Composable
-private fun IconForButton(modifier: Modifier = Modifier, icon: String) {
-    RemixIcon(modifier = modifier, remixName = icon)
-}
 
-@Composable
-private fun IconButtonContainer(icon: @Composable () -> Unit) {
-    Box(modifier = Modifier) {
-        icon()
-    }
-}
+private val ColorPalette = arrayOf(
+    // MTR
+    Color(0xffAE213B),
+    Color(0xff11254A),
+    Color(0xffFF0000),
+    Color(0xff1A9431),
+    Color(0xff0860A8),
+    Color(0xffB5BD00),
+    Color(0xff6B208B),
+    Color(0xffFE7F1D),
+    Color(0xffF550A6),
+    Color(0xff1C7670),
+    Color(0xff5EB6E4),
+    Color(0xffA40084),
+    Color(0xff9A3B26),
+
+    // Nintendo Switch
+    Color(0xffFF5145),
+    Color(0xff00BBDF),
+    Color(0xff8B26A6),
+    Color(0xffF8B62E),
+    Color(0xffBAD600),
+    Color(0xff19D719),
+    Color(0xffF02D7D),
+    Color(0xffFFDC00),
+    Color(0xffC88C32),
+
+    // Google
+    Color(0xff4586F3),
+    Color(0xffEB4334),
+    Color(0xffFBBD06),
+    Color(0xff35AA53),
+)

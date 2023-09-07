@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
-import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
@@ -26,7 +25,6 @@ data class OverlayButtonSelectorState(
     val autoCollapse: Boolean = false,
 
     val tag: String = "",
-    val orientation: OverlayOrientation = OverlayOrientation.Port,
     val maxWidth: Int = 500,
     val maxHeight: Int = 500,
     val backgroundColor: String = "",
@@ -77,7 +75,6 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 buttons = settings.settings.map { it.toButton() },
                 autoCollapse = settings.autoCollapse,
                 tag = settings.tag,
-                orientation = settings.orientation,
                 maxWidth = settings.maxWidth,
                 maxHeight = settings.maxHeight,
                 backgroundAlpha = settings.backgroundAlpha,
@@ -121,12 +118,6 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
             copy(
                 autoCollapse = autoCollapse
             )
-        }
-    }
-
-    fun setOrientation(orientation: OverlayOrientation) {
-        updateState {
-            copy(orientation = orientation)
         }
     }
 

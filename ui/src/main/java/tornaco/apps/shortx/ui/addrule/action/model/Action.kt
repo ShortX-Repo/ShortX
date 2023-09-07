@@ -314,7 +314,6 @@ sealed interface Action : Parcelable {
         val autoCollapse: Boolean,
         val settings: List<OverlayButtonSetting>,
         val tag: String,
-        val orientation: OverlayOrientation,
         val maxWidth: Int,
         val maxHeight: Int,
         val backgroundColor: String,

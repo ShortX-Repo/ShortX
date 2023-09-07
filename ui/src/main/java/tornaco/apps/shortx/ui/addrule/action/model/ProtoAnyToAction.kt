@@ -169,7 +169,6 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 autoCollapse = data.autoCollapse,
                 settings = data.buttonSettingsList,
                 tag = data.tag,
-                orientation = data.orientation,
                 maxWidth = data.maxWidthInDp,
                 maxHeight = data.maxHeightInDp,
                 backgroundAlpha = data.backgroundAlpha,
