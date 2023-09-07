@@ -160,6 +160,10 @@ message ShowOverlayButton {
   bool autoCollapse = 2;
   string tag = 3;
   OverlayOrientation orientation = 4;
+  int32 maxHeightInDp = 5;
+  int32 maxWidthInDp = 6;
+  float backgroundAlpha = 7;
+  string backgroundColor = 8;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

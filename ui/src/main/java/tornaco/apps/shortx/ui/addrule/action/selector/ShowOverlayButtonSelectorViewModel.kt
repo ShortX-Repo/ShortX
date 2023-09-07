@@ -27,6 +27,10 @@ data class OverlayButtonSelectorState(
 
     val tag: String = "",
     val orientation: OverlayOrientation = OverlayOrientation.Port,
+    val maxWidth: Int = 500,
+    val maxHeight: Int = 500,
+    val backgroundColor: String = "",
+    val backgroundAlpha: Float = 0.8f,
     val id: String = defaultNewActionId()
 )
 
@@ -73,7 +77,11 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 buttons = settings.settings.map { it.toButton() },
                 autoCollapse = settings.autoCollapse,
                 tag = settings.tag,
-                orientation = settings.orientation
+                orientation = settings.orientation,
+                maxWidth = settings.maxWidth,
+                maxHeight = settings.maxHeight,
+                backgroundAlpha = settings.backgroundAlpha,
+                backgroundColor = settings.backgroundColor
             )
         }
     }
@@ -120,6 +128,14 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
         updateState {
             copy(orientation = orientation)
         }
+    }
+
+    fun setMaxWidth(max: Int) {
+        updateState { copy(maxWidth = max) }
+    }
+
+    fun setMaxHeight(max: Int) {
+        updateState { copy(maxHeight = max) }
     }
 
     fun addButton() {

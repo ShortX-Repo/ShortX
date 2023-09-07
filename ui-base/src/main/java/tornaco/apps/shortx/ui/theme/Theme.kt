@@ -107,7 +107,7 @@ fun ShortXTheme(
             checkedThumb = Color.White,
             checkedTrack = colorScheme.primaryContainer,
             uncheckedThumb = Color(0xFFEAEAEA),
-            uncheckedTrack = Color(0xFFAAAAAA),
+            uncheckedTrack = Color(0xFF777777),
         )
 
         else -> ShortXColorScheme(

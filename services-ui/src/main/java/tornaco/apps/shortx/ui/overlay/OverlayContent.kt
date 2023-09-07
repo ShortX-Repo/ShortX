@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package tornaco.apps.shortx.ui.overlay
 
 import android.view.MotionEvent
@@ -6,8 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -56,7 +61,8 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
 import tornaco.apps.shortx.ui.base.thenIf
 
-private val minWidth = 48.dp
+const val MIN_WIDTH = 48
+private val minWidthDp = MIN_WIDTH.dp
 
 private class ExpandState(private val scope: CoroutineScope) {
     private var _isExpand by mutableStateOf(true)
@@ -141,7 +147,7 @@ fun OverlayContent(
             ) {
                 // Expand tool.
                 val expandSizeDp: MutableState<Dp> = remember {
-                    mutableStateOf(minWidth)
+                    mutableStateOf(minWidthDp)
                 }
                 val density = LocalDensity.current
                 AnimatedVisibility(visible = !expandState.isExpand) {
@@ -163,26 +169,32 @@ fun OverlayContent(
                 // Expand content.
                 AnimatedVisibility(visible = expandState.isExpand) {
                     if (action.orientation == OverlayOrientation.Land) {
-                        Row(
+                        FlowRow(
                             modifier = Modifier
-                                .widthIn(min = minWidth)
+                                .widthIn(
+                                    min = minWidthDp,
+                                    max = (maxOf(MIN_WIDTH, action.maxWidthInDp).dp)
+                                )
                                 .padding(horizontal = 8.dp)
                                 .onSizeChanged {
                                     expandSizeDp.value = with(density) { it.height.toDp() }
                                 },
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalArrangement = Arrangement.Center,
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             OverlayButtons(state, false, onButtonClick, onButtonLongClick)
                         }
                     } else {
-                        Column(
+                        FlowColumn(
                             modifier = Modifier
-                                .widthIn(min = minWidth)
+                                .widthIn(min = minWidthDp)
+                                .heightIn(max = (maxOf(MIN_WIDTH, action.maxHeightInDp).dp))
                                 .padding(vertical = 8.dp)
                                 .onSizeChanged {
                                     expandSizeDp.value = with(density) { it.width.toDp() }
                                 },
-                            horizontalAlignment = CenterHorizontally
+                            verticalArrangement = Arrangement.Center,
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             OverlayButtons(state, true, onButtonClick, onButtonLongClick)
                         }

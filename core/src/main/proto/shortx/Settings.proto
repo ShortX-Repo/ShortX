@@ -20,6 +20,8 @@ message OverlayButtonSetting {
   string icon = 2;
   int32 index = 3;
   string label = 4;
+  string backgroundColor = 5;
+  string iconTintColor = 6;
 
   string note = 99;
   string id = 100;

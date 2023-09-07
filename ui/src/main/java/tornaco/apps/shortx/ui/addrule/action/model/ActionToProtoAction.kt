@@ -221,6 +221,10 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setTag(tag.fallbackOnEmpty(DateUtils.formatLongForMessageTime(System.currentTimeMillis())))
                 .addAllButtonSettings(settings)
                 .setOrientation(orientation)
+                .setMaxHeightInDp(maxHeight)
+                .setMaxWidthInDp(maxWidth)
+                .setBackgroundAlpha(backgroundAlpha)
+                .setBackgroundColor(backgroundColor)
                 .setNote(overrideNote ?: note).build()
         }
 
