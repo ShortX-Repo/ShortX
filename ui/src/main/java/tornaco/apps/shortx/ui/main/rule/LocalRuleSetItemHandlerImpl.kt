@@ -33,6 +33,10 @@ fun getLocalRuleSetItemHandler(
             vm.dismissRuleSet(rule, props.firstOrNull())
         }
 
+        override fun delete(rule: RuleUM, alsoDeleteItems: Boolean) {
+            vm.deleteRuleSet(rule, alsoDeleteItems, props.firstOrNull())
+        }
+
         override fun rename(rule: RuleUM, newName: String) {
             vm.rename(rule, newName, props.firstOrNull())
         }

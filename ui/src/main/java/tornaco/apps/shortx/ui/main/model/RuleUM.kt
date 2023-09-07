@@ -26,5 +26,6 @@ data class RuleUM(
 
     // For Set
     val isRuleSet: Boolean = false,
-    val hasAnyEnabled: Boolean = false
+    val hasAnyEnabled: Boolean = false,
+    val itemsCount: Int = 0,
 )

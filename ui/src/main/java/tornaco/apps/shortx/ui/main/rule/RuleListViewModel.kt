@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.CommonSetFilter
+import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import java.text.Collator
@@ -34,7 +35,16 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 }
                 val allRules = shortXManager.getAllRules()
                 val allRuleSets = shortXManager.getAllRuleSets()
+
+                // This set is not exists anymore.
+                if (state.value.selectedRuleSetFilter.id != null
+                    && allRuleSets.none { it.id == state.value.selectedRuleSetFilter.id }
+                ) {
+                    updateState { copy(selectedRuleSetFilter = CommonSetFilter.PinnedAll) }
+                }
+
                 val selectedDASetFilter = state.value.selectedRuleSetFilter
+
                 val rules = allRules
                     .filter { rule ->
                         when (selectedDASetFilter) {
@@ -81,6 +91,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                             isRuleSet = true,
                             isEnabled = subRules.isNotEmpty() && subRules.all { it.isEnabled },
                             hasAnyEnabled = subRules.isNotEmpty() && subRules.any { it.isEnabled },
+                            itemsCount = subRules.size
                         )
                     }
                 val ruleSetFilters = listOf(
@@ -134,6 +145,19 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
         }.forEach {
             moveOutSet(it, token)
         }
+    }
+
+    fun deleteRuleSet(ruleSet: RuleUM, alsoDeleteItems: Boolean, token: String?) {
+        logger.i("deleteRuleSet: ${ruleSet.title}")
+        if (alsoDeleteItems) {
+            shortXManager.getAllRules().filter {
+                it.ruleSetId == ruleSet.id
+            }.forEach {
+                logger.w("deleteRuleSet, Delete rule: ${it.title}")
+                shortXManager.deleteRule(it.id)
+            }
+        }
+        shortXManager.deleteRuleSet(ruleSet.id)
     }
 
     fun rename(rule: RuleUM, newName: String, token: String?) {

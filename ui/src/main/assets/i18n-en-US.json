@@ -725,6 +725,7 @@
   "ui.active.dialog.message": "Please enable {app_name} in Xposed Manager",
   "ui.delete.dialog.confirm": "Do you really want to delete {wht}?",
   "ui.dismiss.dialog.confirm": "Do you really want to dismiss {wht}?",
+  "ui.delete.dialog.also.delete.item": "Also delete {count} items",
   "ui.global.var.title": "Global var",
   "ui.global.var.name": "Var name",
   "ui.global.var.name.description": "Please use English name, name will be used when Write/read a var\nName is unique",

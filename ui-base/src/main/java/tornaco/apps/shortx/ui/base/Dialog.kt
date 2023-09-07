@@ -192,17 +192,7 @@ fun ShortXDialog(
     }
 }
 
-class ConfirmDialogState {
-    var isShowing by mutableStateOf(false)
-
-    fun show() {
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
-    }
-}
+class ConfirmDialogState : CommonDialogState()
 
 @Composable
 fun rememberConfirmDialogState(): ConfirmDialogState {

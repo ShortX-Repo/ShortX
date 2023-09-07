@@ -36,7 +36,9 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.main.DeleteSetConfirmDialog
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.rememberDeleteSetConfirmDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 
@@ -129,6 +131,15 @@ private fun listItemOverflowMenu(
         onConfirm = { handler.dismiss(rule) }
     )
 
+    val deleteConfirmDialogState = rememberDeleteSetConfirmDialogState(
+        setTitle = rule.title,
+        itemsCount = 0
+    )
+    DeleteSetConfirmDialog(
+        state = deleteConfirmDialogState,
+        onConfirm = { handler.delete(rule, it) }
+    )
+
     val renameDialogState =
         rememberTextInputState(title = i18N["ui.common.rename"], message = null, onSelected = {
             handler.rename(rule, it)
@@ -157,6 +168,12 @@ private fun listItemOverflowMenu(
                 labelLines = listOf(i18N["ui.common.dismiss"]),
                 data = RuleSetItemMenuOptions.Dismiss,
                 icon = {
+                    RemixIcon(Remix.System.close_circle_line)
+                }),
+            DropdownItem(
+                labelLines = listOf(i18N["ui.common.delete"]),
+                data = RuleSetItemMenuOptions.Delete,
+                icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
                 })
         ), onSelect = {
@@ -164,6 +181,10 @@ private fun listItemOverflowMenu(
             when (it.data) {
                 RuleSetItemMenuOptions.Dismiss -> {
                     dismissDialogState.show()
+                }
+
+                RuleSetItemMenuOptions.Delete -> {
+                    deleteConfirmDialogState.show()
                 }
 
                 RuleSetItemMenuOptions.Rename -> {
@@ -183,5 +204,5 @@ private fun listItemOverflowMenu(
 }
 
 enum class RuleSetItemMenuOptions {
-    Dismiss, Rename, Share
+    Delete, Dismiss, Rename, Share
 }
