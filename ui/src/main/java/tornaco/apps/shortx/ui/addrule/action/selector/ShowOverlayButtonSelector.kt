@@ -239,7 +239,7 @@ private fun Content(
             FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
             Text(text = state.maxWidth.toString())
             Slider(
-                valueRange = 60f..500f,
+                valueRange = 20f..500f,
                 value = state.maxWidth.toFloat(),
                 onValueChange = {
                     vm.setMaxWidth(it.roundToInt())
@@ -250,7 +250,7 @@ private fun Content(
             FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
             Text(text = state.maxHeight.toString())
             Slider(
-                valueRange = 60f..500f,
+                valueRange = 20f..500f,
                 value = state.maxHeight.toFloat(),
                 onValueChange = {
                     vm.setMaxHeight(it.roundToInt())
@@ -261,7 +261,7 @@ private fun Content(
             FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
             Text(text = state.buttonMinWidth.toString())
             Slider(
-                valueRange = 60f..500f,
+                valueRange = 20f..500f,
                 value = state.buttonMinWidth.toFloat(),
                 onValueChange = {
                     vm.setButtonMinWidth(it.roundToInt())
@@ -365,12 +365,28 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.title"]
+                        text = LocalI18N.current["ui.actions.single.click.title"]
                     )
                 },
                 actions = actionState.actions,
                 warnings = actionState.actionWarningMessages,
                 handler = actionStateHandle.asActionHandler()
+            )
+
+            StandardSpacer()
+            val longClickActionStateHandle = remember(button) { button.longClickActionHandle }
+            val longClickActionState by longClickActionStateHandle.state.collectAsState()
+
+            ActionContent(
+                header = {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.actions.long.click.title"]
+                    )
+                },
+                actions = longClickActionState.actions,
+                warnings = longClickActionState.actionWarningMessages,
+                handler = longClickActionStateHandle.asActionHandler()
             )
         }
     }

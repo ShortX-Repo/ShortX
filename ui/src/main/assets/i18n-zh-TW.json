@@ -43,6 +43,8 @@
   "ui.conditions.battery.percent.value": "電量值 (0-100)",
   "ui.conditions.app.has.notification": "应用有通知",
   "ui.actions.title": "動作",
+  "ui.actions.single.click.title": "单击动作",
+  "ui.actions.long.click.title": "长按动作",
   "ui.actions.hook.on.enabled.title": "被啟用時",
   "ui.actions.hook.on.enabled.description": "當該自動指令被啟用時會執行的動作，一般可以添加一些初始化相關的動作，例如創建一些全域變數",
   "ui.actions.hook.on.disabled.title": "被禁用時",

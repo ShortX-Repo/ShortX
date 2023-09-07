@@ -37,14 +37,19 @@ data class Button(
     val id: String = newButtonId(),
     val icon: String = BuildProp.DEFAULT_OVERLAY_BUTTON_ICON,
     val label: String = "",
-    val actionHandle: ActionContentStateHandler = ActionContentStateHandler()
+    val actionHandle: ActionContentStateHandler = ActionContentStateHandler(),
+    val longClickActionHandle: ActionContentStateHandler = ActionContentStateHandler()
 )
 
 fun Button.toOverlayButtonSetting(): OverlayButtonSetting {
     return OverlayButtonSetting.newBuilder()
         .setId(id.fallbackOnEmpty { newButtonId() })
         .setIcon(icon).setLabel(label)
-        .addAllActions(actionHandle.state.value.actions.map { it.toProtoAction().pack_() }).build()
+        .addAllActions(actionHandle.state.value.actions.map { it.toProtoAction().pack_() })
+        .addAllLongClickActions(longClickActionHandle.state.value.actions.map {
+            it.toProtoAction().pack_()
+        })
+        .build()
 }
 
 fun OverlayButtonSetting.toButton(): Button {
@@ -58,7 +63,15 @@ fun OverlayButtonSetting.toButton(): Button {
                     it.toAction(shortXManager = shortXManager)
                 })
             }
-        })
+        },
+        longClickActionHandle = ActionContentStateHandler().apply {
+            updateState {
+                copy(actions = longClickActionsList.mapNotNull {
+                    it.toAction(shortXManager = shortXManager)
+                })
+            }
+        },
+        )
 }
 
 fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {

@@ -332,13 +332,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         conflictStrategy: ConflictStrategy,
     ) {
         logger.d("executeActions: ${context.srcEvent} ${context.srcTitle}")
-        engine.evaluateActions(
-            context = context,
-            actions = actions,
-            initialContextData = initialContextData,
-            localVars = localVars,
-            conflictStrategy = conflictStrategy
-        )
+        if (actions.isNotEmpty()) {
+            engine.evaluateActions(
+                context = context,
+                actions = actions,
+                initialContextData = initialContextData,
+                localVars = localVars,
+                conflictStrategy = conflictStrategy
+            )
+        }
     }
 
     @TestApi

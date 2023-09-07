@@ -70,7 +70,14 @@ class OverlayService(shortXContext: ShortXContext) :
                     localVars = localVars,
                 )
             },
-            onButtonLongClick = {},
+            onButtonLongClick = { button: OverlayButtonSetting ->
+                shortXContext.rule.executeActions(
+                    context = evaluateContext,
+                    actions = button.longClickActionsList,
+                    conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+                    localVars = localVars,
+                )
+            },
         )
 
         showingOverlays.add(

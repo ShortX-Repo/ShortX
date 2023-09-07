@@ -76,7 +76,7 @@ private class ExpandState(private val scope: CoroutineScope) {
     fun scheduleCollapse() {
         cancelPendingCollapseJob()
         pendingCollapseJob = scope.launch {
-            delay(3000)
+            delay(5000)
             collapse()
         }
     }
@@ -139,8 +139,11 @@ fun OverlayContent(
             )
         ) {
             Column(modifier = Modifier) {
-                AnimatedVisibility(visible = !expandState.isExpand) {
+                if (!expandState.isExpand) {
                     Box(modifier = Modifier
+                        .motionEventSpy {
+                            dragHandleMotionEvent(it)
+                        }
                         .width(48.dp)
                         .height(24.dp)
                         .clickable {
@@ -162,12 +165,14 @@ fun OverlayContent(
                             mutableStateOf(32.dp)
                         }
                         val density = LocalDensity.current
+                        // Drag handle
                         Box(modifier = Modifier
                             .width(gridWidth)
                             .height(16.dp)
                             .motionEventSpy {
                                 dragHandleMotionEvent(it)
                             })
+
                         LazyVerticalGrid(
                             modifier = Modifier
                                 .onSizeChanged {
@@ -237,7 +242,8 @@ private fun LazyGridScope.overlayButtons(
             if (label.isNotEmpty()) {
                 Text(
                     modifier = Modifier
-                        .padding(horizontal = 4.dp),
+                        .padding(horizontal = 4.dp)
+                        .padding(top = 6.dp),
                     text = label,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)

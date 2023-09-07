@@ -23,6 +23,8 @@ message OverlayButtonSetting {
   string backgroundColor = 5;
   string iconTintColor = 6;
 
+  repeated google.protobuf.Any longClickActions = 7;
+
   string note = 99;
   string id = 100;
 }
