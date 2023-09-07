@@ -32,6 +32,10 @@ fun getLocalDASetItemHandler(
             vm.dismissDASet(da, props.firstOrNull())
         }
 
+        override fun delete(da: DirectActionUM, alsoDeleteItems: Boolean) {
+            vm.deleteDASet(da, alsoDeleteItems, props.firstOrNull())
+        }
+
         override fun rename(da: DirectActionUM, newName: String) {
             vm.rename(da, newName, props.firstOrNull())
         }

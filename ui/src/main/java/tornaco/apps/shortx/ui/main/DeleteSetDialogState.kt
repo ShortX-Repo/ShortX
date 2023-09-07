@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.ui.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -68,15 +69,17 @@ fun DeleteSetConfirmDialog(
             text = {
                 Column {
                     Text(text = i18N["ui.delete.dialog.confirm", mapOf("wht" to state.setTitle)])
-                    SectionSpacer()
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Checkbox(
-                            checked = state.alsoDeleteItems,
-                            onCheckedChange = { state.alsoDeleteItems = it })
-                        Text(text = i18N["ui.delete.dialog.also.delete.item", mapOf("count" to state.itemsCount.toString())])
+                    AnimatedVisibility(visible = state.itemsCount > 0) {
+                        SectionSpacer()
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Checkbox(
+                                checked = state.alsoDeleteItems,
+                                onCheckedChange = { state.alsoDeleteItems = it })
+                            Text(text = i18N["ui.delete.dialog.also.delete.item", mapOf("count" to state.itemsCount.toString())])
+                        }
                     }
                 }
             })

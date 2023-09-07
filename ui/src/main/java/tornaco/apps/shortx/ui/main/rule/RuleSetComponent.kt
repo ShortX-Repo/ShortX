@@ -133,7 +133,7 @@ private fun listItemOverflowMenu(
 
     val deleteConfirmDialogState = rememberDeleteSetConfirmDialogState(
         setTitle = rule.title,
-        itemsCount = 0
+        itemsCount = rule.itemsCount
     )
     DeleteSetConfirmDialog(
         state = deleteConfirmDialogState,

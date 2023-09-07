@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.ui.base.afterNavLongDelay
 import tornaco.apps.shortx.ui.main.CommonSetFilter
+import tornaco.apps.shortx.ui.main.id
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import java.text.Collator
@@ -33,9 +34,18 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
-                val selectedDASetFilter = state.value.selectedDASetFilter
                 val allDASets = shortXManager.getAllDASets()
-                val das = shortXManager.getAllDirectAction()
+
+                // This set is not exists anymore.
+                if (state.value.selectedDASetFilter.id != null
+                    && allDASets.none { it.id == state.value.selectedDASetFilter.id }
+                ) {
+                    updateState { copy(selectedDASetFilter = CommonSetFilter.PinnedAll) }
+                }
+
+                val selectedDASetFilter = state.value.selectedDASetFilter
+                val allDAs = shortXManager.getAllDirectAction()
+                val das = allDAs
                     .filter { directAction ->
                         when (selectedDASetFilter) {
                             CommonSetFilter.PinnedAll -> {
@@ -65,25 +75,27 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     .sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.title, o2.title)
                     }
-                    .map {
+                    .map { directActionSet ->
+                        val subDAs = allDAs.filter { it.directActionSetId == directActionSet.id }
                         DirectActionUM(
-                            id = it.id,
-                            title = it.title,
-                            description = it.description,
+                            id = directActionSet.id,
+                            title = directActionSet.title,
+                            description = directActionSet.description,
                             updateTime = FuzzyDateTimeFormatter.getTimeAgo(
                                 context,
-                                Date(it.lastUpdateTime)
+                                Date(directActionSet.lastUpdateTime)
                             ),
                             createTime = FuzzyDateTimeFormatter.getTimeAgo(
                                 context,
-                                Date(it.createTime)
+                                Date(directActionSet.createTime)
                             ),
-                            icon = it.icon,
+                            icon = directActionSet.icon,
                             iconColor = Color.Red.value,
                             runningInsCount = 0,
                             directAction = DirectAction.getDefaultInstance(),
                             versionCode = 0,
-                            isDirectActionSet = true
+                            isDirectActionSet = true,
+                            itemsCount = subDAs.size
                         )
                     }
 
@@ -122,6 +134,19 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
         }.forEach {
             moveOutSet(it, token)
         }
+    }
+
+    fun deleteDASet(daSet: DirectActionUM, alsoDeleteItems: Boolean, token: String?) {
+        logger.i("deleteDASet: ${daSet.title}")
+        if (alsoDeleteItems) {
+            shortXManager.getAllDirectAction().filter {
+                it.directActionSetId == daSet.id
+            }.forEach {
+                logger.w("deleteDASet, Delete da: ${it.title}")
+                shortXManager.deleteDirectAction(it.id)
+            }
+        }
+        shortXManager.deleteDASet(daSet.id)
     }
 
     fun rename(daSet: DirectActionUM, newName: String, token: String?) {

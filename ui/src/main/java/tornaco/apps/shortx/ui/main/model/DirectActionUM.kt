@@ -27,5 +27,6 @@ data class DirectActionUM(
     val hasUpdate: Boolean = false,
 
     // For Set
-    val isDirectActionSet: Boolean = false
+    val isDirectActionSet: Boolean = false,
+    val itemsCount: Int = 0
 ) : Parcelable

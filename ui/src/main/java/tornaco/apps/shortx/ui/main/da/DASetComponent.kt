@@ -33,7 +33,9 @@ import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.main.DeleteSetConfirmDialog
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.main.rememberDeleteSetConfirmDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 
@@ -133,6 +135,15 @@ private fun daSetListItemOverflowMenu(
         onConfirm = { handler.dismiss(da) }
     )
 
+    val deleteConfirmDialogState = rememberDeleteSetConfirmDialogState(
+        setTitle = da.title,
+        itemsCount = da.itemsCount
+    )
+    DeleteSetConfirmDialog(
+        state = deleteConfirmDialogState,
+        onConfirm = { handler.delete(da, it) }
+    )
+
     val renameDialogState =
         rememberTextInputState(title = i18N["ui.common.rename"], message = null, onSelected = {
             handler.rename(da, it)
@@ -157,12 +168,21 @@ private fun daSetListItemOverflowMenu(
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dismiss"]),
             data = RuleSetItemMenuOptions.Dismiss,
             icon = {
+                RemixIcon(Remix.System.close_circle_line)
+            }),
+        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+            data = RuleSetItemMenuOptions.Delete,
+            icon = {
                 RemixIcon(Remix.System.delete_bin_4_line)
             })
     ), onSelect = {
         when (it.data) {
             RuleSetItemMenuOptions.Dismiss -> {
                 dismissDialogState.show()
+            }
+
+            RuleSetItemMenuOptions.Delete -> {
+                deleteConfirmDialogState.show()
             }
 
             RuleSetItemMenuOptions.Rename -> {
@@ -183,5 +203,5 @@ private fun daSetListItemOverflowMenu(
 }
 
 enum class RuleSetItemMenuOptions {
-    Dismiss, Rename, Share
+    Dismiss, Delete, Rename, Share
 }
