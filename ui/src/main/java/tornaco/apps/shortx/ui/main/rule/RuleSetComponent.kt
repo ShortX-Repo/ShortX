@@ -70,7 +70,10 @@ fun RuleSetItem(
                 ColoredIcon(
                     size = Dimens.RuleIconSize,
                     padding = 0.dp,
-                    color = MaterialTheme.colorScheme.primaryContainer
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = {
+                        popMenuState.open()
+                    }
                 ) {
                     RemixIcon(
                         modifier = Modifier.size(16.dp),

@@ -63,7 +63,7 @@ fun DirectActionSetItem(
 }
 
 @Composable
-fun DASetListItem(
+private fun DASetListItem(
     modifier: Modifier,
     title: String,
     onClick: () -> Unit,
@@ -85,7 +85,10 @@ fun DASetListItem(
             ColoredIcon(
                 size = Dimens.DAIconSize,
                 padding = 0.dp,
-                color = MaterialTheme.colorScheme.primaryContainer
+                color = MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    onLongClick()
+                }
             ) {
                 RemixIcon(
                     modifier = Modifier.size(16.dp),

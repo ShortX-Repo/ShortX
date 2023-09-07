@@ -145,7 +145,7 @@ fun ShortXTheme(
 }
 
 object Dimens {
-    val DAIconSize = 32.dp
+    val DAIconSize = 36.dp
     val RuleIconSize = 36.dp
-    val menuDropdownFraction = 0.5f
+    const val menuDropdownFraction = 0.5f
 }
