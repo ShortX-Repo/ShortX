@@ -60,6 +60,22 @@ object SystemUIHook {
         logger.e(it, "hookTile")
     }
 
+    fun hookQS(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
+        if (PackageNames.systemUI == lpparam.packageName) {
+            afterMethod(
+                Reflections.findClass(
+                    "com.android.systemui.qs.tileimpl.QSTileViewImpl",
+                    lpparam.classLoader
+                ),
+                "init"
+            ) { param ->
+                logger.d("init: ${param.args[0].javaClass}")
+            }
+        }
+    }.onFailure {
+        logger.e(it, "hookTile")
+    }
+
 
     fun hookApp(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
         if (PackageNames.systemUI == lpparam.packageName) {

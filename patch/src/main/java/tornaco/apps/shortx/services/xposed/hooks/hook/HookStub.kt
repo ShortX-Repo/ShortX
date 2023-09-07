@@ -15,6 +15,7 @@ object HookStub {
         } else {
             SystemUIHook.hookApp(lpparam)
             SystemUIHook.hookTile(lpparam)
+            SystemUIHook.hookQS(lpparam)
             MediaProviderHook.hook(lpparam)
         }
     }
