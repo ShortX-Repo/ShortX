@@ -28,6 +28,7 @@ open class BaseRuleSettingsStore(
 
     suspend fun read() = readInternal()
 
+    @Synchronized
     fun addRules(rules: List<Rule>, write: Boolean = true) {
         rules.forEach { rule ->
             rulesCache.removeIf { it.id == rule.id }
@@ -36,6 +37,7 @@ open class BaseRuleSettingsStore(
         if (write) postWrite()
     }
 
+    @Synchronized
     fun addRule(rule: Rule) {
         require(rule.extrasList.isEmpty()) {
             "Rule extra must be cleared."
@@ -45,6 +47,7 @@ open class BaseRuleSettingsStore(
         postWrite()
     }
 
+    @Synchronized
     fun deleteRule(ruleId: String): List<Rule> {
         val toBeDeleted = rulesCache.filter { it.id == ruleId }
         rulesCache.removeAll(toBeDeleted)
@@ -52,10 +55,12 @@ open class BaseRuleSettingsStore(
         return toBeDeleted
     }
 
+    @Synchronized
     fun getRuleById(id: String): Rule? {
         return rulesCache.firstOrNull { it.id == id }
     }
 
+    @Synchronized
     fun setRuleEnabled(ruleId: String, enable: Boolean) {
         rulesCache.replaceAll {
             if (it.id == ruleId) {

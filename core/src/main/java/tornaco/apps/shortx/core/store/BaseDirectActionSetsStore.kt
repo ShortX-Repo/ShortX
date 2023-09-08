@@ -28,6 +28,7 @@ open class BaseDirectActionSetsStore(
         readInternal()
     }
 
+    @Synchronized
     fun addDirectActionSets(directActionSets: List<DirectActionSet>, write: Boolean = true) {
         directActionSets.forEach { pkgSet ->
             pkgSetsCache.removeIf { it.id == pkgSet.id }
@@ -36,17 +37,20 @@ open class BaseDirectActionSetsStore(
         if (write) postWrite()
     }
 
+    @Synchronized
     fun addDirectActionSet(set: DirectActionSet) {
         pkgSetsCache.removeIf { it.id == set.id }
         pkgSetsCache.add(set)
         postWrite()
     }
 
+    @Synchronized
     fun deleteDirectActionSet(id: String) {
         pkgSetsCache.removeIf { it.id == id }
         postWrite()
     }
 
+    @Synchronized
     fun getDirectActionSet(id: String): DirectActionSet? {
         return pkgSetsCache.firstOrNull { it.id == id }
     }
