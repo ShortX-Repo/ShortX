@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.rule.action.su.ISu;
 import tornaco.apps.shortx.core.notification.INotificationPoster;
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver;
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
+import tornaco.apps.shortx.core.systemui.IQSTileHost;
 
 interface IShortX {
     Version version();
@@ -226,4 +227,6 @@ interface IShortX {
     List<ByteArrayWrapper> getAllDASets(boolean withDAs);
 
     void testFATALError();
+
+    void attachQSTileHost(in IQSTileHost host);
 }

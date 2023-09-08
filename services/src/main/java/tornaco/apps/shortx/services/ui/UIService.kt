@@ -3,15 +3,23 @@ package tornaco.apps.shortx.services.ui
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import tornaco.apps.shortx.core.os.SynchronousResultReceiver
+import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
+import tornaco.apps.shortx.core.systemui.IQSTileHost
+import tornaco.apps.shortx.core.util.RemoteCallbackListExt
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.postSafety
+import java.time.Duration
 
 class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UIService") {
+    private val qsTileHost = RemoteCallbackListExt<IQSTileHost>()
+
     private val uiHandler by lazy {
         require(isSystemReady) { "Pls access uiHandler after systemReady" }
         Handler(Looper.getMainLooper())
@@ -67,5 +75,17 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
             }
         }
         liveDanmuView = null
+    }
+
+    fun attachQSTileHost(host: IQSTileHost) {
+        logger.d("attachQSTileHost: $host")
+        qsTileHost.clear()
+        qsTileHost.register(host)
+
+        val receiver = SynchronousResultReceiver.get()
+        host.getTiles(receiver)
+        val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(10))
+        val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
+        logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
     }
 }

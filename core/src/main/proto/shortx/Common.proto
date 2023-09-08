@@ -315,3 +315,12 @@ enum CallState {
 message CustomContextDataKey {
   repeated StringPair keys = 1;
 }
+
+message QSTile {
+  string tileSpec = 1;
+  string label = 2;
+}
+
+message QSTileList {
+  repeated QSTile tile = 1;
+}

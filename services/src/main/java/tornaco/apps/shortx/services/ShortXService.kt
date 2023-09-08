@@ -50,6 +50,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
+import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.core.util.DateUtils
@@ -348,6 +349,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     )
                 }
             }
+        }
+
+        override fun attachQSTileHost(host: IQSTileHost) {
+            shortXContext.ui.attachQSTileHost(host)
         }
 
         override fun isInjectedShellEnabled(): Boolean {

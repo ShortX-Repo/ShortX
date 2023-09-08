@@ -520,6 +520,9 @@ public interface IShortX extends android.os.IInterface
     @Override public void testFATALError() throws android.os.RemoteException
     {
     }
+    @Override public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2046,6 +2049,15 @@ public interface IShortX extends android.os.IInterface
         {
           data.enforceInterface(descriptor);
           this.testFATALError();
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_attachQSTileHost:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.systemui.IQSTileHost _arg0;
+          _arg0 = tornaco.apps.shortx.core.systemui.IQSTileHost.Stub.asInterface(data.readStrongBinder());
+          this.attachQSTileHost(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -5030,6 +5042,25 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((host!=null))?(host.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_attachQSTileHost, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().attachQSTileHost(host);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5165,6 +5196,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getDASetById = (android.os.IBinder.FIRST_CALL_TRANSACTION + 130);
     static final int TRANSACTION_getAllDASets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 131);
     static final int TRANSACTION_testFATALError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 132);
+    static final int TRANSACTION_attachQSTileHost = (android.os.IBinder.FIRST_CALL_TRANSACTION + 133);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5367,4 +5399,5 @@ public interface IShortX extends android.os.IInterface
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDASetById(java.lang.String id, boolean withDAs) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException;
   public void testFATALError() throws android.os.RemoteException;
+  public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException;
 }
