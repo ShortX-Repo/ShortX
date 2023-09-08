@@ -108,7 +108,7 @@ private fun AllActions(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         val searchBarState = rememberSearchBarState(
@@ -155,7 +155,7 @@ private fun AllActions(
 @Composable
 fun ActionCategoryTitle(category: ActionCategory) {
     SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
         text = LocalI18N.current[category.i18NKey]
     )
 }

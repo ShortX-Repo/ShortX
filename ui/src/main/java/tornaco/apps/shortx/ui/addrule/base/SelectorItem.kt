@@ -127,7 +127,7 @@ private fun SelectorListItem(
     val scope = rememberCoroutineScope()
 
     ShortXCard(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
         shape = ShortXCardRoundedCornerShapeL
     ) {
         Box(modifier = modifier

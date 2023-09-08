@@ -96,7 +96,7 @@ private fun <ARGS> ConditionSelector(
                 }) { paddingValues ->
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 8.dp)
                         .padding(paddingValues)
                         .verticalScroll(rememberScrollState())
                 ) {
@@ -141,7 +141,7 @@ private fun <ARGS> ConditionSelector(
 @Composable
 fun ConditionCategoryTitle(category: ConditionCategory) {
     SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
         text = LocalI18N.current[category.i18NKey]
     )
 }

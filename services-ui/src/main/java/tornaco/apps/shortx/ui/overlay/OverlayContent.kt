@@ -250,7 +250,7 @@ private fun LazyGridScope.overlayButtons(
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
-                        .padding(top = 6.dp),
+                        .padding(top = 3.dp),
                     text = label,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)

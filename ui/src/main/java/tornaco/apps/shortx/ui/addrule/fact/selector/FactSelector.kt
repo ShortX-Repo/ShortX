@@ -111,7 +111,7 @@ private fun <ARGS> FactSelector(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 8.dp)
                         .verticalScroll(rememberScrollState()),
                 ) {
                     val searchBarState = rememberSearchBarState(
@@ -138,7 +138,7 @@ private fun <ARGS> FactSelector(
 @Composable
 fun FactCategoryTitle(category: FactCategory) {
     SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
         text = LocalI18N.current[category.i18NKey]
     )
 }
