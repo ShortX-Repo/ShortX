@@ -67,6 +67,7 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.clickableWithRipple
+import tornaco.apps.shortx.ui.base.thenIf
 
 private val logger = Logger("ShortXOverlay")
 
@@ -132,58 +133,59 @@ fun OverlayContent(
             }
         }
 
+        if (action.enableGlobalDrag) {
+            dragHandleMotionEvent(it)
+        }
+
     }) {
         Card(
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .padding(bottom = 12.dp),
+            modifier = Modifier,
             colors = CardDefaults.cardColors(
-                containerColor = ColorDefaults.backgroundSurfaceColor().copy(
-                    alpha = if (expandState.isExpand) {
-                        0.8f
-                    } else 0.4f
-                )
+                containerColor = ColorDefaults.backgroundSurfaceColor().copy(alpha = 0.6f)
             )
         ) {
             ExpandContainer(isExpanded = expandState.isExpand,
                 expandContent = {
-                    Column {
-                        var gridWidth by remember {
-                            mutableStateOf(32.dp)
-                        }
-                        val density = LocalDensity.current
-                        // Drag handle
+
+                    var gridWidth by remember {
+                        mutableStateOf(32.dp)
+                    }
+                    val density = LocalDensity.current
+                    // Drag handle
+                    if (!action.enableGlobalDrag) {
                         Box(modifier = Modifier
                             .width(gridWidth)
                             .height(16.dp)
                             .motionEventSpy {
                                 dragHandleMotionEvent(it)
                             })
-
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .onSizeChanged {
-                                    gridWidth = with(density) {
-                                        it.width.toDp()
-                                    }
-                                }
-                                .widthIn(
-                                    max = (maxOf(
-                                        72,
-                                        action.maxWidthInDp
-                                    ).dp)
-                                )
-                                .heightIn(
-                                    max = (maxOf(
-                                        72,
-                                        action.maxHeightInDp
-                                    ).dp)
-                                ),
-                            columns = GridCells.Adaptive(maxOf(action.buttonMinWidth.dp, 64.dp)),
-                            content = {
-                                overlayButtons(state, onButtonClick, onButtonLongClick)
-                            })
                     }
+
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .padding(horizontal = action.overlayPaddingH.dp)
+                            .padding(vertical = action.overlayPaddingV.dp)
+                            .onSizeChanged {
+                                gridWidth = with(density) {
+                                    it.width.toDp()
+                                }
+                            }
+                            .widthIn(
+                                max = (maxOf(
+                                    72,
+                                    action.maxWidthInDp
+                                ).dp)
+                            )
+                            .heightIn(
+                                max = (maxOf(
+                                    72,
+                                    action.maxHeightInDp
+                                ).dp)
+                            ),
+                        columns = GridCells.Adaptive(maxOf(action.buttonMinWidth.dp, 64.dp)),
+                        content = {
+                            overlayButtons(state, onButtonClick, onButtonLongClick)
+                        })
                 },
                 collapseContent = {
                     Box(modifier = Modifier
@@ -204,6 +206,7 @@ fun OverlayContent(
                     }
                 })
         }
+
     }
 }
 
@@ -217,7 +220,7 @@ private fun LazyGridScope.overlayButtons(
         val updateButton by rememberUpdatedState(newValue = button)
         Column(
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .thenIf(Modifier.padding(bottom = 8.dp), index != state.buttons.size - 1)
                 .clip(ShortXCardRoundedCornerShape)
                 .clickableWithRipple(
                     onLongClick = {

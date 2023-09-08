@@ -10,7 +10,11 @@ import android.view.*
 import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import androidx.annotation.Keep
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
 import androidx.lifecycle.*
 import tornaco.apps.shortx.core.BuildProp
@@ -20,6 +24,7 @@ import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.screenSize
 import tornaco.apps.shortx.core.util.windowManager
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @SuppressLint("ViewConstructor")
 @Keep
@@ -114,18 +119,26 @@ class ComposeOverlay(
 
         val composeView = ComposeView(contextWrapper).apply {
             setContent {
-                CompositionLocalProvider(LocalContext provides appContext) {
-                    OverlayContent(
-                        action = action,
-                        dragHandleMotionEvent = {
-                            touchListener.onTouch(
-                                this@ComposeOverlay, it
-                            )
-                        },
-                        onButtonClick = { onButtonClick(it) },
-                        onButtonLongClick = { onButtonLongClick(it) }
-                    )
+                ShortXTheme {
+                    val contentColor: Color = contentColorFor(MaterialTheme.colorScheme.surface)
+                    CompositionLocalProvider(
+                        LocalContext provides appContext,
+                        LocalContentColor provides contentColor
+                    ) {
+                        OverlayContent(
+                            action = action,
+                            dragHandleMotionEvent = {
+                                touchListener.onTouch(
+                                    this@ComposeOverlay, it
+                                )
+                            },
+                            onButtonClick = { onButtonClick(it) },
+                            onButtonLongClick = { onButtonLongClick(it) }
+                        )
+
+                    }
                 }
+
             }
             isFocusable = false
             isClickable = false

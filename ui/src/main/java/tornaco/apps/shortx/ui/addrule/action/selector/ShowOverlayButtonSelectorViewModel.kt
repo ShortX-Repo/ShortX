@@ -113,7 +113,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 maxHeight = settings.maxHeight,
                 buttonMinWidth = settings.buttonMinWidth,
                 backgroundAlpha = settings.backgroundAlpha,
-                backgroundColor = settings.backgroundColor
+                backgroundColor = settings.backgroundColor,
+                enableGlobalDrag = settings.enableGlobalDrag,
+                overlayPaddingH = settings.overlayPaddingH,
+                overlayPaddingV = settings.overlayPaddingV
             )
         }
     }
@@ -166,6 +169,18 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setButtonMinWidth(max: Int) {
         updateState { copy(buttonMinWidth = max) }
+    }
+
+    fun setOverlayPaddingV(padding: Int) {
+        updateState { copy(overlayPaddingV = padding) }
+    }
+
+    fun setOverlayPaddingH(padding: Int) {
+        updateState { copy(overlayPaddingH = padding) }
+    }
+
+    fun setEnableGlobalDrag(enable: Boolean) {
+        updateState { copy(enableGlobalDrag = enable) }
     }
 
     fun addButton() {

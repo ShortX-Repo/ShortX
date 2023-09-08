@@ -235,6 +235,20 @@ private fun Content(
         }
 
         StandardSpacer()
+        Column(verticalArrangement = Arrangement.Center) {
+            FieldTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.common.button.enable.global.drag"]
+            )
+            SmallSpacer()
+            TipBody(text = LocalI18N.current["ui.common.button.enable.global.drag.description"])
+            SmallSpacer()
+            ShortXSwitch(checked = state.enableGlobalDrag, onCheckedChange = {
+                vm.setEnableGlobalDrag(it)
+            })
+        }
+
+        StandardSpacer()
         Column(modifier = Modifier.fillMaxWidth()) {
             FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
             Text(text = state.maxWidth.toString())
@@ -265,6 +279,28 @@ private fun Content(
                 value = state.buttonMinWidth.toFloat(),
                 onValueChange = {
                     vm.setButtonMinWidth(it.roundToInt())
+                })
+        }
+        StandardSpacer()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.v"])
+            Text(text = state.overlayPaddingV.toString())
+            Slider(
+                valueRange = 0f..50f,
+                value = state.overlayPaddingV.toFloat(),
+                onValueChange = {
+                    vm.setOverlayPaddingV(it.roundToInt())
+                })
+        }
+        StandardSpacer()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.h"])
+            Text(text = state.overlayPaddingH.toString())
+            Slider(
+                valueRange = 0f..50f,
+                value = state.overlayPaddingH.toFloat(),
+                onValueChange = {
+                    vm.setOverlayPaddingH(it.roundToInt())
                 })
         }
 

@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -93,16 +94,12 @@ fun RuleSetItem(
                     },
                 )
             }
-
-            Column(
-                modifier = Modifier
-            ) {
-                Text(
-                    text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp
-                    )
+            TinySpacer()
+            Text(
+                text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp
                 )
-            }
+            )
         }
     }
 }
