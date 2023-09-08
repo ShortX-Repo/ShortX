@@ -225,6 +225,9 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setButtonMinWidth(buttonMinWidth)
                 .setBackgroundAlpha(backgroundAlpha)
                 .setBackgroundColor(backgroundColor)
+                .setOverlayPaddingH(overlayPaddingH)
+                .setOverlayPaddingV(overlayPaddingV)
+                .setEnableGlobalDrag(enableGlobalDrag)
                 .setNote(overrideNote ?: note).build()
         }
 

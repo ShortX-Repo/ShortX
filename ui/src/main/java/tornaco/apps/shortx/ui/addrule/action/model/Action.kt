@@ -319,6 +319,9 @@ sealed interface Action : Parcelable {
         val buttonMinWidth: Int,
         val backgroundColor: String,
         val backgroundAlpha: Float,
+        val overlayPaddingV: Int,
+        val overlayPaddingH: Int,
+        val enableGlobalDrag: Boolean,
     ) : Action {
         override fun clone(
             id: String,

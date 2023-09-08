@@ -1,7 +1,13 @@
 package tornaco.apps.shortx.ui.overlay
 
 import android.view.MotionEvent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +50,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -138,28 +145,8 @@ fun OverlayContent(
                 )
             )
         ) {
-            Column(modifier = Modifier) {
-                if (!expandState.isExpand) {
-                    Box(modifier = Modifier
-                        .motionEventSpy {
-                            dragHandleMotionEvent(it)
-                        }
-                        .width(48.dp)
-                        .height(24.dp)
-                        .clickable {
-                            expandState.expand()
-                        }) {
-                        RemixIcon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .align(Alignment.Center),
-                            remixName = Remix.Arrows.arrow_drop_down_line,
-                        )
-                    }
-                }
-
-                // Expand content.
-                AnimatedVisibility(visible = expandState.isExpand) {
+            ExpandContainer(isExpanded = expandState.isExpand,
+                expandContent = {
                     Column {
                         var gridWidth by remember {
                             mutableStateOf(32.dp)
@@ -197,8 +184,25 @@ fun OverlayContent(
                                 overlayButtons(state, onButtonClick, onButtonLongClick)
                             })
                     }
-                }
-            }
+                },
+                collapseContent = {
+                    Box(modifier = Modifier
+                        .motionEventSpy {
+                            dragHandleMotionEvent(it)
+                        }
+                        .width(48.dp)
+                        .height(24.dp)
+                        .clickable {
+                            expandState.expand()
+                        }) {
+                        RemixIcon(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .align(Alignment.Center),
+                            remixName = Remix.Arrows.arrow_drop_down_line,
+                        )
+                    }
+                })
         }
     }
 }
@@ -276,6 +280,42 @@ private fun DragHandle(
                     height = height
                 )
         )
+    }
+}
+
+@Composable
+fun ExpandContainer(
+    isExpanded: Boolean,
+    expandContent: @Composable () -> Unit,
+    collapseContent: @Composable () -> Unit
+) {
+    AnimatedContent(
+        targetState = isExpanded,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(150, 150)) togetherWith
+                    fadeOut(animationSpec = tween(150)) using
+                    SizeTransform { initialSize, targetSize ->
+                        if (targetState) {
+                            keyframes {
+                                // Expand horizontally first.
+                                IntSize(targetSize.width, initialSize.height) at 150
+                                durationMillis = 300
+                            }
+                        } else {
+                            keyframes {
+                                // Shrink vertically first.
+                                IntSize(initialSize.width, targetSize.height) at 150
+                                durationMillis = 300
+                            }
+                        }
+                    }
+        }, label = "ExpandAnim"
+    ) { targetExpanded ->
+        if (targetExpanded) {
+            expandContent()
+        } else {
+            collapseContent()
+        }
     }
 }
 

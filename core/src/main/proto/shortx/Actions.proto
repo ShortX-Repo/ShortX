@@ -165,6 +165,9 @@ message ShowOverlayButton {
   float backgroundAlpha = 7;
   string backgroundColor = 8;
   int32 buttonMinWidth = 9;
+  bool enableGlobalDrag = 10;
+  int32 overlayPaddingH = 11;
+  int32 overlayPaddingV = 12;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

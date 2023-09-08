@@ -30,6 +30,9 @@ data class OverlayButtonSelectorState(
     val buttonMinWidth: Int = 64,
     val backgroundColor: String = "",
     val backgroundAlpha: Float = 0.8f,
+    val overlayPaddingV: Int = 0,
+    val overlayPaddingH: Int = 0,
+    val enableGlobalDrag: Boolean = true,
     val id: String = defaultNewActionId()
 )
 
@@ -71,7 +74,7 @@ fun OverlayButtonSetting.toButton(): Button {
                 })
             }
         },
-        )
+    )
 }
 
 fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
@@ -84,7 +87,10 @@ fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
         maxWidth = this.maxWidth,
         buttonMinWidth = this.buttonMinWidth,
         backgroundColor = this.backgroundColor,
-        backgroundAlpha = this.backgroundAlpha
+        backgroundAlpha = this.backgroundAlpha,
+        enableGlobalDrag = this.enableGlobalDrag,
+        overlayPaddingV = this.overlayPaddingV,
+        overlayPaddingH = this.overlayPaddingH
     )
 }
 

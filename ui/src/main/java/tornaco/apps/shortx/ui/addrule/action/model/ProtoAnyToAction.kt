@@ -173,7 +173,10 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 maxHeight = data.maxHeightInDp,
                 buttonMinWidth = data.buttonMinWidth,
                 backgroundAlpha = data.backgroundAlpha,
-                backgroundColor = data.backgroundColor
+                backgroundColor = data.backgroundColor,
+                enableGlobalDrag = data.enableGlobalDrag,
+                overlayPaddingH = data.overlayPaddingH,
+                overlayPaddingV = data.overlayPaddingV
             )
         }
 
