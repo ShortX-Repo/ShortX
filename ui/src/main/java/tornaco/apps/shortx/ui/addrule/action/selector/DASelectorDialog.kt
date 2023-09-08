@@ -28,10 +28,13 @@ import tornaco.apps.shortx.ui.base.LocalSnackbarHostState
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.main.CommonSetFilter
 import tornaco.apps.shortx.ui.main.da.DAItemHandler
 import tornaco.apps.shortx.ui.main.da.DAListViewModel
+import tornaco.apps.shortx.ui.main.da.DASetItemHandler
 import tornaco.apps.shortx.ui.main.da.DirectActionListContent
 import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
+import tornaco.apps.shortx.ui.main.da.LocalDASetItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -74,6 +77,7 @@ private fun DASelector(dialogState: DADialogState) {
     val daListState by daListViewModel.state.collectAsState()
 
     LaunchedEffect(daListViewModel) {
+        daListViewModel.selectDASetFilter(CommonSetFilter.PinnedAllFlat)
         daListViewModel.loadDAList()
     }
 
@@ -108,14 +112,19 @@ private fun DASelector(dialogState: DADialogState) {
                             dialogState.dismiss()
                         }
                     }
+                    val setItemHandler = object : DASetItemHandler {}
                     CompositionLocalProvider(
                         LocalSnackbarHostState provides SnackbarHostState(),
-                        LocalDAItemHandler provides daItemHandler
+                        LocalDAItemHandler provides daItemHandler,
+                        LocalDASetItemHandler provides setItemHandler
                     ) {
                         DirectActionListContent(
                             isLoading = daListState.isLoading,
                             isShowDetailedDAItem = daListState.isShowDetailedDAItem,
                             das = daListState.das,
+                            daSetFilters = daListState.daSetFilters,
+                            selectedDASetFilter = daListState.selectedDASetFilter,
+                            selectDASetFilter = { daListViewModel.selectDASetFilter(it) },
                             showOverflowMenu = false,
                         )
                     }

@@ -141,7 +141,7 @@ fun OverlayContent(
         Card(
             modifier = Modifier,
             colors = CardDefaults.cardColors(
-                containerColor = ColorDefaults.backgroundSurfaceColor().copy(alpha = 0.6f)
+                containerColor = ColorDefaults.backgroundSurfaceColor().copy(alpha = 0.86f)
             )
         ) {
             ExpandContainer(isExpanded = expandState.isExpand,

@@ -9,8 +9,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,24 +28,26 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ColoredIcon
+import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 class FromDADialogState(
     val onSelected: (Action.FromDA) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-
+) : CommonDialogState() {
     var currentSettings: Action.FromDA? = null
 
     fun show(currentSettings: Action.FromDA? = null) {
         this.currentSettings = currentSettings
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+        show()
     }
 }
 
@@ -114,7 +126,10 @@ private fun FromDASelector(dialogState: FromDADialogState) {
 
                     StandardSpacer()
                     Column(verticalArrangement = Arrangement.Center) {
-                        SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.title.select.action"])
+                        SmallTitle(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            LocalI18N.current["ui.title.select.action"]
+                        )
 
                         if (state.data.daId.isNotBlank()) {
                             ListItem(titleLines = labelLinesForAction(action = state.data),
