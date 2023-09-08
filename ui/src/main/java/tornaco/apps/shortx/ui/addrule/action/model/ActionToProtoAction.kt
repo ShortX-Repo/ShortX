@@ -228,6 +228,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setOverlayPaddingH(overlayPaddingH)
                 .setOverlayPaddingV(overlayPaddingV)
                 .setEnableGlobalDrag(enableGlobalDrag)
+                .setDisableAutoEdge(disableAutoEdge)
                 .setNote(overrideNote ?: note).build()
         }
 

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Resources
 import android.graphics.PixelFormat
-import android.util.TypedValue
+import android.graphics.Rect
 import android.view.*
 import android.view.ViewConfiguration
 import android.widget.FrameLayout
@@ -53,6 +53,11 @@ class ComposeOverlay(
             onPosChange(out[0], out[1])
         }
 
+    private val edgeRunnable =
+        Runnable {
+            updatePosToEdge()
+        }
+
     private val touchListener: OnTouchListener = object : OnTouchListener {
         private var touchX = 0f
         private var touchY = 0f
@@ -81,12 +86,18 @@ class ComposeOverlay(
 
                         removeCallbacks(callPosUpdateRunnable)
                         postDelayed(callPosUpdateRunnable, 300)
+                        removeCallbacks(edgeRunnable)
 
                         return true
                     }
                 }
 
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    if (!action.disableAutoEdge) {
+                        removeCallbacks(edgeRunnable)
+                        postDelayed(edgeRunnable, 600)
+                    }
+
                     run {
                         touchY = 0.0f
                         touchX = touchY
@@ -95,6 +106,7 @@ class ComposeOverlay(
                         isDragging = false
                         return true
                     }
+
                 }
 
                 else -> {}
@@ -206,16 +218,16 @@ class ComposeOverlay(
         context.windowManager.updateViewLayout(this, overlayLP)
     }
 
-    private fun updatePos(x: Int, y: Int) {
-        logger.d("updatePos: $x $y")
-        overlayLP.x = x
-        overlayLP.y = y
+    private fun updatePosToEdge() {
+        logger.d("updatePosToEdge")
+        val rect = Rect()
+        getWindowVisibleDisplayFrame(rect)
+        if (overlayLP.x < (rect.width() - width) / 2) {
+            overlayLP.x = 0
+        } else {
+            overlayLP.x = rect.width() - width
+        }
+
         context.windowManager.updateViewLayout(this, overlayLP)
     }
 }
-
-
-internal val Int.dp_: Int
-    get() = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
-    ).toInt()

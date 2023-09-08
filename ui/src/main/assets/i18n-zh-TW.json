@@ -451,6 +451,7 @@
   "ui.action.show.overlay.tag": "標籤（可選）",
   "ui.action.show.overlay.tag.description": "給懸浮工具設置一個標籤，此後你可以在隱藏懸浮工具動作裡使用該標籤來隱藏它",
   "ui.action.show.auto.collapse": "自動折疊",
+  "ui.action.show.auto.edge": "自动贴边",
   "ui.action.show.orientation.land": "横向展示",
   "ui.action.show.add.button": "添加按鈕",
   "ui.action.category.app": "應用",

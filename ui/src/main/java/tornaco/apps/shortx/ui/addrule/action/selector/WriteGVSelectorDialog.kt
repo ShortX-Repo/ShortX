@@ -59,7 +59,7 @@ class WriteGVDialogState(
     var name by mutableStateOf("")
     var valueString by mutableStateOf("")
 
-    var op by mutableStateOf(WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast)
+    var op by mutableStateOf(WriteGlobalVarOp.WriteGlobalVarOp_Auto)
 
     val isValid get() = name.isNotBlank()
 
@@ -67,7 +67,7 @@ class WriteGVDialogState(
         this.name = current?.varName ?: ""
         this.valueString = current?.valueAsString ?: ""
 
-        this.op = current?.op ?: WriteGlobalVarOp.WriteGlobalVarOp_AppendToLast
+        this.op = current?.op ?: WriteGlobalVarOp.WriteGlobalVarOp_Auto
 
         show()
     }

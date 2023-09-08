@@ -322,6 +322,7 @@ sealed interface Action : Parcelable {
         val overlayPaddingV: Int,
         val overlayPaddingH: Int,
         val enableGlobalDrag: Boolean,
+        val disableAutoEdge: Boolean,
     ) : Action {
         override fun clone(
             id: String,

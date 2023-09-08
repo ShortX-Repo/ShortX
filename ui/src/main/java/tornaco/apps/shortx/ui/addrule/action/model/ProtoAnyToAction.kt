@@ -176,7 +176,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 backgroundColor = data.backgroundColor,
                 enableGlobalDrag = data.enableGlobalDrag,
                 overlayPaddingH = data.overlayPaddingH,
-                overlayPaddingV = data.overlayPaddingV
+                overlayPaddingV = data.overlayPaddingV,
+                disableAutoEdge = data.disableAutoEdge
             )
         }
 

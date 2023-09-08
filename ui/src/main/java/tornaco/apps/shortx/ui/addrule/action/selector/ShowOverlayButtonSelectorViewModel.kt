@@ -33,6 +33,7 @@ data class OverlayButtonSelectorState(
     val overlayPaddingV: Int = 0,
     val overlayPaddingH: Int = 0,
     val enableGlobalDrag: Boolean = true,
+    val enableAutoEdge: Boolean = false,
     val id: String = defaultNewActionId()
 )
 
@@ -90,7 +91,8 @@ fun OverlayButtonSelectorState.toAction(): Action.ShowOverlay {
         backgroundAlpha = this.backgroundAlpha,
         enableGlobalDrag = this.enableGlobalDrag,
         overlayPaddingV = this.overlayPaddingV,
-        overlayPaddingH = this.overlayPaddingH
+        overlayPaddingH = this.overlayPaddingH,
+        disableAutoEdge = !this.enableAutoEdge
     )
 }
 
@@ -116,7 +118,8 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 backgroundColor = settings.backgroundColor,
                 enableGlobalDrag = settings.enableGlobalDrag,
                 overlayPaddingH = settings.overlayPaddingH,
-                overlayPaddingV = settings.overlayPaddingV
+                overlayPaddingV = settings.overlayPaddingV,
+                enableAutoEdge = !settings.disableAutoEdge
             )
         }
     }
@@ -181,6 +184,10 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun setEnableGlobalDrag(enable: Boolean) {
         updateState { copy(enableGlobalDrag = enable) }
+    }
+
+    fun setEnableAutoEdge(enable: Boolean) {
+        updateState { copy(enableAutoEdge = enable) }
     }
 
     fun addButton() {

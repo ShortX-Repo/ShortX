@@ -452,6 +452,7 @@
   "ui.action.show.overlay.tag": "Tag (optional)",
   "ui.action.show.overlay.tag.description": "Set a tag for the overlay, and then you can use this tag to hide it in the hide overlay action",
   "ui.action.show.auto.collapse": "Auto collapse",
+  "ui.action.show.auto.edge": "Auto move to edge",
   "ui.action.show.orientation.land": "Landscape",
   "ui.action.show.add.button": "Add button",
   "ui.action.category.app": "Apps",

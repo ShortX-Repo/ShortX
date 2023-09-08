@@ -168,6 +168,7 @@ message ShowOverlayButton {
   bool enableGlobalDrag = 10;
   int32 overlayPaddingH = 11;
   int32 overlayPaddingV = 12;
+  bool disableAutoEdge = 13;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
