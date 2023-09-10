@@ -50,7 +50,7 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
             t = { executeCommandByInjection(command) },
             f = {
                 AppShellServiceProxy.exe(context, command)
-                    ?: errorShellRes("Fail execute shell: Can not connect to ShortX App. Pls allow ShortX start from background!!!")
+                    ?: errorShellRes("AppShellServiceProxy error")
             }
         )
     }
@@ -78,7 +78,9 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     }
 
     private fun errorShellRes(error: String): ShellRes {
-        throw IllegalStateException("Execute fail: $error")
+        val prefix =
+            "Fail execute shell: Pls allow ShortX start from background, and grant su permission to ShortX\n 执行失败，请允许ShortX后台自启动，授予ShortX Root权限"
+        throw IllegalStateException("$prefix \n  $error")
     }
 }
 
@@ -97,18 +99,23 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
         val res: AtomicReference<ShellRes> = AtomicReference()
         setTask(object : ProxyTask() {
             override fun run() {
-                val receiver = SynchronousResultReceiver.get()
-                requireNotNull(impl) { "Impl is null." }.exe(command, receiver)
-                val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
-                logger.d("receiver get res: $receiverRes")
-                val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
-                res.set(
-                    if (byteRes == null) {
-                        null
-                    } else {
-                        ShellRes.parseFrom(byteRes.byteData)
-                    }
-                )
+                runCatching {
+                    val receiver = SynchronousResultReceiver.get()
+                    requireNotNull(impl) { "Impl is null." }.exe(command, receiver)
+                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
+                    logger.d("receiver get res: $receiverRes")
+                    val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
+                    res.set(
+                        if (byteRes == null) {
+                            null
+                        } else {
+                            ShellRes.parseFrom(byteRes.byteData)
+                        }
+                    )
+                }.onFailure {
+                    logger.e(it, "ProxyTask")
+                    res.set(null)
+                }
             }
 
         })

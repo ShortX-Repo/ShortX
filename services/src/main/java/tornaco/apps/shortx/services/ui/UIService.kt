@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.ui
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.settings.DanmuUISettings
@@ -82,10 +83,12 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         qsTileHost.clear()
         qsTileHost.register(host)
 
-        val receiver = SynchronousResultReceiver.get()
-        host.getTiles(receiver)
-        val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(10))
-        val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
-        logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
+        onDebugBuild {
+            val receiver = SynchronousResultReceiver.get()
+            host.getTiles(receiver)
+            val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(10))
+            val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
+            logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
+        }
     }
 }
