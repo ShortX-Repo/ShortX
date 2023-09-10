@@ -26,6 +26,7 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlphaLarge
+import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -36,6 +37,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -48,69 +50,85 @@ import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 
 @Composable
 fun RuleItem(
+    modifier: Modifier = Modifier,
     rule: RuleUM,
     isSubscribed: Boolean
 ) {
     val handler = LocalRuleItemHandler.current
+    // TODO Animate item
     Box {
         val popMenuState = listItemOverflowMenu(
             rule = rule,
             isSubscribed = isSubscribed,
         )
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .clip(ShortXCardRoundedCornerShape)
-            .combinedClickable(onLongClick = {
-                popMenuState.open()
-            }) {
-                handler.click(rule)
-            }
-            .padding(16.dp)
+        val clickAnimateState =
+            rememberClickAnimateState(animateColor = Color(rule.actionIconColor))
+        ClickAnimateContainer(clickAnimateState) {
+            RuleItem(modifier.then(it), popMenuState, rule)
+        }
+    }
+}
+
+@Composable
+private fun RuleItem(
+    modifier: Modifier,
+    popMenuState: DropdownSelectorState,
+    rule: RuleUM
+) {
+    val handler = LocalRuleItemHandler.current
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .clip(ShortXCardRoundedCornerShape)
+        .combinedClickable(onLongClick = {
+            popMenuState.open()
+        }) {
+            handler.click(rule)
+        }
+        .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                RuleIcon(rule) {
-                    popMenuState.open()
+            RuleIcon(rule) {
+                popMenuState.open()
+            }
+            ShortXSwitch(
+                modifier = Modifier,
+                checked = rule.isEnabled,
+                onCheckedChange = {
+                    handler.setRuleEnabled(rule, it)
+                },
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(top = 6.dp)
+        ) {
+            Text(
+                text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp
+                )
+            )
+            TinySpacer()
+            Text(
+                text = rule.description,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        AnimatedVisibility(visible = rule.runningInsCount > 0) {
+            RunningIndicator(
+                modifier = Modifier.padding(start = 12.dp),
+                runningInsCount = rule.runningInsCount,
+                stopAllJobs = {
+                    handler.stopAllJobs(rule)
                 }
-                ShortXSwitch(
-                    modifier = Modifier,
-                    checked = rule.isEnabled,
-                    onCheckedChange = {
-                        handler.setRuleEnabled(rule, it)
-                    },
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .padding(top = 6.dp)
-            ) {
-                Text(
-                    text = rule.title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp
-                    )
-                )
-                TinySpacer()
-                Text(
-                    text = rule.description,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            AnimatedVisibility(visible = rule.runningInsCount > 0) {
-                RunningIndicator(
-                    modifier = Modifier.padding(start = 12.dp),
-                    runningInsCount = rule.runningInsCount,
-                    stopAllJobs = {
-                        handler.stopAllJobs(rule)
-                    }
-                )
-            }
+            )
         }
     }
 }

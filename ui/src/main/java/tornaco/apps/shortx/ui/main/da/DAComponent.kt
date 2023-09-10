@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.ui.addrule.action.mapper.ActionColorBgAlpha
+import tornaco.apps.shortx.ui.base.ClickAnimateContainer
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -48,6 +49,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.rememberClickAnimateState
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
@@ -73,22 +75,28 @@ fun DirectActionItem(
             isSubscribed = isSubscribed
         )
 
-        val handler = LocalDAItemHandler.current
-        DAListItem(
-            modifier = modifier,
-            title = da.title,
-            description = da.description,
-            updateTime = da.updateTime,
-            icon = da.icon,
-            iconColor = Color(da.iconColor),
-            runningInsCount = da.runningInsCount,
-            onClick = { handler.click(da) },
-            run = { handler.run(da) },
-            onLongClick = { if (isLongClickEnabled) popMenuState.open() },
-            stopAllJobs = {
-                handler.stopAllJobs(da)
-            }
-        )
+        val clickAnimateState = rememberClickAnimateState(animateColor = Color(da.iconColor))
+        ClickAnimateContainer(clickAnimateState) {
+            val handler = LocalDAItemHandler.current
+            DAListItem(
+                modifier = modifier.then(it),
+                title = da.title,
+                description = da.description,
+                updateTime = da.updateTime,
+                icon = da.icon,
+                iconColor = Color(da.iconColor),
+                runningInsCount = da.runningInsCount,
+                onClick = { handler.click(da) },
+                run = {
+                    clickAnimateState.startAllAnim()
+                    handler.run(da)
+                },
+                onLongClick = { if (isLongClickEnabled) popMenuState.open() },
+                stopAllJobs = {
+                    handler.stopAllJobs(da)
+                }
+            )
+        }
     }
 }
 

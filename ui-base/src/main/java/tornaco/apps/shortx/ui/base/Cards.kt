@@ -5,14 +5,22 @@ package tornaco.apps.shortx.ui.base
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring.StiffnessMediumLow
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CardDefaults
@@ -21,9 +29,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
@@ -92,7 +106,9 @@ fun ErrorCard(
                 )
 
                 RemixIcon(
-                    modifier = Modifier.offset(y = 2.dp).scale(scale),
+                    modifier = Modifier
+                        .offset(y = 2.dp)
+                        .scale(scale),
                     remixName = iconName
                 )
                 MediumSpacer()
@@ -153,5 +169,66 @@ fun InfoCard(title: String?, infos: List<String>, onClick: () -> Unit = {}) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ClickAnimateContainer(state: ClickAnimateState, content: @Composable (Modifier) -> Unit) {
+    val widthPercent by animateFloatAsState(
+        targetValue = if (!state.colorAnimStarted) 0f else 1f,
+        animationSpec = spring(stiffness = StiffnessMediumLow),
+        finishedListener = {
+            state.colorAnimStarted = false
+        }, label = "widthPercent"
+    )
+    val scalePercent by animateFloatAsState(
+        targetValue = if (state.scaleAnimStarted) 0.96f else 1f,
+        animationSpec = spring(),
+        finishedListener = {
+            state.scaleAnimStarted = false
+        }, label = "scalePercent"
+    )
+    var itemSize by remember {
+        mutableStateOf(Pair(0.dp, 0.dp))
+    }
+    val density = LocalDensity.current
+
+    Box(
+        modifier = Modifier
+            .scale(scalePercent)
+            .animateContentSize(),
+    ) {
+        Box {
+            val modifier = Modifier.onSizeChanged {
+                itemSize = with(density) {
+                    it.width.toDp() to it.height.toDp()
+                }
+            }
+            content(modifier)
+
+            if (state.colorAnimStarted) Spacer(
+                modifier = Modifier
+                    .width((itemSize.first * widthPercent))
+                    .height(itemSize.second)
+                    .background(state.animateColor.copy(alpha = 0.07f))
+            )
+        }
+    }
+}
+
+@Composable
+fun rememberClickAnimateState(animateColor: Color): ClickAnimateState {
+    return remember {
+        ClickAnimateState(animateColor)
+    }
+}
+
+class ClickAnimateState(val animateColor: Color) {
+    var colorAnimStarted by mutableStateOf(false)
+    var scaleAnimStarted by mutableStateOf(false)
+
+    fun startAllAnim() {
+        colorAnimStarted = true
+        scaleAnimStarted = true
     }
 }
