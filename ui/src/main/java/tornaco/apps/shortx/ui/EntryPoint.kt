@@ -43,8 +43,9 @@ object EntryPoint {
                                     logger.p("check OTP success")
                                 },
                                 onError = {
-                                    logger.p("check OTP fail, uncheck")
-                                    setLVLToken(null)
+                                    logger.p("check OTP fail")
+                                    // Usually make mistake?
+                                    // setLVLToken(null)
                                 })
                         } else {
                             logger.p("check CB fail, uncheck")
