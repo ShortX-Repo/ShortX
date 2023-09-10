@@ -95,7 +95,7 @@ class ComposeOverlay(
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (!action.disableAutoEdge) {
                         removeCallbacks(edgeRunnable)
-                        postDelayed(edgeRunnable, 600)
+                        postDelayed(edgeRunnable, 300)
                     }
 
                     run {
@@ -145,7 +145,14 @@ class ComposeOverlay(
                                 )
                             },
                             onButtonClick = { onButtonClick(it) },
-                            onButtonLongClick = { onButtonLongClick(it) }
+                            onButtonLongClick = { onButtonLongClick(it) },
+                            onCollapse = {
+                                if (!action.disableAutoEdge) {
+                                    removeCallbacks(edgeRunnable)
+                                    postDelayed(edgeRunnable, 300)
+                                }
+                            },
+                            onExpand = {}
                         )
 
                     }

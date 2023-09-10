@@ -327,7 +327,9 @@ private fun Content(
             action = action.value as ShowOverlayButton,
             onButtonClick = {},
             onButtonLongClick = {},
-            dragHandleMotionEvent = {}
+            dragHandleMotionEvent = {},
+            onExpand = {},
+            onCollapse = {}
         )
 
         SectionSpacer()

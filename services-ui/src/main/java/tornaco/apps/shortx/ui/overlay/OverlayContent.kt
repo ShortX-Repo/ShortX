@@ -71,7 +71,11 @@ import tornaco.apps.shortx.ui.base.thenIf
 
 private val logger = Logger("ShortXOverlay")
 
-private class ExpandState(private val scope: CoroutineScope) {
+private class ExpandState(
+    private val scope: CoroutineScope,
+    private val onCollapse: () -> Unit,
+    private val onExpand: () -> Unit,
+) {
     private var _isExpand by mutableStateOf(true)
     val isExpand get() = _isExpand
 
@@ -91,10 +95,12 @@ private class ExpandState(private val scope: CoroutineScope) {
 
     fun expand() {
         _isExpand = true
+        onExpand()
     }
 
     fun collapse() {
         _isExpand = false
+        onCollapse()
     }
 }
 
@@ -104,6 +110,8 @@ fun OverlayContent(
     action: ShowOverlayButton,
     onButtonClick: (OverlayButtonSetting) -> Unit,
     onButtonLongClick: (OverlayButtonSetting) -> Unit,
+    onCollapse: () -> Unit,
+    onExpand: () -> Unit,
     dragHandleMotionEvent: (MotionEvent) -> Unit
 ) {
     val vm = viewModel<OverlayViewModel>()
@@ -115,7 +123,7 @@ fun OverlayContent(
     val scope = rememberCoroutineScope()
 
     val expandState by remember(action) {
-        mutableStateOf(ExpandState(scope))
+        mutableStateOf(ExpandState(scope = scope, onCollapse = onCollapse, onExpand = onExpand))
     }
 
     if (action.autoCollapse) {
