@@ -745,6 +745,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setText(text)
                 .setIsRegex(isRegex)
+                .setTimeout(timeout)
                 .setNote(overrideNote ?: note).build()
         }
 
@@ -755,6 +756,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setViewId(viewId)
                 .setIsRegex(isRegex)
+                .setTimeout(timeout)
                 .setNote(overrideNote ?: note).build()
         }
 

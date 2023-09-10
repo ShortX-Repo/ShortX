@@ -56,6 +56,7 @@ class FindAndClickViewByIdSelectorState(
     fun show(current: Action.FindAndClickViewById? = null) {
         this._viewId = current?.viewId ?: ""
         this._isRegex = current?.isRegex ?: false
+        this._timeout = current?.timeout ?: 3000L
 
         show()
     }
