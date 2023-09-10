@@ -154,7 +154,7 @@ fun DirectActionListContent(
     selectDASetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     Column {
-        if (daSetFilters.isNotEmpty()) {
+        if (daSetFilters.any { !it.isStock }) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start

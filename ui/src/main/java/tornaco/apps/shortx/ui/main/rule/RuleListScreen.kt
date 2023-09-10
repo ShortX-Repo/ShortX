@@ -128,7 +128,7 @@ fun RuleContent(
     selectRuleSetFilter: (CommonSetFilter) -> Unit = {},
 ) {
     Column {
-        if (ruleSetFilters.isNotEmpty()) {
+        if (ruleSetFilters.any { !it.isStock }) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
