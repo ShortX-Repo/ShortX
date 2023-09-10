@@ -195,6 +195,8 @@ class ComposeOverlay(
         }.onFailure {
             logger.e(it, "dismiss: ${action.tag}")
         }
+        removeCallbacks(edgeRunnable)
+        removeCallbacks(callPosUpdateRunnable)
     }
 
     private fun createLayoutParams(): WindowManager.LayoutParams {
@@ -225,8 +227,12 @@ class ComposeOverlay(
         context.windowManager.updateViewLayout(this, overlayLP)
     }
 
-    private fun updatePosToEdge() {
+    private fun updatePosToEdge() = runCatching {
         logger.d("updatePosToEdge")
+        if (!isAttachedToWindow) {
+            return@runCatching
+        }
+
         val rect = Rect()
         getWindowVisibleDisplayFrame(rect)
         if (overlayLP.x < (rect.width() - width) / 2) {
@@ -236,5 +242,7 @@ class ComposeOverlay(
         }
 
         context.windowManager.updateViewLayout(this, overlayLP)
+    }.onFailure {
+        logger.e(it, "updatePosToEdge")
     }
 }
