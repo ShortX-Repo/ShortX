@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp.SHORTX_GITHIB_REPO_URL
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.select
@@ -63,12 +64,12 @@ import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
-import tornaco.apps.shortx.ui.main.da.DAViewerDialog
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
-import tornaco.apps.shortx.ui.main.rule.RuleViewerDialog
-import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.da.DAViewerDialog
 import tornaco.apps.shortx.ui.main.da.rememberDAViewerState
+import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.main.rule.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -110,7 +111,7 @@ fun DiscoverScreen() {
     val subscribeDialogState = rememberCommonDialogState()
     FeatureAccessDialog(subscribeDialogState)
 
-    val globalSubscribeState by LVLStateHolder.subscribeState.collectAsState()
+    val globalSubscribeState by LVLStateHolder.collectAsState()
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,

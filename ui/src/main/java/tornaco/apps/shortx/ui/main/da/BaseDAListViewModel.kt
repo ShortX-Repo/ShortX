@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.*
 
 data class DAListState(
@@ -68,6 +69,10 @@ abstract class BaseDAListViewModel(context: Context) :
             super.onDAChanged(id)
             logger.d("daObs, onDAChanged: $id")
             loadDAList()
+
+            if (id.isEmpty()) {
+                LVLStateHolder.fab()
+            }
         }
 
         override fun onDASetChanged(id: String) {

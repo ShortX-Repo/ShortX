@@ -398,6 +398,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         if (!canAddRule) {
             logger.pe("Can not add rule.")
+            ruleObs.broadcast {
+                // "" means fail, need subscribed.
+                kotlin.runCatching { it.onAddOrUpdate("") }
+                    .onFailure { logger.e("Call onAddOrUpdate") }
+            }
             return
         }
 
@@ -507,6 +512,11 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
         if (!canAddRule) {
             logger.pe("Can not add DA.")
+            daObs.broadcast {
+                // "" means need subscribed.
+                kotlin.runCatching { it.onAddOrUpdate("") }
+                    .onFailure { logger.e("Call onAddOrUpdate") }
+            }
             return
         }
 

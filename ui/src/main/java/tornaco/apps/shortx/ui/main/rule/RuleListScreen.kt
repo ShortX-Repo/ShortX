@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.EmptyList
 import tornaco.apps.shortx.ui.base.ShortXCard
@@ -150,7 +151,7 @@ fun RuleContent(
         if (!isLoading && rules.isEmpty()) {
             EmptyList(modifier = Modifier.fillMaxSize())
         } else {
-            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            val subscribeState by LVLStateHolder.collectAsState()
             RuleListContent(
                 isSubscribed = subscribeState.isSubscribed,
                 rules = rules

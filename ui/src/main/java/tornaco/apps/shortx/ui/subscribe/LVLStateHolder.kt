@@ -1,25 +1,50 @@
 package tornaco.apps.shortx.ui.subscribe
 
 import android.content.Context
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.container
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
 import tornaco.apps.shortx.ui.subscribe.util.getLVLToken
 
 
-object LVLStateHolder {
+object LVLStateHolder : ContainerHost<LVLStateHolder.State, LVLStateHolder.Effect> {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     data class State(val isSubscribed: Boolean, val token: String?)
+    sealed interface Effect {
+        data class StateChanged(val state: State) : Effect
 
-    private val _subscribeState = MutableStateFlow(State(false, null))
-    val subscribeState: StateFlow<State> get() = _subscribeState.asStateFlow()
-
-    suspend fun setSubscribed(token: String) {
-        _subscribeState.emit(State(true, token))
+        // FeatureAccessBlocked
+        data object FAB : Effect
     }
 
-    suspend fun setNotSubscribed() {
-        _subscribeState.emit(State(false, null))
+    override val container: Container<State, Effect> = scope.container(
+        initialState = State(false, null)
+    )
+
+    fun setSubscribed(token: String) = intent {
+        reduce {
+            state.copy(isSubscribed = true, token = token)
+        }
+        postSideEffect(Effect.StateChanged(State(isSubscribed = true, token = token)))
+    }
+
+    fun setNotSubscribed() = intent {
+        reduce {
+            state.copy(isSubscribed = false, token = null)
+        }
+        postSideEffect(Effect.StateChanged(State(isSubscribed = false, token = null)))
+    }
+
+    fun fab() = intent {
+        postSideEffect(Effect.FAB)
     }
 
     fun init(context: Context) {
@@ -32,5 +57,4 @@ object LVLStateHolder {
             }
         }
     }
-
 }

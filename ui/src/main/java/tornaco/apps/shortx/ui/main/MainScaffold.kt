@@ -34,7 +34,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
@@ -99,7 +99,7 @@ fun MainScaffold(
     acceptPrivacyStatement: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+    val subscribeState by LVLStateHolder.collectAsState()
 
     var enableFabMask by remember {
         mutableStateOf(false)

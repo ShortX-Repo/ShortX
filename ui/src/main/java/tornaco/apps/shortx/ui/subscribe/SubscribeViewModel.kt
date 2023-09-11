@@ -51,7 +51,7 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
     val codeVerifyEvent = _codeVerifyEvent.asSharedFlow()
 
     fun loadState() {
-        val subscribeState = LVLStateHolder.subscribeState.value
+        val subscribeState = LVLStateHolder.container.stateFlow.value
         val isSubscribed = subscribeState.isSubscribed
         val token = subscribeState.token
 

@@ -41,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +59,7 @@ import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.ui.base.BaseActivity
@@ -85,9 +85,7 @@ class DanmuUISettingsActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        SideEffect {
-            require(LVLStateHolder.subscribeState.value.isSubscribed)
-        }
+        require(LVLStateHolder.collectAsState().value.isSubscribed)
         DanmuUISettingsScreen {
             finish()
         }

@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
@@ -176,7 +177,7 @@ fun DirectActionListContent(
         if (!isLoading && das.isEmpty()) {
             EmptyList(modifier = Modifier.fillMaxSize())
         } else {
-            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            val subscribeState by LVLStateHolder.collectAsState()
             if (isShowDetailedDAItem) {
                 DAListContent(
                     lazyStaggeredGridState = lazyStaggeredGridState,
@@ -241,7 +242,7 @@ private fun DAListContentCompat(
     das: List<DirectActionUM>,
     showOverflowMenu: Boolean
 ) {
-    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+    val subscribeState by LVLStateHolder.collectAsState()
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(adaptiveLauncherIconSizeMin),

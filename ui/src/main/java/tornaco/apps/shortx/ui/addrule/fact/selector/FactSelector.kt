@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.allFactClasses
@@ -119,7 +120,7 @@ private fun <ARGS> FactSelector(
                         keywordChanged = { })
                     SearchBar(searchBarState = searchBarState)
 
-                    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+                    val subscribeState by LVLStateHolder.collectAsState()
 
                     AppFacts(searchBarState.keyword, subscribeState, setFact = setFact)
                     StandardSpacer()

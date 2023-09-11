@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.settings.ResetEventRegistry
 import tornaco.apps.shortx.ui.settings.RestoreEventRegistry
 import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.*
 
 data class RuleListState(
@@ -70,6 +71,10 @@ abstract class BaseRuleListViewModel(context: Context) :
             super.onRuleChanged(id)
             logger.d("ruleObs, onRuleChanged: $id")
             loadRuleList()
+
+            if (id.isEmpty()) {
+                LVLStateHolder.fab()
+            }
         }
 
         override fun onRuleSetChanged(id: String) {

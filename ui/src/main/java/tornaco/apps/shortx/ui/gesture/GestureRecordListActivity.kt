@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectAsState
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.ScreenOrientation
@@ -65,7 +66,7 @@ class GestureRecordListActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        require(LVLStateHolder.subscribeState.value.isSubscribed)
+        require(LVLStateHolder.collectAsState().value.isSubscribed)
         GestureRecordListScreen(
             back = {
                 finish()

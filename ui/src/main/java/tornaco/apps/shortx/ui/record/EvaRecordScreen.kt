@@ -269,7 +269,7 @@ private fun BottomSheetMenu(
         ) {
             CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
 
-            val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+            val subscribeState by LVLStateHolder.collectAsState()
             if (subscribeState.isSubscribed) {
                 if (state.onlyShowSrc != null) {
                     StandardSpacer()

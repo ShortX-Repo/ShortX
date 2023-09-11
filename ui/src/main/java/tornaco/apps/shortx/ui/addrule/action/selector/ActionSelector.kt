@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
@@ -116,7 +117,7 @@ private fun AllActions(
             keywordChanged = { })
         SearchBar(searchBarState = searchBarState)
 
-        val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+        val subscribeState by LVLStateHolder.collectAsState()
 
         AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
             Column {

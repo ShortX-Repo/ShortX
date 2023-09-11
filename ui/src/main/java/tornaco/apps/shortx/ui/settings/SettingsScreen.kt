@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.Pkg
 import tornaco.apps.shortx.core.proto.common.Author
@@ -94,7 +95,7 @@ fun SettingsScreen(
         vm.loadState()
     }
 
-    val subscribeState by LVLStateHolder.subscribeState.collectAsState()
+    val subscribeState by LVLStateHolder.collectAsState()
 
     ShortXTheme {
         Surface(
