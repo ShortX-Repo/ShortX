@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -120,6 +121,9 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
                         dialogState.selectedGesture = it
                     })
                     GestureRecordSelectorDialog(state = gestureSelectorState)
+
+                    TipCard(tip = LocalI18N.current["ui.action.gesture.record.inject.vol.to.stop"])
+                    StandardSpacer()
 
                     FieldTitle(text = LocalI18N.current["ui.action.gesture.record.select"])
                     MediumSpacer()

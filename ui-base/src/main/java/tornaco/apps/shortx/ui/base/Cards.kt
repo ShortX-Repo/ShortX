@@ -60,6 +60,17 @@ fun ShortXCard(
     )
 }
 
+@Composable
+fun TipCard(tip: String) {
+    ShortXCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(
+            modifier = Modifier.padding(16.dp),
+            text = tip,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
 
 @Composable
 fun WarningCard(

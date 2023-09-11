@@ -44,8 +44,8 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
+import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 @Composable
@@ -115,13 +115,7 @@ fun RuleSetViewer(ruleSet: RuleSet, back: (Boolean) -> Unit) {
                 ) {
                     LazyColumn {
                         stickyHeader {
-                            ShortXCard(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                Text(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = LocalI18N.current["ui.common.import.set.desctiption"],
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
+                            TipCard(tip = LocalI18N.current["ui.common.import.set.desctiption"])
                         }
                         stickyHeader {
                             Row {

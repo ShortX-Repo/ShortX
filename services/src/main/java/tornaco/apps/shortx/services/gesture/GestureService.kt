@@ -5,9 +5,12 @@ import android.graphics.Color
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.widget.Toast
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -45,6 +48,7 @@ class GestureService(shortXContext: ShortXContext) :
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
     private val gestureRecorder by lazy { GestureRecorder(context) }
+    private val gesturPlayer by lazy { GesturePlayer(context) }
 
     override fun start(context: Context) {
         super.start(context)
@@ -130,6 +134,23 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     fun handleKeyEvent(event: KeyEvent): Boolean? {
+        // Stop play gesture if necessary
+        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            if (gesturPlayer.isInjecting) {
+                logger.i("Stop inject gesture since VOL key event.")
+                systemServiceScope.launchSafety {
+                    gesturPlayer.stopInject()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            i18NIns["ui.action.gesture.record.inject.stopped"],
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+
         return onKeyEvent?.invoke(event)
     }
 
@@ -174,13 +195,12 @@ class GestureService(shortXContext: ShortXContext) :
         logger.d("injectGestureRecord, gesture: $gesture")
         if (gesture != null) {
             runCatching {
-                gestureRecorder.injectGesture(gesture, speed, showGesturePathView)
+                gesturPlayer.injectGesture(gesture, speed, showGesturePathView)
             }.onFailure {
                 if (it is CancellationException) {
                     logger.i("injectGestureRecord canceled.")
-                    // Clean up views.
-                    gestureRecorder.stop()
                 }
+                gesturPlayer.stopInject()
                 throw it
             }
         }
