@@ -5,10 +5,7 @@ import android.content.Intent
 import android.os.Environment
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import tornaco.apps.shortx.ui.composeLogger
@@ -16,19 +13,14 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
 
 
-class ShareDialogState(val shareName: String) {
-    var isShowing by mutableStateOf(false)
+class ShareDialogState(val shareName: String) : CommonDialogState() {
     var content: String = ""
     var objectTitle: String = ""
 
     fun show(objectTitle: String, content: String) {
         this.content = content
         this.objectTitle = objectTitle
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+        show()
     }
 }
 

@@ -2,6 +2,7 @@ package tornaco.apps.shortx.core.rule
 
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.util.Logger
 
@@ -32,6 +33,17 @@ fun parseShareContentRule(content: String): Rule? {
             }).build()
     }.getOrElse {
         logger.e(it, "parseShareContentRule")
+        null
+    }
+}
+
+fun parseShareContentRuleSet(content: String): RuleSet? {
+    return runCatching {
+        RuleSet.newBuilder(
+            RuleSet.parseFrom(RuleSet.newBuilder().toProto(content).toByteArray())
+        ).build()
+    }.getOrElse {
+        logger.e(it, "parseShareContentRuleSet")
         null
     }
 }

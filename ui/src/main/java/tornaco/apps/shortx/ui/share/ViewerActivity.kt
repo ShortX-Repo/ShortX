@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -21,7 +20,6 @@ import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import java.nio.charset.Charset
 
-@OptIn(ExperimentalAnimationApi::class)
 @AndroidEntryPoint
 class ViewerActivity : BaseActivity() {
     private val logger = Logger("ViewerActivity")
@@ -99,6 +97,10 @@ class ViewerActivity : BaseActivity() {
                     ) {
                         finish()
                     }
+                }
+
+                SharedData.TYPE_RULE_SET -> {
+
                 }
 
                 else -> {
