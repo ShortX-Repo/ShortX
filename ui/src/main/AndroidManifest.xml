@@ -23,6 +23,7 @@
 
         <activity
             android:name=".main.MainActivity"
+            android:theme="@style/UiTheme.AppSplash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
