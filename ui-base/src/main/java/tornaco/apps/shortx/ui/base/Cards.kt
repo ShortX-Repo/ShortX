@@ -61,8 +61,8 @@ fun ShortXCard(
 }
 
 @Composable
-fun TipCard(tip: String) {
-    ShortXCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+fun TipCard(modifier: Modifier = Modifier, tip: String) {
+    ShortXCard(modifier = modifier) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = tip,

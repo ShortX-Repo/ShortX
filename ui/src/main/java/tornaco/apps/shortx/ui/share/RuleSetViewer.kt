@@ -115,7 +115,10 @@ fun RuleSetViewer(ruleSet: RuleSet, back: (Boolean) -> Unit) {
                 ) {
                     LazyColumn {
                         stickyHeader {
-                            TipCard(tip = LocalI18N.current["ui.common.import.set.desctiption"])
+                            TipCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                tip = LocalI18N.current["ui.common.import.set.desctiption"]
+                            )
                         }
                         stickyHeader {
                             Row {

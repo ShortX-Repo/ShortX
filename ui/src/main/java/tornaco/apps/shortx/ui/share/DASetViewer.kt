@@ -44,7 +44,6 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -115,7 +114,10 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
                 ) {
                     LazyColumn {
                         stickyHeader {
-                            TipCard(tip = LocalI18N.current["ui.common.import.set.desctiption"])
+                            TipCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                tip = LocalI18N.current["ui.common.import.set.desctiption"]
+                            )
                         }
                         stickyHeader {
                             Row {
