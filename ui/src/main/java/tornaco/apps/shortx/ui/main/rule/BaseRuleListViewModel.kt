@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.*
+fun defaultNewRuleSetId() = "RS-${UUID.randomUUID()}"
 
 data class RuleListState(
     val isShowRuleDescription: Boolean = true,

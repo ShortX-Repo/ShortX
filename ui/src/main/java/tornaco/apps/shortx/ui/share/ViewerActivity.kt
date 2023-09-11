@@ -11,8 +11,11 @@ import androidx.compose.ui.platform.LocalContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.parseShareContentDA
+import tornaco.apps.shortx.core.rule.parseShareContentDASet
 import tornaco.apps.shortx.core.rule.parseShareContentRule
+import tornaco.apps.shortx.core.rule.parseShareContentRuleSet
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addda.AddDirectActionScreen
 import tornaco.apps.shortx.ui.addrule.AddRuleScreen
@@ -56,8 +59,9 @@ class ViewerActivity : BaseActivity() {
                     da?.let {
                         AddDirectActionScreen(
                             da = da,
-                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                            canSaveWithoutChanges = true
+                            screenTitle = da.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            canSaveWithoutChanges = true,
+                            saveIconName = Remix.System.download_line
                         ) {
                             finish()
                         }
@@ -69,7 +73,8 @@ class ViewerActivity : BaseActivity() {
                         da = null,
                         url = sharedData.data,
                         screenTitle = "URL",
-                        canSaveWithoutChanges = true
+                        canSaveWithoutChanges = true,
+                        saveIconName = Remix.System.download_line
                     ) {
                         finish()
                     }
@@ -80,8 +85,9 @@ class ViewerActivity : BaseActivity() {
                     rule?.let {
                         AddRuleScreen(
                             rule = rule,
-                            screenTitle = LocalI18N.current["ui.common.share.viewer.title"],
-                            canSaveWithoutChanges = true
+                            screenTitle = rule.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            canSaveWithoutChanges = true,
+                            saveIconName = Remix.System.download_line
                         ) {
                             finish()
                         }
@@ -93,14 +99,29 @@ class ViewerActivity : BaseActivity() {
                         rule = null,
                         url = sharedData.data,
                         screenTitle = "URL",
-                        canSaveWithoutChanges = true
+                        canSaveWithoutChanges = true,
+                        saveIconName = Remix.System.download_line
                     ) {
                         finish()
                     }
                 }
 
                 SharedData.TYPE_RULE_SET -> {
+                    val rs = parseShareContentRuleSet(sharedData.data)
+                    rs?.let {
+                        RuleSetViewer(it, back = {
+                            finish()
+                        })
+                    }
+                }
 
+                SharedData.TYPE_DA_SET -> {
+                    val ds = parseShareContentDASet(sharedData.data)
+                    ds?.let {
+                        DASetViewer(it, back = {
+                            finish()
+                        })
+                    }
                 }
 
                 else -> {

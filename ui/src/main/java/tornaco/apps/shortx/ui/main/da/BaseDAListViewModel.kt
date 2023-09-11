@@ -32,6 +32,8 @@ import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.*
 
+fun defaultNewDASetId() = "DS-${UUID.randomUUID()}"
+
 data class DAListState(
     val das: List<DirectActionUM> = emptyList(),
     val daSetFilters: List<CommonSetFilter> = emptyList(),
@@ -209,7 +211,7 @@ abstract class BaseDAListViewModel(context: Context) :
         shortXManager.addOrUpdateDASet(
             DirectActionSet
                 .newBuilder()
-                .setTitle(title).setId("DS-${UUID.randomUUID()}")
+                .setTitle(title).setId(defaultNewDASetId())
                 .setCreateTime(System.currentTimeMillis())
                 .setLastUpdateTime(System.currentTimeMillis())
                 .build()

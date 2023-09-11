@@ -17,7 +17,6 @@ import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import java.text.Collator
 import java.util.Locale
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -125,7 +124,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
     fun createRuleSet(title: String) {
         shortXManager.addOrUpdateRuleSet(
             RuleSet.newBuilder()
-                .setId("RS-${UUID.randomUUID()}")
+                .setId(defaultNewRuleSetId())
                 .setTitle(title)
                 .build()
         )
