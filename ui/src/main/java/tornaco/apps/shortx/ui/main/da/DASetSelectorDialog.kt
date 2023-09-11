@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.main.da
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
@@ -81,7 +83,7 @@ private fun DASetSelector(selectorState: DASetSelectorState) {
                     contentPadding = paddingValues
                 ) {
                     items(allSets) {
-                        ShortXCard {
+                        ShortXCard(modifier = Modifier.padding(8.dp)) {
                             ListItem(
                                 title = it.title,
                                 onClick = {
