@@ -15,7 +15,7 @@
                 android:scaleY="0">
                 <path
                     android:name="path"
-                    android:fillColor="#ffffff"
+                    android:fillColor="#fafafa"
                     android:pathData="M 0.064 54 C 0.064 24.177 24.241 0 54.064 0 C 83.888 0 108.064 24.177 108.064 54 C 108.064 83.823 83.888 108 54.064 108 C 24.241 108 0.064 83.823 0.064 54 Z"
                     android:strokeWidth="1" />
             </group>
@@ -27,7 +27,7 @@
                 android:scaleY="0">
                 <path
                     android:name="path_1"
-                    android:fillColor="#ffffff"
+                    android:fillColor="#fafafa"
                     android:pathData="M 0.064 54 C 0.064 24.177 24.241 0 54.064 0 C 83.888 0 108.064 24.177 108.064 54 C 108.064 83.823 83.888 108 54.064 108 C 24.241 108 0.064 83.823 0.064 54 Z"
                     android:strokeWidth="1" />
                 <group
