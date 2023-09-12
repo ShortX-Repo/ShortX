@@ -125,7 +125,7 @@ interface Engine {
     fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
-        initialContextData: Map<String, Any>
+        initialContextDataLazy: () -> Map<String, Any>
     ): Boolean
 
     fun evaluateActions(
@@ -233,7 +233,7 @@ class DefaultRuleEngine(
     override fun fire(
         fact: ProtoMessage,
         rules: List<Rule>,
-        initialContextData: Map<String, Any>
+        initialContextDataLazy: () -> Map<String, Any>
     ): Boolean {
         logger.d("fire: ${fact.javaClass}")
         var anyMatch = false
@@ -244,7 +244,7 @@ class DefaultRuleEngine(
                 anyMatch = true
 
                 // Init data
-                val contextData = ContextData.obtain(initialContextData)
+                val contextData = ContextData.obtain(initialContextDataLazy())
                 val evaluateContext = EvaluateContext.newBuilder()
                     .setSrcId(rule.id)
                     .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
@@ -339,7 +339,7 @@ class DefaultRuleEngine(
                     logger.d("$LOG_TAG_RULE_QUIT fire, rule-quit matched: ${fact.javaClass} ${rule.title}")
                     anyMatch = true
 
-                    val contextData = ContextData.obtain(initialContextData)
+                    val contextData = ContextData.obtain(initialContextDataLazy())
                     val evaluateContext = EvaluateContext.newBuilder()
                         .setSrcId(rule.id)
                         .setSrcEvent(ContextSrcEvent.ContextSrc_RuleQuit)

@@ -14,9 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,9 +38,11 @@ import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toProcessName
+import tornaco.apps.shortx.core.util.times
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
@@ -230,32 +232,25 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
         onValueChange = {
             inputNameString = it
         },
-        trailingIcon = {
-            FilledTonalIconButton(onClick = {
-                if (inputNameString.isNotBlank()) {
-                    dialogState.addProcessName(
-                        inputNameString.toProcessName(userId)
-                    )
-                }
-            }) {
-                RemixIcon(remixName = Remix.System.add_fill)
-            }
-        },
         showSymbolButton = false,
-
         label = {
             Text(text = i18N["ui.common.selected.process.input"])
         }
     )
+    MediumSpacer()
+    Button(
+        onClick = {
+            if (inputNameString.isNotBlank()) {
+                dialogState.addProcessName(
+                    inputNameString.toProcessName(userId)
+                )
+            }
+        }) {
+        Text(text = LocalI18N.current["ui.common.add"])
+    }
 
 
-    SectionSpacer()
-    SuggestedNavEntry()
-
-    SectionSpacer()
-    SectionSpacer()
-    SectionSpacer()
-
+    3.times { SectionSpacer() }
     if (dialogState.isThanoxAvailable) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             TipRow(
@@ -267,7 +262,8 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
                 })
         }
     }
-
+    3.times { SectionSpacer() }
+    SuggestedNavEntry()
 }
 
 

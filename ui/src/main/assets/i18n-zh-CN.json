@@ -107,6 +107,7 @@
   "ui.fact.system.settings.changed.regex": "匹配目标值",
   "ui.fact.system.settings.changed.regex.summary": "使用正则表达式匹配目标设置值，当系统设置的值匹配到该表达式时触发器触发",
   "ui.fact.screen": "屏幕状态",
+  "ui.fact.process.started": "进程启动",
   "ui.fact.activity.started": "Activity启动",
   "ui.fact.activity.started.any": "任意活动",
   "ui.fact.activity.started.specific": "指定的活动",

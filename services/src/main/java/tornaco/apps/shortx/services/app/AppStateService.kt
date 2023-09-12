@@ -23,12 +23,14 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.proto.common.RecentTask
+import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.appPkgToString
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.*
@@ -391,6 +393,30 @@ class AppStateService(shortXContext: ShortXContext) :
         } else {
             onPkgStopRunning(process.owner)
         }
+    }
+
+    fun onProcessStarted(process: ProcessRecord) {
+        logger.d("onProcessStarted: ${process.owner.pkgName} - ${process.owner.userId} - ${process.processName}")
+        shortXContext.rule.publishFact(
+            reason = "onProcessStarted",
+            fact = AppProcessStarted.newBuilder().addAllProcessName(
+                listOf(
+                    ProcessName.newBuilder().setUserId(process.owner.userId)
+                        .setProcessName(process.processName).build()
+                )
+            )
+                .build(),
+            initialContextDataLazy = {
+                mapOf(
+                    ContextDataMapping.AppProcessStarted.processName.name to process.processName,
+                    ContextDataMapping.AppProcessStarted.appLabel.name to (pkgToApp(process.owner)?.label.fallbackOnEmpty(
+                        ""
+                    )),
+                    ContextDataMapping.AppProcessStarted.userId.name to process.owner.userId,
+                    ContextDataMapping.AppProcessStarted.pkgName.name to process.owner.pkgName,
+                )
+            }
+        )
     }
 
     private fun onPkgStopRunning(pkg: AppPkg) {

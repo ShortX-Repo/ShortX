@@ -8,6 +8,7 @@ import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
@@ -453,6 +454,13 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             GlobalVarChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setGvId(gvId)
+                .build()
+        }
+
+        is Fact.AppProcessStarted -> {
+            AppProcessStarted.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCustomContextDataKey(customContextDataKey)
+                .addAllProcessName(processNames)
                 .build()
         }
 

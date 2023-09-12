@@ -14,6 +14,7 @@ val allKeys: List<String> = listOf(
     enumValues<ContextDataMapping.AppBecomeFg>().map { it.name },
     enumValues<ContextDataMapping.AppBecomeBg>().map { it.name },
     enumValues<ContextDataMapping.TaskRemoved>().map { it.name },
+    enumValues<ContextDataMapping.AppProcessStarted>().map { it.name },
     enumValues<ContextDataMapping.AppAdded>().map { it.name },
     enumValues<ContextDataMapping.AppRemoved>().map { it.name },
     enumValues<ContextDataMapping.AppUpdated>().map { it.name },

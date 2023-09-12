@@ -598,6 +598,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.AppProcessStarted::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.AppProcessStarted::class.java
+
+            Fact.AppProcessStarted(
+                id = data.id, customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                processNames = data.processNameList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen::class.java

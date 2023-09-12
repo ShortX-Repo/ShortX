@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
+import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.AppRemoved
 import tornaco.apps.shortx.core.proto.fact.AppUpdated
 import tornaco.apps.shortx.core.proto.fact.AudioFocusChanged
@@ -432,6 +433,18 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
             val actualN = (actual as HasFoundNodeOnScreen)
             val ruleN = (rule as HasFoundNodeOnScreen)
             actualN.id == ruleN.id
+        }
+
+        register(AppProcessStarted::class.java) { actual, rule ->
+            val actualN = (actual as AppProcessStarted)
+            val ruleN = (rule as AppProcessStarted)
+            val actualProcessName = actualN.processNameList[0]
+            ruleN.processNameList.any {
+                it.userId == actualProcessName.userId && emptyOrRegexMatch(
+                    it.processName,
+                    actualProcessName.processName
+                )
+            }
         }
 
         logger.i("Init complete.")

@@ -70,6 +70,14 @@ object ContextDataMapping {
     }
 
     @DoNotStrip
+    enum class AppProcessStarted(val description: String) {
+        processName("Process name"),
+        appLabel("The process owner's app label"),
+        userId("The process owner's user id"),
+        pkgName("The process owner's package name"),
+    }
+
+    @DoNotStrip
     enum class AppAdded(val description: String) {
         userId("The user id"),
         pkgName("App package name of the installed package"),
