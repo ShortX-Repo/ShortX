@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeL
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import kotlin.reflect.KClass
 
@@ -86,7 +87,7 @@ fun <T : Any> SelectorList(
     actionItems: List<SelectorItem<T>>,
     itemSelected: (KClass<out T>, data: Any?) -> Unit
 ) {
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     FlowRow(

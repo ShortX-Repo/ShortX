@@ -63,6 +63,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
@@ -108,7 +109,7 @@ fun DiscoverScreen() {
             })
     TextInputDialog(state = newRepoDialogState)
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val globalSubscribeState by LVLStateHolder.collectAsState()

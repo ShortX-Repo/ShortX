@@ -1,48 +1,68 @@
 package tornaco.apps.shortx.ui.subscribe
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
-import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.ShortXAlertDialog
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.SectionSpacer
+import tornaco.apps.shortx.ui.base.ShortXBottomSheet
+import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
 import kotlin.reflect.KClass
 
 @Composable
-fun FeatureAccessDialog(state: CommonDialogState) {
-    if (state.isShowing) {
-        val context = LocalContext.current
-        ShortXAlertDialog(
-            onDismissRequest = {
-                state.dismiss()
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    state.dismiss()
-                    SubscribeActivity.start(context)
-                }) {
-                    Text(text = LocalI18N.current["ui.subscription.intro.yes"])
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    state.dismiss()
-                }) {
-                    Text(text = LocalI18N.current["ui.subscription.intro.no"])
-                }
-            },
-            title = {
-                Text(LocalI18N.current["ui.subscription.intro.title"])
-            },
-            text = {
-                Text(text = LocalI18N.current["ui.subscription.intro.message"])
-            })
+fun FeatureAccessDialog(state: ShortXBottomSheetState) {
+    ShortXBottomSheet(state = state) {
+        SubscriptionIntro()
     }
 }
+
+@Composable
+private fun SubscriptionIntro(
+) {
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .fillMaxWidth(),
+            painter = painterResource(
+                id = tornaco.apps.shortx.ui.R.drawable.ui_no_access
+            ),
+            contentDescription = null,
+        )
+
+        MediumTitle(text = LocalI18N.current["ui.subscription.intro.message"])
+        SectionSpacer()
+
+        Button(onClick = {
+            SubscribeActivity.start(context)
+        }) {
+            Text(
+                text = LocalI18N.current["ui.subscription.intro.yes"],
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
 
 // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arrayOf(

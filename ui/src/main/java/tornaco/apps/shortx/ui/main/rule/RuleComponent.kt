@@ -38,9 +38,9 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberClickAnimateState
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.da.RunningIndicator
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
@@ -161,7 +161,7 @@ private fun listItemOverflowMenu(
         null
     } else i18N["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val deleteDialogState = rememberConfirmDialogState()

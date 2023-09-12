@@ -77,6 +77,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberFabState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.base.toAnnotatedString
 import tornaco.apps.shortx.ui.main.model.MainState
@@ -113,7 +114,7 @@ fun MainScaffold(
         })
     TextInputDialog(state = urlInputState)
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val newSetDialogState =

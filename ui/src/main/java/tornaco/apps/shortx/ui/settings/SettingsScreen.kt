@@ -64,8 +64,8 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
+import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -353,7 +353,7 @@ private fun generalSettings(
         null
     } else LocalI18N.current["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOf(
@@ -410,7 +410,7 @@ private fun recordSettings(
         null
     } else LocalI18N.current["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOfNotNull(
@@ -468,7 +468,7 @@ private fun dataSettings(
         null
     } else LocalI18N.current["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOf(
@@ -646,7 +646,7 @@ private fun systemSettings(
         null
     } else i18N["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
     return mutableListOf(
         Preference.Category(i18N["ui.settings.system"]),
@@ -679,7 +679,7 @@ private fun engineSettings(
         null
     } else i18N["ui.subscription.subscribed.only"]
 
-    val subscribeDialogState = rememberCommonDialogState()
+    val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val shellConfirmDialogState = rememberConfirmDialogState()
