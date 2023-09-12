@@ -1,10 +1,8 @@
 package tornaco.apps.shortx.services.gesture
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
-import android.os.VibrationEffect
 import android.view.GestureDetector
 import android.view.MotionEvent
 import tornaco.apps.shortx.core.proto.fact.Edge
@@ -12,10 +10,7 @@ import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.screenSize
-import tornaco.apps.shortx.core.util.vibrate
 import tornaco.apps.shortx.services.gesture.SystemGesturesPointerEventListener.CallbacksAdapter
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.systemServiceScope
 import java.io.PrintWriter
 
 class Detector(
@@ -113,18 +108,6 @@ class Detector(
         }
         if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
         return area
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun vibrateOnExecuteAction() {
-        service.systemServiceScope.launchSafety {
-            context.vibrate.vibrate(
-                VibrationEffect.createOneShot(
-                    20,
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
-            )
-        }
     }
 
     fun interceptEvent(event: MotionEvent): Boolean? {

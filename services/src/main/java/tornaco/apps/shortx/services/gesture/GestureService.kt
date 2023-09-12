@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.graphics.Color
+import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
@@ -122,15 +124,23 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     private fun filterMotionEvent(input: MotionEvent): Boolean? {
-        if (input.action == MotionEvent.ACTION_UP || input.action == MotionEvent.ACTION_CANCEL) {
-            blockingEventDownTimes.clear()
-        } else if (blockingEventDownTimes.contains(input.downTime)
+        if (input.action == MotionEvent.ACTION_UP || input.action == MotionEvent.ACTION_CANCEL
+            || input.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_POINTER_UP
         ) {
+            blockingEventDownTimes.clear()
+        }
+        val gestureInterceptRes = gestureDetector?.interceptEvent(input)?.also {
+            if (!it) blockingEventDownTimes.add(input.downTime)
+
+            val eventTime = SystemClock.uptimeMillis()
+            val cancel =
+                MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+            IMSFunc.injectInputEvent(cancel)
+        }
+        if (blockingEventDownTimes.contains(input.downTime)) {
             return false
         }
-        return gestureDetector?.interceptEvent(input)?.also {
-            if (!it) blockingEventDownTimes.add(input.downTime)
-        }
+        return gestureInterceptRes
     }
 
     fun handleKeyEvent(event: KeyEvent): Boolean? {
