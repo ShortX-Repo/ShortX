@@ -37,6 +37,8 @@ dependencies {
     // For HTML. mvel
     implementation(libs.jsoup)
 
+    implementation(libs.zxing.core)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
