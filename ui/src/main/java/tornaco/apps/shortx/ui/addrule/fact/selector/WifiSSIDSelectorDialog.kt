@@ -139,9 +139,6 @@ fun WifiSSIDSelectorDialog(state: WifiSSIDSelectorState) {
                             }
 
                             ShortXTextField(
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = Color.Transparent
-                                ),
                                 isError = state.isValid.not(),
                                 value = state.currentValue,
                                 showSymbolButton = state.showSymbolButton,

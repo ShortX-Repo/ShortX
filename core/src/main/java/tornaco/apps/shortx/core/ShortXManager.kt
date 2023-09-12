@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
+import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
@@ -922,6 +923,14 @@ class ShortXManager(private val service: IShortX) {
     fun getAllDASets(withDAs: Boolean = false): List<DirectActionSet> {
         return invokeService(emptyList()) {
             getAllDASets(withDAs).map { DirectActionSet.parseFrom(it.byteData) }
+        }
+    }
+
+    fun getAllQSTiles(): QSTileList {
+        return invokeService(QSTileList.getDefaultInstance()) {
+            allQSTiles.let {
+                QSTileList.parseFrom(it.byteData)
+            }
         }
     }
 

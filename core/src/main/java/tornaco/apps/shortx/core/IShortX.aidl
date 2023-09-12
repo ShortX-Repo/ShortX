@@ -229,4 +229,6 @@ interface IShortX {
     void testFATALError();
 
     void attachQSTileHost(in IQSTileHost host);
+    // QSTileList
+    ByteArrayWrapper getAllQSTiles();
 }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 import tornaco.apps.shortx.core.proto.action.AdjustVolume
 import tornaco.apps.shortx.core.proto.action.AudioRecording
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
+import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
 import tornaco.apps.shortx.core.proto.action.CreateLocalVar
 import tornaco.apps.shortx.core.proto.action.CreatePkgSet
@@ -1238,6 +1239,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setIsEnable(enableRule)
                 .setRuleId(ruleId)
+                .build()
+        }
+
+        is Action.ClickTile -> {
+            ClickTile.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setTile(tile)
+                .setIsLongClick(isLongClick)
                 .build()
         }
 

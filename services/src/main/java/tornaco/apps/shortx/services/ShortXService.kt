@@ -355,6 +355,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.ui.attachQSTileHost(host)
         }
 
+        override fun getAllQSTiles(): ByteArrayWrapper {
+            return shortXContext.ui.getAllQSTiles().let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
         override fun isInjectedShellEnabled(): Boolean {
             return shortXContext.shell.isInjectedShellEnabled()
         }

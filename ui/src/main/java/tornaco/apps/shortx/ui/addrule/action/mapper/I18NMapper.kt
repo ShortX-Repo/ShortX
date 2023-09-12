@@ -198,6 +198,7 @@ fun labelAndDescriptionForActionSelector(
         Action.TTS::class -> i18N["ui.action.tts"] to null
         Action.SetWallpaper::class -> i18N["ui.action.set.wallpaper"] to null
         Action.SetRuleEnabled::class -> i18N["ui.action.set.rule.enabled"] to null
+        Action.ClickTile::class -> i18N["ui.action.click.tile"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -725,6 +726,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.SetRuleEnabled -> listOf(
             i18N["ui.action.set.rule.enabled"],
             action.ruleLabel
+        )
+
+        is Action.ClickTile -> listOf(
+            i18N["ui.action.click.tile"],
+            action.tile.label
         )
     }
 }

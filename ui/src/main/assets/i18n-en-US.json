@@ -398,6 +398,8 @@
   "ui.action.adjust.volume.unmute": "Unmute",
   "ui.action.adjust.volume.toggle.mute": "Toggle mute",
   "ui.action.adjust.volume.show.ui": "Show UI",
+  "ui.action.click.tile": "Click QS tile",
+  "ui.action.click.tile.is.long.click": "Long click",
   "ui.action.inject.keycode": "Press key",
   "ui.action.custom.keycode": "Custom keycode",
   "ui.action.enable.universal.copy": "Universal copy",
