@@ -86,17 +86,19 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
                                     shortXManager.addOrUpdateDASet(
                                         DirectActionSet.newBuilder(directActionSet).build()
                                     )
-                                    directActionSet.daList.directActionsList.forEach {
-                                        shortXManager.addDirectAction(
-                                            DirectAction.newBuilder(it)
-                                                .addAllExtras(mutableListOf<StringPair>().apply {
-                                                    if (!token.isNullOrEmpty()) {
-                                                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
-                                                    }
-                                                })
-                                                .build()
-                                        )
-                                    }
+                                    directActionSet.daList.directActionsList
+                                        .filter { selectedIdList.contains(it.id) }
+                                        .forEach {
+                                            shortXManager.addDirectAction(
+                                                DirectAction.newBuilder(it)
+                                                    .addAllExtras(mutableListOf<StringPair>().apply {
+                                                        if (!token.isNullOrEmpty()) {
+                                                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                                                        }
+                                                    })
+                                                    .build()
+                                            )
+                                        }
                                     showToast()
 
                                     back(true)

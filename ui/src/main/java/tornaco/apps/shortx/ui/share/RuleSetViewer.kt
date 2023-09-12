@@ -86,18 +86,19 @@ fun RuleSetViewer(ruleSet: RuleSet, back: (Boolean) -> Unit) {
                                     shortXManager.addOrUpdateRuleSet(
                                         RuleSet.newBuilder(ruleSet).build()
                                     )
-                                    ruleSet.ruleList.rulesList.forEach {
-                                        shortXManager.addRule(
-                                            Rule.newBuilder(it)
-                                                .setIsEnabled(false)
-                                                .addAllExtras(mutableListOf<StringPair>().apply {
-                                                    if (!token.isNullOrEmpty()) {
-                                                        add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
-                                                    }
-                                                })
-                                                .build()
-                                        )
-                                    }
+                                    ruleSet.ruleList.rulesList.filter { selectedIdList.contains(it.id) }
+                                        .forEach {
+                                            shortXManager.addRule(
+                                                Rule.newBuilder(it)
+                                                    .setIsEnabled(false)
+                                                    .addAllExtras(mutableListOf<StringPair>().apply {
+                                                        if (!token.isNullOrEmpty()) {
+                                                            add((BuildProp.APP_PACKAGE_NAME to token).toStringPair())
+                                                        }
+                                                    })
+                                                    .build()
+                                            )
+                                        }
                                     showToast()
 
                                     back(true)
