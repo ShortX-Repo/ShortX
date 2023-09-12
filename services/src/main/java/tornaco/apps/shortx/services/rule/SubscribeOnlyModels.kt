@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.rule
 
 import com.google.protobuf.GeneratedMessageV3
 import tornaco.apps.shortx.core.proto.action.AudioRecording
+import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.FindAndClickMatchedView
 import tornaco.apps.shortx.core.proto.action.FindAndClickViewById
@@ -75,4 +76,5 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         TTS::class,
         FindAndClickViewById::class,
         FindAndClickMatchedView::class,
+        ClickTile::class,
     )

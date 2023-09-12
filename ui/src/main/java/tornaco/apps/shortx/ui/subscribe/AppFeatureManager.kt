@@ -121,6 +121,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.TTS::class,
     Action.FindAndClickViewById::class,
     Action.FindAndClickMatchedView::class,
+    Action.ClickTile::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 
