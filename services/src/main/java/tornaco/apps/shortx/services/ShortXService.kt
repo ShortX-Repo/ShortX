@@ -361,6 +361,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun getSwipeDistanceThresholdDp(): Int {
+            return shortXContext.gesture.getSwipeDistanceThresholdDp()
+        }
+
+        override fun setSwipeDistanceThresholdDp(dp: Int) {
+            shortXContext.gesture.setSwipeDistanceThresholdDp(dp)
+        }
+
         override fun isInjectedShellEnabled(): Boolean {
             return shortXContext.shell.isInjectedShellEnabled()
         }
@@ -694,11 +702,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getGestureAreaSize(): Int {
-            return shortXContext.gesture.getGestureAreaSize()
+            return shortXContext.gesture.getGestureAreaWidthDp()
         }
 
         override fun setGestureAreaSize(dp: Int) {
-            shortXContext.gesture.setGestureAreaSize(dp)
+            shortXContext.gesture.setGestureAreaWidthDp(dp)
         }
 
         override fun registerPkgSetObs(obs: IPkgSetObserver) {

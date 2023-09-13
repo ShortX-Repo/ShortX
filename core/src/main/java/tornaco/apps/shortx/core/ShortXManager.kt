@@ -624,6 +624,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getSwipeDistanceThresholdDp(): Int {
+        return invokeService(0) {
+            swipeDistanceThresholdDp
+        }
+    }
+
+    fun setSwipeDistanceThresholdDp(dp: Int) {
+        invokeService(Unit) {
+            swipeDistanceThresholdDp = dp
+        }
+    }
+
     fun setKeyEventPromptEnabled(enable: Boolean) {
         invokeService(Unit) {
             isKeyEventPromptEnabled = enable

@@ -1,6 +1,13 @@
 package tornaco.apps.shortx.services.data
 
-import kotlinx.coroutines.*
+import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.mapToString
 import tornaco.apps.shortx.services.proto.Settings
@@ -8,7 +15,11 @@ import tornaco.apps.shortx.services.proto.StringMap
 
 private const val WRITE_DELAY = 3000L
 
-class SettingsStore(private val name: String, private val scope: CoroutineScope) {
+class SettingsStore(
+    val context: Context,
+    private val name: String,
+    private val scope: CoroutineScope
+) {
     private val logger = Logger("${SettingsStore::class.java.simpleName}-$name")
     private val storeFile by lazy { Dirs.dataStoreFile(name) }
 

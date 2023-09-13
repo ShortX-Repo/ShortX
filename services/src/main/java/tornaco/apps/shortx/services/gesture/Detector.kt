@@ -63,7 +63,7 @@ class Detector(
             override fun onSwipeFromTop(x: Int, y: Int): Boolean {
                 return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
             }
-        })
+        }, service.getSwipeDistanceThresholdDp()._dp)
 
     private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val area = detectArea(downX, downY) ?: return false
@@ -93,13 +93,13 @@ class Detector(
                 it.getRect(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaSize()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat()
                 )
             } else {
                 it.getRectL(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaSize()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat()
                 )
             }
             if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")
@@ -124,6 +124,11 @@ class Detector(
 
     fun dump() {
         pointerEventListener.dump(PrintWriter(System.err), "")
+    }
+
+    fun setSwipeDistanceThresholdDp(dp: Int) {
+        logger.d("setSwipeDistanceThresholdDp: $dp px: ${dp._dp}")
+        pointerEventListener.setSwipeDistanceThresholdPx(dp._dp)
     }
 }
 

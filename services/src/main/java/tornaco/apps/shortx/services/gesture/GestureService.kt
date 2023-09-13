@@ -91,7 +91,7 @@ class GestureService(shortXContext: ShortXContext) :
                 GuideLineView(
                     context,
                     listOf(HotSeat(area, Color.RED)),
-                    getGestureAreaSize()._dp
+                    getGestureAreaWidthDp()._dp
                 ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
@@ -168,9 +168,18 @@ class GestureService(shortXContext: ShortXContext) :
         return onGestureEvent?.invoke(area to gestureEvent) ?: false
     }
 
-    fun getGestureAreaSize(): Int = maxOf(store.read(Settings.IntSettings.GestureAreaSizeDp), 12)
+    fun getGestureAreaWidthDp(): Int =
+        maxOf(store.read(Settings.IntSettings.GestureAreaWidthDp), 12)
 
-    fun setGestureAreaSize(dp: Int) = store.write(Settings.IntSettings.GestureAreaSizeDp, dp)
+    fun setGestureAreaWidthDp(dp: Int) = store.write(Settings.IntSettings.GestureAreaWidthDp, dp)
+
+    fun getSwipeDistanceThresholdDp(): Int =
+        maxOf(store.read(Settings.IntSettings.SwipeDistanceThresholdDp), 1)
+
+    fun setSwipeDistanceThresholdDp(thr: Int) {
+        store.write(Settings.IntSettings.SwipeDistanceThresholdDp, thr)
+        gestureDetector?.setSwipeDistanceThresholdDp(thr)
+    }
 
     fun addGestureRecord(record: GestureRecord) {
         gestureRecordStore.addGestureRecord(record)

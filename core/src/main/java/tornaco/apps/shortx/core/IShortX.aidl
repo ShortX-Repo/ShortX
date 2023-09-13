@@ -231,4 +231,8 @@ interface IShortX {
     void attachQSTileHost(in IQSTileHost host);
     // QSTileList
     ByteArrayWrapper getAllQSTiles();
+
+    // Swipe gesture.
+    int getSwipeDistanceThresholdDp();
+    void setSwipeDistanceThresholdDp(int dp);
 }
