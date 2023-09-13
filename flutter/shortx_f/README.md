@@ -13,4 +13,18 @@ see the [add-to-app documentation](https://flutter.dev/docs/development/add-to-a
 
 ## Build aar
 
-`flutter build aar`
+```agsl
+flutter build aar --obfuscate --split-debug-info=build/debug-info
+```
+
+## Build error
+
+```agsl
+
+configurations.configureEach {
+        resolutionStrategy {
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10'
+        }
+ }
+
+```
