@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.flutter.embedding.android.FlutterActivity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
@@ -789,7 +790,9 @@ private fun aboutSettings(
                     } else {
                         LocalI18N.current["ui.settings.core.info.na"]
                     },
-                    onClick = {}
+                    onClick = {
+                        context.startActivity(FlutterActivity.createDefaultIntent(context))
+                    }
                 )
             ),
         ),
