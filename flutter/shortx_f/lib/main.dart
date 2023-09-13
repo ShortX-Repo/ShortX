@@ -52,8 +52,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  SubscriptionConfig? _subscriptionConfig;
-
   void _testClicked() async {
     // must wait for MMKV to finish initialization
     final rootDir = await MMKV.initialize();
@@ -63,12 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // DeviceId
     print(
         'MMKV res = ${mmkv.decodeString("39A5DC32-B10D-4370-AB98-A9A809256885")}');
-
-    final config = await fetchSubscribeConfig();
-
-    setState(() {
-      _subscriptionConfig = config;
-    });
   }
 
   Future<SubscriptionConfig> fetchSubscribeConfig() async {
@@ -91,36 +83,50 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Visibility(
-          visible: true,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Visibility(
-                visible: _subscriptionConfig != null,
-                child: Expanded(
-                  child: Markdown(
-                    data: _subscriptionConfig?.formatSubscribeInfo() ?? "",
-                    extensionSet: MarkdownExtensionSet.commonMark.value,
-                    styleSheetTheme: MarkdownStyleSheetBaseTheme.cupertino,
-                    styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                        .copyWith(
-                            h2: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                            blockquoteDecoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).colorScheme.surfaceVariant,
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            blockquotePadding: const EdgeInsets.all(16),
-                            horizontalRuleDecoration: BoxDecoration(),
-                            textScaleFactor: 0.88),
-                  ),
-                ),
-              )
-            ],
+        child: Padding(
+          padding: EdgeInsets.all(2.0),
+          child: FutureBuilder<SubscriptionConfig>(
+            future: fetchSubscribeConfig(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Visibility(
+                      visible: true,
+                      child: Expanded(
+                        child: Markdown(
+                          data: snapshot.data?.formatSubscribeInfo() ?? "ERROR.",
+                          extensionSet: MarkdownExtensionSet.commonMark.value,
+                          styleSheetTheme:
+                              MarkdownStyleSheetBaseTheme.cupertino,
+                          styleSheet: MarkdownStyleSheet.fromTheme(
+                                  Theme.of(context))
+                              .copyWith(
+                                  h2: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                  blockquoteDecoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceVariant,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  blockquotePadding: const EdgeInsets.all(16),
+                                  horizontalRuleDecoration: BoxDecoration(),
+                                  textScaleFactor: 0.88),
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }
+            },
           ),
         ),
       ),
