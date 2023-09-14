@@ -295,7 +295,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
 
     val errorMessageDialog =
         rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
-    val httpCanaryInputDialogState =
+    val httpCanaryJsonInputDialogState =
         rememberTextInputState(
             title = LocalI18N.current["ui.action.http.request.from.http.canary"],
             message = LocalI18N.current["ui.action.http.request.from.http.canary.message"],
@@ -308,7 +308,22 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     errorMessageDialog.show(it.stackTraceToString())
                 }
             })
-    TextInputDialog(state = httpCanaryInputDialogState)
+    TextInputDialog(state = httpCanaryJsonInputDialogState)
+
+    val httpCanaryHcyInputDialogState =
+        rememberTextInputState(
+            title = LocalI18N.current["ui.action.http.request.from.http.canary.hcy"],
+            message = LocalI18N.current["ui.action.http.request.from.http.canary.hcy.message"],
+            onSelected = {
+                runCatching {
+                    val request = it.toHttpCanaryExportHcy().toHttpRequest()
+                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                }.onFailure {
+                    composeLogger.e(it, "toHttpCanaryExportHcy")
+                    errorMessageDialog.show(it.stackTraceToString())
+                }
+            })
+    TextInputDialog(state = httpCanaryHcyInputDialogState)
 
     ShortXTheme {
         Surface(
@@ -338,8 +353,12 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                             data = MoreMenuOptions.FromCurl
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.message"]),
-                                            data = MoreMenuOptions.FromHttpCanary
+                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary"]),
+                                            data = MoreMenuOptions.FromHttpCanaryJson
+                                        ),
+                                        DropdownItem(
+                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.hcy"]),
+                                            data = MoreMenuOptions.FromHttpCanaryHcy
                                         ),
                                     ),
                                     onSelect = {
@@ -348,8 +367,12 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                                 curlInputDialogState.show()
                                             }
 
-                                            MoreMenuOptions.FromHttpCanary -> {
-                                                httpCanaryInputDialogState.show()
+                                            MoreMenuOptions.FromHttpCanaryJson -> {
+                                                httpCanaryJsonInputDialogState.show()
+                                            }
+
+                                            MoreMenuOptions.FromHttpCanaryHcy -> {
+                                                httpCanaryHcyInputDialogState.show()
                                             }
                                         }
                                     })
@@ -823,6 +846,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
 
 enum class MoreMenuOptions {
     FromCurl,
-    FromHttpCanary,
+    FromHttpCanaryJson,
+    FromHttpCanaryHcy,
 }
 
