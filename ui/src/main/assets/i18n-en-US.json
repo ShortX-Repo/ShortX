@@ -591,6 +591,8 @@
   "ui.action.http.request.json.expression": "MVEL expression",
   "ui.action.http.request.json.expression.description": "Multiple MVEL expressions can be added to retrieve different fields, and the results will be saved to a context variable",
   "ui.action.http.request.json.expression.key": "Use {key} in subsequent actions to access the field",
+  "ui.action.http.request.from.curl": "From curl command",
+  "ui.action.http.request.from.curl.message": "Input curl command, will parse command and fill data with parsed http request settings",
   "ui.action.kill.process.by.name": "Kill process",
   "ui.action.kill.process.by.name.summary": "{count} processes",
   "ui.action.enable": "Enable {s}",

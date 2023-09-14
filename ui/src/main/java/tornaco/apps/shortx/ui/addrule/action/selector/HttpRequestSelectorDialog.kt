@@ -53,8 +53,10 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.curl.curlCommandToHttpRequest
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
+import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -275,6 +277,16 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
     val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
     OutputDialog(state = outputDialogState)
 
+    val curlInputDialogState =
+        rememberTextInputState(
+            title = LocalI18N.current["ui.action.http.request.from.curl"],
+            message = LocalI18N.current["ui.action.http.request.from.curl.message"],
+            onSelected = {
+                val request = it.curlCommandToHttpRequest()
+                dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+            })
+    TextInputDialog(state = curlInputDialogState)
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -292,6 +304,27 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                             }
                         },
                         actions = {
+                            Box {
+                                val moreActionsDropdown = rememberDropdownSelectorState()
+                                DropdownSelector(
+                                    widthFraction = 0.5f,
+                                    state = moreActionsDropdown,
+                                    items = listOf(
+                                        DropdownItem(
+                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.curl"]),
+                                            data = MoreMenuOptions.FromCurl
+                                        )
+                                    ),
+                                    onSelect = {
+                                        curlInputDialogState.show()
+                                    })
+                                IconButton(onClick = {
+                                    moreActionsDropdown.open()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.more_2_fill)
+                                }
+                            }
+
                             val scope = rememberCoroutineScope()
                             IconButton(
                                 enabled = !dialogState.isTesting,
@@ -753,5 +786,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
     }
 }
 
-
+enum class MoreMenuOptions {
+    FromCurl
+}
 
