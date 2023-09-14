@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package tornaco.apps.shortx.ui.addrule.action.selector
+package tornaco.apps.shortx.ui.addrule.action.selector.http
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -58,6 +58,8 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.HttpRequestAdapter
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
+import tornaco.apps.shortx.ui.addrule.action.selector.KeyValueEditDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberKeyValueEditDialogState
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -83,8 +85,10 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.code.OutputDialog
 import tornaco.apps.shortx.ui.base.code.rememberOutputDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
@@ -274,6 +278,8 @@ fun HttpRequestDialog(state: HttpRequestDialogState) {
 
 @Composable
 private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
+    val context = LocalContext.current
+
     val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
     OutputDialog(state = outputDialogState)
 
@@ -286,6 +292,23 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                 dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
             })
     TextInputDialog(state = curlInputDialogState)
+
+    val errorMessageDialog =
+        rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
+    val httpCanaryInputDialogState =
+        rememberTextInputState(
+            title = LocalI18N.current["ui.action.http.request.from.http.canary"],
+            message = LocalI18N.current["ui.action.http.request.from.http.canary.message"],
+            onSelected = {
+                runCatching {
+                    val request = it.toHttpCanaryExportJson().toHttpRequest()
+                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                }.onFailure {
+                    composeLogger.e(it, "toHttpCanaryExportJson")
+                    errorMessageDialog.show(it.stackTraceToString())
+                }
+            })
+    TextInputDialog(state = httpCanaryInputDialogState)
 
     ShortXTheme {
         Surface(
@@ -313,10 +336,22 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                                         DropdownItem(
                                             labelLines = listOf(LocalI18N.current["ui.action.http.request.from.curl"]),
                                             data = MoreMenuOptions.FromCurl
-                                        )
+                                        ),
+                                        DropdownItem(
+                                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.message"]),
+                                            data = MoreMenuOptions.FromHttpCanary
+                                        ),
                                     ),
                                     onSelect = {
-                                        curlInputDialogState.show()
+                                        when (it.data) {
+                                            MoreMenuOptions.FromCurl -> {
+                                                curlInputDialogState.show()
+                                            }
+
+                                            MoreMenuOptions.FromHttpCanary -> {
+                                                httpCanaryInputDialogState.show()
+                                            }
+                                        }
                                     })
                                 IconButton(onClick = {
                                     moreActionsDropdown.open()
@@ -787,6 +822,7 @@ private fun RequestBody(dialogState: HttpRequestDialogState) {
 }
 
 enum class MoreMenuOptions {
-    FromCurl
+    FromCurl,
+    FromHttpCanary,
 }
 

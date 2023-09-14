@@ -52,7 +52,7 @@ fun LoadError(
     refresh: (() -> Unit)? = null
 ) {
     val errorMessageDialogState =
-        rememberErrorMessageDialogState(title = "Error", message = message ?: "")
+        rememberErrorMessageDialogState(title = "Error")
     ErrorMessageDialog(state = errorMessageDialogState)
 
     Column(
@@ -72,7 +72,7 @@ fun LoadError(
         )
 
         message?.let {
-            TextButton(onClick = { errorMessageDialogState.show() }) {
+            TextButton(onClick = { errorMessageDialogState.show(message) }) {
                 Text(
                     text = LocalI18N.current["ui.common.error.view.message"],
                     style = MaterialTheme.typography.bodySmall.copy(

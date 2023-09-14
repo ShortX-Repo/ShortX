@@ -592,6 +592,8 @@
   "ui.action.http.request.json.expression.key": "在后续动作中使用{key}访问该字段",
   "ui.action.http.request.from.curl": "从curl命令导入",
   "ui.action.http.request.from.curl.message": "输入curl命令",
+  "ui.action.http.request.from.http.canary": "从Http Canary导出的Json导入",
+  "ui.action.http.request.from.http.canary.message": "输入Http Canary导出的Json",
   "ui.action.kill.process.by.name": "杀进程",
   "ui.action.kill.process.by.name.summary": "{count}个进程",
   "ui.action.enable": "开启{s}",
