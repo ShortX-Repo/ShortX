@@ -4,11 +4,14 @@ import android.app.INotificationManager
 import android.content.Context
 import android.os.RemoteCallbackList
 import android.os.ServiceManager
+import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.notification.INotificationPoster
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.Notification
 import tornaco.apps.shortx.core.proto.fact.NotificationPosted
@@ -17,6 +20,7 @@ import tornaco.apps.shortx.core.proto.fact.NotificationUpdated
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -55,6 +59,28 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
+
+    override fun systemReady() {
+        super.systemReady()
+        systemServiceScope.launchSafety {
+            delay(12000)
+            notificationPoster.invoke(
+                PostNotification.newBuilder()
+                    .setTag("demo")
+                    .setSmallIcon(Remix.Communication.chat_smile_line)
+                    .setLargeIcon(Remix.Logos.bard_line)
+                    .setTitle("This is title")
+                    .setMessage("This is message")
+                    .addClickAction(ShowToast.getDefaultInstance().pack_())
+                    .addButton(
+                        NotificationButton.newBuilder()
+                            .setLabel("Toast")
+                            .addAction(ShowToast.getDefaultInstance().pack_()).build()
+                    )
+                    .build(),
+            )
+        }
+    }
 
     fun AppPkg.hasNotification() = hasNotification(NMSFuncs.getActiveNotifications(nms))
 

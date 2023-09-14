@@ -631,8 +631,8 @@ message PostNotification {
   bool vibrate = 7;
   bool sound = 8;
 
-  AppPkg pkgToLaunchOnClick = 9;
-
+  repeated google.protobuf.Any clickAction = 9;
+  repeated NotificationButton button = 10;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
@@ -641,9 +641,14 @@ message PostNotification {
   string id = 100;
 }
 
+message NotificationButton {
+  string id = 1;
+  repeated google.protobuf.Any action = 2;
+  string label = 3;
+}
+
 message FromDA {
   string daId = 1;
-
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

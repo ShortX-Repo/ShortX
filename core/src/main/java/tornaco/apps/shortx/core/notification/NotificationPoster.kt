@@ -3,17 +3,56 @@ package tornaco.apps.shortx.core.notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.RingtoneManager
+import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.compat.NotificationCompat
 import tornaco.apps.shortx.core.compat.NotificationCompat.VISIBILITY_PUBLIC
 import tornaco.apps.shortx.core.compat.NotificationManagerCompat
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
 import java.util.Objects
+
+object NotificationPosterGlobal {
+    const val BROADCAST_ACTION_NOTIFICATION = "tornaco.apps.shortx.services.action.post.n"
+    const val BROADCAST_EXTRA__NOTIFICATION =
+        "tornaco.apps.shortx.services.action.post.n.extra.n"
+
+
+    const val BROADCAST_ACTION_BUTTON = "tornaco.apps.shortx.services.action.post.n.button"
+    const val BROADCAST_EXTRA_BUTTON =
+        "tornaco.apps.shortx.services.action.post.n.extra.button"
+
+    fun buttonIntent(context: Context, button: NotificationButton): PendingIntent? {
+        return PendingIntent.getBroadcast(
+            context,
+            NotificationIdFactory.getNextId(),
+            Intent(BROADCAST_ACTION_BUTTON)
+                .setPackage("android")
+                .putExtra(BROADCAST_EXTRA_BUTTON, button)
+                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    fun notificationIntent(context: Context, notification: PostNotification): PendingIntent? {
+        return PendingIntent.getBroadcast(
+            context,
+            NotificationIdFactory.getNextId(),
+            Intent(BROADCAST_ACTION_NOTIFICATION)
+                .setPackage("android")
+                .putExtra(BROADCAST_EXTRA__NOTIFICATION, notification)
+                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+}
 
 class NotificationPoster(
     private val context: Context,
@@ -24,6 +63,34 @@ class NotificationPoster(
     private val getBitmap: (String) -> Bitmap?,
 ) {
     private val logger = Logger("NotificationPoster")
+
+    init {
+        ContextCompat.registerReceiver(
+            context,
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    logger.d("onReceive: $intent")
+                    if (intent == null || intent.action == null) return
+                    val action = intent.action
+                    if (action == NotificationPosterGlobal.BROADCAST_ACTION_BUTTON) {
+                        logger.i("Received BROADCAST_ACTION_BUTTON")
+                        val button =
+                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA_BUTTON)
+                        logger.i("Button extra: $button")
+                    } else if (action == NotificationPosterGlobal.BROADCAST_ACTION_NOTIFICATION) {
+                        logger.i("Received BROADCAST_ACTION_NOTIFICATION")
+                        val notification =
+                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA__NOTIFICATION)
+                        logger.i("Notification extra: $notification")
+                    }
+                }
+            },
+            IntentFilter(NotificationPosterGlobal.BROADCAST_ACTION_BUTTON).apply {
+                addAction(NotificationPosterGlobal.BROADCAST_ACTION_NOTIFICATION)
+            },
+            ContextCompat.RECEIVER_EXPORTED
+        )
+    }
 
     operator fun invoke(
         notification: PostNotification
@@ -42,25 +109,6 @@ class NotificationPoster(
                 }
             )
 
-            val pendingIntent: PendingIntent? = pkgToLaunchOnClick?.let {
-                val launchIntent: Intent? =
-                    context.packageManager.getLaunchIntentForPackage(it.pkgName)
-                if (launchIntent != null) {
-                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    val nId =
-                        NotificationIdFactory.getNextId()
-                    PendingIntent.getActivity(
-                        context,
-                        nId,
-                        launchIntent,
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                } else {
-                    logger.w("showNotification, launch intent is null for pkg: $it")
-                    null
-                }
-            }
-
             SystemUI.overrideNotificationAppName(
                 context, builder,
                 overrideName
@@ -78,6 +126,13 @@ class NotificationPoster(
                 .setVisibility(VISIBILITY_PUBLIC)
                 .setPriority(if (isImportant) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_LOW)
                 .setAutoCancel(true)
+                .apply {
+                    notification.buttonList.forEach {
+                        val pi = NotificationPosterGlobal.buttonIntent(context, it)
+                        logger.d("addAction from Button: ${it.label} -> $pi")
+                        addAction(android.R.drawable.ic_menu_manage, it.label, pi)
+                    }
+                }
                 .setStyle(style)
 
             if (largeIcon.isNotEmpty()) {
@@ -86,8 +141,13 @@ class NotificationPoster(
                 }
             }
 
-            pendingIntent?.let {
-                builder.setContentIntent(it)
+            if (notification.clickActionList.isNotEmpty()) {
+                builder.setContentIntent(
+                    NotificationPosterGlobal.notificationIntent(
+                        context,
+                        notification
+                    )
+                )
             }
 
             if (sound) {
