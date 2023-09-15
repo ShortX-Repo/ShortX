@@ -87,8 +87,8 @@ public class Shell {
     public static class ShellDiedException extends Exception {
         public static final String EXCEPTION_SHELL_DIED = "Shell died (or access was not granted)";
 
-        public ShellDiedException() {
-            super(EXCEPTION_SHELL_DIED);
+        public ShellDiedException(String extra) {
+            super(EXCEPTION_SHELL_DIED + "--> " + extra);
         }
     }
 
@@ -1971,6 +1971,10 @@ public class Shell {
         private boolean postCallback(@NonNull final Command fCommand, final int fExitCode,
                                      @Nullable final List<String> fSTDOUT, @Nullable final List<String> fSTDERR,
                                      @Nullable final InputStream inputStream) {
+            Debug.log("postCallback, fExitCode: " + fExitCode);
+            Debug.log("postCallback, fSTDOUT: " + fSTDOUT);
+            Debug.log("postCallback, fSTDERR: " + fSTDERR);
+
             if (
                     (fCommand.onCommandResultListener == null) &&
                             (fCommand.onCommandResultListener2 == null) &&
@@ -2598,7 +2602,8 @@ public class Shell {
                 }
             });
             waitForIdle();
-            if (exitCode[0] < 0) throw new ShellDiedException();
+            if (exitCode[0] < 0)
+                throw new ShellDiedException("run after waitForIdle, exitCode < 0");
             return exitCode[0];
         }
 
@@ -2624,7 +2629,8 @@ public class Shell {
                 }
             });
             waitForIdle();
-            if (exitCode[0] < 0) throw new ShellDiedException();
+            if (exitCode[0] < 0)
+                throw new ShellDiedException("run after waitForIdle, exitCode[0] < 0");
             return exitCode[0];
         }
 
@@ -2650,7 +2656,8 @@ public class Shell {
                 }
             });
             waitForIdle();
-            if (exitCode[0] < 0) throw new ShellDiedException();
+            if (exitCode[0] < 0)
+                throw new ShellDiedException("run after waitForIdle, exitCode[0] < 0");
             return exitCode[0];
         }
     }
@@ -3495,11 +3502,11 @@ public class Shell {
                 // create instance
                 threaded = newInstance(shell, onShellOpenResultListener, true);
                 if (!threaded.isRunning()) {
-                    throw new ShellDiedException();
+                    throw new ShellDiedException("newInstance, threaded not running.");
                 } else {
                     if (!(Debug.getSanityChecksEnabledEffective() && Debug.onMainThread())) {
                         if (!threaded.waitForOpened(null)) {
-                            throw new ShellDiedException();
+                            throw new ShellDiedException("SanityChecks fail.");
                         }
                     }
                     // otherwise failure will be in callbacks
