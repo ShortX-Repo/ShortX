@@ -124,18 +124,28 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     private fun filterMotionEvent(input: MotionEvent): Boolean? {
+        val nonNullGestureDetector = gestureDetector
+        if (nonNullGestureDetector == null) {
+            logger.e("gestureDetector is null.")
+            return null
+        }
+
         if (input.action == MotionEvent.ACTION_UP || input.action == MotionEvent.ACTION_CANCEL
             || input.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_POINTER_UP
         ) {
             blockingEventDownTimes.clear()
         }
-        val gestureInterceptRes = gestureDetector?.interceptEvent(input)?.also {
-            if (!it) blockingEventDownTimes.add(input.downTime)
+        val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)?.also {
+            // False, means block this event
+            if (!it) {
+                blockingEventDownTimes.add(input.downTime)
 
-            val eventTime = SystemClock.uptimeMillis()
-            val cancel =
-                MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-            IMSFunc.injectInputEvent(cancel)
+                logger.w("Send ACTION_CANCEL since we interceptEvent!")
+                val eventTime = SystemClock.uptimeMillis()
+                val cancel =
+                    MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+                IMSFunc.injectInputEvent(cancel)
+            }
         }
         if (blockingEventDownTimes.contains(input.downTime)) {
             return false
