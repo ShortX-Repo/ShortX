@@ -115,13 +115,6 @@ dependencies {
     implementation(libs.mmkv)
     implementation(libs.jotp)
 
-    //noinspection UseTomlInstead
-    debugImplementation("tornaco.apps.shortx_f:flutter_debug:1.0")
-    //noinspection UseTomlInstead
-    profileImplementation("tornaco.apps.shortx_f:flutter_profile:1.0")
-    //noinspection UseTomlInstead
-    releaseImplementation("tornaco.apps.shortx_f:flutter_release:1.0")
-
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
