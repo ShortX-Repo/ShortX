@@ -6,6 +6,7 @@ import android.view.IInputFilter
 import android.view.IInputFilterHost
 import android.view.InputEvent
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.inputManagerService
 import tornaco.apps.shortx.core.platform.Methods
@@ -115,6 +116,7 @@ object InputManagerHook {
     }
 }
 
+@DoNotStrip
 object InputFilterImpl : IInputFilter.Stub() {
     private val logger = Logger("InputFilterImpl")
 
