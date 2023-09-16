@@ -48,7 +48,7 @@ object InputManagerHook {
         }
 
         beforeMethod(lpparam.classLoader.inputManagerService(), Methods.filterInputEvent) { param ->
-            //  logger.d("filterInputEvent, event: ${param.args[0]}")
+            // logger.d("filterInputEvent, event: ${param.args[0]}")
             val res =
                 ShortXService.shortXContext.gesture.filterInput(param.args[0] as InputEvent)
             res?.let {
