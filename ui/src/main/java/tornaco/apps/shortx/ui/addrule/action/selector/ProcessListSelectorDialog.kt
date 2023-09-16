@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -198,7 +199,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
         mutableStateOf("")
     }
     var userId by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var userLabel by remember {
         mutableStateOf(i18N["ui.common.user.main"])
@@ -244,6 +245,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
                 dialogState.addProcessName(
                     inputNameString.toProcessName(userId)
                 )
+                inputNameString = ""
             }
         }) {
         Text(text = LocalI18N.current["ui.common.add"])
