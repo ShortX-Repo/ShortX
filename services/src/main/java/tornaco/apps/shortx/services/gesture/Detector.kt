@@ -2,9 +2,11 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Point
 import android.os.Handler
 import android.view.GestureDetector
 import android.view.MotionEvent
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
@@ -19,13 +21,25 @@ class Detector(
     private val service: GestureService,
 ) {
     companion object {
-        const val LOGV = false
+        const val LOGV = BuildProp.APP_IS_DEBUG
     }
 
     private val logger = Logger("Detector")
 
     private val screenSize by lazy {
-        context.screenSize()
+        context.screenSize().let {
+            val currentOrientation = context.resources.configuration.orientation
+            val isP = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+            logger.d("Init screenSize, isP? $isP")
+            if (isP) {
+                it
+            } else {
+                logger.i("Init screenSize, swap screen x and y")
+                Point(it.y, it.x)
+            }
+        }.apply {
+            logger.d("Init screenSize, return: $this")
+        }
     }
 
     private val gestureDetector: GestureDetector =
