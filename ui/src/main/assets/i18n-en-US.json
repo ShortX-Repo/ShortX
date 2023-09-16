@@ -801,5 +801,6 @@
   "ui.tools.regex.test.regex": "Regex",
   "ui.tools.regex.test.string": "String",
   "ui.tools.regex.test.result": "Match result",
-  "ui.user.guide": "User guide"
+  "ui.user.guide": "User guide",
+  "ui.shortx.removed.toast": "ShortX has been uninstalled, please reboot device ASAP."
 }

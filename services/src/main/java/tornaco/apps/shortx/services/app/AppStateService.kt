@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
+import android.widget.Toast
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -26,6 +27,7 @@ import tornaco.apps.shortx.core.proto.common.RecentTask
 import tornaco.apps.shortx.core.proto.fact.AppProcessStarted
 import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
+import tornaco.apps.shortx.core.store.WRITE_DELAY
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
@@ -34,7 +36,9 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.*
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.pm.*
+import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.os.UserEvent
+import tornaco.apps.shortx.services.ui.i18NIns
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) :
@@ -109,6 +113,9 @@ class AppStateService(shortXContext: ShortXContext) :
             },
             onPackageRemoved = { removed ->
                 handler.postSafety {
+                    if (removed.pkg.pkgName == BuildProp.APP_PACKAGE_NAME) {
+                        onShortXRemoved()
+                    }
                     onPackageRemovedListeners.forEach { it(removed) }
                 }
             }
@@ -117,6 +124,28 @@ class AppStateService(shortXContext: ShortXContext) :
             load()
         }
         return pool
+    }
+
+    private fun onShortXRemoved() {
+        logger.w("onShortXRemoved.")
+        // Reset
+        shortXContext.rule.getAllEnabledRules().map { it.id }.forEach {
+            shortXContext.rule.setRuleEnabled(it, false)
+        }
+        shortXContext.rule.cancelJobs(shortXContext.rule.getActiveJobs())
+
+
+
+        systemServiceScope.launchSafety {
+            // After all file persisted.
+            delay(WRITE_DELAY + 100L)
+
+            Dirs.baseServerDir().deleteRecursively()
+            logger.w("onShortXRemoved, all file deleted!")
+            Toast.makeText(context, i18NIns["ui.shortx.removed.toast"], Toast.LENGTH_LONG)
+                .show()
+
+        }
     }
 
     override fun shutdown() {

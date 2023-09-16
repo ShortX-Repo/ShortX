@@ -800,5 +800,6 @@
   "ui.tools.regex.test.regex": "表达式",
   "ui.tools.regex.test.string": "字符串",
   "ui.tools.regex.test.result": "匹配结果",
-  "ui.user.guide": "查看教程"
+  "ui.user.guide": "查看教程",
+  "ui.shortx.removed.toast": "ShortX已卸载，所有缓存文件都已清除，建议尽快重启设备"
 }

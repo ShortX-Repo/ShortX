@@ -5,7 +5,7 @@ import java.io.File
 
 object Dirs {
 
-    private fun baseServerDir() = DirInit.baseServerDirMayInit()
+    fun baseServerDir() = DirInit.baseServerDirMayInit()
 
     fun baseServerCacheDir() = File(baseServerDir(), "cache")
     fun baseServerRecordingDir() = File(baseServerDir(), "record")
