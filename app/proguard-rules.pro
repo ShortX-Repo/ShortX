@@ -16,11 +16,7 @@
 -keep class ** implements android.os.IInterface { *; }
 
 -keep class de.robv.android.xposed.**{*;}
--keepclassmembers class * {
-    void beforeHookedMethod(...);
-    void afterHookedMethod(...);
-}
--keep,allowobfuscation class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
+-keep class tornaco.apps.shortx.services.xposed.hooks.hook** {*;}
 
 -keep,allowobfuscation @interface tornaco.apps.shortx.core.annotations.DoNotStrip
 
