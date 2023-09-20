@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.util.Logger
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 object LibShKtShellImpl : ISu.Stub() {
     private val logger = Logger("LibShKtShellImpl")
@@ -23,7 +24,10 @@ object LibShKtShellImpl : ISu.Stub() {
             val shell = Shell("su --mount-master")
             val res = shell.run(
                 command[0],
-                Shell.Command.Config.Builder().apply { redirectErrorStream = true }.create()
+                Shell.Command.Config.Builder().apply {
+                    redirectErrorStream = true
+                    timeout = Shell.Timeout(3, TimeUnit.MINUTES)
+                }.create()
             )
             logger.i("Shell res: $res")
             val proto = ShellRes.newBuilder()
@@ -34,6 +38,9 @@ object LibShKtShellImpl : ISu.Stub() {
 
             val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
             receiver.send(byteArrayWrapper)
+
+            shell.shutdown()
+            logger.i("shell.shutdown complete.")
         }
     }
 
