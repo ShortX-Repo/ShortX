@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,65 +26,65 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.common.toTimeOfADay
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
 import tornaco.apps.shortx.core.proto.fact.WeekDay
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.fact.mapper.toDisplayTime
 import tornaco.apps.shortx.ui.base.ColorDefaults
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.timepicker.BottomTimePicker
 import java.time.LocalTime
 
 class AlarmSelectorState(
-    initialTime: LocalTime,
-    initialRepeat: Array<WeekDay>,
     val selected: (Alarm) -> Unit
-) {
-    private var _isShow by mutableStateOf(false)
-    val isShow get() = _isShow
+) : CommonDialogState() {
+    var time: LocalTime by mutableStateOf(LocalTime.now())
+    var repeat by mutableStateOf(emptyList<WeekDay>())
 
-    var time: LocalTime = initialTime
+    fun show(
+        initialTime: LocalTime,
+        initialRepeat: List<WeekDay>,
+    ) {
+        this.time = initialTime
+        this.repeat = initialRepeat
 
-    var repeat = mutableStateOf(initialRepeat.toList())
+        super.show()
+    }
 
     fun addRepeat(weekDay: WeekDay) {
-        repeat.value = repeat.value.toMutableList().apply {
+        repeat = repeat.toMutableList().apply {
             add(weekDay)
         }
     }
 
     fun removeRepeat(weekDay: WeekDay) {
-        repeat.value = repeat.value.toMutableList().apply {
+        repeat = repeat.toMutableList().apply {
             remove(weekDay)
         }
-    }
-
-    fun show() {
-        _isShow = true
-    }
-
-    fun dismiss() {
-        _isShow = false
     }
 }
 
 @Composable
 fun rememberAlarmSelectorState(
-    initialTime: LocalTime,
-    initialRepeat: Array<WeekDay>,
     selected: (Alarm) -> Unit
 ): AlarmSelectorState {
     return remember {
-        AlarmSelectorState(initialTime, initialRepeat, selected)
+        AlarmSelectorState(selected)
     }
 }
 
 @Composable
 fun AlarmSelector(state: AlarmSelectorState) {
-    if (state.isShow) {
+    if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
             DialogTitle(text = LocalI18N.current["ui.fact.time.of.a.day"])
         }, buttons = {
@@ -102,7 +103,7 @@ fun AlarmSelector(state: AlarmSelectorState) {
                         .setRepeat(
                             RepeatDays
                                 .newBuilder()
-                                .addAllDays(state.repeat.value)
+                                .addAllDays(state.repeat)
                                 .build()
                         )
                         .build()
@@ -122,9 +123,25 @@ fun AlarmContent(state: AlarmSelectorState) {
     Column(
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BottomTimePicker(is24TimeFormat = false, currentTime = state.time) {
-            state.time = it
+        val startSelectState = rememberTimePickerDialogState(
+            initialHour = state.time.hour,
+            initialMinute = state.time.minute,
+            onSelected = {
+                state.time = it
+            })
+        TimePickerDialog(dialogState = startSelectState)
+
+        Button(onClick = {
+            startSelectState.show()
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RemixIcon(remixName = Remix.System.alarm_fill)
+                SmallSpacer()
+                Text(text = state.time.toTimeOfADay().toDisplayTime())
+            }
         }
+
+        SectionSpacer()
         RepeatSelector(state)
     }
 }
@@ -132,7 +149,7 @@ fun AlarmContent(state: AlarmSelectorState) {
 @Composable
 private fun RepeatSelector(state: AlarmSelectorState) {
     Column(
-        modifier = Modifier.padding(top = 24.dp, bottom = 32.dp),
+        modifier = Modifier.padding(bottom = 32.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
@@ -155,7 +172,7 @@ private fun RepeatSelector(state: AlarmSelectorState) {
                 WeekDay.FRIDAY,
                 WeekDay.SATURDAY
             ).forEach { weekDay ->
-                val isSelected = state.repeat.value.contains(weekDay)
+                val isSelected = state.repeat.contains(weekDay)
                 Column(
                     modifier = Modifier
                         .width(36.dp)

@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
+import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.shortXManager
@@ -63,10 +64,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         })
     EdgeGestureSelector(edgeGestureSelectorState)
 
-    val timeOfADaySelector = rememberAlarmSelectorState(
-        initialRepeat = emptyArray(),
-        initialTime = LocalTime.now()
-    ) { alarm ->
+    val timeOfADaySelector = rememberAlarmSelectorState { alarm ->
         addFact(Fact.Alarm(timeOfADay = alarm.triggerAt, repeatDays = alarm.repeat))
     }
     AlarmSelector(timeOfADaySelector)
@@ -319,7 +317,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
             }
 
             Fact.Alarm::class -> {
-                timeOfADaySelector.show()
+
+                val localTime =
+                    source.getFactAs<Fact.Alarm>()?.timeOfADay?.toLocalTime() ?: LocalTime.now()
+                val repeat = source.getFactAs<Fact.Alarm>()?.repeatDays?.daysList ?: emptyList()
+                timeOfADaySelector.show(localTime, repeat)
                 true
             }
 

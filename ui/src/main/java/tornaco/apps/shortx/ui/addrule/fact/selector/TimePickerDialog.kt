@@ -32,22 +32,32 @@ import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import java.time.LocalTime
 
-class TimePickerDialogState(val onSelected: (LocalTime) -> Unit) : CommonDialogState() {
+class TimePickerDialogState(
+    val initialHour: Int = 0,
+    val initialMinute: Int = 0,
+    val onSelected: (LocalTime) -> Unit
+) : CommonDialogState() {
     internal val logger = Logger("TimePickerDialogState")
 }
 
 @Composable
 fun rememberTimePickerDialogState(
+    initialHour: Int = 0,
+    initialMinute: Int = 0,
     onSelected: (LocalTime) -> Unit
 ): TimePickerDialogState {
     return remember {
-        TimePickerDialogState(onSelected)
+        TimePickerDialogState(initialHour, initialMinute, onSelected)
     }
 }
 
 @Composable
 fun TimePickerDialog(dialogState: TimePickerDialogState) {
-    val pickState = rememberTimePickerState(is24Hour = false)
+    val pickState = rememberTimePickerState(
+        initialHour = dialogState.initialHour,
+        initialMinute = dialogState.initialMinute,
+        is24Hour = false
+    )
     if (dialogState.isShowing) {
         DialogContainer(
             onCancel = { dialogState.dismiss() },
