@@ -23,7 +23,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.su.LibSuperuserShellImpl
+import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
@@ -111,7 +111,7 @@ object SystemUIHook {
 
     private fun installShellImpl(shortx: IShortX) {
         logger.d("installShellImpl")
-        val shell = LibSuperuserShellImpl
+        val shell = LibShKtShellImpl
         shortx.attachSUImpl("SystemUI", shell)
         logger.i("installShellImpl success.")
     }
