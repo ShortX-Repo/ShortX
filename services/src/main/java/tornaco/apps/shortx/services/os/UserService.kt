@@ -11,6 +11,7 @@ import android.os.UserHandle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
+import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -108,6 +109,22 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             userBroadcastReceiver,
             userFilter,
             ContextCompat.RECEIVER_EXPORTED
+        )
+    }
+
+    fun onScreenOn() {
+        logger.d("onScreenOn")
+        shortXContext.rule.publishFact(
+            "onScreenOn",
+            ScreenOff.newBuilder().build()
+        )
+    }
+
+    fun onScreenOff() {
+        logger.d("onScreenOff")
+        shortXContext.rule.publishFact(
+            "onScreenOff",
+            ScreenOff.newBuilder().build()
         )
     }
 }
