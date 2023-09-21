@@ -90,7 +90,9 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = dats<ContextDataMapping.ShellCommand>(
             customContextDataKey
         ),
-        override val note: String = "", val command: String
+        override val note: String = "",
+        val command: String,
+        val singleShot: Boolean
     ) : Action {
         override fun clone(
             id: String,

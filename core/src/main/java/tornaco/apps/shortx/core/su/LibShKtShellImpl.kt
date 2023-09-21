@@ -11,16 +11,48 @@ import java.util.concurrent.TimeUnit
 
 object LibShKtShellImpl : ISu.Stub() {
     private val logger = Logger("LibShKtShellImpl")
-    private val executors = Executors.newFixedThreadPool(4)
+    private val executors = Executors.newFixedThreadPool(12)
+    private val callbackExecutor = Executors.newSingleThreadExecutor()
 
     override fun exe(
         command: Array<out String>,
-        receiver: SynchronousResultReceiver
+        receiver: SynchronousResultReceiver,
+        singleShot: Boolean
     ) {
-        logger.i("about to execute: ${command.joinToString()}")
+        if (singleShot) {
+            exeSingleShot(command, receiver)
+        } else {
+            exeSharedProcess(command, receiver)
+        }
+    }
 
+    fun exeSharedProcess(
+        command: Array<out String>,
+        receiver: SynchronousResultReceiver,
+    ) {
+        logger.i("exeSharedProcess, about to execute: ${command.joinToString()}")
+        runCatching {
+            com.topjohnwu.superuser.Shell.cmd(*command).submit(callbackExecutor) {
+                logger.i("exeSharedProcess, Shell res: out: ${it.out} err: ${it.err}")
+                val proto = ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                    .addAllErr(it.err)
+                    .build()
+                val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
+                receiver.send(byteArrayWrapper)
+            }
+        }.onFailure {
+            logger.e("exeSharedProcess, Shell onFailure: $it")
+            receiver.propagateException(RuntimeException(it))
+        }
+    }
+
+    fun exeSingleShot(
+        command: Array<out String>,
+        receiver: SynchronousResultReceiver,
+    ) {
+        logger.i("exeSingleShot, about to execute: ${command.joinToString()}")
         executors.execute {
-            logger.i("execute: ${command.joinToString()}")
+            logger.i("exeSingleShot, execute: ${command.joinToString()}")
             val shell = Shell("su --mount-master")
             val res = shell.run(
                 command[0],
@@ -29,7 +61,8 @@ object LibShKtShellImpl : ISu.Stub() {
                     timeout = Shell.Timeout(3, TimeUnit.MINUTES)
                 }.create()
             )
-            logger.i("Shell res: $res")
+            logger.i("exeSingleShot, Shell res: $res")
+            logger.i("exeSingleShot, Shell details: ${res.details}")
             val proto = ShellRes.newBuilder()
                 .setCode(res.exitCode)
                 .addAllOut(res.stdout)
@@ -40,7 +73,7 @@ object LibShKtShellImpl : ISu.Stub() {
             receiver.send(byteArrayWrapper)
 
             shell.shutdown()
-            logger.i("shell.shutdown complete.")
+            logger.i("exeSingleShot, shell.shutdown complete.")
         }
     }
 

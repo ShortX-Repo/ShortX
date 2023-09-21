@@ -125,6 +125,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setCommand(command)
+                .setSingleShot(singleShot)
                 .setNote(overrideNote ?: note)
                 .build()
         }

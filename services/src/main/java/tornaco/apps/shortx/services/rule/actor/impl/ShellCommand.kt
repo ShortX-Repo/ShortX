@@ -30,7 +30,7 @@ object ShellCommand : Actor {
                 shortXContext.rule.getAllGlobalVars()
             }
         val res =
-            shortXContext.shell.executeCommand(command)
+            shortXContext.shell.executeCommand(command, sc.singleShot)
         logger.d("Shell command: $command")
         logger.d("Shell res: $res")
         contextData.add(

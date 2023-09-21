@@ -11,7 +11,6 @@ import java.util.concurrent.Executors
 
 object LibSuShellImpl : ISu.Stub() {
     private val logger = Logger("LibSuShellImpl")
-    private val executors = Executors.newFixedThreadPool(4)
     private val callbackExecutor = Executors.newSingleThreadExecutor()
 
     init {
@@ -26,24 +25,23 @@ object LibSuShellImpl : ISu.Stub() {
 
     override fun exe(
         command: Array<out String>,
-        receiver: SynchronousResultReceiver
+        receiver: SynchronousResultReceiver,
+        singleShot: Boolean
     ) {
         logger.i("about to execute: ${command.joinToString()}")
-        executors.execute {
-            logger.i("execute: ${command.joinToString()}")
-            runCatching {
-                Shell.cmd(*command).submit(callbackExecutor) {
-                    logger.i("Shell res: out: ${it.out} err: ${it.err}")
-                    val proto = ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                        .addAllErr(it.err)
-                        .build()
-                    val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
-                    receiver.send(byteArrayWrapper)
-                }
-            }.onFailure {
-                logger.e("Shell onFailure: $it")
-                receiver.propagateException(RuntimeException(it))
+        logger.i("execute: ${command.joinToString()}")
+        runCatching {
+            Shell.cmd(*command).submit(callbackExecutor) {
+                logger.i("Shell res: out: ${it.out} err: ${it.err}")
+                val proto = ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
+                    .addAllErr(it.err)
+                    .build()
+                val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
+                receiver.send(byteArrayWrapper)
             }
+        }.onFailure {
+            logger.e("Shell onFailure: $it")
+            receiver.propagateException(RuntimeException(it))
         }
     }
 

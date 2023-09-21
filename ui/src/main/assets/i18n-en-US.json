@@ -413,6 +413,7 @@
   "ui.action.danmu.icon": "Icon (optional)",
   "ui.action.shell": "Shell command",
   "ui.action.shell.summary": "Command will be execute with su. \nPlease make sure to allow ShortX start from Background.",
+  "ui.action.shell.single.shot": "Execute with standalone process",
   "ui.action.input.text": "Input text",
   "ui.action.delay": "Delay",
   "ui.action.delay.input.message": "Input milliseconds of delay time",

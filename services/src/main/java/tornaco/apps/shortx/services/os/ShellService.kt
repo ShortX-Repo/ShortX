@@ -45,17 +45,17 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         store.write(Settings.BoolSettings.EnableInjectedShell, enable)
     }
 
-    fun executeCommand(command: String): ShellRes {
+    fun executeCommand(command: String, singleShot: Boolean): ShellRes {
         return isInjectedShellEnabled().select(
-            t = { executeCommandByInjection(command) },
+            t = { executeCommandByInjection(command, singleShot) },
             f = {
-                AppShellServiceProxy.exe(context, command)
+                AppShellServiceProxy.exe(context, command, singleShot)
                     ?: errorShellRes("AppShellServiceProxy error")
             }
         )
     }
 
-    private fun executeCommandByInjection(command: String): ShellRes {
+    private fun executeCommandByInjection(command: String, singleShot: Boolean): ShellRes {
         val itemCount = shellStubs.registeredCallbackCount
         if (itemCount == 0) {
             logger.d("executeCommand, no registered shell.")
@@ -65,7 +65,7 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         logger.d("Using shell: $first")
         return runCatching {
             val receiver = SynchronousResultReceiver.get()
-            first.exe(arrayOf(command), receiver)
+            first.exe(arrayOf(command), receiver, singleShot)
             val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(30))
             logger.d("receiver get res: $receiverRes")
             val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
@@ -94,15 +94,15 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
         impl = ISu.Stub.asInterface(binder)
     }
 
-    fun exe(command: Array<String?>): ShellRes? {
+    fun exe(command: Array<String?>, singleShot: Boolean): ShellRes? {
         logger.d("execute: $command")
         val res: AtomicReference<ShellRes> = AtomicReference()
         setTask(object : ProxyTask() {
             override fun run() {
                 runCatching {
                     val receiver = SynchronousResultReceiver.get()
-                    requireNotNull(impl) { "Impl is null." }.exe(command, receiver)
-                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(1))
+                    requireNotNull(impl) { "Impl is null." }.exe(command, receiver, singleShot)
+                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofMinutes(2))
                     logger.d("receiver get res: $receiverRes")
                     val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
                     res.set(
@@ -124,12 +124,12 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
     }
 
     companion object {
-        fun exe(context: Context, command: String): ShellRes? {
+        fun exe(context: Context, command: String, singleShot: Boolean): ShellRes? {
             val intent = Intent()
             intent.setPackage(BuildProp.APP_PACKAGE_NAME)
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_SHELL_SERVICE_NAME}")
-            return AppShellServiceProxy(context, intent).exe(arrayOf(command))
+            return AppShellServiceProxy(context, intent).exe(arrayOf(command), singleShot)
         }
     }
 }

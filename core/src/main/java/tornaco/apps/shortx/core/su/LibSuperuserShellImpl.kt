@@ -22,7 +22,8 @@ object LibSuperuserShellImpl : ISu.Stub() {
 
     override fun exe(
         command: Array<out String>,
-        receiver: SynchronousResultReceiver
+        receiver: SynchronousResultReceiver,
+        singleShot: Boolean
     ) {
         logger.i("about to execute: ${command.joinToString()}")
 

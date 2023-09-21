@@ -28,15 +28,21 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
     val shellCommandSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.action.shell"],
+        rememberShellCommandCodeEditorState(title = LocalI18N.current["ui.action.shell"],
             message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
             execute = {
                 shortXManager.executeShellCommand(it).shellResToString()
             },
-            onSelected = {
-                addAction(Action.ShellCommand(command = it.src, note = it.note))
+            onSelected = { code, single ->
+                addAction(
+                    Action.ShellCommand(
+                        command = code.src,
+                        note = code.note,
+                        singleShot = single
+                    )
+                )
             })
-    CodeEditorDialog(state = shellCommandSelectorState)
+    ShellCommandCodeEditorDialog(state = shellCommandSelectorState)
 
     val inputTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.input.text"],
@@ -117,7 +123,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
-                shellCommandSelectorState.show(source.getActionAs<Action.ShellCommand>()?.command)
+                shellCommandSelectorState.show(
+                    source.getActionAs<Action.ShellCommand>()?.command,
+                    source.getActionAs<Action.ShellCommand>()?.singleShot ?: false
+                )
                 true
             }
 

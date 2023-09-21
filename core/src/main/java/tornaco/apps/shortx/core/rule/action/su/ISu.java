@@ -7,7 +7,7 @@ public interface ISu extends android.os.IInterface
   /** Default implementation for ISu. */
   public static class Default implements tornaco.apps.shortx.core.rule.action.su.ISu
   {
-    @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+    @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
     {
     }
     @Override public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
@@ -68,7 +68,9 @@ public interface ISu extends android.os.IInterface
           else {
             _arg1 = null;
           }
-          this.exe(_arg0, _arg1);
+          boolean _arg2;
+          _arg2 = (0!=data.readInt());
+          this.exe(_arg0, _arg1, _arg2);
           return true;
         }
         case TRANSACTION_close:
@@ -105,7 +107,7 @@ public interface ISu extends android.os.IInterface
       {
         return DESCRIPTOR;
       }
-      @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException
+      @Override public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
@@ -118,9 +120,10 @@ public interface ISu extends android.os.IInterface
           else {
             _data.writeInt(0);
           }
+          _data.writeInt(((singleShot)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_exe, _data, null, android.os.IBinder.FLAG_ONEWAY);
           if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().exe(command, receiver);
+            getDefaultImpl().exe(command, receiver, singleShot);
             return;
           }
         }
@@ -171,6 +174,6 @@ public interface ISu extends android.os.IInterface
       return Stub.Proxy.sDefaultImpl;
     }
   }
-  public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
+  public void exe(java.lang.String[] command, tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver, boolean singleShot) throws android.os.RemoteException;
   public void close(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
 }
