@@ -20,7 +20,14 @@ object ActivityTaskSupervisorHook {
 
     fun hookActivityTaskSupervisor(lpparam: XC_LoadPackage.LoadPackageParam) =
         kotlin.runCatching {
-            if (OsUtils.isOOrAbove()) {
+            if (OsUtils.isUOrAbove()) {
+                afterMethod(
+                    lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTask),
+                    Methods.cleanUpRemovedTask
+                ) {
+                    handleTaskRemoved(it)
+                }
+            } else if (OsUtils.isOOrAbove()) {
                 afterMethod(
                     lpparam.classLoader.activityStackSupervisorClass(Methods.cleanUpRemovedTaskLocked),
                     Methods.cleanUpRemovedTaskLocked
