@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
+import tornaco.apps.shortx.core.proto.fact.ScreenOn
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
@@ -116,7 +117,7 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         logger.d("onScreenOn")
         shortXContext.rule.publishFact(
             "onScreenOn",
-            ScreenOff.newBuilder().build()
+            ScreenOn.newBuilder().build()
         )
     }
 
