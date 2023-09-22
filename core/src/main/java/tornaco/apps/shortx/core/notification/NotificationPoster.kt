@@ -35,8 +35,7 @@ object NotificationPosterGlobal {
             NotificationIdFactory.getNextId(),
             Intent(BROADCAST_ACTION_BUTTON)
                 .setPackage("android")
-                .putExtra(BROADCAST_EXTRA_BUTTON, button)
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
+                .putExtra(BROADCAST_EXTRA_BUTTON, button),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
@@ -47,8 +46,7 @@ object NotificationPosterGlobal {
             NotificationIdFactory.getNextId(),
             Intent(BROADCAST_ACTION_NOTIFICATION)
                 .setPackage("android")
-                .putExtra(BROADCAST_EXTRA__NOTIFICATION, notification)
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND),
+                .putExtra(BROADCAST_EXTRA__NOTIFICATION, notification),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }

@@ -2,12 +2,12 @@ package tornaco.apps.shortx.services.xposed.hooks.hook
 
 import android.app.usage.UsageEvents
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.platform.Classes.usageStatsServiceClass
 import tornaco.apps.shortx.core.platform.Methods
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXService
 
+@Deprecated("UsageStats Screen event not work on SAMSUNG android 12?")
 object UsageStatsServiceHook {
     private val logger = Logger("ShortXHook.UsageStatsServiceHook")
 

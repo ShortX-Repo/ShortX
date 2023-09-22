@@ -40,6 +40,6 @@ object HookStub {
         PhoneWindowManagerHook.hook(lpparam)
         ClipboardServiceHook.hookClipboardService(lpparam)
         ActivityStarterHook.hookEnqueueRequest(lpparam)
-        UsageStatsServiceHook.hookUsageStats(lpparam)
+        ActiveServiceHook.hookUpdateScreenState(lpparam)
     }
 }

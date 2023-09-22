@@ -42,6 +42,7 @@ object Methods {
     const val onMediaStoreDelete = "onMediaStoreDelete"
     const val interceptKeyBeforeQueueing = "interceptKeyBeforeQueueing"
     const val onCreate = "onCreate"
+    const val updateScreenStateLocked = "updateScreenStateLocked"
 }
 
 object ClassNames {
