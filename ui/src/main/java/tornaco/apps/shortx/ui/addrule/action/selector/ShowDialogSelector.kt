@@ -2,94 +2,141 @@
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.activity.result.ActivityResult
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.action.DialogAction
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.LargeSpacer
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumTitle
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortXTextField
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
+import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
-class ShowDialogSettingsDialogState(
-    val onSelected: (Action.ShowAlertDialog) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-    var currentSettings: Action.ShowAlertDialog? = null
+@AndroidEntryPoint
+class ShowDialogSelectorActivity : BaseActivity() {
+    companion object {
+        private const val INTENT_EXTRA_KEY_ACTION = "action"
 
-    fun show(currentSettings: Action.ShowAlertDialog? = null) {
-        this.currentSettings = currentSettings
-        isShowing = true
-    }
+        fun ActivityResult.toShowAlertDialogActionOrNull(): Action.ShowAlertDialog? {
+            return if (this.resultCode == Activity.RESULT_OK) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    this.data?.getParcelableExtra(
+                        INTENT_EXTRA_KEY_ACTION,
+                        Action.ShowAlertDialog::class.java
+                    )
+                } else {
+                    (this.data?.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as Action.ShowAlertDialog?
+                }
+            } else {
+                null
+            }
+        }
 
-    fun dismiss() {
-        isShowing = false
-    }
-}
+        fun Intent.toShowAlertDialogActionOrNull(): Action.ShowAlertDialog? {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                this.getParcelableExtra(
+                    INTENT_EXTRA_KEY_ACTION,
+                    Action.ShowAlertDialog::class.java
+                )
+            } else {
+                (this.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as Action.ShowAlertDialog?
+            }
+        }
 
-@Composable
-fun rememberShowDialogSettingsDialogState(
-    onSelected: (Action.ShowAlertDialog) -> Unit
-): ShowDialogSettingsDialogState {
-    return remember {
-        ShowDialogSettingsDialogState(onSelected)
-    }
-}
+        @JvmStatic
+        fun start(context: Context) {
+            val starter = Intent(context, ShowDialogSelectorActivity::class.java)
+            context.startActivity(starter)
+        }
 
-@Composable
-fun ShowDialogSettingsDialog(state: ShowDialogSettingsDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ShowDialogSelector(state)
+        fun newIntent(context: Context, currentAction: Action.ShowAlertDialog? = null): Intent {
+            return Intent(context, ShowDialogSelectorActivity::class.java).apply {
+                currentAction?.let {
+                    putExtra(INTENT_EXTRA_KEY_ACTION, it)
+                }
+            }
         }
     }
-}
 
-@Composable
-private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
-    val vm = hiltViewModel<ShowDialogSelectorViewModel>()
-    LaunchedEffect(vm) {
-        val settings = dialogState.currentSettings
-        if (settings == null) {
-            vm.resetState()
-        } else {
-            vm.initFrom(settings)
-        }
+    @Composable
+    override fun Content() {
+        ShowDialogSelector(intent.toShowAlertDialogActionOrNull())
     }
-    val showDialogSelectorState by vm.state.collectAsState()
 
-    ShortXTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-            Scaffold(modifier = Modifier,
-                topBar = {
-                    ShortXTopAppBar(
-                        modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.show.dialog"]) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                dialogState.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.close_line)
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                dialogState.onSelected(
-                                    Action.ShowAlertDialog(
+    @Composable
+    private fun ShowDialogSelector(currentAction: Action.ShowAlertDialog?) {
+        val vm = hiltViewModel<ShowDialogSelectorViewModel>()
+        LaunchedEffect(vm) {
+            if (currentAction == null) {
+                vm.resetState()
+            } else {
+                vm.initFrom(currentAction)
+            }
+        }
+        val showDialogSelectorState by vm.state.collectAsState()
+
+        ShortXTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+            ) {
+                Scaffold(modifier = Modifier,
+                    topBar = {
+                        ShortXTopAppBar(
+                            modifier = Modifier,
+                            title = { Text(LocalI18N.current["ui.action.show.dialog"]) },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    setResult(Activity.RESULT_CANCELED)
+                                    finish()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.close_line)
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    val action = Action.ShowAlertDialog(
                                         id = showDialogSelectorState.id,
                                         title = showDialogSelectorState.title,
                                         message = showDialogSelectorState.message,
@@ -101,180 +148,188 @@ private fun ShowDialogSelector(dialogState: ShowDialogSettingsDialogState) {
                                         negativeActions = vm.negativeActionContent.state.value.actions,
                                         neutralActions = vm.neutralActionContent.state.value.actions,
                                     )
-                                )
-                                dialogState.dismiss()
-                            }) {
-                                RemixIcon(remixName = Remix.System.check_line)
-                            }
+                                    setResult(
+                                        Activity.RESULT_OK, Intent().putExtra(
+                                            INTENT_EXTRA_KEY_ACTION, action
+                                        )
+                                    )
+                                    finish()
+                                }) {
+                                    RemixIcon(remixName = Remix.System.check_line)
+                                }
 
-                        },
-                    )
-                }) {
-                Content(paddingValues = it, vm = vm)
+                            },
+                        )
+                    }) {
+                    Content(paddingValues = it, vm = vm)
+                }
             }
         }
+
     }
 
-}
-
-@Composable
-private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewModel) {
-    val state by vm.state.collectAsState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(paddingValues)
-            .animateContentSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        ShortXTextField(
-            modifier = Modifier.fillMaxWidth(),
-
-
-            label = {
-                Text(text = LocalI18N.current["ui.action.dialog.title"])
-            },
-            value = state.title,
-            onValueChange = {
-                vm.updateTitle(it)
-            })
-        StandardSpacer()
-        StandardSpacer()
-
-        ShortXTextField(
-            modifier = Modifier.fillMaxWidth(),
-
-
-            label = {
-                Text(text = LocalI18N.current["ui.action.dialog.message"])
-            },
-            value = state.message,
-            onValueChange = {
-                vm.updateMessage(it)
-            })
-        StandardSpacer()
-        StandardSpacer()
-
-
-        PositiveButton(state, vm)
-        StandardSpacer()
-
-        NegativeButton(state, vm)
-        StandardSpacer()
-
-        NeutralButton(state, vm)
-        StandardSpacer()
-
-
-        SwitchRow(
-            text = LocalI18N.current["ui.action.dialog.cancelable"],
-            isChecked = state.cancelable
+    @Composable
+    private fun Content(paddingValues: PaddingValues, vm: ShowDialogSelectorViewModel) {
+        val state by vm.state.collectAsState()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            vm.updateCancelable(it)
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+
+
+                label = {
+                    Text(text = LocalI18N.current["ui.action.dialog.title"])
+                },
+                value = state.title,
+                onValueChange = {
+                    vm.updateTitle(it)
+                })
+            StandardSpacer()
+            StandardSpacer()
+
+            ShortXTextField(
+                modifier = Modifier.fillMaxWidth(),
+
+
+                label = {
+                    Text(text = LocalI18N.current["ui.action.dialog.message"])
+                },
+                value = state.message,
+                onValueChange = {
+                    vm.updateMessage(it)
+                })
+            StandardSpacer()
+            StandardSpacer()
+
+
+            PositiveButton(state, vm)
+            StandardSpacer()
+
+            NegativeButton(state, vm)
+            StandardSpacer()
+
+            NeutralButton(state, vm)
+            StandardSpacer()
+
+
+            SwitchRow(
+                text = LocalI18N.current["ui.action.dialog.cancelable"],
+                isChecked = state.cancelable
+            ) {
+                vm.updateCancelable(it)
+            }
+            LargeSpacer()
+
+            SuggestedNavEntry()
         }
-        LargeSpacer()
-
-        SuggestedNavEntry()
     }
-}
 
 
-@Composable
-private fun PositiveButton(
-    state: ShowDialogSelectorState,
-    vm: ShowDialogSelectorViewModel
-) {
-    val positiveAction by remember(vm) {
-        vm.positiveActionContent
-    }.state.collectAsState()
-    ButtonSettings(
-        headerTitle = LocalI18N.current["ui.actions.dialog.positive.button"],
-        text = state.positiveText ?: "",
-        onTextChange = {
-            vm.updateButtonText(it, DialogAction.Positive)
-        },
-        actions = positiveAction.actions,
-        warnings = positiveAction.actionWarningMessages,
-        actionHandler = vm.positiveActionContent.asActionHandler()
-    )
-}
+    @Composable
+    private fun PositiveButton(
+        state: ShowDialogSelectorState,
+        vm: ShowDialogSelectorViewModel
+    ) {
+        val positiveAction by remember(vm) {
+            vm.positiveActionContent
+        }.state.collectAsState()
+        ButtonSettings(
+            headerTitle = LocalI18N.current["ui.actions.dialog.positive.button"],
+            text = state.positiveText ?: "",
+            onTextChange = {
+                vm.updateButtonText(it, DialogAction.Positive)
+            },
+            actions = positiveAction.actions,
+            warnings = positiveAction.actionWarningMessages,
+            actionHandler = vm.positiveActionContent.asActionHandler()
+        )
+    }
 
-@Composable
-private fun NegativeButton(
-    state: ShowDialogSelectorState,
-    vm: ShowDialogSelectorViewModel
-) {
-    val negativeAction by remember(vm) {
-        vm.negativeActionContent
-    }.state.collectAsState()
-    ButtonSettings(
-        headerTitle = LocalI18N.current["ui.actions.dialog.negative.button"],
-        text = state.negativeText ?: "",
-        onTextChange = {
-            vm.updateButtonText(it, DialogAction.Negative)
-        },
-        actions = negativeAction.actions,
-        warnings = negativeAction.actionWarningMessages,
-        actionHandler = vm.negativeActionContent.asActionHandler()
-    )
-}
-
-
-@Composable
-private fun NeutralButton(
-    state: ShowDialogSelectorState,
-    vm: ShowDialogSelectorViewModel
-) {
-    val neutralAction by remember(vm) {
-        vm.neutralActionContent
-    }.state.collectAsState()
-    ButtonSettings(
-        headerTitle = LocalI18N.current["ui.actions.dialog.neutral.button"],
-        text = state.neutralText ?: "",
-        onTextChange = {
-            vm.updateButtonText(it, DialogAction.Neutral)
-        },
-        actions = neutralAction.actions,
-        warnings = neutralAction.actionWarningMessages,
-        actionHandler = vm.neutralActionContent.asActionHandler()
-    )
-}
-
-@Composable
-private fun ButtonSettings(
-    headerTitle: String,
-    text: String,
-    onTextChange: (String) -> Unit,
-    actions: List<Action>,
-    warnings: Map<String, List<String>>,
-    actionHandler: ActionHandler
-) {
-    MediumTitle(headerTitle)
-    ShortXTextField(
-        modifier = Modifier.fillMaxWidth(),
-
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent
-        ),
-        label = {
-            Text(text = LocalI18N.current["ui.action.dialog.button.text"])
-        },
-        value = text,
-        onValueChange = {
-            onTextChange(it)
-        })
-    TinySpacer()
-    TipRow(text = LocalI18N.current["ui.actions.dialog.button.optional"])
-    TinySpacer()
+    @Composable
+    private fun NegativeButton(
+        state: ShowDialogSelectorState,
+        vm: ShowDialogSelectorViewModel
+    ) {
+        val negativeAction by remember(vm) {
+            vm.negativeActionContent
+        }.state.collectAsState()
+        ButtonSettings(
+            headerTitle = LocalI18N.current["ui.actions.dialog.negative.button"],
+            text = state.negativeText ?: "",
+            onTextChange = {
+                vm.updateButtonText(it, DialogAction.Negative)
+            },
+            actions = negativeAction.actions,
+            warnings = negativeAction.actionWarningMessages,
+            actionHandler = vm.negativeActionContent.asActionHandler()
+        )
+    }
 
 
-    ActionContent(
-        header = {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.actions.title"])
-        },
-        actions = actions,
-        handler = actionHandler,
-        warnings = warnings
-    )
+    @Composable
+    private fun NeutralButton(
+        state: ShowDialogSelectorState,
+        vm: ShowDialogSelectorViewModel
+    ) {
+        val neutralAction by remember(vm) {
+            vm.neutralActionContent
+        }.state.collectAsState()
+        ButtonSettings(
+            headerTitle = LocalI18N.current["ui.actions.dialog.neutral.button"],
+            text = state.neutralText ?: "",
+            onTextChange = {
+                vm.updateButtonText(it, DialogAction.Neutral)
+            },
+            actions = neutralAction.actions,
+            warnings = neutralAction.actionWarningMessages,
+            actionHandler = vm.neutralActionContent.asActionHandler()
+        )
+    }
+
+    @Composable
+    private fun ButtonSettings(
+        headerTitle: String,
+        text: String,
+        onTextChange: (String) -> Unit,
+        actions: List<Action>,
+        warnings: Map<String, List<String>>,
+        actionHandler: ActionHandler
+    ) {
+        MediumTitle(headerTitle)
+        ShortXTextField(
+            modifier = Modifier.fillMaxWidth(),
+
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent
+            ),
+            label = {
+                Text(text = LocalI18N.current["ui.action.dialog.button.text"])
+            },
+            value = text,
+            onValueChange = {
+                onTextChange(it)
+            })
+        TinySpacer()
+        TipRow(text = LocalI18N.current["ui.actions.dialog.button.optional"])
+        TinySpacer()
+
+
+        ActionContent(
+            header = {
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    text = LocalI18N.current["ui.actions.title"]
+                )
+            },
+            actions = actions,
+            handler = actionHandler,
+            warnings = warnings
+        )
+    }
 }

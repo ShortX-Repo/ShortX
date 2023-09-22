@@ -413,7 +413,7 @@
   "ui.action.danmu.icon": "图标（可选）",
   "ui.action.shell": "Shell 命令",
   "ui.action.shell.summary": "将会使用su执行你的命令。\n请确保允许ShortX的自启动，否则指令无法执行",
-  "ui.action.shell.single.shot": "独立运行，不复用Shell进程",
+  "ui.action.shell.single.shot": "独立运行，不复用Shell进程（该配置仅在动作实际运行时生效，在编辑页面测试时会使用独立进程测试）",
   "ui.action.input.text": "输入文本",
   "ui.action.delay": "延迟",
   "ui.action.delay.input.message": "输入延迟的毫秒数（1秒等于1000毫秒）",

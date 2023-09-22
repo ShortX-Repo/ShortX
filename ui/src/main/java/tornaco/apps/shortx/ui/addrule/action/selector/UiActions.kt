@@ -1,12 +1,16 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.ShowDialogSelectorActivity.Companion.toShowAlertDialogActionOrNull
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -18,6 +22,8 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val context = LocalContext.current
+
     val subSelectorStates = uiActionSubSelectors(addAction)
 
     val injectGestureSelectorState = rememberInjectGestureRecordDialogState(onSelected = {
@@ -29,6 +35,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         addAction(it)
     }
     ShowTextFieldDialogSettingsDialog(state = showTextFieldSelectorState)
+
+
+    val showDialogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toShowAlertDialogActionOrNull()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     return { source ->
         when (source.clazz) {
@@ -60,7 +77,12 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowAlertDialog::class -> {
-                subSelectorStates.showDialogSettingsState.show(source.getActionAs())
+                showDialogLauncher.launch(
+                    ShowDialogSelectorActivity.newIntent(
+                        context = context,
+                        currentAction = source.getActionAs()
+                    )
+                )
                 true
             }
 
@@ -209,7 +231,6 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
 data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
     val overlayButtonState: ShowOverlayButtonDialogState,
-    val showDialogSettingsState: ShowDialogSettingsDialogState,
     val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
@@ -241,11 +262,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         addAction(it)
     }
     ShowDanmuSettingsDialog(state = showDanmuSettingsState)
-
-    val showDialogSettingsState = rememberShowDialogSettingsDialogState {
-        addAction(it)
-    }
-    ShowDialogSettingsDialog(state = showDialogSettingsState)
 
     val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
         addAction(it)
@@ -285,7 +301,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
         overlayButtonState = overlayButtonState,
-        showDialogSettingsState = showDialogSettingsState,
         showMenuDialogSettingsDialogState = showMenuDialogState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
