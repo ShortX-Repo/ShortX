@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
 object LibShKtShellImpl : ISu.Stub() {
     private val logger = Logger("LibShKtShellImpl")
     private val executors = Executors.newFixedThreadPool(12)
-    private val callbackExecutor = Executors.newSingleThreadExecutor()
 
     override fun exe(
         command: Array<out String>,
@@ -32,14 +31,23 @@ object LibShKtShellImpl : ISu.Stub() {
     ) {
         logger.i("exeSharedProcess, about to execute: ${command.joinToString()}")
         runCatching {
-            com.topjohnwu.superuser.Shell.cmd(*command).submit(callbackExecutor) {
-                logger.i("exeSharedProcess, Shell res: out: ${it.out} err: ${it.err}")
-                val proto = ShellRes.newBuilder().setCode(it.code).addAllOut(it.out)
-                    .addAllErr(it.err)
-                    .build()
-                val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
-                receiver.send(byteArrayWrapper)
-            }
+            val shell = Shell.SU
+            val res = shell.run(
+                command[0],
+                Shell.Command.Config.Builder().apply {
+                    redirectErrorStream = true
+                    timeout = Shell.Timeout(SHELL_TIMEOUT_MINUTES, TimeUnit.MINUTES)
+                }.create()
+            )
+            logger.i("exeSharedProcess, Shell res: $res")
+            logger.i("exeSharedProcess, Shell details: ${res.details}")
+            val proto = ShellRes.newBuilder()
+                .setCode(res.exitCode)
+                .addAllOut(res.stdout)
+                .addAllErr(res.stderr)
+                .build()
+            val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
+            receiver.send(byteArrayWrapper)
         }.onFailure {
             logger.e("exeSharedProcess, Shell onFailure: $it")
             receiver.propagateException(RuntimeException(it))
@@ -52,28 +60,33 @@ object LibShKtShellImpl : ISu.Stub() {
     ) {
         logger.i("exeSingleShot, about to execute: ${command.joinToString()}")
         executors.execute {
-            logger.i("exeSingleShot, execute: ${command.joinToString()}")
-            val shell = Shell("su --mount-master")
-            val res = shell.run(
-                command[0],
-                Shell.Command.Config.Builder().apply {
-                    redirectErrorStream = true
-                    timeout = Shell.Timeout(3, TimeUnit.MINUTES)
-                }.create()
-            )
-            logger.i("exeSingleShot, Shell res: $res")
-            logger.i("exeSingleShot, Shell details: ${res.details}")
-            val proto = ShellRes.newBuilder()
-                .setCode(res.exitCode)
-                .addAllOut(res.stdout)
-                .addAllErr(res.stderr)
-                .build()
+            runCatching {
+                logger.i("exeSingleShot, execute: ${command.joinToString()}")
+                val shell = Shell("su --mount-master")
+                val res = shell.run(
+                    command[0],
+                    Shell.Command.Config.Builder().apply {
+                        redirectErrorStream = true
+                        timeout = Shell.Timeout(SHELL_TIMEOUT_MINUTES, TimeUnit.MINUTES)
+                    }.create()
+                )
+                logger.i("exeSingleShot, Shell res: $res")
+                logger.i("exeSingleShot, Shell details: ${res.details}")
+                val proto = ShellRes.newBuilder()
+                    .setCode(res.exitCode)
+                    .addAllOut(res.stdout)
+                    .addAllErr(res.stderr)
+                    .build()
 
-            val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
-            receiver.send(byteArrayWrapper)
+                val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
+                receiver.send(byteArrayWrapper)
 
-            shell.shutdown()
-            logger.i("exeSingleShot, shell.shutdown complete.")
+                shell.shutdown()
+                logger.i("exeSingleShot, shell.shutdown complete.")
+            }.onFailure {
+                logger.e("exeSingleShot, Shell onFailure: $it")
+                receiver.propagateException(RuntimeException(it))
+            }
         }
     }
 

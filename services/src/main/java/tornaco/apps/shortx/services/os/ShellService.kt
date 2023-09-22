@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
+import tornaco.apps.shortx.core.su.SHELL_TIMEOUT_MINUTES
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
@@ -66,7 +67,11 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         return runCatching {
             val receiver = SynchronousResultReceiver.get()
             first.exe(arrayOf(command), receiver, singleShot)
-            val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofDays(30))
+            val receiverRes = receiver.awaitResultNoInterrupt(
+                Duration.ofMinutes(
+                    SHELL_TIMEOUT_MINUTES
+                )
+            )
             logger.d("receiver get res: $receiverRes")
             val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
             byteRes?.let { ShellRes.parseFrom(byteRes.byteData) }

@@ -773,7 +773,7 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
         val SH: Shell get() = this["sh"]
 
         /** Switch to root, and run it as a shell */
-        val SU: Shell get() = this["su"]
+        val SU: Shell get() = this["su --mount-master"]
 
         /**
          * Execute a command with the provided environment.
