@@ -58,6 +58,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val postNotificationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.PostNotification>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -118,7 +128,13 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.PostNotification::class -> {
-                subSelectorStates.postNotificationDialogState.show(source.getActionAs())
+                postNotificationLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.PostNotification>(),
+                        PostNotificationSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -249,7 +265,6 @@ data class UiActionSubSelectorStates(
     val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
-    val postNotificationDialogState: PostNotificationDialogState,
     val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
     val findAndClickViewByIdSelectorState: FindAndClickViewByIdSelectorState,
     val inputTapSelectorState: InputTapSelectorState,
@@ -281,11 +296,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
     }
     HideOverlayDialog(state = hideOverlayDialogState)
 
-    val postNotificationDialogState = rememberPostNotificationDialogState {
-        addAction(it)
-    }
-    PostNotificationSelectorDialog(postNotificationDialogState)
-
     val findAndClickViewByTextSelectorState = rememberFindAndClickViewByTextSelectorState {
         addAction(it)
     }
@@ -311,7 +321,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         showMenuDialogSettingsDialogState = showMenuDialogState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
-        postNotificationDialogState = postNotificationDialogState,
         findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
         findAndClickViewByIdSelectorState = findAndClickViewByIdSelectorState,
         inputTapSelectorState = inputTapSelectorState,

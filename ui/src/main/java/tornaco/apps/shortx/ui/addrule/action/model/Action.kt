@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.common.ActionOnError
@@ -639,6 +640,7 @@ sealed interface Action : Parcelable {
         val isImportant: Boolean,
         val vibrate: Boolean,
         val sound: Boolean,
+        val buttons: List<NotificationButton>
     ) : Action {
         override fun clone(
             id: String,

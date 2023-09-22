@@ -829,7 +829,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 smallIcon = data.smallIcon,
                 vibrate = data.vibrate,
                 sound = data.sound,
-                isImportant = data.isImportant
+                isImportant = data.isImportant,
+                buttons = data.buttonList
             )
         }
 

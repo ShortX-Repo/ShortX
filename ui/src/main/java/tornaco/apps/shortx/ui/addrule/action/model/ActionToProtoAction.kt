@@ -727,6 +727,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIsImportant(isImportant)
                 .setSound(sound)
                 .setVibrate(vibrate)
+                .addAllButton(buttons)
                 .setNote(overrideNote ?: note).build()
         }
 

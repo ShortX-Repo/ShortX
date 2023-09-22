@@ -26,7 +26,6 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
-import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -341,11 +340,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
             if (systemReadyTriggered.compareAndSet(false, true)) {
                 systemServiceScope.launchSafety {
-                    // DELAY
+                    // Sometimes SystemUI attached before system ready called, something has not been initilised...
+                    while (!serviceLifecycle.isSystemReadyCalled) {
+                        delay(1000)
+                        logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
+                    }
+
+                    logger.i("About to publish SystemReady")
                     delay(3000)
                     shortXContext.rule.publishFact(
-                        "SystemReady",
-                        SystemReady.newBuilder().build()
+                        reason = "SystemReady",
+                        fact = SystemReady.newBuilder().build(),
+                        initialContextDataLazy = { emptyMap() }
                     )
                 }
             }
