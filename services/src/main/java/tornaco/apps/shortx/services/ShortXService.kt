@@ -375,6 +375,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.gesture.setSwipeDistanceThresholdDp(dp)
         }
 
+        override fun log(message: String?) {
+            logger.i("EXTERNAL: $message")
+        }
+
         override fun isInjectedShellEnabled(): Boolean {
             return shortXContext.shell.isInjectedShellEnabled()
         }

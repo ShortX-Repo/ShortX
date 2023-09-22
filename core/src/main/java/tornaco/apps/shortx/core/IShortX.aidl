@@ -235,4 +235,6 @@ interface IShortX {
     // Swipe gesture.
     int getSwipeDistanceThresholdDp();
     void setSwipeDistanceThresholdDp(int dp);
+
+    void log(String message);
 }

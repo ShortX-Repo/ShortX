@@ -90,19 +90,22 @@ object SystemUIHook {
                 Reflections.findClass(SYSTEM_UI_APP, lpparam.classLoader),
                 onCreate
             ) { param ->
+                val shortx = ShortXManagerNative.shortX
+                if (shortx == null) {
+                    XposedBridge.log("systemUI hook. ERROR, shortX is null")
+                    return@afterMethod
+                }
+                logger.i("ShortX: $shortx")
+
                 // Install log
                 logAdapter = { _: Int, tag: String, msg: String ->
-                    XposedBridge.log("$tag - $msg")
+                    shortx.log("$tag - $msg")
                 }
 
                 val app: Application = param.thisObject as Application
                 logger.d("After onCreate: $app")
-                val shortx = ShortXManagerNative.shortX
-                logger.i("ShortX: $shortx")
-                shortx?.let {
-                    installShellImpl(it)
-                    installNotificationPoster(it, app.applicationContext)
-                }
+                installShellImpl(shortx)
+                installNotificationPoster(shortx, app.applicationContext)
             }
         }
     }.onFailure {
