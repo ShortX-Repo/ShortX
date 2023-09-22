@@ -10,9 +10,10 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.addrule.action.selector.ShowDialogSelectorActivity.Companion.toShowAlertDialogActionOrNull
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
@@ -40,7 +41,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     val showDialogLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
-            val action = result.toShowAlertDialogActionOrNull()
+            val action = result.toBaseSelectorActionOrNull<Action.ShowAlertDialog>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val showOverlayLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.ShowOverlay>()
             action?.let {
                 addAction(it)
             }
@@ -70,17 +81,22 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowOverlay::class -> {
-                subSelectorStates.overlayButtonState.show(
-                    source.getActionAs()
+                showOverlayLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentAction = source.getActionAs<Action.ShowOverlay>(),
+                        clazz = ShowOverlayButtonSelectorActivity::class.java
+                    )
                 )
                 true
             }
 
             Action.ShowAlertDialog::class -> {
                 showDialogLauncher.launch(
-                    ShowDialogSelectorActivity.newIntent(
+                    newIntent(
                         context = context,
-                        currentAction = source.getActionAs()
+                        currentAction = source.getActionAs<Action.ShowAlertDialog>(),
+                        clazz = ShowDialogSelectorActivity::class.java
                     )
                 )
                 true
@@ -223,14 +239,13 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
     val handler = uiActionSelectHandler(addAction = addAction)
     SelectorList(
         items = uiActionItems,
-        itemSelected = { it ->
+        itemSelected = {
             handler(ActionSelectSource.FromClass(it))
         })
 }
 
 data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
-    val overlayButtonState: ShowOverlayButtonDialogState,
     val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
@@ -250,13 +265,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
                 addAction(Action.ShowToast(message = it))
             })
     TextInputDialog(state = toastSelectionState)
-
-    val overlayButtonState = rememberShowOverlayButtonDialogState(
-        onSelected = { action ->
-            addAction(action)
-        }
-    )
-    ShowOverlayButtonDialog(state = overlayButtonState)
 
     val showDanmuSettingsState = rememberShowDanmuSettingsDialogState {
         addAction(it)
@@ -300,7 +308,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
 
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
-        overlayButtonState = overlayButtonState,
         showMenuDialogSettingsDialogState = showMenuDialogState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,

@@ -3,10 +3,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.activity.result.ActivityResult
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,7 +35,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -55,54 +52,11 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 @AndroidEntryPoint
-class ShowDialogSelectorActivity : BaseActivity() {
-    companion object {
-        private const val INTENT_EXTRA_KEY_ACTION = "action"
-
-        fun ActivityResult.toShowAlertDialogActionOrNull(): Action.ShowAlertDialog? {
-            return if (this.resultCode == Activity.RESULT_OK) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    this.data?.getParcelableExtra(
-                        INTENT_EXTRA_KEY_ACTION,
-                        Action.ShowAlertDialog::class.java
-                    )
-                } else {
-                    (this.data?.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as Action.ShowAlertDialog?
-                }
-            } else {
-                null
-            }
-        }
-
-        fun Intent.toShowAlertDialogActionOrNull(): Action.ShowAlertDialog? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                this.getParcelableExtra(
-                    INTENT_EXTRA_KEY_ACTION,
-                    Action.ShowAlertDialog::class.java
-                )
-            } else {
-                (this.getParcelableExtra(INTENT_EXTRA_KEY_ACTION)) as Action.ShowAlertDialog?
-            }
-        }
-
-        @JvmStatic
-        fun start(context: Context) {
-            val starter = Intent(context, ShowDialogSelectorActivity::class.java)
-            context.startActivity(starter)
-        }
-
-        fun newIntent(context: Context, currentAction: Action.ShowAlertDialog? = null): Intent {
-            return Intent(context, ShowDialogSelectorActivity::class.java).apply {
-                currentAction?.let {
-                    putExtra(INTENT_EXTRA_KEY_ACTION, it)
-                }
-            }
-        }
-    }
+class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>() {
 
     @Composable
-    override fun Content() {
-        ShowDialogSelector(intent.toShowAlertDialogActionOrNull())
+    override fun BaseSelectorActivity<Action.ShowAlertDialog>.SelectorContent(currentAction: Action.ShowAlertDialog?) {
+        ShowDialogSelector(currentAction)
     }
 
     @Composable

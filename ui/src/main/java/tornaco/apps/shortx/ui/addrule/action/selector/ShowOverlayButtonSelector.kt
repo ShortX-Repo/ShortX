@@ -29,20 +29,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
-import tornaco.apps.shortx.ui.base.CommonDialogState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -50,7 +49,6 @@ import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
@@ -65,47 +63,23 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
 
-
-class ShowOverlayButtonDialogState(
-    val onSelected: (Action.ShowOverlay) -> Unit
-) : CommonDialogState() {
-    var currentSettings: Action.ShowOverlay? = null
-    var isButtonListExpanded by mutableStateOf(true)
-
-    fun show(currentSettings: Action.ShowOverlay? = null) {
-        this.currentSettings = currentSettings
-        this.isButtonListExpanded = true
-        show()
+@AndroidEntryPoint
+class ShowOverlayButtonSelectorActivity : BaseSelectorActivity<Action.ShowOverlay>() {
+    @Composable
+    override fun BaseSelectorActivity<Action.ShowOverlay>.SelectorContent(currentAction: Action.ShowOverlay?) {
+        ShowOverlayButtonSelector(currentAction)
     }
+
 }
 
 @Composable
-fun rememberShowOverlayButtonDialogState(
-    onSelected: (Action.ShowOverlay) -> Unit
-): ShowOverlayButtonDialogState {
-    return remember {
-        ShowOverlayButtonDialogState(onSelected)
-    }
-}
-
-@Composable
-fun ShowOverlayButtonDialog(state: ShowOverlayButtonDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            ShowOverlayButtonSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState) {
+private fun BaseSelectorActivity<Action.ShowOverlay>.ShowOverlayButtonSelector(currentAction: Action.ShowOverlay?) {
     val vm = hiltViewModel<ShowOverlayButtonSelectorViewModel>()
     LaunchedEffect(vm) {
-        val currentSettings = dialogState.currentSettings
-        if (currentSettings == null) {
+        if (currentAction == null) {
             vm.resetState()
         } else {
-            vm.initFrom(currentSettings)
+            vm.initFrom(currentAction)
         }
     }
     val selectorState by vm.state.collectAsState()
@@ -121,7 +95,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                         title = { Text(LocalI18N.current["ui.action.show.overlay"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                dialogState.dismiss()
+                                cancelAndFinish()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
@@ -129,9 +103,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                         actions = {
                             IconButton(onClick = {
                                 val action = selectorState.toAction()
-
-                                dialogState.onSelected(action)
-                                dialogState.dismiss()
+                                setResultAndFinish(action)
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
@@ -139,7 +111,7 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
                         },
                     )
                 }) {
-                Content(paddingValues = it, dialogState = dialogState, vm = vm)
+                Content(paddingValues = it, vm = vm)
             }
         }
     }
@@ -149,7 +121,6 @@ private fun ShowOverlayButtonSelector(dialogState: ShowOverlayButtonDialogState)
 @Composable
 private fun Content(
     paddingValues: PaddingValues,
-    dialogState: ShowOverlayButtonDialogState,
     vm: ShowOverlayButtonSelectorViewModel
 ) {
     val state by vm.state.collectAsState()
@@ -180,7 +151,7 @@ private fun Content(
             FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
-                    dialogState.isButtonListExpanded = !dialogState.isButtonListExpanded
+                    vm.setButtonListExpanded(!state.isButtonListExpanded)
                 }) {
                     RemixIcon(remixName = Remix.Arrows.expand_up_down_fill)
                 }
@@ -192,7 +163,7 @@ private fun Content(
             }
         }
         SmallSpacer()
-        AnimatedVisibility(visible = dialogState.isButtonListExpanded) {
+        AnimatedVisibility(visible = state.isButtonListExpanded) {
             Column {
                 state.buttons.forEachIndexed { index, button ->
                     ButtonListItem(vm, index, button)
