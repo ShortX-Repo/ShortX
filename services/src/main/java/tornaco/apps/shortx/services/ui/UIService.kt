@@ -87,7 +87,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
             val receiver = SynchronousResultReceiver.get()
             host.getTiles(receiver)
             val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(10))
-            val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
+            val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
             logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
         }
     }
@@ -103,7 +103,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         first.getTiles(receiver)
         val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(5))
         val list = runCatching {
-            QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
+            QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
         }.getOrElse {
             logger.e(it, "getAllQSTiles")
             QSTileList.getDefaultInstance()
