@@ -31,13 +31,12 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManagerPolicyConstants.PointerEventListener;
 
 import java.util.ArrayList;
 
-public class PointerLocationView extends View implements InputDeviceListener,
+public class PointerLocationViewImpl extends PointerLocationView implements InputDeviceListener,
         PointerEventListener {
     private static final String TAG = "PointerLocationView";
     private static final boolean DRAW_LABEL = false;
@@ -135,7 +134,7 @@ public class PointerLocationView extends View implements InputDeviceListener,
 
     private boolean mPrintCoords = true;
 
-    public PointerLocationView(Context c) {
+    public PointerLocationViewImpl(Context c) {
         super(c);
         setFocusableInTouchMode(true);
 

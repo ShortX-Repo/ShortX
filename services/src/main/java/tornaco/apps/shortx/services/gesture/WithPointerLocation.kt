@@ -8,23 +8,23 @@ import android.view.WindowManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.util.OsUtils
-import tornaco.apps.shortx.services.ui.PointerLocationView
+import tornaco.apps.shortx.services.ui.PointerLocationViewCompat
 
 open class WithPointerLocation(val context: Context) {
-    private var mPointerLocationView: PointerLocationView? = null
+    private var pointerLocationViewCompat: PointerLocationViewCompat? = null
 
     suspend fun injectOnPointerEvent(event: MotionEvent) {
         withContext(Dispatchers.Main) {
-            mPointerLocationView?.onPointerEvent(event)
+            pointerLocationViewCompat?.onPointerEvent(event)
         }
     }
 
     suspend fun enablePointerLocation() = withContext(Dispatchers.Main) {
-        if (mPointerLocationView != null) {
+        if (pointerLocationViewCompat != null) {
             return@withContext
         }
-        mPointerLocationView = PointerLocationView(context)
-        mPointerLocationView!!.setPrintCoords(false)
+        pointerLocationViewCompat = PointerLocationViewCompat(context)
+        pointerLocationViewCompat!!.setPrintCoords(false)
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.type = WindowManager.LayoutParams.TYPE_SECURE_SYSTEM_OVERLAY
         lp.flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -45,17 +45,17 @@ open class WithPointerLocation(val context: Context) {
         lp.inputFeatures =
             lp.inputFeatures or WindowManager.LayoutParams.INPUT_FEATURE_NO_INPUT_CHANNEL
         val wm: WindowManager = context.getSystemService(WindowManager::class.java)
-        wm.addView(mPointerLocationView, lp)
+        wm.addView(pointerLocationViewCompat!!.view, lp)
     }
 
     suspend fun disablePointerLocation() {
         withContext(Dispatchers.Main) {
-            if (mPointerLocationView == null) {
+            if (pointerLocationViewCompat == null) {
                 return@withContext
             }
             val wm: WindowManager = context.getSystemService(WindowManager::class.java)
-            wm.removeView(mPointerLocationView)
-            mPointerLocationView = null
+            wm.removeView(pointerLocationViewCompat!!.view)
+            pointerLocationViewCompat = null
         }
     }
 }
