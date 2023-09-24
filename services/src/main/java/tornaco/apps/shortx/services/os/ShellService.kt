@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.RemoteCallbackList
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.ShellRes
@@ -46,7 +47,7 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         store.write(Settings.BoolSettings.EnableInjectedShell, enable)
     }
 
-    fun executeCommand(command: String, singleShot: Boolean): ShellRes {
+    suspend fun executeCommand(command: String, singleShot: Boolean): ShellRes {
         return isInjectedShellEnabled().select(
             t = { executeCommandByInjection(command, singleShot) },
             f = {
@@ -56,7 +57,7 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         )
     }
 
-    private fun executeCommandByInjection(command: String, singleShot: Boolean): ShellRes {
+    private suspend fun executeCommandByInjection(command: String, singleShot: Boolean): ShellRes {
         val itemCount = shellStubs.registeredCallbackCount
         if (itemCount == 0) {
             logger.d("executeCommand, no registered shell.")
@@ -107,7 +108,8 @@ internal class AppShellServiceProxy(context: Context, intent: Intent?) :
                 runCatching {
                     val receiver = SynchronousResultReceiver.get()
                     requireNotNull(impl) { "Impl is null." }.exe(command, receiver, singleShot)
-                    val receiverRes = receiver.awaitResultNoInterrupt(Duration.ofMinutes(2))
+                    val receiverRes =
+                        runBlocking { receiver.awaitResultNoInterrupt(Duration.ofMinutes(2)) }
                     logger.d("receiver get res: $receiverRes")
                     val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
                     res.set(

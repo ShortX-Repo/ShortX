@@ -547,6 +547,7 @@ class DefaultRuleEngine(
             val canceled = jobs.filter(filter).onEach {
                 logger.d("cancel job: $it, reason: $reason")
                 it.job.cancel()
+                logger.d("After call cancel, job isCanceled: ${it.job.isCancelled}, job isActive: ${it.job.isActive}")
                 onJobCancelled(it.id)
             }
             jobs.removeAll(canceled)

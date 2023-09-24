@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.ui
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver
 import tornaco.apps.shortx.core.proto.common.QSTileList
@@ -86,7 +87,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         onDebugBuild {
             val receiver = SynchronousResultReceiver.get()
             host.getTiles(receiver)
-            val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(10))
+            val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(10)) }
             val tileList = QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
             logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
         }
@@ -101,7 +102,7 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
         val first = qsTileHost.getRegisteredCallbackItem(0)
         val receiver = SynchronousResultReceiver.get()
         first.getTiles(receiver)
-        val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(5))
+        val result = runBlocking { receiver.awaitResultNoInterrupt(Duration.ofSeconds(5)) }
         val list = runCatching {
             QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper)?.byteData)
         }.getOrElse {

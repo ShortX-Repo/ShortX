@@ -322,7 +322,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun executeShellCommand(command: String): ByteArrayWrapper {
             enforceCallingPermissions()
             logger.d("executeShellCommand: $command")
-            val res = shortXContext.shell.executeCommand(command = command, singleShot = true)
+            val res = runBlocking {
+                shortXContext.shell.executeCommand(command = command, singleShot = true)
+            }
             return ByteArrayWrapper(res.toByteArray())
         }
 

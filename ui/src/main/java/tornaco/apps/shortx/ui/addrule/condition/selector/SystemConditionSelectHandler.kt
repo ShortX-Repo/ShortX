@@ -110,7 +110,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
             }
 
             Condition.BatteryPercent::class -> {
-                batteryPercentDialog.show()
+                batteryPercentDialog.show(source.getConditionAs())
                 true
             }
 

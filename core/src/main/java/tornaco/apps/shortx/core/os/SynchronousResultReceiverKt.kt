@@ -6,6 +6,9 @@ import android.os.RemoteException
 import android.os.SystemClock
 import android.util.Log
 import com.android.internal.annotations.GuardedBy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import java.time.Duration
 import java.util.Objects
@@ -190,30 +193,32 @@ class SynchronousResultReceiver : Parcelable {
      * @throws TimeoutException if the timeout in milliseconds expired.
      */
     @Throws(TimeoutException::class)
-    fun awaitResultNoInterrupt(timeout: Duration): Result {
-        Objects.requireNonNull(timeout, "Null timeout is not allowed")
-        val startWaitNanoTime = SystemClock.elapsedRealtimeNanos()
-        var remainingTime = timeout
-        while (!remainingTime.isNegative) {
-            try {
-                val result = getFuture()!![remainingTime.toMillis(), TimeUnit.MILLISECONDS]
-                synchronized(sLock) {
-                    releaseLocked()
-                    return result
+    suspend fun awaitResultNoInterrupt(timeout: Duration): Result {
+        return withContext(Dispatchers.Default) {
+            Objects.requireNonNull(timeout, "Null timeout is not allowed")
+            val startWaitNanoTime = SystemClock.elapsedRealtimeNanos()
+            var remainingTime = timeout
+            while (!remainingTime.isNegative && isActive) {
+                try {
+                    val result = getFuture()!![remainingTime.toMillis(), TimeUnit.MILLISECONDS]
+                    synchronized(sLock) {
+                        releaseLocked()
+                        return@withContext result
+                    }
+                } catch (e: ExecutionException) {
+                    // This will NEVER happen.
+                    throw AssertionError("Error receiving response", e)
+                } catch (e: InterruptedException) {
+                    // The thread was interrupted, try and get the value again, this time
+                    // with the remaining time until the deadline.
+                    remainingTime = timeout.minus(
+                        Duration.ofNanos(SystemClock.elapsedRealtimeNanos() - startWaitNanoTime)
+                    )
                 }
-            } catch (e: ExecutionException) {
-                // This will NEVER happen.
-                throw AssertionError("Error receiving response", e)
-            } catch (e: InterruptedException) {
-                // The thread was interrupted, try and get the value again, this time
-                // with the remaining time until the deadline.
-                remainingTime = timeout.minus(
-                    Duration.ofNanos(SystemClock.elapsedRealtimeNanos() - startWaitNanoTime)
-                )
             }
+            synchronized(sLock) { releaseLocked() }
+            throw TimeoutException()
         }
-        synchronized(sLock) { releaseLocked() }
-        throw TimeoutException()
     }
 
     var mReceiver: ISynchronousResultReceiver? = null

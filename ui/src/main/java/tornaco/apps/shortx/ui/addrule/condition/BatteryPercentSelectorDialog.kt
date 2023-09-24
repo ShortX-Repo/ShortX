@@ -72,6 +72,14 @@ class BatteryPercentSelectorDialogState(
     private var _output by mutableStateOf("")
     val output get() = _output
 
+    fun show(current: Condition.BatteryPercent? = null) {
+        current?.let {
+            inputValue(it.value.toString())
+            setOp(it.op)
+        }
+        show()
+    }
+
     fun inputValue(value: String) {
         _action = _action.copy(
             value = minOf(100, value.toIntOrNull() ?: 0)
