@@ -11,13 +11,14 @@ import java.util.concurrent.TimeUnit
 
 object LibShKtShellImpl : ISu.Stub() {
     private val logger = Logger("LibShKtShellImpl")
-    private val executors = Executors.newFixedThreadPool(12)
+    private val executors = Executors.newCachedThreadPool()
 
     override fun exe(
         command: Array<out String>,
         receiver: SynchronousResultReceiver,
         singleShot: Boolean
     ) {
+        logger.d("exe: $command $singleShot")
         if (singleShot) {
             exeSingleShot(command, receiver)
         } else {
@@ -30,27 +31,29 @@ object LibShKtShellImpl : ISu.Stub() {
         receiver: SynchronousResultReceiver,
     ) {
         logger.i("exeSharedProcess, about to execute: ${command.joinToString()}")
-        runCatching {
-            val shell = Shell.SU
-            val res = shell.run(
-                command[0],
-                Shell.Command.Config.Builder().apply {
-                    redirectErrorStream = true
-                    timeout = Shell.Timeout(SHELL_TIMEOUT_MINUTES, TimeUnit.MINUTES)
-                }.create()
-            )
-            logger.i("exeSharedProcess, Shell res: $res")
-            logger.i("exeSharedProcess, Shell details: ${res.details}")
-            val proto = ShellRes.newBuilder()
-                .setCode(res.exitCode)
-                .addAllOut(res.stdout)
-                .addAllErr(res.stderr)
-                .build()
-            val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
-            receiver.send(byteArrayWrapper)
-        }.onFailure {
-            logger.e("exeSharedProcess, Shell onFailure: $it")
-            receiver.propagateException(RuntimeException(it))
+        executors.execute {
+            runCatching {
+                val shell = Shell.SU
+                val res = shell.run(
+                    command[0],
+                    Shell.Command.Config.Builder().apply {
+                        redirectErrorStream = true
+                        timeout = Shell.Timeout(SHELL_TIMEOUT_MINUTES, TimeUnit.MINUTES)
+                    }.create()
+                )
+                logger.i("exeSharedProcess, Shell res: $res")
+                logger.i("exeSharedProcess, Shell details: ${res.details}")
+                val proto = ShellRes.newBuilder()
+                    .setCode(res.exitCode)
+                    .addAllOut(res.stdout)
+                    .addAllErr(res.stderr)
+                    .build()
+                val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
+                receiver.send(byteArrayWrapper)
+            }.onFailure {
+                logger.e("exeSharedProcess, Shell onFailure: $it")
+                receiver.propagateException(RuntimeException(it))
+            }
         }
     }
 

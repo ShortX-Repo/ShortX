@@ -60,32 +60,34 @@ class ShellService(shortXContext: ShortXContext) : SystemService(shortXContext, 
     private suspend fun executeCommandByInjection(command: String, singleShot: Boolean): ShellRes {
         val itemCount = shellStubs.registeredCallbackCount
         if (itemCount == 0) {
-            logger.d("executeCommand, no registered shell.")
-            return errorShellRes("su impl is not attached")
+            logger.d("executeCommandByInjection executeCommand, no registered shell.")
+            return errorShellRes("executeCommandByInjection su impl is not attached")
         }
         val first = shellStubs.getRegisteredCallbackItem(0)
-        logger.d("Using shell: $first")
+        logger.d("executeCommandByInjection Using shell: $first")
         return runCatching {
             val receiver = SynchronousResultReceiver.get()
+            logger.d("executeCommandByInjection Using receiver: $receiver")
             first.exe(arrayOf(command), receiver, singleShot)
+            logger.d("executeCommandByInjection After call exe")
             val receiverRes = receiver.awaitResultNoInterrupt(
                 Duration.ofMinutes(
                     SHELL_TIMEOUT_MINUTES
                 )
             )
-            logger.d("receiver get res: $receiverRes")
+            logger.d("executeCommandByInjection receiver get res: $receiverRes")
             val byteRes: ByteArrayWrapper? = receiverRes.getValue(null)
             byteRes?.let { ShellRes.parseFrom(byteRes.byteData) }
-                ?: errorShellRes("No shell res returned.")
+                ?: errorShellRes("executeCommandByInjection No shell res returned.")
         }.getOrElse {
-            logger.e(it, "Got error call shell")
+            logger.e(it, "executeCommandByInjection Got error call shell")
             errorShellRes(it.toString())
         }
     }
 
     private fun errorShellRes(error: String): ShellRes {
         val prefix =
-            "Fail execute shell: Pls allow ShortX start from background, and grant su permission to ShortX\n 执行失败，请允许ShortX后台自启动，授予ShortX Root权限"
+            "Shell execute fail"
         throw IllegalStateException("$prefix \n  $error")
     }
 }

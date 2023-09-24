@@ -5,45 +5,29 @@ import android.os.Parcelable
 import android.os.RemoteException
 import android.os.SystemClock
 import android.util.Log
-import com.android.internal.annotations.GuardedBy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.util.Logger
 import java.time.Duration
 import java.util.Objects
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.atomic.AtomicReference
 
 class SynchronousResultReceiver : Parcelable {
     private var mLocal = false
     private var mIsCompleted = false
 
-    @GuardedBy("sLock")
-    private var mFuture: CompletableFuture<Result>? = CompletableFuture()
+    private var mFuture: AtomicReference<Result?> = AtomicReference(null)
+    private var mReceiver: ISynchronousResultReceiver? = null
 
     companion object {
-        const val TAG = "SynchronousResultReceiver"
-        const val QUEUE_THRESHOLD = 4
-
-        private val sLock = Any()
-
-        @GuardedBy("sLock")
-        private val sAvailableReceivers = ConcurrentLinkedQueue<SynchronousResultReceiver>()
+        private val logger = Logger("SynchronousResultReceiver")
 
         fun get(): SynchronousResultReceiver {
-            synchronized(sLock) {
-                if (sAvailableReceivers.isEmpty()) {
-                    return SynchronousResultReceiver()
-                }
-                val receiver =
-                    sAvailableReceivers.poll()
-                receiver.resetLocked()
-                return receiver
-            }
+            return SynchronousResultReceiver()
         }
 
         @JvmField
@@ -69,25 +53,6 @@ class SynchronousResultReceiver : Parcelable {
         mIsCompleted = false
         mReceiver = ISynchronousResultReceiver.Stub.asInterface(p.readStrongBinder())
     }
-
-    @GuardedBy("sLock")
-    private fun releaseLocked() {
-        mFuture = null
-        if (sAvailableReceivers.size < QUEUE_THRESHOLD) {
-            sAvailableReceivers.add(this)
-        }
-    }
-
-    @GuardedBy("sLock")
-    private fun resetLocked() {
-        mFuture = CompletableFuture()
-        mIsCompleted = false
-    }
-
-    private fun getFuture(): CompletableFuture<Result>? {
-        synchronized(sLock) { return mFuture }
-    }
-
 
     class Result : Parcelable {
         private val mObject: ByteArrayWrapper?
@@ -148,7 +113,7 @@ class SynchronousResultReceiver : Parcelable {
         check(!mIsCompleted) { "Receiver has already been completed" }
         mIsCompleted = true
         if (mLocal) {
-            getFuture()!!.complete(result)
+            mFuture.set(result)
         } else {
             val rr: ISynchronousResultReceiver?
             synchronized(this) { rr = mReceiver }
@@ -156,7 +121,7 @@ class SynchronousResultReceiver : Parcelable {
                 try {
                     rr.send(result)
                 } catch (e: RemoteException) {
-                    Log.w(TAG, "Failed to complete future")
+                    logger.w("Failed to complete future")
                 }
             }
         }
@@ -199,34 +164,24 @@ class SynchronousResultReceiver : Parcelable {
             val startWaitNanoTime = SystemClock.elapsedRealtimeNanos()
             var remainingTime = timeout
             while (!remainingTime.isNegative && isActive) {
-                try {
-                    val result = getFuture()!![remainingTime.toMillis(), TimeUnit.MILLISECONDS]
-                    synchronized(sLock) {
-                        releaseLocked()
-                        return@withContext result
-                    }
-                } catch (e: ExecutionException) {
-                    // This will NEVER happen.
-                    throw AssertionError("Error receiving response", e)
-                } catch (e: InterruptedException) {
-                    // The thread was interrupted, try and get the value again, this time
-                    // with the remaining time until the deadline.
-                    remainingTime = timeout.minus(
-                        Duration.ofNanos(SystemClock.elapsedRealtimeNanos() - startWaitNanoTime)
-                    )
+                val result = mFuture.get()
+                if (result != null) {
+                    return@withContext result
                 }
+                delay(100)
+                remainingTime = timeout.minus(
+                    Duration.ofNanos(SystemClock.elapsedRealtimeNanos() - startWaitNanoTime)
+                )
             }
-            synchronized(sLock) { releaseLocked() }
             throw TimeoutException()
         }
     }
 
-    var mReceiver: ISynchronousResultReceiver? = null
 
     private class MyResultReceiver(val receiver: SynchronousResultReceiver) :
         ISynchronousResultReceiver.Stub() {
         override fun send(result: Result) {
-            receiver.getFuture()?.complete(result)
+            receiver.mFuture.set(result)
         }
     }
 

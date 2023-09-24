@@ -71,6 +71,7 @@ private fun ShellCommandCodeEditor(
         SwitchRow(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = LocalI18N.current["ui.action.shell.single.shot"],
+            tip = LocalI18N.current["ui.action.shell.single.shot.description"],
             isChecked = state.isSingleShot,
             onCheckChange = {
                 state.isSingleShot = it
