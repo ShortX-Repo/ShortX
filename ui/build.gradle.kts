@@ -1,4 +1,3 @@
-
 import tornaco.project.android.shortx.Configs
 import tornaco.project.android.shortx.Configs.resPrefix
 import tornaco.project.android.shortx.addI18NTask
@@ -121,6 +120,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.orbit.test)
     testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
 }
 
 configurations.all {

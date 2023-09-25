@@ -23,7 +23,7 @@ import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
-import tornaco.apps.shortx.core.su.LibSuperuserShellImpl
+import tornaco.apps.shortx.core.su.LibShKtShellImpl
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.logAdapter
@@ -111,7 +111,7 @@ object SystemUIHook {
 
     private fun installShellImpl(shortx: IShortX) {
         logger.d("installShellImpl")
-        val shell = LibSuperuserShellImpl
+        val shell = LibShKtShellImpl
         shortx.attachSUImpl("SystemUI", shell)
         logger.i("installShellImpl success.")
     }
@@ -154,7 +154,7 @@ object SystemUIHook {
     }
 }
 
-@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN", "UNCHECKED_CAST")
 class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
     private val logger = Logger("ShortXHook.SystemUIHook.QSTileHostImpl")
 
@@ -190,9 +190,21 @@ class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
         }
     }
 
-    private fun getTilesInternal(): QSTileList {
+    private fun getTilesInternal(): QSTileList = runCatching {
         val tiles =
-            Reflections.callMethod(hostObj, "getTiles") as java.util.Collection<*>
+            runCatching {
+                Reflections.callMethod(hostObj, "getTiles") as java.util.Collection<*>
+            }.getOrElse {
+                if (it is NoSuchMethodError) {
+                    logger.w("NoSuchMethodError when call getTiles(), try to get field: mTiles")
+                    // LinkedHashMap<String, QSTile> mTiles = new LinkedHashMap<>()
+                    val map = Reflections.getObjectField(hostObj, "mTiles") as Map<*, *>
+                    map.values
+                } else {
+                    throw Error(it)
+                }
+            }
+
         logger.d("tiles: ${tiles.map { it }}")
         val qsTiles = tiles.mapNotNull {
             runCatching {
@@ -205,7 +217,10 @@ class QSTileHostImpl(private val hostObj: Any) : IQSTileHost.Stub() {
                 null
             }
         }
-        return QSTileList.newBuilder().addAllTile(qsTiles).build()
+        QSTileList.newBuilder().addAllTile(qsTiles).build()
+    }.getOrElse {
+        logger.e(it, "getTilesInternal")
+        QSTileList.getDefaultInstance()
     }
 }
 

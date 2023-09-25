@@ -33,11 +33,13 @@ object HookStub {
         AppWidgetServiceHook.hookAppWidgetService(lpparam)
         NotificationUsageStatsHook.hookNotificationUsageStats(lpparam)
         ActivityTaskSupervisorHook.hookActivityTaskSupervisor(lpparam)
-        ProcessListHook.hookProcessList(lpparam)
+        ProcessListHook.hookProcessListRemoveProcess(lpparam)
+        ProcessListHook.hookProcessListOnProcessStarted(lpparam)
         ActivityRecordHook.hook(lpparam)
         VPNHook.hook(lpparam)
         PhoneWindowManagerHook.hook(lpparam)
         ClipboardServiceHook.hookClipboardService(lpparam)
         ActivityStarterHook.hookEnqueueRequest(lpparam)
+        ActiveServiceHook.hookUpdateScreenState(lpparam)
     }
 }

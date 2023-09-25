@@ -1,14 +1,19 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputState
@@ -18,6 +23,8 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val context = LocalContext.current
+
     val subSelectorStates = uiActionSubSelectors(addAction)
 
     val injectGestureSelectorState = rememberInjectGestureRecordDialogState(onSelected = {
@@ -29,6 +36,37 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         addAction(it)
     }
     ShowTextFieldDialogSettingsDialog(state = showTextFieldSelectorState)
+
+
+    val showDialogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.ShowAlertDialog>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val showOverlayLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.ShowOverlay>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
+    val postNotificationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.PostNotification>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     return { source ->
         when (source.clazz) {
@@ -53,14 +91,24 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.ShowOverlay::class -> {
-                subSelectorStates.overlayButtonState.show(
-                    source.getActionAs()
+                showOverlayLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentAction = source.getActionAs<Action.ShowOverlay>(),
+                        clazz = ShowOverlayButtonSelectorActivity::class.java
+                    )
                 )
                 true
             }
 
             Action.ShowAlertDialog::class -> {
-                subSelectorStates.showDialogSettingsState.show(source.getActionAs())
+                showDialogLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentAction = source.getActionAs<Action.ShowAlertDialog>(),
+                        clazz = ShowDialogSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -80,7 +128,13 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
             }
 
             Action.PostNotification::class -> {
-                subSelectorStates.postNotificationDialogState.show(source.getActionAs())
+                postNotificationLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.PostNotification>(),
+                        PostNotificationSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
@@ -201,19 +255,16 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
     val handler = uiActionSelectHandler(addAction = addAction)
     SelectorList(
         items = uiActionItems,
-        itemSelected = { it ->
+        itemSelected = {
             handler(ActionSelectSource.FromClass(it))
         })
 }
 
 data class UiActionSubSelectorStates(
     val toastSelectionState: TextInputState,
-    val overlayButtonState: ShowOverlayButtonDialogState,
-    val showDialogSettingsState: ShowDialogSettingsDialogState,
     val showMenuDialogSettingsDialogState: ShowMenuDialogSettingsDialogState,
     val showDanmuSettingsState: ShowDanmuSettingsDialogState,
     val hideOverlayDialogState: HideOverlayDialogState,
-    val postNotificationDialogState: PostNotificationDialogState,
     val findAndClickViewByTextSelectorState: FindAndClickViewByTextSelectorState,
     val findAndClickViewByIdSelectorState: FindAndClickViewByIdSelectorState,
     val inputTapSelectorState: InputTapSelectorState,
@@ -230,22 +281,10 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
             })
     TextInputDialog(state = toastSelectionState)
 
-    val overlayButtonState = rememberShowOverlayButtonDialogState(
-        onSelected = { action ->
-            addAction(action)
-        }
-    )
-    ShowOverlayButtonDialog(state = overlayButtonState)
-
     val showDanmuSettingsState = rememberShowDanmuSettingsDialogState {
         addAction(it)
     }
     ShowDanmuSettingsDialog(state = showDanmuSettingsState)
-
-    val showDialogSettingsState = rememberShowDialogSettingsDialogState {
-        addAction(it)
-    }
-    ShowDialogSettingsDialog(state = showDialogSettingsState)
 
     val showMenuDialogState = rememberShowMenuDialogSettingsDialogState {
         addAction(it)
@@ -256,11 +295,6 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
         addAction(it)
     }
     HideOverlayDialog(state = hideOverlayDialogState)
-
-    val postNotificationDialogState = rememberPostNotificationDialogState {
-        addAction(it)
-    }
-    PostNotificationSelectorDialog(postNotificationDialogState)
 
     val findAndClickViewByTextSelectorState = rememberFindAndClickViewByTextSelectorState {
         addAction(it)
@@ -284,12 +318,9 @@ fun uiActionSubSelectors(addAction: (Action) -> Unit): UiActionSubSelectorStates
 
     return UiActionSubSelectorStates(
         toastSelectionState = toastSelectionState,
-        overlayButtonState = overlayButtonState,
-        showDialogSettingsState = showDialogSettingsState,
         showMenuDialogSettingsDialogState = showMenuDialogState,
         showDanmuSettingsState = showDanmuSettingsState,
         hideOverlayDialogState = hideOverlayDialogState,
-        postNotificationDialogState = postNotificationDialogState,
         findAndClickViewByTextSelectorState = findAndClickViewByTextSelectorState,
         findAndClickViewByIdSelectorState = findAndClickViewByIdSelectorState,
         inputTapSelectorState = inputTapSelectorState,

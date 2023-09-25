@@ -71,4 +71,9 @@ public abstract class OsUtils {
         return Build.VERSION.SDK_INT >= 33;
     }
 
+    // android 14
+    public static boolean isUOrAbove() {
+        return Build.VERSION.SDK_INT >= 34;
+    }
+
 }

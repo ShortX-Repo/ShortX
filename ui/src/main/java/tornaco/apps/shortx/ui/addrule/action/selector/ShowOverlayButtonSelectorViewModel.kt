@@ -34,7 +34,10 @@ data class OverlayButtonSelectorState(
     val overlayPaddingH: Int = 0,
     val enableGlobalDrag: Boolean = true,
     val enableAutoEdge: Boolean = false,
-    val id: String = defaultNewActionId()
+    val id: String = defaultNewActionId(),
+
+    // UI states
+    val isButtonListExpanded: Boolean = true
 )
 
 data class Button(
@@ -206,5 +209,9 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun applySort(sorted: List<Button>) {
         updateState { copy(buttons = sorted) }
+    }
+
+    fun setButtonListExpanded(expanded: Boolean) {
+        updateState { copy(isButtonListExpanded = expanded) }
     }
 }

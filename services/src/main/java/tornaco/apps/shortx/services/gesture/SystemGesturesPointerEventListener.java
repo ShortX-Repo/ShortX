@@ -29,7 +29,6 @@ import android.view.MotionEvent;
 
 import java.io.PrintWriter;
 
-import tornaco.apps.shortx.core.util.ResExtKt;
 import tornaco.apps.shortx.core.util.ScreenUtilsKt;
 
 /**
@@ -64,10 +63,17 @@ public class SystemGesturesPointerEventListener {
     private boolean mDebugFireable;
     private boolean mMouseHoveringAtEdge;
 
-    public SystemGesturesPointerEventListener(Context context, Callbacks callbacks) {
+    public SystemGesturesPointerEventListener(Context context, Callbacks callbacks, int swipeDistanceThresholdPxSize) {
         mContext = checkNull("context", context);
         mCallbacks = checkNull("callbacks", callbacks);
+        mSwipeDistanceThreshold = swipeDistanceThresholdPxSize;
+        Log.w(TAG, "mSwipeDistanceThreshold: " + mSwipeDistanceThreshold);
         onConfigurationChanged();
+    }
+
+    public void setSwipeDistanceThresholdPx(int px) {
+        this.mSwipeDistanceThreshold = px;
+        Log.w(TAG, "mSwipeDistanceThreshold: " + mSwipeDistanceThreshold);
     }
 
     void onConfigurationChanged() {
@@ -77,18 +83,6 @@ public class SystemGesturesPointerEventListener {
         screenWidth = screenSize.x;
         screenHeight = screenSize.y;
         Log.w(TAG, "screenSize: " + screenSize);
-
-        // r.getDimensionPixelSize(com.android.internal.R.dimen.system_gestures_start_threshold)
-        int defaultThreshold = ResExtKt.get_dp(12);
-        try {
-            int resId = Resources.getSystem().getIdentifier("system_gestures_start_threshold", "dimen", "android");
-            // /2 means we use less than system distance to block some touch events.
-            defaultThreshold = r.getDimensionPixelSize(resId) / 2;
-            Log.w(TAG, "system_gestures_start_threshold: " + defaultThreshold);
-        } catch (Throwable ignored) {
-
-        }
-        mSwipeDistanceThreshold = defaultThreshold;
 
 //        if (OsUtils.isQOrAbove()) {
 //            final Display display = ScreenUtilsKt.defaultDisplay(mContext);

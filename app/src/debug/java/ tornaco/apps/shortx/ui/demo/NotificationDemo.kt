@@ -18,8 +18,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.notification.NotificationPoster
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.proto.action.ShowToast
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.base.remixResId
 import java.util.*
@@ -144,6 +147,12 @@ fun NotificationDemo() {
                 .setLargeIcon(Remix.Logos.bard_line)
                 .setTitle("This is title")
                 .setMessage("This is message")
+                .addClickAction(ShowToast.getDefaultInstance().pack_())
+                .addButton(
+                    NotificationButton.newBuilder()
+                        .setLabel("Toast")
+                        .addAction(ShowToast.getDefaultInstance().pack_()).build()
+                )
                 .build(),
         )
     }) {

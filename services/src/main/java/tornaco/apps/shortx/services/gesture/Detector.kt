@@ -1,21 +1,18 @@
 package tornaco.apps.shortx.services.gesture
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Point
 import android.os.Handler
-import android.os.VibrationEffect
 import android.view.GestureDetector
 import android.view.MotionEvent
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.core.util.screenSize
-import tornaco.apps.shortx.core.util.vibrate
 import tornaco.apps.shortx.services.gesture.SystemGesturesPointerEventListener.CallbacksAdapter
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.systemServiceScope
 import java.io.PrintWriter
 
 class Detector(
@@ -24,13 +21,25 @@ class Detector(
     private val service: GestureService,
 ) {
     companion object {
-        const val LOGV = false
+        const val LOGV = BuildProp.APP_IS_DEBUG
     }
 
     private val logger = Logger("Detector")
 
     private val screenSize by lazy {
-        context.screenSize()
+        context.screenSize().let {
+            val currentOrientation = context.resources.configuration.orientation
+            val isP = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+            logger.d("Init screenSize, isP? $isP")
+            if (isP) {
+                it
+            } else {
+                logger.i("Init screenSize, swap screen x and y")
+                Point(it.y, it.x)
+            }
+        }.apply {
+            logger.d("Init screenSize, return: $this")
+        }
     }
 
     private val gestureDetector: GestureDetector =
@@ -68,7 +77,7 @@ class Detector(
             override fun onSwipeFromTop(x: Int, y: Int): Boolean {
                 return handleEvent(x.toFloat(), y.toFloat(), Gesture.SwipeFromTop)
             }
-        })
+        }, service.getSwipeDistanceThresholdDp()._dp)
 
     private fun handleEvent(downX: Float, downY: Float, gestureEvent: Gesture): Boolean {
         val area = detectArea(downX, downY) ?: return false
@@ -98,13 +107,13 @@ class Detector(
                 it.getRect(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaSize()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat()
                 )
             } else {
                 it.getRectL(
                     screenSize.x.toFloat(),
                     screenSize.y.toFloat(),
-                    service.getGestureAreaSize()._dp.toFloat()
+                    service.getGestureAreaWidthDp()._dp.toFloat()
                 )
             }
             if (LOGV) logger.d("rect: $rect (downX: $downX downY: $downY)")
@@ -113,18 +122,6 @@ class Detector(
         }
         if (LOGV) logger.d("detectArea, $downX $downY return: $area (screen info: $screenSize)")
         return area
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun vibrateOnExecuteAction() {
-        service.systemServiceScope.launchSafety {
-            context.vibrate.vibrate(
-                VibrationEffect.createOneShot(
-                    20,
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
-            )
-        }
     }
 
     fun interceptEvent(event: MotionEvent): Boolean? {
@@ -141,6 +138,11 @@ class Detector(
 
     fun dump() {
         pointerEventListener.dump(PrintWriter(System.err), "")
+    }
+
+    fun setSwipeDistanceThresholdDp(dp: Int) {
+        logger.d("setSwipeDistanceThresholdDp: $dp px: ${dp._dp}")
+        pointerEventListener.setSwipeDistanceThresholdPx(dp._dp)
     }
 }
 

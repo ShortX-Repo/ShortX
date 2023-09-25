@@ -26,7 +26,6 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AudioRecordFile
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.GestureRecord
-import tornaco.apps.shortx.core.proto.common.ShellRes
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
@@ -323,7 +322,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun executeShellCommand(command: String): ByteArrayWrapper {
             enforceCallingPermissions()
             logger.d("executeShellCommand: $command")
-            val res = shortXContext.shell.executeCommand(command) ?: ShellRes.newBuilder().build()
+            val res = shortXContext.shell.executeCommand(command = command, singleShot = true)
             return ByteArrayWrapper(res.toByteArray())
         }
 
@@ -341,11 +340,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
             if (systemReadyTriggered.compareAndSet(false, true)) {
                 systemServiceScope.launchSafety {
-                    // DELAY
+                    // Sometimes SystemUI attached before system ready called, something has not been initilised...
+                    while (!serviceLifecycle.isSystemReadyCalled) {
+                        delay(1000)
+                        logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
+                    }
+
+                    logger.i("About to publish SystemReady")
                     delay(3000)
                     shortXContext.rule.publishFact(
-                        "SystemReady",
-                        SystemReady.newBuilder().build()
+                        reason = "SystemReady",
+                        fact = SystemReady.newBuilder().build(),
+                        initialContextDataLazy = { emptyMap() }
                     )
                 }
             }
@@ -353,6 +359,20 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun attachQSTileHost(host: IQSTileHost) {
             shortXContext.ui.attachQSTileHost(host)
+        }
+
+        override fun getAllQSTiles(): ByteArrayWrapper {
+            return shortXContext.ui.getAllQSTiles().let {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
+        override fun getSwipeDistanceThresholdDp(): Int {
+            return shortXContext.gesture.getSwipeDistanceThresholdDp()
+        }
+
+        override fun setSwipeDistanceThresholdDp(dp: Int) {
+            shortXContext.gesture.setSwipeDistanceThresholdDp(dp)
         }
 
         override fun isInjectedShellEnabled(): Boolean {
@@ -688,11 +708,11 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         }
 
         override fun getGestureAreaSize(): Int {
-            return shortXContext.gesture.getGestureAreaSize()
+            return shortXContext.gesture.getGestureAreaWidthDp()
         }
 
         override fun setGestureAreaSize(dp: Int) {
-            shortXContext.gesture.setGestureAreaSize(dp)
+            shortXContext.gesture.setGestureAreaWidthDp(dp)
         }
 
         override fun registerPkgSetObs(obs: IPkgSetObserver) {

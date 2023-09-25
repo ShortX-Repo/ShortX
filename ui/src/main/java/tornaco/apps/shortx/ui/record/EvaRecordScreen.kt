@@ -39,7 +39,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -433,7 +432,6 @@ private fun ActionRecordItem(
         }
         val messageDialogState = rememberErrorMessageDialogState(
             title = actionLabel[0],
-            message = it.record.message
         )
         ErrorMessageDialog(state = messageDialogState)
 
@@ -471,7 +469,7 @@ private fun ActionRecordItem(
                 }
             },
             onClick = {
-                if (!it.record.isSuccess) messageDialogState.show()
+                if (!it.record.isSuccess) messageDialogState.show(it.record.message)
             })
     }
 }
@@ -495,7 +493,6 @@ private fun ConditionRecordItem(
         }
         val messageDialogState = rememberErrorMessageDialogState(
             title = conditionLabel[0],
-            message = it.record.message
         )
         ErrorMessageDialog(state = messageDialogState)
 
@@ -540,7 +537,7 @@ private fun ConditionRecordItem(
                 }
             },
             onClick = {
-                if (!it.record.isSuccess) messageDialogState.show()
+                if (!it.record.isSuccess) messageDialogState.show(it.record.message)
             })
     }
 }

@@ -213,7 +213,6 @@ private fun DAListContent(
             ShortXCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .animateContentSize(),
             ) {
                 Box {
                     if (da.isDirectActionSet) {

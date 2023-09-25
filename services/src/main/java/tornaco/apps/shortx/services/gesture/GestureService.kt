@@ -2,6 +2,7 @@ package tornaco.apps.shortx.services.gesture
 
 import android.content.Context
 import android.graphics.Color
+import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -23,6 +24,7 @@ import tornaco.apps.shortx.services.data.GestureRecordsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.input.IMSFunc
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
@@ -42,8 +44,6 @@ class GestureService(shortXContext: ShortXContext) :
 
     private var onKeyEvent: ((KeyEvent) -> Boolean?)? = null
     private var onGestureEvent: ((Pair<Edge, Gesture>) -> Boolean?)? = null
-
-    private val blockingEventDownTimes: MutableSet<Long> = mutableSetOf()
 
     private val showingHints: MutableSet<GuideLineView> = mutableSetOf()
 
@@ -89,7 +89,7 @@ class GestureService(shortXContext: ShortXContext) :
                 GuideLineView(
                     context,
                     listOf(HotSeat(area, Color.RED)),
-                    getGestureAreaSize()._dp
+                    getGestureAreaWidthDp()._dp
                 ).apply { attach() }
             showingHints.add(guideLineView)
             delay(GUIDELINE_VIEW_SHOWN_TIME)
@@ -122,15 +122,23 @@ class GestureService(shortXContext: ShortXContext) :
     }
 
     private fun filterMotionEvent(input: MotionEvent): Boolean? {
-        if (input.action == MotionEvent.ACTION_UP || input.action == MotionEvent.ACTION_CANCEL) {
-            blockingEventDownTimes.clear()
-        } else if (blockingEventDownTimes.contains(input.downTime)
-        ) {
-            return false
+        val nonNullGestureDetector = gestureDetector
+        if (nonNullGestureDetector == null) {
+            logger.e("gestureDetector is null.")
+            return null
         }
-        return gestureDetector?.interceptEvent(input)?.also {
-            if (!it) blockingEventDownTimes.add(input.downTime)
+
+        val gestureInterceptRes = nonNullGestureDetector.interceptEvent(input)?.also {
+            // False, means block this event
+            if (!it) {
+                logger.w("Send ACTION_CANCEL since we interceptEvent!")
+                val eventTime = SystemClock.uptimeMillis()
+                val cancel =
+                    MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+                IMSFunc.injectInputEvent(cancel)
+            }
         }
+        return gestureInterceptRes
     }
 
     fun handleKeyEvent(event: KeyEvent): Boolean? {
@@ -158,9 +166,18 @@ class GestureService(shortXContext: ShortXContext) :
         return onGestureEvent?.invoke(area to gestureEvent) ?: false
     }
 
-    fun getGestureAreaSize(): Int = maxOf(store.read(Settings.IntSettings.GestureAreaSizeDp), 12)
+    fun getGestureAreaWidthDp(): Int =
+        maxOf(store.read(Settings.IntSettings.GestureAreaWidthDp), 12)
 
-    fun setGestureAreaSize(dp: Int) = store.write(Settings.IntSettings.GestureAreaSizeDp, dp)
+    fun setGestureAreaWidthDp(dp: Int) = store.write(Settings.IntSettings.GestureAreaWidthDp, dp)
+
+    fun getSwipeDistanceThresholdDp(): Int =
+        maxOf(store.read(Settings.IntSettings.SwipeDistanceThresholdDp), 1)
+
+    fun setSwipeDistanceThresholdDp(thr: Int) {
+        store.write(Settings.IntSettings.SwipeDistanceThresholdDp, thr)
+        gestureDetector?.setSwipeDistanceThresholdDp(thr)
+    }
 
     fun addGestureRecord(record: GestureRecord) {
         gestureRecordStore.addGestureRecord(record)

@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.common.CallState
 import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
@@ -538,6 +539,21 @@ sealed interface Fact {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val id: String = defaultNewFactId(),
         val n: Notification
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+
+    data class AppProcessStarted(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+        val processNames: List<ProcessName>
     ) : Fact {
         override fun clone(
             id: String,

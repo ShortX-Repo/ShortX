@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package tornaco.apps.shortx.ui.addrule.action.selector
 
@@ -6,10 +6,13 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,18 +24,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
+import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
@@ -43,51 +49,22 @@ import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-
-class PostNotificationDialogState(
-    val onSelected: (Action.PostNotification) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-
-    var currentSettings: Action.PostNotification? = null
-
-    fun show(currentSettings: Action.PostNotification? = null) {
-        this.currentSettings = currentSettings
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+@AndroidEntryPoint
+class PostNotificationSelectorActivity : BaseSelectorActivity<Action.PostNotification>() {
+    @Composable
+    override fun BaseSelectorActivity<Action.PostNotification>.SelectorContent(currentAction: Action.PostNotification?) {
+        PostNotificationSelector(currentAction)
     }
 }
 
 @Composable
-fun rememberPostNotificationDialogState(
-    onSelected: (Action.PostNotification) -> Unit
-): PostNotificationDialogState {
-    return remember {
-        PostNotificationDialogState(onSelected)
-    }
-}
-
-@Composable
-fun PostNotificationSelectorDialog(state: PostNotificationDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            PostNotificationSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun PostNotificationSelector(dialogState: PostNotificationDialogState) {
+private fun BaseSelectorActivity<Action.PostNotification>.PostNotificationSelector(currentAction: Action.PostNotification?) {
     val vm = hiltViewModel<PostNotificationSelectorViewModel>()
     LaunchedEffect(vm) {
-        val settings = dialogState.currentSettings
-        if (settings == null) {
+        if (currentAction == null) {
             vm.resetState()
         } else {
-            vm.initFrom(settings)
+            vm.initFrom(currentAction)
         }
     }
 
@@ -104,15 +81,14 @@ private fun PostNotificationSelector(dialogState: PostNotificationDialogState) {
                         title = { Text(LocalI18N.current["ui.action.post.notification"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                dialogState.dismiss()
+                                cancelAndFinish()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(state.data)
-                                dialogState.dismiss()
+                                setResultAndFinish(state.toAction())
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
@@ -141,40 +117,44 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.tag"])
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.post.notification.tag"]
+            )
             TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
-            ShortXTextField(value = state.data.tag, onValueChange = {
+            ShortXTextField(value = state.tag, onValueChange = {
                 vm.updateTag(it)
             })
         }
 
-        //   "ui.action.post.notification.title": "标题",
-        //  "ui.action.post.notification.message": "内容",
-        //  "ui.action.post.notification.small.icon": "状态栏图标",
-        //  "ui.action.post.notification.large.icon": "大图标（可选）",
-        //  "ui.action.post.notification.important": "重要通知",
-        //  "ui.action.post.notification.sound": "播放声音",
-        //  "ui.action.post.notification.vibrate": "振动",
-
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.title"])
-            ShortXTextField(value = state.data.title, onValueChange = {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.post.notification.title"]
+            )
+            ShortXTextField(value = state.title, onValueChange = {
                 vm.updateTitle(it)
             })
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.message"])
-            ShortXTextField(value = state.data.message, onValueChange = {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.post.notification.message"]
+            )
+            ShortXTextField(value = state.message, onValueChange = {
                 vm.updateMessage(it)
             })
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.small.icon"])
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.post.notification.small.icon"]
+            )
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateSmallIcon(it)
             }
@@ -182,13 +162,16 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
             TextButton(onClick = {
                 iconSelector.show()
             }) {
-                RemixIcon(state.data.smallIcon)
+                RemixIcon(state.smallIcon)
             }
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),LocalI18N.current["ui.action.post.notification.large.icon"])
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                LocalI18N.current["ui.action.post.notification.large.icon"]
+            )
             val iconSelector = rememberMDIconSelectorState {
                 vm.updateLargeIcon(it)
             }
@@ -196,36 +179,122 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
             TextButton(onClick = {
                 iconSelector.show()
             }) {
-                if (state.data.largeIcon.isNotEmpty()) {
-                    RemixIcon(state.data.largeIcon)
+                if (state.largeIcon.isNotEmpty()) {
+                    RemixIcon(state.largeIcon)
                 }
             }
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.important"])
-            ShortXSwitch(checked = state.data.isImportant, onCheckedChange = {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.post.notification.important"]
+            )
+            ShortXSwitch(checked = state.isImportant, onCheckedChange = {
                 vm.setImportant(it)
             })
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.sound"])
-            ShortXSwitch(checked = state.data.sound, onCheckedChange = {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.post.notification.sound"]
+            )
+            ShortXSwitch(checked = state.sound, onCheckedChange = {
                 vm.setSound(it)
             })
         }
 
         StandardSpacer()
         Column(verticalArrangement = Arrangement.Center) {
-            SmallTitle(modifier = Modifier.padding(vertical = 12.dp),text = LocalI18N.current["ui.action.post.notification.vibrate"])
-            ShortXSwitch(checked = state.data.vibrate, onCheckedChange = {
+            SmallTitle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = LocalI18N.current["ui.action.post.notification.vibrate"]
+            )
+            ShortXSwitch(checked = state.vibrate, onCheckedChange = {
                 vm.setVibrate(it)
             })
         }
 
+        StandardSpacer()
+
+        FieldTitle(text = LocalI18N.current["ui.action.post.notification.button"])
+        MediumSpacer()
+        Column {
+            state.buttonAndHandlers.forEachIndexed { index, button ->
+                ButtonListItem(index, button, vm)
+            }
+            StandardSpacer()
+            // Add icon
+            Button(
+                modifier = Modifier.fillMaxSize(),
+                onClick = {
+                    vm.newButton()
+                }) {
+                Text(text = LocalI18N.current["ui.action.show.add.button"])
+            }
+        }
+
+
         SuggestedNavEntry()
+    }
+}
+
+
+@Composable
+private fun ButtonListItem(
+    index: Int,
+    buttonAndHandler: NotificationButtonAndHandler,
+    vm: PostNotificationSelectorViewModel,
+) {
+    ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MediumTitle(
+                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                        "index" to "${index + 1}"
+                    )]
+                )
+                IconButton(onClick = {
+                    vm.removeButton(index)
+                }) {
+                    RemixIcon(remixName = Remix.System.close_line)
+                }
+            }
+
+            StandardSpacer()
+
+            Column(verticalArrangement = Arrangement.Center) {
+                SmallTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    LocalI18N.current["ui.action.post.notification.button.text"]
+                )
+                ShortXTextField(value = buttonAndHandler.label, onValueChange = {
+                    vm.updateLabel(index, it)
+                })
+            }
+            StandardSpacer()
+
+            val actionState by buttonAndHandler.handler.state.collectAsState()
+
+            tornaco.apps.shortx.ui.addrule.action.ActionContent(
+                header = {
+                    SmallTitle(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        text = LocalI18N.current["ui.actions.single.click.title"]
+                    )
+                },
+                actions = actionState.actions,
+                warnings = actionState.actionWarningMessages,
+                handler = buttonAndHandler.handler.asActionHandler()
+            )
+        }
     }
 }

@@ -80,6 +80,12 @@ subprojects {
                 }
             }
 
+            buildTypes {
+                create("profile") {
+                    initWith(getByName("debug"))
+                }
+            }
+
             lint {
                 abortOnError = true
                 checkReleaseBuilds = false

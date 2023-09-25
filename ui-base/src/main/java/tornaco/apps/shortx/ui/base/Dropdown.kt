@@ -53,7 +53,7 @@ fun rememberDropdownSelectorState(): DropdownSelectorState {
 
 @Composable
 fun <T> DropdownSelector(
-    widthFraction: Float = 0.8f,
+    widthFraction: Float = 0.76f,
     state: DropdownSelectorState = rememberDropdownSelectorState(),
     items: List<DropdownItem<T>>,
     onSelect: (DropdownItem<T>) -> Unit,

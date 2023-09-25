@@ -42,13 +42,23 @@ object SetWallpaper : Actor {
         val tmpFile = File(Dirs.baseServerCacheDir(), "wallpaper.png")
         tmpFile.parentFile.mkdir()
 
-        requireNotNull(shortXContext.shell.executeCommand("cp $realUrl $tmpFile")) { "Copy file fail - Shell res is null" }
+        requireNotNull(
+            shortXContext.shell.executeCommand(
+                "cp $realUrl $tmpFile",
+                false
+            )
+        ) { "Copy file fail - Shell res is null" }
             .also {
                 require(it.code == 0) { "Copy file fail: $it" }
             }
 
         val changeOwner = "chown system:system ${tmpFile.absolutePath}"
-        requireNotNull(shortXContext.shell.executeCommand(changeOwner)) { "chown file fail." }
+        requireNotNull(
+            shortXContext.shell.executeCommand(
+                changeOwner,
+                false
+            )
+        ) { "chown file fail." }
             .also {
                 require(it.code == 0) { "chown file fail." }
             }

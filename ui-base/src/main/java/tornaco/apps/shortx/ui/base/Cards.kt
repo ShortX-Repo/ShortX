@@ -51,7 +51,7 @@ fun ShortXCard(
     content: @Composable () -> Unit
 ) {
     Card(
-        modifier = modifier.animateContentSize(),
+        modifier = modifier,
         backgroundColor = ColorDefaults.backgroundSurfaceColor(),
         shape = shape,
         elevation = 0.dp,
@@ -80,7 +80,7 @@ fun WarningCard(
     content: @Composable () -> Unit
 ) {
     Card(
-        modifier = modifier.animateContentSize(),
+        modifier = modifier,
         backgroundColor = WarningYellow,
         shape = shape,
         elevation = 0.dp,
@@ -206,8 +206,7 @@ fun ClickAnimateContainer(state: ClickAnimateState, content: @Composable (Modifi
 
     Box(
         modifier = Modifier
-            .scale(scalePercent)
-            .animateContentSize(),
+            .scale(scalePercent),
     ) {
         Box {
             val modifier = Modifier.onSizeChanged {

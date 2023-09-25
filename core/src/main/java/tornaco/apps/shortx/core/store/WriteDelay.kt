@@ -1,3 +1,3 @@
 package tornaco.apps.shortx.core.store
 
-const val WRITE_DELAY = 3000L
+const val WRITE_DELAY = 300L

@@ -56,6 +56,10 @@ class NotificationService(shortXContext: ShortXContext) :
 
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
 
+    override fun systemReady() {
+        super.systemReady()
+    }
+
     fun AppPkg.hasNotification() = hasNotification(NMSFuncs.getActiveNotifications(nms))
 
     fun AppPkg.hasNotification(allN: List<Notification>) = allN.any { notification ->

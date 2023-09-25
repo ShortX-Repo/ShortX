@@ -18,9 +18,11 @@ import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -124,8 +126,21 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     SetWallpaperSelectorDialog(state = wallpaperFileSelectorState)
 
+    val clickTileSelectorState = rememberQSTileSelectorState(
+        title = LocalI18N.current["ui.action.click.tile"],
+        onSelected = {
+            addAction(Action.ClickTile(tile = it, isLongClick = false))
+        }
+    )
+    QSTileSelectorDialog(state = clickTileSelectorState)
+
     return { source ->
         when (source.clazz) {
+            Action.ClickTile::class -> {
+                clickTileSelectorState.show()
+                true
+            }
+
             Action.WakeupScreen::class -> {
                 addAction(Action.WakeupScreen())
                 true
@@ -266,6 +281,7 @@ fun SystemActions(
         OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
+        Action.ClickTile::class,
     ).map {
         SelectorItem(
             type = it,

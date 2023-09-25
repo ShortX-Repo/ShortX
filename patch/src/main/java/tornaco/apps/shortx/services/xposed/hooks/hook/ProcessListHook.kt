@@ -5,6 +5,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import tornaco.apps.shortx.core.platform.Classes.amsClass
 import tornaco.apps.shortx.core.platform.Classes.processListClass
+import tornaco.apps.shortx.core.platform.Methods.handleProcessStartedLocked
 import tornaco.apps.shortx.core.platform.Methods.removeLruProcessLocked
 import tornaco.apps.shortx.core.proto.common.ProcessRecord
 import tornaco.apps.shortx.core.toAppPkg
@@ -17,18 +18,43 @@ import util.ReflectionsExt
 object ProcessListHook {
     private val logger = Logger("ShortXHook.ProcessListHook")
 
-    fun hookProcessList(lpparam: XC_LoadPackage.LoadPackageParam) = kotlin.runCatching {
-        if (OsUtils.isQOrAbove()) {
-            afterMethod(lpparam.classLoader.processListClass(), removeLruProcessLocked) {
-                handleRemoveLruProcessLocked(it)
+    fun hookProcessListRemoveProcess(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            if (OsUtils.isQOrAbove()) {
+                afterMethod(lpparam.classLoader.processListClass(), removeLruProcessLocked) {
+                    handleRemoveLruProcessLocked(it)
+                }
+            } else {
+                afterMethod(lpparam.classLoader.amsClass(), removeLruProcessLocked) {
+                    handleRemoveLruProcessLocked(it)
+                }
             }
-        } else {
-            afterMethod(lpparam.classLoader.amsClass(), removeLruProcessLocked) {
-                handleRemoveLruProcessLocked(it)
-            }
+        }.getOrElse {
+            logger.e(it, "hookProcessList")
         }
-    }.getOrElse {
-        logger.e(it, "hookProcessList")
+
+    fun hookProcessListOnProcessStarted(lpparam: XC_LoadPackage.LoadPackageParam) =
+        kotlin.runCatching {
+            if (OsUtils.isQOrAbove()) {
+                val method = ReflectionsExt.findMethodWithMostArgs(
+                    lpparam.classLoader.processListClass(),
+                    handleProcessStartedLocked
+                )
+                logger.i("hookProcessListOnProcessStarted, method: $method")
+                afterMethod(method) {
+                    handleProcessStartedLocked(it)
+                }
+            } else {
+                // TODO
+            }
+        }.getOrElse {
+            logger.e(it, "hookProcessListOnProcessStarted")
+        }
+
+    private fun handleProcessStartedLocked(param: XC_MethodHook.MethodHookParam) {
+        // boolean handleProcessStartedLocked(ProcessRecord app, int pid, boolean usingWrapper, long expectedStartSeq, boolean procAttached)
+        val record = param.args[0].toProcessRecord()
+        ShortXService.shortXContext.appState.onProcessStarted(record)
     }
 
     private fun handleRemoveLruProcessLocked(param: XC_MethodHook.MethodHookParam) {

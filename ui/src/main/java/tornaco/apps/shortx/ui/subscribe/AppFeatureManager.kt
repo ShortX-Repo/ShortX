@@ -17,16 +17,29 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
+import tornaco.apps.shortx.ui.base.DisposableEffectWithLifeCycle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXBottomSheet
 import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
+import tornaco.apps.shortx.ui.composeLogger
 import kotlin.reflect.KClass
 
 @Composable
 fun FeatureAccessDialog(state: ShortXBottomSheetState) {
     ShortXBottomSheet(state = state) {
+        DisposableEffectWithLifeCycle(
+            onResume = {
+                composeLogger.d("FeatureAccessDialog onResume")
+                if (LVLStateHolder.container.stateFlow.value.isSubscribed) {
+                    state.dismiss()
+                }
+            },
+            onPause = {
+                composeLogger.d("FeatureAccessDialog onPause")
+            }
+        )
         SubscriptionIntro()
     }
 }
@@ -108,6 +121,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.TTS::class,
     Action.FindAndClickViewById::class,
     Action.FindAndClickMatchedView::class,
+    Action.ClickTile::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

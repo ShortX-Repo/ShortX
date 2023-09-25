@@ -91,4 +91,44 @@ class UIService(shortXContext: ShortXContext) : SystemService(shortXContext, "UI
             logger.d("tileList: ${tileList.tileList.joinToString { it.label }}")
         }
     }
+
+    fun getAllQSTiles(): QSTileList {
+        val itemCount = qsTileHost.registeredCallbackCount
+        if (itemCount == 0) {
+            logger.d("getAllQSTiles, no registered qsTileHost.")
+            return QSTileList.getDefaultInstance()
+        }
+        val first = qsTileHost.getRegisteredCallbackItem(0)
+        val receiver = SynchronousResultReceiver.get()
+        first.getTiles(receiver)
+        val result = receiver.awaitResultNoInterrupt(Duration.ofSeconds(5))
+        val list = runCatching {
+            QSTileList.parseFrom(result.getValue(emptyByteArrayWrapper).byteData)
+        }.getOrElse {
+            logger.e(it, "getAllQSTiles")
+            QSTileList.getDefaultInstance()
+        }
+        logger.d("getAllQSTiles, return: ${list.tileList.map { it.tileSpec }}")
+        return list
+    }
+
+    fun clickTile(tileSpec: String) {
+        val itemCount = qsTileHost.registeredCallbackCount
+        if (itemCount == 0) {
+            throw Error("no registered qsTileHost")
+        }
+        logger.d("ClickTile: $tileSpec")
+        val first = qsTileHost.getRegisteredCallbackItem(0)
+        first.click(tileSpec)
+    }
+
+    fun longClickTile(tileSpec: String) {
+        val itemCount = qsTileHost.registeredCallbackCount
+        if (itemCount == 0) {
+            throw Error("no registered qsTileHost")
+        }
+        logger.d("longClickTile: $tileSpec")
+        val first = qsTileHost.getRegisteredCallbackItem(0)
+        first.longClick(tileSpec)
+    }
 }

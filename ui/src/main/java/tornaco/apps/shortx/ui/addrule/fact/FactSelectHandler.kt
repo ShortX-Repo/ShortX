@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.ui.addrule.fact
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.ui.addrule.action.selector.ProcessListSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberProcessListSelectorState
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
@@ -136,8 +138,19 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     })
     HasFoundNodeOnScreenDialog(state = hasNodeOnScreenState)
 
+    val appProcessStartedSelectorState = rememberProcessListSelectorState(onSelected = {
+        setFact(Fact.AppProcessStarted(processNames = it))
+    })
+    ProcessListSelectorDialog(state = appProcessStartedSelectorState)
+
+
     return { source ->
         when (source.clazz) {
+            Fact.AppProcessStarted::class -> {
+                appProcessStartedSelectorState.show(source.getFactAs<Fact.AppProcessStarted>()?.processNames)
+                true
+            }
+
             Fact.ActivityStarted::class -> {
                 activityStartSingleAppSelectorState.show()
                 true

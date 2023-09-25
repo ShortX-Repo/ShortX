@@ -29,6 +29,7 @@ import kotlin.reflect.KClass
 
 fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair<String, String?> {
     return when (fact) {
+        Fact.AppProcessStarted::class -> i18n["ui.fact.process.started"] to null
         Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.specific"]
         Fact.AnyActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.any"]
         Fact.EdgeGesture::class -> i18n["ui.fact.edge.gesture"] to null
@@ -227,6 +228,10 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.AnyActivityStarted -> listOf(
             i18N["ui.fact.activity.started"],
             i18N["ui.fact.activity.started.any"]
+        )
+
+        is Fact.AppProcessStarted -> listOf(
+            i18N["ui.fact.process.started"],
         )
 
         is Fact.EdgeGesture -> listOf(

@@ -73,7 +73,9 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note, command = data.command
+                note = data.note,
+                command = data.command,
+                singleShot = data.singleShot
             )
         }
 
@@ -827,7 +829,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 smallIcon = data.smallIcon,
                 vibrate = data.vibrate,
                 sound = data.sound,
-                isImportant = data.isImportant
+                isImportant = data.isImportant,
+                buttons = data.buttonList
             )
         }
 
@@ -1386,6 +1389,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 enableRule = data.isEnable,
                 ruleId = data.ruleId,
                 ruleLabel = shortXManager.getRuleById(data.ruleId)?.title ?: "N/A"
+            )
+        }
+
+        this is_ tornaco.apps.shortx.core.proto.action.ClickTile::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.ClickTile::class.java
+            Action.ClickTile(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                tile = data.tile,
+                isLongClick = data.isLongClick
             )
         }
 

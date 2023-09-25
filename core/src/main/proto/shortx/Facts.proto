@@ -521,3 +521,11 @@ message NodeMatcherText {
   string text = 1;
   bool isRegex = 2;
 }
+
+message AppProcessStarted {
+  repeated ProcessName processName = 1;
+
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}

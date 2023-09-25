@@ -258,7 +258,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                         engine.fire(
                             fact = fact,
                             rules = enabledRules,
-                            initialContextData = emptyMap()
+                            initialContextDataLazy = { emptyMap() }
                         )
                     }
                 }
@@ -278,7 +278,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     engine.fire(
                         fact = fact,
                         rules = enabledRules,
-                        initialContextData = emptyMap()
+                        initialContextDataLazy = { emptyMap() }
                     )
                 }
                 return@onGestureEvent true
@@ -304,6 +304,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         return engine.shouldFire(rules, fact)
     }
 
+    @Deprecated("use publishFact with initialContextDataLazy")
     fun publishFact(
         reason: String,
         fact: ProtoMessage,
@@ -315,7 +316,27 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             val anyMatch = engine.fire(
                 fact = fact,
                 rules = getAllEnabledRules(),
-                initialContextData = initialContextData
+                initialContextDataLazy = { initialContextData }
+            )
+
+            if (anyMatch && isEvaluateRecordEnabled()) {
+                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
+            }
+        }
+    }
+
+    fun publishFact(
+        reason: String,
+        fact: ProtoMessage,
+        initialContextDataLazy: () -> Map<String, Any>
+    ) {
+        val publishTimeMillis = System.currentTimeMillis()
+        handler.postSafety {
+            logger.i("publishFact, ${fact::class.java}: $reason")
+            val anyMatch = engine.fire(
+                fact = fact,
+                rules = getAllEnabledRules(),
+                initialContextDataLazy = initialContextDataLazy
             )
 
             if (anyMatch && isEvaluateRecordEnabled()) {

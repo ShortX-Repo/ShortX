@@ -29,7 +29,10 @@ object Methods {
     const val registerRemovedByApp = "registerRemovedByApp"
     const val registerDismissedByUser = "registerDismissedByUser"
     const val cleanUpRemovedTaskLocked = "cleanUpRemovedTaskLocked"
+    // Android 14
+    const val cleanUpRemovedTask = "cleanUpRemovedTask"
     const val removeLruProcessLocked = "removeLruProcessLocked"
+    const val handleProcessStartedLocked = "handleProcessStartedLocked"
     const val activityResumed = "activityResumed"
     const val activityResumedLocked = "activityResumedLocked"
     const val activityStopped = "activityStopped"
@@ -39,6 +42,7 @@ object Methods {
     const val onMediaStoreDelete = "onMediaStoreDelete"
     const val interceptKeyBeforeQueueing = "interceptKeyBeforeQueueing"
     const val onCreate = "onCreate"
+    const val updateScreenStateLocked = "updateScreenStateLocked"
 }
 
 object ClassNames {

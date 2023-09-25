@@ -36,7 +36,10 @@ abstract class SystemService(val shortXContext: ShortXContext, private val servi
         private set
 
     val store: SettingsStore by lazy {
-        SettingsStore(serviceName, systemServiceScope)
+        require(isStarted) {
+            "Access to Store before isStarted!"
+        }
+        SettingsStore(context, serviceName, systemServiceScope)
     }
 
     @CallSuper

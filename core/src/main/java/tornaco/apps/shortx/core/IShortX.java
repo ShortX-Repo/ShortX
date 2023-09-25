@@ -523,6 +523,21 @@ public interface IShortX extends android.os.IInterface
     @Override public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException
     {
     }
+    // QSTileList
+
+    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException
+    {
+      return null;
+    }
+    // Swipe gesture.
+
+    @Override public int getSwipeDistanceThresholdDp() throws android.os.RemoteException
+    {
+      return 0;
+    }
+    @Override public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2058,6 +2073,37 @@ public interface IShortX extends android.os.IInterface
           tornaco.apps.shortx.core.systemui.IQSTileHost _arg0;
           _arg0 = tornaco.apps.shortx.core.systemui.IQSTileHost.Stub.asInterface(data.readStrongBinder());
           this.attachQSTileHost(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getAllQSTiles:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getAllQSTiles();
+          reply.writeNoException();
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
+        }
+        case TRANSACTION_getSwipeDistanceThresholdDp:
+        {
+          data.enforceInterface(descriptor);
+          int _result = this.getSwipeDistanceThresholdDp();
+          reply.writeNoException();
+          reply.writeInt(_result);
+          return true;
+        }
+        case TRANSACTION_setSwipeDistanceThresholdDp:
+        {
+          data.enforceInterface(descriptor);
+          int _arg0;
+          _arg0 = data.readInt();
+          this.setSwipeDistanceThresholdDp(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -5061,6 +5107,74 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // QSTileList
+
+      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getAllQSTiles, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllQSTiles();
+          }
+          _reply.readException();
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      // Swipe gesture.
+
+      @Override public int getSwipeDistanceThresholdDp() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        int _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getSwipeDistanceThresholdDp, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getSwipeDistanceThresholdDp();
+          }
+          _reply.readException();
+          _result = _reply.readInt();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
+      @Override public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(dp);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setSwipeDistanceThresholdDp, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setSwipeDistanceThresholdDp(dp);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5197,6 +5311,9 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getAllDASets = (android.os.IBinder.FIRST_CALL_TRANSACTION + 131);
     static final int TRANSACTION_testFATALError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 132);
     static final int TRANSACTION_attachQSTileHost = (android.os.IBinder.FIRST_CALL_TRANSACTION + 133);
+    static final int TRANSACTION_getAllQSTiles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 134);
+    static final int TRANSACTION_getSwipeDistanceThresholdDp = (android.os.IBinder.FIRST_CALL_TRANSACTION + 135);
+    static final int TRANSACTION_setSwipeDistanceThresholdDp = (android.os.IBinder.FIRST_CALL_TRANSACTION + 136);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5400,4 +5517,11 @@ public interface IShortX extends android.os.IInterface
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllDASets(boolean withDAs) throws android.os.RemoteException;
   public void testFATALError() throws android.os.RemoteException;
   public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException;
+  // QSTileList
+
+  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException;
+  // Swipe gesture.
+
+  public int getSwipeDistanceThresholdDp() throws android.os.RemoteException;
+  public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException;
 }

@@ -335,16 +335,21 @@ fun TipDialog(state: TipDialogState) {
 
 class ErrorMessageDialogState(
     val title: String,
-    val message: String,
-) : CommonDialogState()
+) : CommonDialogState() {
+    var message by mutableStateOf("")
+
+    fun show(message: String) {
+        this.message = message
+        super.show()
+    }
+}
 
 @Composable
 fun rememberErrorMessageDialogState(
-    title: String,
-    message: String,
+    title: String
 ): ErrorMessageDialogState {
     return remember {
-        ErrorMessageDialogState(title, message)
+        ErrorMessageDialogState(title)
     }
 }
 

@@ -60,7 +60,7 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 data class Code(val src: String, val note: String)
 
-class CodeEditorState(
+open class CodeEditorState(
     val title: String,
     val message: String?,
     val guideTextAndLink: Pair<String, String>?,
@@ -116,8 +116,13 @@ fun CodeEditorDialog(state: CodeEditorState) {
 }
 
 @Composable
-private fun CodeEditor(
-    state: CodeEditorState
+fun CodeEditor(
+    state: CodeEditorState,
+    onSave: () -> Unit = {
+        state.onSelected(Code(src = state.currentText, note = state.note))
+        state.dismiss()
+    },
+    headerContent: @Composable () -> Unit = {}
 ) {
     val outputDialogState = rememberOutputDialogState(title = state.title)
     OutputDialog(state = outputDialogState)
@@ -172,8 +177,7 @@ private fun CodeEditor(
                         }
 
                         IconButton(onClick = {
-                            state.onSelected(Code(src = state.currentText, note = state.note))
-                            state.dismiss()
+                            onSave()
                         }) {
                             Icon(imageVector = Icons.Outlined.Check, contentDescription = "Done")
                         }
@@ -187,7 +191,11 @@ private fun CodeEditor(
                         .verticalScroll(rememberScrollState()),
                 ) {
                     state.message?.let {
-                        WarningCard {
+                        WarningCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -198,6 +206,9 @@ private fun CodeEditor(
                             }
                         }
                     }
+
+                    headerContent()
+
                     val isDarkTheme = isSystemInDarkTheme()
                     AndroidView(modifier = Modifier
                         .fillMaxSize()

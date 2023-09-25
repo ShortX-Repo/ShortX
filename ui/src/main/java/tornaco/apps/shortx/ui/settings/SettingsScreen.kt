@@ -47,8 +47,9 @@ import tornaco.apps.shortx.core.proto.common.Author
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.select
-import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSizeValueSelector
-import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSizeValueSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSettings
+import tornaco.apps.shortx.ui.addrule.fact.selector.EdgeGestureSettingsSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberEdgeGestureSettingsSelectorState
 import tornaco.apps.shortx.ui.backup.autoGenBackupFileName
 import tornaco.apps.shortx.ui.base.AppIcon
 import tornaco.apps.shortx.ui.base.ConfirmDialog
@@ -345,10 +346,11 @@ private fun generalSettings(
     goToGV: () -> Unit,
     goToDanmuUISettings: () -> Unit,
 ): List<Preference> {
-    val edgeGestureSizeSelectorState = rememberEdgeGestureSizeValueSelectorState(selected = {
-        vm.setGestureAreaSize(it)
+    val edgeGestureSizeSelectorState = rememberEdgeGestureSettingsSelectorState(selected = {
+        vm.setGestureAreaSize(it.areaSize)
+        vm.setSwipeDistanceThresold(it.swipeDistanceThreshold)
     })
-    EdgeGestureSizeValueSelector(state = edgeGestureSizeSelectorState)
+    EdgeGestureSettingsSelector(state = edgeGestureSizeSelectorState)
     val badge = if (mainState.isSubscribed) {
         null
     } else LocalI18N.current["ui.subscription.subscribed.only"]
@@ -387,10 +389,15 @@ private fun generalSettings(
 
 
         Preference.TextPreference(icon = Remix.Editor.sketching,
-            title = LocalI18N.current["ui.settings.edge.gesture.size"],
-            summary = LocalI18N.current["ui.settings.edge.gesture.size.summary"],
+            title = LocalI18N.current["ui.settings.edge.gesture"],
+            summary = LocalI18N.current["ui.settings.edge.gesture.summary"],
             onClick = {
-                edgeGestureSizeSelectorState.show(state.gestureAreaSize)
+                edgeGestureSizeSelectorState.show(
+                    EdgeGestureSettings(
+                        state.gestureAreaSize,
+                        state.swipeDistanceThreshold
+                    )
+                )
             }
         ),
     )
@@ -782,7 +789,8 @@ private fun aboutSettings(
                     } else {
                         LocalI18N.current["ui.settings.core.info.na"]
                     },
-                    onClick = {}
+                    onClick = {
+                    }
                 )
             ),
         ),

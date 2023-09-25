@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
+import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.action.WriteGlobalVarOp
 import tornaco.apps.shortx.core.proto.common.ActionOnError
@@ -19,6 +20,7 @@ import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.proto.common.ProcessName
+import tornaco.apps.shortx.core.proto.common.QSTile
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TextFieldProp
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
@@ -26,7 +28,6 @@ import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.gv.LocalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
-import tornaco.apps.shortx.core.proto.settings.OverlayOrientation
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -90,7 +91,9 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = dats<ContextDataMapping.ShellCommand>(
             customContextDataKey
         ),
-        override val note: String = "", val command: String
+        override val note: String = "",
+        val command: String,
+        val singleShot: Boolean
     ) : Action {
         override fun clone(
             id: String,
@@ -637,6 +640,7 @@ sealed interface Action : Parcelable {
         val isImportant: Boolean,
         val vibrate: Boolean,
         val sound: Boolean,
+        val buttons: List<NotificationButton>
     ) : Action {
         override fun clone(
             id: String,
@@ -2985,6 +2989,35 @@ sealed interface Action : Parcelable {
         val ruleId: String,
         val enableRule: Boolean,
         val ruleLabel: String
+    ) : Action {
+        override fun clone(
+            id: String,
+            note: String,
+            isEnabled: Boolean,
+            actionOnError: ActionOnError,
+            contextData: List<ContextData>
+        ): Action {
+            return this.copy(
+                id = id,
+                note = note,
+                isEnabled = isEnabled,
+                actionOnError = actionOnError,
+                contextData = contextData
+            )
+        }
+    }
+
+    @Parcelize
+    data class ClickTile(
+        override val id: String = defaultNewActionId(),
+        override val isEnabled: Boolean = true,
+        override val actionOnError: ActionOnError = defaultActionOnError,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val contextData: List<ContextData> = emptyList(),
+        override val note: String = "",
+
+        val tile: QSTile,
+        val isLongClick: Boolean
     ) : Action {
         override fun clone(
             id: String,

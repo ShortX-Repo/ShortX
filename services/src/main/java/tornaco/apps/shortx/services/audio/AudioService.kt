@@ -95,6 +95,7 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         } else {
             outputFile
         }
+        checkedFile.parentFile.mkdirs()
         logger.p("startRecordingMic, checkedFile: $checkedFile")
 
         val recorder = OmRecorder.wav(

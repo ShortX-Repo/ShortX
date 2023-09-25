@@ -11,6 +11,8 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.http.rememberHttpRequestDialogState
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -26,15 +28,21 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
     val shellCommandSelectorState =
-        rememberCodeEditorState(title = LocalI18N.current["ui.action.shell"],
+        rememberShellCommandCodeEditorState(title = LocalI18N.current["ui.action.shell"],
             message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
             execute = {
                 shortXManager.executeShellCommand(it).shellResToString()
             },
-            onSelected = {
-                addAction(Action.ShellCommand(command = it.src, note = it.note))
+            onSelected = { code, single ->
+                addAction(
+                    Action.ShellCommand(
+                        command = code.src,
+                        note = code.note,
+                        singleShot = single
+                    )
+                )
             })
-    CodeEditorDialog(state = shellCommandSelectorState)
+    ShellCommandCodeEditorDialog(state = shellCommandSelectorState)
 
     val inputTextSelectorState = rememberTextInputState(
         title = LocalI18N.current["ui.action.input.text"],
@@ -115,7 +123,10 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
-                shellCommandSelectorState.show(source.getActionAs<Action.ShellCommand>()?.command)
+                shellCommandSelectorState.show(
+                    source.getActionAs<Action.ShellCommand>()?.command,
+                    source.getActionAs<Action.ShellCommand>()?.singleShot ?: false
+                )
                 true
             }
 
