@@ -78,7 +78,7 @@ class ActionEvaluatorImpl(
             )
             ActionEvaluator.EvaluateResult.Success(action, evaluateContext)
         }.getOrElse { throwable ->
-            if (throwable is StopExecuteException) {
+            if (throwable is BreakActionException) {
                 ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
             } else {
                 val isCanceledError = throwable is CancellationException
