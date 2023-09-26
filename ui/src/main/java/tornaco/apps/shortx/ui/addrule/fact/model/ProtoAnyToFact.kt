@@ -14,6 +14,15 @@ import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
     return when {
+        this is_ tornaco.apps.shortx.core.proto.fact.AnyFact::class.java -> {
+            val data = this unpack_ tornaco.apps.shortx.core.proto.fact.AnyFact::class.java
+            Fact.AnyFact(
+                id = data.id,
+                customContextDataKey = data.customContextDataKey,
+                note = data.note
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.fact.KeyEvent::class.java
             Fact.KeyEvent(

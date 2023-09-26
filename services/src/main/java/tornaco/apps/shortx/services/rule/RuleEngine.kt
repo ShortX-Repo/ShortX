@@ -28,7 +28,7 @@ object RuleEngineFactory {
         conditionEvaluator
     )
 
-    private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl(shortXContext)
+    private fun newFactMatcher(shortXContext: ShortXContext) = FactMatcherImpl { shortXContext }
 
     fun newRuleEngine(
         shortXContext: ShortXContext,

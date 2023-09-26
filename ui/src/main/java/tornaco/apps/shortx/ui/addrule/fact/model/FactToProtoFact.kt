@@ -5,6 +5,7 @@ import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
@@ -65,6 +66,10 @@ import tornaco.apps.shortx.core.rule.pack_
 
 fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
     return when (this) {
+        is Fact.AnyFact -> {
+            AnyFact.newBuilder().build()
+        }
+
         is Fact.KeyEvent -> {
             KeyEvent.newBuilder().setKeyCode(keyCode).setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey).build()

@@ -29,6 +29,7 @@ import kotlin.reflect.KClass
 
 fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair<String, String?> {
     return when (fact) {
+        Fact.AnyFact::class -> "Any(For dev)" to null
         Fact.AppProcessStarted::class -> i18n["ui.fact.process.started"] to null
         Fact.ActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.specific"]
         Fact.AnyActivityStarted::class -> i18n["ui.fact.activity.started"] to i18n["ui.fact.activity.started.any"]
@@ -217,6 +218,7 @@ fun labelForFact(fact: Fact): List<String> {
 
 fun labelForFact(i18N: I18N, fact: Fact): List<String> {
     return when (fact) {
+        is Fact.AnyFact -> listOf("Any(For dev)")
         is Fact.ActivityStarted -> mutableListOf(i18N["ui.fact.activity.started"]).apply {
             addAll(fact.components.map {
                 "${

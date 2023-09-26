@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.fact.AnyFact
 import tornaco.apps.shortx.core.proto.fact.AppAdded
 import tornaco.apps.shortx.core.proto.fact.AppBecomeBg
 import tornaco.apps.shortx.core.proto.fact.AppBecomeFg
@@ -73,7 +74,7 @@ internal class Matcher(
 
 private val logger = Logger("FactMatcher")
 
-class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
+class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatcher {
     private val factValueMatchers: MutableMap<Class<*>, Matcher> =
         mutableMapOf()
 
@@ -457,7 +458,12 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
     }
 
     override fun match(actualFact: ProtoMessage, ruleFacts: List<ProtoAny>): Boolean {
-        return ruleFacts.any { match(actualFact, it) }
+        return ruleFacts.any { it is_ AnyFact::class.java } || ruleFacts.any {
+            match(
+                actualFact,
+                it
+            )
+        }
     }
 
     private fun match(actualFact: ProtoMessage, ruleFact: ProtoAny): Boolean {
@@ -498,7 +504,7 @@ class FactMatcherImpl(private val shortXContext: ShortXContext) : FactMatcher {
         }
 
         val pkgListRule = rule.pkgSetList.flatMap { label ->
-            shortXContext.pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
+            shortXContext().pkgSet.getPkgSetByLabel(label)?.appPkgsList ?: emptyList()
         } + rule.appList
         logger.d("matchWithAppOrPkgSetListFact, pkgListActual: ${pkgListActual.map { it.appPkgToString() }}, pkgListRule: ${pkgListRule.map { it.appPkgToString() }}")
         return pkgListRule.isNotEmpty() && pkgListRule.containsAll(pkgListActual)

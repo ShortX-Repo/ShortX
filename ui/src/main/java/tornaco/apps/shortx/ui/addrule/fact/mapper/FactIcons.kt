@@ -7,6 +7,7 @@ import kotlin.reflect.KClass
 
 fun imageVectorForFact(fact: KClass<out Fact>): String {
     return when (fact) {
+        Fact.AnyFact::class -> Remix.Logos.blender_fill
         Fact.AppProcessStarted::class -> Remix.Logos.android_fill
         Fact.ActivityStarted::class -> Remix.Logos.android_fill
         Fact.AnyActivityStarted::class -> Remix.Logos.android_fill

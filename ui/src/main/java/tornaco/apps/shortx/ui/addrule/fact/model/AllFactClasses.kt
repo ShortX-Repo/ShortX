@@ -77,4 +77,6 @@ val allFactClasses = listOf(
 
     Fact.HasFoundNodeOnScreen::class,
     Fact.AppProcessStarted::class,
+
+    Fact.AnyFact::class,
 )

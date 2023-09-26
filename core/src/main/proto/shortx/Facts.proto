@@ -7,6 +7,12 @@ option java_multiple_files = true;
 import "shortx/Common.proto";
 import "google/protobuf/any.proto";
 
+message AnyFact {
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message KeyEvent {
   int32 keyCode = 1;
 

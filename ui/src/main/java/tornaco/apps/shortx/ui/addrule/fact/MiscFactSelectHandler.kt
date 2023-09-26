@@ -32,6 +32,11 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
 
     return { source ->
         when (source.clazz) {
+            Fact.AnyFact::class -> {
+                addFact(Fact.AnyFact())
+                true
+            }
+
             Fact.OnQSTileClick::class -> {
                 qsTileSelectState.launch(TileSettingsActivity.intent(context, true))
                 true

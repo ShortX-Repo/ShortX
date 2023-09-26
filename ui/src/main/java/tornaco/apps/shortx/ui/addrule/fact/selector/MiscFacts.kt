@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.fact.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.fact.FactSelectSource
@@ -17,10 +18,14 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 @Composable
 fun MiscFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: (Fact) -> Unit) {
     val i18N = LocalI18N.current
-    val items = listOf(
+    val items = mutableListOf(
         Fact.OnQSTileClick::class,
         Fact.GlobalVarChanged::class,
-    ).map {
+    ).apply {
+        onDebugBuild {
+            add(Fact.AnyFact::class)
+        }
+    }.map {
         SelectorItem(
             type = it,
             labelAndDescription = labelAndDescriptionForFactSelector(i18N, it),

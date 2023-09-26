@@ -28,6 +28,20 @@ sealed interface Fact {
 
     fun clone(id: String, note: String, customContextDataKey: CustomContextDataKey): Fact
 
+    data class AnyFact(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId()
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+
     data class KeyEvent(
         val keyCode: Int,
         override val note: String = "",
