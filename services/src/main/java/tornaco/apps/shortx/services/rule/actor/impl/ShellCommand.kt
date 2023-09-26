@@ -12,7 +12,6 @@ import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
-import java.util.concurrent.CancellationException
 
 
 object ShellCommand : Actor {
@@ -31,31 +30,24 @@ object ShellCommand : Actor {
             .replaceGlobalVarValues {
                 shortXContext.rule.getAllGlobalVars()
             }
-        runCatching {
-            val res =
-                shortXContext.shell.executeCommand(command, sc.singleShot)
-            logger.d("Shell command: $command")
-            logger.d("Shell res: $res")
-            contextData.add(
-                sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellCode.name)
-                    .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellCode.name },
-                res.code
-            )
-            contextData.add(
-                sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellErr.name)
-                    .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellErr.name },
-                res.errList?.joinToString()
-            )
-            contextData.add(
-                sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellOut.name)
-                    .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellOut.name },
-                res.outList?.joinToString()
-            )
-        }.onFailure {
-            logger.i("Shell Command was cancelled.")
-            if (it is CancellationException) {
-                throw Error(it)
-            }
-        }
+        val res =
+            shortXContext.shell.executeCommand(command, sc.singleShot)
+        logger.d("Shell command: $command")
+        logger.d("Shell res: $res")
+        contextData.add(
+            sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellCode.name)
+                .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellCode.name },
+            res.code
+        )
+        contextData.add(
+            sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellErr.name)
+                .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellErr.name },
+            res.errList?.joinToString()
+        )
+        contextData.add(
+            sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellOut.name)
+                .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellOut.name },
+            res.outList?.joinToString()
+        )
     }
 }
