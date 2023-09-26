@@ -181,7 +181,7 @@ class NotificationPoster(
 
             cancelNotification(tag)
             NotificationManagerCompat.from(context)
-                .notify(NotificationIdFactory.getIdByTag(tag), n)
+                .notify(tag, NotificationIdFactory.getIdByTag(tag), n)
         }
     }
 
