@@ -431,12 +431,18 @@ message SetSensorsOffEnabled {
 }
 
 message BreakActionExecute {
-
+  BreakActionExecuteScope scope = 1;
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
   string id = 100;
+}
+
+enum BreakActionExecuteScope {
+  BreakActionExecuteScope_Current = 0;
+  BreakActionExecuteScope_Parent = 1;
+  BreakActionExecuteScope_Root = 2;
 }
 
 enum DialogAction {

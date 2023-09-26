@@ -110,7 +110,7 @@ interface ActionEvaluator {
     }
 }
 
-class StopExecuteException(override val message: String) : RuntimeException()
+class BreakActionException(override val message: String) : RuntimeException()
 
 interface Engine {
     val conditionEvaluator: ConditionEvaluator
