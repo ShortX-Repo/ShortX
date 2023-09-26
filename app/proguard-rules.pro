@@ -151,6 +151,10 @@
 -dontwarn android.view.IInputFilter$Stub
 -dontwarn android.view.IInputFilterHost
 -dontwarn android.os.ShellCommand
+-dontwarn android.view.ISystemGestureExclusionListener$Stub
+-dontwarn android.view.ISystemGestureExclusionListener
+-dontwarn android.view.IWindowManager
+-dontwarn android.view.WindowManagerGlobal
 
 # Inroduced by a lib update, not sure if it 55d1baecdbfe02c40a147d696d8a805f43906890
 -dontwarn java.beans.BeanDescriptor
