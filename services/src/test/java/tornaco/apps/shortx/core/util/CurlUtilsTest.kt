@@ -98,4 +98,14 @@ class CurlUtilsTest {
         println(request.toString())
     }
 
+ @Test
+    fun parseCurlWithApache7() {
+        val curlCommand =
+            "curl -X POST -H \"x-version:2022-11-08\" -H \"user-agent:Dart/2.17 (dart:io)\" -H \"appid:4150439554430523\" -H \"ts:1695715212296\" -H \"accept-encoding:gzip\" -H \"content-length:0\" -H \"authentication:WelGhv/lRa+j2eVSbbFkozDSo2o2Fyy/5KKGIzjS8Z1KbqLG+XxaOhEObJjpGQdwJ3QmwGMapkh1t71zZqXCZQ==\" -H \"host:116.205.235.27:8090\" -H \"content-type:application/json; charset=utf-8\" -H \"x-token:xjfjnrjcisjsnfnfr\" -d \"\" \"http://116.205.235.27:8090/app/task/sign\""
+
+        val parser = BasicCurlParser()
+        val request = parser.parse(curlCommand)
+        println(request.toString())
+    }
+
 }

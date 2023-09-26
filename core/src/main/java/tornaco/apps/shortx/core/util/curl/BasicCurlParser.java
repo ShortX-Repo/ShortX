@@ -945,6 +945,9 @@ public class BasicCurlParser {
      */
     private String getPostDataByDifferentOption(final String originalPostdata, String dataOptionName) {
         String postdata = originalPostdata;
+        if (postdata == null || postdata.length() == 0) {
+            return "";
+        }
         if ("data-urlencode".equals(dataOptionName)) {
             postdata = encodePostdata(postdata);
         } else {
