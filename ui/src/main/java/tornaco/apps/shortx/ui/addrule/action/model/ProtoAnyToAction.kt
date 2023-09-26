@@ -614,7 +614,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 isEnabled = !data.isDisabled,
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
-                id = data.id
+                id = data.id,
+                scope = data.scope
             )
         }
 

@@ -545,6 +545,7 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
+                .setScope(scope)
                 .build()
         }
 

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.mapper
 import android.content.ComponentName
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
@@ -369,7 +370,7 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.UnSuspendAppByPkg -> listOf(i18N["ui.action.unsuspend.app.by.pkg"])
 
         is Action.Brk -> {
-            listOf(i18N["ui.action.brk"])
+            listOf(i18N["ui.action.brk"], i18N[action.scope.labelKey()])
         }
 
         is Action.ShowAlertDialog -> {
@@ -805,4 +806,11 @@ fun NavType.labelKey() = when (this) {
     NavType.NavType_Car -> "ui.action.map.nav.type.car"
     NavType.NavType_Ride -> "ui.action.map.nav.type.ride"
     NavType.UNRECOGNIZED -> "UNRECOGNIZED"
+}
+
+fun BreakActionExecuteScope.labelKey() = when (this) {
+    BreakActionExecuteScope.BreakActionExecuteScope_Current -> "ui.action.brk.scope.current"
+    BreakActionExecuteScope.BreakActionExecuteScope_Parent -> "ui.action.brk.scope.parent"
+    BreakActionExecuteScope.BreakActionExecuteScope_Root -> "ui.action.brk.scope.root"
+    BreakActionExecuteScope.UNRECOGNIZED -> "UNRECOGNIZED"
 }

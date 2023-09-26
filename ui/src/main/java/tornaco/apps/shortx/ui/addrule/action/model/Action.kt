@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.IntRange
 import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.proto.action.MapApp
 import tornaco.apps.shortx.core.proto.action.NavType
@@ -1545,7 +1546,8 @@ sealed interface Action : Parcelable {
         override val actionOnError: ActionOnError = defaultActionOnError,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
-        override val note: String = ""
+        override val note: String = "",
+        val scope: BreakActionExecuteScope
     ) : Action {
         override fun clone(
             id: String,

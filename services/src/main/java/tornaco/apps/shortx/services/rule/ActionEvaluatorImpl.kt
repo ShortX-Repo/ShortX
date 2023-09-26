@@ -49,11 +49,10 @@ class ActionEvaluatorImpl(
         contextData: ContextData,
         localVars: LocalVars
     ): ActionEvaluator.EvaluateResult {
-        val actor = prebuiltActorFor(action)
-        logger.d("evaluate: ${evaluateContext.srcTitle} - ${action.typeUrl}, actor: $actor")
-        if (actor == null) {
-            return ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
+        val actor = requireNotNull(prebuiltActorFor(action)) {
+            "Can not find Actor for: ${action.typeUrl}"
         }
+        logger.d("evaluate: ${evaluateContext.srcTitle} - ${action.typeUrl}, actor: $actor")
 
         // Do not worry about unpack cost, protobuf has cache.
         val unPacked = action unpack_ actor.actionsCanHandle()
@@ -79,7 +78,7 @@ class ActionEvaluatorImpl(
             ActionEvaluator.EvaluateResult.Success(action, evaluateContext)
         }.getOrElse { throwable ->
             if (throwable is BreakActionException) {
-                ActionEvaluator.EvaluateResult.Break(action, evaluateContext)
+                ActionEvaluator.EvaluateResult.Break(action, throwable.scope, evaluateContext)
             } else {
                 val isCanceledError = throwable is CancellationException
                 if (isCanceledError) {

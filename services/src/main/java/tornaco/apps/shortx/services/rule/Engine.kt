@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.localvar.LocalVars
+import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -100,6 +101,7 @@ interface ActionEvaluator {
 
         data class Break(
             val action: ProtoAny,
+            val scope: BreakActionExecuteScope,
             override val evaluateContext: EvaluateContext
         ) : EvaluateResult
 
@@ -110,7 +112,7 @@ interface ActionEvaluator {
     }
 }
 
-class BreakActionException(override val message: String) : RuntimeException()
+class BreakActionException(override val message: String, val scope: BreakActionExecuteScope) : RuntimeException()
 
 interface Engine {
     val conditionEvaluator: ConditionEvaluator

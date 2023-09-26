@@ -40,8 +40,11 @@ object IfThenElse : Actor {
                                 return@loop
                             }
                         } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@loop
+                            val scope = evaRes.scope
+                            logger.w("evaluate break! $scope")
+                            scope.rethrowOrReturnLoop {
+                                return@loop
+                            }
                         }
                     }
                 }
@@ -61,8 +64,11 @@ object IfThenElse : Actor {
                                 return@loop
                             }
                         } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
-                            logger.w("evaluate break!")
-                            return@loop
+                            val scope = evaRes.scope
+                            logger.w("evaluate break! $scope")
+                            scope.rethrowOrReturnLoop {
+                                return@loop
+                            }
                         }
                     }
                 }

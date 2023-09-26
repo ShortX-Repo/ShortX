@@ -5,20 +5,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.rule.action.su.shellResToString
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
+import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.http.rememberHttpRequestDialogState
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MenuDialog
+import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.code.CodeEditorDialog
 import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
+import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -120,6 +125,19 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     })
     HttpRequestDialog(state = httpRequestDialogState)
 
+    val brkScopeSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.brk.scope"],
+        menuItems = BreakActionExecuteScope.values()
+            .filterNot { it == BreakActionExecuteScope.UNRECOGNIZED }.map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val scope = BreakActionExecuteScope.valueOf(id)
+            addAction(Action.Brk(scope = scope))
+        }
+    )
+    MenuDialog(state = brkScopeSelectorState)
+
     return { source ->
         when (source.clazz) {
             Action.ShellCommand::class -> {
@@ -151,7 +169,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.Brk::class -> {
-                addAction(Action.Brk())
+                brkScopeSelectorState.show(currentSelection = listOfNotNull(source.getActionAs<Action.Brk>()?.scope?.name))
                 true
             }
 
