@@ -68,6 +68,14 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val removeNotificationState = rememberTextInputState(
+        title = LocalI18N.current["ui.action.remove.notification"],
+        message = LocalI18N.current["ui.action.remove.notification.tag"],
+        onSelected = {
+            addAction(Action.RemoveNotification(tag = it))
+        })
+    TextInputDialog(state = removeNotificationState)
+
     return { source ->
         when (source.clazz) {
             Action.ShowToast::class -> {
@@ -135,6 +143,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         PostNotificationSelectorActivity::class.java
                     )
                 )
+                true
+            }
+
+            Action.RemoveNotification::class -> {
+                removeNotificationState.show(source.getActionAs<Action.RemoveNotification>()?.tag)
                 true
             }
 
@@ -218,6 +231,7 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         Action.ShowDanmu::class,
         Action.ExpandNotification::class,
         Action.PostNotification::class,
+        Action.RemoveNotification::class,
         Action.ShowOverlay::class,
         Action.HideOverlay::class,
         Action.HideAllOverlay::class,

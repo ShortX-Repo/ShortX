@@ -626,6 +626,16 @@ enum NavType {
   NavType_Ride = 1;
 }
 
+message RemoveNotification {
+  string tag = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message PostNotification {
   string tag = 1;
   string  title = 2;

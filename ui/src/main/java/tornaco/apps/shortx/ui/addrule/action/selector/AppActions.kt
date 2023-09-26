@@ -204,7 +204,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = removeNotificationDialogState)
 
     val removeNotificationByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.remove.notification.by.pkg"],
+        title = LocalI18N.current["ui.action.remove.app.notification.by.pkg"],
         onSelected = {
             addAction(Action.RemoveNotificationForPackageByPkg(stringPairs = it))
         })

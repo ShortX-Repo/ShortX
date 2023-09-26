@@ -31,6 +31,7 @@ fun StatusBarNotification.androidSBNToNotification(): Notification? {
             .setTitle(getTitle(n) ?: "")
             .setContentText(getContent(n) ?: "")
             .setTag(getTag(sbn) ?: "")
+            .setNotificationId(getId(sbn)?.toString() ?: "")
             .setIsFgService(isFgService)
             .addApps(
                 AppPkg.newBuilder()
@@ -79,6 +80,15 @@ fun getTag(sbn: StatusBarNotification): String? {
         null
     }.also {
         logger.p("tag: $it")
+    }
+}
+
+fun getId(sbn: StatusBarNotification): Int? {
+    return runCatching { sbn.id }.getOrElse {
+        logger.w(it)
+        null
+    }.also {
+        logger.p("id: $it")
     }
 }
 

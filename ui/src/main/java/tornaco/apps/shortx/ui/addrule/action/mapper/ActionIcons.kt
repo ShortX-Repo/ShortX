@@ -209,6 +209,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.notification_fill
         }
 
+        Action.RemoveNotification::class -> {
+            Remix.Media.notification_3_fill
+        }
+
         Action.RemoteMVEL::class -> {
             Remix.Business.cloud_fill
         }

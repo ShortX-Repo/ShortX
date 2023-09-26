@@ -68,7 +68,13 @@ class NotificationService(shortXContext: ShortXContext) :
         }
     }
 
-    fun getActiveNotifications(): List<Notification> = NMSFuncs.getActiveNotifications(nms)
+    fun getActiveNotifications(): List<Notification> = NMSFuncs.getActiveNotifications(nms).also {
+        logger.p(
+            "getActiveNotifications, return: ${
+                it.joinToString(System.lineSeparator())
+            }"
+        )
+    }
 
     fun post(postNotification: PostNotification) {
         if (!postByAttached(postNotification)) {
@@ -153,6 +159,19 @@ class NotificationService(shortXContext: ShortXContext) :
         appPkgs.forEach {
             nms.cancelAllNotifications(it.pkgName, it.userId)
             logger.p("Notification has been removed: ${it.appPkgToString()}")
+        }
+    }
+
+    fun removeNotificationByTag(tag: String) {
+        logger.p("removeNotificationByTag: $tag")
+        val nms =
+            INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
+        requireNotNull(nms) { "Can not get nms" }
+        getActiveNotifications().filter { it.tag == tag }.forEach {
+            val pkg = it.appsList[0]
+            val id = it.notificationId.toIntOrNull() ?: 0
+            logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, id: $id")
+            nms.cancelNotificationWithTag(pkg.pkgName, pkg.pkgName, tag, id, pkg.userId)
         }
     }
 

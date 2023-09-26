@@ -155,8 +155,8 @@ fun labelAndDescriptionForActionSelector(
         Action.ShowMenuDialog::class -> i18N["ui.action.show.menu.dialog"] to null
         Action.ShowTextFieldDialog::class -> i18N["ui.action.show.text.field.dialog"] to null
         Action.ExpandNotification::class -> i18N["ui.action.expand.notification"] to null
-        Action.RemoveNotificationForPackage::class -> i18N["ui.action.remove.notification"] to null
-        Action.RemoveNotificationForPackageByPkg::class -> i18N["ui.action.remove.notification.by.pkg"] to null
+        Action.RemoveNotificationForPackage::class -> i18N["ui.action.remove.app.notification"] to null
+        Action.RemoveNotificationForPackageByPkg::class -> i18N["ui.action.remove.app.notification.by.pkg"] to null
         Action.WhileLoop::class -> i18N["ui.action.while.loop"] to null
         Action.WriteGV::class -> i18N["ui.action.write.global.var"] to null
         Action.CreateGV::class -> i18N["ui.action.create.global.var"] to null
@@ -166,6 +166,7 @@ fun labelAndDescriptionForActionSelector(
         Action.MapNav::class -> i18N["ui.action.map.nav"] to null
         Action.MapQueryBus::class -> i18N["ui.action.map.nav.bus.query"] to null
         Action.PostNotification::class -> i18N["ui.action.post.notification"] to null
+        Action.RemoveNotification::class -> i18N["ui.action.remove.notification"] to null
         Action.FromDA::class -> i18N["ui.action.from.da"] to null
         Action.FindAndClickViewByText::class -> i18N["ui.action.find.click.view.by.text"] to null
         Action.FindAndClickViewById::class -> i18N["ui.action.find.click.view.by.id"] to null
@@ -437,11 +438,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.RemoveNotificationForPackage -> {
-            listOf(i18N["ui.action.remove.notification"])
+            listOf(i18N["ui.action.remove.app.notification"])
         }
 
         is Action.RemoveNotificationForPackageByPkg -> {
-            listOf(i18N["ui.action.remove.notification.by.pkg"])
+            listOf(i18N["ui.action.remove.app.notification.by.pkg"])
         }
 
         is Action.RemoteMVEL -> {
@@ -524,6 +525,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                 action.tag,
                 action.title,
                 action.message
+            )
+        }
+
+        is Action.RemoveNotification -> {
+            listOf(
+                i18N["ui.action.remove.notification"],
+                action.tag,
             )
         }
 

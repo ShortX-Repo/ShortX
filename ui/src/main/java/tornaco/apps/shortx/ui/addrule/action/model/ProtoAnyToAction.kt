@@ -835,6 +835,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.RemoveNotification::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.RemoveNotification::class.java
+            Action.RemoveNotification(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                tag = data.tag,
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.FromDA::class.java -> {
             val data = this unpack_ tornaco.apps.shortx.core.proto.action.FromDA::class.java
             val da = shortXManager.getDirectActionById(data.daId)

@@ -37,6 +37,7 @@ import tornaco.apps.shortx.core.proto.action.MapQueryBus
 import tornaco.apps.shortx.core.proto.action.NoAction
 import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.action.ReadClipboard
+import tornaco.apps.shortx.core.proto.action.RemoveNotification
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackage
 import tornaco.apps.shortx.core.proto.action.RemoveNotificationForPackageByPkg
 import tornaco.apps.shortx.core.proto.action.RemoveTasks
@@ -729,6 +730,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setVibrate(vibrate)
                 .addAllButton(buttons)
                 .addAllClickAction(onClickActions.map { it.toProtoAction().pack_() })
+                .setNote(overrideNote ?: note).build()
+        }
+
+        is Action.RemoveNotification -> {
+            RemoveNotification.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setTag(tag)
                 .setNote(overrideNote ?: note).build()
         }
 
