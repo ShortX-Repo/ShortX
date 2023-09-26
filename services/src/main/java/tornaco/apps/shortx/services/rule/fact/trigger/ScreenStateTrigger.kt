@@ -18,8 +18,9 @@ class ScreenStateTrigger(override val context: Context, override val shortXConte
                 when (it) {
                     Intent.ACTION_USER_PRESENT -> {
                         shortXContext.rule.publishFact(
-                            "ACTION_USER_PRESENT",
-                            UserPresent.newBuilder().build()
+                            reason = "ACTION_USER_PRESENT",
+                            fact = UserPresent.newBuilder().build(),
+                            initialContextDataLazy = { emptyMap() }
                         )
                     }
                 }

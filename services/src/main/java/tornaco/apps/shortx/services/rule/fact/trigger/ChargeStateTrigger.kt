@@ -30,16 +30,20 @@ class ChargeStateTrigger(
                     logger.d("state changed")
                     _isCharging.value = newState.isCharging
 
-                    if (newState.isCharging) {
-                        shortXContext.rule.publishFact(
-                            reason = "Charge state changed",
-                            fact = ChargerPlug.newBuilder().build(),
-                        )
+                    if (shortXContext.user.isSystemReadyTriggered) {
+                        if (newState.isCharging) {
+                            shortXContext.rule.publishFact(
+                                reason = "Charge state changed",
+                                fact = ChargerPlug.newBuilder().build(),
+                            )
+                        } else {
+                            shortXContext.rule.publishFact(
+                                reason = "Charge state changed",
+                                fact = ChargerUnplug.newBuilder().build(),
+                            )
+                        }
                     } else {
-                        shortXContext.rule.publishFact(
-                            reason = "Charge state changed",
-                            fact = ChargerUnplug.newBuilder().build(),
-                        )
+                        logger.w("isSystemReadyTriggered is false. ignore.")
                     }
                 }
             }

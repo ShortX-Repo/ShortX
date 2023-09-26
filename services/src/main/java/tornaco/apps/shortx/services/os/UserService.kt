@@ -13,12 +13,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import tornaco.apps.shortx.core.compat.ContextCompat
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import java.util.concurrent.atomic.AtomicBoolean
 
 sealed interface UserEvent {
     data class Added(val userId: Int) : UserEvent
@@ -28,6 +30,9 @@ sealed interface UserEvent {
 class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "UserService") {
     private val _userEvent = MutableSharedFlow<UserEvent>()
     val userEvent = _userEvent.asSharedFlow()
+
+    private val _systemReadyTriggered = AtomicBoolean(false)
+    val isSystemReadyTriggered get() = _systemReadyTriggered.get()
 
     private val userBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -115,6 +120,10 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun onScreenOn() {
         logger.d("onScreenOn")
+        if (!isSystemReadyTriggered) {
+            logger.i("onScreenOn, drop since isSystemReadyTriggered is false.")
+            return
+        }
         shortXContext.rule.publishFact(
             "onScreenOn",
             ScreenOn.newBuilder().build()
@@ -123,9 +132,28 @@ class UserService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun onScreenOff() {
         logger.d("onScreenOff")
+        if (!isSystemReadyTriggered) {
+            logger.i("onScreenOff, drop since isSystemReadyTriggered is false.")
+            return
+        }
         shortXContext.rule.publishFact(
             "onScreenOff",
             ScreenOff.newBuilder().build()
         )
+    }
+
+    fun publishSystemReady() {
+        logger.i("publishSystemReady?")
+        if (!_systemReadyTriggered.get()) {
+            logger.i("publishSystemReady in.")
+
+            shortXContext.rule.publishFact(
+                reason = "SystemReady",
+                fact = SystemReady.newBuilder().build(),
+                initialContextDataLazy = { emptyMap() }
+            )
+
+            _systemReadyTriggered.set(true)
+        }
     }
 }

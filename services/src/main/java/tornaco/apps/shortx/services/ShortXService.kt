@@ -31,7 +31,6 @@ import tornaco.apps.shortx.core.proto.common.UserInfo
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.fact.OnQSTileClick
-import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
@@ -67,12 +66,10 @@ import tornaco.apps.shortx.services.ui.I18NCache
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.v.v
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
     private val serviceLifecycle by lazy { ServiceLifecycle(shortXContext) }
-    private val systemReadyTriggered = AtomicBoolean(false)
 
     fun main() {
         LogInit.initEarlyLogging()
@@ -340,22 +337,17 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         override fun attachSUImpl(from: String?, su: ISu?) {
             shortXContext.shell.attachSUImpl(from, su)
 
-            if (systemReadyTriggered.compareAndSet(false, true)) {
-                systemServiceScope.launchSafety {
-                    // Sometimes SystemUI attached before system ready called, something has not been initilised...
-                    while (!serviceLifecycle.isSystemReadyCalled) {
-                        delay(1000)
-                        logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
-                    }
-
-                    logger.i("About to publish SystemReady")
-                    delay(3000)
-                    shortXContext.rule.publishFact(
-                        reason = "SystemReady",
-                        fact = SystemReady.newBuilder().build(),
-                        initialContextDataLazy = { emptyMap() }
-                    )
+            systemServiceScope.launchSafety {
+                // Sometimes SystemUI attached before system ready called, something has not been initilised...
+                while (!serviceLifecycle.isSystemReadyCalled) {
+                    delay(1000)
+                    logger.w("attachSUImpl, Wait 1s until serviceLifecycle.isSystemReadyCalled.")
                 }
+
+                logger.i("About to publish SystemReady")
+                delay(3000)
+
+                shortXContext.user.publishSystemReady()
             }
         }
 
