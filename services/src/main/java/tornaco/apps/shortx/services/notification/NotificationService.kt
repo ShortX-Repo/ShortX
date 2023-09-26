@@ -163,14 +163,33 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun removeNotificationByTag(tag: String) {
         logger.d("removeNotificationByTag: $tag")
-        val nms =
-            INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
-        requireNotNull(nms) { "Can not get nms" }
-        getActiveNotifications().filter { it.tag == tag }.forEach {
-            val pkg = it.appsList[0]
-            val id = it.notificationId.toIntOrNull() ?: 0
-            logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, id: $id")
-            nms.cancelNotificationWithTag("android", "android", tag, id, pkg.userId)
+        synchronized(attachedPoster) {
+            val itemCount = attachedPoster.beginBroadcast()
+            if (itemCount == 0) {
+                logger.d("removeNotificationByTag, no registered poster.")
+                return
+            }
+            val first = attachedPoster.getBroadcastItem(0)
+            logger.d("removeNotificationByTag, Using poster: $first")
+            kotlin.runCatching { first.cancelWithTag(tag) }
+                .getOrElse {
+                    logger.e(it, "Error call cancelWithTag")
+                    null
+                }
+            attachedPoster.finishBroadcast()
+        }
+
+        // Below logic not work, no error, no log.
+        if (false) {
+            val nms =
+                INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
+            requireNotNull(nms) { "Can not get nms" }
+            getActiveNotifications().filter { it.tag == tag }.forEach {
+                val pkg = it.appsList[0]
+                val id = it.notificationId.toIntOrNull() ?: 0
+                logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, id: $id")
+                nms.cancelNotificationWithTag("android", "android", tag, id, pkg.userId)
+            }
         }
     }
 

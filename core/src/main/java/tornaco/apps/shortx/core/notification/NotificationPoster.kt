@@ -187,7 +187,7 @@ class NotificationPoster(
 
     fun cancelNotification(notificationTag: String) {
         NotificationManagerCompat.from(context)
-            .cancel(NotificationIdFactory.getIdByTag(notificationTag))
+            .cancel(notificationTag, NotificationIdFactory.getIdByTag(notificationTag))
     }
 
     private fun createSilenceNotificationChannel(context: Context): String {

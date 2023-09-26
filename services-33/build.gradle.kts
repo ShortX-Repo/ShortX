@@ -4,6 +4,8 @@ plugins {
 
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/33/android-33.jar"))
+    // Debug usage
+    compileOnly(files("${rootProject.rootDir.path}/android-sdk/33/services-33.jar"))
 
     implementation(project(":core"))
     implementation(project(":external:utils"))

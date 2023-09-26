@@ -12,6 +12,9 @@ public interface INotificationPoster extends android.os.IInterface
     @Override public void post(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper data) throws android.os.RemoteException
     {
     }
+    @Override public void cancelWithTag(java.lang.String tag) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -68,6 +71,14 @@ public interface INotificationPoster extends android.os.IInterface
           this.post(_arg0);
           return true;
         }
+        case TRANSACTION_cancelWithTag:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.cancelWithTag(_arg0);
+          return true;
+        }
         default:
         {
           return super.onTransact(code, data, reply, flags);
@@ -113,9 +124,26 @@ public interface INotificationPoster extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void cancelWithTag(java.lang.String tag) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(tag);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_cancelWithTag, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().cancelWithTag(tag);
+            return;
+          }
+        }
+        finally {
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.notification.INotificationPoster sDefaultImpl;
     }
     static final int TRANSACTION_post = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+    static final int TRANSACTION_cancelWithTag = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.notification.INotificationPoster impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -136,4 +164,5 @@ public interface INotificationPoster extends android.os.IInterface
   // PostNotification
 
   public void post(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper data) throws android.os.RemoteException;
+  public void cancelWithTag(java.lang.String tag) throws android.os.RemoteException;
 }
