@@ -34,7 +34,6 @@ object NotificationPosterGlobal {
             context,
             NotificationIdFactory.getNextId(),
             Intent(BROADCAST_ACTION_BUTTON)
-                .setPackage("android")
                 .putExtra(BROADCAST_EXTRA_BUTTON, button),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -45,7 +44,6 @@ object NotificationPosterGlobal {
             context,
             NotificationIdFactory.getNextId(),
             Intent(BROADCAST_ACTION_NOTIFICATION)
-                .setPackage("android")
                 .putExtra(BROADCAST_EXTRA__NOTIFICATION, notification),
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -59,6 +57,8 @@ class NotificationPoster(
     private val overrideName: String? = null,
     private val getIcon: (String) -> android.graphics.drawable.Icon?,
     private val getBitmap: (String) -> Bitmap?,
+    private val onButtonClick: (NotificationButton) -> Unit = {},
+    private val onPostNotificationClick: (PostNotification) -> Unit = {},
 ) {
     private val logger = Logger("NotificationPoster")
 
@@ -73,13 +73,16 @@ class NotificationPoster(
                     if (action == NotificationPosterGlobal.BROADCAST_ACTION_BUTTON) {
                         logger.i("Received BROADCAST_ACTION_BUTTON")
                         val button =
-                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA_BUTTON)
+                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA_BUTTON) as NotificationButton
                         logger.i("Button extra: $button")
+                        onButtonClick(button)
+
                     } else if (action == NotificationPosterGlobal.BROADCAST_ACTION_NOTIFICATION) {
                         logger.i("Received BROADCAST_ACTION_NOTIFICATION")
                         val notification =
-                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA__NOTIFICATION)
+                            intent.getSerializableExtra(NotificationPosterGlobal.BROADCAST_EXTRA__NOTIFICATION) as PostNotification
                         logger.i("Notification extra: $notification")
+                        onPostNotificationClick(notification)
                     }
                 }
             },

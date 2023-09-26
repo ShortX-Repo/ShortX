@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
@@ -118,9 +117,11 @@ fun SystemService.enforceCallingPermissions() {
         return
     }
     if (shortXContext.appState.isShortXAppUid(callingUid)) {
-        if (BuildProp.APP_IS_DEBUG) {
-            logger.d("enforceCallingPermissions, allow shortx of UID: $callingUid")
-        }
+        logger.p("enforceCallingPermissions, allow shortx of UID: $callingUid")
+        return
+    }
+    if (shortXContext.appState.isSystemUIAppUid(callingUid)) {
+        logger.p("enforceCallingPermissions, allow SystemUI of UID: $callingUid")
         return
     }
     throw SecurityException("Uid of $callingUid it not allowed to interact with ShortX server!!!")

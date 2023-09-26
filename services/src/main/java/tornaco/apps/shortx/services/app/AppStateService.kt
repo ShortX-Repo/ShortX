@@ -563,4 +563,5 @@ class AppStateService(shortXContext: ShortXContext) :
     }
 
     fun isShortXAppUid(uid: Int) = pkgPools.any { it.isShortXAppUid(uid) }
+    fun isSystemUIAppUid(uid: Int) = pkgPools.any { it.isSystemUIAppUid(uid) }
 }

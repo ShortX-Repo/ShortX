@@ -55,6 +55,7 @@ class PkgPool(
     val allApps: Map<String, App> get() = _allApps.toMap()
 
     private val shortXAppUids = mutableListOf<Int>()
+    private val systemUIAppUids = mutableListOf<Int>()
 
     fun init() {
         logger.d("init")
@@ -107,6 +108,10 @@ class PkgPool(
         return shortXAppUids.contains(uid)
     }
 
+    fun isSystemUIAppUid(uid: Int): Boolean {
+        return systemUIAppUids.contains(uid)
+    }
+
     private fun ApplicationInfo.toApp(): App {
         val isXposedMod =
             kotlin.runCatching { this.metaData.get("xposedmodule").toString().toBoolean() }
@@ -120,6 +125,9 @@ class PkgPool(
         if (BuildProp.APP_PACKAGE_NAME == packageName) {
             logger.i("ShortX app uid: $uid")
             shortXAppUids.add(uid)
+        } else if ("com.android.systemui" == packageName) {
+            logger.i("systemui app uid: $uid")
+            systemUIAppUids.add(uid)
         }
 
         return tornaco.apps.shortx.core.App(

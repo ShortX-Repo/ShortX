@@ -20,6 +20,8 @@ import tornaco.apps.shortx.core.proto.action.PostNotification
 import tornaco.apps.shortx.core.proto.common.QSTile
 import tornaco.apps.shortx.core.proto.common.QSTileList
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
+import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
+import tornaco.apps.shortx.core.proto.rule.EvaluateContext
 import tornaco.apps.shortx.core.res.AppResources
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
@@ -139,6 +141,32 @@ object SystemUIHook {
                 },
                 getBitmap = {
                     appRes.getBitmap(it)
+                },
+                onButtonClick = { button ->
+                    button.actionList.forEach {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId("Notification button")
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                            .setSrcTitle(button.label)
+                            .build()
+                        shortx.executeAction(
+                            ByteArrayWrapper(evaluateContext.toByteArray()),
+                            ByteArrayWrapper(it.toByteArray())
+                        )
+                    }
+                },
+                onPostNotificationClick = { post ->
+                    post.clickActionList.forEach {
+                        val evaluateContext = EvaluateContext.newBuilder()
+                            .setSrcId("Notification")
+                            .setSrcEvent(ContextSrcEvent.ContextSrc_Rule)
+                            .setSrcTitle(post.title)
+                            .build()
+                        shortx.executeAction(
+                            ByteArrayWrapper(evaluateContext.toByteArray()),
+                            ByteArrayWrapper(it.toByteArray())
+                        )
+                    }
                 }
             )
         }

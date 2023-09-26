@@ -26,7 +26,8 @@ data class PostNotificationSelectorState(
     val isImportant: Boolean,
     val vibrate: Boolean,
     val sound: Boolean,
-    val buttonAndHandlers: List<NotificationButtonAndHandler>
+    val buttonAndHandlers: List<NotificationButtonAndHandler>,
+    val onClickHandler: ActionContentStateHandler
 )
 
 data class NotificationButtonAndHandler(
@@ -52,7 +53,8 @@ fun PostNotificationSelectorState.toAction(): Action.PostNotification {
                 .setId(buttonAndHandler.id)
                 .addAllAction(buttonAndHandler.handler.actions.map { it.toProtoAction().pack_() })
                 .build()
-        }
+        },
+        onClickActions = this.onClickHandler.actions
     )
 }
 
@@ -70,7 +72,8 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 isImportant = false,
                 vibrate = false,
                 sound = false,
-                buttonAndHandlers = emptyList()
+                buttonAndHandlers = emptyList(),
+                onClickHandler = ActionContentStateHandler()
             )
         }
     ) {
@@ -99,6 +102,9 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                                 )
                             })
                         })
+                },
+                onClickHandler = ActionContentStateHandler().apply {
+                    init(settings.onClickActions)
                 }
             )
         }
