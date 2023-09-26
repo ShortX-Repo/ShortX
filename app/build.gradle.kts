@@ -38,10 +38,6 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
-
-            ndk {
-                abiFilters.addAll(listOf("arm64-v8a"))
-            }
         }
 
         getByName("debug") {
@@ -52,10 +48,6 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
-
-            ndk {
-                abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
-            }
         }
     }
 
@@ -64,11 +56,6 @@ android {
         create("row") {
             dimension = "market"
             versionNameSuffix = "-row"
-
-            // Support all abi for row.
-            ndk {
-                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
-            }
         }
         create("prc") {
             dimension = "market"

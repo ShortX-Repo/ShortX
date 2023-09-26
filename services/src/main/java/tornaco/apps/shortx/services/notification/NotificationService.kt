@@ -91,12 +91,11 @@ class NotificationService(shortXContext: ShortXContext) :
             }
             val first = attachedPoster.getBroadcastItem(0)
             logger.d("Using poster: $first")
-            val shellRes =
-                kotlin.runCatching { first.post(ByteArrayWrapper(postNotification.toByteArray())) }
-                    .getOrElse {
-                        logger.e(it, "Error call post")
-                        null
-                    }
+            kotlin.runCatching { first.post(ByteArrayWrapper(postNotification.toByteArray())) }
+                .getOrElse {
+                    logger.e(it, "Error call post")
+                    null
+                }
             attachedPoster.finishBroadcast()
             return true
         }
@@ -163,7 +162,7 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun removeNotificationByTag(tag: String) {
-        logger.p("removeNotificationByTag: $tag")
+        logger.d("removeNotificationByTag: $tag")
         val nms =
             INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE))
         requireNotNull(nms) { "Can not get nms" }
@@ -171,7 +170,7 @@ class NotificationService(shortXContext: ShortXContext) :
             val pkg = it.appsList[0]
             val id = it.notificationId.toIntOrNull() ?: 0
             logger.d("removeNotificationByTag, pkg: ${pkg.appPkgToString()}, id: $id")
-            nms.cancelNotificationWithTag(pkg.pkgName, pkg.pkgName, tag, id, pkg.userId)
+            nms.cancelNotificationWithTag("android", "android", tag, id, pkg.userId)
         }
     }
 
