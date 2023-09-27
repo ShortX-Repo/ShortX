@@ -8,8 +8,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tornaco.android.sec.net.S
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.UiState
 import tornaco.apps.shortx.ui.base.data
@@ -44,16 +46,29 @@ enum class CodeVerifyEvent {
 @SuppressLint("StaticFieldLeak")
 class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Context) :
     StateViewModel<SubscriptionState>({ SubscriptionState() }) {
+    private val logger = Logger("ShortX")
 
     private val repo by lazy { Repo(context) }
 
     private val _codeVerifyEvent = MutableSharedFlow<CodeVerifyEvent>()
     val codeVerifyEvent = _codeVerifyEvent.asSharedFlow()
 
+    init {
+        viewModelScope.launch {
+            LVLStateHolder.container.stateFlow.collectLatest {
+                logger.p("LVLStateHolder.container.stateFlow changed")
+                loadState()
+            }
+        }
+    }
+
     fun loadState() {
+        logger.p("loadState")
         val subscribeState = LVLStateHolder.container.stateFlow.value
         val isSubscribed = subscribeState.isSubscribed
         val token = subscribeState.token
+
+        logger.p("loadState, isSubscribed: $isSubscribed")
 
         var source: SubscriptionSource? = null
         if (isSubscribed && token != null) {
@@ -105,7 +120,6 @@ class SubscribeViewModel @Inject constructor(@ApplicationContext val context: Co
                             setLVLToken(code)
                             viewModelScope.launch {
                                 _codeVerifyEvent.emit(CodeVerifyEvent.Success)
-                                loadState()
                             }
                         },
                         onError = {

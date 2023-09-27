@@ -221,6 +221,7 @@ private fun UnsubscribedUi(config: SubscriptionConfig) {
 
                     CodeVerifyEvent.Success -> {
                         progressDialog.dismiss()
+                        Toast.makeText(context, "\uD83E\uDD70", Toast.LENGTH_LONG).show()
                     }
 
                     CodeVerifyEvent.Fail -> {
