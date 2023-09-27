@@ -171,10 +171,10 @@ class ActionContentStateHandler(
         checkUpdateWarnings()
     }
 
-    fun removeAction(action: Action) {
+    fun removeAction(action: String) {
         updateState {
             copy(actions = actions.toMutableList().apply {
-                remove(action)
+                removeIf { action == it.id }
             }, isChanged = true)
         }
         checkUpdateWarnings()

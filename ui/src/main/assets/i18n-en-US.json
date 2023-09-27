@@ -270,6 +270,7 @@
   "ui.common.select": "Select",
   "ui.common.select.all": "Select all",
   "ui.common.selected.of.total": "Total: {total}, Selected: {selected}",
+  "ui.common.selected.count": "Selected: {selected}",
   "ui.common.filter": "Filter",
   "ui.common.filter.matched": "Matched",
   "ui.common.filter.unmatched": "Not matched",

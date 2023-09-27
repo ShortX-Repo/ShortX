@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -58,6 +61,9 @@ import tornaco.apps.shortx.ui.addrule.action.selector.miscActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.systemActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.uiActionSelectHandler
 import tornaco.apps.shortx.ui.addrule.action.selector.varActionSelectHandler
+import tornaco.apps.shortx.ui.addrule.base.BatchOpToolbar
+import tornaco.apps.shortx.ui.addrule.base.batchOpSelectedItemHighlightColor
+import tornaco.apps.shortx.ui.addrule.base.rememberBatchOpState
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
@@ -79,6 +85,7 @@ import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
@@ -209,384 +216,413 @@ private fun Actions(
             modifier = Modifier,
             shape = ShortXCardRoundedCornerShapeXL,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-            ) {
-                actions.forEachIndexed { _, action ->
-                    val currentAction by rememberUpdatedState(newValue = action)
-                    val editAction: (Action) -> Unit = { newAction ->
-                        composeLogger.d("addAction, new: ${newAction.id}, old: ${currentAction.id}")
-                        handler.addAction(
-                            newAction.clone(
-                                id = currentAction.id,
-                                note = currentAction.note,
-                                isEnabled = currentAction.isEnabled,
-                                actionOnError = currentAction.actionOnError,
-                                contextData = currentAction.contextData
+            val batchOpState = rememberBatchOpState(
+                onCopy = { idList ->
+                    idList.forEach { handler.copy(it) }
+                },
+                onDeleteConfirmed = { idList ->
+                    idList.forEach { handler.removeAction(it) }
+                },
+            )
+            Column {
+                BatchOpToolbar(batchOpState)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp),
+                ) {
+                    actions.forEachIndexed { _, action ->
+                        val currentAction by rememberUpdatedState(newValue = action)
+                        val editAction: (Action) -> Unit = { newAction ->
+                            composeLogger.d("addAction, new: ${newAction.id}, old: ${currentAction.id}")
+                            handler.addAction(
+                                newAction.clone(
+                                    id = currentAction.id,
+                                    note = currentAction.note,
+                                    isEnabled = currentAction.isEnabled,
+                                    actionOnError = currentAction.actionOnError,
+                                    contextData = currentAction.contextData
+                                )
                             )
+                        }
+
+                        val selectHandlers = listOf(
+                            uiActionSelectHandler(addAction = editAction),
+                            appActionSelectHandler(addAction = editAction),
+                            systemActionSelectHandler(addAction = editAction),
+                            extActionSelectHandler(addAction = editAction),
+                            lifeActionSelectHandler(addAction = editAction),
+                            varActionSelectHandler(addAction = editAction),
+                            miscActionSelectHandler(addAction = editAction),
                         )
-                    }
 
-                    val selectHandlers = listOf(
-                        uiActionSelectHandler(addAction = editAction),
-                        appActionSelectHandler(addAction = editAction),
-                        systemActionSelectHandler(addAction = editAction),
-                        extActionSelectHandler(addAction = editAction),
-                        lifeActionSelectHandler(addAction = editAction),
-                        varActionSelectHandler(addAction = editAction),
-                        miscActionSelectHandler(addAction = editAction),
-                    )
-
-                    val onActionClick = {
-                        composeLogger.d("addAction, onActionClick: ${currentAction.id}")
-                        selectHandlers.any { it(ActionSelectSource.FromAction(currentAction)) }
-                    }
-
-                    val noteDialogState =
-                        rememberTextInputState(
-                            title = LocalI18N.current["ui.common.note"],
-                            message = null
-                        ) {
-                            handler.setNote(currentAction.id, it)
+                        val onActionClick = {
+                            composeLogger.d("addAction, onActionClick: ${currentAction.id}")
+                            selectHandlers.any { it(ActionSelectSource.FromAction(currentAction)) }
                         }
-                    TextInputDialog(state = noteDialogState)
 
-                    val onErrorMenuState = rememberMenuDialogState<String>(
-                        title = LocalI18N.current["ui.actions.on.error"],
-                        menuItems = listOf(
-                            MenuDialogItem(
-                                id = ActionOnError.Break.name,
-                                title = LocalI18N.current[ActionOnError.Break.labelKey()],
-                                iconName = Remix.System.forbid_2_fill
-                            ),
-                            MenuDialogItem(
-                                id = ActionOnError.Continue.name,
-                                title = LocalI18N.current[ActionOnError.Continue.labelKey()],
-                                iconName = Remix.System.checkbox_circle_fill
-                            ),
-                        ),
-                        onItemSelected = { _, id ->
-                            val policy = ActionOnError.valueOf(id)
-                            composeLogger.d("setOnError: $policy ${currentAction.id}")
-                            handler.setOnError(currentAction.id, policy)
-                        }
-                    )
-                    MenuDialog(state = onErrorMenuState)
-
-                    Box(modifier = Modifier) {
-                        val clickDropdownState = rememberDropdownSelectorState()
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(ShortXCardRoundedCornerShape)
-                                .combinedClickable(
-                                    enabled = !readOnly,
-                                    onClick = { onActionClick() },
-                                    onLongClick = { clickDropdownState.open() }
-                                )
-                        ) {
-                            ListItem(
-                                modifier = Modifier,
-                                titleLines = mutableListOf<String>().apply {
-                                    addAll(labelLinesForAction(action = action))
-                                    onDebugBuild { add(action.id) }
-                                },
-                                textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
-                                titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
-                                textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
-                                icon = {
-                                    ActionIcon(action) {
-                                        clickDropdownState.open()
-                                    }
-                                },
-                                action1 = {
-                                    if (action.contextData.isNotEmpty()
-                                    ) {
-                                        IconButton(onClick = {
-                                            contextDataInfoDialogState.show(
-                                                objName = labelAndDescriptionForActionSelector(
-                                                    i18N,
-                                                    action::class
-                                                ).first,
-                                                contextData = currentAction.contextData,
-                                                canSetCustomKey = true,
-                                                setCustomKey = {
-                                                    handler.setCustomContextDataKey(
-                                                        currentAction.id,
-                                                        it
-                                                    )
-                                                }
-                                            )
-                                        }) {
-                                            ContextDataIcon()
-                                        }
-                                        VerticalDivider(modifier = Modifier.height(24.dp))
-                                    }
-
-                                    if (!readOnly) {
-                                        IconButton(onClick = {
-                                            handler.removeAction(action)
-                                        }) {
-                                            RemixIcon(remixName = Remix.System.close_line)
-                                        }
-                                    }
-                                }
-                            )
-
-                            if (action.note.isNotBlank()) {
-                                NoteRow(
-                                    modifier = Modifier
-                                        .padding(start = 68.dp, end = 16.dp)
-                                        .padding(bottom = 16.dp),
-                                    text = action.note
-                                )
+                        val noteDialogState =
+                            rememberTextInputState(
+                                title = LocalI18N.current["ui.common.note"],
+                                message = null
+                            ) {
+                                handler.setNote(currentAction.id, it)
                             }
+                        TextInputDialog(state = noteDialogState)
 
-                            // Warning.
-                            val actionWarning: List<String>? = warnings[action.id]
-                            AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
-                                actionWarning?.let {
-                                    ErrorCard(
+                        val onErrorMenuState = rememberMenuDialogState<String>(
+                            title = LocalI18N.current["ui.actions.on.error"],
+                            menuItems = listOf(
+                                MenuDialogItem(
+                                    id = ActionOnError.Break.name,
+                                    title = LocalI18N.current[ActionOnError.Break.labelKey()],
+                                    iconName = Remix.System.forbid_2_fill
+                                ),
+                                MenuDialogItem(
+                                    id = ActionOnError.Continue.name,
+                                    title = LocalI18N.current[ActionOnError.Continue.labelKey()],
+                                    iconName = Remix.System.checkbox_circle_fill
+                                ),
+                            ),
+                            onItemSelected = { _, id ->
+                                val policy = ActionOnError.valueOf(id)
+                                composeLogger.d("setOnError: $policy ${currentAction.id}")
+                                handler.setOnError(currentAction.id, policy)
+                            }
+                        )
+                        MenuDialog(state = onErrorMenuState)
+
+                        Box(modifier = Modifier) {
+                            val clickDropdownState = rememberDropdownSelectorState()
+                            val isSelected by remember {
+                                derivedStateOf {
+                                    batchOpState.batchSelectedItems.contains(
+                                        action.id
+                                    )
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(ShortXCardRoundedCornerShape)
+                                    .combinedClickable(
+                                        enabled = !readOnly,
+                                        onClick = {
+                                            if (batchOpState.isEnable) {
+                                                batchOpState.addOrRemoveItem(action.id)
+                                            } else {
+                                                onActionClick()
+                                            }
+                                        },
+                                        onLongClick = {
+                                            batchOpState.enable()
+                                            batchOpState.addOrRemoveItem(action.id)
+                                        }
+                                    )
+                            ) {
+                                ListItem(
+                                    modifier = Modifier.thenIf(
+                                        Modifier.background(batchOpSelectedItemHighlightColor()),
+                                        isSelected
+                                    ),
+                                    titleLines = mutableListOf<String>().apply {
+                                        addAll(labelLinesForAction(action = action))
+                                        onDebugBuild { add(action.id) }
+                                    },
+                                    textDecoration = if (action.isEnabled) TextDecoration.None else TextDecoration.LineThrough,
+                                    titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
+                                    textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
+                                    icon = {
+                                        ActionIcon(action) {
+                                            clickDropdownState.open()
+                                        }
+                                    },
+                                    action1 = {
+                                        if (action.contextData.isNotEmpty()
+                                        ) {
+                                            IconButton(onClick = {
+                                                contextDataInfoDialogState.show(
+                                                    objName = labelAndDescriptionForActionSelector(
+                                                        i18N,
+                                                        action::class
+                                                    ).first,
+                                                    contextData = currentAction.contextData,
+                                                    canSetCustomKey = true,
+                                                    setCustomKey = {
+                                                        handler.setCustomContextDataKey(
+                                                            currentAction.id,
+                                                            it
+                                                        )
+                                                    }
+                                                )
+                                            }) {
+                                                ContextDataIcon()
+                                            }
+                                            VerticalDivider(modifier = Modifier.height(24.dp))
+                                        }
+
+                                        if (!readOnly) {
+                                            IconButton(onClick = {
+                                                handler.removeAction(action.id)
+                                            }) {
+                                                RemixIcon(remixName = Remix.System.close_line)
+                                            }
+                                        }
+                                    }
+                                )
+
+                                if (action.note.isNotBlank()) {
+                                    NoteRow(
                                         modifier = Modifier
-                                            .padding(16.dp),
-                                        title = LocalI18N.current["ui.action.warning.message"],
-                                        warnings = it
+                                            .padding(start = 68.dp, end = 16.dp)
+                                            .padding(bottom = 16.dp),
+                                        text = action.note
                                     )
                                 }
+
+                                // Warning.
+                                val actionWarning: List<String>? = warnings[action.id]
+                                AnimatedVisibility(visible = !actionWarning.isNullOrEmpty()) {
+                                    actionWarning?.let {
+                                        ErrorCard(
+                                            modifier = Modifier
+                                                .padding(16.dp),
+                                            title = LocalI18N.current["ui.action.warning.message"],
+                                            warnings = it
+                                        )
+                                    }
+                                }
+                            }
+
+
+                            val clipboardDialogState = rememberClipboardDialogState()
+                            ClipboardDialog(state = clipboardDialogState)
+
+                            val scope = rememberCoroutineScope()
+                            DropdownSelector(
+                                state = clickDropdownState,
+                                items = listOf(
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
+                                        data = currentAction.id to "ia",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_top,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
+                                        data = currentAction.id to "ib",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_bottom,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                                        data = currentAction.id to "pa",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_top,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                                        data = currentAction.id to "pb",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.insert_row_bottom,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                                        data = currentAction.id to "cp",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Document.file_copy_fill,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                                        data = currentAction.id to "note",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Document.sticky_note_fill,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.sort"]),
+                                        data = currentAction.id to "sort",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Editor.sort_asc,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(LocalI18N.current["ui.common.execute"]),
+                                        data = currentAction.id to "execute",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.Media.play_line,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(
+                                            LocalI18N.current["ui.actions.on.error"],
+                                            LocalI18N.current[action.actionOnError.labelKey()]
+                                        ),
+                                        data = currentAction.id to "onError",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.System.error_warning_line,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+                                    DropdownItem(
+                                        labelLines = listOf(
+                                            LocalI18N.current["ui.common.toggle.enable.disable"],
+                                            LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                                        ),
+                                        data = currentAction.id to "enableDisable",
+                                        icon = {
+                                            RemixIcon(
+                                                remixName = Remix.System.toggle_line,
+                                                tint = colorForAction(action::class)
+                                            )
+                                        }
+                                    ),
+
+                                    ),
+                                onSelect = { dropdownItem ->
+                                    when (dropdownItem.data.second) {
+                                        "ia" -> {
+                                            insertAboveActionSelectActivityLauncher.launch(
+                                                ActionSelectorActivity.newIntent(
+                                                    context,
+                                                    dropdownItem.data.first
+                                                )
+                                            )
+                                        }
+
+                                        "ib" -> {
+                                            insertBelowActionSelectActivityLauncher.launch(
+                                                ActionSelectorActivity.newIntent(
+                                                    context,
+                                                    dropdownItem.data.first
+                                                )
+                                            )
+                                        }
+
+                                        "pa" -> {
+                                            val clipboardActions = UiClipboard.getActions()
+                                            if (clipboardActions.size == 1) {
+                                                handler.insertAbove(
+                                                    clipboardActions[0].action,
+                                                    dropdownItem.data.first
+                                                )
+                                            } else {
+                                                clipboardDialogState.show { contentList ->
+                                                    contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
+                                                        .forEach {
+                                                            handler.insertAbove(
+                                                                it.action,
+                                                                dropdownItem.data.first
+                                                            )
+                                                        }
+                                                }
+                                            }
+                                        }
+
+                                        "pb" -> {
+                                            val clipboardActions = UiClipboard.getActions()
+                                            if (clipboardActions.size == 1) {
+                                                handler.insertBelow(
+                                                    clipboardActions[0].action,
+                                                    dropdownItem.data.first
+                                                )
+                                            } else {
+                                                clipboardDialogState.show { contentList ->
+                                                    contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
+                                                        .forEach {
+                                                            handler.insertBelow(
+                                                                it.action,
+                                                                dropdownItem.data.first
+                                                            )
+                                                        }
+                                                }
+                                            }
+                                        }
+
+                                        "cp" -> {
+                                            handler.copy(dropdownItem.data.first)
+                                        }
+
+                                        "enableDisable" -> {
+                                            handler.enableDisable(dropdownItem.data.first)
+                                        }
+
+                                        "onError" -> {
+                                            onErrorMenuState.show()
+                                        }
+
+                                        "note" -> {
+                                            noteDialogState.show(action.note)
+                                        }
+
+                                        "sort" -> {
+                                            actionSortDialogState.show()
+                                        }
+
+                                        "execute" -> {
+                                            scope.launch { handler.execute(dropdownItem.data.first) }
+                                        }
+                                    }
+                                })
+                        }
+                    }
+
+                    // Add
+                    TinySpacer()
+                    Box {
+                        if (!readOnly) {
+                            Button(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                onClick = {
+                                    newActionSelectActivityLauncher.launch(
+                                        ActionSelectorActivity.newIntent(
+                                            context
+                                        )
+                                    )
+                                }) {
+                                RemixIcon(
+                                    modifier = Modifier.size(16.dp),
+                                    remixName = Remix.System.add_line,
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                                TinySpacer()
+                                Text(LocalI18N.current["ui.actions.add"])
                             }
                         }
 
-
-                        val clipboardDialogState = rememberClipboardDialogState()
-                        ClipboardDialog(state = clipboardDialogState)
-
-                        val scope = rememberCoroutineScope()
-                        DropdownSelector(
-                            state = clickDropdownState,
-                            items = listOf(
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
-                                    data = currentAction.id to "ia",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Editor.insert_row_top,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
-                                    data = currentAction.id to "ib",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Editor.insert_row_bottom,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
-                                    data = currentAction.id to "pa",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Editor.insert_row_top,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
-                                    data = currentAction.id to "pb",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Editor.insert_row_bottom,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.copy"]),
-                                    data = currentAction.id to "cp",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Document.file_copy_fill,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.note"]),
-                                    data = currentAction.id to "note",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Document.sticky_note_fill,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.sort"]),
-                                    data = currentAction.id to "sort",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Editor.sort_asc,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(LocalI18N.current["ui.common.execute"]),
-                                    data = currentAction.id to "execute",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.Media.play_line,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(
-                                        LocalI18N.current["ui.actions.on.error"],
-                                        LocalI18N.current[action.actionOnError.labelKey()]
-                                    ),
-                                    data = currentAction.id to "onError",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.System.error_warning_line,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-                                DropdownItem(
-                                    labelLines = listOf(
-                                        LocalI18N.current["ui.common.toggle.enable.disable"],
-                                        LocalI18N.current["ui.common.toggle.enable.disable.summary"]
-                                    ),
-                                    data = currentAction.id to "enableDisable",
-                                    icon = {
-                                        RemixIcon(
-                                            remixName = Remix.System.toggle_line,
-                                            tint = colorForAction(action::class)
-                                        )
-                                    }
-                                ),
-
-                                ),
-                            onSelect = { dropdownItem ->
-                                when (dropdownItem.data.second) {
-                                    "ia" -> {
-                                        insertAboveActionSelectActivityLauncher.launch(
-                                            ActionSelectorActivity.newIntent(
-                                                context,
-                                                dropdownItem.data.first
-                                            )
-                                        )
-                                    }
-
-                                    "ib" -> {
-                                        insertBelowActionSelectActivityLauncher.launch(
-                                            ActionSelectorActivity.newIntent(
-                                                context,
-                                                dropdownItem.data.first
-                                            )
-                                        )
-                                    }
-
-                                    "pa" -> {
-                                        val clipboardActions = UiClipboard.getActions()
-                                        if (clipboardActions.size == 1) {
-                                            handler.insertAbove(
-                                                clipboardActions[0].action,
-                                                dropdownItem.data.first
-                                            )
-                                        } else {
-                                            clipboardDialogState.show { contentList ->
-                                                contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
-                                                    .forEach {
-                                                        handler.insertAbove(
-                                                            it.action,
-                                                            dropdownItem.data.first
-                                                        )
-                                                    }
-                                            }
-                                        }
-                                    }
-
-                                    "pb" -> {
-                                        val clipboardActions = UiClipboard.getActions()
-                                        if (clipboardActions.size == 1) {
-                                            handler.insertBelow(
-                                                clipboardActions[0].action,
-                                                dropdownItem.data.first
-                                            )
-                                        } else {
-                                            clipboardDialogState.show { contentList ->
-                                                contentList.filterIsInstance<UiClipboard.ClipboardContent.ActionContent>()
-                                                    .forEach {
-                                                        handler.insertBelow(
-                                                            it.action,
-                                                            dropdownItem.data.first
-                                                        )
-                                                    }
-                                            }
-                                        }
-                                    }
-
-                                    "cp" -> {
-                                        handler.copy(dropdownItem.data.first)
-                                    }
-
-                                    "enableDisable" -> {
-                                        handler.enableDisable(dropdownItem.data.first)
-                                    }
-
-                                    "onError" -> {
-                                        onErrorMenuState.show()
-                                    }
-
-                                    "note" -> {
-                                        noteDialogState.show(action.note)
-                                    }
-
-                                    "sort" -> {
-                                        actionSortDialogState.show()
-                                    }
-
-                                    "execute" -> {
-                                        scope.launch { handler.execute(dropdownItem.data.first) }
-                                    }
-                                }
-                            })
+                        ActionSortDialog(state = actionSortDialogState)
                     }
-                }
-
-                // Add
-                TinySpacer()
-                Box {
-                    if (!readOnly) {
-                        Button(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            onClick = {
-                                newActionSelectActivityLauncher.launch(
-                                    ActionSelectorActivity.newIntent(
-                                        context
-                                    )
-                                )
-                            }) {
-                            RemixIcon(
-                                modifier = Modifier.size(16.dp),
-                                remixName = Remix.System.add_line,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                            TinySpacer()
-                            Text(LocalI18N.current["ui.actions.add"])
-                        }
-                    }
-
-                    ActionSortDialog(state = actionSortDialogState)
                 }
             }
         }
@@ -637,7 +673,7 @@ fun ActionIcon(actionClass: KClass<out Action>) {
 
 class ActionHandler(
     val addAction: (Action) -> Unit = {},
-    val removeAction: (Action) -> Unit = {},
+    val removeAction: (String) -> Unit = {},
     val applySort: (List<Action>) -> Unit = {},
     val insertAbove: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },
     val insertBelow: (action: Action, anchorId: String) -> Unit = { _, _ -> run {} },

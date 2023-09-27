@@ -270,6 +270,7 @@
   "ui.common.select": "选择",
   "ui.common.select.all": "全选",
   "ui.common.selected.of.total": "总共：{total}   已选：{selected}",
+  "ui.common.selected.count": "已选：{selected}",
   "ui.common.filter": "过滤器",
   "ui.common.filter.matched": "匹配",
   "ui.common.filter.unmatched": "不匹配",
