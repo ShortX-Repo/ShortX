@@ -175,7 +175,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
             val daUMs = withContext(Dispatchers.IO) {
                 content.das.mapNotNull { directAction ->
                     runCatching {
-                        daToDirectActionUM(directAction, emptyList())
+                        daToDirectActionUM(directAction, emptyList(), emptyList())
                     }.getOrElse {
                         logger.e(it, "daToDirectActionUM")
                         null
@@ -186,7 +186,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                 content.rules.mapNotNull {
                     runCatching {
                         // Disable it, in-case it is enabled after import.
-                        ruleToRuleUM(it, emptyList()).copy(isEnabled = false)
+                        ruleToRuleUM(it, emptyList(), emptyList()).copy(isEnabled = false)
                     }.getOrElse {
                         logger.e(it, "ruleToRuleUM")
                         null

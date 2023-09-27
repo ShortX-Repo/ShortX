@@ -564,7 +564,7 @@ private fun TitleAndDescription(
         },
         value = state.description,
         readOnly = readOnly,
-        showSymbolButton = false,
+        showSymbolButton = true,
         onValueChange = { description ->
             vm.setDescription(description)
         })

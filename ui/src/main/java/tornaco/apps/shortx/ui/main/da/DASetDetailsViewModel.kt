@@ -20,6 +20,7 @@ class DASetDetailsViewModel constructor(
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
+                val gvs = shortXManager.getAllGlobalVars()
                 val das = shortXManager.getAllDirectAction()
                     .filter {
                         it.directActionSetId == daSetId
@@ -27,7 +28,7 @@ class DASetDetailsViewModel constructor(
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {
-                            daToDirectActionUM(directAction, activeJobs)
+                            daToDirectActionUM(directAction, activeJobs, gvs)
                         }.getOrElse {
                             logger.e(it, "daToDirectActionUM")
                             null

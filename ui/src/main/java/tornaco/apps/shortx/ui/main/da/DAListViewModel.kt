@@ -34,6 +34,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
+                val gvs = shortXManager.getAllGlobalVars()
                 val allDASets = shortXManager.getAllDASets()
 
                 // This set is not exists anymore.
@@ -64,7 +65,7 @@ class DAListViewModel @Inject constructor(@ApplicationContext context: Context) 
                     .sortedByDescending { it.createTime }
                     .mapNotNull { directAction ->
                         runCatching {
-                            daToDirectActionUM(directAction, activeJobs)
+                            daToDirectActionUM(directAction, activeJobs, gvs)
                         }.getOrElse {
                             logger.e(it, "daToDirectActionUM")
                             null

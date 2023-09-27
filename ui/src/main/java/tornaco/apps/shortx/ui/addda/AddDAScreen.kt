@@ -274,5 +274,5 @@ private fun TitleAndDescription(
         Text(text = LocalI18N.current["ui.da.description"])
     }, value = state.description, readOnly = readOnly, onValueChange = { description ->
         vm.setDescription(description)
-    }, showSymbolButton = false)
+    }, showSymbolButton = true)
 }

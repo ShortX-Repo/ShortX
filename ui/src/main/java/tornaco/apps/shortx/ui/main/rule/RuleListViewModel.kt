@@ -32,6 +32,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
+                val gvs = shortXManager.getAllGlobalVars()
                 val allRules = shortXManager.getAllRules()
                 val allRuleSets = shortXManager.getAllRuleSets()
 
@@ -63,7 +64,7 @@ class RuleListViewModel @Inject constructor(@ApplicationContext context: Context
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
                         runCatching {
-                            ruleToRuleUM(rule, activeJobs)
+                            ruleToRuleUM(rule, activeJobs, gvs)
                         }.getOrElse {
                             logger.e(it, "ruleToRuleUM")
                             null

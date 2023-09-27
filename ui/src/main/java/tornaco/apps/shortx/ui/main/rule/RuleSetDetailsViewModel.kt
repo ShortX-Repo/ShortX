@@ -20,12 +20,13 @@ class RuleSetDetailsViewModel constructor(
                 val activeJobs = shortXManager.getActiveJobs().apply {
                     logger.d("activeJobs: $this")
                 }
+                val gvs = shortXManager.getAllGlobalVars()
                 val rules = shortXManager.getAllRules()
                     .filter { it.ruleSetId == ruleSetId }
                     .let(sort(state.value.ruleSortBy))
                     .mapNotNull { rule ->
                         runCatching {
-                            ruleToRuleUM(rule, activeJobs)
+                            ruleToRuleUM(rule, activeJobs, gvs)
                         }.getOrElse {
                             logger.e(it, "ruleToRuleUM")
                             null

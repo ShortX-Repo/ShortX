@@ -51,13 +51,13 @@ class TileSettingsViewModel @Inject constructor(@ApplicationContext context: Con
             updateState { copy(isLoading = true) }
 
             withContext(Dispatchers.IO) {
+                val gvs = shortXManager.getAllGlobalVars()
                 val tiles = shortXManager.getAllStatusBarTileSettings().sortedBy { it.tile.number }
-
                 val usages = mutableMapOf<StatusBarTile, MutableList<RuleUM>>()
                 shortXManager.getAllRules().forEach { rule ->
                     val tileFacts = rule.factsList.filter { it is_ OnQSTileClick::class.java }
                     if (tileFacts.isNotEmpty()) {
-                        val ruleUM = ruleToRuleUM(rule, emptyList())
+                        val ruleUM = ruleToRuleUM(rule, emptyList(), gvs)
                         tileFacts.forEach {
                             val onQSTileClick = it unpack_ OnQSTileClick::class.java
                             val tile = StatusBarTile.forNumber(onQSTileClick.tileNumber)

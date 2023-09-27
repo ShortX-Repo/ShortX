@@ -4,9 +4,11 @@ import androidx.compose.ui.graphics.Color
 import si.virag.fuzzydateformatter.FuzzyDateTimeFormatter
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.da.DirectAction
+import tornaco.apps.shortx.core.proto.gv.GlobalVar
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.is_
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -26,7 +28,8 @@ import java.util.Date
 
 fun <T> ContextViewModel<T>.daToDirectActionUM(
     directAction: DirectAction,
-    activeJobs: List<String>
+    activeJobs: List<String>,
+    globalVars: List<GlobalVar>
 ): DirectActionUM {
     val firstAction: Action? = directAction.actionsList?.let {
         if (it.isEmpty()) {
@@ -39,7 +42,7 @@ fun <T> ContextViewModel<T>.daToDirectActionUM(
     return DirectActionUM(
         id = directAction.id,
         title = directAction.title,
-        description = translateDA(directAction),
+        description = translateDA(directAction, globalVars),
         updateTime = FuzzyDateTimeFormatter.getTimeAgo(
             context,
             Date(directAction.lastUpdateTime)
@@ -62,14 +65,20 @@ fun <T> ContextViewModel<T>.daToDirectActionUM(
     )
 }
 
-private fun <T> ContextViewModel<T>.translateDA(da: DirectAction) =
-    da.description.fallbackOnEmpty(da.actionsList.mapNotNull {
-        it.toAction(shortXManager)
-    }.joinToString {
-        labelAndDescriptionForActionSelector(i18N, it::class).first
-    })
+private fun <T> ContextViewModel<T>.translateDA(da: DirectAction, globalVars: List<GlobalVar>) =
+    da.description
+        .replaceGlobalVarValues { globalVars }
+        .fallbackOnEmpty(da.actionsList.mapNotNull {
+            it.toAction(shortXManager)
+        }.joinToString {
+            labelAndDescriptionForActionSelector(i18N, it::class).first
+        })
 
-fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule, activeJobs: List<String>): RuleUM {
+fun <T> ContextViewModel<T>.ruleToRuleUM(
+    rule: Rule,
+    activeJobs: List<String>,
+    globalVars: List<GlobalVar>
+): RuleUM {
     val firstFact: Fact? =
         if (rule.factsList.isEmpty()) null else rule.factsList[0]?.toFact(shortXManager)
     val firstAction: Action? = rule.actionsList?.let {
@@ -82,7 +91,7 @@ fun <T> ContextViewModel<T>.ruleToRuleUM(rule: Rule, activeJobs: List<String>): 
     return RuleUM(
         id = rule.id,
         title = rule.title,
-        description = rule.description.fallbackOnEmpty(
+        description = rule.description.replaceGlobalVarValues { globalVars }.fallbackOnEmpty(
             translateRule(rule)
         ),
         updateTime = FuzzyDateTimeFormatter.getTimeAgo(
