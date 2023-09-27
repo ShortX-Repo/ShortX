@@ -39,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -97,22 +98,34 @@ import tornaco.apps.shortx.ui.theme.SuccessGreen
 @AndroidEntryPoint
 class EvaRecordActivity : BaseActivity() {
     companion object {
+        const val KEY_PIN_SRC_ID = "pin_src_id"
+
         @JvmStatic
-        fun start(context: Context) {
-            val starter = Intent(context, EvaRecordActivity::class.java)
+        fun start(context: Context, pinSrcId: String? = null) {
+            val starter = Intent(context, EvaRecordActivity::class.java).apply {
+                pinSrcId?.let {
+                    putExtra(KEY_PIN_SRC_ID, it)
+                }
+            }
             context.startActivity(starter)
         }
+
+        val Intent.pinSrcIdOrNull: String? get() = this.getStringExtra(KEY_PIN_SRC_ID)
     }
 
     @Composable
     override fun Content() {
-        EvaRecordScreen { finish() }
+        val pinSrcId = intent.pinSrcIdOrNull
+        EvaRecordScreen(pinSrcId) { finish() }
     }
 }
 
 @Composable
-fun EvaRecordScreen(back: () -> Unit) {
+fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
     val vm = hiltViewModel<EvaRecordViewModel>()
+    LaunchedEffect(vm) {
+        pinSrcId?.let { vm.setOnlyShowSrcId(pinSrcId) }
+    }
     val state by vm.collectAsState()
 
     val i18N = LocalI18N.current

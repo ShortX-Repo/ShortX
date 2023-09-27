@@ -50,11 +50,11 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberClickAnimateState
-import tornaco.apps.shortx.ui.base.rememberCommonDialogState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.shortcut.ActionShortcutActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
@@ -366,6 +366,12 @@ private fun daListItemOverflowMenu(
             icon = {
                 RemixIcon(Remix.Document.folder_reduce_fill)
             }),
+        DropdownItem(
+            labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+            data = DAItemMenuOptions.ViewEvaRecord,
+            icon = {
+                RemixIcon(Remix.System.history_fill)
+            }),
         DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
             data = DAItemMenuOptions.Delete,
             icon = {
@@ -439,6 +445,10 @@ private fun daListItemOverflowMenu(
             DAItemMenuOptions.MoveOutSet -> {
                 handler.moveOutSet(da)
             }
+
+            DAItemMenuOptions.ViewEvaRecord -> {
+                EvaRecordActivity.start(context, da.id)
+            }
         }
     })
 
@@ -447,7 +457,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet
+    Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, MoveToSet, MoveOutSet, ViewEvaRecord
 }
 
 @Composable

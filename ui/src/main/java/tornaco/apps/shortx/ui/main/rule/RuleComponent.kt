@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +44,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.da.RunningIndicator
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
@@ -180,6 +182,8 @@ private fun listItemOverflowMenu(
 
     val menuState = rememberDropdownSelectorState()
 
+    val context = LocalContext.current
+
     DropdownSelector(
         widthFraction = menuDropdownFraction,
         state = menuState,
@@ -219,6 +223,12 @@ private fun listItemOverflowMenu(
                 data = RuleItemMenuOptions.MoveOutSet,
                 icon = {
                     RemixIcon(Remix.Document.folder_reduce_fill)
+                }),
+            DropdownItem(
+                labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+                data = RuleItemMenuOptions.ViewEvaRecord,
+                icon = {
+                    RemixIcon(Remix.System.history_fill)
                 }),
             DropdownItem(
                 labelLines = listOf(i18N["ui.common.delete"]),
@@ -264,11 +274,15 @@ private fun listItemOverflowMenu(
                 RuleItemMenuOptions.MoveOutSet -> {
                     handler.moveOutSet(rule)
                 }
+
+                RuleItemMenuOptions.ViewEvaRecord -> {
+                    EvaRecordActivity.start(context, rule.id)
+                }
             }
         })
     return menuState
 }
 
 enum class RuleItemMenuOptions {
-    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet
+    Dup, Delete, Edit, Share, Execute, MoveToSet, MoveOutSet, ViewEvaRecord
 }

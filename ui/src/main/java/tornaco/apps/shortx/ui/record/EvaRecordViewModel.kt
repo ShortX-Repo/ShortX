@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.proto.rule.FactPublishRecord
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
@@ -127,6 +128,17 @@ class EvaRecordViewModel @Inject constructor(@ApplicationContext private val con
     override val container: Container<EvaRecordState, String> = container(
         initialState = EvaRecordState()
     )
+
+    fun setOnlyShowSrcId(onlyShowSrcId: String) {
+        val title =
+            (shortXManager.getDirectActionById(onlyShowSrcId)?.title) ?: (shortXManager.getRuleById(
+                onlyShowSrcId
+            )?.title)
+        val context = EvaluateContext.newBuilder().setSrcId(onlyShowSrcId)
+            .setSrcTitle(title.fallbackOnEmpty("")).build()
+
+        setOnlyShowSrcId(context)
+    }
 
     fun setOnlyShowSrcId(onlyShowSrc: EvaluateContext?) = intent {
         val showSrc = if (state.onlyShowSrc == onlyShowSrc) {
