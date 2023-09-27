@@ -234,6 +234,7 @@ private fun DAContent(
     Spacer(modifier = Modifier.size(24.dp))
 
     ActionContent(
+        srcId = addDirectActionState.id,
         actions = actionContentState.actions,
         handler = actionContentStateHandler.asActionHandler(),
         readOnly = readOnly,

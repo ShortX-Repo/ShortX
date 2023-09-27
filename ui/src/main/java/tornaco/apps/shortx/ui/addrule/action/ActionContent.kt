@@ -99,6 +99,8 @@ fun ActionContent(
     header: @Composable() (ColumnScope.() -> Unit) = {
         MediumTitle(LocalI18N.current["ui.actions.title"])
     },
+    // Rule Or DA id.
+    srcId: String? = null,
     actions: List<Action>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean = false,
@@ -107,6 +109,7 @@ fun ActionContent(
     Actions(
         header = header,
         warnings = warnings,
+        srcId = srcId,
         actions = actions,
         readOnly = readOnly,
         handler = handler
@@ -116,6 +119,7 @@ fun ActionContent(
 @Composable
 private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
+    srcId: String?,
     actions: List<Action>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean,
@@ -167,7 +171,7 @@ private fun Actions(
                     if (it.data == "exe") {
                         scope.launch { handler.executeAll() }
                     } else if (it.data == "history") {
-                        EvaRecordActivity.start(context)
+                        EvaRecordActivity.start(context = context, pinSrcId = srcId)
                     }
                 })
 
@@ -643,7 +647,12 @@ private fun Actions(
 
             DropdownSelector(
                 state = actionContentCardMenuState,
-                items = listOf(DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.paste"]), data = "paste")),
+                items = listOf(
+                    DropdownItem(
+                        labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                        data = "paste"
+                    )
+                ),
                 onSelect = {
                     val clipboardActions = UiClipboard.getActions()
                     if (clipboardActions.size == 1) {

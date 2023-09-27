@@ -332,6 +332,7 @@ private fun RuleContent(
     SectionSpacer()
 
     ActionContent(
+        srcId = addRuleState.id,
         actions = actionContentState.actions,
         handler = actionHandler.asActionHandler(),
         readOnly = readOnly,
@@ -442,6 +443,7 @@ private fun RuleContent(
                             )
                             TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
                         },
+                        srcId = addRuleState.id,
                         actions = quitActionState.actions,
                         warnings = emptyMap(),
                         handler = quitActionHandler.asActionHandler()
@@ -462,6 +464,7 @@ private fun RuleContent(
                         LocalI18N.current["ui.actions.hook.on.enabled.description"]
                     )
                 },
+                srcId = addRuleState.id,
                 actions = actionOnEnabledState.actions,
                 handler = actionOnEnabledHandler.asActionHandler(),
                 readOnly = readOnly,
@@ -476,6 +479,7 @@ private fun RuleContent(
                         LocalI18N.current["ui.actions.hook.on.disabled.description"]
                     )
                 },
+                srcId = addRuleState.id,
                 actions = actionOnDisabledState.actions,
                 handler = actionOnDisabledHandler.asActionHandler(),
                 readOnly = readOnly,
@@ -490,6 +494,7 @@ private fun RuleContent(
                         LocalI18N.current["ui.actions.hook.on.deleted.description"]
                     )
                 },
+                srcId = addRuleState.id,
                 actions = actionOnDeletedState.actions,
                 handler = actionOnDeletedHandler.asActionHandler(),
                 readOnly = readOnly,
