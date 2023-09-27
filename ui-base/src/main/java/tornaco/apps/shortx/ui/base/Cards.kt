@@ -2,7 +2,6 @@
 
 package tornaco.apps.shortx.ui.base
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring.StiffnessMediumLow
@@ -41,6 +40,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.theme.SuccessGreen
 import tornaco.apps.shortx.ui.theme.WarningYellow
 
 @Composable
@@ -61,8 +61,19 @@ fun ShortXCard(
 }
 
 @Composable
+fun TipCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Card(
+        modifier = modifier,
+        backgroundColor = SuccessGreen.copy(alpha = 0.16f),
+        shape = ShortXCardRoundedCornerShape,
+        elevation = 0.dp,
+        content = content
+    )
+}
+
+@Composable
 fun TipCard(modifier: Modifier = Modifier, tip: String) {
-    ShortXCard(modifier = modifier) {
+    TipCard(modifier = modifier) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = tip,

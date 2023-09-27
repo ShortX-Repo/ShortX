@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +20,6 @@ import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.theme.PrefIcon
 
@@ -72,9 +69,8 @@ fun BatchOpToolbar(state: BatchOpState) {
                     RemixIcon(remixName = Remix.Document.file_copy_line, tint = PrefIcon)
                 }
 
-                StandardSpacer()
-                TextButton(onClick = { state.disable() }) {
-                    Text(text = i18N["ui.common.done"])
+                IconButton(onClick = { state.disable() }) {
+                    RemixIcon(remixName = Remix.System.check_line, tint = PrefIcon)
                 }
             }
         }

@@ -81,6 +81,8 @@ import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShapeXL
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.ui.base.TipIds
+import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.VerticalDivider
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
@@ -174,6 +176,8 @@ private fun Actions(
                 }
             }
         }
+
+        UserTip(TipIds.actionContent, LocalI18N.current["ui.actions.content.tip"])
 
         val contextDataInfoDialogState = rememberContextDataInfoDialogState()
         ContextDataInfoDialog(state = contextDataInfoDialogState)

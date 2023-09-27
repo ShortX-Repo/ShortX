@@ -44,10 +44,17 @@ private val DISCOVERY_SELECTED_REPO_URL =
 
 private val SHARE_AUTHOR_INFO = stringPreferencesKey("share_author_info")
 
+private val USER_TIPS_HAS_READ =
+    stringSetPreferencesKey("user_tips_has_read")
+
 class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
         private val logger = Logger("Pref")
+    }
+
+    val userTipsHasRead: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[USER_TIPS_HAS_READ] ?: emptySet()
     }
 
     val hideSubscribeInfoFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -178,6 +185,15 @@ class Pref(val context: Context) {
     suspend fun setHttpChuckerEnabled(enable: Boolean) {
         context.dataStore.edit {
             it[UI_ENABLE_HTTP_CHUCKER] = enable
+        }
+    }
+
+    suspend fun userReadTip(id: String) {
+        val tips = (userTipsHasRead.firstOrNull() ?: emptySet()).toMutableSet().apply {
+            add(id)
+        }
+        context.dataStore.edit {
+            it[USER_TIPS_HAS_READ] = tips
         }
     }
 }
