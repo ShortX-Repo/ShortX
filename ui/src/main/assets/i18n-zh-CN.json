@@ -44,6 +44,7 @@
   "ui.conditions.app.has.notification": "应用有通知",
   "ui.actions.title": "动作",
   "ui.actions.content.tip": "点击动作左侧的图标可唤出菜单，长按动作项可批量操作",
+  "ui.common.rule.item.tip": "点击指令图标或者长按指令项可唤出菜单",
   "ui.actions.single.click.title": "单击动作",
   "ui.actions.long.click.title": "长按动作",
   "ui.actions.hook.on.enabled.title": "被启用时",

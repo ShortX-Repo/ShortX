@@ -28,8 +28,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.ui.addrule.AddRuleActivity
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
+import tornaco.apps.shortx.ui.base.TipIds
+import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.main.CommonSetFilter
@@ -151,6 +154,12 @@ fun RuleContent(
         if (!isLoading && rules.isEmpty()) {
             EmptyList(modifier = Modifier.fillMaxSize())
         } else {
+            UserTip(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                tipId = TipIds.commonRuleItem,
+                message = LocalI18N.current["ui.common.rule.item.tip"]
+            )
+
             val subscribeState by LVLStateHolder.collectAsState()
             RuleListContent(
                 isSubscribed = subscribeState.isSubscribed,

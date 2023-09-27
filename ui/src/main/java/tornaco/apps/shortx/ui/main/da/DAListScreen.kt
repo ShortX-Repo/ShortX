@@ -4,7 +4,6 @@ package tornaco.apps.shortx.ui.main.da
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,9 +37,12 @@ import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addda.AddDirectActionActivity
 import tornaco.apps.shortx.ui.base.EmptyList
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXFilterChip
+import tornaco.apps.shortx.ui.base.TipIds
+import tornaco.apps.shortx.ui.base.UserTip
 import tornaco.apps.shortx.ui.base.adaptiveLauncherIconSizeMin
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
@@ -177,6 +179,12 @@ fun DirectActionListContent(
         if (!isLoading && das.isEmpty()) {
             EmptyList(modifier = Modifier.fillMaxSize())
         } else {
+            UserTip(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                tipId = TipIds.commonRuleItem,
+                message = LocalI18N.current["ui.common.rule.item.tip"]
+            )
+
             val subscribeState by LVLStateHolder.collectAsState()
             if (isShowDetailedDAItem) {
                 DAListContent(

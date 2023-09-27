@@ -44,6 +44,7 @@
   "ui.conditions.app.has.notification": "App has notification",
   "ui.actions.title": "Actions",
   "ui.actions.content.tip": "Click action icon to display action menu, long click item to enable batch operation",
+  "ui.common.rule.item.tip": "You can also click icon to display menu",
   "ui.actions.single.click.title": "Single click Actions",
   "ui.actions.long.click.title": "Long click Actions",
   "ui.actions.hook.on.enabled.title": "On enabled",

@@ -177,7 +177,11 @@ private fun Actions(
             }
         }
 
-        UserTip(TipIds.actionContent, LocalI18N.current["ui.actions.content.tip"])
+        UserTip(
+            modifier = Modifier,
+            tipId = TipIds.actionContent,
+            message = LocalI18N.current["ui.actions.content.tip"]
+        )
 
         val contextDataInfoDialogState = rememberContextDataInfoDialogState()
         ContextDataInfoDialog(state = contextDataInfoDialogState)

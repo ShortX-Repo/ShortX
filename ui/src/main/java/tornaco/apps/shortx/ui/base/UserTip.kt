@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,10 +35,17 @@ object TipIds {
             "ActionContent"
         )
     }
+
+    val commonRuleItem by lazy {
+        BuildProp.APP_IS_DEBUG.select(
+            "CommonRule_${UUID.randomUUID()}",
+            "CommonRule"
+        )
+    }
 }
 
 @Composable
-fun UserTip(tipId: String, message: String) {
+fun UserTip(modifier: Modifier = Modifier, tipId: String, message: String) {
     val context = LocalContext.current
     val pref = remember { Pref(context) }
     val userReadTips by pref.userTipsHasRead.collectAsState(initial = null)
@@ -50,7 +56,7 @@ fun UserTip(tipId: String, message: String) {
                 && !userReadTips!!.contains(tipId)
     ) {
         TipCard(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = 6.dp)
         ) {
