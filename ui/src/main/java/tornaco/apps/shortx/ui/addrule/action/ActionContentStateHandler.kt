@@ -36,6 +36,9 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
         insertBelow = { action, anchorId ->
             this.insertActionBelow(action, anchorId)
         },
+        insertLast = { action ->
+            addAction(action)
+        },
         copy = { actionId ->
             actions.first { it.id == actionId }.let {
                 UiClipboard.copy(UiClipboard.ClipboardContent.ActionContent(it))

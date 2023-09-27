@@ -192,6 +192,7 @@
   "ui.common.insert.above": "Insert above",
   "ui.common.paste.above": "Paste above",
   "ui.common.insert.below": "Insert below",
+  "ui.common.paste": "Paste",
   "ui.common.paste.below": "Paste below",
   "ui.common.delete": "Delete",
   "ui.common.dismiss": "Dismiss",
