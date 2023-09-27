@@ -179,11 +179,13 @@ fun DirectActionListContent(
         if (!isLoading && das.isEmpty()) {
             EmptyList(modifier = Modifier.fillMaxSize())
         } else {
-            UserTip(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                tipId = TipIds.commonRuleItem,
-                message = LocalI18N.current["ui.common.rule.item.tip"]
-            )
+            if (!isLoading) {
+                UserTip(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    tipId = TipIds.commonRuleItem,
+                    message = LocalI18N.current["ui.common.rule.item.tip"]
+                )
+            }
 
             val subscribeState by LVLStateHolder.collectAsState()
             if (isShowDetailedDAItem) {
