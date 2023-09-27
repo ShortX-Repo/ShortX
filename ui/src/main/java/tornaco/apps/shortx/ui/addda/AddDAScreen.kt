@@ -5,6 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -264,15 +268,47 @@ private fun TitleAndDescription(
     vm: AddDirectActionViewModel,
     readOnly: Boolean
 ) {
-    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = LocalI18N.current["ui.da.title"])
-    }, value = state.title, readOnly = readOnly, onValueChange = { title ->
-        vm.setTitle(title)
-    }, showSymbolButton = false)
-    Spacer(modifier = Modifier.size(16.dp))
-    ShortXTextField(modifier = Modifier.fillMaxWidth(), label = {
-        Text(text = LocalI18N.current["ui.da.description"])
-    }, value = state.description, readOnly = readOnly, onValueChange = { description ->
-        vm.setDescription(description)
-    }, showSymbolButton = true)
+    var showDescription by remember(state) { mutableStateOf(state.description.isNotEmpty()) }
+    val dropdownRotate by animateFloatAsState(
+        targetValue = if (showDescription) 180f else 0f,
+        label = "dropdownRotate"
+    )
+
+    ShortXTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(text = LocalI18N.current["ui.da.title"])
+        },
+        value = state.title,
+        readOnly = readOnly,
+        onValueChange = { title ->
+            vm.setTitle(title)
+        },
+        trailingIcon = {
+            IconButton(onClick = { showDescription = !showDescription }) {
+                RemixIcon(
+                    modifier = Modifier.rotate(dropdownRotate),
+                    remixName = Remix.Arrows.arrow_drop_down_fill
+                )
+            }
+        },
+        showSymbolButton = false
+    )
+
+    AnimatedVisibility(visible = showDescription) {
+        ShortXTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = {
+                Text(text = LocalI18N.current["ui.da.description"])
+            },
+            value = state.description,
+            readOnly = readOnly,
+            onValueChange = { description ->
+                vm.setDescription(description)
+            },
+            showSymbolButton = true
+        )
+    }
 }
