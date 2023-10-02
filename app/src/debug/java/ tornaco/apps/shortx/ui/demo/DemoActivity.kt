@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -25,7 +27,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.ShortXManagerNative
+import tornaco.apps.shortx.core.os.currentUserHandle
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.launcherApps
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
@@ -54,11 +58,24 @@ class DemoActivity : BaseActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues)
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()),
                     ) {
                         NotificationDemo()
                         MapDemo()
                         VibrateDemo()
+
+                        val context = LocalContext.current
+
+                        Button(onClick = {
+                            val launcher = context.launcherApps
+                            launcher.getShortcutConfigActivityList(null, currentUserHandle).apply {
+                                Logger().d("${this.joinToString()}")
+                            }
+                        }) {
+                            Text(text = "getShortcutConfigActivityList")
+                        }
+
 
                         FilledTonalButton(onClick = {
                             throw IllegalArgumentException()
@@ -78,7 +95,6 @@ class DemoActivity : BaseActivity() {
                             Text(text = "Test fatal error")
                         }
 
-                        val context = LocalContext.current
                         FilledTonalButton(onClick = {
                             AlertDialog.Builder(context)
                                 .setAdapter(
@@ -118,7 +134,6 @@ class DemoActivity : BaseActivity() {
                         }) {
                             Text(text = "Compose demo")
                         }
-
 
                         Button(onClick = {
                             var tts: TextToSpeech? = null

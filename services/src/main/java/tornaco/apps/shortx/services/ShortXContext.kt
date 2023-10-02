@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.services
 
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.services.app.AppStateService
 import tornaco.apps.shortx.services.app.PkgSetService
 import tornaco.apps.shortx.services.audio.AudioService
+import tornaco.apps.shortx.services.dev.DevService
 import tornaco.apps.shortx.services.gesture.GestureService
 import tornaco.apps.shortx.services.input.InputService
 import tornaco.apps.shortx.services.media.MediaService
@@ -37,9 +39,10 @@ interface ShortXContext {
     val phone: PhoneService
     val shell: ShellService
     val tile: StatusBarTileService
+    val dev: DevService
 
     val allServices
-        get() = listOf(
+        get() = mutableListOf(
             appState,
             pkgSet,
             rule,
@@ -58,7 +61,9 @@ interface ShortXContext {
             phone,
             shell,
             tile,
-        )
+        ).apply {
+            onDebugBuild { add(dev) }
+        }
 }
 
 class ShortXContextImpl : ShortXContext {
@@ -80,4 +85,5 @@ class ShortXContextImpl : ShortXContext {
     override val phone = PhoneService(this)
     override val shell = ShellService(this)
     override val tile = StatusBarTileService(this)
+    override val dev = DevService(this)
 }
