@@ -108,6 +108,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Media.volume_vibrate_line
         }
 
+        Condition.HasNodeOnScreen::class -> {
+            Remix.Design.focus_3_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -53,6 +53,9 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 private const val DEFAULT_TIMEOUT = 5000L
 
 class HasFoundNodeOnScreenSelectorDialogState(
+    val canSelectPkgName: Boolean,
+    val canSelectActivity: Boolean,
+    val canSelectTimeout: Boolean,
     val onSelected: (Fact.HasFoundNodeOnScreen) -> Unit
 ) : CommonDialogState() {
     var packageName: String by mutableStateOf("")
@@ -84,10 +87,18 @@ class HasFoundNodeOnScreenSelectorDialogState(
 
 @Composable
 fun rememberHasFoundNodeOnScreenState(
+    canSelectPkgName: Boolean = true,
+    canSelectActivity: Boolean = true,
+    canSelectTimeout: Boolean = true,
     onSelected: (Fact.HasFoundNodeOnScreen) -> Unit
 ): HasFoundNodeOnScreenSelectorDialogState {
     return remember {
-        HasFoundNodeOnScreenSelectorDialogState(onSelected)
+        HasFoundNodeOnScreenSelectorDialogState(
+            canSelectPkgName,
+            canSelectActivity,
+            canSelectTimeout,
+            onSelected
+        )
     }
 }
 
@@ -144,74 +155,81 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg"])
-                    SmallSpacer()
-                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg.description"])
-                    MediumSpacer()
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = dialogState.packageName,
-                        showSymbolButton = true,
-                        onValueChange = { newValue ->
-                            dialogState.packageName = newValue
-                        })
-                    StandardSpacer()
-
-                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component"])
-                    SmallSpacer()
-                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component.description"])
-                    MediumSpacer()
-
-                    val activityComponentSelectorState = rememberAppComponentSelectorState(
-                        types = listOf(ComponentType.Activity),
-                        maxItemCount = 1,
-                        onAppComponentSelected = { infoList ->
-                            if (infoList.isNotEmpty()) {
-                                dialogState.componentName = infoList[0].component.toComponentName()
-                                    .flattenToString()
-                            }
-                        }
-                    )
-                    AppComponentSelectorDialog(activityComponentSelectorState)
-
-                    val singleAppSelectorState = rememberSingleAppPkgSelectorState {
-                        activityComponentSelectorState.show(it.pkg)
+                    if (dialogState.canSelectPkgName) {
+                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg"])
+                        SmallSpacer()
+                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg.description"])
+                        MediumSpacer()
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = dialogState.packageName,
+                            showSymbolButton = true,
+                            onValueChange = { newValue ->
+                                dialogState.packageName = newValue
+                            })
+                        StandardSpacer()
                     }
-                    SingleAppSelectorDialog(state = singleAppSelectorState)
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = dialogState.componentName,
-                        showSymbolButton = true,
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                singleAppSelectorState.show()
-                            }) {
-                                RemixIcon(
-                                    modifier = Modifier,
-                                    remixName = Remix.System.search_2_line
-                                )
+
+                    if (dialogState.canSelectActivity) {
+                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component"])
+                        SmallSpacer()
+                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component.description"])
+                        MediumSpacer()
+
+                        val activityComponentSelectorState = rememberAppComponentSelectorState(
+                            types = listOf(ComponentType.Activity),
+                            maxItemCount = 1,
+                            onAppComponentSelected = { infoList ->
+                                if (infoList.isNotEmpty()) {
+                                    dialogState.componentName =
+                                        infoList[0].component.toComponentName()
+                                            .flattenToString()
+                                }
                             }
-                        },
-                        onValueChange = { newValue ->
-                            dialogState.componentName = newValue
-                        })
-                    StandardSpacer()
+                        )
+                        AppComponentSelectorDialog(activityComponentSelectorState)
+
+                        val singleAppSelectorState = rememberSingleAppPkgSelectorState {
+                            activityComponentSelectorState.show(it.pkg)
+                        }
+                        SingleAppSelectorDialog(state = singleAppSelectorState)
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = dialogState.componentName,
+                            showSymbolButton = true,
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    singleAppSelectorState.show()
+                                }) {
+                                    RemixIcon(
+                                        modifier = Modifier,
+                                        remixName = Remix.System.search_2_line
+                                    )
+                                }
+                            },
+                            onValueChange = { newValue ->
+                                dialogState.componentName = newValue
+                            })
+                        StandardSpacer()
+                    }
 
 
 
-                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout"])
-                    SmallSpacer()
-                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout.description"])
-                    MediumSpacer()
-                    ShortXTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = dialogState.timeout.toString(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        showSymbolButton = false,
-                        onValueChange = { newValue ->
-                            dialogState.timeout = newValue.toLongOrDefault(DEFAULT_TIMEOUT)
-                        })
-                    StandardSpacer()
+                    if (dialogState.canSelectTimeout) {
+                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout"])
+                        SmallSpacer()
+                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout.description"])
+                        MediumSpacer()
+                        ShortXTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = dialogState.timeout.toString(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            showSymbolButton = false,
+                            onValueChange = { newValue ->
+                                dialogState.timeout = newValue.toLongOrDefault(DEFAULT_TIMEOUT)
+                            })
+                        StandardSpacer()
+                    }
 
                     FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.matcher"])
                     SmallSpacer()

@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
 import tornaco.apps.shortx.ui.addrule.conditionContextData
+import tornaco.apps.shortx.ui.addrule.fact.model.NodeMatcher
 import java.util.UUID
 
 fun defaultNewConditionId() = "C-" + UUID.randomUUID().toString()
@@ -633,6 +634,33 @@ sealed interface Condition : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val note: String = "",
         override val id: String = defaultNewConditionId(),
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+
+    @Parcelize
+    data class HasNodeOnScreen(
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+        val packageName: String,
+        val componentName: String,
+        val detectTimeout: Long,
+        val matchers: List<NodeMatcher>
     ) : Condition {
         override fun clone(
             id: String,

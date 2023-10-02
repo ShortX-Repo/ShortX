@@ -18,14 +18,16 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
-import tornaco.apps.shortx.core.ui.XRectF
+import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
+import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.rule.cond.impl.HasNodeOnScreen
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.ui.overlay.IdViewerView
@@ -293,7 +295,9 @@ class WindowManagerService(shortXContext: ShortXContext) :
             discoverViewIdFromAccessibilityNode(nodes, root)
         }
         logger.d("discoverViewIdFromAccessibilityNode take ${System.currentTimeMillis() - discoverStartTimeMillis}ms")
-        return nodes
+        return nodes.also {
+            onDebugBuild { HasNodeOnScreen.logger.d("getAllNodesFromScreen allNodes: $it") }
+        }
     }
 
     fun enableUniversalCopy() {

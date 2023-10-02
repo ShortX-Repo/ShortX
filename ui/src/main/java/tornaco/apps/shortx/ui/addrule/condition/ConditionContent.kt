@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.addrule.condition.selector.appConditionSelectHandl
 import tornaco.apps.shortx.ui.addrule.condition.selector.otherConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.condition.selector.rememberConditionSelectorDialogState
 import tornaco.apps.shortx.ui.addrule.condition.selector.systemConditionSelectHandler
+import tornaco.apps.shortx.ui.addrule.condition.selector.uiConditionSelectHandler
 import tornaco.apps.shortx.ui.addrule.rememberContextDataInfoDialogState
 import tornaco.apps.shortx.ui.base.ClickableBadge
 import tornaco.apps.shortx.ui.base.ColoredIcon
@@ -130,6 +131,16 @@ fun ConditionList(
                     conditions.forEach { conditionItem ->
                         val currentCondition by rememberUpdatedState(newValue = conditionItem)
                         val allHandlers = listOf(
+                            uiConditionSelectHandler {
+                                handler.addCondition(
+                                    it.clone(
+                                        id = currentCondition.id,
+                                        note = currentCondition.note,
+                                        isInvert = currentCondition.isInvert,
+                                        customContextDataKey = currentCondition.customContextDataKey
+                                    )
+                                )
+                            },
                             appConditionSelectHandler {
                                 handler.addCondition(
                                     it.clone(

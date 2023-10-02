@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
+import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
@@ -27,8 +28,12 @@ import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.rule.ProtoMessage
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.ui.addrule.condition.op.toConditionOperator
+import tornaco.apps.shortx.ui.addrule.fact.model.NodeMatcher
 
 
 fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
@@ -341,6 +346,33 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
+        is Condition.HasNodeOnScreen -> {
+            HasNodeOnScreen.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setPackageName(packageName)
+                .setComponentName(componentName)
+                .setDetectTimeout(detectTimeout)
+                .addAllMatchers(matchers.mapNotNull {
+                    when (it) {
+                        is NodeMatcher.Text -> {
+                            NodeMatcherText.newBuilder().setText(it.text).setIsRegex(it.isRegex)
+                                .build()
+                                .pack_()
+                        }
+
+                        is NodeMatcher.ViewId -> {
+                            NodeMatcherViewId.newBuilder().setId(it.viewId).build().pack_()
+                        }
+
+                        else -> null
+                    }
+                })
                 .build()
         }
     }

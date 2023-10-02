@@ -11,6 +11,7 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
+import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
@@ -27,10 +28,13 @@ import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
 import tornaco.apps.shortx.core.proto.condition.TimeInRange
 import tornaco.apps.shortx.core.proto.condition.True
 import tornaco.apps.shortx.core.proto.condition.VPNIsConnected
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
+import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.ui.addrule.condition.op.toOp
+import tornaco.apps.shortx.ui.addrule.fact.model.NodeMatcher
 import tornaco.apps.shortx.ui.addrule.protoPkgsAndPkgSetsToModels
 
 
@@ -317,6 +321,28 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey
+            )
+        }
+
+        this is_ HasNodeOnScreen::class.java -> {
+            val data = this unpack_ HasNodeOnScreen::class.java
+            Condition.HasNodeOnScreen(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                packageName = data.packageName,
+                componentName = data.componentName,
+                detectTimeout = data.detectTimeout,
+                matchers = data.matchersList.mapNotNull {
+                    if (it is_ NodeMatcherText::class.java) {
+                        val m = it unpack_ NodeMatcherText::class.java
+                        NodeMatcher.Text(m.text, m.isRegex)
+                    } else if (it is_ NodeMatcherViewId::class.java) {
+                        val m = it unpack_ NodeMatcherViewId::class.java
+                        NodeMatcher.ViewId(m.id)
+                    } else null
+                }
             )
         }
 

@@ -27,4 +27,5 @@ val allConditionClasses = listOf(
     Condition.ScreenOrientationIsPort::class,
     Condition.IsInCall::class,
     Condition.IsRinging::class,
+    Condition.HasNodeOnScreen::class,
 )

@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 enum class ConditionCategory(val i18NKey: String, val icon: String) {
+    Ui("UI", Remix.System.apps_2_line),
     Apps("ui.action.category.app", Remix.System.apps_2_line),
     System("ui.action.system.settings", Remix.System.settings_2_line),
     Other("ui.action.misc", Remix.System.settings_2_line),
@@ -111,6 +112,13 @@ private fun <ARGS> ConditionSelector(
                     }
 
                     val subscribeState by LVLStateHolder.collectAsState()
+
+                    UIConditions(
+                        keyword = searchBarState.keyword,
+                        subscribeState = subscribeState,
+                        setCondition = setCondition
+                    )
+                    StandardSpacer()
 
                     AppConditions(
                         keyword = searchBarState.keyword,

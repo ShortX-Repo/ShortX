@@ -82,6 +82,7 @@
   "ui.rule.async.mode.sync_in_rule": "Sync exclusive",
   "ui.toast.rule.saved": "Rule saved",
   "ui.toast.da.saved": "Direct Action saved",
+  "ui.condition.is.has.node.on.screen":"Target view displayed",
   "ui.fact.has.found.node.on.screen": "Target view found",
   "ui.fact.has.found.node.on.screen.pkg": "Target package name",
   "ui.fact.has.found.node.on.screen.pkg.description": "Input * or leave it blank means scan for all packages",

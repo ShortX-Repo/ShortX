@@ -127,7 +127,6 @@ class AccessibilityNodeOnScreenTrigger(
                     val shouldCheckEvent = matcherForThisPackage.isNotEmpty()
                     if (shouldCheckEvent) {
                         val allNodes = shortXContext.wm.getAllNodesFromScreen()
-                        onDebugBuild { logger.d("allNodes: $allNodes") }
 
                         matcherForThisPackage.forEach { (brief, matcherList) ->
                             run matcher@{

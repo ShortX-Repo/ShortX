@@ -159,6 +159,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.condition.is.ringing"])
         }
 
+        Condition.HasNodeOnScreen::class -> {
+            listOf(i18N["ui.condition.is.has.node.on.screen"])
+        }
+
         else -> {
             emptyList()
         }
@@ -341,6 +345,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.IsRinging -> {
             listOf(
                 i18N["ui.condition.is.ringing"]
+            )
+        }
+
+        is Condition.HasNodeOnScreen -> {
+            listOf(
+                i18N["ui.condition.is.has.node.on.screen"]
             )
         }
     }

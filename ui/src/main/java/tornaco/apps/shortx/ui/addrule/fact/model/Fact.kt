@@ -1,5 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.fact.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppComponent
@@ -935,10 +937,11 @@ sealed interface Fact {
     }
 }
 
-sealed interface NodeMatcher {
+sealed interface NodeMatcher : Parcelable {
     val displayLabel: String
     val displayMessage: String
 
+    @Parcelize
     data class Text(val text: String, val isRegex: Boolean) : NodeMatcher {
         override val displayLabel: String
             get() = "ui.fact.has.found.node.on.screen.view.text"
@@ -946,6 +949,7 @@ sealed interface NodeMatcher {
             get() = this.text
     }
 
+    @Parcelize
     data class ViewId(val viewId: String) : NodeMatcher {
         override val displayLabel: String
             get() = "ui.fact.has.found.node.on.screen.view.id"

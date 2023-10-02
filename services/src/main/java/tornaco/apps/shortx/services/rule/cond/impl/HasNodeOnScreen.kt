@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
 import com.google.protobuf.Message
+import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
 import tornaco.apps.shortx.services.wm.NodeMatcher
@@ -14,16 +15,24 @@ object HasNodeOnScreen : Cond {
         val data =
             param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen::class.java)
 
+        runBlocking {
+            param.shortXContext.wm.withUiAutomation("condition.HasNodeOnScreen.") {
+            }
+        }
+
         val allNodes = param.shortXContext.wm.getAllNodesFromScreen()
+
         val matchers = data.matchersList.extractMatchers()
-        val isRinging = matchers.matchers.any {
+        logger.d("HasNodeOnScreen, matchers: $matchers")
+
+        val isMatched = matchers.matchers.any {
             NodeMatcher.matchNodes(it, allNodes).isMatched
         }
 
         return if (data.isInvert) {
-            !isRinging
+            !isMatched
         } else {
-            isRinging
+            isMatched
         }.toResult()
     }
 }

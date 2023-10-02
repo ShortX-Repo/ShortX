@@ -107,6 +107,6 @@ object NodeMatcher {
     private fun matchTextOrRegex(text: CharSequence?, matcher: NodeMatcherText): Boolean {
         if (text == null) return false
         if (matcher.isRegex && matcher.text.toRegex().matches(text.toString())) return true
-        return !matcher.isRegex && matcher.text == text
+        return !matcher.isRegex && matcher.text == text.toString()
     }
 }
