@@ -58,6 +58,21 @@ fun ActionContentStateHandler.asActionHandler(): ActionHandler {
             }
 
         },
+        batchEnableDisable = { actionIdList ->
+            val isAllEnabled = actions.filter { actionIdList.contains(it.id) }.all { it.isEnabled }
+            val setAllToEnabled = !isAllEnabled
+            actions.filter { actionIdList.contains(it.id) }.forEach {
+                addAction(
+                    it.clone(
+                        id = it.id,
+                        note = it.note,
+                        actionOnError = it.actionOnError,
+                        isEnabled = setAllToEnabled,
+                        contextData = it.contextData
+                    )
+                )
+            }
+        },
         setOnError = { actionId, onError ->
             actions.first { it.id == actionId }.let { action ->
                 addAction(

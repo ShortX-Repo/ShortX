@@ -22,9 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -238,13 +236,26 @@ private fun Actions(
                     actionContentCardMenuState.open()
                 }
             ) {
+                val updatedActions by rememberUpdatedState(newValue = actions)
                 val batchOpState = rememberBatchOpState(
                     onCopy = { idList ->
                         idList.forEach { handler.copy(it) }
                     },
+                    onToggleItems = { idList ->
+                        handler.batchEnableDisable(idList)
+                    },
                     onDeleteConfirmed = { idList ->
                         idList.forEach { handler.removeAction(it) }
                     },
+                    selectAll = { currentSelections ->
+                        val isAllSelected =
+                            currentSelections.isNotEmpty() && currentSelections.size == updatedActions.size
+                        if (isAllSelected) {
+                            removeAllItem()
+                        } else {
+                            addAllItem(updatedActions.map { it.id })
+                        }
+                    }
                 )
                 Column {
                     BatchOpToolbar(batchOpState)
@@ -316,13 +327,9 @@ private fun Actions(
 
                             Box(modifier = Modifier) {
                                 val clickDropdownState = rememberDropdownSelectorState()
-                                val isSelected by remember {
-                                    derivedStateOf {
-                                        batchOpState.batchSelectedItems.contains(
-                                            action.id
-                                        )
-                                    }
-                                }
+                                val isSelected = batchOpState.batchSelectedItems.contains(
+                                    action.id
+                                )
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -688,7 +695,7 @@ fun ActionIcon(action: Action, onClick: (() -> Unit)? = null) {
         if (action.actionOnError == ActionOnError.Break) {
             RemixIcon(
                 modifier = Modifier
-                    .size(8.dp)
+                    .size(11.dp)
                     .align(Alignment.TopEnd),
                 remixName = Remix.System.forbid_2_fill,
                 tint = colorForAction(action::class)
@@ -721,6 +728,7 @@ class ActionHandler(
     val insertLast: (action: Action) -> Unit = {},
     val copy: (actionId: String) -> Unit = {},
     val enableDisable: (actionId: String) -> Unit = {},
+    val batchEnableDisable: (actionId: List<String>) -> Unit = {},
     val setOnError: (actionId: String, onError: ActionOnError) -> Unit = { _, _ -> run {} },
     val setNote: (actionId: String, note: String) -> Unit = { _, _ -> run {} },
     val execute: suspend (actionId: String) -> Unit = { },
