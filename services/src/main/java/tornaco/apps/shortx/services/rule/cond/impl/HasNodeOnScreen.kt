@@ -1,0 +1,29 @@
+package tornaco.apps.shortx.services.rule.cond.impl
+
+import com.google.protobuf.Message
+import tornaco.apps.shortx.core.rule.unpack_
+import tornaco.apps.shortx.services.rule.cond.Cond
+import tornaco.apps.shortx.services.wm.NodeMatcher
+import tornaco.apps.shortx.services.wm.NodeMatcher.extractMatchers
+
+object HasNodeOnScreen : Cond {
+    override fun condClass(): Class<out Message> =
+        tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen::class.java
+
+    override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
+        val data =
+            param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen::class.java)
+
+        val allNodes = param.shortXContext.wm.getAllNodesFromScreen()
+        val matchers = data.matchersList.extractMatchers()
+        val isRinging = matchers.matchers.any {
+            NodeMatcher.matchNodes(it, allNodes).isMatched
+        }
+
+        return if (data.isInvert) {
+            !isRinging
+        } else {
+            isRinging
+        }.toResult()
+    }
+}

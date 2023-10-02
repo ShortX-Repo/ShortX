@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
@@ -19,6 +18,7 @@ import androidx.test.uiautomator.imp.UiSelector
 import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
+import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.util.clipboardManager
@@ -467,7 +467,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     TextViewNode(
                         text = root.text.toString(),
                         viewId = root.viewIdResourceName ?: "",
-                        position = RectF(
+                        position = XRectF(
                             rect.left.toFloat(),
                             rect.top.toFloat(),
                             rect.right.toFloat(),
@@ -505,7 +505,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     rootPackageName = root.packageName?.toString() ?: "android",
                     sourceNodeId = root.sourceNodeId,
                     windowId = root.windowId,
-                    position = RectF(
+                    position = XRectF(
                         rect.left.toFloat(),
                         rect.top.toFloat(),
                         rect.right.toFloat(),

@@ -10,13 +10,13 @@ import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
-import tornaco.apps.shortx.core.proto.fact.NodeMatcherText
-import tornaco.apps.shortx.core.proto.fact.NodeMatcherViewId
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
+import tornaco.apps.shortx.services.wm.NodeMatcher
+import tornaco.apps.shortx.services.wm.NodeMatcher.extractMatchers
 
 
 private data class HasFoundNodeOnScreenBrief(
@@ -32,7 +32,7 @@ class AccessibilityNodeOnScreenTrigger(
 ) :
     Trigger {
     private val logger = Logger("AccessibilityNodeOnScreenTrigger")
-    private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, MatcherList>()
+    private val nodeMatchers = mutableMapOf<HasFoundNodeOnScreenBrief, NodeMatcher.MatcherList>()
     private var currentClassName: String? = null
     private var currentClassTimeMillis: Long = 0L
 
@@ -130,63 +130,27 @@ class AccessibilityNodeOnScreenTrigger(
                         onDebugBuild { logger.d("allNodes: $allNodes") }
 
                         matcherForThisPackage.forEach { (brief, matcherList) ->
-                            var matchViewIdContextData = ""
-                            var matchTextContextData = ""
-                            var matchIsRegexContextData = false
-                            var sourceNodeId = 0L
-                            var windowId = 0
-                            val matchedOnThisFact = matcherList.matchers.any { matcherAny ->
-                                when (matcherAny) {
-                                    is NodeMatcherViewId -> {
-                                        val isMatch =
-                                            allNodes.any { viewNode ->
-                                                (viewNode.viewId == matcherAny.id || viewNode.shortViewId == matcherAny.id).also {
-                                                    if (it) {
-                                                        sourceNodeId = viewNode.sourceNodeId
-                                                        windowId = viewNode.windowId
-                                                        matchViewIdContextData = viewNode.viewId
-                                                    }
-                                                }
+                            run matcher@{
+                                matcherList.matchers.forEach {
+                                    val matchRes = NodeMatcher.matchNodes(it, allNodes)
+                                    if (matchRes.isMatched) {
+                                        shortXContext.rule.publishFact(
+                                            reason = "Match node",
+                                            fact = HasFoundNodeOnScreen.newBuilder().setId(brief.id)
+                                                .build(),
+                                            initialContextDataLazy = {
+                                                mapOf(
+                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchRes.matchViewIdContextData,
+                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchRes.matchTextContextData,
+                                                    ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchRes.matchIsRegexContextData,
+                                                    ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to matchRes.sourceNodeId,
+                                                    ContextDataMapping.HasFoundNodeOnScreen.windowId.name to matchRes.windowId,
+                                                )
                                             }
-                                        if (isMatch) {
-                                            logger.d("Match viewId: $matchViewIdContextData $sourceNodeId")
-                                        }
-                                        isMatch
+                                        )
+                                        return@matcher
                                     }
-
-                                    is NodeMatcherText -> {
-                                        val isMatch =
-                                            allNodes.any { viewNode ->
-                                                matchTextOrRegex(viewNode.text, matcherAny).also {
-                                                    matchTextContextData = matcherAny.text
-                                                    matchIsRegexContextData = matcherAny.isRegex
-                                                    sourceNodeId = viewNode.sourceNodeId
-                                                    windowId = viewNode.windowId
-                                                }
-                                            }
-                                        if (isMatch) {
-                                            logger.d("Match text: $matchTextContextData $sourceNodeId")
-                                        }
-                                        isMatch
-                                    }
-
-                                    else -> false
                                 }
-                            }
-
-                            if (matchedOnThisFact) {
-                                shortXContext.rule.publishFact(
-                                    reason = "Match node",
-                                    fact = HasFoundNodeOnScreen.newBuilder().setId(brief.id)
-                                        .build(),
-                                    initialContextData = mapOf(
-                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewId.name to matchViewIdContextData,
-                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewText.name to matchTextContextData,
-                                        ContextDataMapping.HasFoundNodeOnScreen.matchedViewTextIsRegex.name to matchIsRegexContextData,
-                                        ContextDataMapping.HasFoundNodeOnScreen.sourceNodeId.name to sourceNodeId,
-                                        ContextDataMapping.HasFoundNodeOnScreen.windowId.name to windowId,
-                                    )
-                                )
                             }
                         }
                     } else {
@@ -202,28 +166,9 @@ class AccessibilityNodeOnScreenTrigger(
     }
 }
 
-private fun matchTextOrRegex(text: CharSequence?, matcher: NodeMatcherText): Boolean {
-    if (text == null) return false
-    if (matcher.isRegex && matcher.text.toRegex().matches(text.toString())) return true
-    return !matcher.isRegex && matcher.text == text
+private fun HasFoundNodeOnScreen.extractMatchers(): NodeMatcher.MatcherList {
+    return matchersList.extractMatchers()
 }
-
-private fun HasFoundNodeOnScreen.extractMatchers(): MatcherList {
-    val matchers = mutableListOf<Any>()
-    matchersList.forEach {
-        val realMatcher = if (it is_ NodeMatcherText::class.java) {
-            it unpack_ NodeMatcherText::class.java
-        } else if (it is_ NodeMatcherViewId::class.java) {
-            it unpack_ NodeMatcherViewId::class.java
-        } else null
-        realMatcher?.let {
-            matchers.add(realMatcher)
-        }
-    }
-    return MatcherList(matchers)
-}
-
-private data class MatcherList(val matchers: List<Any>)
 
 private fun tryGetActivity(context: Context, componentName: ComponentName): ActivityInfo? {
     return try {

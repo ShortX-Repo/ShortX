@@ -5,6 +5,7 @@ option java_outer_classname = "OuterConditions";
 option java_multiple_files = true;
 
 import "shortx/Common.proto";
+import "google/protobuf/any.proto";
 
 enum ConditionOperator {
   ALL = 0;
@@ -304,6 +305,18 @@ message IsInCall {
 }
 
 message IsRinging {
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message HasNodeOnScreen {
+  string packageName = 1;
+  string componentName = 2;
+  repeated google.protobuf.Any matchers = 3;
+  int64 detectTimeout = 4;
+
   CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
   string note = 99;
