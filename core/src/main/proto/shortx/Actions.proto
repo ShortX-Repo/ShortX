@@ -1126,3 +1126,23 @@ message ClickTile {
   QSTile tile = 1;
   bool isLongClick = 2;
 }
+
+message MediaPlayback {
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+
+  MediaPlaybackAction action = 1;
+}
+
+enum MediaPlaybackAction {
+  MediaPlaybackAction_Play = 0;
+  MediaPlaybackAction_Pause = 1;
+  MediaPlaybackAction_SkipToNext = 2;
+  MediaPlaybackAction_SkipToPrevious = 3;
+  MediaPlaybackAction_FastForward = 4;
+  MediaPlaybackAction_Rewind = 5;
+  MediaPlaybackAction_Stop = 6;
+}

@@ -1421,6 +1421,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.MediaPlayback::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.MediaPlayback::class.java
+            Action.MediaPlayback(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                action = data.action
+            )
+        }
+
         else -> null
     }
 }

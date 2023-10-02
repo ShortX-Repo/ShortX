@@ -110,5 +110,6 @@ val allActionClasses = listOf(
     Action.SetWallpaper::class,
     Action.SetRuleEnabled::class,
     Action.ClickTile::class,
+    Action.MediaPlayback::class,
     Action.NoAction::class,
 )

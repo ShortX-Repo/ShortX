@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.MapApp
+import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.ActionOnError
@@ -201,6 +202,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetWallpaper::class -> i18N["ui.action.set.wallpaper"] to null
         Action.SetRuleEnabled::class -> i18N["ui.action.set.rule.enabled"] to null
         Action.ClickTile::class -> i18N["ui.action.click.tile"] to null
+        Action.MediaPlayback::class -> i18N["ui.action.media.play.back"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -741,6 +743,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N["ui.action.click.tile"],
             action.tile.label
         )
+
+        is Action.MediaPlayback -> listOf(
+            i18N["ui.action.media.play.back"],
+            i18N[action.action.labelKey()]
+        )
     }
 }
 
@@ -813,4 +820,15 @@ fun BreakActionExecuteScope.labelKey() = when (this) {
     BreakActionExecuteScope.BreakActionExecuteScope_Parent -> "ui.action.brk.scope.parent"
     BreakActionExecuteScope.BreakActionExecuteScope_Root -> "ui.action.brk.scope.root"
     BreakActionExecuteScope.UNRECOGNIZED -> "UNRECOGNIZED"
+}
+
+fun MediaPlaybackAction.labelKey() = when (this) {
+    MediaPlaybackAction.MediaPlaybackAction_Play -> "ui.action.media.play.back.play"
+    MediaPlaybackAction.MediaPlaybackAction_Pause -> "ui.action.media.play.back.pause"
+    MediaPlaybackAction.MediaPlaybackAction_SkipToNext -> "ui.action.media.play.back.next"
+    MediaPlaybackAction.MediaPlaybackAction_SkipToPrevious -> "ui.action.media.play.back.previous"
+    MediaPlaybackAction.MediaPlaybackAction_FastForward -> "ui.action.media.play.back.ff"
+    MediaPlaybackAction.MediaPlaybackAction_Rewind -> "ui.action.media.play.back.rewind"
+    MediaPlaybackAction.MediaPlaybackAction_Stop -> "ui.action.media.play.back.stop"
+    MediaPlaybackAction.UNRECOGNIZED -> "UNRECOGNIZED"
 }

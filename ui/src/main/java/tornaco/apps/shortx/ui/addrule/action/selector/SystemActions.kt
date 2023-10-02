@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
 import tornaco.apps.shortx.core.util.OsUtils
@@ -134,8 +135,27 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     QSTileSelectorDialog(state = clickTileSelectorState)
 
+    val mediaPlayMenuDialogState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.media.play.back"],
+        menuItems = MediaPlaybackAction.values()
+            .filter { it != MediaPlaybackAction.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val action = MediaPlaybackAction.valueOf(id)
+            addAction(Action.MediaPlayback(action = action))
+        }
+    )
+    MenuDialog(state = mediaPlayMenuDialogState)
+
     return { source ->
         when (source.clazz) {
+            Action.MediaPlayback::class -> {
+                mediaPlayMenuDialogState.show()
+                true
+            }
+
             Action.ClickTile::class -> {
                 clickTileSelectorState.show()
                 true
@@ -249,6 +269,7 @@ fun SystemActions(
         Action.WakeupScreen::class,
         Action.SleepScreen::class,
         Action.InjectKeyCode::class,
+        Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,
