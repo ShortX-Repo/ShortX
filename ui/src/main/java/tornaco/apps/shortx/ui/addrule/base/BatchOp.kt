@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.base
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -45,6 +46,10 @@ fun BatchOpToolbar(state: BatchOpState) {
             onConfirm = {
                 state.onDeleteConfirmed(it)
             })
+
+        BackHandler(enabled = state.isEnable) {
+            state.dismiss()
+        }
 
         Row(
             modifier = Modifier
