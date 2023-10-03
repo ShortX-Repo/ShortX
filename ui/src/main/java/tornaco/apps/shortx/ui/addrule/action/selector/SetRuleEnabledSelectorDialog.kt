@@ -13,7 +13,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +39,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
 class SetRuleEnabledDialogState(
+    val title: String,
     val onSelected: (Action.SetRuleEnabled) -> Unit
 ) : CommonDialogState() {
     var currentRule: Rule? by mutableStateOf(null)
@@ -56,10 +56,11 @@ class SetRuleEnabledDialogState(
 
 @Composable
 fun rememberSetRuleEnabledDialogState(
+    title: String,
     onSelected: (Action.SetRuleEnabled) -> Unit
 ): SetRuleEnabledDialogState {
     return remember {
-        SetRuleEnabledDialogState(onSelected)
+        SetRuleEnabledDialogState(title, onSelected)
     }
 }
 
@@ -82,7 +83,7 @@ private fun SetRuleEnabledSelector(dialogState: SetRuleEnabledDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.set.rule.enabled"]) },
+                        title = { Text(dialogState.title) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

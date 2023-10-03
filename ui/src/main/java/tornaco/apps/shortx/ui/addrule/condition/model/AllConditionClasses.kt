@@ -28,4 +28,5 @@ val allConditionClasses = listOf(
     Condition.IsInCall::class,
     Condition.IsRinging::class,
     Condition.HasNodeOnScreen::class,
+    Condition.IsRuleEnabled::class,
 )

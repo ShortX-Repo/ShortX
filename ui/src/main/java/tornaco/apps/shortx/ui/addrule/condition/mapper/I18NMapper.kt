@@ -163,6 +163,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.condition.is.has.node.on.screen"])
         }
 
+        Condition.IsRuleEnabled::class -> {
+            listOf(i18N["ui.condition.is.rule.enabled"])
+        }
+
         else -> {
             emptyList()
         }
@@ -351,6 +355,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.HasNodeOnScreen -> {
             listOf(
                 i18N["ui.condition.is.has.node.on.screen"]
+            )
+        }
+
+        is Condition.IsRuleEnabled -> {
+            listOf(
+                i18N["ui.condition.is.rule.enabled"],
+                condition.ruleLabel
             )
         }
     }

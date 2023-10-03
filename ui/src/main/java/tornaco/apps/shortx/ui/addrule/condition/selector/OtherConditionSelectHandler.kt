@@ -2,6 +2,9 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.SetRuleEnabledSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberSetRuleEnabledDialogState
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateLocalVarSelectorDialog
@@ -34,6 +37,20 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     }
     EvaluateLocalVarSelectorDialog(state = evaluateLocalVarSelectorDialogState)
 
+    val setRuleEnabledState = rememberSetRuleEnabledDialogState(
+        LocalI18N.current["ui.condition.is.rule.enabled"],
+        onSelected = {
+        addCondition(
+            Condition.IsRuleEnabled(
+                ruleId = it.ruleId,
+                isEnabled = it.enableRule,
+                ruleLabel = it.ruleLabel
+            )
+        )
+    })
+    SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
+
+
     return { source ->
         when (source.clazz) {
             Condition.MVEL::class -> {
@@ -53,6 +70,20 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.EvaluateLocalVar::class -> {
                 evaluateLocalVarSelectorDialogState.show(source.getConditionAs())
+                true
+            }
+
+            Condition.IsRuleEnabled::class -> {
+                val currentValue = source.getConditionAs<Condition.IsRuleEnabled>()
+                setRuleEnabledState.show(
+                    currentValue?.let {
+                        Action.SetRuleEnabled(
+                            ruleId = currentValue.ruleId,
+                            enableRule = currentValue.isEnabled,
+                            ruleLabel = currentValue.ruleLabel
+                        )
+                    }
+                )
                 true
             }
 

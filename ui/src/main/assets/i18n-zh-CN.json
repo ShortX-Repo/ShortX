@@ -82,6 +82,7 @@
   "ui.rule.async.mode.sync_in_rule": "同指令同步",
   "ui.toast.rule.saved": "自动指令已保存",
   "ui.toast.da.saved": "一键指令已保存",
+  "ui.condition.is.rule.enabled":"指令开关状态",
   "ui.condition.is.has.node.on.screen":"页面上有视图",
   "ui.fact.has.found.node.on.screen": "发现页面视图",
   "ui.fact.has.found.node.on.screen.pkg": "目标应用包名",

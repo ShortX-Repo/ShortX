@@ -25,6 +25,7 @@ fun OtherConditions(
         Condition.TRUE::class,
         Condition.EvaluateGlobalVar::class,
         Condition.EvaluateLocalVar::class,
+        Condition.IsRuleEnabled::class
     ).map {
         SelectorItem(
             type = it,

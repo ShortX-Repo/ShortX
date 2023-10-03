@@ -322,3 +322,13 @@ message HasNodeOnScreen {
   string note = 99;
   string id = 100;
 }
+
+message IsRuleEnabled {
+  bool isEnabled = 1;
+  string ruleId = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
+import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -373,6 +374,17 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                         else -> null
                     }
                 })
+                .build()
+        }
+
+        is Condition.IsRuleEnabled -> {
+            IsRuleEnabled.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setRuleId(ruleId)
+                .setIsEnabled(isEnabled)
                 .build()
         }
     }

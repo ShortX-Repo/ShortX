@@ -149,6 +149,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.HasNodeOnScreen
     },
+    IsRuleEnabled {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.IsRuleEnabled
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
+import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
@@ -343,6 +344,19 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                         NodeMatcher.ViewId(m.id)
                     } else null
                 }
+            )
+        }
+
+        this is_ IsRuleEnabled::class.java -> {
+            val data = this unpack_ IsRuleEnabled::class.java
+            Condition.IsRuleEnabled(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                ruleId = data.ruleId,
+                isEnabled = data.isEnabled,
+                ruleLabel = shortXManager.getRuleById(data.ruleId)?.title ?: "N/A"
             )
         }
 

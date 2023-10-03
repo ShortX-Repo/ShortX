@@ -112,6 +112,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Design.focus_3_line
         }
 
+        Condition.IsRuleEnabled::class -> {
+            Remix.System.toggle_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

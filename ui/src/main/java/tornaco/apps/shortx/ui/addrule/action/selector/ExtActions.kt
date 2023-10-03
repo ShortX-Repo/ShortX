@@ -90,9 +90,12 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     }
     FromDASelectorDialog(state = fromDASelectorState)
 
-    val setRuleEnabledState = rememberSetRuleEnabledDialogState(onSelected = {
-        addAction(it)
-    })
+    val setRuleEnabledState = rememberSetRuleEnabledDialogState(
+        onSelected = {
+            addAction(it)
+        },
+        title = LocalI18N.current["ui.action.set.rule.enabled"],
+    )
     SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
 
     val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
