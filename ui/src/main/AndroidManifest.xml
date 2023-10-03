@@ -139,6 +139,9 @@
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.PostNotificationSelectorActivity"
             android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.IfThenElseSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

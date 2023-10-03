@@ -1,8 +1,11 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
@@ -17,6 +20,8 @@ import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.http.rememberHttpRequestDialogState
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
@@ -31,6 +36,9 @@ import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val i18N = LocalI18N.current
+    val context = LocalContext.current
+
     val isShellInjectionEnabled = remember { shortXManager.isInjectedShellEnabled() }
     val shellCommandSelectorState =
         rememberShellCommandCodeEditorState(title = LocalI18N.current["ui.action.shell"],
@@ -98,17 +106,22 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     )
     SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
 
-    val ifThenElseDialogState = rememberIfThenElseSelectorDialogDialogState {
-        addAction(it)
-    }
-    IfThenElseSelectorDialogDialog(state = ifThenElseDialogState)
+
+    val ifThenElseLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.IfThenElse>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val whileLoopSelectorState = rememberWhileLoopDialogState {
         addAction(it)
     }
     WhileLoopDialog(state = whileLoopSelectorState)
 
-    val i18N = LocalI18N.current
     val vm = hiltViewModel<PkgSetListViewModel>()
     val addPkgSetDialogState =
         rememberTextInputState(
@@ -187,7 +200,13 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
             }
 
             Action.IfThenElse::class -> {
-                ifThenElseDialogState.show(source.getActionAs())
+                ifThenElseLauncher.launch(
+                    newIntent(
+                        context,
+                        source.getActionAs<Action.IfThenElse>(),
+                        IfThenElseSelectorActivity::class.java
+                    )
+                )
                 true
             }
 
