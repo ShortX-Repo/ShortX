@@ -39,7 +39,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
 }
 
 
-private const val MAX_ENTRY_SIZE = 200
+private const val MAX_ENTRY_SIZE = 500
 
 class ActionEvaluateRecorder {
     private val _actionEvaluateRecords = mutableListOf<ActionEvaluateRecord>()
