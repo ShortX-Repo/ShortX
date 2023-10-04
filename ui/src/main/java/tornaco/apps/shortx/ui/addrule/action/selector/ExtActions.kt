@@ -268,7 +268,7 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Advanced.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategory(i18N[ActionCategory.Advanced.i18NKey], categoryState)
+        ActionCategory(i18N[ActionCategory.Advanced.i18NKey], actionItems.size, categoryState)
     }
 
     val itemSelected = extActionSelectHandler(addAction = addAction)

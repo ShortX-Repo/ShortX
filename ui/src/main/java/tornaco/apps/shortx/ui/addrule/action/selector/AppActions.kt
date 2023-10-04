@@ -495,7 +495,7 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Apps.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategory(i18N[ActionCategory.Apps.i18NKey], categoryState)
+        ActionCategory(i18N[ActionCategory.Apps.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = appActionSelectHandler(addAction = addAction)

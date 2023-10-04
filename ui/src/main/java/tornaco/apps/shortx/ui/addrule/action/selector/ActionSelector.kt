@@ -129,6 +129,7 @@ private fun AllActions(
                     rememberCategoryState(categoryTitle = LocalI18N.current[ActionCategory.Recent.i18NKey])
                 ActionCategory(
                     LocalI18N.current[ActionCategory.Recent.i18NKey],
+                    selectorState.recentActions.size,
                     categoryState
                 )
                 AnimatedVisibility(visible = categoryState.isExpand) {

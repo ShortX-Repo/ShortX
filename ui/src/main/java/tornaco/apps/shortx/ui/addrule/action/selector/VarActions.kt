@@ -130,7 +130,7 @@ fun VarActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Vars.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategory(i18N[ActionCategory.Vars.i18NKey], categoryState)
+        ActionCategory(i18N[ActionCategory.Vars.i18NKey], actionItems.size, categoryState)
     }
 
     val itemSelected = varActionSelectHandler(addAction = addAction)

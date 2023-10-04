@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,7 +30,9 @@ import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.settings.pref.Pref
+import tornaco.apps.shortx.ui.theme.NoteTextColor
 
 class CategoryState(
     private val categoryId: String,
@@ -71,20 +76,32 @@ fun rememberCategoryState(categoryTitle: String): CategoryState {
 }
 
 @Composable
-fun ActionCategory(categoryTitle: String, categoryState: CategoryState) {
+fun ActionCategory(categoryTitle: String, itemCount: Int, categoryState: CategoryState) {
     val dropdownRotate by animateFloatAsState(
         targetValue = if (categoryState.isExpand) 0f else 180f,
         label = "dropdownRotate"
     )
 
     Row(
-        modifier = Modifier.fillMaxWidth().clip(ShortXCardRoundedCornerShape).clickable {
-            categoryState.toggle()
-        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(ShortXCardRoundedCornerShape)
+            .clickable {
+                categoryState.toggle()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ActionCategoryTitle(categoryTitle)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ActionCategoryTitle(categoryTitle)
+            Text(
+                text = itemCount.toString(),
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 12.5.sp,
+                    color = NoteTextColor
+                ),
+            )
+        }
         IconButton(onClick = {
             categoryState.toggle()
         }) {

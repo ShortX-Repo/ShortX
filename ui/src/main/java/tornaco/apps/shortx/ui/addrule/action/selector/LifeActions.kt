@@ -76,7 +76,7 @@ fun LifeActions(
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Life.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategory(i18N[ActionCategory.Life.i18NKey], categoryState)
+        ActionCategory(i18N[ActionCategory.Life.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = lifeActionSelectHandler(addAction = addAction)

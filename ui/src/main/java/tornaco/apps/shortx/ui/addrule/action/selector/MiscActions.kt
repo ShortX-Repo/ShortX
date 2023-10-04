@@ -82,7 +82,7 @@ fun MiscActions(
 
     val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Misc.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategory(i18N[ActionCategory.Misc.i18NKey], categoryState)
+        ActionCategory(i18N[ActionCategory.Misc.i18NKey], actionItems.size, categoryState)
     }
 
     val selectHandler = miscActionSelectHandler(addAction = addAction)
