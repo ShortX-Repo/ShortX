@@ -34,7 +34,7 @@ class CategoryState(
     private val pref: Pref,
     private val scope: CoroutineScope
 ) {
-    var isExpand by mutableStateOf(true)
+    var isExpand by mutableStateOf(false)
 
     fun toggle() {
         scope.launch {
