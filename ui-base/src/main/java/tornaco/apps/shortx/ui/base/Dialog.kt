@@ -207,6 +207,8 @@ fun <T> ConfirmDialog(
     state: ConfirmDialogState,
     data: T,
     messageHint: (T) -> String = { "" },
+    confirmButton: String = stringResource(id = android.R.string.ok),
+    dismissButton: String = stringResource(id = android.R.string.cancel),
     onConfirm: (T) -> Unit
 ) {
     if (state.isShowing) {
@@ -220,12 +222,12 @@ fun <T> ConfirmDialog(
                     onConfirm(data)
                     state.dismiss()
                 }) {
-                    Text(text = stringResource(id = android.R.string.ok))
+                    Text(text = confirmButton)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { state.dismiss() }) {
-                    Text(text = stringResource(id = android.R.string.cancel))
+                    Text(text = dismissButton)
                 }
             },
             title = {

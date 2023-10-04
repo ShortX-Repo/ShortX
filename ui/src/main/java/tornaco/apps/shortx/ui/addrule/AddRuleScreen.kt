@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -58,6 +59,7 @@ import tornaco.apps.shortx.ui.addrule.fact.FactSelectors
 import tornaco.apps.shortx.ui.addrule.fact.asFactHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
@@ -80,6 +82,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -141,7 +144,8 @@ fun AddRuleScreen(
     val addRuleState by vm.state.collectAsState()
 
     val context = LocalContext.current
-    val savedMessage = LocalI18N.current["ui.toast.rule.saved"]
+    val i18n = LocalI18N.current
+    val savedMessage = i18n["ui.toast.rule.saved"]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -183,6 +187,52 @@ fun AddRuleScreen(
         }
     }
 
+    val backConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18n["ui.edit.discard.dialog.title"],
+        messageHint = {
+            i18n["ui.edit.discard.dialog.message"]
+        },
+        confirmButton = i18n["ui.edit.discard.dialog.discard"],
+        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        state = backConfirmDialogState,
+        data = "",
+        onConfirm = {
+            back(false)
+        })
+
+    val hasAnyChanges = remember(
+        addRuleState,
+        factContentState,
+        actionContentState,
+        conditionContentState,
+        actionOnEnabledState,
+        actionOnDisabledState,
+        actionOnDeletedState,
+        quitFactContentState,
+        quitConditionContentState,
+        quitActionState
+    ) {
+        addRuleState.ruleChanged
+                || factContentState.isChanged
+                || actionContentState.isChanged
+                || conditionContentState.isChanged
+                || actionOnEnabledState.isChanged
+                || actionOnDisabledState.isChanged
+                || actionOnDeletedState.isChanged
+                || quitFactContentState.isChanged
+                || quitConditionContentState.isChanged
+                || quitActionState.isChanged
+    }
+
+    BackHandler {
+        if (hasAnyChanges) {
+            backConfirmDialogState.show()
+        } else {
+            back(false)
+        }
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -196,24 +246,18 @@ fun AddRuleScreen(
                         title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                back(false)
+                                if (hasAnyChanges) {
+                                    backConfirmDialogState.show()
+                                } else {
+                                    back(false)
+                                }
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {
                             IconButton(
-                                enabled = canSaveWithoutChanges
-                                        || addRuleState.ruleChanged
-                                        || factContentState.isChanged
-                                        || actionContentState.isChanged
-                                        || conditionContentState.isChanged
-                                        || actionOnEnabledState.isChanged
-                                        || actionOnDisabledState.isChanged
-                                        || actionOnDeletedState.isChanged
-                                        || quitFactContentState.isChanged
-                                        || quitConditionContentState.isChanged
-                                        || quitActionState.isChanged,
+                                enabled = canSaveWithoutChanges || hasAnyChanges,
                                 onClick = {
                                     vm.save(shortXProps.firstOrNull())
                                     back(true)

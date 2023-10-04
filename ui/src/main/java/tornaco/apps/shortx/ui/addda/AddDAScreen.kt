@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addda
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -47,6 +48,7 @@ import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
+import tornaco.apps.shortx.ui.base.ConfirmDialog
 import tornaco.apps.shortx.ui.base.ErrorCard
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LoadError
@@ -59,6 +61,7 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
@@ -117,7 +120,8 @@ fun AddDirectActionScreen(
     val addDirectActionState by vm.state.collectAsState()
 
     val context = LocalContext.current
-    val savedMessage = LocalI18N.current["ui.toast.da.saved"]
+    val i18n = LocalI18N.current
+    val savedMessage = i18n["ui.toast.da.saved"]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -138,6 +142,32 @@ fun AddDirectActionScreen(
     val actionContentState by actionContentStateHandler.state.collectAsState()
     val shortXProps = LocalShortXProps.current
 
+    val backConfirmDialogState = rememberConfirmDialogState()
+    ConfirmDialog(
+        title = i18n["ui.edit.discard.dialog.title"],
+        messageHint = {
+            i18n["ui.edit.discard.dialog.message"]
+        },
+        confirmButton = i18n["ui.edit.discard.dialog.discard"],
+        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        state = backConfirmDialogState,
+        data = "",
+        onConfirm = {
+            back(false)
+        })
+
+    val hasAnyChanges = remember(addDirectActionState, actionContentState) {
+        addDirectActionState.daChanged || actionContentState.isChanged
+    }
+
+    BackHandler {
+        if (hasAnyChanges) {
+            backConfirmDialogState.show()
+        } else {
+            back(false)
+        }
+    }
+
     ShortXTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -151,14 +181,18 @@ fun AddDirectActionScreen(
                         title = { Text(text = screenTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                back(false)
+                                if (hasAnyChanges) {
+                                    backConfirmDialogState.show()
+                                } else {
+                                    back(false)
+                                }
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {
                             IconButton(
-                                enabled = canSaveWithoutChanges || addDirectActionState.daChanged || actionContentState.isChanged,
+                                enabled = canSaveWithoutChanges || hasAnyChanges,
                                 onClick = {
                                     vm.save(shortXProps.firstOrNull())
                                     back(true)
