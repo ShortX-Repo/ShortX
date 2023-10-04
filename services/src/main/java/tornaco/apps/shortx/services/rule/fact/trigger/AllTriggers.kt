@@ -29,5 +29,5 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     ClipboardTrigger(context, shortXContext),
     GlobalVarTrigger(context, shortXContext),
     AccessibilityNodeOnScreenTrigger(context, shortXContext),
-    HeadsetPluginTrigger(context, shortXContext),
+    HeadsetPlugTrigger(context, shortXContext),
 )

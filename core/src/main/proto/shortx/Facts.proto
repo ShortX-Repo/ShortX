@@ -535,3 +535,11 @@ message AppProcessStarted {
   string note = 99;
   string id = 100;
 }
+
+message HeadsetPlug {
+  bool isPlug = 1;
+
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}

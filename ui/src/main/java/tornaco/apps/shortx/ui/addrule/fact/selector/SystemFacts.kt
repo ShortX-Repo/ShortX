@@ -20,6 +20,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
     val items = listOf(
         Fact.KeyEvent::class,
         Fact.AdvancedKeyEvent::class,
+        Fact.HeadsetPlug::class,
 
         Fact.EdgeGesture::class,
 

@@ -607,6 +607,17 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.fact.HeadsetPlug::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.fact.HeadsetPlug::class.java
+
+            Fact.HeadsetPlug(
+                id = data.id, customContextDataKey = data.customContextDataKey,
+                note = data.note,
+                isPlug = data.isPlug
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.fact.AppProcessStarted::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.fact.AppProcessStarted::class.java

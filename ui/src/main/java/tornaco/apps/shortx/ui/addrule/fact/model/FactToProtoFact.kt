@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.fact.FlashLightStatusChanged
 import tornaco.apps.shortx.core.proto.fact.GlobalVarChanged
 import tornaco.apps.shortx.core.proto.fact.HasFoundNodeOnScreen
+import tornaco.apps.shortx.core.proto.fact.HeadsetPlug
 import tornaco.apps.shortx.core.proto.fact.HotSpotStatusChanged
 import tornaco.apps.shortx.core.proto.fact.KeyEvent
 import tornaco.apps.shortx.core.proto.fact.LocationStatusChanged
@@ -466,6 +467,13 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             AppProcessStarted.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .addAllProcessName(processNames)
+                .build()
+        }
+
+        is Fact.HeadsetPlug -> {
+            HeadsetPlug.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCustomContextDataKey(customContextDataKey)
+                .setIsPlug(isPlug)
                 .build()
         }
 

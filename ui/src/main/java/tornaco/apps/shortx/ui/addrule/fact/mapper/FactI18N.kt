@@ -19,6 +19,7 @@ import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.displayNameKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
@@ -204,6 +205,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.HasFoundNodeOnScreen::class -> {
             i18n["ui.fact.has.found.node.on.screen"] to null
+        }
+
+        Fact.HeadsetPlug::class -> {
+            i18n["ui.fact.headset.plug"] to null
         }
 
         else -> "N/A" to null
@@ -602,6 +607,16 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.HasFoundNodeOnScreen -> {
             listOf(i18N["ui.fact.has.found.node.on.screen"])
+        }
+
+        is Fact.HeadsetPlug -> {
+            listOf(
+                i18N["ui.fact.headset.plug"],
+                fact.isPlug.select(
+                    i18N["ui.fact.headset.plug.in"],
+                    i18N["ui.fact.headset.plug.out"]
+                )
+            )
         }
     }
 }

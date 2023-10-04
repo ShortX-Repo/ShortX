@@ -918,6 +918,22 @@ sealed interface Fact {
         }
     }
 
+    data class HeadsetPlug(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val isPlug: Boolean,
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+
     data class HasFoundNodeOnScreen(
         override val note: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),

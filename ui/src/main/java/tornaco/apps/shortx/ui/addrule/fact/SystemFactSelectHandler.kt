@@ -85,6 +85,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
 
+    val headsetPlugMenuState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.headset.plug"],
+        menuItems = listOf(
+            MenuDialogItem(id = "in", title = LocalI18N.current["ui.fact.headset.plug.in"]),
+            MenuDialogItem(id = "out", title = LocalI18N.current["ui.fact.headset.plug.out"]),
+        ),
+        onItemSelected = { data, id ->
+            addFact(Fact.HeadsetPlug(isPlug = id == "in"))
+        })
+    MenuDialog(state = headsetPlugMenuState)
+
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
         title = LocalI18N.current["ui.fact.wifi.connect.to"],
         message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
@@ -488,6 +499,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
                 clipboardRegexDialogState.show(
                     source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: ".*"
                 )
+                true
+            }
+
+            Fact.HeadsetPlug::class -> {
+                headsetPlugMenuState.show()
                 true
             }
 

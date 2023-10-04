@@ -78,5 +78,6 @@ val allFactClasses = listOf(
     Fact.HasFoundNodeOnScreen::class,
     Fact.AppProcessStarted::class,
 
+    Fact.HeadsetPlug::class,
     Fact.AnyFact::class,
 )
