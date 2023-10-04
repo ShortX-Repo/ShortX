@@ -27,11 +27,13 @@ import org.orbitmvi.orbit.compose.collectAsState
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.allActionClasses
+import tornaco.apps.shortx.ui.addrule.base.ActionCategory
+import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
+import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
-import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
@@ -84,17 +86,19 @@ fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
                         .fillMaxSize()
                         .padding(paddingValues),
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val selectorVM = hiltViewModel<ActionSelectorViewModel>()
-                        val selectorState by selectorVM.state.collectAsState()
-                        val addAction: (Action) -> Unit = {
-                            onSelected(it)
-                            selectorVM.onActionAdd(it)
+                    ClickOutsideClearFocusBox {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val selectorVM = hiltViewModel<ActionSelectorViewModel>()
+                            val selectorState by selectorVM.state.collectAsState()
+                            val addAction: (Action) -> Unit = {
+                                onSelected(it)
+                                selectorVM.onActionAdd(it)
+                            }
+                            AllActions(selectorState, addAction)
                         }
-                        AllActions(selectorState, addAction)
                     }
                 }
             }
@@ -121,12 +125,19 @@ private fun AllActions(
 
         AnimatedVisibility(visible = searchBarState.keyword.isBlank() && selectorState.recentActions.isNotEmpty()) {
             Column {
-                ActionCategoryTitle(ActionCategory.Recent)
-                RecentActions(
-                    actions = selectorState,
-                    subscribeState = subscribeState,
-                    addAction = addAction
+                val categoryState =
+                    rememberCategoryState(categoryTitle = LocalI18N.current[ActionCategory.Recent.i18NKey])
+                ActionCategory(
+                    LocalI18N.current[ActionCategory.Recent.i18NKey],
+                    categoryState
                 )
+                AnimatedVisibility(visible = categoryState.isExpand) {
+                    RecentActions(
+                        actions = selectorState,
+                        subscribeState = subscribeState,
+                        addAction = addAction
+                    )
+                }
                 StandardSpacer()
             }
         }
@@ -153,10 +164,3 @@ private fun AllActions(
     }
 }
 
-@Composable
-fun ActionCategoryTitle(category: ActionCategory) {
-    SmallTitle(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
-        text = LocalI18N.current[category.i18NKey]
-    )
-}

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -10,8 +11,10 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -262,16 +265,19 @@ fun UiActions(keyword: String, subscribeState: LVLStateHolder.State, addAction: 
         keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
+    val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Ui.i18NKey])
     if (uiActionItems.isNotEmpty()) {
-        ActionCategoryTitle(ActionCategory.Ui)
+        ActionCategory(i18N[ActionCategory.Ui.i18NKey], categoryState)
     }
 
     val handler = uiActionSelectHandler(addAction = addAction)
-    SelectorList(
-        items = uiActionItems,
-        itemSelected = {
-            handler(ActionSelectSource.FromClass(it))
-        })
+    AnimatedVisibility(visible = categoryState.isExpand) {
+        SelectorList(
+            items = uiActionItems,
+            itemSelected = {
+                handler(ActionSelectSource.FromClass(it))
+            })
+    }
 }
 
 data class UiActionSubSelectorStates(

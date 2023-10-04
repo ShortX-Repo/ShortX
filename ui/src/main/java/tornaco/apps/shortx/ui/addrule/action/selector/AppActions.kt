@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.toComponentName
@@ -8,11 +9,13 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.AppPkgSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
 import tornaco.apps.shortx.ui.addrule.base.SingleAppSelectorDialog
 import tornaco.apps.shortx.ui.addrule.base.rememberAppPkgSelectorState
+import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.ComponentOrGVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorState
@@ -490,16 +493,19 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
+    val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Apps.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategoryTitle(ActionCategory.Apps)
+        ActionCategory(i18N[ActionCategory.Apps.i18NKey], categoryState)
     }
 
     val selectHandler = appActionSelectHandler(addAction = addAction)
 
-    SelectorList(
-        actionItems = actionItems,
-        itemSelected = { it, _ ->
-            selectHandler(ActionSelectSource.FromClass(it))
-        }
-    )
+    AnimatedVisibility(visible = categoryState.isExpand) {
+        SelectorList(
+            actionItems = actionItems,
+            itemSelected = { it, _ ->
+                selectHandler(ActionSelectSource.FromClass(it))
+            }
+        )
+    }
 }

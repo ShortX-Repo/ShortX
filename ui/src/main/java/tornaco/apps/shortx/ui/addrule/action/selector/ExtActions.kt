@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -18,8 +19,10 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.http.HttpRequestDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.http.rememberHttpRequestDialogState
+import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.newIntent
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -263,16 +266,19 @@ fun ExtActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
+    val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Advanced.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategoryTitle(ActionCategory.Advanced)
+        ActionCategory(i18N[ActionCategory.Advanced.i18NKey], categoryState)
     }
 
     val itemSelected = extActionSelectHandler(addAction = addAction)
 
-    SelectorList(
-        items = actionItems,
-        itemSelected = { it ->
-            itemSelected(ActionSelectSource.FromClass(it))
-        }
-    )
+    AnimatedVisibility(visible = categoryState.isExpand) {
+        SelectorList(
+            items = actionItems,
+            itemSelected = { it ->
+                itemSelected(ActionSelectSource.FromClass(it))
+            }
+        )
+    }
 }

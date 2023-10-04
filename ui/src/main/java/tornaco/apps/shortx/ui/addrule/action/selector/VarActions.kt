@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import tornaco.apps.shortx.core.rule.GlobalVarType
@@ -9,8 +10,10 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelAndDescriptionForActionSelector
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.base.ActionCategory
 import tornaco.apps.shortx.ui.addrule.base.SelectorItem
 import tornaco.apps.shortx.ui.addrule.base.SelectorList
+import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.gvar.NewGlobalVar
 import tornaco.apps.shortx.ui.gvar.NewGlobalVarDialog
@@ -125,16 +128,19 @@ fun VarActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         keyword.isBlank() || it.labelAndDescription.first.contains(keyword, ignoreCase = true)
     }
 
+    val categoryState = rememberCategoryState(categoryTitle = i18N[ActionCategory.Vars.i18NKey])
     if (actionItems.isNotEmpty()) {
-        ActionCategoryTitle(ActionCategory.Vars)
+        ActionCategory(i18N[ActionCategory.Vars.i18NKey], categoryState)
     }
 
     val itemSelected = varActionSelectHandler(addAction = addAction)
 
-    SelectorList(
-        items = actionItems,
-        itemSelected = { it ->
-            itemSelected(ActionSelectSource.FromClass(it))
-        }
-    )
+    AnimatedVisibility(visible = categoryState.isExpand) {
+        SelectorList(
+            items = actionItems,
+            itemSelected = { it ->
+                itemSelected(ActionSelectSource.FromClass(it))
+            }
+        )
+    }
 }

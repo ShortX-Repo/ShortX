@@ -47,6 +47,9 @@ private val SHARE_AUTHOR_INFO = stringPreferencesKey("share_author_info")
 private val USER_TIPS_HAS_READ =
     stringSetPreferencesKey("user_tips_has_read")
 
+private val MISC_UI_TOGGLES =
+    stringSetPreferencesKey("misc_ui_toggles")
+
 class Pref(val context: Context) {
     companion object {
         private val gson by lazy { Gson() }
@@ -55,6 +58,10 @@ class Pref(val context: Context) {
 
     val userTipsHasRead: Flow<Set<String>> = context.dataStore.data.map { preferences ->
         preferences[USER_TIPS_HAS_READ] ?: emptySet()
+    }
+
+    val miscUiToggles: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[MISC_UI_TOGGLES] ?: emptySet()
     }
 
     val hideSubscribeInfoFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -194,6 +201,24 @@ class Pref(val context: Context) {
         }
         context.dataStore.edit {
             it[USER_TIPS_HAS_READ] = tips
+        }
+    }
+
+    suspend fun miscUiTogglesOn(id: String) {
+        val tips = (miscUiToggles.firstOrNull() ?: emptySet()).toMutableSet().apply {
+            add(id)
+        }
+        context.dataStore.edit {
+            it[MISC_UI_TOGGLES] = tips
+        }
+    }
+
+    suspend fun miscUiTogglesOff(id: String) {
+        val tips = (miscUiToggles.firstOrNull() ?: emptySet()).toMutableSet().apply {
+            remove(id)
+        }
+        context.dataStore.edit {
+            it[MISC_UI_TOGGLES] = tips
         }
     }
 }
