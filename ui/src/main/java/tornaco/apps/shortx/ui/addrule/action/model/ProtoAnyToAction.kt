@@ -1208,6 +1208,20 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.SetVolume::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.SetVolume::class.java
+            Action.SetVolume(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                type = data.type,
+                index = data.index
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.Vibrate::class.java

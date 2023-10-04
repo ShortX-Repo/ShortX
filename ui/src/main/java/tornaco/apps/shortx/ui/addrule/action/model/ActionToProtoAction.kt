@@ -62,6 +62,7 @@ import tornaco.apps.shortx.core.proto.action.SetNFCEnabled
 import tornaco.apps.shortx.core.proto.action.SetRingerMode
 import tornaco.apps.shortx.core.proto.action.SetRuleEnabled
 import tornaco.apps.shortx.core.proto.action.SetSensorsOffEnabled
+import tornaco.apps.shortx.core.proto.action.SetVolume
 import tornaco.apps.shortx.core.proto.action.SetWallpaper
 import tornaco.apps.shortx.core.proto.action.SetWifiEnabled
 import tornaco.apps.shortx.core.proto.action.ShellCommand
@@ -1074,6 +1075,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setNote(overrideNote ?: note)
                 .setDirection(direction)
                 .setShowUI(true)
+                .build()
+        }
+
+        is Action.SetVolume -> {
+            SetVolume.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setType(type)
+                .setIndex(index)
                 .build()
         }
 

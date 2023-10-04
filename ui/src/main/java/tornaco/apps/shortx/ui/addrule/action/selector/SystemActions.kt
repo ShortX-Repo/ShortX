@@ -142,12 +142,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
             },
-        onItemSelected = { data, id ->
+        onItemSelected = { _, id ->
             val action = MediaPlaybackAction.valueOf(id)
             addAction(Action.MediaPlayback(action = action))
         }
     )
     MenuDialog(state = mediaPlayMenuDialogState)
+
+    val setVolumeDialogState = rememberSetVolumeDialogState(onSelected = {
+        addAction(it)
+    })
+    SetVolumeDialog(state = setVolumeDialogState)
 
     return { source ->
         when (source.clazz) {
@@ -198,6 +203,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
             Action.AdjustVolume::class -> {
                 adjustVolumeSelectorState.show()
+                true
+            }
+
+            Action.SetVolume::class -> {
+                setVolumeDialogState.show(source.getActionAs())
                 true
             }
 
@@ -271,6 +281,8 @@ fun SystemActions(
         Action.InjectKeyCode::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
+        Action.AdjustVolume::class,
+        Action.SetVolume::class,
         Action.ReadClipboard::class,
         Action.WriteClipboard::class,
         Action.EnableWifi::class,
@@ -296,7 +308,6 @@ fun SystemActions(
         Action.SetBrightness::class,
         Action.EnableSensorsOff::class,
         Action.DisableSensorsOff::class,
-        Action.AdjustVolume::class,
         Action.Vibrate::class,
         OsUtils.isQOrAbove().select(Action.AudioRecording::class, null),
         OsUtils.isQOrAbove().select(Action.StopAudioRecording::class, null),

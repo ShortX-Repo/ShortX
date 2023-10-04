@@ -237,4 +237,8 @@ interface IShortX {
     void setSwipeDistanceThresholdDp(int dp);
 
     void log(String message);
+
+    int getStreamMinVolume(int type);
+    int getStreamMaxVolume(int type);
+    int getStreamVolume(int type);
 }

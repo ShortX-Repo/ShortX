@@ -111,5 +111,6 @@ val allActionClasses = listOf(
     Action.SetRuleEnabled::class,
     Action.ClickTile::class,
     Action.MediaPlayback::class,
+    Action.SetVolume::class,
     Action.NoAction::class,
 )

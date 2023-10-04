@@ -946,6 +946,25 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getStreamMinVolume(type: Int): Int {
+        return invokeService(0) {
+            getStreamMinVolume(type)
+        }
+    }
+
+    fun getStreamMaxVolume(type: Int): Int {
+        return invokeService(0) {
+            getStreamMaxVolume(type)
+        }
+    }
+
+    fun getStreamVolume(type: Int): Int {
+        return invokeService(0) {
+            getStreamVolume(type)
+        }
+    }
+
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

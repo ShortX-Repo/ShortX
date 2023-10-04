@@ -30,6 +30,7 @@ import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import java.io.File
 import java.io.FileOutputStream
@@ -61,6 +62,20 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         super.systemReady()
         registerListener()
     }
+
+    fun getStreamMinVolume(type: Int): Int = runClearCallingIdentity {
+        if (OsUtils.isPOrAbove()) {
+            context.audioManager.getStreamMinVolume(type)
+        } else 0
+    } ?: 0
+
+    fun getStreamMaxVolume(type: Int): Int = runClearCallingIdentity {
+        context.audioManager.getStreamMaxVolume(type)
+    } ?: 0
+
+    fun getStreamVolume(type: Int): Int = runClearCallingIdentity {
+        context.audioManager.getStreamVolume(type)
+    } ?: 0
 
     fun startRecording(
         src: AudioSource,

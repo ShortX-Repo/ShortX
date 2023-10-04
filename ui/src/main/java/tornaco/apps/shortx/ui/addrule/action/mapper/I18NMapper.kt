@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.action.mapper
 
 import android.content.ComponentName
+import android.media.AudioManager
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
@@ -188,6 +189,7 @@ fun labelAndDescriptionForActionSelector(
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
+        Action.SetVolume::class -> i18N["ui.action.set.volume"] to null
         Action.Vibrate::class -> i18N["ui.action.vibrate"] to null
         Action.AudioRecording::class -> i18N["ui.action.audio.recording"] to null
         Action.StopAudioRecording::class -> i18N["ui.action.audio.recording.stop"] to null
@@ -678,6 +680,13 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             )
         }
 
+        is Action.SetVolume -> {
+            listOf(
+                i18N["ui.action.set.volume"],
+                i18N[action.type.streamTypeLabelKey()] + " " + action.index
+            )
+        }
+
         is Action.Vibrate -> {
             listOf(
                 i18N["ui.action.vibrate"],
@@ -831,4 +840,16 @@ fun MediaPlaybackAction.labelKey() = when (this) {
     MediaPlaybackAction.MediaPlaybackAction_Rewind -> "ui.action.media.play.back.rewind"
     MediaPlaybackAction.MediaPlaybackAction_Stop -> "ui.action.media.play.back.stop"
     MediaPlaybackAction.UNRECOGNIZED -> "UNRECOGNIZED"
+}
+
+fun Int.streamTypeLabelKey(): String {
+    return when (this) {
+        AudioManager.STREAM_VOICE_CALL -> "ui.action.audio.stream.voice.call"
+        AudioManager.STREAM_SYSTEM -> "ui.action.audio.stream.system"
+        AudioManager.STREAM_RING -> "ui.action.audio.stream.ring"
+        AudioManager.STREAM_MUSIC -> "ui.action.audio.stream.music"
+        AudioManager.STREAM_ALARM -> "ui.action.audio.stream.alarm"
+        AudioManager.STREAM_NOTIFICATION -> "ui.action.audio.stream.notification"
+        else -> "N/A"
+    }
 }

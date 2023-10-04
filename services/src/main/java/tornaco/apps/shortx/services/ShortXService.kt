@@ -373,6 +373,18 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             logger.i("EXTERNAL: $message")
         }
 
+        override fun getStreamMinVolume(type: Int): Int {
+            return shortXContext.audio.getStreamMinVolume(type)
+        }
+
+        override fun getStreamMaxVolume(type: Int): Int {
+            return shortXContext.audio.getStreamMaxVolume(type)
+        }
+
+        override fun getStreamVolume(type: Int): Int {
+            return shortXContext.audio.getStreamVolume(type)
+        }
+
         override fun isInjectedShellEnabled(): Boolean {
             return shortXContext.shell.isInjectedShellEnabled()
         }
