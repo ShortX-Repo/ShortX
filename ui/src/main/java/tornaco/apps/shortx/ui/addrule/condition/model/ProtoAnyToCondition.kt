@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
+import tornaco.apps.shortx.core.proto.condition.IsHeadsetPlug
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
@@ -357,6 +358,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 ruleId = data.ruleId,
                 isEnabled = data.isEnabled,
                 ruleLabel = shortXManager.getRuleById(data.ruleId)?.title ?: "N/A"
+            )
+        }
+
+        this is_ IsHeadsetPlug::class.java -> {
+            val data = this unpack_ IsHeadsetPlug::class.java
+            Condition.IsHeadsetPlug(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                isPlug = data.isPlug
             )
         }
 

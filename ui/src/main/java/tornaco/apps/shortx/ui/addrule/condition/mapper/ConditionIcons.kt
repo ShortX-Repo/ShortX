@@ -116,6 +116,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.System.toggle_fill
         }
 
+        Condition.IsHeadsetPlug::class -> {
+            Remix.Media.headphone_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

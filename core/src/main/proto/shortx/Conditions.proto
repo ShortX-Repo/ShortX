@@ -332,3 +332,12 @@ message IsRuleEnabled {
   string note = 99;
   string id = 100;
 }
+
+message IsHeadsetPlug {
+  bool isPlug = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}

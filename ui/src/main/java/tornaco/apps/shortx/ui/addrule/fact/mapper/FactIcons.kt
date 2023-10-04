@@ -63,6 +63,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.CallStateChanged::class -> Remix.Device.phone_fill
         Fact.GlobalVarChanged::class -> Remix.Finance.exchange_line
         Fact.HasFoundNodeOnScreen::class -> Remix.Design.focus_3_line
+        Fact.HeadsetPlug::class -> Remix.Media.headphone_fill
 
         else -> {
             Remix.Document.file_unknow_fill

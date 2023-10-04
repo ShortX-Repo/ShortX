@@ -167,6 +167,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.condition.is.rule.enabled"])
         }
 
+        Condition.IsHeadsetPlug::class -> {
+            listOf(
+                i18N["ui.fact.headset.plug"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -362,6 +368,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.condition.is.rule.enabled"],
                 condition.ruleLabel
+            )
+        }
+
+        is Condition.IsHeadsetPlug -> {
+            listOf(
+                i18N["ui.fact.headset.plug"],
+                condition.isPlug.select(
+                    i18N["ui.condition.headset.plugged"],
+                    i18N["ui.condition.headset.unplugged"]
+                )
             )
         }
     }

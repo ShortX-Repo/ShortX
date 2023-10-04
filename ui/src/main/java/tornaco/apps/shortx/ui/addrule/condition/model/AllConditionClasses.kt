@@ -29,4 +29,5 @@ val allConditionClasses = listOf(
     Condition.IsRinging::class,
     Condition.HasNodeOnScreen::class,
     Condition.IsRuleEnabled::class,
+    Condition.IsHeadsetPlug::class,
 )

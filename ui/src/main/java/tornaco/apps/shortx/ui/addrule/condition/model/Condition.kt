@@ -701,6 +701,29 @@ sealed interface Condition : Parcelable {
             )
         }
     }
+
+    @Parcelize
+    data class IsHeadsetPlug(
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+        val isPlug: Boolean
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
 }
 
 val Condition.contextData: List<ContextData> get() = this::class.conditionContextData()

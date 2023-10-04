@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
 import tornaco.apps.shortx.core.proto.condition.EvaluateLocalVar
 import tornaco.apps.shortx.core.proto.condition.HasNodeOnScreen
+import tornaco.apps.shortx.core.proto.condition.IsHeadsetPlug
 import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
@@ -385,6 +386,16 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setCustomContextDataKey(customContextDataKey)
                 .setRuleId(ruleId)
                 .setIsEnabled(isEnabled)
+                .build()
+        }
+
+        is Condition.IsHeadsetPlug -> {
+            IsHeadsetPlug.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setIsPlug(isPlug)
                 .build()
         }
     }

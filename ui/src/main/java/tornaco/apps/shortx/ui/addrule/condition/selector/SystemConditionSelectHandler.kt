@@ -97,8 +97,25 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     })
     SIMSlotSelectorDialog(state = mobileDataEnableSelectorState)
 
+
+    val headsetPlugMenuState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.headset.plug"],
+        menuItems = listOf(
+            MenuDialogItem(id = "in", title = LocalI18N.current["ui.condition.headset.plugged"]),
+            MenuDialogItem(id = "out", title = LocalI18N.current["ui.condition.headset.unplugged"]),
+        ),
+        onItemSelected = { _, id ->
+            addCondition(Condition.IsHeadsetPlug(isPlug = id == "in"))
+        })
+    MenuDialog(state = headsetPlugMenuState)
+
     return { source ->
         when (source.clazz) {
+            Condition.IsHeadsetPlug::class -> {
+                headsetPlugMenuState.show()
+                true
+            }
+
             Condition.ScreenIsOn::class -> {
                 addCondition(Condition.ScreenIsOn())
                 true

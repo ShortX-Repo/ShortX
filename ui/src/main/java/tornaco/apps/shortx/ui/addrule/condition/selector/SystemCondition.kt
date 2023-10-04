@@ -36,6 +36,7 @@ fun SystemConditions(
         Condition.RequireMobileDataEnabled::class,
         Condition.IsInCall::class,
         Condition.IsRinging::class,
+        Condition.IsHeadsetPlug::class,
     ).map {
         SelectorItem(
             type = it,

@@ -153,6 +153,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.IsRuleEnabled
     },
+    IsHeadsetPlug {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.IsHeadsetPlug
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {
