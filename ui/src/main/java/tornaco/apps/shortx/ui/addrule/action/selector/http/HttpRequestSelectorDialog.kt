@@ -64,6 +64,7 @@ import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.ListItem
@@ -283,18 +284,26 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
     val outputDialogState = rememberOutputDialogState(title = "ui.action.http.request")
     OutputDialog(state = outputDialogState)
 
+    val errorDialogState =
+        rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
+    ErrorMessageDialog(state = errorDialogState)
+
     val curlInputDialogState =
         rememberTextInputState(
             title = LocalI18N.current["ui.action.http.request.from.curl"],
             message = LocalI18N.current["ui.action.http.request.from.curl.message"],
             onSelected = {
-                val request = it.curlCommandToHttpRequest()
-                dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                runCatching {
+                    val request = it.curlCommandToHttpRequest()
+                    dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
+                }.onFailure {
+                    composeLogger.e(it, "curlCommandToHttpRequest")
+                    val errorMsg = it.stackTraceToString()
+                    errorDialogState.show(errorMsg)
+                }
             })
     TextInputDialog(state = curlInputDialogState)
 
-    val errorMessageDialog =
-        rememberErrorMessageDialogState(title = LocalI18N.current["ui.common.error.view.message"])
     val httpCanaryJsonInputDialogState =
         rememberTextInputState(
             title = LocalI18N.current["ui.action.http.request.from.http.canary"],
@@ -305,7 +314,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportJson")
-                    errorMessageDialog.show(it.stackTraceToString())
+                    errorDialogState.show(it.stackTraceToString())
                 }
             })
     TextInputDialog(state = httpCanaryJsonInputDialogState)
@@ -320,7 +329,7 @@ private fun HttpRequestSelector(dialogState: HttpRequestDialogState) {
                     dialogState.show(request.pack_().toAction(shortXManager) as Action.HttpRequest?)
                 }.onFailure {
                     composeLogger.e(it, "toHttpCanaryExportHcy")
-                    errorMessageDialog.show(it.stackTraceToString())
+                    errorDialogState.show(it.stackTraceToString())
                 }
             })
     TextInputDialog(state = httpCanaryHcyInputDialogState)

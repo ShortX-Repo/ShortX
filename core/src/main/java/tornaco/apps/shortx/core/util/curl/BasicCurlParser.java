@@ -203,7 +203,10 @@ public class BasicCurlParser {
         public void addHeader(String name, String value) {
             if ("COOKIE".equalsIgnoreCase(name)) {
                 this.cookieInHeaders = value;
-            } else if (HEADERS_TO_IGNORE.contains(name)) {
+                // Modify by tornaco. also add header item.
+                headers.add(Pair.of(name, value));
+                // Modify by tornaco. also add header item.
+            } else if (false && HEADERS_TO_IGNORE.contains(name)) {
                 return;
             } else {
                 if (UNIQUE_HEADERS.contains(name.toLowerCase(Locale.US))) {
