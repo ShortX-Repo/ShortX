@@ -691,7 +691,7 @@ fun ActionIcon(action: Action, isEvaluating: Boolean = false, onClick: (() -> Un
             if (isEvaluating) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(37.dp),
-                    strokeWidth = 1.dp
+                    strokeWidth = 2.dp
                 )
             }
             ColoredIcon(

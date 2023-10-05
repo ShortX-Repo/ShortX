@@ -1448,6 +1448,22 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.BiometricVerify::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.BiometricVerify::class.java
+            Action.BiometricVerify(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                title = data.title,
+                subtitle = data.subTitle,
+                allowActions = data.allowActionsList.mapNotNull { it.toAction(shortXManager) },
+                denyActions = data.denyActionsList.mapNotNull { it.toAction(shortXManager) },
+            )
+        }
+
         else -> null
     }
 }

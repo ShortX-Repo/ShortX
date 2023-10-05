@@ -409,6 +409,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.volume_up_fill
         }
 
+        Action.BiometricVerify::class -> {
+            Remix.System.lock_password_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

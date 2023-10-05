@@ -246,4 +246,6 @@ interface IShortX {
     List<String> getEvaluatingActions();
     void registerActionEvaluateListener(in IActionEvaluateListener listener);
     void unregisterActionEvaluateListener(in IActionEvaluateListener listener);
+
+    void setStartActivityResult(int requestCode, int resultCode, in Bundle result);
 }

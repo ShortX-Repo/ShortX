@@ -239,6 +239,18 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.BiometricVerify::class -> {
+                addAction(
+                    Action.BiometricVerify(
+                        title = "Title",
+                        subtitle = "subtitle",
+                        allowActions = emptyList(),
+                        denyActions = emptyList()
+                    )
+                )
+                true
+            }
+
             Action.DisableBT::class,
             Action.DisableLocation::class,
             Action.DisableDND::class,
@@ -317,6 +329,7 @@ fun SystemActions(
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
+        Action.BiometricVerify::class,
     ).map {
         SelectorItem(
             type = it,

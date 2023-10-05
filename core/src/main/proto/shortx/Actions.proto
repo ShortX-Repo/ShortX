@@ -1158,3 +1158,17 @@ enum MediaPlaybackAction {
   MediaPlaybackAction_Rewind = 5;
   MediaPlaybackAction_Stop = 6;
 }
+
+
+message BiometricVerify {
+  repeated google.protobuf.Any allowActions = 1;
+  repeated google.protobuf.Any denyActions = 2;
+  string title = 3;
+  string subTitle = 4;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

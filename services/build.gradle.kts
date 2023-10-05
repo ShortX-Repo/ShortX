@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     compileOnly(files("${rootProject.rootDir.path}/android-sdk/31/android-31.jar"))
-    compileOnly(files("lib/service-ui-stubs4.jar"))
+    compileOnly(files("lib/service-ui-stubs6.jar"))
 
     implementation(project(":core"))
     implementation(project(":services-29"))

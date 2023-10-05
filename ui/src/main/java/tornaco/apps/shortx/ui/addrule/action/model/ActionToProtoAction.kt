@@ -2,6 +2,7 @@ package tornaco.apps.shortx.ui.addrule.action.model
 
 import tornaco.apps.shortx.core.proto.action.AdjustVolume
 import tornaco.apps.shortx.core.proto.action.AudioRecording
+import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.action.BreakActionExecute
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.CreateGlobalVar
@@ -1294,6 +1295,19 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.BiometricVerify -> {
+            BiometricVerify.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setTitle(title)
+                .setSubTitle(subtitle)
+                .addAllAllowActions(allowActions.map { it.toProtoAction().pack_() })
+                .addAllDenyActions(denyActions.map { it.toProtoAction().pack_() })
+                .build()
+        }
 
         is Action.NoAction -> {
             NoAction.newBuilder()

@@ -8,6 +8,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
+import android.os.Bundle
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
@@ -51,6 +52,9 @@ class AppStateService(shortXContext: ShortXContext) :
 
     private val enableAppPkg by lazy { PmSetAppEnabledApplicationPackageEnabler(context) }
     private val suspendAppPkg by lazy { PmSuspendApplicationPackageEnabler(context) }
+
+    private val activityStartResultOneTimeListeners =
+        mutableListOf<ActivityStartResultOneTimeListener>()
 
     private val ams by lazy {
         ServiceRetriever(context.classLoader).getAMS()
@@ -564,4 +568,20 @@ class AppStateService(shortXContext: ShortXContext) :
 
     fun isShortXAppUid(uid: Int) = pkgPools.any { it.isShortXAppUid(uid) }
     fun isSystemUIAppUid(uid: Int) = pkgPools.any { it.isSystemUIAppUid(uid) }
+
+    fun setStartActivityResult(requestCode: Int, resultCode: Int, result: Bundle) {
+        synchronized(activityStartResultOneTimeListeners) {
+            activityStartResultOneTimeListeners.forEach {
+                it.onStartActivityResult(requestCode, resultCode, result)
+            }
+
+            activityStartResultOneTimeListeners.clear()
+        }
+    }
+
+    fun registerActivityStartResultOneTimeListeners(listener: ActivityStartResultOneTimeListener) {
+        synchronized(activityStartResultOneTimeListeners) {
+            activityStartResultOneTimeListeners.add(listener)
+        }
+    }
 }
