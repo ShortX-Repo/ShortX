@@ -557,6 +557,12 @@ public interface IShortX extends android.os.IInterface
     {
       return null;
     }
+    @Override public void registerActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException
+    {
+    }
+    @Override public void unregisterActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2171,6 +2177,24 @@ public interface IShortX extends android.os.IInterface
           java.util.List<java.lang.String> _result = this.getEvaluatingActions();
           reply.writeNoException();
           reply.writeStringList(_result);
+          return true;
+        }
+        case TRANSACTION_registerActionEvaluateListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IActionEvaluateListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IActionEvaluateListener.Stub.asInterface(data.readStrongBinder());
+          this.registerActionEvaluateListener(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_unregisterActionEvaluateListener:
+        {
+          data.enforceInterface(descriptor);
+          tornaco.apps.shortx.core.IActionEvaluateListener _arg0;
+          _arg0 = tornaco.apps.shortx.core.IActionEvaluateListener.Stub.asInterface(data.readStrongBinder());
+          this.unregisterActionEvaluateListener(_arg0);
+          reply.writeNoException();
           return true;
         }
         default:
@@ -5343,6 +5367,44 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void registerActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_registerActionEvaluateListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerActionEvaluateListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public void unregisterActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterActionEvaluateListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterActionEvaluateListener(listener);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5487,6 +5549,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getStreamMaxVolume = (android.os.IBinder.FIRST_CALL_TRANSACTION + 139);
     static final int TRANSACTION_getStreamVolume = (android.os.IBinder.FIRST_CALL_TRANSACTION + 140);
     static final int TRANSACTION_getEvaluatingActions = (android.os.IBinder.FIRST_CALL_TRANSACTION + 141);
+    static final int TRANSACTION_registerActionEvaluateListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 142);
+    static final int TRANSACTION_unregisterActionEvaluateListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 143);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5702,4 +5766,6 @@ public interface IShortX extends android.os.IInterface
   public int getStreamMaxVolume(int type) throws android.os.RemoteException;
   public int getStreamVolume(int type) throws android.os.RemoteException;
   public java.util.List<java.lang.String> getEvaluatingActions() throws android.os.RemoteException;
+  public void registerActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException;
+  public void unregisterActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException;
 }

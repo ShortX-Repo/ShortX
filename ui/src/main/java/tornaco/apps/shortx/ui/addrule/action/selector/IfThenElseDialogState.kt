@@ -25,8 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -58,9 +60,32 @@ class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialo
         IfThenElseSelectorDialogDialogState()
     }
 ) {
+    private val logger = Logger("IfThenElseSelectorViewModel")
+
     val ifActionHandler: ActionContentStateHandler = ActionContentStateHandler()
     val elseActionHandler: ActionContentStateHandler = ActionContentStateHandler()
     val conditionHandler: ConditionContentStateHandler = ConditionContentStateHandler()
+
+    private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
+        override fun onStart(id: String) {
+            logger.d("actionEvaluateListener#onStart: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+
+        override fun onComplete(id: String) {
+            logger.d("actionEvaluateListener#onComplete: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+    }
+
+    init {
+        shortXManager.registerActionEvaluateListener(actionEvaluateListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterActionEvaluateListener(actionEvaluateListener)
+    }
 
     fun initFrom(currentSettings: Action.IfThenElse? = null) {
         updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }

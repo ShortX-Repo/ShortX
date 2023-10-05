@@ -5,6 +5,7 @@ import android.content.Context
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.settings.OverlayButtonSetting
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.shortXManager
@@ -106,6 +107,27 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
     ContextViewModel<OverlayButtonSelectorState>(context, {
         OverlayButtonSelectorState()
     }) {
+
+    private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
+        override fun onStart(id: String) {
+            logger.d("actionEvaluateListener#onStart: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+
+        override fun onComplete(id: String) {
+            logger.d("actionEvaluateListener#onComplete: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+    }
+
+    init {
+        shortXManager.registerActionEvaluateListener(actionEvaluateListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterActionEvaluateListener(actionEvaluateListener)
+    }
 
     fun initFrom(settings: Action.ShowOverlay) {
         logger.d("initFrom: $settings")

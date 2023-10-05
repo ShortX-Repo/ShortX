@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.runBlocking
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.IJobStatusListener
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -114,6 +115,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     private val jobStatusListeners = RemoteCallbackList<IJobStatusListener>()
+    private val actionEvaluateListener = RemoteCallbackList<IActionEvaluateListener>()
 
     private val globalVarObs = RemoteCallbackList<IGlobalVarObserver>()
     private val ruleObs = RemoteCallbackList<IRuleObserver>()
@@ -155,10 +157,23 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             actionEvaluateStartListener = { actionId ->
                 logger.d("ActionLifecycle actionEvaluateStartListener: $actionId")
                 actionEvaluateRecorder.addEvaluating(actionId)
+                systemServiceScope.launchSafety {
+                    actionEvaluateListener.broadcast {
+                        kotlin.runCatching { it.onStart(actionId) }
+                            .onFailure { logger.e(it, "call onStart") }
+                    }
+                }
             },
             actionEvaluateResultListener = { result ->
                 logger.d("ActionLifecycle actionEvaluateResultListener: $result")
                 actionEvaluateRecorder.removeEvaluating(result.actionId)
+                systemServiceScope.launchSafety {
+                    actionEvaluateListener.broadcast {
+                        kotlin.runCatching { it.onComplete(result.actionId) }
+                            .onFailure { logger.e(it, "call onComplete") }
+                    }
+                }
+
                 if (isEvaluateRecordEnabled()) {
                     result.toActionEvaluateRecord()?.let { actionEvaluateRecorder.addResult(it) }
                 }
@@ -686,6 +701,14 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun unregisterJobStatusListener(listener: IJobStatusListener) {
         jobStatusListeners.unregister(listener)
+    }
+
+    fun registerActionEvaluateListener(listener: IActionEvaluateListener) {
+        actionEvaluateListener.register(listener)
+    }
+
+    fun unregisterActionEvaluateListener(listener: IActionEvaluateListener) {
+        actionEvaluateListener.unregister(listener)
     }
 
     fun addGlobalVar(gv: GlobalVar) {

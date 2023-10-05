@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.IActionEvaluateListener
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
@@ -92,6 +93,27 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
     val quitFactContentStateHandler = FactContentStateHandler()
     val quitConditionContentStateHandler = ConditionContentStateHandler()
     val quitActionStateHandler = ActionContentStateHandler()
+
+    private val actionEvaluateListener = object : IActionEvaluateListener.Stub() {
+        override fun onStart(id: String) {
+            logger.d("actionEvaluateListener#onStart: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+
+        override fun onComplete(id: String) {
+            logger.d("actionEvaluateListener#onComplete: $id")
+            updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+        }
+    }
+
+    init {
+        shortXManager.registerActionEvaluateListener(actionEvaluateListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterActionEvaluateListener(actionEvaluateListener)
+    }
 
     fun setTitle(title: String) {
         if (title != state.value.title) {

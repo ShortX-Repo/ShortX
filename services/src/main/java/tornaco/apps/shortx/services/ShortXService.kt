@@ -923,6 +923,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.unregisterJobStatusListener(listener)
         }
 
+        override fun registerActionEvaluateListener(listener: IActionEvaluateListener) {
+            shortXContext.rule.registerActionEvaluateListener(listener)
+        }
+
+        override fun unregisterActionEvaluateListener(listener: IActionEvaluateListener) {
+            shortXContext.rule.unregisterActionEvaluateListener(listener)
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String

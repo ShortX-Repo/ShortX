@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.core;
 
+import tornaco.apps.shortx.core.IActionEvaluateListener;
 import tornaco.apps.shortx.core.IJobStatusListener;
 import tornaco.apps.shortx.core.ICallback;
 import tornaco.apps.shortx.core.rule.IGlobalVarObserver;
@@ -243,4 +244,6 @@ interface IShortX {
     int getStreamVolume(int type);
 
     List<String> getEvaluatingActions();
+    void registerActionEvaluateListener(in IActionEvaluateListener listener);
+    void unregisterActionEvaluateListener(in IActionEvaluateListener listener);
 }
