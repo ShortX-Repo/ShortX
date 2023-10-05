@@ -135,6 +135,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             pw.println("Welcome to ShortX(${BuildProp.APP_VERSION_NAME}). Command usage:")
             pw.println("shortx run [ID]")
             pw.println("      Run a Rule.")
+            pw.println("shortx dump")
+            pw.println("      Dump ShortX states.")
             pw.flush()
             return 0
         } else if (nextArgs == "run") {
@@ -162,6 +164,13 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     .build(),
                 id = id
             )
+            return 0
+        } else if (nextArgs == "dump") {
+            pw.println("Running actions:")
+            shortXContext.rule.getEvaluatingActions().forEach {
+                pw.println(it)
+            }
+            pw.flush()
             return 0
         }
 
@@ -691,6 +700,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.getActionEvaluateRecords().map {
                 ByteArrayWrapper(it.toByteArray())
             }
+        }
+
+        override fun getEvaluatingActions(): List<String> {
+            return shortXContext.rule.getEvaluatingActions()
         }
 
         override fun getConditionEvaluateRecords(): List<ByteArrayWrapper> {

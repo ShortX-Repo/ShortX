@@ -241,4 +241,6 @@ interface IShortX {
     int getStreamMinVolume(int type);
     int getStreamMaxVolume(int type);
     int getStreamVolume(int type);
+
+    List<String> getEvaluatingActions();
 }

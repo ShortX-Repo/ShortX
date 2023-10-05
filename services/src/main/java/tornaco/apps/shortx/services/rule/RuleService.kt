@@ -152,10 +152,15 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                     }
                 }
             },
+            actionEvaluateStartListener = { actionId ->
+                logger.d("ActionLifecycle actionEvaluateStartListener: $actionId")
+                actionEvaluateRecorder.addEvaluating(actionId)
+            },
             actionEvaluateResultListener = { result ->
-                logger.d("actionEvaluateResultListener: $result")
+                logger.d("ActionLifecycle actionEvaluateResultListener: $result")
+                actionEvaluateRecorder.removeEvaluating(result.actionId)
                 if (isEvaluateRecordEnabled()) {
-                    result.toActionEvaluateRecord()?.let { actionEvaluateRecorder.add(it) }
+                    result.toActionEvaluateRecord()?.let { actionEvaluateRecorder.addResult(it) }
                 }
             },
             conditionEvaluateResultListener = { result ->
@@ -709,6 +714,10 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun getActionEvaluateRecords(): List<ActionEvaluateRecord> {
         return actionEvaluateRecorder.actionEvaluateRecords
+    }
+
+    fun getEvaluatingActions(): List<String> {
+        return actionEvaluateRecorder.evaluatingActions
     }
 
     fun clearActionEvaluateRecords() {

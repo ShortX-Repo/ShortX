@@ -581,6 +581,12 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun getEvaluatingActions(): List<String> {
+        return invokeService(emptyList()) {
+            evaluatingActions
+        }
+    }
+
     fun getConditionEvaluateRecords(): List<ConditionEvaluateRecord> {
         return invokeService(emptyList()) {
             conditionEvaluateRecords.map {

@@ -553,6 +553,10 @@ public interface IShortX extends android.os.IInterface
     {
       return 0;
     }
+    @Override public java.util.List<java.lang.String> getEvaluatingActions() throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2159,6 +2163,14 @@ public interface IShortX extends android.os.IInterface
           int _result = this.getStreamVolume(_arg0);
           reply.writeNoException();
           reply.writeInt(_result);
+          return true;
+        }
+        case TRANSACTION_getEvaluatingActions:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<java.lang.String> _result = this.getEvaluatingActions();
+          reply.writeNoException();
+          reply.writeStringList(_result);
           return true;
         }
         default:
@@ -5311,6 +5323,26 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public java.util.List<java.lang.String> getEvaluatingActions() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<java.lang.String> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getEvaluatingActions, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getEvaluatingActions();
+          }
+          _reply.readException();
+          _result = _reply.createStringArrayList();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5454,6 +5486,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_getStreamMinVolume = (android.os.IBinder.FIRST_CALL_TRANSACTION + 138);
     static final int TRANSACTION_getStreamMaxVolume = (android.os.IBinder.FIRST_CALL_TRANSACTION + 139);
     static final int TRANSACTION_getStreamVolume = (android.os.IBinder.FIRST_CALL_TRANSACTION + 140);
+    static final int TRANSACTION_getEvaluatingActions = (android.os.IBinder.FIRST_CALL_TRANSACTION + 141);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5668,4 +5701,5 @@ public interface IShortX extends android.os.IInterface
   public int getStreamMinVolume(int type) throws android.os.RemoteException;
   public int getStreamMaxVolume(int type) throws android.os.RemoteException;
   public int getStreamVolume(int type) throws android.os.RemoteException;
+  public java.util.List<java.lang.String> getEvaluatingActions() throws android.os.RemoteException;
 }

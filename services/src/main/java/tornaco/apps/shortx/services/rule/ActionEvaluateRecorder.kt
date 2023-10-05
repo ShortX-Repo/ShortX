@@ -7,6 +7,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
     return when (this) {
         is ActionEvaluator.EvaluateResult.Break -> {
             ActionEvaluateRecord.newBuilder()
+                .setActionId(this.actionId)
                 .setIsSuccess(true)
                 .setMessage("[break!!!]")
                 .setContext(this.evaluateContext)
@@ -16,6 +17,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
 
         is ActionEvaluator.EvaluateResult.Fail -> {
             ActionEvaluateRecord.newBuilder()
+                .setActionId(this.actionId)
                 .setIsSuccess(false)
                 .setMessage(this.error.stackTraceToString())
                 .setContext(this.evaluateContext)
@@ -25,6 +27,7 @@ fun ActionEvaluator.EvaluateResult.toActionEvaluateRecord(): ActionEvaluateRecor
 
         is ActionEvaluator.EvaluateResult.Success -> {
             ActionEvaluateRecord.newBuilder()
+                .setActionId(this.actionId)
                 .setIsSuccess(true)
                 .setMessage("Success")
                 .setContext(this.evaluateContext)
@@ -43,10 +46,20 @@ private const val MAX_ENTRY_SIZE = 500
 
 class ActionEvaluateRecorder {
     private val _actionEvaluateRecords = mutableListOf<ActionEvaluateRecord>()
-
     val actionEvaluateRecords get() = _actionEvaluateRecords.toList()
 
-    fun add(record: ActionEvaluateRecord) {
+    private val _evaluatingActions = mutableListOf<String>()
+    val evaluatingActions get() = _evaluatingActions.toList()
+
+    fun addEvaluating(actionId: String) {
+        _evaluatingActions.add(actionId)
+    }
+
+    fun removeEvaluating(actionId: String) {
+        _evaluatingActions.remove(actionId)
+    }
+
+    fun addResult(record: ActionEvaluateRecord) {
         _actionEvaluateRecords.add(record)
         if (_actionEvaluateRecords.size > MAX_ENTRY_SIZE) {
             _actionEvaluateRecords.removeFirst()

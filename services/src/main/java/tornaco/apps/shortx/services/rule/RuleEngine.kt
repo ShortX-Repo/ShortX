@@ -19,11 +19,13 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         handler: Handler,
         conditionEvaluator: ConditionEvaluator,
+        actionEvaluateStartListener: (actionId: String) -> Unit,
         actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     ) = ActionEvaluatorImpl(
         context,
         shortXContext,
         handler,
+        actionEvaluateStartListener,
         actionEvaluateResultListener,
         conditionEvaluator
     )
@@ -34,6 +36,7 @@ object RuleEngineFactory {
         shortXContext: ShortXContext,
         androidContext: Context,
         handler: Handler,
+        actionEvaluateStartListener: (actionId: String) -> Unit,
         actionEvaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
         conditionEvaluateResultListener: (ConditionEvaluator.EvaluateResult) -> Unit,
         factMatcher: FactMatcher = newFactMatcher(shortXContext),
@@ -47,6 +50,7 @@ object RuleEngineFactory {
             shortXContext = shortXContext,
             handler = handler,
             conditionEvaluator = conditionEvaluator,
+            actionEvaluateStartListener = actionEvaluateStartListener,
             actionEvaluateResultListener = actionEvaluateResultListener
         ),
         onJobStarted: (String) -> Unit,

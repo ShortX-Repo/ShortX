@@ -12,6 +12,7 @@ import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.prebuiltActorFor
@@ -28,6 +29,7 @@ class ActionEvaluatorImpl(
     private val context: Context,
     private val shortXContext: ShortXContext,
     private val handler: Handler,
+    private val evaluateStartListener: (actionId: String) -> Unit,
     private val evaluateResultListener: (ActionEvaluator.EvaluateResult) -> Unit,
     private val conditionEvaluator: ConditionEvaluator
 ) : ActionEvaluator {
@@ -57,12 +59,17 @@ class ActionEvaluatorImpl(
         // Do not worry about unpack cost, protobuf has cache.
         val unPacked = action unpack_ actor.actionsCanHandle()
         val attrs = extractActionAttrs(unPacked)
+        val actionId = attrs?.id.fallbackOnEmpty("Unknown-Action-Id")
+        logger.d("Action attrs: $attrs")
+
         if (attrs != null && attrs.isDisabled) {
-            return ActionEvaluator.EvaluateResult.Disabled(action, evaluateContext)
+            return ActionEvaluator.EvaluateResult.Disabled(actionId, action, evaluateContext)
         }
         val shouldContinueOnError = attrs != null && attrs.onError == ActionOnError.Continue
 
         return kotlin.runCatching {
+            evaluateStartListener(actionId)
+
             actor.handle(
                 HandleParams(
                     androidContext = context,
@@ -75,10 +82,15 @@ class ActionEvaluatorImpl(
                     conditionEvaluator = conditionEvaluator
                 )
             )
-            ActionEvaluator.EvaluateResult.Success(action, evaluateContext)
+            ActionEvaluator.EvaluateResult.Success(actionId, action, evaluateContext)
         }.getOrElse { throwable ->
             if (throwable is BreakActionException) {
-                ActionEvaluator.EvaluateResult.Break(action, throwable.scope, evaluateContext)
+                ActionEvaluator.EvaluateResult.Break(
+                    actionId,
+                    action,
+                    throwable.scope,
+                    evaluateContext
+                )
             } else {
                 val isCanceledError = throwable is CancellationException
                 if (isCanceledError) {
@@ -86,6 +98,7 @@ class ActionEvaluatorImpl(
                 }
                 ActionEvaluator.EvaluateResult.Fail(
                     shouldContinue = shouldContinueOnError && !isCanceledError,
+                    actionId = actionId,
                     action = action,
                     error = throwable,
                     evaluateContext = evaluateContext

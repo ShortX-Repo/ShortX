@@ -62,6 +62,7 @@ data class AddRuleState(
     val asyncMode: AsyncMode = AsyncMode.AsyncMode_Async,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
     val ruleSetId: String = "",
+    val evaluatingActions: List<String> = emptyList(),
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
     val securityCheckRes: Boolean = true
@@ -326,6 +327,8 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                             || quitConditionContentStateHandler.conditions.isNotEmpty()
                 logger.d("hasAnyHookActions: $hasAnyHookActions")
 
+                val evaluatingActions = shortXManager.getEvaluatingActions()
+
                 updateState {
                     copy(
                         id = r.id,
@@ -339,6 +342,7 @@ class AddRuleViewModel @Inject constructor(@ApplicationContext context: Context)
                         isQuitEnabled = r.quit.isEnabled,
                         asyncMode = r.asyncMode,
                         conflictStrategy = r.conflictPolicy,
+                        evaluatingActions = evaluatingActions,
                         ruleSetId = r.ruleSetId,
                         securityCheckRes = Security.checkSecurity(r)
                     )

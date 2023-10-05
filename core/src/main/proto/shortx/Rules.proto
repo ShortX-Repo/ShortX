@@ -84,6 +84,7 @@ message ActionEvaluateRecord {
   int64 timeStamp = 4;
 
   EvaluateContext context = 6;
+  string actionId = 7;
 }
 
 message ConditionEvaluateRecord {
@@ -102,8 +103,10 @@ message FactPublishRecord {
 }
 
 message EvaluateContext {
+  // The Rule or DA id.
   string srcId = 1;
   string srcTitle = 2;
+  // Unique number by execute sequence.
   int32 serialNumber = 3;
   ContextSrcEvent srcEvent = 8;
 }
