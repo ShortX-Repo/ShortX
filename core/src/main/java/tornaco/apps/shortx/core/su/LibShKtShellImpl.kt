@@ -57,7 +57,7 @@ object LibShKtShellImpl : ISu.Stub() {
         }
     }
 
-    fun exeSingleShot(
+    private fun exeSingleShot(
         command: Array<out String>,
         receiver: SynchronousResultReceiver,
     ) {

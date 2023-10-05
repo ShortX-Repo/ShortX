@@ -16,8 +16,10 @@
 
 package com.jaredrummler.ktsh
 
+import android.util.Log
 import com.jaredrummler.ktsh.Shell.Command
 import java.io.*
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -658,6 +660,7 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
                 null -> {
                     await(); true
                 }
+
                 else -> await(timeout.value, timeout.unit)
             }
         }
@@ -717,7 +720,8 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
          */
         var onComplete: (marker: Command.Marker) -> Unit = {}
 
-        override fun run() = BufferedReader(InputStreamReader(stream)).forEachLine { line ->
+        override fun run() = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8)).forEachLine { line ->
+            Log.d("ShortX-Shell", "line: $line")
             pattern.matcher(line).let { matcher ->
                 if (matcher.matches()) {
                     val uuid = UUID.fromString(matcher.group(GROUP_UUID))
