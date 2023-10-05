@@ -18,14 +18,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -200,6 +198,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                 vm.updateButtonText(it, DialogAction.Positive)
             },
             actions = positiveAction.actions,
+            evaluatingActions = state.evaluatingActions,
             warnings = positiveAction.actionWarningMessages,
             actionHandler = vm.positiveActionContent.asActionHandler()
         )
@@ -220,6 +219,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                 vm.updateButtonText(it, DialogAction.Negative)
             },
             actions = negativeAction.actions,
+            evaluatingActions = state.evaluatingActions,
             warnings = negativeAction.actionWarningMessages,
             actionHandler = vm.negativeActionContent.asActionHandler()
         )
@@ -241,6 +241,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                 vm.updateButtonText(it, DialogAction.Neutral)
             },
             actions = neutralAction.actions,
+            evaluatingActions = state.evaluatingActions,
             warnings = neutralAction.actionWarningMessages,
             actionHandler = vm.neutralActionContent.asActionHandler()
         )
@@ -252,16 +253,13 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
         text: String,
         onTextChange: (String) -> Unit,
         actions: List<Action>,
+        evaluatingActions: List<String>,
         warnings: Map<String, List<String>>,
         actionHandler: ActionHandler
     ) {
         MediumTitle(headerTitle)
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
-
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent
-            ),
             label = {
                 Text(text = LocalI18N.current["ui.action.dialog.button.text"])
             },
@@ -273,7 +271,6 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
         TipRow(text = LocalI18N.current["ui.actions.dialog.button.optional"])
         TinySpacer()
 
-
         ActionContent(
             header = {
                 SmallTitle(
@@ -282,6 +279,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                 )
             },
             actions = actions,
+            evaluatingActions = evaluatingActions,
             handler = actionHandler,
             warnings = warnings
         )

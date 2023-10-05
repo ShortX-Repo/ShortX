@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.DialogMenuItem
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.ActionContent
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.ActionHandler
@@ -71,7 +72,10 @@ class ShowMenuDialogSettingsDialogState(
     var isCancelable by mutableStateOf(true)
     var items by mutableStateOf<List<MenuDialogUiItem>>(emptyList())
 
+    var evaluatingActions: List<String> = emptyList()
+
     fun show(currentSettings: Action.ShowMenuDialog? = null) {
+        this.evaluatingActions = shortXManager.getEvaluatingActions()
         this.title = currentSettings?.title ?: ""
         this.message = currentSettings?.message ?: ""
         this.isCancelable = currentSettings?.cancelable ?: true
@@ -79,7 +83,7 @@ class ShowMenuDialogSettingsDialogState(
             MenuDialogUiItem(dialogMenuItem.title, ActionContentStateHandler().apply {
                 updateState {
                     copy(actions = dialogMenuItem.clickActionsList.mapNotNull {
-                        it.toAction(shortXManager = tornaco.apps.shortx.core.shortXManager)
+                        it.toAction(shortXManager = shortXManager)
                     })
                 }
             })
@@ -252,6 +256,7 @@ private fun Items(
                 state.updateItemTitle(it, index)
             },
             actions = actionState.actions,
+            evaluatingActions = state.evaluatingActions,
             warnings = emptyMap(),
             actionHandler = menuDialogUiItem.actionHandler.asActionHandler(),
             removeItem = {
@@ -269,6 +274,7 @@ private fun ItemSettings(
     text: String,
     onTextChange: (String) -> Unit,
     actions: List<Action>,
+    evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     actionHandler: ActionHandler,
     removeItem: () -> Unit
@@ -310,6 +316,7 @@ private fun ItemSettings(
             )
         },
         actions = actions,
+        evaluatingActions = evaluatingActions,
         handler = actionHandler,
         warnings = warnings
     )

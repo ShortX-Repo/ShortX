@@ -270,6 +270,7 @@ private fun DAContent(
     ActionContent(
         srcId = addDirectActionState.id,
         actions = actionContentState.actions,
+        evaluatingActions = addDirectActionState.evaluatingActions,
         handler = actionContentStateHandler.asActionHandler(),
         readOnly = readOnly,
         warnings = actionContentState.actionWarningMessages

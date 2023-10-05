@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -60,7 +61,10 @@ class WhileLoopDialogState(
     var delay by mutableStateOf(0L)
     var repeat by mutableStateOf(0)
 
+    var evaluatingActions: List<String> = emptyList()
+
     fun show(currentSettings: Action.WhileLoop? = null) {
+        evaluatingActions = shortXManager.getEvaluatingActions()
         conditionHandler.init(
             currentSettings?.conditions ?: emptyList(),
             currentSettings?.op ?: Op.All
@@ -199,6 +203,7 @@ private fun WhileLoopSelector(dialogState: WhileLoopDialogState) {
                             )
                         },
                         actions = actionState.actions,
+                        evaluatingActions = dialogState.evaluatingActions,
                         handler = dialogState.actionHandler.asActionHandler(),
                         warnings = actionState.actionWarningMessages
                     )

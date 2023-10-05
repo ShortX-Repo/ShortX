@@ -235,6 +235,7 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
                 )
             },
             actions = handlerState.actions,
+            evaluatingActions = state.evaluatingActions,
             warnings = emptyMap(),
             handler = handler
         )
@@ -244,7 +245,16 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
         MediumSpacer()
         Column {
             state.buttonAndHandlers.forEachIndexed { index, button ->
-                ButtonListItem(index, button, vm)
+                ButtonListItem(
+                    index = index,
+                    buttonAndHandler = button,
+                    evaluatingActions = state.evaluatingActions,
+                    removeButton = {
+                        vm.removeButton(it)
+                    },
+                    updateLabel = { ix, s ->
+                        vm.updateLabel(ix, s)
+                    })
             }
             StandardSpacer()
             // Add icon
@@ -267,7 +277,9 @@ private fun Content(paddingValues: PaddingValues, vm: PostNotificationSelectorVi
 private fun ButtonListItem(
     index: Int,
     buttonAndHandler: NotificationButtonAndHandler,
-    vm: PostNotificationSelectorViewModel,
+    evaluatingActions: List<String>,
+    removeButton: (Int) -> Unit,
+    updateLabel: (Int, String) -> Unit,
 ) {
     ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
         Column(
@@ -283,7 +295,7 @@ private fun ButtonListItem(
                     )]
                 )
                 IconButton(onClick = {
-                    vm.removeButton(index)
+                    removeButton(index)
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }
@@ -297,7 +309,7 @@ private fun ButtonListItem(
                     LocalI18N.current["ui.action.post.notification.button.text"]
                 )
                 ShortXTextField(value = buttonAndHandler.label, onValueChange = {
-                    vm.updateLabel(index, it)
+                    updateLabel(index, it)
                 })
             }
             StandardSpacer()
@@ -312,6 +324,7 @@ private fun ButtonListItem(
                     )
                 },
                 actions = actionState.actions,
+                evaluatingActions = evaluatingActions,
                 warnings = actionState.actionWarningMessages,
                 handler = buttonAndHandler.handler.asActionHandler()
             )

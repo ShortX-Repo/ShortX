@@ -21,6 +21,7 @@ data class ShowDialogSelectorState(
     val positiveText: String? = null,
     val negativeText: String? = null,
     val neutralText: String? = null,
+    val evaluatingActions: List<String> = emptyList()
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -50,7 +51,8 @@ class ShowDialogSelectorViewModel @Inject constructor(@ApplicationContext contex
                 cancelable = settings.cancelable,
                 positiveText = settings.positiveText,
                 negativeText = settings.negativeText,
-                neutralText = settings.neutralText
+                neutralText = settings.neutralText,
+                evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
         positiveActionContent.init(settings.positiveActions)

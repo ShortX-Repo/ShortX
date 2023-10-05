@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -100,6 +101,7 @@ fun ActionContent(
     // Rule Or DA id.
     srcId: String? = null,
     actions: List<Action>,
+    evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean = false,
     handler: ActionHandler
@@ -109,6 +111,7 @@ fun ActionContent(
         warnings = warnings,
         srcId = srcId,
         actions = actions,
+        evaluatingActions = evaluatingActions,
         readOnly = readOnly,
         handler = handler
     )
@@ -119,6 +122,7 @@ private fun Actions(
     header: @Composable ColumnScope.() -> Unit,
     srcId: String?,
     actions: List<Action>,
+    evaluatingActions: List<String>,
     warnings: Map<String, List<String>>,
     readOnly: Boolean,
     handler: ActionHandler
@@ -362,7 +366,10 @@ private fun Actions(
                                         titleColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
                                         textColor = if (action.isEnabled) Color.Unspecified else ErrorRed,
                                         icon = {
-                                            ActionIcon(action) {
+                                            ActionIcon(
+                                                action,
+                                                evaluatingActions.contains(action.id),
+                                            ) {
                                                 clickDropdownState.open()
                                             }
                                         },
@@ -678,18 +685,26 @@ private fun Actions(
 }
 
 @Composable
-fun ActionIcon(action: Action, onClick: (() -> Unit)? = null) {
+fun ActionIcon(action: Action, isEvaluating: Boolean = false, onClick: (() -> Unit)? = null) {
     Box {
-        ColoredIcon(
-            size = 36.dp,
-            color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
-            onClick = onClick
-        ) {
-            RemixIcon(
-                modifier = Modifier.size(16.dp),
-                remixName = imageVectorForAction(action = action),
-                tint = colorForAction(action::class)
-            )
+        Box(modifier = Modifier.align(Alignment.Center)) {
+            if (isEvaluating) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(37.dp),
+                    strokeWidth = 1.dp
+                )
+            }
+            ColoredIcon(
+                size = 36.dp,
+                color = colorForAction(action::class).copy(alpha = ActionColorBgAlpha),
+                onClick = onClick
+            ) {
+                RemixIcon(
+                    modifier = Modifier.size(16.dp),
+                    remixName = imageVectorForAction(action = action),
+                    tint = colorForAction(action::class)
+                )
+            }
         }
 
         if (action.actionOnError == ActionOnError.Break) {

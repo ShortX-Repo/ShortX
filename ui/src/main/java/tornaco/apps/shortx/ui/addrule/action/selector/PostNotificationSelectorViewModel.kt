@@ -27,7 +27,8 @@ data class PostNotificationSelectorState(
     val vibrate: Boolean,
     val sound: Boolean,
     val buttonAndHandlers: List<NotificationButtonAndHandler>,
-    val onClickHandler: ActionContentStateHandler
+    val onClickHandler: ActionContentStateHandler,
+    val evaluatingActions: List<String> = emptyList()
 )
 
 data class NotificationButtonAndHandler(
@@ -91,6 +92,7 @@ class PostNotificationSelectorViewModel @Inject constructor(@ApplicationContext 
                 isImportant = settings.isImportant,
                 vibrate = settings.vibrate,
                 sound = settings.sound,
+                evaluatingActions = shortXManager.getEvaluatingActions(),
                 buttonAndHandlers = settings.buttons.map { notificationButton ->
                     NotificationButtonAndHandler(
                         label = notificationButton.label,

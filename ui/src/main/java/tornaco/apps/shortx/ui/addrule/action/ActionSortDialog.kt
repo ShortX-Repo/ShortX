@@ -7,8 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
@@ -19,7 +28,11 @@ import org.burnoutcrew.reorderable.reorderable
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelLinesForAction
 import tornaco.apps.shortx.ui.addrule.action.model.Action
-import tornaco.apps.shortx.ui.base.*
+import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.RemixIcon
+import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
+import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
 
@@ -114,7 +127,7 @@ private fun ActionSortDialogContent(state: ActionSortState) {
                                 modifier = Modifier.scale(scale.value),
                                 titleLines = labelLinesForAction(action = item),
                                 icon = {
-                                    ActionIcon(item)
+                                    ActionIcon(item, false)
                                 }
                             )
                         }

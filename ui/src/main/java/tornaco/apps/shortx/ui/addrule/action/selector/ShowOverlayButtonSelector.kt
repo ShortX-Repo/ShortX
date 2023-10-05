@@ -166,7 +166,19 @@ private fun Content(
         AnimatedVisibility(visible = state.isButtonListExpanded) {
             Column {
                 state.buttons.forEachIndexed { index, button ->
-                    ButtonListItem(vm, index, button)
+                    ButtonListItem(
+                        index = index,
+                        button = button,
+                        evaluatingActions = state.evaluatingActions,
+                        updateLabel = { i: Int, s: String ->
+                            vm.updateLabel(i, s)
+                        },
+                        updateIcon = { i: Int, s: String ->
+                            vm.updateIcon(i, s)
+                        },
+                        removeButton = {
+                            vm.removeButton(it)
+                        })
                 }
                 StandardSpacer()
                 // Add icon
@@ -310,12 +322,15 @@ private fun Content(
 
 @Composable
 private fun ButtonListItem(
-    vm: ShowOverlayButtonSelectorViewModel,
     index: Int,
-    button: Button
+    button: Button,
+    evaluatingActions: List<String>,
+    updateLabel: (Int, String) -> Unit,
+    updateIcon: (Int, String) -> Unit,
+    removeButton: (Int) -> Unit,
 ) {
     val iconSelector = rememberMDIconSelectorState {
-        vm.updateIcon(index, it)
+        updateIcon(index, it)
     }
     MDIconSelectorDialog(state = iconSelector)
 
@@ -330,7 +345,7 @@ private fun ButtonListItem(
                     )]
                 )
                 IconButton(onClick = {
-                    vm.removeButton(index)
+                    removeButton(index)
                 }) {
                     RemixIcon(remixName = Remix.System.close_line)
                 }
@@ -344,7 +359,7 @@ private fun ButtonListItem(
                     LocalI18N.current["ui.action.show.overlay.text"]
                 )
                 ShortXTextField(value = button.label, onValueChange = {
-                    vm.updateLabel(index, it)
+                    updateLabel(index, it)
                 })
             }
             StandardSpacer()
@@ -356,7 +371,7 @@ private fun ButtonListItem(
                         LocalI18N.current["ui.action.show.overlay.icon"]
                     )
                     IconButton(onClick = {
-                        vm.updateIcon(index, "")
+                        updateIcon(index, "")
                     }) {
                         RemixIcon(
                             modifier = Modifier.size(18.dp),
@@ -390,6 +405,7 @@ private fun ButtonListItem(
                     )
                 },
                 actions = actionState.actions,
+                evaluatingActions = evaluatingActions,
                 warnings = actionState.actionWarningMessages,
                 handler = actionStateHandle.asActionHandler()
             )
@@ -406,6 +422,7 @@ private fun ButtonListItem(
                     )
                 },
                 actions = longClickActionState.actions,
+                evaluatingActions = evaluatingActions,
                 warnings = longClickActionState.actionWarningMessages,
                 handler = longClickActionStateHandle.asActionHandler()
             )

@@ -46,6 +46,7 @@ data class AddDirectActionState(
     val copiedAction: Action? = null,
     val showAdvancedOptions: Boolean = false,
     val conflictStrategy: ConflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth,
+    val evaluatingActions: List<String> = emptyList(),
     val daSetId: String = "",
     // For online.
     val onlineDALoadState: LoadState<Unit> = LoadState.Success(Unit),
@@ -162,6 +163,7 @@ class AddDirectActionViewModel @Inject constructor(@ApplicationContext context: 
                         createTime = da.createTime,
                         versionCode = da.versionCode,
                         conflictStrategy = da.conflictPolicy,
+                        evaluatingActions = shortXManager.getEvaluatingActions(),
                         daSetId = da.directActionSetId,
                         securityCheckRes = Security.checkSecurity(da)
                     )

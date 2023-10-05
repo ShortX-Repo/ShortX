@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.ActionContentStateHandler
 import tornaco.apps.shortx.ui.addrule.action.asActionHandler
 import tornaco.apps.shortx.ui.addrule.action.model.Action
@@ -62,6 +63,8 @@ class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialo
     val conditionHandler: ConditionContentStateHandler = ConditionContentStateHandler()
 
     fun initFrom(currentSettings: Action.IfThenElse? = null) {
+        updateState { copy(evaluatingActions = shortXManager.getEvaluatingActions()) }
+
         currentSettings?.let {
             updateState {
                 copy(id = currentSettings.id, note = currentSettings.note)
@@ -79,17 +82,14 @@ class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialo
 data class IfThenElseSelectorDialogDialogState(
     val id: String = defaultNewActionId(),
     val note: String = "",
+    val evaluatingActions: List<String> = emptyList()
 )
 
 @Composable
 private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSelector(currentAction: Action.IfThenElse?) {
     val vm = viewModel<IfThenElseSelectorViewModel>()
     LaunchedEffect(vm) {
-        if (currentAction == null) {
-            vm.resetState()
-        } else {
-            vm.initFrom(currentAction)
-        }
+        vm.initFrom(currentAction)
     }
     val dialogState by vm.state.collectAsState()
 
@@ -160,6 +160,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
                             MediumTitle(LocalI18N.current["ui.action.then"])
                         },
                         actions = ifActionState.actions,
+                        evaluatingActions = dialogState.evaluatingActions,
                         handler = ifHandler.asActionHandler(),
                         warnings = ifActionState.actionWarningMessages
                     )
@@ -170,6 +171,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
                             MediumTitle(LocalI18N.current["ui.action.else"])
                         },
                         actions = elseActionState.actions,
+                        evaluatingActions = dialogState.evaluatingActions,
                         handler = elseHandler.asActionHandler(),
                         warnings = elseActionState.actionWarningMessages
                     )

@@ -35,6 +35,7 @@ data class OverlayButtonSelectorState(
     val enableGlobalDrag: Boolean = true,
     val enableAutoEdge: Boolean = false,
     val id: String = defaultNewActionId(),
+    val evaluatingActions: List<String> = emptyList(),
 
     // UI states
     val isButtonListExpanded: Boolean = true
@@ -122,7 +123,8 @@ class ShowOverlayButtonSelectorViewModel @Inject constructor(@ApplicationContext
                 enableGlobalDrag = settings.enableGlobalDrag,
                 overlayPaddingH = settings.overlayPaddingH,
                 overlayPaddingV = settings.overlayPaddingV,
-                enableAutoEdge = !settings.disableAutoEdge
+                enableAutoEdge = !settings.disableAutoEdge,
+                evaluatingActions = shortXManager.getEvaluatingActions()
             )
         }
     }

@@ -378,6 +378,7 @@ private fun RuleContent(
     ActionContent(
         srcId = addRuleState.id,
         actions = actionContentState.actions,
+        evaluatingActions = addRuleState.evaluatingActions,
         handler = actionHandler.asActionHandler(),
         readOnly = readOnly,
         warnings = actionContentState.actionWarningMessages
@@ -489,6 +490,7 @@ private fun RuleContent(
                         },
                         srcId = addRuleState.id,
                         actions = quitActionState.actions,
+                        evaluatingActions = addRuleState.evaluatingActions,
                         warnings = emptyMap(),
                         handler = quitActionHandler.asActionHandler()
                     )
@@ -510,6 +512,7 @@ private fun RuleContent(
                 },
                 srcId = addRuleState.id,
                 actions = actionOnEnabledState.actions,
+                evaluatingActions = addRuleState.evaluatingActions,
                 handler = actionOnEnabledHandler.asActionHandler(),
                 readOnly = readOnly,
                 warnings = actionOnEnabledState.actionWarningMessages
@@ -525,6 +528,7 @@ private fun RuleContent(
                 },
                 srcId = addRuleState.id,
                 actions = actionOnDisabledState.actions,
+                evaluatingActions = addRuleState.evaluatingActions,
                 handler = actionOnDisabledHandler.asActionHandler(),
                 readOnly = readOnly,
                 warnings = actionOnDisabledState.actionWarningMessages
@@ -540,6 +544,7 @@ private fun RuleContent(
                 },
                 srcId = addRuleState.id,
                 actions = actionOnDeletedState.actions,
+                evaluatingActions = addRuleState.evaluatingActions,
                 handler = actionOnDeletedHandler.asActionHandler(),
                 readOnly = readOnly,
                 warnings = actionOnDeletedState.actionWarningMessages
