@@ -34,6 +34,7 @@ object ShellCommand : Actor {
             shortXContext.shell.executeCommand(command, sc.singleShot)
         logger.d("Shell command: $command")
         logger.d("Shell res: $res")
+
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellCode.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellCode.name },
@@ -42,12 +43,16 @@ object ShellCommand : Actor {
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellErr.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellErr.name },
-            res.errList?.joinToString()
+            res.errList?.joinToString().also {
+                logger.p("shellErr: [$it]")
+            }
         )
         contextData.add(
             sc.customContextDataKey.forKey(ContextDataMapping.ShellCommand.shellOut.name)
                 .fallbackOnEmpty { ContextDataMapping.ShellCommand.shellOut.name },
-            res.outList?.joinToString()
+            res.outList?.joinToString().also {
+                logger.p("shellOut: [$it]")
+            }
         )
     }
 }

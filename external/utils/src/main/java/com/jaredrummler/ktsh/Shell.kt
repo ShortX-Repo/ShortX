@@ -256,7 +256,7 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
         try {
             state = State.Running
             // Write the command and command end marker to stdin.
-            write(command, "echo '$uuid' $?", "echo '$uuid' >&2")
+            write(command, "echo \n", "echo '$uuid' $?", "echo '$uuid' >&2")
             // Wait for the result with a timeout, if provided.
             if (!watchdog.await(config.timeout)) {
                 exitCode = Command.Status.TIMEOUT
@@ -720,22 +720,23 @@ class Shell @Throws(NotFoundException::class) @JvmOverloads constructor(
          */
         var onComplete: (marker: Command.Marker) -> Unit = {}
 
-        override fun run() = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8)).forEachLine { line ->
-            Log.d("ShortX-Shell", "line: $line")
-            pattern.matcher(line).let { matcher ->
-                if (matcher.matches()) {
-                    val uuid = UUID.fromString(matcher.group(GROUP_UUID))
-                    onComplete(
-                        when (val exitCode = matcher.group(GROUP_CODE)) {
-                            null -> Command.Marker(uuid, Command.Status.INVALID)
-                            else -> Command.Marker(uuid, exitCode.toInt())
-                        }
-                    )
-                } else {
-                    onReadLine(line)
+        override fun run() =
+            BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8)).forEachLine { line ->
+                Log.d("ShortX-Shell", "line: $line")
+                pattern.matcher(line).let { matcher ->
+                    if (matcher.matches()) {
+                        val uuid = UUID.fromString(matcher.group(GROUP_UUID))
+                        onComplete(
+                            when (val exitCode = matcher.group(GROUP_CODE)) {
+                                null -> Command.Marker(uuid, Command.Status.INVALID)
+                                else -> Command.Marker(uuid, exitCode.toInt())
+                            }
+                        )
+                    } else {
+                        onReadLine(line)
+                    }
                 }
             }
-        }
 
         companion object {
 
