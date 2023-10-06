@@ -1,21 +1,34 @@
 package tornaco.apps.shortx.ui.biometric
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import tornaco.apps.shortx.core.BuildProp
-import tornaco.apps.shortx.core.proto.action.BiometricVerify
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.ConfirmDeviceCredentialUtils
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQUEST_CODE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_SUBTITLE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_TITLE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.RESULT_CASE
+import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class BiometricVerifyActivity : AppCompatActivity() {
+class BiometricVerifyActivity : BaseActivity() {
     private val logger = Logger("BiometricVerifyActivity")
 
     private var requestCode = 0
@@ -24,35 +37,38 @@ class BiometricVerifyActivity : AppCompatActivity() {
 
     private var biometricPrompt: BiometricPrompt? = null
 
-    companion object {
-        const val EXTRA_REQUEST_CODE = "extra.request.code"
-        const val EXTRA_TITLE = "extra.title"
-        const val EXTRA_SUBTITLE = "extra.subtitle"
-        const val RESULT_CASE = "result.case"
-
-        @JvmStatic
-        fun start(context: Context, requestCode: Int, action: BiometricVerify) {
-            val starter = Intent("")
-                .setPackage(BuildProp.APP_PACKAGE_NAME)
-                .setClassName(
-                    BuildProp.APP_PACKAGE_NAME,
-                    "tornaco.apps.shortx.ui.biometric.BiometricVerifyActivity"
-                )
-                .putExtra(EXTRA_REQUEST_CODE, requestCode)
-                .putExtra(EXTRA_TITLE, action.title)
-                .putExtra(EXTRA_SUBTITLE, action.subTitle)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            context.startActivity(starter)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resolveIntent()
         startVerifyWithBiometrics()
     }
 
+    @Composable
+    override fun Content() {
+        ShortXTheme {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(fraction = 0.8f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AppIcon(
+                        modifier = Modifier.size(120.dp),
+                        pkg = AppPkg
+                            .newBuilder()
+                            .setPkgName(BuildProp.APP_PACKAGE_NAME)
+                            .setUserId(0)
+                            .build()
+                    )
+                }
+            }
+        }
+    }
 
     private fun resolveIntent() {
         requestCode =

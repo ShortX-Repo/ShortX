@@ -47,7 +47,6 @@ dependencies {
     // Note: Do not upgrade this lib, ComposeOverlay.
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
-    implementation(libs.androidx.biometric)
 
     implementation(project(":core"))
     implementation(project(":ui-base"))

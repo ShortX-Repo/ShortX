@@ -12,7 +12,7 @@ import tornaco.apps.shortx.services.app.RequestCodeFactory
 import tornaco.apps.shortx.services.rule.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
-import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivity
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter
 
 object BiometricVerify : Actor {
     override fun actionsCanHandle(): Class<out Message> {
@@ -38,14 +38,14 @@ object BiometricVerify : Actor {
                     logger.d("onStartActivityResult: $requestCode $resultCode ${result.bundleToString()}")
                     if (requestCode == actionRequestCode) {
                         val case = BiometricVerifyResultCase.valueOf(
-                            result.getString(BiometricVerifyActivity.RESULT_CASE)
+                            result.getString(BiometricVerifyActivityStarter.RESULT_CASE)
                         )
                         continuation.resume(case) {}
                     }
                 }
             })
 
-            BiometricVerifyActivity.start(params.androidContext, actionRequestCode, d)
+            BiometricVerifyActivityStarter.start(params.androidContext, actionRequestCode, d)
         }
 
         logger.d("Got case: $case")
