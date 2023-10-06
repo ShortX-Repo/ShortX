@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.bundleToString
 import tornaco.apps.shortx.services.app.ActivityStartResultOneTimeListener
 import tornaco.apps.shortx.services.app.RequestCodeFactory
+import tornaco.apps.shortx.services.rule.ActionEvaluator
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivity
@@ -48,27 +49,60 @@ object BiometricVerify : Actor {
         }
 
         logger.d("Got case: $case")
+        require(case != BiometricVerifyResultCase.UNRECOGNIZED) {
+            "UNRECOGNIZED BiometricVerifyResultCase"
+        }
 
-        when (case) {
-            BiometricVerifyResultCase.BiometricVerifyResult_Allow_BiometricNotReady -> {
+        val allowed = case == BiometricVerifyResultCase.BiometricVerifyResult_Allow_Verified
+                || case == BiometricVerifyResultCase.BiometricVerifyResult_Allow_BiometricNotReady
 
+        if (allowed) {
+            run loop@{
+                if (d.allowActionsList.isNullOrEmpty().not()) {
+                    d.allowActionsList.forEach {
+                        val evaRes = recursiveExecute(evaluateContext, it, contextData, localVars)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            val scope = evaRes.scope
+                            logger.w("evaluate break! $scope")
+                            scope.rethrowOrReturnLoop {
+                                return@loop
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            run loop@{
+                if (d.denyActionsList.isNullOrEmpty().not()) {
+                    d.denyActionsList.forEach {
+                        logger.d("about to execute action: ${it.typeUrl}")
+                        val evaRes =
+                            recursiveExecute(evaluateContext, it, contextData, localVars)
+                        if (evaRes is ActionEvaluator.EvaluateResult.Fail) {
+                            logger.e(evaRes.error, "evaluate fail")
+                            if (evaRes.shouldContinue) {
+                                logger.d("Action on error is continue execute.")
+                            } else {
+                                return@loop
+                            }
+                        } else if (evaRes is ActionEvaluator.EvaluateResult.Break) {
+                            val scope = evaRes.scope
+                            logger.w("evaluate break! $scope")
+                            scope.rethrowOrReturnLoop {
+                                return@loop
+                            }
+                        }
+                    }
+                }
             }
 
-            BiometricVerifyResultCase.BiometricVerifyResult_Allow_Verified -> {
-
-            }
-
-            BiometricVerifyResultCase.BiometricVerifyResult_Deny_VerifyFail -> {
-
-            }
-
-            BiometricVerifyResultCase.BiometricVerifyResult_Deny_UserCanceled -> {
-
-            }
-
-            BiometricVerifyResultCase.UNRECOGNIZED -> {
-                throw Error("Bad case: UNRECOGNIZED")
-            }
         }
 
     }
