@@ -39,6 +39,13 @@
         </activity>
 
         <activity
+            android:name="tornaco.apps.shortx.ui.biometric.BiometricVerifyActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="ui.biometric.BiometricVerifyActivity" />
+
+        <activity
             android:name=".shortcut.ActionShortcutActivity"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -141,6 +148,9 @@
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.IfThenElseSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.BiometricVerifySelectorActivity"
             android:exported="false" />
 
         <service

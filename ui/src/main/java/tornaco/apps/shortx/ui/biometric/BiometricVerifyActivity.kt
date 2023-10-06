@@ -1,0 +1,140 @@
+package tornaco.apps.shortx.ui.biometric
+
+import android.app.Activity
+import android.os.Bundle
+import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import tornaco.apps.shortx.core.BuildProp
+import tornaco.apps.shortx.core.proto.common.AppPkg
+import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
+import tornaco.apps.shortx.core.shortXManager
+import tornaco.apps.shortx.core.util.ConfirmDeviceCredentialUtils
+import tornaco.apps.shortx.core.util.Logger
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.ui.base.AppIcon
+import tornaco.apps.shortx.ui.base.BaseActivity
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_REQUEST_CODE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_SUBTITLE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.EXTRA_TITLE
+import tornaco.apps.shortx.ui.biometric.BiometricVerifyActivityStarter.RESULT_CASE
+import tornaco.apps.shortx.ui.theme.ShortXTheme
+
+class BiometricVerifyActivity : BaseActivity() {
+    private val logger = Logger("BiometricVerifyActivity")
+
+    private var requestCode = 0
+    private var title = "ShortX"
+    private var subTitle = ""
+
+    private var biometricPrompt: BiometricPrompt? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        resolveIntent()
+        startVerifyWithBiometrics()
+    }
+
+    @Composable
+    override fun Content() {
+        ShortXTheme {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(fraction = 0.8f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AppIcon(
+                        modifier = Modifier.size(120.dp),
+                        pkg = AppPkg
+                            .newBuilder()
+                            .setPkgName(BuildProp.APP_PACKAGE_NAME)
+                            .setUserId(0)
+                            .build()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun resolveIntent() {
+        requestCode =
+            intent.getIntExtra(EXTRA_REQUEST_CODE, Int.MIN_VALUE)
+        require(requestCode >= 0) {
+            "Bad requestCode: $requestCode"
+        }
+        title = intent.getStringExtra(EXTRA_TITLE).fallbackOnEmpty("ShortX")
+        subTitle = intent.getStringExtra(EXTRA_SUBTITLE).fallbackOnEmpty("")
+    }
+
+    private fun startVerifyWithBiometrics() {
+        if (!isBiometricReady(this)) {
+            shortXManager.setStartActivityResult(
+                requestCode,
+                Activity.RESULT_OK,
+                bundleOf(RESULT_CASE to BiometricVerifyResultCase.BiometricVerifyResult_Allow_BiometricNotReady.name)
+            )
+            setResult(RESULT_OK)
+            finish()
+            return
+        }
+
+        biometricPrompt = authenticateWithBiometric(
+            Prompt(
+                title,
+                subTitle
+            )
+        ) { success: Boolean, message: String ->
+            logger.i("authenticateWithBiometric result: $success $message")
+            if (success) {
+                logger.d("setVerifyResult ALLOW")
+                shortXManager.setStartActivityResult(
+                    requestCode,
+                    RESULT_OK,
+                    bundleOf(RESULT_CASE to BiometricVerifyResultCase.BiometricVerifyResult_Allow_Verified.name)
+                )
+                ConfirmDeviceCredentialUtils.checkForPendingIntent(this@BiometricVerifyActivity)
+                setResult(RESULT_OK)
+                finish()
+            } else {
+                logger.d("setVerifyResult DENY")
+                shortXManager.setStartActivityResult(
+                    requestCode,
+                    RESULT_CANCELED,
+                    bundleOf(RESULT_CASE to BiometricVerifyResultCase.BiometricVerifyResult_Deny_VerifyFail.name)
+                )
+                cancelVerifyAndFinish()
+            }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        shortXManager.setStartActivityResult(
+            requestCode,
+            RESULT_CANCELED,
+            bundleOf(RESULT_CASE to BiometricVerifyResultCase.BiometricVerifyResult_Deny_UserCanceled)
+        )
+        cancelVerifyAndFinish()
+    }
+
+    private fun cancelVerifyAndFinish() {
+        logger.w("cancelVerifyAndFinish...")
+        kotlin.runCatching { biometricPrompt?.cancelAuthentication() }
+        setResult(RESULT_CANCELED)
+        finish()
+    }
+}

@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
@@ -28,6 +31,8 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrightnessValueSelec
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberKeyEventSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberQSTileSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberVibratePatternSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -47,6 +52,8 @@ import kotlin.reflect.full.createInstance
 @Composable
 fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val i18N = LocalI18N.current
+    val context = LocalContext.current
+
     val ringerModeSelectDialogState = rememberSelectionDialogState(
         title = i18N["ui.action.set.ringer.mode"],
         message = null,
@@ -157,6 +164,16 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     })
     SetVolumeDialog(state = setVolumeDialogState)
 
+    val biometricVerifyLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.BiometricVerify>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     return { source ->
         when (source.clazz) {
             Action.MediaPlayback::class -> {
@@ -239,6 +256,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.BiometricVerify::class -> {
+                biometricVerifyLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.BiometricVerify>(),
+                        BiometricVerifySelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.DisableBT::class,
             Action.DisableLocation::class,
             Action.DisableDND::class,
@@ -317,6 +345,7 @@ fun SystemActions(
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
+        Action.BiometricVerify::class,
     ).map {
         SelectorItem(
             type = it,

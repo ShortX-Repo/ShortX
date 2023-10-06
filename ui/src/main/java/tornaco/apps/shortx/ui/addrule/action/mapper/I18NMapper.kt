@@ -205,6 +205,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetRuleEnabled::class -> i18N["ui.action.set.rule.enabled"] to null
         Action.ClickTile::class -> i18N["ui.action.click.tile"] to null
         Action.MediaPlayback::class -> i18N["ui.action.media.play.back"] to null
+        Action.BiometricVerify::class -> i18N["ui.action.biometric.verify"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
         else -> {
@@ -756,6 +757,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         is Action.MediaPlayback -> listOf(
             i18N["ui.action.media.play.back"],
             i18N[action.action.labelKey()]
+        )
+
+        is Action.BiometricVerify -> listOf(
+            i18N["ui.action.biometric.verify"]
         )
     }
 }

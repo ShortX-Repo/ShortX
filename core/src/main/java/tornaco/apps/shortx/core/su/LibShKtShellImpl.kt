@@ -45,8 +45,8 @@ object LibShKtShellImpl : ISu.Stub() {
                 logger.i("exeSharedProcess, Shell details: ${res.details}")
                 val proto = ShellRes.newBuilder()
                     .setCode(res.exitCode)
-                    .addAllOut(res.stdout)
-                    .addAllErr(res.stderr)
+                    .addAllOut(res.stdout.removeEOL())
+                    .addAllErr(res.stderr.removeEOL())
                     .build()
                 val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
                 receiver.send(byteArrayWrapper)
@@ -57,7 +57,7 @@ object LibShKtShellImpl : ISu.Stub() {
         }
     }
 
-    fun exeSingleShot(
+    private fun exeSingleShot(
         command: Array<out String>,
         receiver: SynchronousResultReceiver,
     ) {
@@ -77,8 +77,8 @@ object LibShKtShellImpl : ISu.Stub() {
                 logger.i("exeSingleShot, Shell details: ${res.details}")
                 val proto = ShellRes.newBuilder()
                     .setCode(res.exitCode)
-                    .addAllOut(res.stdout)
-                    .addAllErr(res.stderr)
+                    .addAllOut(res.stdout.removeEOL())
+                    .addAllErr(res.stderr.removeEOL())
                     .build()
 
                 val byteArrayWrapper = ByteArrayWrapper(proto.toByteArray())
@@ -95,5 +95,16 @@ object LibShKtShellImpl : ISu.Stub() {
 
     override fun close(receiver: SynchronousResultReceiver) {
         logger.w("close. no impl.")
+    }
+
+    private fun List<String>.removeEOL(): List<String> {
+        return toMutableList().apply {
+            if (!isEmpty()) {
+                val last = last()
+                if (last.isEmpty()) {
+                    removeLast()
+                }
+            }
+        }
     }
 }

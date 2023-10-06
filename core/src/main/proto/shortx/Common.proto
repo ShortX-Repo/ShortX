@@ -324,3 +324,10 @@ message QSTile {
 message QSTileList {
   repeated QSTile tile = 1;
 }
+
+enum BiometricVerifyResultCase {
+  BiometricVerifyResult_Allow_BiometricNotReady = 0;
+  BiometricVerifyResult_Allow_Verified = 1;
+  BiometricVerifyResult_Deny_VerifyFail = 2;
+  BiometricVerifyResult_Deny_UserCanceled = 3;
+}

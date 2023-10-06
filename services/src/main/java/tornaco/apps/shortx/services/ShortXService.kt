@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Binder
+import android.os.Bundle
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
@@ -929,6 +930,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterActionEvaluateListener(listener: IActionEvaluateListener) {
             shortXContext.rule.unregisterActionEvaluateListener(listener)
+        }
+
+        override fun setStartActivityResult(requestCode: Int, resultCode: Int, result: Bundle) {
+            shortXContext.appState.setStartActivityResult(requestCode, resultCode, result)
         }
 
         override fun getActivities(

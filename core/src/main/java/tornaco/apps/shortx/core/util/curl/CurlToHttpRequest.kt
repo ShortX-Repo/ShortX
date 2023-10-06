@@ -7,12 +7,13 @@ import tornaco.apps.shortx.core.proto.common.HttpRequestBodyJson
 import tornaco.apps.shortx.core.proto.common.HttpRequestHeader
 import tornaco.apps.shortx.core.proto.common.HttpRequestMethod
 import tornaco.apps.shortx.core.rule.pack_
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 
 fun String.curlCommandToHttpRequest(): HttpRequest {
     val parser = BasicCurlParser()
     val request = parser.parse(this)
     return HttpRequest.newBuilder()
-        .setUrl(request.url)
+        .setUrl(request.url.fallbackOnEmpty(""))
         .setMethod(request.method.toHttpRequestMethod())
         .addAllHeaders(mutableListOf<HttpRequestHeader?>().apply {
             request.headers.forEach { headerPair ->

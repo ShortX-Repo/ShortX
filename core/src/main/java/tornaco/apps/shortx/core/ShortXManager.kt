@@ -982,6 +982,11 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun setStartActivityResult(requestCode: Int, resultCode: Int, result: Bundle) {
+        invokeService(Unit) {
+            setStartActivityResult(requestCode, resultCode, result)
+        }
+    }
 
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
