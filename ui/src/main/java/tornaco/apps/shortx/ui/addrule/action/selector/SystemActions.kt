@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
@@ -345,7 +346,7 @@ fun SystemActions(
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
-        Action.BiometricVerify::class,
+        BuildProp.APP_IS_DEBUG.select(Action.BiometricVerify::class, null),
     ).map {
         SelectorItem(
             type = it,
