@@ -899,4 +899,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getAllDASets(): List<DirectActionSet> {
         return daSetsStore.getAllDirectActionSets()
     }
+
+    fun shortcutAppLaunched(packageName: String) {
+        logger.d("shortcutAppLaunched: $packageName")
+    }
 }

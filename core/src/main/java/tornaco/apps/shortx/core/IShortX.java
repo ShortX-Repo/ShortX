@@ -566,6 +566,9 @@ public interface IShortX extends android.os.IInterface
     @Override public void setStartActivityResult(int requestCode, int resultCode, android.os.Bundle result) throws android.os.RemoteException
     {
     }
+    @Override public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException
+    {
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2215,6 +2218,15 @@ public interface IShortX extends android.os.IInterface
             _arg2 = null;
           }
           this.setStartActivityResult(_arg0, _arg1, _arg2);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_shortcutAppLaunched:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          this.shortcutAppLaunched(_arg0);
           reply.writeNoException();
           return true;
         }
@@ -5453,6 +5465,25 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      @Override public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(packageName);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_shortcutAppLaunched, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().shortcutAppLaunched(packageName);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5600,6 +5631,7 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_registerActionEvaluateListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 142);
     static final int TRANSACTION_unregisterActionEvaluateListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 143);
     static final int TRANSACTION_setStartActivityResult = (android.os.IBinder.FIRST_CALL_TRANSACTION + 144);
+    static final int TRANSACTION_shortcutAppLaunched = (android.os.IBinder.FIRST_CALL_TRANSACTION + 145);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5818,4 +5850,5 @@ public interface IShortX extends android.os.IInterface
   public void registerActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException;
   public void unregisterActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException;
   public void setStartActivityResult(int requestCode, int resultCode, android.os.Bundle result) throws android.os.RemoteException;
+  public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException;
 }

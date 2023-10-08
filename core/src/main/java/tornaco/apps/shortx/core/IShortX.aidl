@@ -248,4 +248,6 @@ interface IShortX {
     void unregisterActionEvaluateListener(in IActionEvaluateListener listener);
 
     void setStartActivityResult(int requestCode, int resultCode, in Bundle result);
+
+    void shortcutAppLaunched(String packageName);
 }
