@@ -493,6 +493,31 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    // 	at android.view.accessibility.AccessibilityNodeInfo.init(AccessibilityNodeInfo.java:4036)
+    //	at android.view.accessibility.AccessibilityNodeInfo.<init>(AccessibilityNodeInfo.java:870)
+    //	at android.view.accessibility.AccessibilityCache.getNode(AccessibilityCache.java:283)
+    //	at android.view.accessibility.AccessibilityInteractionClient.findAccessibilityNodeInfoByAccessibilityId(AccessibilityInteractionClient.java:468)
+    //	at android.view.accessibility.AccessibilityNodeInfo.getChild(AccessibilityNodeInfo.java:1121)
+    // 	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.j(Unknown Source:147)
+    //	at qi.u.k(Unknown Source:40)
+    //	at tornaco.apps.shortx.services.rule.fact.trigger.d.invoke(Unknown Source:330)
+    //	at qi.u.onAccessibilityEvent(Unknown Source:19)
+    //	at androidx.appcompat.app.m0.run(Unknown Source:18)
+    //	at android.os.Handler.handleCallback(Handler.java:938)
+    //	at android.os.Handler.dispatchMessage(Handler.java:99)
+    //	at android.os.Looper.loopOnce(Looper.java:210)
+    //	at android.os.Looper.loop(Looper.java:299)
+    //	at android.os.HandlerThread.run(HandlerThread.java:67)
     private fun discoverViewIdFromAccessibilityNode(
         list: MutableList<ViewNode>,
         root: AccessibilityNodeInfo
@@ -522,7 +547,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             if (root.childCount > 0) {
                 for (i in 0 until root.childCount) {
                     val child = root.getChild(i)
-                    if (child != null) {
+                    if (child != null && child != root) {
                         discoverViewIdFromAccessibilityNode(list, child)
                     }
                 }

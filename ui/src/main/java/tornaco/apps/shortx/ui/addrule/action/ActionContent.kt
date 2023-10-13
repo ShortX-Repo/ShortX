@@ -68,6 +68,7 @@ import tornaco.apps.shortx.ui.base.ColoredIcon
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
 import tornaco.apps.shortx.ui.base.ErrorCard
+import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumTitle
@@ -301,7 +302,10 @@ private fun Actions(
                             val noteDialogState =
                                 rememberTextInputState(
                                     title = LocalI18N.current["ui.common.note"],
-                                    message = null
+                                    message = null,
+                                    inputValidator = {
+                                        InputValidateResult.OK
+                                    }
                                 ) {
                                     handler.setNote(currentAction.id, it)
                                 }
