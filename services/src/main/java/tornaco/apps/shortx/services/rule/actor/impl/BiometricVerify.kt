@@ -4,9 +4,13 @@ import android.os.Bundle
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.proto.action.BiometricVerify
 import tornaco.apps.shortx.core.proto.common.BiometricVerifyResultCase
+import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.bundleToString
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.app.ActivityStartResultOneTimeListener
 import tornaco.apps.shortx.services.app.RequestCodeFactory
 import tornaco.apps.shortx.services.rule.ActionEvaluator
@@ -45,7 +49,10 @@ object BiometricVerify : Actor {
                 }
             })
 
-            BiometricVerifyActivityStarter.start(params.androidContext, actionRequestCode, d)
+            BiometricVerifyActivityStarter.start(params.androidContext, actionRequestCode, BiometricVerify.newBuilder(d)
+                .setTitle(d.title.fallbackOnEmpty("").inflateContextMap(contextData).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
+                .setSubTitle(d.subTitle.fallbackOnEmpty("").inflateContextMap(contextData).replaceGlobalVarValues { shortXContext.rule.getAllGlobalVars() })
+                .build())
         }
 
         logger.d("Got case: $case")

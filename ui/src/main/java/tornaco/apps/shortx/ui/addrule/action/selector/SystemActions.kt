@@ -346,7 +346,7 @@ fun SystemActions(
         Action.SwitchMobileDataSlot::class,
         Action.SetWallpaper::class,
         Action.ClickTile::class,
-        BuildProp.APP_IS_DEBUG.select(Action.BiometricVerify::class, null),
+        Action.BiometricVerify::class
     ).map {
         SelectorItem(
             type = it,
