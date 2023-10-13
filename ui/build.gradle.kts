@@ -113,6 +113,7 @@ dependencies {
     implementation(project(":external:icons"))
     implementation(project(":external:sec_net"))
     implementation(project(":external:dex-maker"))
+    implementation(project(":external:apkbuilder"))
 
     implementation(libs.mmkv)
     implementation(libs.jotp)

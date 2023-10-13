@@ -936,6 +936,10 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.appState.setStartActivityResult(requestCode, resultCode, result)
         }
 
+        override fun shortcutAppLaunched(packageName: String) {
+            shortXContext.rule.shortcutAppLaunched(packageName)
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String
