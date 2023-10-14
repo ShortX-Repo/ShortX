@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.content.Context
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.Alarm
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -30,13 +31,14 @@ class AlarmTrigger(
                 logger.i("Rule ${ruleOrNull.title} it not enabled now, will not publish fact.")
                 return@AlarmScheduler
             }
-            if (ruleOrNull.factsList.all { !it.isAlarm() }) {
-                logger.i("Rule ${ruleOrNull.title} fact it not contains Alarm anymore, will not publish fact.")
+            if (ruleOrNull.factsAndQuitFacts.all { !it.isAlarm() }) {
+                logger.i("Rule ${ruleOrNull.title} fact and it's quit does not contains Alarm anymore, will not publish fact.")
                 return@AlarmScheduler
             }
 
             val alarmList =
-                ruleOrNull.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+                ruleOrNull.factsAndQuitFacts.filter { it.isAlarm() }
+                    .map { it unpack_ Alarm::class.java }
             val targetFact = alarmList.firstOrNull { it.id == factId }
             if (targetFact == null) {
                 logger.i("Rule ${ruleOrNull.title} does not have this fact with id: $factId, will not publish fact.")
@@ -44,9 +46,12 @@ class AlarmTrigger(
             }
 
             logger.i("Good, will publish fact.")
-            shortXContext.rule.publishFact("onAlarm",
-                Alarm.newBuilder().setTriggerAt(targetFact.triggerAt).setRepeat(targetFact.repeat)
-                    .setId(factId).build()
+            shortXContext.rule.publishFact(
+                reason = "onAlarm",
+                fact = Alarm.newBuilder().setTriggerAt(targetFact.triggerAt)
+                    .setRepeat(targetFact.repeat)
+                    .setId(factId).build(),
+                initialContextDataLazy = { emptyMap() }
             )
 
             // Repeat
@@ -66,7 +71,8 @@ class AlarmTrigger(
 
     private fun checkAndScheduleAlarmForRule(rule: Rule, reason: () -> String) {
         if (rule.isEnabled) {
-            val alarms = rule.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+            val alarms = (rule.factsAndQuitFacts).filter { it.isAlarm() }
+                .map { it unpack_ Alarm::class.java }
             if (alarms.isNotEmpty()) {
                 alarms.forEach { alarm ->
                     alarmScheduler.schedule(
@@ -80,7 +86,8 @@ class AlarmTrigger(
     }
 
     private fun cancelAlarmForRule(rule: Rule, reason: () -> String) {
-        val alarms = rule.factsList.filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
+        val alarms =
+            (rule.factsAndQuitFacts).filter { it.isAlarm() }.map { it unpack_ Alarm::class.java }
         if (alarms.isNotEmpty()) {
             alarms.forEach { alarm ->
                 alarmScheduler.cancel(rule, alarm, reason())
@@ -101,7 +108,8 @@ class AlarmTrigger(
             return
         }
 
-        if (oldRule.factsList.filter { it.isAlarm() } == newRule.factsList.filter { it.isAlarm() }) {
+        if (oldRule.factsList.filter { it.isAlarm() } == newRule.factsList.filter { it.isAlarm() }
+            && oldRule.quit.factsList.filter { it.isAlarm() } == newRule.quit.factsList.filter { it.isAlarm() }) {
             logger.d("Alarm not change for this rule(new label): ${newRule.title}")
             return
         }
