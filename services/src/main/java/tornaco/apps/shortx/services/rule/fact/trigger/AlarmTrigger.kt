@@ -103,8 +103,8 @@ class AlarmTrigger(
     override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
         super.onUpdateRule(oldRule, newRule)
 
-        if (oldRule.factsList == newRule.factsList) {
-            logger.d("Facts not change for this rule(new label): ${newRule.title}")
+        if (oldRule.factsList == newRule.factsList && oldRule.quit.factsList == newRule.quit.factsList) {
+            logger.d("Facts and quit not change for this rule(new label): ${newRule.title}")
             return
         }
 

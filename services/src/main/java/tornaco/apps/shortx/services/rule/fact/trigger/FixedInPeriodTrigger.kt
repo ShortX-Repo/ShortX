@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.content.Context
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -32,13 +33,13 @@ class FixedInPeriodTrigger(
                 logger.i("Rule ${ruleOrNull.title} it not enabled now, will not publish fact.")
                 return@FixedInPeriodScheduler
             }
-            if (ruleOrNull.factsList.all { !it.isFixedInPeriod() }) {
-                logger.i("Rule ${ruleOrNull.title} fact it not contains FixedInPeriod anymore, will not publish fact.")
+            if (ruleOrNull.factsAndQuitFacts.all { !it.isFixedInPeriod() }) {
+                logger.i("Rule ${ruleOrNull.title} fact and quit does not contains FixedInPeriod anymore, will not publish fact.")
                 return@FixedInPeriodScheduler
             }
 
             val fixedInPeriodList =
-                ruleOrNull.factsList.filter { it.isFixedInPeriod() }
+                ruleOrNull.factsAndQuitFacts.filter { it.isFixedInPeriod() }
                     .map { it unpack_ FixedInPeriod::class.java }
             val targetFact = fixedInPeriodList.firstOrNull { it.id == factId }
             if (targetFact == null) {
@@ -48,12 +49,13 @@ class FixedInPeriodTrigger(
 
             logger.i("Good, will publish fact.")
             shortXContext.rule.publishFact(
-                "onAlarm",
-                FixedInPeriod.newBuilder().setStart(targetFact.start)
+                reason = "onAlarm",
+                fact = FixedInPeriod.newBuilder().setStart(targetFact.start)
                     .setEnd(targetFact.end)
                     .setFixedBy(targetFact.fixedBy)
                     .setRepeat(targetFact.repeat)
-                    .setId(factId).build()
+                    .setId(factId).build(),
+                initialContextDataLazy = { emptyMap() }
             )
 
             shortXContext.rule.systemServiceScope.launchSafety {
@@ -75,7 +77,7 @@ class FixedInPeriodTrigger(
     private fun checkAndScheduleFixedInPeriodForRule(rule: Rule, reason: () -> String) {
         if (rule.isEnabled) {
             val fixedInPeriods =
-                rule.factsList.filter { it.isFixedInPeriod() }
+                rule.factsAndQuitFacts.filter { it.isFixedInPeriod() }
                     .map { it unpack_ FixedInPeriod::class.java }
                     .filter { it.hasFixedBy() && it.hasStart() && it.hasEnd() }
             if (fixedInPeriods.isNotEmpty()) {
@@ -92,7 +94,7 @@ class FixedInPeriodTrigger(
 
     private fun cancelFixedInPeriodForRule(rule: Rule, reason: () -> String) {
         val fixedInPeriods =
-            rule.factsList.filter { it.isFixedInPeriod() }
+            rule.factsAndQuitFacts.filter { it.isFixedInPeriod() }
                 .map { it unpack_ FixedInPeriod::class.java }
         if (fixedInPeriods.isNotEmpty()) {
             fixedInPeriods.forEach { period ->
@@ -109,12 +111,13 @@ class FixedInPeriodTrigger(
     override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
         super.onUpdateRule(oldRule, newRule)
 
-        if (oldRule.factsList == newRule.factsList) {
-            logger.d("Facts not change for this rule(new label): ${newRule.title}")
+        if (oldRule.factsList == newRule.factsList && oldRule.quit.factsList == newRule.quit.factsList) {
+            logger.d("Facts and quit not change for this rule(new label): ${newRule.title}")
             return
         }
 
-        if (oldRule.factsList.filter { it.isFixedInPeriod() } == newRule.factsList.filter { it.isFixedInPeriod() }) {
+        if (oldRule.factsList.filter { it.isFixedInPeriod() } == newRule.factsList.filter { it.isFixedInPeriod() }
+            && oldRule.quit.factsList.filter { it.isFixedInPeriod() } == newRule.quit.factsList.filter { it.isFixedInPeriod() }) {
             logger.d("FixedInPeriodTrigger not change for this rule(new label): ${newRule.title}")
             return
         }

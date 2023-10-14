@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 import android.content.Context
 import tornaco.apps.shortx.core.alarm.isNo
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
+import tornaco.apps.shortx.core.proto.factsAndQuitFacts
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.is_
@@ -30,13 +31,13 @@ class RandomInPeriodTrigger(
                 logger.i("Rule ${ruleOrNull.title} it not enabled now, will not publish fact.")
                 return@RandomInPeriodScheduler
             }
-            if (ruleOrNull.factsList.all { !it.isPeriod() }) {
-                logger.i("Rule ${ruleOrNull.title} fact it not contains Period anymore, will not publish fact.")
+            if (ruleOrNull.factsAndQuitFacts.all { !it.isPeriod() }) {
+                logger.i("Rule ${ruleOrNull.title} fact and quit does not contains Period anymore, will not publish fact.")
                 return@RandomInPeriodScheduler
             }
 
             val randomInPeriods =
-                ruleOrNull.factsList.filter { it.isPeriod() }
+                ruleOrNull.factsAndQuitFacts.filter { it.isPeriod() }
                     .map { it unpack_ RandomInPeriod::class.java }
             val targetFact = randomInPeriods.firstOrNull { it.id == factId }
             if (targetFact == null) {
@@ -46,12 +47,13 @@ class RandomInPeriodTrigger(
 
             logger.i("Good, will publish fact.")
             shortXContext.rule.publishFact(
-                "Period#onAlarm",
-                RandomInPeriod.newBuilder()
+                reason = "Period#onAlarm",
+                fact = RandomInPeriod.newBuilder()
                     .setId(factId)
                     .setStart(targetFact.start)
                     .setEnd(targetFact.end)
-                    .setRepeat(targetFact.repeat).build()
+                    .setRepeat(targetFact.repeat).build(),
+                initialContextDataLazy = { emptyMap() }
             )
 
             // Repeat
@@ -71,7 +73,7 @@ class RandomInPeriodTrigger(
 
     private fun checkAndSchedulePeriodForRule(rule: Rule, reason: () -> String) {
         if (rule.isEnabled) {
-            val periods = rule.factsList.filter { it.isPeriod() }
+            val periods = rule.factsAndQuitFacts.filter { it.isPeriod() }
                 .map { it unpack_ RandomInPeriod::class.java }
                 .filter { it.hasStart() && it.hasEnd() }
             if (periods.isNotEmpty()) {
@@ -89,7 +91,7 @@ class RandomInPeriodTrigger(
 
     private fun cancelPeriodForRule(rule: Rule, reason: () -> String) {
         val periods =
-            rule.factsList.filter { it.isPeriod() }.map { it unpack_ RandomInPeriod::class.java }
+            rule.factsAndQuitFacts.filter { it.isPeriod() }.map { it unpack_ RandomInPeriod::class.java }
         if (periods.isNotEmpty()) {
             periods.forEach { period ->
                 scheduler.cancel(rule, period, reason())
@@ -105,12 +107,13 @@ class RandomInPeriodTrigger(
     override fun onUpdateRule(oldRule: Rule, newRule: Rule) {
         super.onUpdateRule(oldRule, newRule)
 
-        if (oldRule.factsList == newRule.factsList) {
-            logger.d("Facts not change for this rule(new label): ${newRule.title}")
+        if (oldRule.factsList == newRule.factsList && oldRule.quit.factsList == newRule.quit.factsList) {
+            logger.d("Facts and quit not change for this rule(new label): ${newRule.title}")
             return
         }
 
-        if (oldRule.factsList.filter { it.isPeriod() } == newRule.factsList.filter { it.isPeriod() }) {
+        if (oldRule.factsList.filter { it.isPeriod() } == newRule.factsList.filter { it.isPeriod() }
+            && oldRule.quit.factsList.filter { it.isPeriod() } == newRule.quit.factsList.filter { it.isPeriod() }) {
             logger.d("Period not change for this rule(new label): ${newRule.title}")
             return
         }
