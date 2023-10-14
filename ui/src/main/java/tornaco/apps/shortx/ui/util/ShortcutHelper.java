@@ -20,7 +20,7 @@ import tornaco.apps.shortx.ui.R;
 @SuppressWarnings("UnstableApiUsage")
 public class ShortcutHelper {
     private static final Logger LOGGER = new Logger("ShortcutHelper");
-    private static final String STUB_APK_TEMPLATE_PATH = "shortcut_stub_template.apk";
+    private static final String STUB_APK_TEMPLATE_PATH = "apk/shortcut-stub.apk";
     private static final String OUT_APK_PATH = "shortcut_stub_apks";
     private static final String WORK_DIR_PATH = "tmp_";
     private static final String ICON_DIR_PATH = "icon.png";

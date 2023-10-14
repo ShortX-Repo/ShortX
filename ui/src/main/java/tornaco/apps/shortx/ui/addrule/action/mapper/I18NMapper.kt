@@ -251,7 +251,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.ShellCommand -> {
-            listOf(i18N["ui.action.shell"], action.command)
+            listOfNotNull(i18N["ui.action.shell"],
+                action.singleShot.select(i18N["ui.action.shell.single.shot"], null),
+                action.command
+            )
         }
 
         is Action.InputText -> {

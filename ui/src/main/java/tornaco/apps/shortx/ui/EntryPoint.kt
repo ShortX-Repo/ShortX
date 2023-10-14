@@ -31,18 +31,24 @@ object EntryPoint {
         LCRulesAdapter.initRules(context)
 
         onDebugBuild {
-            ShortcutHelper.createShortcutStubApkFor(
-                context,
-                App.newBuilder()
-                    .setLabel("Test")
-                    .setPkg(AppPkg.newBuilder().setPkgName(BuildProp.APP_PACKAGE_NAME).build())
-                    .build(),
-                "Test",
-                "1.0",
-                1
-            ).apply {
-                logger.d("createShortcutStubApkFor: $this")
-            }
+            Thread(Runnable {
+                runCatching {
+                    ShortcutHelper.createShortcutStubApkFor(
+                        context,
+                        App.newBuilder()
+                            .setLabel("Test")
+                            .setPkg(AppPkg.newBuilder().setPkgName(BuildProp.APP_PACKAGE_NAME).build())
+                            .build(),
+                        "Test",
+                        "1.0",
+                        1
+                    ).apply {
+                        logger.d("createShortcutStubApkFor: $this")
+                    }
+                }.onFailure {
+                    logger.e(it, "createShortcutStubApkFor")
+                }
+            }).start()
         }
     }
 
