@@ -21,7 +21,7 @@ public class DateUtils {
     private static final String DATE_FORMAT_PATTERN_MESSAGE_TIME_SHORT = "HH:mm:ss";
     private static final String DATE_FORMAT_PATTERN_MESSAGE_TIME_LONG = "yyyy-MM-dd HH:mm:ss";
 
-    private static final DateTimeFormatter LOCAL_TIME_FORMAT = DateTimeFormatter.ofPattern("hh:mm a");
+    private static final DateTimeFormatter LOCAL_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String formatLong(long l) {
         String time;
