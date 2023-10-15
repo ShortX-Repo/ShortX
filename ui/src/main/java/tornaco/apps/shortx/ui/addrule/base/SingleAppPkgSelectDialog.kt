@@ -226,9 +226,19 @@ private fun AppItem(
                             text = app.app.pkg.pkgName, fontSize = 12.sp
                         )
 
-                        if (app.isRunning) {
-                            SmallSpacer()
-                            OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (app.isRunning) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                            }
+                            if (app.app.isDisabled) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.app.disabled"])
+                            }
+                            if (app.app.isSuspend) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.app.suspended"])
+                            }
                         }
                     }
                 }

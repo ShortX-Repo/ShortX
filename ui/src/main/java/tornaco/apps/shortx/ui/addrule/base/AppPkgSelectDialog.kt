@@ -126,8 +126,7 @@ open class BaseAppPkgSelectorDialogState {
 class AppPkgSelectorDialogState(
     val onAppListSelected: (List<App>) -> Unit,
     val onPkgSetSelected: ((List<PkgSet>) -> Unit)?
-) : BaseAppPkgSelectorDialogState() {
-}
+) : BaseAppPkgSelectorDialogState()
 
 @Composable
 fun rememberAppPkgSelectorState(
@@ -310,7 +309,10 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
                     widthFraction = 0.6f,
                     state = dropdownState,
                     items = allPkgSets.map {
-                        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]), data = it.label)
+                        DropdownItem(
+                            labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]),
+                            data = it.label
+                        )
                     },
                     onSelect = {
                         dialogState.selectedAppFilterPkgSetLabel = it.data
@@ -378,9 +380,19 @@ private fun AppItem(
                             text = app.app.pkg.pkgName, fontSize = 12.sp
                         )
 
-                        if (app.isRunning) {
-                            SmallSpacer()
-                            OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (app.isRunning) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                            }
+                            if (app.app.isDisabled) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.app.disabled"])
+                            }
+                            if (app.app.isSuspend) {
+                                SmallSpacer()
+                                OutlineBadge(text = LocalI18N.current["ui.common.app.suspended"])
+                            }
                         }
                     }
                 }
