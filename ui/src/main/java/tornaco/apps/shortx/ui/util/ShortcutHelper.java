@@ -71,7 +71,7 @@ public class ShortcutHelper {
                 .setVersionCode(versionCode)
                 .setVersionName(versionName)
                 .setAppName(appLabel)
-                .setPackageName("test")
+                .setPackageName("test.app")
                 .commit();
         // Replaces/
         apkBuilder

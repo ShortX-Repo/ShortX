@@ -3,6 +3,8 @@ package com.stardust.autojs.apkbuilder;
 
 import com.stardust.autojs.apkbuilder.util.StreamUtils;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,6 +54,8 @@ public class ApkBuilder {
 
 
     public ApkBuilder replaceFile(String relativePath, String newFilePath) throws IOException {
+        FileUtils.createParentDirectories(new File(mWorkspacePath, relativePath));
+        FileUtils.createParentDirectories(new File(newFilePath));
         StreamUtils.write(new FileInputStream(newFilePath),
                 new FileOutputStream(new File(mWorkspacePath, relativePath)));
         return this;
