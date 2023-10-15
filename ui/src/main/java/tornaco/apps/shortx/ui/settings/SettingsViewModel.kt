@@ -44,6 +44,7 @@ data class SettingsState(
     val enableHttpChucker: Boolean = false,
     val shellEngineEnabled: Boolean = false,
     val mvelEngineEnabled: Boolean = false,
+    val ruleFeatureEnabled: Boolean = false,
 )
 
 sealed interface BackupResult {
@@ -96,6 +97,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL),
                 mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
+                ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled()
             )
         }
 
@@ -296,6 +298,13 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
         viewModelScope.launch {
             shortXManager.setPointerLocationEnabled(!state.value.isPointerLocationEnabled)
             updateState { copy(isPointerLocationEnabled = shortXManager.isPointerLocationEnabled()) }
+        }
+    }
+
+    fun toggleRuleFeatureEnable() {
+        viewModelScope.launch {
+            shortXManager.setRuleFeatureEnabled(!state.value.ruleFeatureEnabled)
+            updateState { copy(ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled()) }
         }
     }
 }

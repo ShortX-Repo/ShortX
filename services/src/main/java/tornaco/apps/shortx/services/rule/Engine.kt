@@ -165,6 +165,7 @@ class DefaultRuleEngine(
     private val onJobStarted: (String) -> Unit,
     private val onJobCompleted: (String) -> Unit,
     private val onJobCancelled: (String) -> Unit,
+    private val isRuleFeatureEnabled: () -> Boolean
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -187,6 +188,7 @@ class DefaultRuleEngine(
         .build()
 
     override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
+        if (!isRuleFeatureEnabled()) return false
         val startTimeMillis = System.currentTimeMillis()
         return rules.filterInvalid().any {
             shouldFireRuleForFact(
@@ -243,6 +245,7 @@ class DefaultRuleEngine(
         rules: List<Rule>,
         initialContextDataLazy: () -> Map<String, Any>
     ): Boolean {
+        if (!isRuleFeatureEnabled()) return false
         logger.d("fire: ${fact.javaClass}")
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->

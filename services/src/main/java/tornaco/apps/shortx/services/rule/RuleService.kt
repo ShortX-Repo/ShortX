@@ -48,6 +48,7 @@ import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
+import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
@@ -945,5 +946,13 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
     fun shortcutAppLaunched(packageName: String) {
         logger.d("shortcutAppLaunched: $packageName")
+    }
+
+    fun setRuleFeatureEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.EnableRuleFeature, enable)
+    }
+
+    fun isRuleFeatureEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.EnableRuleFeature)
     }
 }

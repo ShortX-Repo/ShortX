@@ -34,6 +34,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data class EnableRuleEngine(val engineName: String) :
             BoolSettings(key = "EnableRuleEngine_${engineName}", defaultValue = { true })
+
+        data object EnableRuleFeature :
+            BoolSettings(key = "EnableRuleFeature", defaultValue = { true })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :

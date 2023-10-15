@@ -986,6 +986,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun setRuleFeatureEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isRuleFeatureEnabled = enable
+        }
+    }
+
+    fun isRuleFeatureEnabled(): Boolean {
+        return invokeService(false) {
+            isRuleFeatureEnabled
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

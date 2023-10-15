@@ -939,6 +939,15 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             shortXContext.rule.shortcutAppLaunched(packageName)
         }
 
+        override fun setRuleFeatureEnabled(enable: Boolean) {
+            enforceCallingPermissions()
+            shortXContext.rule.setRuleFeatureEnabled(enable)
+        }
+
+        override fun isRuleFeatureEnabled(): Boolean {
+            return shortXContext.rule.isRuleFeatureEnabled()
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String

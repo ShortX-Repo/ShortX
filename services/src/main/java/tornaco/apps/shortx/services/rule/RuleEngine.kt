@@ -65,6 +65,7 @@ object RuleEngineFactory {
         onJobStarted = onJobStarted,
         onJobCompleted = onJobCompleted,
         onJobCancelled = onJobCancelled,
+        isRuleFeatureEnabled = { shortXContext.rule.isRuleFeatureEnabled() }
     )
 }
 

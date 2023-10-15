@@ -689,6 +689,8 @@
   "ui.action.remote": "Online",
   "ui.action.all": "All",
   "ui.action.recent": "Recent",
+  "ui.settings.enable.rule.feature": "Rule feature",
+  "ui.settings.enable.rule.feature.description": "This is the global toggle of the Rule feature",
   "ui.settings.settings.catcher": "Settings catcher",
   "ui.settings.settings.catcher.summary": "Record System settings write and read records. \nNeed to select Settings Provider app scope in Xposed Manager and reboot device",
   "ui.settings.settings.catcher.record": "Settings records",

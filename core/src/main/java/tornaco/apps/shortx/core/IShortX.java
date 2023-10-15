@@ -567,6 +567,15 @@ public interface IShortX extends android.os.IInterface
     @Override public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException
     {
     }
+    // Global feature toggle.
+
+    @Override public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException
+    {
+    }
+    @Override public boolean isRuleFeatureEnabled() throws android.os.RemoteException
+    {
+      return false;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2220,6 +2229,23 @@ public interface IShortX extends android.os.IInterface
           _arg0 = data.readString();
           this.shortcutAppLaunched(_arg0);
           reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_setRuleFeatureEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _arg0;
+          _arg0 = (0!=data.readInt());
+          this.setRuleFeatureEnabled(_arg0);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_isRuleFeatureEnabled:
+        {
+          data.enforceInterface(descriptor);
+          boolean _result = this.isRuleFeatureEnabled();
+          reply.writeNoException();
+          reply.writeInt(((_result)?(1):(0)));
           return true;
         }
         default:
@@ -5469,6 +5495,47 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
+      // Global feature toggle.
+
+      @Override public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeInt(((enable)?(1):(0)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_setRuleFeatureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setRuleFeatureEnabled(enable);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public boolean isRuleFeatureEnabled() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        boolean _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_isRuleFeatureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isRuleFeatureEnabled();
+          }
+          _reply.readException();
+          _result = (0!=_reply.readInt());
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5617,6 +5684,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_unregisterActionEvaluateListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 143);
     static final int TRANSACTION_setStartActivityResult = (android.os.IBinder.FIRST_CALL_TRANSACTION + 144);
     static final int TRANSACTION_shortcutAppLaunched = (android.os.IBinder.FIRST_CALL_TRANSACTION + 145);
+    static final int TRANSACTION_setRuleFeatureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 146);
+    static final int TRANSACTION_isRuleFeatureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 147);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -5834,4 +5903,8 @@ public interface IShortX extends android.os.IInterface
   public void unregisterActionEvaluateListener(tornaco.apps.shortx.core.IActionEvaluateListener listener) throws android.os.RemoteException;
   public void setStartActivityResult(int requestCode, int resultCode, android.os.Bundle result) throws android.os.RemoteException;
   public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException;
+  // Global feature toggle.
+
+  public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException;
+  public boolean isRuleFeatureEnabled() throws android.os.RemoteException;
 }

@@ -680,6 +680,8 @@
   "ui.action.remote": "在线",
   "ui.action.all": "全部",
   "ui.action.recent": "最近",
+  "ui.settings.enable.rule.feature": "自动指令",
+  "ui.settings.enable.rule.feature.description": "启用自动指令功能，此开关为自动指令的总开关",
   "ui.settings.settings.catcher": "设置捕捉器",
   "ui.settings.settings.catcher.summary": "记录系统设置的读写，需要你勾选设置存储作用域并重启设备才生效",
   "ui.settings.settings.catcher.record": "捕捉记录",

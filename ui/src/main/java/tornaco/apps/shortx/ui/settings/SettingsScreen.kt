@@ -361,6 +361,14 @@ private fun generalSettings(
     return listOf(
         Preference.Category(LocalI18N.current["ui.settings.general"]),
 
+        Preference.SwitchPreference(icon = Remix.Weather.meteor_line,
+            title = LocalI18N.current["ui.settings.enable.rule.feature"],
+            summary = LocalI18N.current["ui.settings.enable.rule.feature.description"],
+            value = state.ruleFeatureEnabled,
+            onCheckChanged = {
+                vm.toggleRuleFeatureEnable()
+            }),
+
         Preference.TextPreference(icon = Remix.System.apps_fill,
             title = LocalI18N.current["ui.pkg.set.title"],
             summary = LocalI18N.current["ui.pkg.set.desc"],

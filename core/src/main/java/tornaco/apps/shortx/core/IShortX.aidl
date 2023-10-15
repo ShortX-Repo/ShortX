@@ -249,4 +249,8 @@ interface IShortX {
     void setStartActivityResult(int requestCode, int resultCode, in Bundle result);
 
     void shortcutAppLaunched(String packageName);
+
+    // Global feature toggle.
+    void setRuleFeatureEnabled(boolean enable);
+    boolean isRuleFeatureEnabled();
 }
