@@ -84,6 +84,10 @@ class ConditionContentStateHandler(
                 remove(condition)
             }, isChanged = true)
         }
+        // Check if only 1 left.
+        if (state.value.conditions.size <= 1) {
+            setConditionOp(Op.All)
+        }
         checkUpdateWarnings()
     }
 

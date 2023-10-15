@@ -375,7 +375,7 @@ fun ConditionList(
                     }
 
                     // OP button
-                    AnimatedVisibility(visible = conditions.size > 1) {
+                    AnimatedVisibility(visible = conditions.size > 1 || conditionOp != Op.All) {
                         Column {
                             StandardSpacer()
                             OpSelector(
