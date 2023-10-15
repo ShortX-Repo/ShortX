@@ -13,6 +13,8 @@ import tornaco.apps.shortx.core.proto.common.App
 import tornaco.apps.shortx.core.proto.common.AppCategory
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.PkgUtils
+import tornaco.apps.shortx.services.app.pm.PmSetAppEnabledApplicationPackageEnabler
+import tornaco.apps.shortx.services.app.pm.PmSuspendApplicationPackageEnabler
 import tornaco.apps.shortx.services.util.PackageMonitor
 
 class PkgPool(
@@ -25,6 +27,10 @@ class PkgPool(
 ) {
     private val logger = Logger("PkgPool")
     private val pm by lazy { context.packageManager }
+
+    private val enableAppPkg by lazy { PmSetAppEnabledApplicationPackageEnabler(context) }
+    private val suspendAppPkg by lazy { PmSuspendApplicationPackageEnabler(context) }
+
     private val pkgMonitor = object : PackageMonitor() {
         override fun onPackageAdded(packageName: String?, uid: Int) {
             super.onPackageAdded(packageName, uid)
@@ -49,6 +55,38 @@ class PkgPool(
                 loaded?.let { onPackageUpdateFinished(it) }
             }
         }
+
+        override fun onSomePackagesChanged() {
+            super.onSomePackagesChanged()
+            logger.d("onSomePackagesChanged")
+        }
+
+        override fun onPackageModified(packageName: String) {
+            super.onPackageModified(packageName)
+            logger.d("onPackageModified: $packageName")
+            load(packageName)
+        }
+
+        override fun onPackageChanged(
+            packageName: String?,
+            uid: Int,
+            components: Array<out String>?
+        ): Boolean {
+            logger.d("onPackageChanged: $packageName ${components?.map { it }}")
+            return super.onPackageChanged(packageName, uid, components)
+        }
+
+        override fun onPackagesSuspended(packages: Array<out String>?) {
+            super.onPackagesSuspended(packages)
+            logger.d("onPackagesSuspended: ${packages?.map { it }}")
+            packages?.forEach { load(it) }
+        }
+
+        override fun onPackagesUnsuspended(packages: Array<out String>?) {
+            super.onPackagesUnsuspended(packages)
+            logger.d("onPackagesUnsuspended: ${packages?.map { it }}")
+            packages?.forEach { load(it) }
+        }
     }
 
     private val _allApps: MutableMap<String, App> = mutableMapOf()
@@ -69,6 +107,11 @@ class PkgPool(
 
     suspend fun load() = withContext(Dispatchers.IO) {
         logger.d("Load at thread: ${Thread.currentThread()}")
+        loadLocked()
+    }
+
+    @Synchronized
+    private fun loadLocked() {
         val apps =
             PkgUtils.getInstalledApplicationsAsUser(context, userId)
                 .mapNotNull { applicationInfo ->
@@ -84,6 +127,7 @@ class PkgPool(
         }
     }
 
+    @Synchronized
     fun load(pkgName: String): App? {
         logger.d("load $pkgName")
         return kotlin.runCatching {
@@ -99,6 +143,7 @@ class PkgPool(
         }
     }
 
+    @Synchronized
     fun remove(pkgName: String): App? {
         logger.d("remove $pkgName")
         return _allApps.remove(pkgName)
@@ -113,6 +158,8 @@ class PkgPool(
     }
 
     private fun ApplicationInfo.toApp(): App {
+        val pkg = Pkg(packageName, userId)
+
         val isXposedMod =
             kotlin.runCatching { this.metaData.get("xposedmodule").toString().toBoolean() }
                 .getOrElse { false }
@@ -120,6 +167,8 @@ class PkgPool(
             (this.flags and ApplicationInfo.FLAG_IS_GAME) != 0 || kotlin.runCatching { this.category == ApplicationInfo.CATEGORY_GAME }
                 .getOrElse { false }
 
+        val isDisabled = !enableAppPkg.isEnabled(pkg)
+        val isSuspend = !suspendAppPkg.isEnabled(pkg)
 
         // Check if it is ShortX
         if (BuildProp.APP_PACKAGE_NAME == packageName) {
@@ -131,12 +180,14 @@ class PkgPool(
         }
 
         return tornaco.apps.shortx.core.App(
-            pkg = Pkg(packageName, userId),
+            pkg = pkg,
             category = getCategory(),
             label = getLabel(),
             uid = uid,
             isGame = isGame,
-            isXposedMode = isXposedMod
+            isXposedMode = isXposedMod,
+            isDisabled = isDisabled,
+            isSuspend = isSuspend
         )
     }
 

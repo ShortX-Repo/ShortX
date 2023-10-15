@@ -22,6 +22,8 @@ class PkgSetService(shortXContext: ShortXContext) : SystemService(shortXContext,
         PrebuiltStablePkgSet.System,
         PrebuiltStablePkgSet.XposedModule,
         PrebuiltStablePkgSet.All,
+        PrebuiltStablePkgSet.Disabled,
+        PrebuiltStablePkgSet.Suspended,
     )
 
     private val prebuiltUserPkgSets = listOf(
@@ -111,7 +113,7 @@ sealed class PrebuiltStablePkgSet(
     val label: PrebuiltStablePkgSetLabel,
     val getPkgSet: (ShortXContext) -> PkgSet
 ) {
-    object All : PrebuiltStablePkgSet(
+    data object All : PrebuiltStablePkgSet(
         PrebuiltStablePkgSetLabel.All,
         { shortXContext ->
             PkgSet.newBuilder()
@@ -122,7 +124,7 @@ sealed class PrebuiltStablePkgSet(
         }
     )
 
-    object System : PrebuiltStablePkgSet(
+    data object System : PrebuiltStablePkgSet(
         PrebuiltStablePkgSetLabel.System,
         { shortXContext ->
             PkgSet.newBuilder()
@@ -135,7 +137,7 @@ sealed class PrebuiltStablePkgSet(
         }
     )
 
-    object User : PrebuiltStablePkgSet(
+    data object User : PrebuiltStablePkgSet(
         PrebuiltStablePkgSetLabel.User,
         { shortXContext ->
             PkgSet.newBuilder()
@@ -148,7 +150,7 @@ sealed class PrebuiltStablePkgSet(
         }
     )
 
-    object XposedModule : PrebuiltStablePkgSet(
+    data object XposedModule : PrebuiltStablePkgSet(
         PrebuiltStablePkgSetLabel.XposedModule,
         { shortXContext ->
             PkgSet.newBuilder()
@@ -157,6 +159,32 @@ sealed class PrebuiltStablePkgSet(
                 .addAllAppPkgs(
                     shortXContext.appState.getInstalledApps()
                         .filter { it.isXposedMod }.map { it.pkg })
+                .build()
+        }
+    )
+
+    data object Disabled : PrebuiltStablePkgSet(
+        PrebuiltStablePkgSetLabel.Disabled,
+        { shortXContext ->
+            PkgSet.newBuilder()
+                .setIsPrebuilt(true)
+                .setLabel(PrebuiltStablePkgSetLabel.Disabled.name)
+                .addAllAppPkgs(
+                    shortXContext.appState.getInstalledApps()
+                        .filter { it.isDisabled }.map { it.pkg })
+                .build()
+        }
+    )
+
+    data object Suspended : PrebuiltStablePkgSet(
+        PrebuiltStablePkgSetLabel.Suspended,
+        { shortXContext ->
+            PkgSet.newBuilder()
+                .setIsPrebuilt(true)
+                .setLabel(PrebuiltStablePkgSetLabel.Suspended.name)
+                .addAllAppPkgs(
+                    shortXContext.appState.getInstalledApps()
+                        .filter { it.isSuspend }.map { it.pkg })
                 .build()
         }
     )

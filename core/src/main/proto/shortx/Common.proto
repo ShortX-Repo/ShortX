@@ -22,6 +22,8 @@ message App {
 
   bool isGame = 5;
   bool isXposedMod = 6;
+  bool isDisabled = 7;
+  bool isSuspend = 8;
 }
 
 message AppComponent {

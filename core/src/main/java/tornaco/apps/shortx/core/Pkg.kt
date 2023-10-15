@@ -23,7 +23,9 @@ fun App(
     category: AppCategory,
     uid: Int,
     isGame: Boolean,
-    isXposedMode: Boolean
+    isXposedMode: Boolean,
+    isDisabled: Boolean,
+    isSuspend: Boolean,
 ): App =
     App.newBuilder()
         .setCategory(category)
@@ -32,6 +34,8 @@ fun App(
         .setPkg(pkg)
         .setIsGame(isGame)
         .setIsXposedMod(isXposedMode)
+        .setIsDisabled(isDisabled)
+        .setIsSuspend(isSuspend)
         .build()
 
 fun ApplicationInfo.toAppPkg(): AppPkg {
