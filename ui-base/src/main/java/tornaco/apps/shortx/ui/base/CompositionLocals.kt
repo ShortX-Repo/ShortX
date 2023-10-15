@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package tornaco.apps.shortx.ui.base
 
 import android.app.Activity

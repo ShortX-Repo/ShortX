@@ -171,7 +171,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                         )
 
                                         PkgSetListItem(modifier = Modifier,
-                                            title = it.label,
+                                            title = LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label],
                                             text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
                                             badge = if (it.isPrebuilt) {
                                                 i18N["ui.pkg.set.prebuilt"]

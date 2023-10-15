@@ -850,5 +850,12 @@
   "ui.tools.regex.test.string": "String",
   "ui.tools.regex.test.result": "Match result",
   "ui.user.guide": "User guide",
-  "ui.shortx.removed.toast": "ShortX has been uninstalled, please reboot device ASAP."
+  "ui.shortx.removed.toast": "ShortX has been uninstalled, please reboot device ASAP.",
+  "ui.common.app.disabled": "Disabled",
+  "ui.common.app.suspended": "Suspended",
+  "ui.common.app.system": "System",
+  "ui.common.app.user": "User",
+  "ui.common.app.game": "Game",
+  "ui.common.app.xposedmodule": "Xposed mod",
+  "ui.common.app.all": "All"
 }

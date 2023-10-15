@@ -13,8 +13,8 @@ import tornaco.apps.shortx.ui.R
 val i18NIns by lazy { I18NImpl() }
 
 class I18NImpl : I18N {
-    override fun get(key: String, args: Map<String, String>): String {
-        return I18NCache.get(key, args)
+    override fun get(key: String, args: Map<String, String>, fallback: String?): String {
+        return I18NCache.get(key, args, fallback)
     }
 }
 
@@ -24,10 +24,10 @@ object I18NCache {
     private val logger = Logger("I18NCache")
     private val res: MutableMap<String, String> = mutableMapOf()
 
-    fun get(key: String, args: Map<String, String>): String {
+    fun get(key: String, args: Map<String, String>, fallback: String?): String {
         return res[key]?.let {
             MessageFormat(it).format(args)
-        } ?: key
+        } ?: (fallback ?: key)
     }
 
     fun init(context: Context) {

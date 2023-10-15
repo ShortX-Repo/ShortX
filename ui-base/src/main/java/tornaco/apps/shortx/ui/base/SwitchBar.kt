@@ -83,7 +83,7 @@ fun SwitchBar(modifier: Modifier = Modifier, isChecked: Boolean, onCheckChange: 
 @Composable
 private fun SwitchBarPreview() {
     CompositionLocalProvider(LocalI18N provides object : I18N {
-        override fun get(key: String, args: Map<String, String>): String {
+        override fun get(key: String, args: Map<String, String>, fallback: String?): String {
             return key.substringAfterLast(".")
         }
     }) {

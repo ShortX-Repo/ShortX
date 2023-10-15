@@ -110,7 +110,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"] + " " + state.label) },
+                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"] + " " + LocalI18N.current["ui.common.app.${state.label.lowercase()}", emptyMap(), state.label]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()

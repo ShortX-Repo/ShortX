@@ -94,7 +94,7 @@ sealed class PrebuiltUserPkgSet(
     val label: PrebuiltUserPkgSetLabel,
     val getPkgSet: (ShortXContext) -> PkgSet
 ) {
-    object Game : PrebuiltUserPkgSet(
+    data object Game : PrebuiltUserPkgSet(
         PrebuiltUserPkgSetLabel.Game,
         { shortXContext ->
             PkgSet.newBuilder()

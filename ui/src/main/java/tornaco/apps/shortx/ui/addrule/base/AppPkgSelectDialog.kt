@@ -299,7 +299,9 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
                             remixName = Remix.System.filter_line
                         )
                         SmallSpacer()
-                        Text(text = dialogState.selectedAppFilterPkgSetLabel)
+                        Text(text = dialogState.selectedAppFilterPkgSetLabel.let {
+                            LocalI18N.current["ui.common.app.${it.lowercase()}", emptyMap(), it]
+                        })
                     }
 
                 }
@@ -308,7 +310,7 @@ fun AppListContent(dialogState: BaseAppPkgSelectorDialogState) {
                     widthFraction = 0.6f,
                     state = dropdownState,
                     items = allPkgSets.map {
-                        DropdownItem(labelLines = listOf(it.label), data = it.label)
+                        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label]), data = it.label)
                     },
                     onSelect = {
                         dialogState.selectedAppFilterPkgSetLabel = it.data
