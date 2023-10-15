@@ -666,11 +666,9 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
-    fun executeShellCommand(command: String): ShellRes {
-        return invokeService(ShellRes.getDefaultInstance()) {
-            executeShellCommand(command).let {
-                ShellRes.parseFrom(it.byteData)
-            }
+    fun executeShellCommand(command: String): String {
+        return invokeService("DEFAULT ERROR") {
+            executeShellCommand(command)
         }
     }
 

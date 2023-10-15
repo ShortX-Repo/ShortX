@@ -53,6 +53,7 @@ import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
+import tornaco.apps.shortx.services.rule.actor.impl.ShellCommand
 import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
@@ -622,6 +623,48 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 conflictStrategy = ConflictStrategy.ConflictStrategy_ExecuteBoth
             )
         }
+    }
+
+    fun executeShell(command: String): String {
+        var res = ""
+        runBlocking {
+            val action = tornaco.apps.shortx.core.proto.action.ShellCommand.newBuilder()
+                .setCommand(command)
+                .setSingleShot(true)
+                .setId("UI#executeShellCommand")
+                .build()
+            systemServiceScope.launchSafety {
+                val handleParams = dummyHandlerParamsForAction(
+                    androidContext = context,
+                    shortXContext = shortXContext,
+                    evaluateContext = EvaluateContext.newBuilder()
+                        .setSrcId(UUID.randomUUID().toString())
+                        .setSrcTitle("Testing Shell")
+                        .setSrcEvent(ContextSrcEvent.ContextSrc_ExecuteOnDAEditor)
+                        .setSerialNumber(nextEvaluateContextSerialNumber())
+                        .build(),
+                    action = action.pack_()
+                )
+                runCatching {
+                    ShellCommand.handle(handleParams)
+                    val code =
+                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellCode.name)
+                            .toString().toInt()
+                    val out =
+                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellOut.name)
+                            .toString()
+                    val error =
+                        handleParams.contextData.get(ContextDataMapping.ShellCommand.shellErr.name)
+                            .toString()
+
+
+                    res = "$out${System.lineSeparator()}$error"
+                }.onFailure {
+                    res = Log.getStackTraceString(it)
+                }
+            }.join()
+        }
+        return res
     }
 
     fun executeMVEL(expression: String): String {

@@ -315,9 +315,7 @@ public interface IShortX extends android.os.IInterface
     @Override public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException
     {
     }
-    // ShellRes
-
-    @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException
+    @Override public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException
     {
       return null;
     }
@@ -1535,15 +1533,9 @@ public interface IShortX extends android.os.IInterface
           data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
-          tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.executeShellCommand(_arg0);
+          java.lang.String _result = this.executeShellCommand(_arg0);
           reply.writeNoException();
-          if ((_result!=null)) {
-            reply.writeInt(1);
-            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          }
-          else {
-            reply.writeInt(0);
-          }
+          reply.writeString(_result);
           return true;
         }
         case TRANSACTION_getWifiScanResults:
@@ -4048,13 +4040,11 @@ public interface IShortX extends android.os.IInterface
           _data.recycle();
         }
       }
-      // ShellRes
-
-      @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException
+      @Override public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
-        tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
+        java.lang.String _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(command);
@@ -4063,12 +4053,7 @@ public interface IShortX extends android.os.IInterface
             return getDefaultImpl().executeShellCommand(command);
           }
           _reply.readException();
-          if ((0!=_reply.readInt())) {
-            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
-          }
-          else {
-            _result = null;
-          }
+          _result = _reply.readString();
         }
         finally {
           _reply.recycle();
@@ -5760,9 +5745,7 @@ public interface IShortX extends android.os.IInterface
   public boolean isKeyEventPromptEnabled() throws android.os.RemoteException;
   public void onMediaStoreInsert(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
   public void onMediaStoreDelete(android.net.Uri uri, java.lang.String path) throws android.os.RemoteException;
-  // ShellRes
-
-  public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper executeShellCommand(java.lang.String command) throws android.os.RemoteException;
+  public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException;
   public java.util.List<java.lang.String> getWifiScanResults() throws android.os.RemoteException;
   // Called by SystemUI
 

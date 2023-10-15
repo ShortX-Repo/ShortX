@@ -47,7 +47,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         rememberShellCommandCodeEditorState(title = LocalI18N.current["ui.action.shell"],
             message = if (isShellInjectionEnabled) null else LocalI18N.current["ui.action.shell.summary"],
             execute = {
-                shortXManager.executeShellCommand(it).shellResToString()
+                shortXManager.executeShellCommand(it)
             },
             onSelected = { code, single ->
                 addAction(

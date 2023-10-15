@@ -148,8 +148,7 @@ interface IShortX {
     void onMediaStoreInsert(in Uri uri, String path);
     void onMediaStoreDelete(in Uri uri, String path);
 
-    // ShellRes
-    ByteArrayWrapper executeShellCommand(String command);
+    String executeShellCommand(String command);
 
     List<String> getWifiScanResults();
 
