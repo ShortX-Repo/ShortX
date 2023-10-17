@@ -245,6 +245,24 @@ class AudioService(shortXContext: ShortXContext) : SystemService(shortXContext, 
         }
     }
 
+    // java.util.ConcurrentModificationException
+    //	at java.util.LinkedHashMap$LinkedHashIterator.nextNode(LinkedHashMap.java:760)
+    //	at java.util.LinkedHashMap$LinkedEntryIterator.next(LinkedHashMap.java:793)
+    //	at java.util.LinkedHashMap$LinkedEntryIterator.next(LinkedHashMap.java:791)
+    //	at java.util.HashMap.putMapEntries(HashMap.java:511)
+    //	at java.util.LinkedHashMap.<init>(LinkedHashMap.java:408)
+    //	at oa.b0.y4(Unknown Source:7)
+    //	at oa.b0.v4(Unknown Source:14)
+    //	at ih.f0.a(Unknown Source:2)
+    //	at ih.y.E(Unknown Source:41)
+    //	at kh.h.l(Unknown Source:131)
+    //	at kh.f.onPlaybackConfigChanged(Unknown Source:7)
+    //	at android.media.AudioManager$ServiceEventHandlerDelegate$1.handleMessage(AudioManager.java:3811)
+    //	at android.os.Handler.dispatchMessage(Handler.java:106)
+    //	at android.os.Looper.loopOnce(Looper.java:226)
+    //	at android.os.Looper.loop(Looper.java:313)
+    //	at android.os.HandlerThread.run(HandlerThread.java:67)
+    @Synchronized
     private fun handlePlaybackConfigChanged(configs: List<AudioPlaybackConfiguration>) =
         kotlin.runCatching {
             configs.forEach {
