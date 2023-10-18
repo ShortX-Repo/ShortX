@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.common.StringPair
 import tornaco.apps.shortx.core.proto.common.TimeOfADayRange
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOp
 import tornaco.apps.shortx.core.proto.condition.GlobalVarOpPayload
+import tornaco.apps.shortx.core.proto.condition.PlugType
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
@@ -400,7 +401,7 @@ sealed interface Condition : Parcelable {
 
     @Parcelize
     data class PlugState(
-        val requireIsPlug: Boolean,
+        val type: PlugType,
 
         override val isInvert: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),

@@ -222,6 +222,7 @@ message ChargeState {
 
 message PlugState {
   bool requireIsPlug = 1;
+  PlugType type = 2;
 
   CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
@@ -229,6 +230,13 @@ message PlugState {
   string id = 100;
 }
 
+enum PlugType {
+    PlugType_PlugAny = 0;
+    PlugType_PlugUSB = 1;
+    PlugType_PlugAC = 2;
+    PlugType_PlugWireless = 3;
+    PlugType_IsCharge = 4;
+}
 
 message RequireWifiConnected {
   string requiredSSID = 1;

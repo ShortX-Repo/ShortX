@@ -48,16 +48,17 @@ class BatteryImpl(private val context: Context) : IBattery {
 
             // How are we charging?
             val chargePlug: Int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
-            val usbCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_USB
-            val acCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_AC
-            val wirelessCharge: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_WIRELESS
+            val usbPlug: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_USB
+            val acPlug: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_AC
+            val wirelessPlug: Boolean = chargePlug == BatteryManager.BATTERY_PLUGGED_WIRELESS
 
             return BatteryState(
                 batteryLevel = level,
                 isCharging = charging,
-                isUsbCharge = usbCharge,
-                isAcCharge = acCharge,
-                isPlug = usbCharge || acCharge || wirelessCharge
+                isUsbPlug = usbPlug,
+                isAcPlug = acPlug,
+                isWirelessPlug = wirelessPlug,
+                isAnyPlug = usbPlug || acPlug || wirelessPlug
             )
         }
     }

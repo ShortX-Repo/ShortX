@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.condition.PlugType
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
@@ -56,18 +57,14 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val plugStateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.conditions.plug.state"],
-        menuItems = listOf(
+        menuItems = PlugType.values().filterNot { it == PlugType.UNRECOGNIZED }.map {
             MenuDialogItem(
-                id = "plug",
-                title = LocalI18N.current["ui.conditions.plug.state.plug"],
-            ),
-            MenuDialogItem(
-                id = "notPlug",
-                title = LocalI18N.current["ui.conditions.plug.state.not.plug"],
-            ),
-        ),
-        onItemSelected = { data, id ->
-            addCondition(Condition.PlugState(requireIsPlug = id == "plug"))
+                id = it.name,
+                title = LocalI18N.current["ui.conditions.plug.type.${it.name.lowercase()}"]
+            )
+        },
+        onItemSelected = { _, id ->
+            addCondition(Condition.PlugState(type = PlugType.valueOf(id)))
         }
     )
     MenuDialog(state = plugStateSelectorState)
