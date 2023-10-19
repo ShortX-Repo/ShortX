@@ -218,7 +218,7 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 note = data.note,
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey,
-                requireIsPlug = data.requireIsPlug
+                type = data.type
             )
         }
 

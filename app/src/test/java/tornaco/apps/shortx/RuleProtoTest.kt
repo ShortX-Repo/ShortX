@@ -1,6 +1,7 @@
 package tornaco.apps.shortx
 
 import com.google.protobuf.Descriptors
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -17,6 +18,7 @@ import tornaco.apps.shortx.core.rule.is_
 import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.logAdapter
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.RuleEngineFactory
 
 
@@ -82,8 +84,11 @@ class RuleProtoTest {
                 .addAllActions(actions)
                 .build()
 
+            val mockShortXContext = mockk<ShortXContext>(relaxed = true)
+            every { mockShortXContext.rule.isRuleFeatureEnabled() } returns true
+
             RuleEngineFactory.newRuleEngine(
-                shortXContext = mockk(),
+                shortXContext = mockShortXContext,
                 androidContext = mockk(),
                 handler = mockk(),
                 onJobCancelled = {},

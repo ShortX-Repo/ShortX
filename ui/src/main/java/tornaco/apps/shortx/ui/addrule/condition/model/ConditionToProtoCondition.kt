@@ -235,7 +235,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setNote(note)
                 .setIsInvert(isInvert)
                 .setCustomContextDataKey(customContextDataKey)
-                .setRequireIsPlug(requireIsPlug)
+                .setType(type)
                 .build()
         }
 

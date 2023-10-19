@@ -287,10 +287,7 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.PlugState -> {
             listOf(
                 i18N["ui.conditions.plug.state"],
-                condition.requireIsPlug.select(
-                    i18N["ui.conditions.plug.state.plug"],
-                    i18N["ui.conditions.plug.state.not.plug"]
-                )
+                i18N["ui.conditions.plug.type.${condition.type.name.lowercase()}"]
             )
         }
 
