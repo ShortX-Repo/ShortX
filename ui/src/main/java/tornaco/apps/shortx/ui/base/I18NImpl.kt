@@ -47,7 +47,7 @@ object I18NCache {
             context.assets.open(DEFAULT_LANGUAGE)
         }.use {
             val content = it.bufferedReader(Charsets.UTF_8).readText()
-            res.putAll(Json.decodeFromString<Map<String, String>>(content))
+            res.putAll(Json.decodeFromString<Map<String, String>>(content).mapKeys { it.key.lowercase() })
         }
     }
 }
