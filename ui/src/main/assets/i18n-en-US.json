@@ -39,6 +39,7 @@
   "ui.conditions.plug.type.PlugType_PlugUSB": "Plugged USB",
   "ui.conditions.plug.type.PlugType_PlugAC": "Plugged AC",
   "ui.conditions.plug.type.PlugType_PlugWireless": "Plugged wireless",
+  "ui.conditions.plug.type.PlugType_NotPlug": "Unplugged",
   "ui.conditions.plug.type.PlugType_IsCharge": "Charging",
   "ui.conditions.app.running": "App is running",
   "ui.conditions.app.not.running": "App is NOT running",

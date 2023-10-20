@@ -38,6 +38,9 @@ object PlugState : Cond {
                 PlugType.PlugType_IsCharge -> {
                     state.isCharging
                 }
+                PlugType.PlugType_NotPlug -> {
+                    !state.isAnyPlug
+                }
 
                 PlugType.UNRECOGNIZED -> {
                     false

@@ -34,6 +34,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Rules start
+
     @Override public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
     {
     }
@@ -56,6 +57,7 @@ public interface IShortX extends android.os.IInterface
       return 0;
     }
     // Rules end
+
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledApps() throws android.os.RemoteException
     {
       return null;
@@ -72,6 +74,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Direct Actions start
+
     @Override public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
     {
     }
@@ -106,6 +109,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Direct Actions end
+
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActionEvaluateRecords() throws android.os.RemoteException
     {
       return null;
@@ -129,6 +133,7 @@ public interface IShortX extends android.os.IInterface
       return false;
     }
     // Pkg Set
+
     @Override public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException
     {
     }
@@ -145,6 +150,7 @@ public interface IShortX extends android.os.IInterface
     }
     // Pkg Set end
     // UI start
+
     @Override public void showDanmu(java.lang.String text, java.lang.String icon) throws android.os.RemoteException
     {
     }
@@ -161,6 +167,7 @@ public interface IShortX extends android.os.IInterface
     }
     // UI end
     // List with rule id or DA id
+
     @Override public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException
     {
       return null;
@@ -175,6 +182,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Components start
+
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException
     {
       return null;
@@ -204,6 +212,7 @@ public interface IShortX extends android.os.IInterface
     }
     // Components end
     // Global var start
+
     @Override public void addGlobalVar(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper gv) throws android.os.RemoteException
     {
     }
@@ -225,6 +234,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Global var end
+
     @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
     {
     }
@@ -233,21 +243,25 @@ public interface IShortX extends android.os.IInterface
       return null;
     }
     // Condition start
+
     @Override public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper evaluateContext, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException
     {
       return false;
     }
     // Condition end
     // Verify binding.
+
     @Override public void vb(java.lang.String code, java.lang.String deviceId, tornaco.apps.shortx.core.ICallback cb) throws android.os.RemoteException
     {
     }
     // User
+
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException
     {
       return null;
     }
     // Dev settings
+
     @Override public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException
     {
     }
@@ -310,6 +324,7 @@ public interface IShortX extends android.os.IInterface
       return null;
     }
     // Called by SystemUI
+
     @Override public void attachSUImpl(java.lang.String from, tornaco.apps.shortx.core.rule.action.su.ISu su) throws android.os.RemoteException
     {
     }
@@ -348,10 +363,12 @@ public interface IShortX extends android.os.IInterface
       return null;
     }
     // Called by SystemUI
+
     @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
     {
     }
     // Error report
+
     @Override public void uncaughtException(java.lang.String error) throws android.os.RemoteException
     {
     }
@@ -359,16 +376,19 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Http test
+
     @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
     {
       return null;
     }
     // Phone
+
     @Override public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException
     {
       return null;
     }
     // Gesture record
+
     @Override public void addGestureRecord(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper record) throws android.os.RemoteException
     {
     }
@@ -397,6 +417,7 @@ public interface IShortX extends android.os.IInterface
       return false;
     }
     // Tile
+
     @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException
     {
       return null;
@@ -425,6 +446,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Catcher
+
     @Override public boolean isSettingsCatcherEnabled() throws android.os.RemoteException
     {
       return false;
@@ -464,6 +486,7 @@ public interface IShortX extends android.os.IInterface
       return null;
     }
     // Rule Set
+
     @Override public void addOrUpdateRuleSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rs) throws android.os.RemoteException
     {
     }
@@ -499,11 +522,13 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // QSTileList
+
     @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException
     {
       return null;
     }
     // Swipe gesture.
+
     @Override public int getSwipeDistanceThresholdDp() throws android.os.RemoteException
     {
       return 0;
@@ -543,6 +568,7 @@ public interface IShortX extends android.os.IInterface
     {
     }
     // Global feature toggle.
+
     @Override public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException
     {
     }
@@ -558,6 +584,7 @@ public interface IShortX extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.IShortX
   {
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IShortX";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -585,9 +612,6 @@ public interface IShortX extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
-      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
-        data.enforceInterface(descriptor);
-      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -595,526 +619,744 @@ public interface IShortX extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
-      }
-      switch (code)
-      {
         case TRANSACTION_version:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.Version _result = this.version();
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_fingerprint:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _result = this.fingerprint();
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_setLogDebugEnable:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setLogDebugEnable(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isLogDebugEnable:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isLogDebugEnable();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_getLogDir:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _result = this.getLogDir();
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_hasFatalError:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.hasFatalError();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_writeLogsTo:
         {
+          data.enforceInterface(descriptor);
           android.os.ParcelFileDescriptor _arg0;
-          _arg0 = _Parcel.readTypedObject(data, android.os.ParcelFileDescriptor.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.writeLogsTo(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_addRule:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addRule(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deleteRule:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteRule(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getRuleById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getRuleById(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_setRuleEnabled:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
           this.setRuleEnabled(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAllRules:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllRules();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getRuleCount:
         {
+          data.enforceInterface(descriptor);
           int _result = this.getRuleCount();
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getInstalledApps:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getInstalledApps();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getAppLabel:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.lang.String _result = this.getAppLabel(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_pkgToApp:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.pkgToApp(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_showEdgeHint:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           this.showEdgeHint(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_addDirectAction:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addDirectAction(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deleteDirectAction:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteDirectAction(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getDirectActionById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDirectActionById(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getAllDirectAction:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDirectAction();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getDirectActionCount:
         {
+          data.enforceInterface(descriptor);
           int _result = this.getDirectActionCount();
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_executeDirectionActionById:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.executeDirectionActionById(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeDirectionAction:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg1;
-          _arg1 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg1 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
           this.executeDirectionAction(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeAction:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg1;
-          _arg1 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg1 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
           this.executeAction(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeActionBlocking:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg1;
-          _arg1 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg1 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
           this.executeActionBlocking(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_directExecuteRuleActions:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.directExecuteRuleActions(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getActionEvaluateRecords:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getActionEvaluateRecords();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getConditionEvaluateRecords:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getConditionEvaluateRecords();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getFactPublishRecords:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getFactPublishRecords();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_clearEvaluateRecords:
         {
+          data.enforceInterface(descriptor);
           this.clearEvaluateRecords();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_setEvaluateRecordEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setEvaluateRecordEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isEvaluateRecordEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isEvaluateRecordEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_addPkgSet:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addPkgSet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deletePkgSet:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deletePkgSet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getPkgSetByLabel:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getPkgSetByLabel(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getAllPkgSets:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllPkgSets(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_showDanmu:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.showDanmu(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getDanmuUISettings:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDanmuUISettings();
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_setDanmuUISettings:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.setDanmuUISettings(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAppIcon:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           int _arg1;
           _arg1 = data.readInt();
           android.graphics.Bitmap _result = this.getAppIcon(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getActiveJobs:
         {
+          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _result = this.getActiveJobs();
           reply.writeNoException();
           reply.writeStringList(_result);
-          break;
+          return true;
         }
         case TRANSACTION_cancelJobs:
         {
+          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _arg0;
           _arg0 = data.createStringArrayList();
           this.cancelJobs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerJobStatusListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IJobStatusListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IJobStatusListener.Stub.asInterface(data.readStrongBinder());
           this.registerJobStatusListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterJobStatusListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IJobStatusListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IJobStatusListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterJobStatusListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getActivities:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
           _arg1 = data.readString();
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getActivities(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getReceivers:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
           _arg1 = data.readString();
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getReceivers(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getServices:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
           _arg1 = data.readString();
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getServices(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getProviders:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           java.lang.String _arg1;
           _arg1 = data.readString();
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getProviders(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_setComponentEnabledSetting:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           int _arg1;
           _arg1 = data.readInt();
           int _arg2;
           _arg2 = data.readInt();
           this.setComponentEnabledSetting(_arg0, _arg1, _arg2);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getComponentEnabledSetting:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           int _result = this.getComponentEnabledSetting(_arg0);
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getAppComponentInfo:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getAppComponentInfo(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_addGlobalVar:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addGlobalVar(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deleteGlobalVar:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteGlobalVar(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getGlobalVarByName:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getGlobalVarByName(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getAllGlobalVars:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllGlobalVars();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_registerGlobalVarObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IGlobalVarObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IGlobalVarObserver.Stub.asInterface(data.readStrongBinder());
           this.registerGlobalVarObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterGlobalVarObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IGlobalVarObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IGlobalVarObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterGlobalVarObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_reboot:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.reboot(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeMVEL:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _result = this.executeMVEL(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_evaluateCondition:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg1;
-          _arg1 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg1 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
           boolean _result = this.evaluateCondition(_arg0, _arg1);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_vb:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
@@ -1123,714 +1365,894 @@ public interface IShortX extends android.os.IInterface
           _arg2 = tornaco.apps.shortx.core.ICallback.Stub.asInterface(data.readStrongBinder());
           this.vb(_arg0, _arg1, _arg2);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAllUsers:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllUsers();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_setPointerLocationEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setPointerLocationEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isPointerLocationEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isPointerLocationEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_getRunningServices:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getRunningServices(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getRunningAppPkgs:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getRunningAppPkgs(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getGestureAreaSize:
         {
+          data.enforceInterface(descriptor);
           int _result = this.getGestureAreaSize();
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_setGestureAreaSize:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           this.setGestureAreaSize(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerPkgSetObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IPkgSetObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IPkgSetObserver.Stub.asInterface(data.readStrongBinder());
           this.registerPkgSetObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterPkgSetObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IPkgSetObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IPkgSetObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterPkgSetObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerRuleObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IRuleObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IRuleObserver.Stub.asInterface(data.readStrongBinder());
           this.registerRuleObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterRuleObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IRuleObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IRuleObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterRuleObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerDAObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IDAObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IDAObserver.Stub.asInterface(data.readStrongBinder());
           this.registerDAObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterDAObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.IDAObserver _arg0;
           _arg0 = tornaco.apps.shortx.core.rule.IDAObserver.Stub.asInterface(data.readStrongBinder());
           this.unregisterDAObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_setKeyEventPromptEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setKeyEventPromptEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isKeyEventPromptEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isKeyEventPromptEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_onMediaStoreInsert:
         {
+          data.enforceInterface(descriptor);
           android.net.Uri _arg0;
-          _arg0 = _Parcel.readTypedObject(data, android.net.Uri.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = android.net.Uri.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.onMediaStoreInsert(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_onMediaStoreDelete:
         {
+          data.enforceInterface(descriptor);
           android.net.Uri _arg0;
-          _arg0 = _Parcel.readTypedObject(data, android.net.Uri.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = android.net.Uri.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.onMediaStoreDelete(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeShellCommand:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _result = this.executeShellCommand(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getWifiScanResults:
         {
+          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _result = this.getWifiScanResults();
           reply.writeNoException();
           reply.writeStringList(_result);
-          break;
+          return true;
         }
         case TRANSACTION_attachSUImpl:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.su.ISu _arg1;
           _arg1 = tornaco.apps.shortx.core.rule.action.su.ISu.Stub.asInterface(data.readStrongBinder());
           this.attachSUImpl(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isInjectedShellEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isInjectedShellEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_setInjectedShellEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setInjectedShellEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isAudioRecording:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isAudioRecording();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_stopAudioRecording:
         {
+          data.enforceInterface(descriptor);
           this.stopAudioRecording();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerAudioRecordingObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IAudioRecordingListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IAudioRecordingListener.Stub.asInterface(data.readStrongBinder());
           this.registerAudioRecordingObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterAudioRecordingObs:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IAudioRecordingListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IAudioRecordingListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterAudioRecordingObs(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAllAudioRecordFiles:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllAudioRecordFiles();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_deleteAudioRecordFile:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.deleteAudioRecordFile(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_exportAudioRecordFile:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           android.os.ParcelFileDescriptor _arg1;
-          _arg1 = _Parcel.readTypedObject(data, android.os.ParcelFileDescriptor.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg1 = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
           this.exportAudioRecordFile(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getBTBondedDevices:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getBTBondedDevices();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_attachNotificationPoster:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.notification.INotificationPoster _arg1;
           _arg1 = tornaco.apps.shortx.core.notification.INotificationPoster.Stub.asInterface(data.readStrongBinder());
           this.attachNotificationPoster(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_uncaughtException:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.uncaughtException(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_crashSystemServer:
         {
+          data.enforceInterface(descriptor);
           this.crashSystemServer();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_executeHttpRequest:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           java.util.List<java.lang.String> _result = this.executeHttpRequest(_arg0);
           reply.writeNoException();
           reply.writeStringList(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getActiveSubscriptionInfoList:
         {
+          data.enforceInterface(descriptor);
           java.util.List<android.telephony.SubscriptionInfo> _result = this.getActiveSubscriptionInfoList();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_addGestureRecord:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addGestureRecord(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getGestureRecordById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getGestureRecordById(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_deleteGestureRecordById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteGestureRecordById(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAllGestureRecords:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllGestureRecords(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_injectGestureRecord:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           float _arg1;
           _arg1 = data.readFloat();
           tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg2;
-          _arg2 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg2 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg2 = null;
+          }
           this.injectGestureRecord(_arg0, _arg1, _arg2);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_startGestureRecording:
         {
+          data.enforceInterface(descriptor);
           this.startGestureRecording();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_stopGestureRecording:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.stopGestureRecording(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isGestureRecording:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isGestureRecording();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_getAllStatusBarTileSettings:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllStatusBarTileSettings();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getStatusBarTileSettingsByNumber:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getStatusBarTileSettingsByNumber(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_updateStatusBarTileSetting:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.updateStatusBarTileSetting(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_registerStatusBarTileSettingsChangeListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
           this.registerStatusBarTileSettingsChangeListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterStatusBarTileSettingsChangeListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterStatusBarTileSettingsChangeListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_onTileClick:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           this.onTileClick(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isQSTileOptEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isQSTileOptEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_setQSTileOptEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setQSTileOptEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isSettingsCatcherEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isSettingsCatcherEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_setSettingsCatcherEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setSettingsCatcherEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_onReadSettings:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.onReadSettings(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_onWriteSettings:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _arg1;
           _arg1 = data.readString();
           this.onWriteSettings(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getReadSettingsRecord:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getReadSettingsRecord();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_getWriteSettingsRecord:
         {
+          data.enforceInterface(descriptor);
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getWriteSettingsRecord();
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_clearWriteSettingsRecord:
         {
+          data.enforceInterface(descriptor);
           this.clearWriteSettingsRecord();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_clearReadSettingsRecord:
         {
+          data.enforceInterface(descriptor);
           this.clearReadSettingsRecord();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_setRuleEngineEnabled:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
           this.setRuleEngineEnabled(_arg0, _arg1);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isRuleEngineEnabled:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _result = this.isRuleEngineEnabled(_arg0);
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         case TRANSACTION_executeJS:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           java.lang.String _result = this.executeJS(_arg0);
           reply.writeNoException();
           reply.writeString(_result);
-          break;
+          return true;
         }
         case TRANSACTION_addOrUpdateRuleSet:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addOrUpdateRuleSet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deleteRuleSet:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteRuleSet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getRuleSetById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getRuleSetById(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getAllRuleSets:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllRuleSets(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_addOrUpdateDASet:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.addOrUpdateDASet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_deleteDASet:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.deleteDASet(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getDASetById:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           boolean _arg1;
           _arg1 = (0!=data.readInt());
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getDASetById(_arg0, _arg1);
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getAllDASets:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getAllDASets(_arg0);
           reply.writeNoException();
-          _Parcel.writeTypedList(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          reply.writeTypedList(_result);
+          return true;
         }
         case TRANSACTION_testFATALError:
         {
+          data.enforceInterface(descriptor);
           this.testFATALError();
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_attachQSTileHost:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.systemui.IQSTileHost _arg0;
           _arg0 = tornaco.apps.shortx.core.systemui.IQSTileHost.Stub.asInterface(data.readStrongBinder());
           this.attachQSTileHost(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getAllQSTiles:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result = this.getAllQSTiles();
           reply.writeNoException();
-          _Parcel.writeTypedObject(reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-          break;
+          if ((_result!=null)) {
+            reply.writeInt(1);
+            _result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+          }
+          else {
+            reply.writeInt(0);
+          }
+          return true;
         }
         case TRANSACTION_getSwipeDistanceThresholdDp:
         {
+          data.enforceInterface(descriptor);
           int _result = this.getSwipeDistanceThresholdDp();
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_setSwipeDistanceThresholdDp:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           this.setSwipeDistanceThresholdDp(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_log:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.log(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_getStreamMinVolume:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           int _result = this.getStreamMinVolume(_arg0);
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getStreamMaxVolume:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           int _result = this.getStreamMaxVolume(_arg0);
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getStreamVolume:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           int _result = this.getStreamVolume(_arg0);
           reply.writeNoException();
           reply.writeInt(_result);
-          break;
+          return true;
         }
         case TRANSACTION_getEvaluatingActions:
         {
+          data.enforceInterface(descriptor);
           java.util.List<java.lang.String> _result = this.getEvaluatingActions();
           reply.writeNoException();
           reply.writeStringList(_result);
-          break;
+          return true;
         }
         case TRANSACTION_registerActionEvaluateListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IActionEvaluateListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IActionEvaluateListener.Stub.asInterface(data.readStrongBinder());
           this.registerActionEvaluateListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_unregisterActionEvaluateListener:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.IActionEvaluateListener _arg0;
           _arg0 = tornaco.apps.shortx.core.IActionEvaluateListener.Stub.asInterface(data.readStrongBinder());
           this.unregisterActionEvaluateListener(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_setStartActivityResult:
         {
+          data.enforceInterface(descriptor);
           int _arg0;
           _arg0 = data.readInt();
           int _arg1;
           _arg1 = data.readInt();
           android.os.Bundle _arg2;
-          _arg2 = _Parcel.readTypedObject(data, android.os.Bundle.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg2 = android.os.Bundle.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg2 = null;
+          }
           this.setStartActivityResult(_arg0, _arg1, _arg2);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_shortcutAppLaunched:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.shortcutAppLaunched(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_setRuleFeatureEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _arg0;
           _arg0 = (0!=data.readInt());
           this.setRuleFeatureEnabled(_arg0);
           reply.writeNoException();
-          break;
+          return true;
         }
         case TRANSACTION_isRuleFeatureEnabled:
         {
+          data.enforceInterface(descriptor);
           boolean _result = this.isRuleFeatureEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
-          break;
+          return true;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
-      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.IShortX
     {
@@ -1855,8 +2277,16 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_version, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().version();
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.Version.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.Version.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -1872,6 +2302,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_fingerprint, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().fingerprint();
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1889,6 +2322,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setLogDebugEnable, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setLogDebugEnable(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -1904,6 +2341,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isLogDebugEnable, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isLogDebugEnable();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1921,6 +2361,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getLogDir, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getLogDir();
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -1938,6 +2381,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_hasFatalError, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().hasFatalError();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -1953,8 +2399,18 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, pfd, 0);
+          if ((pfd!=null)) {
+            _data.writeInt(1);
+            pfd.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_writeLogsTo, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().writeLogsTo(pfd);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -1963,14 +2419,25 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Rules start
+
       @Override public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, rule, 0);
+          if ((rule!=null)) {
+            _data.writeInt(1);
+            rule.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addRule, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addRule(rule);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -1986,6 +2453,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteRule, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteRule(id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2002,8 +2473,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getRuleById(id);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2020,6 +2499,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(ruleId);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setRuleEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setRuleEnabled(ruleId, enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2035,6 +2518,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllRules, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllRules();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2052,6 +2538,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleCount, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getRuleCount();
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -2062,6 +2551,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Rules end
+
       @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledApps() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2070,6 +2560,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getInstalledApps, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getInstalledApps();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2086,8 +2579,17 @@ public interface IShortX extends android.os.IInterface
         java.lang.String _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, pkg, 0);
+          if ((pkg!=null)) {
+            _data.writeInt(1);
+            pkg.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAppLabel, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAppLabel(pkg);
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -2104,10 +2606,24 @@ public interface IShortX extends android.os.IInterface
         tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, pkg, 0);
+          if ((pkg!=null)) {
+            _data.writeInt(1);
+            pkg.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_pkgToApp, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().pkgToApp(pkg);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2123,6 +2639,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(edgeNumber);
           boolean _status = mRemote.transact(Stub.TRANSACTION_showEdgeHint, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().showEdgeHint(edgeNumber);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2131,14 +2651,25 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Direct Actions start
+
       @Override public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, da, 0);
+          if ((da!=null)) {
+            _data.writeInt(1);
+            da.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addDirectAction(da);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2154,6 +2685,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteDirectAction(id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2170,8 +2705,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDirectActionById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getDirectActionById(id);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2187,6 +2730,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllDirectAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllDirectAction();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2204,6 +2750,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDirectActionCount, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getDirectActionCount();
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -2219,9 +2768,19 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeDirectionActionById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().executeDirectionActionById(evaluateContext, id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2235,9 +2794,25 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
-          _Parcel.writeTypedObject(_data, da, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((da!=null)) {
+            _data.writeInt(1);
+            da.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeDirectionAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().executeDirectionAction(evaluateContext, da);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2251,9 +2826,25 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
-          _Parcel.writeTypedObject(_data, action, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((action!=null)) {
+            _data.writeInt(1);
+            action.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeAction, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().executeAction(evaluateContext, action);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2267,9 +2858,25 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
-          _Parcel.writeTypedObject(_data, action, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((action!=null)) {
+            _data.writeInt(1);
+            action.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeActionBlocking, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().executeActionBlocking(evaluateContext, action);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2283,9 +2890,19 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           _data.writeString(ruleId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_directExecuteRuleActions, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().directExecuteRuleActions(evaluateContext, ruleId);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2294,6 +2911,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Direct Actions end
+
       @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActionEvaluateRecords() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2302,6 +2920,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getActionEvaluateRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActionEvaluateRecords();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2319,6 +2940,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getConditionEvaluateRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getConditionEvaluateRecords();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2336,6 +2960,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getFactPublishRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getFactPublishRecords();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2352,6 +2979,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_clearEvaluateRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearEvaluateRecords();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2367,6 +2998,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setEvaluateRecordEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setEvaluateRecordEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2382,6 +3017,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isEvaluateRecordEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isEvaluateRecordEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -2392,14 +3030,25 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Pkg Set
+
       @Override public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, set, 0);
+          if ((set!=null)) {
+            _data.writeInt(1);
+            set.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addPkgSet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addPkgSet(set);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2415,6 +3064,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(label);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deletePkgSet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deletePkgSet(label);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2431,8 +3084,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(label);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getPkgSetByLabel, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getPkgSetByLabel(label);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2449,6 +3110,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((withPkgList)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllPkgSets, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllPkgSets(withPkgList);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2460,6 +3124,7 @@ public interface IShortX extends android.os.IInterface
       }
       // Pkg Set end
       // UI start
+
       @Override public void showDanmu(java.lang.String text, java.lang.String icon) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2469,6 +3134,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(text);
           _data.writeString(icon);
           boolean _status = mRemote.transact(Stub.TRANSACTION_showDanmu, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().showDanmu(text, icon);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2484,8 +3153,16 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDanmuUISettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getDanmuUISettings();
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2499,8 +3176,18 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, settings, 0);
+          if ((settings!=null)) {
+            _data.writeInt(1);
+            settings.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_setDanmuUISettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setDanmuUISettings(settings);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2518,8 +3205,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(pkgName);
           _data.writeInt(userId);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAppIcon, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAppIcon(pkgName, userId);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, android.graphics.Bitmap.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = android.graphics.Bitmap.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2529,6 +3224,7 @@ public interface IShortX extends android.os.IInterface
       }
       // UI end
       // List with rule id or DA id
+
       @Override public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2537,6 +3233,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getActiveJobs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActiveJobs();
+          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -2554,6 +3253,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeStringList(jobs);
           boolean _status = mRemote.transact(Stub.TRANSACTION_cancelJobs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().cancelJobs(jobs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2567,8 +3270,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerJobStatusListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerJobStatusListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2582,8 +3289,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterJobStatusListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterJobStatusListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2592,6 +3303,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Components start
+
       @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2602,6 +3314,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInt(userId);
           _data.writeString(packageName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getActivities, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActivities(userId, packageName);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2621,6 +3336,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInt(userId);
           _data.writeString(packageName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getReceivers, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getReceivers(userId, packageName);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2640,6 +3358,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInt(userId);
           _data.writeString(packageName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getServices, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getServices(userId, packageName);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2659,6 +3380,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInt(userId);
           _data.writeString(packageName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getProviders, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getProviders(userId, packageName);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2674,10 +3398,20 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, component, 0);
+          if ((component!=null)) {
+            _data.writeInt(1);
+            component.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           _data.writeInt(newState);
           _data.writeInt(flags);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setComponentEnabledSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setComponentEnabledSetting(component, newState, flags);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2692,8 +3426,17 @@ public interface IShortX extends android.os.IInterface
         int _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, component, 0);
+          if ((component!=null)) {
+            _data.writeInt(1);
+            component.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_getComponentEnabledSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getComponentEnabledSetting(component);
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -2710,10 +3453,24 @@ public interface IShortX extends android.os.IInterface
         tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, component, 0);
+          if ((component!=null)) {
+            _data.writeInt(1);
+            component.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAppComponentInfo, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAppComponentInfo(component);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2723,14 +3480,25 @@ public interface IShortX extends android.os.IInterface
       }
       // Components end
       // Global var start
+
       @Override public void addGlobalVar(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper gv) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, gv, 0);
+          if ((gv!=null)) {
+            _data.writeInt(1);
+            gv.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addGlobalVar, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addGlobalVar(gv);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2746,6 +3514,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(name);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteGlobalVar, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteGlobalVar(name);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2762,8 +3534,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(name);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getGlobalVarByName, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getGlobalVarByName(name);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -2779,6 +3559,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllGlobalVars, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllGlobalVars();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2794,8 +3577,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerGlobalVarObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerGlobalVarObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2809,8 +3596,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterGlobalVarObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterGlobalVarObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2819,6 +3610,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Global var end
+
       @Override public void reboot(java.lang.String reason) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2827,6 +3619,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(reason);
           boolean _status = mRemote.transact(Stub.TRANSACTION_reboot, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().reboot(reason);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2843,6 +3639,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(expression);
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeMVEL, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeMVEL(expression);
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -2853,6 +3652,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Condition start
+
       @Override public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper evaluateContext, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2860,9 +3660,24 @@ public interface IShortX extends android.os.IInterface
         boolean _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, evaluateContext, 0);
-          _Parcel.writeTypedObject(_data, condition, 0);
+          if ((evaluateContext!=null)) {
+            _data.writeInt(1);
+            evaluateContext.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((condition!=null)) {
+            _data.writeInt(1);
+            condition.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_evaluateCondition, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().evaluateCondition(evaluateContext, condition);
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -2874,6 +3689,7 @@ public interface IShortX extends android.os.IInterface
       }
       // Condition end
       // Verify binding.
+
       @Override public void vb(java.lang.String code, java.lang.String deviceId, tornaco.apps.shortx.core.ICallback cb) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2882,8 +3698,12 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(code);
           _data.writeString(deviceId);
-          _data.writeStrongInterface(cb);
+          _data.writeStrongBinder((((cb!=null))?(cb.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_vb, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().vb(code, deviceId, cb);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2892,6 +3712,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // User
+
       @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2900,6 +3721,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllUsers, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllUsers();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2910,6 +3734,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Dev settings
+
       @Override public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -2918,6 +3743,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setPointerLocationEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setPointerLocationEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -2933,6 +3762,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isPointerLocationEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isPointerLocationEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -2949,8 +3781,17 @@ public interface IShortX extends android.os.IInterface
         java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, pkg, 0);
+          if ((pkg!=null)) {
+            _data.writeInt(1);
+            pkg.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRunningServices, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getRunningServices(pkg);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2969,6 +3810,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(pkgSetLabel);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRunningAppPkgs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getRunningAppPkgs(pkgSetLabel);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -2986,6 +3830,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureAreaSize, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getGestureAreaSize();
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -3003,6 +3850,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(dp);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setGestureAreaSize, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setGestureAreaSize(dp);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3016,8 +3867,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerPkgSetObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerPkgSetObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3031,8 +3886,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterPkgSetObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterPkgSetObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3046,8 +3905,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerRuleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerRuleObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3061,8 +3924,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterRuleObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterRuleObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3076,8 +3943,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerDAObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerDAObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3091,8 +3962,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterDAObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterDAObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3108,6 +3983,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setKeyEventPromptEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setKeyEventPromptEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3123,6 +4002,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isKeyEventPromptEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isKeyEventPromptEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3138,9 +4020,19 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, uri, 0);
+          if ((uri!=null)) {
+            _data.writeInt(1);
+            uri.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           _data.writeString(path);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreInsert, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onMediaStoreInsert(uri, path);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3154,9 +4046,19 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, uri, 0);
+          if ((uri!=null)) {
+            _data.writeInt(1);
+            uri.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           _data.writeString(path);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onMediaStoreDelete, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onMediaStoreDelete(uri, path);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3173,6 +4075,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(command);
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeShellCommand, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeShellCommand(command);
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -3190,6 +4095,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getWifiScanResults, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getWifiScanResults();
+          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -3200,6 +4108,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Called by SystemUI
+
       @Override public void attachSUImpl(java.lang.String from, tornaco.apps.shortx.core.rule.action.su.ISu su) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3207,8 +4116,12 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(from);
-          _data.writeStrongInterface(su);
+          _data.writeStrongBinder((((su!=null))?(su.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_attachSUImpl, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().attachSUImpl(from, su);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3224,6 +4137,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isInjectedShellEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isInjectedShellEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3241,6 +4157,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setInjectedShellEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setInjectedShellEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3256,6 +4176,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isAudioRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isAudioRecording();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3272,6 +4195,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_stopAudioRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().stopAudioRecording();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3285,8 +4212,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerAudioRecordingObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerAudioRecordingObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3300,8 +4231,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(obs);
+          _data.writeStrongBinder((((obs!=null))?(obs.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterAudioRecordingObs, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterAudioRecordingObs(obs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3317,6 +4252,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllAudioRecordFiles, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllAudioRecordFiles();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3332,8 +4270,18 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, file, 0);
+          if ((file!=null)) {
+            _data.writeInt(1);
+            file.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteAudioRecordFile, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteAudioRecordFile(file);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3347,9 +4295,25 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, file, 0);
-          _Parcel.writeTypedObject(_data, pfd, 0);
+          if ((file!=null)) {
+            _data.writeInt(1);
+            file.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          if ((pfd!=null)) {
+            _data.writeInt(1);
+            pfd.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_exportAudioRecordFile, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().exportAudioRecordFile(file, pfd);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3365,6 +4329,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getBTBondedDevices, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getBTBondedDevices();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3375,6 +4342,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Called by SystemUI
+
       @Override public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3382,8 +4350,12 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(from);
-          _data.writeStrongInterface(poster);
+          _data.writeStrongBinder((((poster!=null))?(poster.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_attachNotificationPoster, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().attachNotificationPoster(from, poster);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3392,6 +4364,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Error report
+
       @Override public void uncaughtException(java.lang.String error) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3400,6 +4373,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(error);
           boolean _status = mRemote.transact(Stub.TRANSACTION_uncaughtException, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().uncaughtException(error);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3414,6 +4391,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_crashSystemServer, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().crashSystemServer();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3422,6 +4403,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Http test
+
       @Override public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3429,8 +4411,17 @@ public interface IShortX extends android.os.IInterface
         java.util.List<java.lang.String> _result;
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, request, 0);
+          if ((request!=null)) {
+            _data.writeInt(1);
+            request.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeHttpRequest, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeHttpRequest(request);
+          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -3441,6 +4432,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Phone
+
       @Override public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3449,6 +4441,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getActiveSubscriptionInfoList, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getActiveSubscriptionInfoList();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(android.telephony.SubscriptionInfo.CREATOR);
         }
@@ -3459,14 +4454,25 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Gesture record
+
       @Override public void addGestureRecord(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper record) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, record, 0);
+          if ((record!=null)) {
+            _data.writeInt(1);
+            record.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addGestureRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addGestureRecord(record);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3483,8 +4489,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getGestureRecordById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getGestureRecordById(id);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -3500,6 +4514,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteGestureRecordById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteGestureRecordById(id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3516,6 +4534,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((withEventData)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllGestureRecords, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllGestureRecords(withEventData);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3533,8 +4554,18 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           _data.writeFloat(speed);
-          _Parcel.writeTypedObject(_data, onComplete, 0);
+          if ((onComplete!=null)) {
+            _data.writeInt(1);
+            onComplete.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_injectGestureRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().injectGestureRecord(id, speed, onComplete);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3549,6 +4580,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_startGestureRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().startGestureRecording();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3564,6 +4599,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((save)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_stopGestureRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().stopGestureRecording(save);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3579,6 +4618,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isGestureRecording, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isGestureRecording();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3589,6 +4631,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Tile
+
       @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3597,6 +4640,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllStatusBarTileSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllStatusBarTileSettings();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3615,8 +4661,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(tileNumber);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getStatusBarTileSettingsByNumber, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getStatusBarTileSettingsByNumber(tileNumber);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -3630,8 +4684,18 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, tileSetting, 0);
+          if ((tileSetting!=null)) {
+            _data.writeInt(1);
+            tileSetting.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_updateStatusBarTileSetting, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().updateStatusBarTileSetting(tileSetting);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3645,8 +4709,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerStatusBarTileSettingsChangeListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerStatusBarTileSettingsChangeListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3660,8 +4728,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterStatusBarTileSettingsChangeListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterStatusBarTileSettingsChangeListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3677,6 +4749,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(tileNumber);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onTileClick, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onTileClick(tileNumber);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3692,6 +4768,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isQSTileOptEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isQSTileOptEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3709,6 +4788,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setQSTileOptEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setQSTileOptEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3717,6 +4800,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Catcher
+
       @Override public boolean isSettingsCatcherEnabled() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -3725,6 +4809,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isSettingsCatcherEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isSettingsCatcherEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3742,6 +4829,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enabled)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setSettingsCatcherEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setSettingsCatcherEnabled(enabled);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3758,6 +4849,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(url);
           _data.writeString(value);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onReadSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onReadSettings(url, value);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3774,6 +4869,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(url);
           _data.writeString(value);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onWriteSettings, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onWriteSettings(url, value);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3789,6 +4888,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getReadSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getReadSettingsRecord();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3806,6 +4908,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getWriteSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getWriteSettingsRecord();
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3822,6 +4927,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_clearWriteSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearWriteSettingsRecord();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3836,6 +4945,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_clearReadSettingsRecord, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().clearReadSettingsRecord();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3852,6 +4965,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(engine);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setRuleEngineEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setRuleEngineEnabled(engine, enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3868,6 +4985,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(engine);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isRuleEngineEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isRuleEngineEnabled(engine);
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -3886,6 +5006,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(expression);
           boolean _status = mRemote.transact(Stub.TRANSACTION_executeJS, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().executeJS(expression);
+          }
           _reply.readException();
           _result = _reply.readString();
         }
@@ -3896,14 +5019,25 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Rule Set
+
       @Override public void addOrUpdateRuleSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rs) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, rs, 0);
+          if ((rs!=null)) {
+            _data.writeInt(1);
+            rs.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addOrUpdateRuleSet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addOrUpdateRuleSet(rs);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3919,6 +5053,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteRuleSet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteRuleSet(id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3936,8 +5074,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(id);
           _data.writeInt(((withRules)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getRuleSetById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getRuleSetById(id, withRules);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -3954,6 +5100,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((withRules)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllRuleSets, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllRuleSets(withRules);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -3969,8 +5118,18 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, ds, 0);
+          if ((ds!=null)) {
+            _data.writeInt(1);
+            ds.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_addOrUpdateDASet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().addOrUpdateDASet(ds);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -3986,6 +5145,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(id);
           boolean _status = mRemote.transact(Stub.TRANSACTION_deleteDASet, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().deleteDASet(id);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4003,8 +5166,16 @@ public interface IShortX extends android.os.IInterface
           _data.writeString(id);
           _data.writeInt(((withDAs)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getDASetById, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getDASetById(id, withDAs);
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -4021,6 +5192,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((withDAs)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllDASets, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllDASets(withDAs);
+          }
           _reply.readException();
           _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
         }
@@ -4037,6 +5211,10 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_testFATALError, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().testFATALError();
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4050,8 +5228,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(host);
+          _data.writeStrongBinder((((host!=null))?(host.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_attachQSTileHost, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().attachQSTileHost(host);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4060,6 +5242,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // QSTileList
+
       @Override public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -4068,8 +5251,16 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getAllQSTiles, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getAllQSTiles();
+          }
           _reply.readException();
-          _result = _Parcel.readTypedObject(_reply, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+          if ((0!=_reply.readInt())) {
+            _result = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(_reply);
+          }
+          else {
+            _result = null;
+          }
         }
         finally {
           _reply.recycle();
@@ -4078,6 +5269,7 @@ public interface IShortX extends android.os.IInterface
         return _result;
       }
       // Swipe gesture.
+
       @Override public int getSwipeDistanceThresholdDp() throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -4086,6 +5278,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getSwipeDistanceThresholdDp, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getSwipeDistanceThresholdDp();
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -4103,6 +5298,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(dp);
           boolean _status = mRemote.transact(Stub.TRANSACTION_setSwipeDistanceThresholdDp, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setSwipeDistanceThresholdDp(dp);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4118,6 +5317,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(message);
           boolean _status = mRemote.transact(Stub.TRANSACTION_log, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().log(message);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4134,6 +5337,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(type);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getStreamMinVolume, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getStreamMinVolume(type);
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -4152,6 +5358,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(type);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getStreamMaxVolume, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getStreamMaxVolume(type);
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -4170,6 +5379,9 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(type);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getStreamVolume, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getStreamVolume(type);
+          }
           _reply.readException();
           _result = _reply.readInt();
         }
@@ -4187,6 +5399,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_getEvaluatingActions, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getEvaluatingActions();
+          }
           _reply.readException();
           _result = _reply.createStringArrayList();
         }
@@ -4202,8 +5417,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_registerActionEvaluateListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().registerActionEvaluateListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4217,8 +5436,12 @@ public interface IShortX extends android.os.IInterface
         android.os.Parcel _reply = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _data.writeStrongInterface(listener);
+          _data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_unregisterActionEvaluateListener, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().unregisterActionEvaluateListener(listener);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4234,8 +5457,18 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(requestCode);
           _data.writeInt(resultCode);
-          _Parcel.writeTypedObject(_data, result, 0);
+          if ((result!=null)) {
+            _data.writeInt(1);
+            result.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_setStartActivityResult, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setStartActivityResult(requestCode, resultCode, result);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4251,6 +5484,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(packageName);
           boolean _status = mRemote.transact(Stub.TRANSACTION_shortcutAppLaunched, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().shortcutAppLaunched(packageName);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4259,6 +5496,7 @@ public interface IShortX extends android.os.IInterface
         }
       }
       // Global feature toggle.
+
       @Override public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
@@ -4267,6 +5505,10 @@ public interface IShortX extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeInt(((enable)?(1):(0)));
           boolean _status = mRemote.transact(Stub.TRANSACTION_setRuleFeatureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().setRuleFeatureEnabled(enable);
+            return;
+          }
           _reply.readException();
         }
         finally {
@@ -4282,6 +5524,9 @@ public interface IShortX extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_isRuleFeatureEnabled, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().isRuleFeatureEnabled();
+          }
           _reply.readException();
           _result = (0!=_reply.readInt());
         }
@@ -4291,6 +5536,7 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_fingerprint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -4440,8 +5686,23 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_shortcutAppLaunched = (android.os.IBinder.FIRST_CALL_TRANSACTION + 145);
     static final int TRANSACTION_setRuleFeatureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 146);
     static final int TRANSACTION_isRuleFeatureEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 147);
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
+      // Only one user of this interface can use this function
+      // at a time. This is a heuristic to detect if two different
+      // users in the same process use this function.
+      if (Stub.Proxy.sDefaultImpl != null) {
+        throw new IllegalStateException("setDefaultImpl() called twice");
+      }
+      if (impl != null) {
+        Stub.Proxy.sDefaultImpl = impl;
+        return true;
+      }
+      return false;
+    }
+    public static tornaco.apps.shortx.core.IShortX getDefaultImpl() {
+      return Stub.Proxy.sDefaultImpl;
+    }
   }
-  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IShortX";
   public tornaco.apps.shortx.core.Version version() throws android.os.RemoteException;
   public java.lang.String fingerprint() throws android.os.RemoteException;
   public void setLogDebugEnable(boolean enable) throws android.os.RemoteException;
@@ -4450,6 +5711,7 @@ public interface IShortX extends android.os.IInterface
   public boolean hasFatalError() throws android.os.RemoteException;
   public void writeLogsTo(android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException;
   // Rules start
+
   public void addRule(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rule) throws android.os.RemoteException;
   public void deleteRule(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleById(java.lang.String id) throws android.os.RemoteException;
@@ -4457,11 +5719,13 @@ public interface IShortX extends android.os.IInterface
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllRules() throws android.os.RemoteException;
   public int getRuleCount() throws android.os.RemoteException;
   // Rules end
+
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledApps() throws android.os.RemoteException;
   public java.lang.String getAppLabel(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper pkg) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper pkgToApp(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper pkg) throws android.os.RemoteException;
   public void showEdgeHint(int edgeNumber) throws android.os.RemoteException;
   // Direct Actions start
+
   public void addDirectAction(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper da) throws android.os.RemoteException;
   public void deleteDirectAction(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDirectActionById(java.lang.String id) throws android.os.RemoteException;
@@ -4473,6 +5737,7 @@ public interface IShortX extends android.os.IInterface
   public void executeActionBlocking(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper evaluateContext, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper action) throws android.os.RemoteException;
   public void directExecuteRuleActions(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper evaluateContext, java.lang.String ruleId) throws android.os.RemoteException;
   // Direct Actions end
+
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActionEvaluateRecords() throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getConditionEvaluateRecords() throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getFactPublishRecords() throws android.os.RemoteException;
@@ -4480,23 +5745,27 @@ public interface IShortX extends android.os.IInterface
   public void setEvaluateRecordEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isEvaluateRecordEnabled() throws android.os.RemoteException;
   // Pkg Set
+
   public void addPkgSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper set) throws android.os.RemoteException;
   public void deletePkgSet(java.lang.String label) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getPkgSetByLabel(java.lang.String label) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllPkgSets(boolean withPkgList) throws android.os.RemoteException;
   // Pkg Set end
   // UI start
+
   public void showDanmu(java.lang.String text, java.lang.String icon) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getDanmuUISettings() throws android.os.RemoteException;
   public void setDanmuUISettings(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper settings) throws android.os.RemoteException;
   public android.graphics.Bitmap getAppIcon(java.lang.String pkgName, int userId) throws android.os.RemoteException;
   // UI end
   // List with rule id or DA id
+
   public java.util.List<java.lang.String> getActiveJobs() throws android.os.RemoteException;
   public void cancelJobs(java.util.List<java.lang.String> jobs) throws android.os.RemoteException;
   public void registerJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
   public void unregisterJobStatusListener(tornaco.apps.shortx.core.IJobStatusListener listener) throws android.os.RemoteException;
   // Components start
+
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getActivities(int userId, java.lang.String packageName) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getReceivers(int userId, java.lang.String packageName) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getServices(int userId, java.lang.String packageName) throws android.os.RemoteException;
@@ -4506,6 +5775,7 @@ public interface IShortX extends android.os.IInterface
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAppComponentInfo(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper component) throws android.os.RemoteException;
   // Components end
   // Global var start
+
   public void addGlobalVar(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper gv) throws android.os.RemoteException;
   public void deleteGlobalVar(java.lang.String name) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGlobalVarByName(java.lang.String name) throws android.os.RemoteException;
@@ -4513,16 +5783,21 @@ public interface IShortX extends android.os.IInterface
   public void registerGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
   public void unregisterGlobalVarObs(tornaco.apps.shortx.core.rule.IGlobalVarObserver obs) throws android.os.RemoteException;
   // Global var end
+
   public void reboot(java.lang.String reason) throws android.os.RemoteException;
   public java.lang.String executeMVEL(java.lang.String expression) throws android.os.RemoteException;
   // Condition start
+
   public boolean evaluateCondition(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper evaluateContext, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper condition) throws android.os.RemoteException;
   // Condition end
   // Verify binding.
+
   public void vb(java.lang.String code, java.lang.String deviceId, tornaco.apps.shortx.core.ICallback cb) throws android.os.RemoteException;
   // User
+
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllUsers() throws android.os.RemoteException;
   // Dev settings
+
   public void setPointerLocationEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isPointerLocationEnabled() throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getRunningServices(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper pkg) throws android.os.RemoteException;
@@ -4542,6 +5817,7 @@ public interface IShortX extends android.os.IInterface
   public java.lang.String executeShellCommand(java.lang.String command) throws android.os.RemoteException;
   public java.util.List<java.lang.String> getWifiScanResults() throws android.os.RemoteException;
   // Called by SystemUI
+
   public void attachSUImpl(java.lang.String from, tornaco.apps.shortx.core.rule.action.su.ISu su) throws android.os.RemoteException;
   public boolean isInjectedShellEnabled() throws android.os.RemoteException;
   public void setInjectedShellEnabled(boolean enable) throws android.os.RemoteException;
@@ -4554,15 +5830,20 @@ public interface IShortX extends android.os.IInterface
   public void exportAudioRecordFile(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper file, android.os.ParcelFileDescriptor pfd) throws android.os.RemoteException;
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getBTBondedDevices() throws android.os.RemoteException;
   // Called by SystemUI
+
   public void attachNotificationPoster(java.lang.String from, tornaco.apps.shortx.core.notification.INotificationPoster poster) throws android.os.RemoteException;
   // Error report
+
   public void uncaughtException(java.lang.String error) throws android.os.RemoteException;
   public void crashSystemServer() throws android.os.RemoteException;
   // Http test
+
   public java.util.List<java.lang.String> executeHttpRequest(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper request) throws android.os.RemoteException;
   // Phone
+
   public java.util.List<android.telephony.SubscriptionInfo> getActiveSubscriptionInfoList() throws android.os.RemoteException;
   // Gesture record
+
   public void addGestureRecord(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper record) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getGestureRecordById(java.lang.String id) throws android.os.RemoteException;
   public void deleteGestureRecordById(java.lang.String id) throws android.os.RemoteException;
@@ -4572,6 +5853,7 @@ public interface IShortX extends android.os.IInterface
   public void stopGestureRecording(boolean save) throws android.os.RemoteException;
   public boolean isGestureRecording() throws android.os.RemoteException;
   // Tile
+
   public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getAllStatusBarTileSettings() throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getStatusBarTileSettingsByNumber(int tileNumber) throws android.os.RemoteException;
   public void updateStatusBarTileSetting(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper tileSetting) throws android.os.RemoteException;
@@ -4581,6 +5863,7 @@ public interface IShortX extends android.os.IInterface
   public boolean isQSTileOptEnabled() throws android.os.RemoteException;
   public void setQSTileOptEnabled(boolean enable) throws android.os.RemoteException;
   // Catcher
+
   public boolean isSettingsCatcherEnabled() throws android.os.RemoteException;
   public void setSettingsCatcherEnabled(boolean enabled) throws android.os.RemoteException;
   public void onReadSettings(java.lang.String url, java.lang.String value) throws android.os.RemoteException;
@@ -4593,6 +5876,7 @@ public interface IShortX extends android.os.IInterface
   public boolean isRuleEngineEnabled(java.lang.String engine) throws android.os.RemoteException;
   public java.lang.String executeJS(java.lang.String expression) throws android.os.RemoteException;
   // Rule Set
+
   public void addOrUpdateRuleSet(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper rs) throws android.os.RemoteException;
   public void deleteRuleSet(java.lang.String id) throws android.os.RemoteException;
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getRuleSetById(java.lang.String id, boolean withRules) throws android.os.RemoteException;
@@ -4604,8 +5888,10 @@ public interface IShortX extends android.os.IInterface
   public void testFATALError() throws android.os.RemoteException;
   public void attachQSTileHost(tornaco.apps.shortx.core.systemui.IQSTileHost host) throws android.os.RemoteException;
   // QSTileList
+
   public tornaco.apps.shortx.core.rule.action.ByteArrayWrapper getAllQSTiles() throws android.os.RemoteException;
   // Swipe gesture.
+
   public int getSwipeDistanceThresholdDp() throws android.os.RemoteException;
   public void setSwipeDistanceThresholdDp(int dp) throws android.os.RemoteException;
   public void log(java.lang.String message) throws android.os.RemoteException;
@@ -4618,41 +5904,7 @@ public interface IShortX extends android.os.IInterface
   public void setStartActivityResult(int requestCode, int resultCode, android.os.Bundle result) throws android.os.RemoteException;
   public void shortcutAppLaunched(java.lang.String packageName) throws android.os.RemoteException;
   // Global feature toggle.
+
   public void setRuleFeatureEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isRuleFeatureEnabled() throws android.os.RemoteException;
-  /** @hide */
-  static class _Parcel {
-    static private <T> T readTypedObject(
-        android.os.Parcel parcel,
-        android.os.Parcelable.Creator<T> c) {
-      if (parcel.readInt() != 0) {
-          return c.createFromParcel(parcel);
-      } else {
-          return null;
-      }
-    }
-    static private <T extends android.os.Parcelable> void writeTypedObject(
-        android.os.Parcel parcel, T value, int parcelableFlags) {
-      if (value != null) {
-        parcel.writeInt(1);
-        value.writeToParcel(parcel, parcelableFlags);
-      } else {
-        parcel.writeInt(0);
-      }
-    }
-    static private <T extends android.os.Parcelable> void writeTypedList(
-        android.os.Parcel parcel, java.util.List<T> value, int parcelableFlags) {
-      if (value == null) {
-        parcel.writeInt(-1);
-      } else {
-        int N = value.size();
-        int i = 0;
-        parcel.writeInt(N);
-        while (i < N) {
-    writeTypedObject(parcel, value.get(i), parcelableFlags);
-          i++;
-        }
-      }
-    }
-  }
 }

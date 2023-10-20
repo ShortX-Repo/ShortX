@@ -235,7 +235,8 @@ enum PlugType {
     PlugType_PlugUSB = 1;
     PlugType_PlugAC = 2;
     PlugType_PlugWireless = 3;
-    PlugType_IsCharge = 4;
+    PlugType_NotPlug = 4;
+    PlugType_IsCharge = 5;
 }
 
 message RequireWifiConnected {
