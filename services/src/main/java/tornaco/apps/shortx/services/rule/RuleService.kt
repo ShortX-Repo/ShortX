@@ -513,6 +513,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 if (enable) it.onRuleEnabled(ruleId) else it.onRuleDisabled(ruleId)
             }
         }
+
+        // Stop tasks
+        cancelJobs(getActiveJobs().filter { it == ruleId })
     }
 
     fun getActiveJobs(): List<String> = engine.activeJobs().map { it.id }
@@ -580,6 +583,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onDelete(id) }
                 .onFailure { logger.e("Call onDelete") }
         }
+
+        // Stop tasks
+        cancelJobs(getActiveJobs().filter { it == id })
     }
 
     fun getDirectActionById(id: String): DirectAction? {
