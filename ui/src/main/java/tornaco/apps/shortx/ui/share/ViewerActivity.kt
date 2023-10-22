@@ -143,25 +143,31 @@ class ViewerActivity : BaseActivity() {
 
     private fun parseIntent(): SharedData? {
         logger.d("parseIntent: $intent")
-        return if (Intent.ACTION_VIEW == intent.action) {
-            val uri = intent.data
-            logger.d("uri: $uri")
-            logger.d("scheme: ${uri?.scheme}")
-            uri?.let { u ->
-                contentResolver.openInputStream(u)?.use { stream ->
-                    val text = stream.reader(Charset.defaultCharset()).readText()
-                    logger.d("text: $text")
-                    val header = text.getContentHeader()
-                    logger.d("header: $header")
-                    val data = text.getContentData()
-                    logger.d("data: $data")
-                    val type = header["type"]
-                    type?.let {
-                        SharedData(it, data)
+        return when {
+            Intent.ACTION_VIEW == intent.action ||  Intent.ACTION_SEND == intent.action -> {
+                var uri: Uri? = intent.data
+                if (uri == null) {
+                    uri = intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                }
+                logger.d("uri: $uri")
+                logger.d("scheme: ${uri?.scheme}")
+                uri?.let { u ->
+                    contentResolver.openInputStream(u)?.use { stream ->
+                        val text = stream.reader(Charset.defaultCharset()).readText()
+                        logger.d("text: $text")
+                        val header = text.getContentHeader()
+                        logger.d("header: $header")
+                        val data = text.getContentData()
+                        logger.d("data: $data")
+                        val type = header["type"]
+                        type?.let {
+                            SharedData(it, data)
+                        }
                     }
                 }
             }
-        } else intent.getParcelableExtra("data")
+            else -> intent.getParcelableExtra("data")
+        }
     }
 }
 
