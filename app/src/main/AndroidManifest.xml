@@ -26,6 +26,10 @@
         <meta-data
             android:name="xposedscope"
             android:resource="@array/xposed_scope" />
+
+        <service
+            android:name="tornaco.apps.shortx.ui.demo.DemoService"
+            android:exported="false" />
     </application>
 
 </manifest>

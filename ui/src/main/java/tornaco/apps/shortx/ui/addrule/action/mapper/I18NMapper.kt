@@ -648,7 +648,6 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             }
             listOfNotNull(
                 i18N["ui.action.start.service"],
-                action.action,
                 name?.let { "${it.flattenToShortString()}$PREFIX_APP_ICON${name.packageName}" }
             )
         }

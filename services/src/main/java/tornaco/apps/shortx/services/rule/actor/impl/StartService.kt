@@ -23,13 +23,14 @@ object StartService : Actor {
         val intent =
             data.intent.toIntent(contextData, localVars) { shortXContext.rule.getAllGlobalVars() }
         val userId = data.userId
-        logger.d("start service, intent: ${data.intent} $userId")
         if (data.isForegroundService) {
+            logger.d("start fg service, intent: ${data.intent} $userId")
             androidContext.startForegroundServiceAsUser(
                 intent,
                 UserHandleUtils.userIdToUserHandle(userId)
             )
         } else {
+            logger.d("start service, intent: ${data.intent} $userId")
             androidContext.startServiceAsUser(intent, UserHandleUtils.userIdToUserHandle(userId))
         }
     }
