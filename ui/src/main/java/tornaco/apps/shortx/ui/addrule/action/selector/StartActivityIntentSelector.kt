@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
@@ -31,9 +32,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtra
 import tornaco.apps.shortx.core.proto.common.AndroidIntentExtraType
 import tornaco.apps.shortx.core.proto.common.AppPkg
@@ -51,12 +51,11 @@ import tornaco.apps.shortx.ui.addrule.base.rememberSingleAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
-import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
-import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
@@ -65,49 +64,20 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 
-class StartActivityIntentDialogState(
-    val onSelected: (Action.StartActivityIntent) -> Unit
-) {
-    var isShowing by mutableStateOf(false)
-    var current: Action.StartActivityIntent? = null
-
-    fun show(current: Action.StartActivityIntent? = null) {
-        this.current = current
-        isShowing = true
-    }
-
-    fun dismiss() {
-        isShowing = false
+@AndroidEntryPoint
+class StartActivityIntentSelectorActivity : BaseSelectorActivity<Action.StartActivityIntent>() {
+    @Composable
+    override fun BaseSelectorActivity<Action.StartActivityIntent>.SelectorContent(currentAction: Action.StartActivityIntent?) {
+        StartActivityIntentSelector(currentAction)
     }
 }
 
 @Composable
-fun rememberStartActivityIntentDialogState(
-    onSelected: (Action.StartActivityIntent) -> Unit
-): StartActivityIntentDialogState {
-    return remember {
-        StartActivityIntentDialogState(onSelected)
-    }
-}
-
-@Composable
-fun StartActivityIntentDialog(state: StartActivityIntentDialogState) {
-    if (state.isShowing) {
-        ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
-            StartActivityIntentSelector(state)
-        }
-    }
-}
-
-@Composable
-private fun StartActivityIntentSelector(dialogState: StartActivityIntentDialogState) {
+private fun BaseSelectorActivity<Action.StartActivityIntent>.StartActivityIntentSelector(current: Action.StartActivityIntent?) {
     val vm = hiltViewModel<StartActivityIntentSelectorViewModel>()
     LaunchedEffect(vm) {
-        val current = dialogState.current
         if (current != null) {
             vm.initFrom(current)
-        } else {
-            vm.resetState()
         }
     }
     val vmState by vm.state.collectAsState()
@@ -123,14 +93,14 @@ private fun StartActivityIntentSelector(dialogState: StartActivityIntentDialogSt
                         title = { Text(LocalI18N.current["ui.action.start.activity.intent"]) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                dialogState.dismiss()
+                                cancelAndFinish()
                             }) {
                                 RemixIcon(remixName = Remix.System.close_line)
                             }
                         },
                         actions = {
                             IconButton(onClick = {
-                                dialogState.onSelected(
+                                setResultAndFinish(
                                     Action.StartActivityIntent(
                                         id = vmState.id,
                                         userId = vmState.userId,
@@ -142,7 +112,6 @@ private fun StartActivityIntentSelector(dialogState: StartActivityIntentDialogSt
                                         extras = vmState.extras
                                     )
                                 )
-                                dialogState.dismiss()
                             }) {
                                 RemixIcon(remixName = Remix.System.check_line)
                             }
@@ -345,10 +314,10 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         StandardSpacer()
 
         // Add extra
-        FilledTonalIconButton(onClick = {
+        Button(onClick = {
             vm.newExtra()
         }) {
-            RemixIcon(remixName = Remix.System.add_fill)
+            Text(text = LocalI18N.current["ui.common.add"])
         }
 
         StandardSpacer()

@@ -504,6 +504,7 @@
   "ui.action.set.ringer.mode.vibrate": "振动模式",
   "ui.action.set.brightness": "调整屏幕亮度",
   "ui.action.start.service": "启动服务",
+  "ui.action.start.service.is.fg": "前台服务",
   "ui.action.stop.service": "停止服务",
   "ui.action.stop.service.summary": "{count}个服务",
   "ui.action.no.action": "无动作",

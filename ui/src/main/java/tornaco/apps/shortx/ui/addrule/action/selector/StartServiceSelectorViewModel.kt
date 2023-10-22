@@ -121,6 +121,12 @@ class StartServiceSelectorViewModel @Inject constructor(@ApplicationContext cont
         }
     }
 
+    fun updateFG(fg: Boolean) {
+        updateState {
+            copy(isFG = fg)
+        }
+    }
+
     fun updateUserId(userId: Int) {
         updateState {
             copy(

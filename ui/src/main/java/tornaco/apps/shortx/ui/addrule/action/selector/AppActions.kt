@@ -220,10 +220,15 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         })
     PackageNameAndUserSelectorDialog(state = removeNotificationByPkgSelectorState)
 
-    val startActivityIntentSelectorState = rememberStartActivityIntentDialogState(onSelected = {
-        addAction(it)
-    })
-    StartActivityIntentDialog(state = startActivityIntentSelectorState)
+    val startActivityIntentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.StartActivityIntent>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val startServiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -279,7 +284,13 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     return { source: ActionSelectSource ->
         when (source.clazz) {
             Action.StartActivityIntent::class -> {
-                startActivityIntentSelectorState.show(source.getActionAs())
+                startActivityIntentLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.StartActivityIntent>(),
+                        StartActivityIntentSelectorActivity::class.java
+                    )
+                )
                 true
             }
 

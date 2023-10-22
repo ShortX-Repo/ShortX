@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -59,6 +59,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -162,7 +163,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
         StandardSpacer()
 
         val componentSelectorState = rememberAppComponentSelectorState(
-            types = listOf(ComponentType.Activity),
+            types = listOf(ComponentType.Service),
             maxItemCount = 1,
             onAppComponentSelected = { infoList ->
                 if (infoList.isNotEmpty()) {
@@ -302,11 +303,19 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
         StandardSpacer()
 
         // Add extra
-        FilledTonalIconButton(onClick = {
+        Button(onClick = {
             vm.newExtra()
         }) {
-            RemixIcon(remixName = Remix.System.add_fill)
+            Text(text = LocalI18N.current["ui.common.add"])
         }
+
+        StandardSpacer()
+        SwitchRow(
+            text = LocalI18N.current["ui.action.start.service.is.fg"],
+            isChecked = state.isFG,
+            onCheckChange = {
+                vm.updateFG(it)
+            })
 
         StandardSpacer()
 
