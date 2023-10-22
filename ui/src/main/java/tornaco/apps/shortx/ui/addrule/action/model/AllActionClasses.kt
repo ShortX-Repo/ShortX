@@ -81,6 +81,7 @@ val allActionClasses = listOf(
     Action.DisableAutoBrightness::class,
     Action.SetBrightness::class,
     Action.StopService::class,
+    Action.StartService::class,
     Action.RemoveTasks::class,
     Action.RemoveTasksByPkg::class,
     Action.KillProcessByName::class,

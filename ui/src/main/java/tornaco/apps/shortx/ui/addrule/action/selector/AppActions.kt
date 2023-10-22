@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import tornaco.apps.shortx.core.toComponentName
 import tornaco.apps.shortx.ui.addrule.action.mapper.colorForAction
 import tornaco.apps.shortx.ui.addrule.action.mapper.imageVectorForAction
@@ -22,12 +25,16 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorSta
 import tornaco.apps.shortx.ui.addrule.fact.selector.AppComponentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelectorState
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity
+import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.toBaseSelectorActionOrNull
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 
 @Composable
 fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
+    val context = LocalContext.current
+
     val launchAppSelectorState =
         rememberSingleAppPkgSelectorState(onAppSelected = {
             val action = Action.LaunchApp(app = it)
@@ -217,6 +224,16 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
         addAction(it)
     })
     StartActivityIntentDialog(state = startActivityIntentSelectorState)
+
+    val startServiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.StartService>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val startActivityComponentSelectorState = rememberAppComponentSelectorState(
         types = listOf(ComponentType.Activity),
@@ -413,6 +430,17 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                 true
             }
 
+            Action.StartService::class -> {
+                startServiceLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.StartService>(),
+                        StartServiceSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.KillProcessByName::class -> {
                 killProcessSelectorState.show(source.getActionAs<Action.KillProcessByName>()?.processList)
                 true
@@ -473,6 +501,7 @@ fun AppActions(keyword: String, subscribeState: LVLStateHolder.State, addAction:
         Action.UnSuspendApp::class,
         Action.SuspendAppByPkg::class,
         Action.UnSuspendAppByPkg::class,
+        Action.StartService::class,
         Action.StopService::class,
         Action.RemoveTasks::class,
         Action.RemoveTasksByPkg::class,

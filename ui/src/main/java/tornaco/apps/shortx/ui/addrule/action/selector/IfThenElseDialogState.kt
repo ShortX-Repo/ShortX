@@ -52,7 +52,6 @@ class IfThenElseSelectorActivity : BaseSelectorActivity<Action.IfThenElse>() {
     override fun BaseSelectorActivity<Action.IfThenElse>.SelectorContent(currentAction: Action.IfThenElse?) {
         IfThenElseSelectorDialogSelector(currentAction)
     }
-
 }
 
 class IfThenElseSelectorViewModel : StateViewModel<IfThenElseSelectorDialogDialogState>(

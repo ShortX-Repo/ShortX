@@ -182,6 +182,7 @@ fun labelAndDescriptionForActionSelector(
         Action.SetRingerMode::class -> i18N["ui.action.set.ringer.mode"] to null
         Action.SetBrightness::class -> i18N["ui.action.set.brightness"] to null
         Action.StopService::class -> i18N["ui.action.stop.service"] to null
+        Action.StartService::class -> i18N["ui.action.start.service"] to null
         Action.RemoveTasks::class -> i18N["ui.action.remove.tasks"] to null
         Action.RemoveTasksByPkg::class -> i18N["ui.action.remove.tasks.by.pkg"] to null
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
@@ -636,6 +637,19 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.stop.service"],
                 i18N["ui.action.stop.service.summary", mapOf("count" to action.services.size.toString())]
+            )
+        }
+
+        is Action.StartService -> {
+            val name: ComponentName? = if (action.pkgName != null && action.className != null) {
+                ComponentName(action.pkgName, action.className)
+            } else {
+                null
+            }
+            listOfNotNull(
+                i18N["ui.action.start.service"],
+                action.action,
+                name?.let { "${it.flattenToShortString()}$PREFIX_APP_ICON${name.packageName}" }
             )
         }
 

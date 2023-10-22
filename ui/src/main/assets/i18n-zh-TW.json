@@ -503,6 +503,7 @@
   "ui.action.set.ringer.mode.silent": "靜音模式",
   "ui.action.set.ringer.mode.vibrate": "振動模式",
   "ui.action.set.brightness": "調整屏幕亮度",
+  "ui.action.start.service": "启动服务",
   "ui.action.stop.service": "停止服務",
   "ui.action.stop.service.summary": "{count}個服務",
   "ui.action.no.action": "無動作",

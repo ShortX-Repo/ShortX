@@ -824,6 +824,19 @@ message StopService {
   string id = 100;
 }
 
+
+message StartService {
+  AndroidIntent intent = 1;
+  int32 userId = 2;
+  bool isForegroundService = 3;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message RemoveTasks {
   repeated AppPkg appPkg = 1;
   repeated string pkgSets = 2;

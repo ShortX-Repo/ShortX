@@ -6,6 +6,7 @@ import android.app.ActivityTaskManager
 import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.os.Bundle

@@ -1037,6 +1037,26 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.StartService::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.StartService::class.java
+            Action.StartService(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                userId = data.userId,
+                action = data.intent.action,
+                pkgName = data.intent.pkgName,
+                className = data.intent.className,
+                data = data.intent.data,
+                flags = data.intent.flags,
+                extras = data.intent.extrasList,
+                isFG = data.isForegroundService
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.RemoveTasks::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.RemoveTasks::class.java

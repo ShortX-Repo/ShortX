@@ -317,6 +317,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Media.stop_line
         }
 
+        Action.StartService::class -> {
+            Remix.Business.service_line
+        }
+
         Action.RemoveTasks::class, Action.RemoveTasksByPkg::class -> {
             Remix.System.close_circle_fill
         }

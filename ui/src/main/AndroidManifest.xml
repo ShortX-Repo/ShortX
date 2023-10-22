@@ -157,6 +157,9 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.IfThenElseSelectorActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.StartServiceSelectorActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.BiometricVerifySelectorActivity"
             android:exported="false" />
 

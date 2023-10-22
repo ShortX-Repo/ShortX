@@ -81,6 +81,7 @@ import tornaco.apps.shortx.core.proto.action.StartAppProcess
 import tornaco.apps.shortx.core.proto.action.StartAppProcessByPkg
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
 import tornaco.apps.shortx.core.proto.action.StartLastApp
+import tornaco.apps.shortx.core.proto.action.StartService
 import tornaco.apps.shortx.core.proto.action.StopApp
 import tornaco.apps.shortx.core.proto.action.StopAppByPkg
 import tornaco.apps.shortx.core.proto.action.StopAudioRecording
@@ -925,6 +926,27 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .addAllServices(services.distinct())
+                .build()
+        }
+
+        is Action.StartService -> {
+            StartService.newBuilder().setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setIntent(AndroidIntent.newBuilder()
+                    .apply {
+                        this@toProtoAction.action?.let { action = it }
+                        this@toProtoAction.pkgName?.let { pkgName = it }
+                        this@toProtoAction.className?.let { className = it }
+                        this@toProtoAction.data?.let { data = it }
+                    }
+                    .setFlags(flags)
+                    .addAllExtras(extras)
+                    .build())
+                .setUserId(userId)
+                .setNote(overrideNote ?: note)
+                .setIsForegroundService(isFG)
                 .build()
         }
 
