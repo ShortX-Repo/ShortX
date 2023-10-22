@@ -165,7 +165,8 @@ class DefaultRuleEngine(
     private val onJobStarted: (String) -> Unit,
     private val onJobCompleted: (String) -> Unit,
     private val onJobCancelled: (String) -> Unit,
-    private val isRuleFeatureEnabled: () -> Boolean
+    private val isRuleFeatureEnabled: () -> Boolean,
+    private val isSystemReady: () -> Boolean,
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -245,7 +246,15 @@ class DefaultRuleEngine(
         rules: List<Rule>,
         initialContextDataLazy: () -> Map<String, Any>
     ): Boolean {
-        if (!isRuleFeatureEnabled()) return false
+        if (!isRuleFeatureEnabled()) {
+            logger.w("Drop fact since Rule feature is disabled: $fact")
+            return false
+        }
+        if (!isSystemReady()) {
+            logger.w("Drop fact since System NOT ready: $fact")
+            return false
+        }
+
         logger.d("fire: ${fact.javaClass}")
         var anyMatch = false
         rules.filterInvalid().forEach { rule ->

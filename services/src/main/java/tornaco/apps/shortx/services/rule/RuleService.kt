@@ -332,19 +332,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         fact: ProtoMessage,
         initialContextData: Map<String, Any> = emptyMap()
     ) {
-        val publishTimeMillis = System.currentTimeMillis()
-        handler.postSafety {
-            logger.i("publishFact, ${fact::class.java}: $reason")
-            val anyMatch = engine.fire(
-                fact = fact,
-                rules = getAllEnabledRules(),
-                initialContextDataLazy = { initialContextData }
-            )
-
-            if (anyMatch && isEvaluateRecordEnabled()) {
-                factPublishRecorder.add(fact.toFactPublishRecord(publishTimeMillis))
-            }
-        }
+        publishFact(reason, fact) { initialContextData }
     }
 
     fun publishFact(
