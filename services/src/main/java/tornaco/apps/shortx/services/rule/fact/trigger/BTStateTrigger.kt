@@ -32,6 +32,7 @@ import tornaco.apps.shortx.services.util.SafeBroadcastReceiver
 class BTStateTrigger(override val context: Context, override val shortXContext: ShortXContext) :
     Trigger {
     private val logger = Logger("BTStateTrigger")
+
     override fun register() {
         val receiver = object : SafeBroadcastReceiver(shortXContext) {
             @SuppressLint("MissingPermission")

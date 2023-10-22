@@ -13,7 +13,7 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.newHandlerOfNewThread
 import tornaco.apps.shortx.services.data.SettingsStore
 
-abstract class SystemService(val shortXContext: ShortXContext, private val serviceName: String) {
+abstract class SystemService(val shortXContext: ShortXContext, val serviceName: String) {
     private val logTag: String = serviceName
 
     private val bagOfTags: MutableMap<String, Any> = mutableMapOf()
@@ -45,7 +45,7 @@ abstract class SystemService(val shortXContext: ShortXContext, private val servi
     open fun start(context: Context) {
         this.context = context
         isStarted = true
-        logger.i("start: $this with context: $context")
+        logger.i("start: $serviceName with context: $context")
     }
 
     @CallSuper
@@ -93,7 +93,7 @@ fun <T> runClearCallingIdentity(action: () -> T?): T? {
 val SystemService.systemServiceScope: CoroutineScope
     get() {
         require(isStarted) {
-            "Trying to access systemServiceScope before System started!"
+            "Trying to access systemServiceScope[- $serviceName] before System started!"
         }
         val key = "systemServiceScope"
         val scope: CoroutineScope? = this.getTag(key)

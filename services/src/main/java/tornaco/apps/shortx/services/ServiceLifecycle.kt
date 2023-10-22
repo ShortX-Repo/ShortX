@@ -17,7 +17,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                 val startTime = System.currentTimeMillis()
                 it.start(context)
                 val taken = System.currentTimeMillis() - startTime
-                logger.i("start $it take $taken(ms)")
+                logger.i("start---> $it take $taken(ms)")
             }
         }
     }
@@ -28,7 +28,7 @@ class ServiceLifecycle(private val shortXContext: ShortXContext) {
                val startTime = System.currentTimeMillis()
                it.systemReady()
                val taken = System.currentTimeMillis() - startTime
-               logger.i("systemReady $it take $taken(ms)")
+               logger.i("systemReady---> $it take $taken(ms)")
            }
            isSystemReadyCalled = true
        }
