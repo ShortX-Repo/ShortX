@@ -24,6 +24,10 @@ android {
         }
     }
 
+    defaultConfig {
+        targetSdk = 29
+    }
+
     buildTypes {
 
         getByName("release") {
@@ -84,6 +88,7 @@ android {
 
 dependencies {
     implementation(files("libs/core.jar"))
+    implementation(libs.hiddenapibypass)
 }
 
 

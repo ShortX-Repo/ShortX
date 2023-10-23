@@ -1,8 +1,10 @@
 package tornaco.apps.shortx.stub
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 import tornaco.apps.shortx.core.ShortXManagerNative
 
 class MainActivity : Activity() {
