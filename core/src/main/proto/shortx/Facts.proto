@@ -543,3 +543,19 @@ message HeadsetPlug {
   string note = 99;
   string id = 100;
 }
+
+message ScreenRotate {
+  ScreenRotateDegree degree = 1;
+
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
+enum ScreenRotateDegree {
+  ScreenRotateDegree_0 = 0;
+  ScreenRotateDegree_90 = 1;
+  ScreenRotateDegree_180 = 2;
+  ScreenRotateDegree_270 = 3;
+  ScreenRotateDegree_Any = 4;
+}

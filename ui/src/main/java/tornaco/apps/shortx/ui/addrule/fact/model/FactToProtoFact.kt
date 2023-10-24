@@ -52,6 +52,7 @@ import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -474,6 +475,13 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             HeadsetPlug.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setIsPlug(isPlug)
+                .build()
+        }
+
+        is Fact.ScreenRotate -> {
+            ScreenRotate.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDegree(degree)
                 .build()
         }
 

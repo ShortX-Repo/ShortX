@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.proto.common.TimeOfADay
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.core.proto.fact.Gesture
 import tornaco.apps.shortx.core.proto.fact.RepeatDays
+import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.pkgset.PkgSet
 import tornaco.apps.shortx.ui.addrule.ContextData
 import tornaco.apps.shortx.ui.addrule.factContextData
@@ -942,6 +943,22 @@ sealed interface Fact {
         val componentName: String,
         val detectTimeout: Long,
         val matchers: List<NodeMatcher>
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+
+    data class ScreenRotate(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val degree: ScreenRotateDegree
     ) : Fact {
         override fun clone(
             id: String,

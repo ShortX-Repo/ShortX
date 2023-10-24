@@ -50,6 +50,8 @@ import tornaco.apps.shortx.core.proto.fact.PkgStopRunning
 import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.fact.ScreenOff
 import tornaco.apps.shortx.core.proto.fact.ScreenOn
+import tornaco.apps.shortx.core.proto.fact.ScreenRotate
+import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.fact.SystemSettingsChanged
 import tornaco.apps.shortx.core.proto.fact.TaskRemoved
@@ -446,6 +448,12 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
                     actualProcessName.processName
                 )
             }
+        }
+
+        register(ScreenRotate::class.java) { actual, rule ->
+            val actualN = (actual as ScreenRotate)
+            val ruleN = (rule as ScreenRotate)
+            ruleN.degree == ScreenRotateDegree.ScreenRotateDegree_Any || ruleN.degree == actualN.degree
         }
 
         logger.i("Init complete.")

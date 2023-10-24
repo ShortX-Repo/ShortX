@@ -343,6 +343,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         val publishTimeMillis = System.currentTimeMillis()
         handler.postSafety {
             logger.i("publishFact, ${fact::class.java}: $reason")
+            logger.p("publishFact: $fact")
             val anyMatch = engine.fire(
                 fact = fact,
                 rules = getAllEnabledRules(),

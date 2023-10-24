@@ -7,9 +7,11 @@ import androidx.core.text.isDigitsOnly
 import tornaco.apps.shortx.core.alarm.toLocalTime
 import tornaco.apps.shortx.core.platform.PackageNames
 import tornaco.apps.shortx.core.proto.common.CallState
+import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.AdvancedKeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.AlarmSelector
@@ -287,6 +289,19 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     TextInputDialog(state = clipboardRegexDialogState)
 
+    val screenRotateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.screen.rotate"],
+        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val degree = ScreenRotateDegree.valueOf(id)
+            addFact(Fact.ScreenRotate(degree = degree))
+        }
+    )
+    MenuDialog(state = screenRotateSelectorState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -504,6 +519,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.HeadsetPlug::class -> {
                 headsetPlugMenuState.show()
+                true
+            }
+
+            Fact.ScreenRotate::class -> {
+                screenRotateSelectorState.show()
                 true
             }
 

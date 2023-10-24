@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
+import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting
@@ -209,6 +210,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
 
         Fact.HeadsetPlug::class -> {
             i18n["ui.fact.headset.plug"] to null
+        }
+
+        Fact.ScreenRotate::class -> {
+            i18n["ui.fact.screen.rotate"] to null
         }
 
         else -> "N/A" to null
@@ -618,6 +623,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
                 )
             )
         }
+
+        is Fact.ScreenRotate -> {
+            listOf(
+                i18N["ui.fact.screen.rotate"],
+                i18N[fact.degree.labelKey()]
+            )
+        }
     }
 }
 
@@ -708,4 +720,8 @@ fun Int.opsIconName(): String {
         AppOpsManagerCompat.OP_RECORD_AUDIO -> Remix.Media.record_circle_fill
         else -> ""
     }
+}
+
+fun ScreenRotateDegree.labelKey(): String {
+    return "ui.fact.screen.rotate.degree.${name.lowercase()}"
 }
