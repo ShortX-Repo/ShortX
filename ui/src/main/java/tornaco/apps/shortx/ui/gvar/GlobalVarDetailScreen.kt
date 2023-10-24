@@ -113,6 +113,15 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
             )
             TextInputDialog(state = nameInputState)
 
+            val noteInputState = rememberTextInputState(
+                title = LocalI18N.current["ui.common.note"],
+                message = null,
+                onSelected = {
+                    vm.updateNote(it)
+                }
+            )
+            TextInputDialog(state = noteInputState)
+
             val appComponentSelectorState = rememberAppComponentSelectorState(
                 types = ComponentType.values().toList(),
                 onAppComponentSelected = { infoList ->
@@ -205,6 +214,17 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                         stickyHeader {
                             ListItem(title = globalVar.name, onClick = {
                                 nameInputState.show()
+                            })
+                        }
+
+                        stickyHeader {
+                            StandardSpacer()
+                            CategoryTitle(title = LocalI18N.current["ui.common.note"])
+                        }
+
+                        stickyHeader {
+                            ListItem(title = globalVar.note, onClick = {
+                                noteInputState.show()
                             })
                         }
 

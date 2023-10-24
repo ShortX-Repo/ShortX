@@ -79,7 +79,8 @@ fun varActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
                     NewGlobalVar(
                         name = it.globalVar.name,
                         type = (it.globalVar.type.toType() ?: GlobalVarType.String),
-                        isSecret = it.globalVar.isSecret
+                        isSecret = it.globalVar.isSecret,
+                        note = it.globalVar.note
                     )
                 })
                 true

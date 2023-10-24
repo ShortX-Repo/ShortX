@@ -60,6 +60,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MultiFabItem
 import tornaco.apps.shortx.ui.base.MultiFloatingActionButton
+import tornaco.apps.shortx.ui.base.NoteRow
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SearchBar
@@ -213,6 +214,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                                         modifier = Modifier,
                                         name = globalVar.name,
                                         value = globalVar.valueString(),
+                                        note = globalVar.note.takeIf { it.isNotEmpty() },
                                         type = globalVar.type.toType()?.label() ?: "?",
                                         isSecret = globalVar.isSecret,
                                         onInfoClick = {
@@ -241,6 +243,7 @@ private fun GlobalVarListItem(
     modifier: Modifier,
     name: String,
     value: String? = null,
+    note: String? = null,
     type: String,
     isSecret: Boolean,
     onInfoClick: () -> Unit,
@@ -275,6 +278,8 @@ private fun GlobalVarListItem(
                 "****"
             }, fontSize = 12.sp, maxLines = 3
         )
+        note?.let { NoteRow(text = it) }
+
         if (isSecret) {
             MediumSpacer()
             TipRow(text = LocalI18N.current["ui.global.var.secrets.title"],

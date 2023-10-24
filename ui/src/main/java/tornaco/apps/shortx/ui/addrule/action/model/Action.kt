@@ -1730,6 +1730,7 @@ sealed interface Action : Parcelable {
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
+
         val globalVar: GlobalVar
     ) : Action {
         override fun clone(

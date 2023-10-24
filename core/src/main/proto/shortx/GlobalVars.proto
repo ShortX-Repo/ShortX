@@ -29,6 +29,7 @@ message GlobalVar {
   int64 updateTimeMillis = 4;
 
   bool isSecret = 5;
+  string note = 6;
 }
 
 enum VarOp {

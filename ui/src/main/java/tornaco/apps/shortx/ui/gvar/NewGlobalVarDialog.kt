@@ -32,8 +32,10 @@ import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.DialogTitle
 import tornaco.apps.shortx.ui.base.DropdownItem
 import tornaco.apps.shortx.ui.base.DropdownSelector
+import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXSwitch
@@ -48,6 +50,7 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 
 data class NewGlobalVar(
     val name: String,
+    val note: String,
     val type: GlobalVarType,
     val isSecret: Boolean
 )
@@ -56,11 +59,13 @@ class NewGlobalVarState(
     val onSelected: (NewGlobalVar) -> Unit
 ) : CommonDialogState() {
     var name by mutableStateOf("")
+    var note by mutableStateOf("")
     var type by mutableStateOf(GlobalVarType.String)
     var isSecret by mutableStateOf(false)
 
     fun show(current: NewGlobalVar? = null) {
         this.name = current?.name ?: ""
+        this.note = current?.note ?: ""
         this.type = current?.type ?: GlobalVarType.String
         this.isSecret = current?.isSecret ?: false
 
@@ -81,6 +86,7 @@ fun NewGlobalVar.toGlobalVar(): GlobalVar =
     GlobalVar
         .newBuilder()
         .setName(name)
+        .setNote(note)
         .setType(type.toProtoType())
         .setIsSecret(isSecret)
         .build()
@@ -96,6 +102,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     state.onSelected(
                         NewGlobalVar(
                             state.name.trim(),
+                            state.note.trim(),
                             state.type,
                             state.isSecret
                         )
@@ -110,7 +117,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                 val context = LocalContext.current
                 val i18N = LocalI18N.current
 
-                SmallTitle(
+                FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
                     text = LocalI18N.current["ui.global.var.name"]
                 )
@@ -145,9 +152,23 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     )
                 }
 
+                FieldTitle(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    text = LocalI18N.current["ui.common.note"]
+                )
+                MediumSpacer()
+                ShortXTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.note,
+                    showSymbolButton = false,
+                    onValueChange = {
+                        state.note = it
+                    })
+
                 LargeSpacer()
 
-                SmallTitle(
+                FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
                     text = LocalI18N.current["ui.global.var.type"]
                 )
@@ -186,7 +207,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SmallTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
+                    FieldTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
                     ShortXSwitch(checked = state.isSecret, onCheckedChange = {
                         state.isSecret = it
                     })

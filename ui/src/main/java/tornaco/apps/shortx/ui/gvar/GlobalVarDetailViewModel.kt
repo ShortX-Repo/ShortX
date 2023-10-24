@@ -78,6 +78,17 @@ class GlobalVarDetailViewModel : StateViewModel<GlobalVarDetailState>({ GlobalVa
         }
     }
 
+    fun updateNote(note: String) {
+        viewModelScope.launch {
+            val current = state.value.globalVar
+            current?.let {
+                shortXManager.deleteGlobalVar(it.name)
+                shortXManager.addGlobalVar(GlobalVar.newBuilder(it).setNote(note).build())
+                loadState(current.name)
+            }
+        }
+    }
+
     fun addOrUpdateValue(value: List<String>) {
         viewModelScope.launch {
             state.value.globalVar?.addOrUpdateValue(value)?.let {
