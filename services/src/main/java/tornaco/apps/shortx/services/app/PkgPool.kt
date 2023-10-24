@@ -163,6 +163,9 @@ class PkgPool(
         val isXposedMod =
             kotlin.runCatching { this.metaData.get("xposedmodule").toString().toBoolean() }
                 .getOrElse { false }
+        val isShortcutStub =
+            kotlin.runCatching { this.metaData.get("shortx-stub").toString().toBoolean() }
+                .getOrElse { false }
         val isGame =
             (this.flags and ApplicationInfo.FLAG_IS_GAME) != 0 || kotlin.runCatching { this.category == ApplicationInfo.CATEGORY_GAME }
                 .getOrElse { false }
@@ -187,7 +190,8 @@ class PkgPool(
             isGame = isGame,
             isXposedMode = isXposedMod,
             isDisabled = isDisabled,
-            isSuspend = isSuspend
+            isSuspend = isSuspend,
+            isShortcutStub = isShortcutStub
         )
     }
 

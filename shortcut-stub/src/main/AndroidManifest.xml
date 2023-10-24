@@ -10,6 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="shortx-stub"
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:excludeFromRecents="true"

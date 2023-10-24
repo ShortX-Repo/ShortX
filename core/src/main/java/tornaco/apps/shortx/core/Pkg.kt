@@ -26,6 +26,7 @@ fun App(
     isXposedMode: Boolean,
     isDisabled: Boolean,
     isSuspend: Boolean,
+    isShortcutStub: Boolean,
 ): App =
     App.newBuilder()
         .setCategory(category)
@@ -36,6 +37,7 @@ fun App(
         .setIsXposedMod(isXposedMode)
         .setIsDisabled(isDisabled)
         .setIsSuspend(isSuspend)
+        .setIsShortcutStub(isShortcutStub)
         .build()
 
 fun ApplicationInfo.toAppPkg(): AppPkg {
