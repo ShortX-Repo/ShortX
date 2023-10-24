@@ -157,6 +157,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.IsHeadsetPlug
     },
+    RequireScreenRotate {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.RequireScreenRotate
+    },
 }
 
 fun prebuiltCondFor(condition: ProtoAny): Cond? {

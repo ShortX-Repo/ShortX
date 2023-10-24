@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.addrule.condition.selector
 
 import androidx.compose.runtime.Composable
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.PlugType
 import tornaco.apps.shortx.ui.addrule.condition.BatteryPercentSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
@@ -11,6 +12,7 @@ import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.rememberBatteryPercentSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberEvaluateGlobalVarSelectorState
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.fact.selector.BTDeviceSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.WifiSSIDSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBTDeviceSelectorState
@@ -106,6 +108,19 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         })
     MenuDialog(state = headsetPlugMenuState)
 
+    val screenRotateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.screen.rotate"],
+        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val degree = ScreenRotateDegree.valueOf(id)
+            addCondition(Condition.RequireScreenRotate(degree = degree))
+        }
+    )
+    MenuDialog(state = screenRotateSelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.IsHeadsetPlug::class -> {
@@ -185,6 +200,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.IsRinging::class -> {
                 addCondition(Condition.IsRinging())
+                true
+            }
+
+            Condition.RequireScreenRotate::class -> {
+                screenRotateSelectorState.show()
                 true
             }
 

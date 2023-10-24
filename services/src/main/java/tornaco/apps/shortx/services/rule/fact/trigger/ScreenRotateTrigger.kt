@@ -2,11 +2,9 @@ package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
 import android.view.OrientationEventListener
-import android.view.Surface
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.ScreenRotate
-import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 
 class ScreenRotateTrigger(
@@ -18,29 +16,9 @@ class ScreenRotateTrigger(
     private val listener by lazy {
         object : OrientationEventListener(context) {
             override fun onOrientationChanged(orientation: Int) {
-                val rotation: Int = context.windowManager.defaultDisplay.rotation
-                val degree = when (rotation) {
-                    Surface.ROTATION_0 -> {
-                        ScreenRotateDegree.ScreenRotateDegree_0
-                    }
-
-                    Surface.ROTATION_90 -> {
-                        ScreenRotateDegree.ScreenRotateDegree_90
-                    }
-
-                    Surface.ROTATION_180 -> {
-                        ScreenRotateDegree.ScreenRotateDegree_180
-                    }
-
-                    Surface.ROTATION_270 -> {
-                        ScreenRotateDegree.ScreenRotateDegree_270
-                    }
-
-                    else -> {
-                        ScreenRotateDegree.UNRECOGNIZED
-                    }
-                }
-                logger.d("onOrientationChanged: $orientation $rotation $degree")
+                shortXContext.wm.currentScreenOrientation = orientation
+                val degree = orientation.orientationToDegree()
+                logger.d("onOrientationChanged: $orientation $degree")
 
                 shortXContext.rule.publishFact(
                     reason = "onOrientationChanged",
@@ -57,5 +35,29 @@ class ScreenRotateTrigger(
     override fun unRegister() {
         listener.disable()
     }
+}
 
+fun Int.orientationToDegree(): ScreenRotateDegree {
+    val degree = when (this) {
+        0 -> {
+            ScreenRotateDegree.ScreenRotateDegree_0
+        }
+
+        90 -> {
+            ScreenRotateDegree.ScreenRotateDegree_90
+        }
+
+        180 -> {
+            ScreenRotateDegree.ScreenRotateDegree_180
+        }
+
+        270 -> {
+            ScreenRotateDegree.ScreenRotateDegree_270
+        }
+
+        else -> {
+            ScreenRotateDegree.UNRECOGNIZED
+        }
+    }
+    return degree
 }

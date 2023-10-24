@@ -48,6 +48,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
         Handler(Looper.getMainLooper())
     }
 
+    var currentScreenOrientation: Int = 0
+        set(value) {
+            field = value
+            logger.i("currentScreenOrientation--> $value")
+        }
+
     private var onAccessibilityEvent: ((AccessibilityEvent) -> Unit)? = null
 
     fun setOnAccessibilityEvent(onAccessibilityEvent: ((AccessibilityEvent) -> Unit)?) {

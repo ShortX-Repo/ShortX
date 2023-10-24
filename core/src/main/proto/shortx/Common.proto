@@ -334,3 +334,12 @@ enum BiometricVerifyResultCase {
   BiometricVerifyResult_Deny_VerifyFail = 2;
   BiometricVerifyResult_Deny_UserCanceled = 3;
 }
+
+
+enum ScreenRotateDegree {
+  ScreenRotateDegree_0 = 0;
+  ScreenRotateDegree_90 = 1;
+  ScreenRotateDegree_180 = 2;
+  ScreenRotateDegree_270 = 3;
+  ScreenRotateDegree_Any = 4;
+}

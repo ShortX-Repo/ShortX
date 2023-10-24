@@ -9,6 +9,7 @@ import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.condition.model.Condition
 import tornaco.apps.shortx.ui.addrule.condition.op.Op
+import tornaco.apps.shortx.ui.addrule.fact.mapper.labelKey
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppComponents
 import tornaco.apps.shortx.ui.addrule.labelLinesFromAppsAndPkgSets
 import tornaco.apps.shortx.ui.base.LocalI18N
@@ -170,6 +171,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
         Condition.IsHeadsetPlug::class -> {
             listOf(
                 i18N["ui.fact.headset.plug"],
+            )
+        }
+
+        Condition.RequireScreenRotate::class -> {
+            listOf(
+                i18N["ui.fact.screen.rotate"],
             )
         }
 
@@ -375,6 +382,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                     i18N["ui.condition.headset.plugged"],
                     i18N["ui.condition.headset.unplugged"]
                 )
+            )
+        }
+
+        is Condition.RequireScreenRotate -> {
+            listOf(
+                i18N["RequireScreenRotate"],
+                i18N[condition.degree.labelKey()]
             )
         }
     }

@@ -12,8 +12,8 @@ import tornaco.apps.shortx.core.compat.AppOpsManagerCompat
 import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProvider
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.TimeOfADay
-import tornaco.apps.shortx.core.proto.fact.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.WeekDay
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.settings.defaultStatusBarTileSetting

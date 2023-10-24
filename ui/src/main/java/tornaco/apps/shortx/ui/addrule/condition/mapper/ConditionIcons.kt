@@ -120,6 +120,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Media.headphone_fill
         }
 
+        Condition.RequireScreenRotate::class -> {
+            Remix.Device.smartphone_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
