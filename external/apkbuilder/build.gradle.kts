@@ -24,7 +24,7 @@ android {
 dependencies {
     implementation(files("libs/tiny-sign-0.9.jar"))
     implementation("commons-codec:commons-codec:1.16.0")
-    implementation("commons-io:commons-io:2.14.0")
+    implementation("commons-io:commons-io:2.15.0")
 }
 
 
