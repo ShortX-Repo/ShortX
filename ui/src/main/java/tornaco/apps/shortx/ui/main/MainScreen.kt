@@ -61,17 +61,17 @@ enum class HomeBottomRoute {
 sealed class BottomNavItem(
     var title: String, var icon: String, var screenRoute: HomeBottomRoute
 ) {
-    object Rules :
+    data object Rules :
         BottomNavItem("ui.feat.label.rule", Remix.Weather.meteor_line, HomeBottomRoute.Rules)
 
-    object DirectActions :
+    data object DirectActions :
         BottomNavItem(
             "ui.feat.label.da",
             Remix.Development.command_line,
             HomeBottomRoute.DirectActions
         )
 
-    object Discover :
+    data object Discover :
         BottomNavItem(
             "ui.feat.label.discover",
             Remix.Map.compass_discover_line,
@@ -181,7 +181,7 @@ private fun BottomNavigationContent(
     navController: NavHostController,
 ) {
     val items = listOf(
-        BottomNavItem.DirectActions, BottomNavItem.Rules, BottomNavItem.Discover
+        BottomNavItem.DirectActions, BottomNavItem.Rules
     )
     NavigationBar(
         modifier = modifier
