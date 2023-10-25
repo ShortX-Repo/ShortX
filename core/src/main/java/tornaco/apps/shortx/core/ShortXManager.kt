@@ -20,7 +20,7 @@ import tornaco.apps.shortx.core.proto.common.BTBondedDevice
 import tornaco.apps.shortx.core.proto.common.CommonApiRes
 import tornaco.apps.shortx.core.proto.common.GestureRecord
 import tornaco.apps.shortx.core.proto.common.QSTileList
-import tornaco.apps.shortx.core.proto.common.ShellRes
+import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.proto.common.StatusBarTileSetting
 import tornaco.apps.shortx.core.proto.common.SystemSettingsAccessRecord
 import tornaco.apps.shortx.core.proto.common.UserInfo
@@ -995,6 +995,14 @@ class ShortXManager(private val service: IShortX) {
     fun isRuleFeatureEnabled(): Boolean {
         return invokeService(false) {
             isRuleFeatureEnabled
+        }
+    }
+
+    fun querySensorUsage(): List<SensorUsage> {
+        return invokeService(emptyList()) {
+            querySensorUsages().map {
+                SensorUsage.parseFrom(it.byteData)
+            }
         }
     }
 

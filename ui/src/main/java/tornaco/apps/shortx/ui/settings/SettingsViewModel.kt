@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.Author
+import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.proto.fact.Edge
 import tornaco.apps.shortx.ui.backup.BackupAgent
 import tornaco.apps.shortx.ui.base.ContextViewModel
@@ -45,6 +46,7 @@ data class SettingsState(
     val shellEngineEnabled: Boolean = false,
     val mvelEngineEnabled: Boolean = false,
     val ruleFeatureEnabled: Boolean = false,
+    val sensorUsages: List<SensorUsage> = emptyList()
 )
 
 sealed interface BackupResult {
@@ -97,7 +99,8 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 shellEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_SHELL),
                 mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
-                ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled()
+                ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
+                sensorUsages = shortXManager.querySensorUsage()
             )
         }
 

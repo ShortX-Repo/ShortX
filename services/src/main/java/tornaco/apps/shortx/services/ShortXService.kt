@@ -948,6 +948,12 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.rule.isRuleFeatureEnabled()
         }
 
+        override fun querySensorUsages(): List<ByteArrayWrapper> {
+            return shortXContext.watchDog.querySensorUsage().map {
+                ByteArrayWrapper(it.toByteArray())
+            }
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String

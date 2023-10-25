@@ -122,7 +122,7 @@
   "ui.fact.system.settings.changed.regex": "匹配目标值",
   "ui.fact.system.settings.changed.regex.summary": "使用正则表达式匹配目标设置值，当系统设置的值匹配到该表达式时触发器触发",
   "ui.fact.screen": "荧幕狀態",
-  "ui.fact.screen.rotate": "屏幕旋转",
+  "ui.fact.screen.rotate": "屏幕旋转（传感器）",
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_0": "0",
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_90": "90",
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_180": "180",

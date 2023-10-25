@@ -253,4 +253,7 @@ interface IShortX {
     // Global feature toggle.
     void setRuleFeatureEnabled(boolean enable);
     boolean isRuleFeatureEnabled();
+
+    // Sensor usage
+    List<ByteArrayWrapper> querySensorUsages();
 }

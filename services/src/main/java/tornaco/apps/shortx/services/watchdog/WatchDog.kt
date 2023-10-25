@@ -25,6 +25,12 @@ class WatchDogService(shortXContext: ShortXContext) :
         super.systemReady()
     }
 
+    fun querySensorUsage(): List<SensorUsage> {
+        return sensorUsages.filterValues { it.isNotEmpty() }.map {
+            SensorUsage.newBuilder().setSensor(it.key).addAllSrcId(it.value).build()
+        }
+    }
+
     fun onSensorUsage(sensor: Int, srcId: List<String>) {
         sensorUsages[sensor] = srcId
         logger.i("onSensorUsage: $sensor $srcId")

@@ -21,26 +21,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.I18N
-import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.ShortXTheme
-import java.util.UUID
 
 object TipIds {
     val actionContent by lazy {
-        BuildProp.APP_IS_DEBUG.select(
-            "ActionContent_${UUID.randomUUID()}",
-            "ActionContent"
-        )
+        "ActionContent"
     }
 
     val commonRuleItem by lazy {
-        BuildProp.APP_IS_DEBUG.select(
-            "CommonRule_${UUID.randomUUID()}",
-            "CommonRule"
-        )
+        "CommonRule"
     }
 }
 

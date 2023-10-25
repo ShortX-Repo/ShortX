@@ -166,6 +166,10 @@ fun SettingsScreen(
                         }
                     }
 
+                    AnimatedVisibility(visible = state.sensorUsages.isNotEmpty()) {
+                        SensorUsage(state.sensorUsages)
+                    }
+
                     val i18N = LocalI18N.current
                     LaunchedEffect(vm) {
                         vm.backupPerformed.collectLatest {
