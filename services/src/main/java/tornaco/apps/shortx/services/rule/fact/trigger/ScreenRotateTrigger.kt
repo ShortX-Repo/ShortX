@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.services.rule.fact.trigger
 
 import android.content.Context
+import android.hardware.Sensor
 import android.view.OrientationEventListener
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
@@ -73,18 +74,24 @@ class ScreenRotateTrigger(
         }
         val startTime = System.currentTimeMillis()
 
-        val shouldEnable = shortXContext.rule.getAllEnabledRules().any {
+        val rules = shortXContext.rule.getAllEnabledRules().filter {
             it.containsAnyTypeUrl(typrUrls)
-        } || shortXContext.rule.getAllDirectAction().any {
+        }.map { it.id }
+
+        val das = shortXContext.rule.getAllDirectAction().filter {
             it.containsAnyTypeUrl(typrUrls)
-        }
+        }.map { it.id }
+
+        val shouldEnable = rules.isNotEmpty() || das.isNotEmpty()
 
         logger.i("updateEnableState, shouldEnable: $shouldEnable")
 
         if (shouldEnable) {
             listener.enable()
+            shortXContext.watchDog.onSensorUsage(Sensor.TYPE_ACCELEROMETER, rules + das)
         } else {
             listener.disable()
+            shortXContext.watchDog.removeSensorUsage(Sensor.TYPE_ACCELEROMETER)
         }
 
         logger.i("updateEnableState take: ${System.currentTimeMillis() - startTime}ms")

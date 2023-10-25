@@ -27,6 +27,11 @@ class WatchDogService(shortXContext: ShortXContext) :
 
     fun onSensorUsage(sensor: Int, srcId: List<String>) {
         sensorUsages[sensor] = srcId
+        logger.i("onSensorUsage: $sensor $srcId")
+    }
+
+    fun removeSensorUsage(sensor: Int) {
+        sensorUsages.remove(sensor)
     }
 
     fun onFatalError(error: Throwable, method: String = "") {
