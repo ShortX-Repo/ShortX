@@ -771,6 +771,7 @@
   "ui.settings.core.info": "Framework info",
   "ui.settings.core.info.na": "Not activated",
   "ui.settings.open.source.license": "Open source license",
+  "ui.settings.privacy.statement": "Privacy statement",
   "ui.settings.enable.debug.log": "Enable Log",
   "ui.settings.enable.debug.log.description": "Open debug log output",
   "ui.settings.debug.log.export": "Export Log",

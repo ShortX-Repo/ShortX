@@ -770,6 +770,7 @@
   "ui.settings.core.info": "核心信息",
   "ui.settings.core.info.na": "未激活",
   "ui.settings.open.source.license": "开源许可",
+  "ui.settings.privacy.statement": "隐私政策",
   "ui.settings.enable.debug.log": "开启日志",
   "ui.settings.enable.debug.log.description": "输出详细调试日志",
   "ui.settings.debug.log.export": "导出日志",

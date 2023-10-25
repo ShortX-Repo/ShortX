@@ -33,11 +33,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.ui.base.ErrorMessageDialog
 import tornaco.apps.shortx.ui.base.LocalDrawerState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalNavHostController
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.ui.base.rememberErrorMessageDialogState
 import tornaco.apps.shortx.ui.discover.DiscoverScreen
 import tornaco.apps.shortx.ui.gesture.GestureRecordListActivity
 import tornaco.apps.shortx.ui.gvar.GlobalVarListActivity
@@ -50,6 +52,7 @@ import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.ui.util.AssetUtils
 
 enum class HomeBottomRoute {
     Rules, DirectActions, Discover
@@ -97,6 +100,10 @@ fun HomeScreen() {
                         val appNavController = LocalNavHostController.current
                         val context = LocalContext.current
 
+                        val statementDialog =
+                            rememberErrorMessageDialogState(title = LocalI18N.current["ui.settings.privacy.statement"])
+                        ErrorMessageDialog(state = statementDialog)
+
                         SettingsScreen(
                             back = { scope.launch { drawerState.close() } },
                             goToPkgSetList = {
@@ -122,6 +129,14 @@ fun HomeScreen() {
                             },
                             viewOpenSourceLicense = {
                                 appNavController.navigate(AppRoute.ViewOpenSourceLicense.name)
+                            },
+                            viewPrivacyStatement = {
+                                statementDialog.show(
+                                    AssetUtils.readFileToString(
+                                        context,
+                                        "privacy/privacy_agreement.html"
+                                    )
+                                )
                             })
 
                         BackHandler(enabled = drawerState.isOpen) {

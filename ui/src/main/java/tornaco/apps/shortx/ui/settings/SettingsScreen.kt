@@ -87,6 +87,7 @@ fun SettingsScreen(
     goToAudioRecord: () -> Unit,
     goToGestureRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit,
+    viewPrivacyStatement: () -> Unit,
     goToSettingsCatcherRecord: () -> Unit,
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -307,7 +308,8 @@ fun SettingsScreen(
                         addAll(
                             aboutSettings(
                                 state = state,
-                                viewOpenSourceLicense = viewOpenSourceLicense
+                                viewOpenSourceLicense = viewOpenSourceLicense,
+                                viewPrivacyStatement = viewPrivacyStatement,
                             )
                         )
                     })
@@ -783,7 +785,8 @@ private fun engineSettings(
 @Composable
 private fun aboutSettings(
     state: SettingsState,
-    viewOpenSourceLicense: () -> Unit
+    viewOpenSourceLicense: () -> Unit,
+    viewPrivacyStatement: () -> Unit,
 ): List<Preference> {
     val context = LocalContext.current
     return listOf(
@@ -818,6 +821,12 @@ private fun aboutSettings(
             title = LocalI18N.current["ui.settings.open.source.license"],
             onClick = {
                 viewOpenSourceLicense()
+            }
+        ),
+        Preference.TextPreference(icon = Remix.Document.sticky_note_2_fill,
+            title = LocalI18N.current["ui.settings.privacy.statement"],
+            onClick = {
+                viewPrivacyStatement()
             }
         )
     )

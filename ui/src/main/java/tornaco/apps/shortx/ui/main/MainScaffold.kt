@@ -453,10 +453,7 @@ private fun PrivacyStatementDialog(
                     .fillMaxHeight(fraction = 0.64f)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    text = HtmlCompat.fromHtml(privacyAgreement, HtmlCompat.FROM_HTML_MODE_COMPACT)
-                        .toAnnotatedString()
-                )
+                Text(text = privacyAgreement)
             }
         },
         onDismissRequest = onDismissRequest,
