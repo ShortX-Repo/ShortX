@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.ListItem
+import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.TipCard
 
@@ -11,7 +12,7 @@ import tornaco.apps.shortx.ui.base.TipCard
 fun SensorUsage(sensorUsage: List<SensorUsage>) {
     val count = sensorUsage.size
     TipCard {
-        ListItem(title = "$count Sensor is using",
+        ListItem(title = LocalI18N.current["ui.common.sensor.tip.title", mapOf("count" to count.toString())],
             icon = {
                 RemixIcon(remixName = Remix.Device.sensor_fill)
             })
