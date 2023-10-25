@@ -343,3 +343,8 @@ enum ScreenRotateDegree {
   ScreenRotateDegree_270 = 3;
   ScreenRotateDegree_Any = 4;
 }
+
+message SensorUsage {
+  int32 sensor = 1;
+  repeated string srcId = 2;
+}

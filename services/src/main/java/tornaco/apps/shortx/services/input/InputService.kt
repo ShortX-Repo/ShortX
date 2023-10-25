@@ -4,7 +4,7 @@ import com.android.internal.view.IInputContext
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
-import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import util.Reflections
 
 class InputService(shortXContext: ShortXContext) : SystemService(shortXContext, "InputService") {

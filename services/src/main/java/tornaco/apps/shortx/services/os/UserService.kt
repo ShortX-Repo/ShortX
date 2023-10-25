@@ -18,7 +18,7 @@ import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.userManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import java.util.concurrent.atomic.AtomicBoolean
 

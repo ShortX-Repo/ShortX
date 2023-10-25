@@ -72,11 +72,13 @@ class ScreenRotateTrigger(
             return
         }
         val startTime = System.currentTimeMillis()
+
         val shouldEnable = shortXContext.rule.getAllEnabledRules().any {
             it.containsAnyTypeUrl(typrUrls)
         } || shortXContext.rule.getAllDirectAction().any {
             it.containsAnyTypeUrl(typrUrls)
         }
+
         logger.i("updateEnableState, shouldEnable: $shouldEnable")
 
         if (shouldEnable) {

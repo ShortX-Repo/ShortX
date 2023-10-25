@@ -25,8 +25,8 @@ import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.input.IMSFunc
-import tornaco.apps.shortx.services.launchSafety
-import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.GuideLineView
 import tornaco.apps.shortx.services.ui.i18NIns

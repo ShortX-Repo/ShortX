@@ -6,7 +6,6 @@ import android.app.ActivityTaskManager
 import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.os.Bundle
@@ -41,6 +40,8 @@ import tornaco.apps.shortx.services.app.pm.*
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.os.UserEvent
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) :

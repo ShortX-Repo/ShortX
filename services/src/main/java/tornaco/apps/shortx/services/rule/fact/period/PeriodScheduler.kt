@@ -33,7 +33,7 @@ import tornaco.apps.shortx.core.proto.fact.RandomInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
-import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.util.AlarmManagerCompat
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger

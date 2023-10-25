@@ -1,12 +1,15 @@
-package tornaco.apps.shortx.services
+package tornaco.apps.shortx.services.watchdog
 
 import android.os.Handler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.util.DateUtils
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService.shortXContext
+import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Dirs
 import java.io.File
 import kotlin.coroutines.CoroutineContext
@@ -16,9 +19,14 @@ import kotlin.coroutines.cancellation.CancellationException
 class WatchDogService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WatchDogService") {
     private val fatalErrors = mutableListOf<Throwable>()
+    private val sensorUsages = mutableMapOf<Int, List<String>>()
 
     override fun systemReady() {
         super.systemReady()
+    }
+
+    fun onSensorUsage(sensor: Int, srcId: List<String>) {
+        sensorUsages[sensor] = srcId
     }
 
     fun onFatalError(error: Throwable, method: String = "") {

@@ -5,7 +5,7 @@ import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.fact.MediaStoreInsert
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 
 
 class MediaService(shortXContext: ShortXContext) : SystemService(shortXContext, "MediaService") {

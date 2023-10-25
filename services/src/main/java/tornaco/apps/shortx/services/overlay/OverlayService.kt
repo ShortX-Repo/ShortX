@@ -13,7 +13,7 @@ import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.postSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.ComposeOverlay
 
 internal data class ShowingOverlay(

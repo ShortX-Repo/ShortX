@@ -21,7 +21,7 @@ import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.util.Logger
-import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 

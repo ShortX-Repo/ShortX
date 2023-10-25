@@ -22,7 +22,7 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.NMSFuncs
-import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
 
 class NotificationService(shortXContext: ShortXContext) :

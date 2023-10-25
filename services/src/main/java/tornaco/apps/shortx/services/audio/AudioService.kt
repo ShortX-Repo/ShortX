@@ -29,7 +29,7 @@ import tornaco.apps.shortx.services.audio.recorder.ScreenRecordingAudioSource
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.data.Dirs.baseServerRecordingDir
 import tornaco.apps.shortx.services.enforceCallingPermissions
-import tornaco.apps.shortx.services.launchSafety
+import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.runClearCallingIdentity
 import tornaco.apps.shortx.services.systemServiceScope
 import java.io.File
