@@ -48,7 +48,6 @@ import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.enforceCallingPermissions
 import tornaco.apps.shortx.services.launchSafety
 import tornaco.apps.shortx.services.postSafety
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
@@ -564,6 +563,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             kotlin.runCatching { it.onAddOrUpdate(da.id) }
                 .onFailure { logger.e("Call onAddOrUpdate") }
         }
+        handler.postSafety {
+            allTriggers.forEach { it.onAddOrUpdateDA(da.id) }
+        }
     }
 
     fun deleteDirectAction(id: String) {
@@ -571,6 +573,9 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
         daObs.broadcast {
             kotlin.runCatching { it.onDelete(id) }
                 .onFailure { logger.e("Call onDelete") }
+        }
+        handler.postSafety {
+            allTriggers.forEach { it.onDeleteDA(id) }
         }
 
         // Stop tasks

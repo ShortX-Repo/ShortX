@@ -16,4 +16,7 @@ interface Trigger {
     fun onDeleteRule(rule: Rule) {}
     fun onRuleEnabled(ruleId: String) {}
     fun onRuleDisabled(ruleId: String) {}
+
+    fun onAddOrUpdateDA(daId: String) {}
+    fun onDeleteDA(daId: String) {}
 }
