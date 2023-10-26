@@ -66,7 +66,7 @@ object RuleEngineFactory {
         onJobCompleted = onJobCompleted,
         onJobCancelled = onJobCancelled,
         isRuleFeatureEnabled = { shortXContext.rule.isRuleFeatureEnabled() },
-        isSystemReady = { shortXContext.rule.isSystemReady },
+        isSystemReadyPublished = { shortXContext.user.isSystemReadyTriggered },
     )
 }
 

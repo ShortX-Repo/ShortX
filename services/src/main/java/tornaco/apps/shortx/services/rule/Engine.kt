@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.common.ConflictStrategy
 import tornaco.apps.shortx.core.proto.condition.ConditionOperator
 import tornaco.apps.shortx.core.proto.condition.ConditionOperatorPayload
+import tornaco.apps.shortx.core.proto.fact.SystemReady
 import tornaco.apps.shortx.core.proto.rule.AsyncMode
 import tornaco.apps.shortx.core.proto.rule.ContextSrcEvent
 import tornaco.apps.shortx.core.proto.rule.EvaluateContext
@@ -166,7 +167,7 @@ class DefaultRuleEngine(
     private val onJobCompleted: (String) -> Unit,
     private val onJobCancelled: (String) -> Unit,
     private val isRuleFeatureEnabled: () -> Boolean,
-    private val isSystemReady: () -> Boolean,
+    private val isSystemReadyPublished: () -> Boolean,
 ) : Engine {
     private val logger = Logger("DefaultRuleEngine")
     private val jobs = mutableListOf<JobRecord>()
@@ -250,7 +251,11 @@ class DefaultRuleEngine(
             logger.w("Drop fact since Rule feature is disabled: $fact")
             return false
         }
-        if (!isSystemReady()) {
+        if (fact is SystemReady) {
+            logger.w("fire SystemReady")
+        }
+
+        if (fact !is SystemReady && !isSystemReadyPublished()) {
             logger.w("Drop fact since System NOT ready: $fact")
             return false
         }
