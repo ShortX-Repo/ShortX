@@ -72,7 +72,7 @@ val shortXManager by lazy {
     )
 }
 
-class ShortXManager(private val service: IShortX) {
+class ShortXManager(val service: IShortX) {
     val isInstalled get() = kotlin.runCatching { service.fingerprint() != null }.getOrElse { false }
 
     val isFrameworkUpdated

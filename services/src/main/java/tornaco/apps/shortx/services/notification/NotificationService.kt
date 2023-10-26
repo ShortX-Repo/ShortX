@@ -1,7 +1,10 @@
 package tornaco.apps.shortx.services.notification
 
 import android.app.INotificationManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.os.IBinder
 import android.os.RemoteCallbackList
 import android.os.ServiceManager
 import tornaco.apps.shortx.core.BuildProp
@@ -24,6 +27,7 @@ import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.NMSFuncs
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.util.AppServiceProxy
 
 class NotificationService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "NotificationService") {
@@ -36,7 +40,7 @@ class NotificationService(shortXContext: ShortXContext) :
 
     private val attachedPoster = RemoteCallbackList<INotificationPoster>()
 
-    private val notificationPoster by lazy {
+    private val fallbackNotificationPoster by lazy {
         NotificationPoster(
             context,
             "ShortX silence",
@@ -55,6 +59,8 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
+
+    private val postNByApp = true
 
     override fun systemReady() {
         super.systemReady()
@@ -77,8 +83,12 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun post(postNotification: PostNotification) {
-        if (!postByAttached(postNotification)) {
-            notificationPoster.invoke(postNotification)
+        if (postNByApp) {
+            AppNotificationServiceProxy.post(context, postNotification)
+        } else {
+            if (!postByAttached(postNotification)) {
+                fallbackNotificationPoster.invoke(postNotification)
+            }
         }
     }
 
@@ -200,4 +210,39 @@ class NotificationService(shortXContext: ShortXContext) :
         ContextDataMapping.Notification.userId.name to appsList.first().userId,
         ContextDataMapping.Notification.notificationTag.name to tag,
     )
+}
+
+
+internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
+    AppServiceProxy(context, intent) {
+    private val logger = tornaco.apps.shortx.core.util.Logger("AppNotificationServiceProxy")
+    private var impl: INotificationPoster? = null
+
+    override fun onConnected(binder: IBinder) {
+        impl = INotificationPoster.Stub.asInterface(binder)
+    }
+
+    fun post(postNotification: PostNotification) {
+        setTask(object : ProxyTask() {
+            override fun run() {
+                runCatching {
+                    requireNotNull(impl) { "impl is null." }.post(ByteArrayWrapper(postNotification.toByteArray()))
+                }.onFailure {
+                    logger.e(it, "ProxyTask")
+                }
+            }
+
+        })
+        waitForCompletion()
+    }
+
+    companion object {
+        fun post(context: Context, postNotification: PostNotification) {
+            val intent = Intent()
+            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.component =
+                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
+            return AppNotificationServiceProxy(context, intent).post(postNotification)
+        }
+    }
 }

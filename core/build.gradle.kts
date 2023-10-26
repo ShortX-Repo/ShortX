@@ -39,6 +39,11 @@ buildConfig {
         "APP_SHELL_SERVICE_NAME",
         "\"tornaco.apps.shortx.ui.service.AppShellService\""
     )
+    buildConfigField(
+        "String",
+        "APP_NOTIFICATION_SERVICE_NAME",
+        "\"tornaco.apps.shortx.ui.service.AppNotificationService\""
+    )
     buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"\"")
     buildConfigField(
         "String",

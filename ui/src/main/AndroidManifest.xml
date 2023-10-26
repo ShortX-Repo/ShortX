@@ -261,6 +261,10 @@
             android:name=".service.AppShellService"
             android:exported="true"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        <service
+            android:name="tornaco.apps.shortx.ui.service.AppNotificationService"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
