@@ -485,7 +485,12 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
 
     private fun match0(actual: ProtoMessage, rule: ProtoMessage): Boolean {
         val matcher = factValueMatchers[actual.javaClass]
-        val res = matcher?.impl?.invoke(actual, rule) ?: (actual == rule)
+        val res = runCatching {
+            matcher?.impl?.invoke(actual, rule) ?: (actual == rule)
+        }.getOrElse {
+            logger.e(it, "Matcher error")
+            false
+        }
         logger.p("matching actual: $actual, rule: $rule, res: $res")
         logger.d("matching class: ${matcher?.targetClass} res: $res")
         return res
