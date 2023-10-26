@@ -13,6 +13,7 @@ import tornaco.apps.shortx.core.notification.INotificationPoster;
 import tornaco.apps.shortx.core.os.SynchronousResultReceiver;
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
 import tornaco.apps.shortx.core.systemui.IQSTileHost;
+import tornaco.apps.shortx.core.ISensorUsageListener;
 
 interface IShortX {
     Version version();
@@ -256,4 +257,6 @@ interface IShortX {
 
     // Sensor usage
     List<ByteArrayWrapper> querySensorUsages();
+    void registerSensorUsageListener(in ISensorUsageListener listener);
+    void unregisterSensorUsageListener(in ISensorUsageListener listener);
 }

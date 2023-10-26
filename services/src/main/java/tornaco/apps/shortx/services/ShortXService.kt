@@ -954,6 +954,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        override fun registerSensorUsageListener(listener: ISensorUsageListener) {
+            shortXContext.watchDog.registerSensorUsageListener(listener)
+        }
+
+        override fun unregisterSensorUsageListener(listener: ISensorUsageListener) {
+            shortXContext.watchDog.unregisterSensorUsageListener(listener)
+        }
+
         override fun getActivities(
             userId: Int,
             packageName: String

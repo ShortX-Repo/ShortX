@@ -1006,6 +1006,18 @@ class ShortXManager(private val service: IShortX) {
         }
     }
 
+    fun registerSensorUsageListener(listener: ISensorUsageListener) {
+        invokeService(Unit) {
+            registerSensorUsageListener(listener)
+        }
+    }
+
+    fun unregisterSensorUsageListener(listener: ISensorUsageListener) {
+        invokeService(Unit) {
+            unregisterSensorUsageListener(listener)
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

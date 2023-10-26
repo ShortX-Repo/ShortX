@@ -1,16 +1,19 @@
 package tornaco.apps.shortx.services.watchdog
 
 import android.os.Handler
+import android.os.RemoteCallbackList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.proto.common.SensorUsage
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService.shortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.systemServiceScope
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -20,6 +23,7 @@ class WatchDogService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WatchDogService") {
     private val fatalErrors = mutableListOf<Throwable>()
     private val sensorUsages = mutableMapOf<Int, List<String>>()
+    private val sensorUsageListeners = RemoteCallbackList<ISensorUsageListener>()
 
     override fun systemReady() {
         super.systemReady()
@@ -34,10 +38,30 @@ class WatchDogService(shortXContext: ShortXContext) :
     fun onSensorUsage(sensor: Int, srcId: List<String>) {
         sensorUsages[sensor] = srcId
         logger.i("onSensorUsage: $sensor $srcId")
+        systemServiceScope.launchSafety {
+            sensorUsageListeners.broadcast {
+                kotlin.runCatching { it.onUpdate() }
+                    .onFailure { logger.e(it, "call onUpdate") }
+            }
+        }
     }
 
     fun removeSensorUsage(sensor: Int) {
         sensorUsages.remove(sensor)
+        systemServiceScope.launchSafety {
+            sensorUsageListeners.broadcast {
+                kotlin.runCatching { it.onUpdate() }
+                    .onFailure { logger.e(it, "call onUpdate") }
+            }
+        }
+    }
+
+    fun registerSensorUsageListener(listener: ISensorUsageListener) {
+        sensorUsageListeners.register(listener)
+    }
+
+    fun unregisterSensorUsageListener(listener: ISensorUsageListener) {
+        sensorUsageListeners.unregister(listener)
     }
 
     fun onFatalError(error: Throwable, method: String = "") {

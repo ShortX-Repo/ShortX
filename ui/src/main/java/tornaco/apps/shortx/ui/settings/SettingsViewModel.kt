@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.RuleEngineNames
 import tornaco.apps.shortx.core.Version
 import tornaco.apps.shortx.core.proto.common.Author
@@ -79,6 +80,26 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     val logExportPerformed = _logExportPerformed.asSharedFlow()
 
     private val pref by lazy { Pref(context) }
+
+    private val sensorListener = object : ISensorUsageListener.Stub() {
+        override fun onUpdate() {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    val usage = shortXManager.querySensorUsage()
+                    updateState { copy(sensorUsages = usage) }
+                }
+            }
+        }
+    }
+
+    init {
+        shortXManager.registerSensorUsageListener(sensorListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shortXManager.unregisterSensorUsageListener(sensorListener)
+    }
 
     fun loadState() {
         updateState {
