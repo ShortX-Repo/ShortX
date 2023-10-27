@@ -25,9 +25,12 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
 import tornaco.apps.shortx.services.app.NMSFuncs
-import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.util.AppServiceProxy
+import tornaco.apps.shortx.services.watchdog.launchSafety
 
 class NotificationService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "NotificationService") {
@@ -60,10 +63,16 @@ class NotificationService(shortXContext: ShortXContext) :
 
     private val nms by lazy { ServiceRetriever(context.classLoader).getNMS() }
 
-    private val postNByApp = true
-
     override fun systemReady() {
         super.systemReady()
+    }
+
+    fun setPostNByAppEnabled(enable: Boolean) {
+        store.write(Settings.BoolSettings.PostNByApp, enable)
+    }
+
+    fun isPostNByAppEnabled(): Boolean {
+        return store.read(Settings.BoolSettings.PostNByApp)
     }
 
     fun AppPkg.hasNotification() = hasNotification(NMSFuncs.getActiveNotifications(nms))
@@ -83,9 +92,11 @@ class NotificationService(shortXContext: ShortXContext) :
     }
 
     fun post(postNotification: PostNotification) {
-        if (postNByApp) {
+        if (isPostNByAppEnabled()) {
+            logger.d("post by app.")
             AppNotificationServiceProxy.post(context, postNotification)
         } else {
+            logger.d("post by attached.")
             if (!postByAttached(postNotification)) {
                 fallbackNotificationPoster.invoke(postNotification)
             }
@@ -220,12 +231,14 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
 
     override fun onConnected(binder: IBinder) {
         impl = INotificationPoster.Stub.asInterface(binder)
+        logger.i("onConnected: $impl")
     }
 
     fun post(postNotification: PostNotification) {
         setTask(object : ProxyTask() {
             override fun run() {
                 runCatching {
+                    logger.i("call post: $impl")
                     requireNotNull(impl) { "impl is null." }.post(ByteArrayWrapper(postNotification.toByteArray()))
                 }.onFailure {
                     logger.e(it, "ProxyTask")

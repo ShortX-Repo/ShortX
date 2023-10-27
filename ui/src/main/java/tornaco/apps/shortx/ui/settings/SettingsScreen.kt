@@ -778,6 +778,16 @@ private fun engineSettings(
                     vm.setMVELEngineEnable(false)
                 }
             }
+        ),
+        Preference.SwitchPreference(
+            icon = Remix.Communication.chat_smile_2_line,
+            title = i18N["ui.settings.rule.post.n.app"],
+            summary = i18N["ui.settings.rule.post.n.app.summary"],
+            hasLongSummary = false,
+            value = state.isPostNByApp,
+            onCheckChanged = { enable ->
+                vm.setPostNByAppEnabled(enable)
+            }
         )
     ).filterNotNull()
 }

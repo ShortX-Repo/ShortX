@@ -801,6 +801,8 @@
   "ui.settings.rule.engine.shell.summary": "启用Shell命令执行引擎，shell命令会在SysystemUI进程执行，请在root管理器中为SystemUI授权",
   "ui.settings.rule.engine.mvel": "MVEL表达式引擎",
   "ui.settings.rule.engine.mvel.summary": "启用MVEL表达式引擎",
+  "ui.settings.rule.post.n.app": "ShortX应用通知",
+  "ui.settings.rule.post.n.app.summary": "开启后通知动作将在ShortX应用进程中执行（默认是在SystemUI中执行），需要允许ShortX从后台启动",
   "ui.settings.rule.engine.shell.confirm.title": "启用Shell命令引擎",
   "ui.settings.rule.engine.shell.confirm.message": "启用Shell命令执行引擎，shell命令会在SysystemUI进程执行，请在root管理器中为SystemUI授权\n\n请注意，不明来源的Shell动作可能会导致你的设备无法启动、数据丢失等异常",
   "ui.settings.rule.engine.mvel.confirm.title": "启用MVEL表达式引擎",

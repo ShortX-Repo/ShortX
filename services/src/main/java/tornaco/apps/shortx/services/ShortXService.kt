@@ -59,6 +59,9 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
+import tornaco.apps.shortx.services.data.Settings
+import tornaco.apps.shortx.services.data.read
+import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
@@ -960,6 +963,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterSensorUsageListener(listener: ISensorUsageListener) {
             shortXContext.watchDog.unregisterSensorUsageListener(listener)
+        }
+
+        override fun setPostNByAppEnabled(enable: Boolean) {
+            shortXContext.notification.setPostNByAppEnabled(enable)
+        }
+
+        override fun isPostNByAppEnabled(): Boolean {
+            return shortXContext.notification.isPostNByAppEnabled()
         }
 
         override fun getActivities(

@@ -19,6 +19,7 @@ public interface ISynchronousResultReceiver extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.os.ISynchronousResultReceiver
   {
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.os.ISynchronousResultReceiver";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -46,9 +47,6 @@ public interface ISynchronousResultReceiver extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
-      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
-        data.enforceInterface(descriptor);
-      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -56,22 +54,24 @@ public interface ISynchronousResultReceiver extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
-      }
-      switch (code)
-      {
         case TRANSACTION_send:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.os.SynchronousResultReceiver.Result _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.os.SynchronousResultReceiver.Result.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.Result.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.send(_arg0);
-          break;
+          return true;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
-      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.os.ISynchronousResultReceiver
     {
@@ -93,37 +93,42 @@ public interface ISynchronousResultReceiver extends android.os.IInterface
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, resultData, 0);
+          if ((resultData!=null)) {
+            _data.writeInt(1);
+            resultData.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_send, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().send(resultData);
+            return;
+          }
         }
         finally {
           _data.recycle();
         }
       }
+      public static tornaco.apps.shortx.core.os.ISynchronousResultReceiver sDefaultImpl;
     }
     static final int TRANSACTION_send = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.os.ISynchronousResultReceiver impl) {
+      // Only one user of this interface can use this function
+      // at a time. This is a heuristic to detect if two different
+      // users in the same process use this function.
+      if (Stub.Proxy.sDefaultImpl != null) {
+        throw new IllegalStateException("setDefaultImpl() called twice");
+      }
+      if (impl != null) {
+        Stub.Proxy.sDefaultImpl = impl;
+        return true;
+      }
+      return false;
+    }
+    public static tornaco.apps.shortx.core.os.ISynchronousResultReceiver getDefaultImpl() {
+      return Stub.Proxy.sDefaultImpl;
+    }
   }
-  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.os.ISynchronousResultReceiver";
   public void send(tornaco.apps.shortx.core.os.SynchronousResultReceiver.Result resultData) throws android.os.RemoteException;
-  /** @hide */
-  static class _Parcel {
-    static private <T> T readTypedObject(
-        android.os.Parcel parcel,
-        android.os.Parcelable.Creator<T> c) {
-      if (parcel.readInt() != 0) {
-          return c.createFromParcel(parcel);
-      } else {
-          return null;
-      }
-    }
-    static private <T extends android.os.Parcelable> void writeTypedObject(
-        android.os.Parcel parcel, T value, int parcelableFlags) {
-      if (value != null) {
-        parcel.writeInt(1);
-        value.writeToParcel(parcel, parcelableFlags);
-      } else {
-        parcel.writeInt(0);
-      }
-    }
-  }
 }

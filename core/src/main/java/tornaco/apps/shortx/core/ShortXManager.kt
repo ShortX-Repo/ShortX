@@ -1018,6 +1018,18 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun setPostNByAppEnabled(enable: Boolean) {
+        invokeService(Unit) {
+            isPostNByAppEnabled = enable
+        }
+    }
+
+    fun isPostNByAppEnabled(): Boolean {
+        return invokeService(false) {
+            isPostNByAppEnabled
+        }
+    }
+
     private inline fun <T> invokeService(defaultValue: T, onService: IShortX.() -> T): T {
         return kotlin.runCatching {
             onService(service)

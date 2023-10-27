@@ -47,6 +47,7 @@ data class SettingsState(
     val shellEngineEnabled: Boolean = false,
     val mvelEngineEnabled: Boolean = false,
     val ruleFeatureEnabled: Boolean = false,
+    val isPostNByApp: Boolean = false,
     val sensorUsages: List<SensorUsage> = emptyList()
 )
 
@@ -121,6 +122,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
                 mvelEngineEnabled = shortXManager.isRuleEngineEnabled(RuleEngineNames.ENGINE_NAME_MVEL),
                 hasAudioRecord = shortXManager.getAllAudioRecordFiles().isNotEmpty(),
                 ruleFeatureEnabled = shortXManager.isRuleFeatureEnabled(),
+                isPostNByApp = shortXManager.isPostNByAppEnabled(),
                 sensorUsages = shortXManager.querySensorUsage()
             )
         }
@@ -165,6 +167,15 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
             shortXManager.setLogDebugEnable(enable)
             updateState {
                 copy(isDebugLogEnabled = shortXManager.isLogDebugEnable())
+            }
+        }
+    }
+
+    fun setPostNByAppEnabled(enable: Boolean) {
+        viewModelScope.launch {
+            shortXManager.setPostNByAppEnabled(enable)
+            updateState {
+                copy(isPostNByApp = shortXManager.isPostNByAppEnabled())
             }
         }
     }

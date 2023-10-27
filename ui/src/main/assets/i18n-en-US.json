@@ -802,6 +802,8 @@
   "ui.settings.rule.engine.shell.summary": "Enable shell command engine, shell command will run in SystemUI, please allow SystemUI to access root",
   "ui.settings.rule.engine.mvel": "MVEL engine",
   "ui.settings.rule.engine.mvel.summary": "Enable MVEL expression engine",
+  "ui.settings.rule.post.n.app": "Notification by App",
+  "ui.settings.rule.post.n.app.summary": "The Action Post notification will be execute in ShortX app process(default in SystemUI process), this require shortx to be allowed to start from background",
   "ui.settings.rule.engine.shell.confirm.title": "Enable Shell engine",
   "ui.settings.rule.engine.shell.confirm.message": "Enable Shell command engine to execute Shell Action, please be aware that untrusted shell command is dangerous, it may damage the system, resulting in data loss",
   "ui.settings.rule.engine.mvel.confirm.title": "Enable MVEL engine",

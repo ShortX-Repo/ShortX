@@ -259,4 +259,8 @@ interface IShortX {
     List<ByteArrayWrapper> querySensorUsages();
     void registerSensorUsageListener(in ISensorUsageListener listener);
     void unregisterSensorUsageListener(in ISensorUsageListener listener);
+
+    // N
+    void setPostNByAppEnabled(boolean enable);
+    boolean isPostNByAppEnabled();
 }

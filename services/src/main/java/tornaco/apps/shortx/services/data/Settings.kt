@@ -37,6 +37,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
 
         data object EnableRuleFeature :
             BoolSettings(key = "EnableRuleFeature", defaultValue = { true })
+
+        data object PostNByApp :
+            BoolSettings(key = "PostNByApp", defaultValue = { false })
     }
 
     sealed class StringSettings(key: String, defaultValue: (Context) -> String?) :
