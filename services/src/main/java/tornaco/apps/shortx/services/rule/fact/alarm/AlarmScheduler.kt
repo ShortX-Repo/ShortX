@@ -17,14 +17,13 @@
 
 package tornaco.apps.shortx.services.rule.fact.alarm
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
-import android.os.SystemClock
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.alarm.formatDuration
 import tornaco.apps.shortx.core.alarm.getTriggerTimeOffset
 import tornaco.apps.shortx.core.compat.ContextCompat
@@ -32,8 +31,8 @@ import tornaco.apps.shortx.core.proto.fact.Alarm
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
-import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.util.AlarmManagerCompat
+import tornaco.apps.shortx.services.watchdog.postSafety
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -102,10 +101,16 @@ class AlarmScheduler(
                     formatDuration(Duration.ofMillis(triggerOffset))
                 }"
             )
-            AlarmManagerCompat.setExactAndAllowWhileIdle(
+
+            AlarmManagerCompat.setAlarmClock(
                 alarmManager,
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + triggerOffset,
+                System.currentTimeMillis() + triggerOffset,
+                PendingIntent.getActivity(
+                    context,
+                    System.currentTimeMillis().toString().hashCode(),
+                    context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                ),
                 pi
             )
         }
