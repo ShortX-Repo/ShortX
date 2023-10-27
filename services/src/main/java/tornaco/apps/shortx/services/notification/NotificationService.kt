@@ -246,7 +246,6 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
             }
 
         })
-        waitForCompletion()
     }
 
     companion object {
