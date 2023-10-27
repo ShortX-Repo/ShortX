@@ -44,6 +44,11 @@ buildConfig {
         "APP_NOTIFICATION_SERVICE_NAME",
         "\"tornaco.apps.shortx.ui.service.AppNotificationService\""
     )
+    buildConfigField(
+        "String",
+        "APP_MAIN_ACTIVITY",
+        "\"tornaco.apps.shortx.ui.main.MainActivity\""
+    )
     buildConfigField("String", "DEFAULT_OVERLAY_BUTTON_ICON", "\"\"")
     buildConfigField(
         "String",

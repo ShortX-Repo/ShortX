@@ -32,6 +32,7 @@ import tornaco.apps.shortx.core.proto.fact.FixedInPeriod
 import tornaco.apps.shortx.core.proto.rule.Rule
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.alarmManager
+import tornaco.apps.shortx.services.rule.fact.alarm.alarmClockViewerIntent
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
@@ -105,12 +106,7 @@ class FixedInPeriodScheduler(
             AlarmManagerCompat.setAlarmClock(
                 alarmManager,
                 System.currentTimeMillis() + triggerOffset,
-                PendingIntent.getActivity(
-                    context,
-                    System.currentTimeMillis().toString().hashCode(),
-                    context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                ),
+                context.alarmClockViewerIntent(),
                 pi
             )
         }

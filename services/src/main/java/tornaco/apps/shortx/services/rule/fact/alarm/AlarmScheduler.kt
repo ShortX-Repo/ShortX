@@ -19,6 +19,7 @@ package tornaco.apps.shortx.services.rule.fact.alarm
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -102,15 +103,27 @@ class AlarmScheduler(
                 }"
             )
 
+            // java.lang.NullPointerException:
+            // Attempt to invoke virtual method 'boolean android.content.Intent.migrateExtraStreamToClipData()' on a null object reference
+            //  at android.app.PendingIntent.getActivity(PendingIntent.java:348)
+            //  at android.app.PendingIntent.getActivity(PendingIntent.java:311)
+            //  at tornaco.apps.shortx.services.rule.fact.alarm.AlarmScheduler.schedule-0E7RQCE(AlarmScheduler.kt:108)
+            //  at tornaco.apps.shortx.services.rule.fact.trigger.AlarmTrigger.checkAndScheduleAlarmForRule(AlarmTrigger.kt:78)
+            //  at tornaco.apps.shortx.services.rule.fact.trigger.AlarmTrigger.register(AlarmTrigger.kt:68)
+            //  at tornaco.apps.shortx.services.rule.RuleService.installListeners(RuleService.kt:313)
+            //  at tornaco.apps.shortx.services.rule.RuleService.systemReady(RuleService.kt:206)
+            //  at tornaco.apps.shortx.services.ServiceLifecycle.systemReady$lambda$3(ServiceLifecycle.kt:29)
+            //  at tornaco.apps.shortx.services.ServiceLifecycle.$r8$lambda$nVP-0IWWFReUPuQb7Qs7_QEy8kA(Unknown Source:0)
+            //  at tornaco.apps.shortx.services.ServiceLifecycle$$ExternalSyntheticLambda1.run(Unknown Source:2)
+            //  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+            //  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+            //  at java.lang.Thread.run(Thread.java:919)
+            val viewerIntent = context.alarmClockViewerIntent()
+            logger.i("AlarmScheduler, viewerIntent: $viewerIntent")
             AlarmManagerCompat.setAlarmClock(
                 alarmManager,
                 System.currentTimeMillis() + triggerOffset,
-                PendingIntent.getActivity(
-                    context,
-                    System.currentTimeMillis().toString().hashCode(),
-                    context.packageManager.getLaunchIntentForPackage(BuildProp.APP_PACKAGE_NAME),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                ),
+                viewerIntent,
                 pi
             )
         }
@@ -170,4 +183,15 @@ object AlarmReqCodeCache {
 
         return newCode
     }
+}
+
+fun Context.alarmClockViewerIntent(): PendingIntent {
+    return PendingIntent.getActivity(
+        this,
+        System.currentTimeMillis().toString().hashCode(),
+        Intent().setPackage(BuildProp.APP_PACKAGE_NAME).setComponent(
+            ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_MAIN_ACTIVITY}")
+        ),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 }
