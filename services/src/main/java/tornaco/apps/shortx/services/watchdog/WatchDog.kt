@@ -6,14 +6,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.ISensorUsageListener
+import tornaco.apps.shortx.core.os.myUserId
+import tornaco.apps.shortx.core.proto.action.LaunchApp
+import tornaco.apps.shortx.core.proto.action.PostNotification
+import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.SensorUsage
+import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.rule.pack_
 import tornaco.apps.shortx.core.util.DateUtils
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.ShortXService.shortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.systemServiceScope
+import tornaco.apps.shortx.services.ui.i18NIns
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -74,6 +82,26 @@ class WatchDogService(shortXContext: ShortXContext) :
         )
         logFile.parentFile.mkdirs()
         logFile.writeText(error.stackTraceToString())
+
+        // Post N
+        shortXContext.notification.post(
+            PostNotification.newBuilder()
+                .setTitle(i18NIns["ui.settings.fatal.error.title"])
+                .setMessage(i18NIns["ui.settings.fatal.error.message"])
+                .setId("ShortX.WatchDog")
+                .setIsImportant(true)
+                .setSmallIcon(Remix.System.alert_fill)
+                .addClickAction(
+                    LaunchApp.newBuilder()
+                        .setId("ShortX.WatchDog")
+                        .setAppPkg(
+                            AppPkg.newBuilder().setUserId(myUserId)
+                                .setPkgName(BuildProp.APP_PACKAGE_NAME).build()
+                        )
+                        .build().pack_()
+                )
+                .build()
+        )
     }
 
     fun hasFatalError() = fatalErrors.isNotEmpty()

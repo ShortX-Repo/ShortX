@@ -776,7 +776,7 @@
   "ui.settings.debug.log.export": "导出日志",
   "ui.settings.debug.log.export.description": "导出日志文件到 {dir}",
   "ui.settings.fatal.error.title": "兼容性错误",
-  "ui.settings.fatal.error.message": "检测到兼容性错误，可能会导致某些功能出现异常，请在下方设置中导出日志反馈给开发者",
+  "ui.settings.fatal.error.message": "检测到兼容性错误，可能会导致某些功能出现异常，请在设置中导出日志反馈给开发者",
   "ui.settings.key.event.prompt": "按键事件提示",
   "ui.settings.key.event.prompt.description": "Toast提示按键事件的按键码",
   "ui.settings.http:chucker": "启用Http记录器",
