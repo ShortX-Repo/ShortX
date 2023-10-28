@@ -41,5 +41,6 @@ object HookStub {
         ClipboardServiceHook.hookClipboardService(lpparam)
         ActivityStarterHook.hookEnqueueRequest(lpparam)
         ActiveServiceHook.hookUpdateScreenState(lpparam)
+        DisplayRotationHook.hookOnProposedRotationChanged(lpparam)
     }
 }

@@ -165,6 +165,10 @@ class AppStateService(shortXContext: ShortXContext) :
         return activityState.isFront(this)
     }
 
+    fun currentFrontPkgs(): List<AppPkg> {
+        return activityState.currentFrontAppPkgs.toList()
+    }
+
     fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
         activityState.onActivityResumed(componentName, userId, intentUri)
     }

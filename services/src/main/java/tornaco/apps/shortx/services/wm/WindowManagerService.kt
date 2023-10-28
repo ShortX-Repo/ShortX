@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Pair
+import android.view.Surface
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -20,13 +21,16 @@ import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.onDebugBuild
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.fact.ScreenRotate
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.clipboardManager
+import tornaco.apps.shortx.core.util.windowManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.rule.cond.impl.HasNodeOnScreen
+import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
@@ -52,7 +56,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     var screenRotateDegree: ScreenRotateDegree = ScreenRotateDegree.ScreenRotateDegree_0
         set(value) {
             field = value
-            logger.i("currentScreenOrientation--> $value")
+            logger.i("screenRotateDegree--> $value")
         }
 
     private var onAccessibilityEvent: ((AccessibilityEvent) -> Unit)? = null
@@ -64,10 +68,30 @@ class WindowManagerService(shortXContext: ShortXContext) :
     override fun systemReady() {
         super.systemReady()
         registerListeners()
+        screenRotateDegree =
+            context.windowManager.defaultDisplay.rotation.rotationToDegree().apply {
+                logger.i("systemReady, set screenRotateDegree to: $this")
+            }
     }
 
     private fun registerListeners() {
 
+    }
+
+    fun onProposedRotationChanged(@Surface.Rotation rotation: Int) {
+        systemServiceScope.launchSafety {
+            val degree = rotation.rotationToDegree()
+            if (degree != ScreenRotateDegree.UNRECOGNIZED) {
+                if (degree != shortXContext.wm.screenRotateDegree) {
+                    logger.d("onProposedRotationChanged: $rotation $degree")
+                    shortXContext.wm.screenRotateDegree = degree
+                    shortXContext.rule.publishFact(
+                        reason = "onProposedRotationChanged",
+                        fact = ScreenRotate.newBuilder().setDegree(degree).build()
+                    ) { emptyMap() }
+                }
+            }
+        }
     }
 
     fun performAccessibilityAction(sourceNodeId: Long, windowId: Int, action: Int) {
