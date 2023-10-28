@@ -231,12 +231,12 @@ message PlugState {
 }
 
 enum PlugType {
-    PlugType_PlugAny = 0;
-    PlugType_PlugUSB = 1;
-    PlugType_PlugAC = 2;
-    PlugType_PlugWireless = 3;
-    PlugType_NotPlug = 4;
-    PlugType_IsCharge = 5;
+  PlugType_PlugAny = 0;
+  PlugType_PlugUSB = 1;
+  PlugType_PlugAC = 2;
+  PlugType_PlugWireless = 3;
+  PlugType_NotPlug = 4;
+  PlugType_IsCharge = 5;
 }
 
 message RequireWifiConnected {
@@ -352,6 +352,16 @@ message IsHeadsetPlug {
 }
 
 message RequireScreenRotate {
+  ScreenRotateDegree degree = 1;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+
+message RequireWindowRotation {
   ScreenRotateDegree degree = 1;
 
   CustomContextDataKey customContextDataKey = 97;

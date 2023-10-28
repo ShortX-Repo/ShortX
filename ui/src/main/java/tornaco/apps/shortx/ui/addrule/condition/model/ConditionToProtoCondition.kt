@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
+import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
@@ -399,8 +400,19 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setIsPlug(isPlug)
                 .build()
         }
+
         is Condition.RequireScreenRotate -> {
             RequireScreenRotate.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDegree(degree)
+                .build()
+        }
+
+        is Condition.RequireWindowRotation -> {
+            RequireWindowRotation.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 private const val DEFAULT_TIMEOUT = 5000L
 
 class HasFoundNodeOnScreenSelectorDialogState(
+    val selectorTitle: String,
     val canSelectPkgName: Boolean,
     val canSelectActivity: Boolean,
     val canSelectTimeout: Boolean,
@@ -87,6 +88,7 @@ class HasFoundNodeOnScreenSelectorDialogState(
 
 @Composable
 fun rememberHasFoundNodeOnScreenState(
+    selectorTitle: String,
     canSelectPkgName: Boolean = true,
     canSelectActivity: Boolean = true,
     canSelectTimeout: Boolean = true,
@@ -94,6 +96,7 @@ fun rememberHasFoundNodeOnScreenState(
 ): HasFoundNodeOnScreenSelectorDialogState {
     return remember {
         HasFoundNodeOnScreenSelectorDialogState(
+            selectorTitle,
             canSelectPkgName,
             canSelectActivity,
             canSelectTimeout,
@@ -121,7 +124,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.fact.has.found.node.on.screen"]) },
+                        title = { Text(text = dialogState.selectorTitle) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

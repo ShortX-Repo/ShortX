@@ -110,7 +110,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.rotate"],
-        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+        menuItems = ScreenRotateDegree.values()
+            .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
             },
@@ -120,6 +121,20 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
         }
     )
     MenuDialog(state = screenRotateSelectorState)
+
+    val windowRotationSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.window.rotate"],
+        menuItems = ScreenRotateDegree.values()
+            .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
+            .map {
+                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val degree = ScreenRotateDegree.valueOf(id)
+            addCondition(Condition.RequireWindowRotation(degree = degree))
+        }
+    )
+    MenuDialog(state = windowRotationSelectorState)
 
     return { source ->
         when (source.clazz) {
@@ -205,6 +220,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
             Condition.RequireScreenRotate::class -> {
                 screenRotateSelectorState.show()
+                true
+            }
+
+            Condition.RequireWindowRotation::class -> {
+                windowRotationSelectorState.show()
                 true
             }
 

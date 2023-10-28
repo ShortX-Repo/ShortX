@@ -133,9 +133,11 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
         }
     NotificationAppAndMatcherSelectorDialog(notificationRemovedSelectorState)
 
-    val hasNodeOnScreenState = rememberHasFoundNodeOnScreenState(onSelected = {
-        setFact(it)
-    })
+    val hasNodeOnScreenState = rememberHasFoundNodeOnScreenState(
+        selectorTitle = LocalI18N.current["ui.fact.has.found.node.on.screen"],
+        onSelected = {
+            setFact(it)
+        })
     HasFoundNodeOnScreenDialog(state = hasNodeOnScreenState)
 
     val appProcessStartedSelectorState = rememberProcessListSelectorState(onSelected = {

@@ -180,6 +180,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireWindowRotation::class -> {
+            listOf(
+                i18N["ui.fact.window.rotate"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -387,7 +393,14 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
 
         is Condition.RequireScreenRotate -> {
             listOf(
-                i18N["RequireScreenRotate"],
+                i18N["ui.fact.screen.rotate"],
+                i18N[condition.degree.labelKey()]
+            )
+        }
+
+        is Condition.RequireWindowRotation -> {
+            listOf(
+                i18N["ui.fact.window.rotate"],
                 i18N[condition.degree.labelKey()]
             )
         }

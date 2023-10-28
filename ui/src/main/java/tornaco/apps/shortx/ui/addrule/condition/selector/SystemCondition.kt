@@ -22,6 +22,7 @@ fun SystemConditions(
     val i18N = LocalI18N.current
     val items = listOf(
         Condition.RequireScreenRotate::class,
+        Condition.RequireWindowRotation::class,
         Condition.ScreenIsOn::class,
         Condition.VPNIsConnected::class,
         Condition.BatteryPercent::class,

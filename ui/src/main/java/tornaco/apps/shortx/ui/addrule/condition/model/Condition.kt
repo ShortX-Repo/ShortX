@@ -749,6 +749,31 @@ sealed interface Condition : Parcelable {
             )
         }
     }
+
+    @Parcelize
+    data class RequireWindowRotation(
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId(),
+        val degree: ScreenRotateDegree
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    // SEALED CLASS END
 }
 
 val Condition.contextData: List<ContextData> get() = this::class.conditionContextData()

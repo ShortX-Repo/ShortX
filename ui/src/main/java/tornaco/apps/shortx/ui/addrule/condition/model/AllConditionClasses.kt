@@ -31,4 +31,5 @@ val allConditionClasses = listOf(
     Condition.IsRuleEnabled::class,
     Condition.IsHeadsetPlug::class,
     Condition.RequireScreenRotate::class,
+    Condition.RequireWindowRotation::class,
 )

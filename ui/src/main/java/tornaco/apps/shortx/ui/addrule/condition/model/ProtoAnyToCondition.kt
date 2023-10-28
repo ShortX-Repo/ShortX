@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
+import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
 import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
@@ -376,6 +377,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ RequireScreenRotate::class.java -> {
             val data = this unpack_ RequireScreenRotate::class.java
             Condition.RequireScreenRotate(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                degree = data.degree
+            )
+        }
+
+        this is_ RequireWindowRotation::class.java -> {
+            val data = this unpack_ RequireWindowRotation::class.java
+            Condition.RequireWindowRotation(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

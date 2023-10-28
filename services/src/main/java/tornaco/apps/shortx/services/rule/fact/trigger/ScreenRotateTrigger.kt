@@ -24,27 +24,7 @@ class ScreenRotateTrigger(
         object : IRotationWatcher.Stub() {
             override fun onRotationChanged(rotation: Int) {
                 runCatching {
-                    val degree = when (rotation) {
-                        Surface.ROTATION_0 -> {
-                            ScreenRotateDegree.ScreenRotateDegree_0
-                        }
-
-                        Surface.ROTATION_90 -> {
-                            ScreenRotateDegree.ScreenRotateDegree_90
-                        }
-
-                        Surface.ROTATION_180 -> {
-                            ScreenRotateDegree.ScreenRotateDegree_180
-                        }
-
-                        Surface.ROTATION_270 -> {
-                            ScreenRotateDegree.ScreenRotateDegree_270
-                        }
-
-                        else -> {
-                            ScreenRotateDegree.UNRECOGNIZED
-                        }
-                    }
+                    val degree = rotation.rotationToDegree()
                     logger.d("onRotationChanged: $rotation $degree")
                     if (degree != ScreenRotateDegree.UNRECOGNIZED) {
                         shortXContext.rule.publishFact(
@@ -69,3 +49,26 @@ class ScreenRotateTrigger(
 
 }
 
+fun Int.rotationToDegree(): ScreenRotateDegree {
+    return when (this) {
+        Surface.ROTATION_0 -> {
+            ScreenRotateDegree.ScreenRotateDegree_0
+        }
+
+        Surface.ROTATION_90 -> {
+            ScreenRotateDegree.ScreenRotateDegree_90
+        }
+
+        Surface.ROTATION_180 -> {
+            ScreenRotateDegree.ScreenRotateDegree_180
+        }
+
+        Surface.ROTATION_270 -> {
+            ScreenRotateDegree.ScreenRotateDegree_270
+        }
+
+        else -> {
+            ScreenRotateDegree.UNRECOGNIZED
+        }
+    }
+}
