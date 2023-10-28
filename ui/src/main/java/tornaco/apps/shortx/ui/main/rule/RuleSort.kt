@@ -29,7 +29,7 @@ fun sort(ruleSortBy: RuleSortBy): (List<Rule>) -> List<Rule> {
             }
 
             RuleSortBy.CreateTime -> {
-                rules.sortedByDescending { it.createTime }.sortedByDescending { it.isEnabled }
+                rules.sortedByDescending { it.createTime }
             }
 
             RuleSortBy.CreateTimeReverse -> {
