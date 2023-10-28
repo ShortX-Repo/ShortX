@@ -80,5 +80,6 @@ val allFactClasses = listOf(
 
     Fact.HeadsetPlug::class,
     Fact.ScreenRotate::class,
+    Fact.WindowRotationChange::class,
     Fact.AnyFact::class,
 )

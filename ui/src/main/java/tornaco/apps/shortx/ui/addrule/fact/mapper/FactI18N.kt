@@ -216,6 +216,10 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
             i18n["ui.fact.screen.rotate"] to null
         }
 
+        Fact.WindowRotationChange::class -> {
+            i18n["ui.fact.window.rotate"] to null
+        }
+
         else -> "N/A" to null
     }
 }
@@ -627,6 +631,13 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         is Fact.ScreenRotate -> {
             listOf(
                 i18N["ui.fact.screen.rotate"],
+                i18N[fact.degree.labelKey()]
+            )
+        }
+
+        is Fact.WindowRotationChange -> {
+            listOf(
+                i18N["ui.fact.window.rotate"],
                 i18N[fact.degree.labelKey()]
             )
         }

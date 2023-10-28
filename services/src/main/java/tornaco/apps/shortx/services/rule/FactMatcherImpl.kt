@@ -61,6 +61,7 @@ import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
+import tornaco.apps.shortx.core.proto.fact.WindowRotationChange
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.is_
@@ -453,6 +454,12 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
         register(ScreenRotate::class.java) { actual, rule ->
             val actualN = (actual as ScreenRotate)
             val ruleN = (rule as ScreenRotate)
+            ruleN.degree == ScreenRotateDegree.ScreenRotateDegree_Any || ruleN.degree == actualN.degree
+        }
+
+        register(WindowRotationChange::class.java) { actual, rule ->
+            val actualN = (actual as WindowRotationChange)
+            val ruleN = (rule as WindowRotationChange)
             ruleN.degree == ScreenRotateDegree.ScreenRotateDegree_Any || ruleN.degree == actualN.degree
         }
 

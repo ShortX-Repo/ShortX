@@ -62,6 +62,7 @@ import tornaco.apps.shortx.core.proto.fact.VPNDisconnected
 import tornaco.apps.shortx.core.proto.fact.WifiConnectedTo
 import tornaco.apps.shortx.core.proto.fact.WifiDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.WifiStatusChanged
+import tornaco.apps.shortx.core.proto.fact.WindowRotationChange
 import tornaco.apps.shortx.core.rule.ProtoMessage
 import tornaco.apps.shortx.core.rule.pack_
 
@@ -480,6 +481,13 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
 
         is Fact.ScreenRotate -> {
             ScreenRotate.newBuilder().setId(overrideId ?: id).setNote(note)
+                .setCustomContextDataKey(customContextDataKey)
+                .setDegree(degree)
+                .build()
+        }
+
+        is Fact.WindowRotationChange -> {
+            WindowRotationChange.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setDegree(degree)
                 .build()

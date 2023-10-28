@@ -110,6 +110,7 @@
   "ui.fact.screen.on": "Screen On",
   "ui.fact.screen.user.present": "Screen Unlock",
   "ui.fact.screen": "Screen",
+  "ui.fact.window.rotate": "Window rotate",
   "ui.fact.screen.rotate": "Screen rotate(sensor)",
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_0": "0",
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_90": "90",

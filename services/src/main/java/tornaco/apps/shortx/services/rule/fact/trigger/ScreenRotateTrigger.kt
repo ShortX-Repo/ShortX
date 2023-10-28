@@ -4,6 +4,10 @@ import android.content.Context
 import android.os.ServiceManager
 import android.view.IRotationWatcher
 import android.view.IWindowManager
+import android.view.Surface
+import tornaco.apps.shortx.core.annotations.DoNotStrip
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
+import tornaco.apps.shortx.core.proto.fact.WindowRotationChange
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.services.ShortXContext
 
@@ -16,11 +20,38 @@ class ScreenRotateTrigger(
     private val wm by lazy { IWindowManager.Stub.asInterface(ServiceManager.getService(Context.WINDOW_SERVICE)) }
 
     private val watcher by lazy {
+        @DoNotStrip
         object : IRotationWatcher.Stub() {
             override fun onRotationChanged(rotation: Int) {
-                logger.d("onRotationChanged: $rotation")
                 runCatching {
+                    val degree = when (rotation) {
+                        Surface.ROTATION_0 -> {
+                            ScreenRotateDegree.ScreenRotateDegree_0
+                        }
 
+                        Surface.ROTATION_90 -> {
+                            ScreenRotateDegree.ScreenRotateDegree_90
+                        }
+
+                        Surface.ROTATION_180 -> {
+                            ScreenRotateDegree.ScreenRotateDegree_180
+                        }
+
+                        Surface.ROTATION_270 -> {
+                            ScreenRotateDegree.ScreenRotateDegree_270
+                        }
+
+                        else -> {
+                            ScreenRotateDegree.UNRECOGNIZED
+                        }
+                    }
+                    logger.d("onRotationChanged: $rotation $degree")
+                    if (degree != ScreenRotateDegree.UNRECOGNIZED) {
+                        shortXContext.rule.publishFact(
+                            "onRotationChanged",
+                            WindowRotationChange.newBuilder().setDegree(degree).build()
+                        ) { emptyMap() }
+                    }
                 }.onFailure {
                     shortXContext.watchDog.onFatalError(it, "onRotationChanged")
                 }

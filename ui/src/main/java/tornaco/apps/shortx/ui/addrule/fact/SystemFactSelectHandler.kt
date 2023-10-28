@@ -302,6 +302,19 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
     MenuDialog(state = screenRotateSelectorState)
 
+    val windowRotateSelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.fact.window.rotate"],
+        menuItems = ScreenRotateDegree.values().filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val degree = ScreenRotateDegree.valueOf(id)
+            addFact(Fact.WindowRotationChange(degree = degree))
+        }
+    )
+    MenuDialog(state = windowRotateSelectorState)
+
     return { source ->
         when (source.clazz) {
             Fact.KeyEvent::class -> {
@@ -524,6 +537,11 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ScreenRotate::class -> {
                 screenRotateSelectorState.show()
+                true
+            }
+
+            Fact.WindowRotationChange::class -> {
+                windowRotateSelectorState.show()
                 true
             }
 

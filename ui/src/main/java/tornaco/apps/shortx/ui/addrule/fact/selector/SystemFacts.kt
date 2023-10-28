@@ -25,6 +25,7 @@ fun SystemFacts(keyword: String, subscribeState: LVLStateHolder.State, setFact: 
         Fact.EdgeGesture::class,
 
         Fact.ScreenRotate::class,
+        Fact.WindowRotationChange::class,
         Fact.ScreenOn::class,
         Fact.ScreenOff::class,
         Fact.UserPresent::class,

@@ -968,6 +968,24 @@ sealed interface Fact {
             return copy(id = id, note = note, customContextDataKey = customContextDataKey)
         }
     }
+
+    data class WindowRotationChange(
+        override val note: String = "",
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val id: String = defaultNewFactId(),
+
+        val degree: ScreenRotateDegree
+    ) : Fact {
+        override fun clone(
+            id: String,
+            note: String,
+            customContextDataKey: CustomContextDataKey
+        ): Fact {
+            return copy(id = id, note = note, customContextDataKey = customContextDataKey)
+        }
+    }
+
+    // END SEAL CLASS
 }
 
 sealed interface NodeMatcher : Parcelable {

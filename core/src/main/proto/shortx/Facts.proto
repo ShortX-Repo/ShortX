@@ -544,7 +544,16 @@ message HeadsetPlug {
   string id = 100;
 }
 
+// Sensor
 message ScreenRotate {
+  ScreenRotateDegree degree = 1;
+
+  CustomContextDataKey customContextDataKey = 98;
+  string note = 99;
+  string id = 100;
+}
+
+message WindowRotationChange {
   ScreenRotateDegree degree = 1;
 
   CustomContextDataKey customContextDataKey = 98;

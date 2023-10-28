@@ -65,6 +65,7 @@ fun imageVectorForFact(fact: KClass<out Fact>): String {
         Fact.HasFoundNodeOnScreen::class -> Remix.Design.focus_3_line
         Fact.HeadsetPlug::class -> Remix.Media.headphone_fill
         Fact.ScreenRotate::class -> Remix.Device.smartphone_fill
+        Fact.WindowRotationChange::class -> Remix.Device.smartphone_fill
 
         else -> {
             Remix.Document.file_unknow_fill
