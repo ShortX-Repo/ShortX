@@ -19,17 +19,18 @@ import androidx.test.uiautomator.imp.adapter.InstrumentationAdapter
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
 import kotlinx.coroutines.delay
 import tornaco.apps.shortx.core.onDebugBuild
+import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.ui.TextViewNode
 import tornaco.apps.shortx.core.ui.ViewNode
 import tornaco.apps.shortx.core.ui.XRectF
 import tornaco.apps.shortx.core.util.clipboardManager
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
-import tornaco.apps.shortx.services.watchdog.launchSafety
-import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.rule.cond.impl.HasNodeOnScreen
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
 
@@ -48,7 +49,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         Handler(Looper.getMainLooper())
     }
 
-    var currentScreenOrientation: Int = 0
+    var screenRotateDegree: ScreenRotateDegree = ScreenRotateDegree.ScreenRotateDegree_0
         set(value) {
             field = value
             logger.i("currentScreenOrientation--> $value")

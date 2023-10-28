@@ -4,7 +4,6 @@ import com.google.protobuf.Message
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.services.rule.cond.Cond
-import tornaco.apps.shortx.services.rule.fact.trigger.orientationToDegree
 
 object RequireScreenRotate : Cond {
     override fun condClass(): Class<out Message> =
@@ -13,10 +12,11 @@ object RequireScreenRotate : Cond {
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         val data =
             param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.RequireScreenRotate::class.java)
-        val degree = param.shortXContext.wm.currentScreenOrientation.orientationToDegree()
-        logger.d("degree: $degree")
+        val currentDegree = param.shortXContext.wm.screenRotateDegree
+        logger.d("degree: $currentDegree")
 
-        val res = degree == data.degree || data.degree == ScreenRotateDegree.ScreenRotateDegree_Any
+        val res =
+            currentDegree == data.degree || data.degree == ScreenRotateDegree.ScreenRotateDegree_Any
 
         return if (data.isInvert) {
             !res

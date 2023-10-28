@@ -30,5 +30,6 @@ internal fun allTriggers(context: Context, shortXContext: ShortXContext) = mutab
     GlobalVarTrigger(context, shortXContext),
     AccessibilityNodeOnScreenTrigger(context, shortXContext),
     HeadsetPlugTrigger(context, shortXContext),
+    SensorScreenRotateTrigger(context, shortXContext),
     ScreenRotateTrigger(context, shortXContext),
 )
