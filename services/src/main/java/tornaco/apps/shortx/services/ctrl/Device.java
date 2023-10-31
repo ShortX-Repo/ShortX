@@ -189,8 +189,21 @@ public final class Device {
                 && injectKeyEvent(KeyEvent.ACTION_UP, keyCode, 0, 0, displayId, injectMode);
     }
 
+    public static void pressReleaseKeycodes(int[] keyCodes, int displayId, int injectMode) {
+        for (int keyCode : keyCodes) {
+            injectKeyEvent(KeyEvent.ACTION_DOWN, keyCode, 0, 0, displayId, injectMode);
+        }
+        for (int keyCode : keyCodes) {
+            injectKeyEvent(KeyEvent.ACTION_UP, keyCode, 0, 0, displayId, injectMode);
+        }
+    }
+
     public boolean pressReleaseKeycode(int keyCode, int injectMode) {
         return pressReleaseKeycode(keyCode, displayId, injectMode);
+    }
+
+    public void pressReleaseKeycodes(int[] keyCodes, int injectMode) {
+        pressReleaseKeycodes(keyCodes, displayId, injectMode);
     }
 
     public boolean pressKeycode(int keyCode, int injectMode) {
