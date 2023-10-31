@@ -188,6 +188,7 @@ fun labelAndDescriptionForActionSelector(
         Action.KillProcessByName::class -> i18N["ui.action.kill.process.by.name"] to null
         Action.HttpRequest::class -> i18N["ui.action.http.request"] to null
         Action.InjectKeyCode::class -> i18N["ui.action.inject.keycode"] to null
+        Action.InjectCombineKeyCode::class -> i18N["ui.action.inject.combine.keycode"] to null
         Action.StopCurrentApp::class -> i18N["ui.action.stop.current.foreground.app"] to null
         Action.AdjustVolume::class -> i18N["ui.action.adjust.volume"] to null
         Action.SetVolume::class -> i18N["ui.action.set.volume"] to null
@@ -252,7 +253,8 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         }
 
         is Action.ShellCommand -> {
-            listOfNotNull(i18N["ui.action.shell"],
+            listOfNotNull(
+                i18N["ui.action.shell"],
                 action.singleShot.select(i18N["ui.action.shell.single.shot"], null),
                 action.command
             )
@@ -681,6 +683,15 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             listOf(
                 i18N["ui.action.inject.keycode"],
                 getLabelForKeyCode(i18N, action.code)
+            )
+        }
+
+        is Action.InjectCombineKeyCode -> {
+            listOf(
+                i18N["ui.action.inject.combine.keycode"],
+                action.codes.joinToString {
+                    getLabelForKeyCode(i18N, it)
+                }
             )
         }
 

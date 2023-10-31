@@ -342,6 +342,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.InjectKeyCode
     },
+    InjectCombineKeyCode {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.InjectCombineKeyCode
+    },
     SleepScreen {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.SleepScreen

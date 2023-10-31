@@ -25,6 +25,7 @@ import tornaco.apps.shortx.core.proto.action.HttpRequestHeaderBodyJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestJsonMapAdapter
 import tornaco.apps.shortx.core.proto.action.HttpRequestRawAdapter
 import tornaco.apps.shortx.core.proto.action.IfThenElse
+import tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode
 import tornaco.apps.shortx.core.proto.action.InjectGestureRecording
 import tornaco.apps.shortx.core.proto.action.InjectKeyCode
 import tornaco.apps.shortx.core.proto.action.InputSwipe
@@ -1046,6 +1047,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setKeyCode(code)
+                .build()
+        }
+        is Action.InjectCombineKeyCode -> {
+            InjectCombineKeyCode.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .addAllKeyCode(codes)
                 .build()
         }
 

@@ -1167,6 +1167,19 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
             )
         }
 
+        this is_ tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode::class.java -> {
+            val data =
+                this unpack_ tornaco.apps.shortx.core.proto.action.InjectCombineKeyCode::class.java
+            Action.InjectCombineKeyCode(
+                isEnabled = !data.isDisabled,
+                actionOnError = data.actionOnError,
+                customContextDataKey = data.customContextDataKey,
+                id = data.id,
+                note = data.note,
+                codes = data.keyCodeList
+            )
+        }
+
         this is_ tornaco.apps.shortx.core.proto.action.WakeupScreen::class.java -> {
             val data =
                 this unpack_ tornaco.apps.shortx.core.proto.action.WakeupScreen::class.java

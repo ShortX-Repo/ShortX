@@ -341,6 +341,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.keyboard_fill
         }
 
+        Action.InjectCombineKeyCode::class -> {
+            Remix.Device.keyboard_fill
+        }
+
         Action.SleepScreen::class -> {
             Remix.Device.shut_down_line
         }

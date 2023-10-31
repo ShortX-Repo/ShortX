@@ -8,7 +8,6 @@ public interface INotificationPoster extends android.os.IInterface
   public static class Default implements tornaco.apps.shortx.core.notification.INotificationPoster
   {
     // PostNotification
-
     @Override public void post(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper data) throws android.os.RemoteException
     {
     }
@@ -23,7 +22,6 @@ public interface INotificationPoster extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.notification.INotificationPoster
   {
-    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.notification.INotificationPoster";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -51,6 +49,9 @@ public interface INotificationPoster extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
+      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
+        data.enforceInterface(descriptor);
+      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -58,32 +59,29 @@ public interface INotificationPoster extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
+      }
+      switch (code)
+      {
         case TRANSACTION_post:
         {
-          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.rule.action.ByteArrayWrapper _arg0;
-          if ((0!=data.readInt())) {
-            _arg0 = tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR.createFromParcel(data);
-          }
-          else {
-            _arg0 = null;
-          }
+          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
           this.post(_arg0);
-          return true;
+          break;
         }
         case TRANSACTION_cancelWithTag:
         {
-          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.cancelWithTag(_arg0);
-          return true;
+          break;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
+      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.notification.INotificationPoster
     {
@@ -101,24 +99,13 @@ public interface INotificationPoster extends android.os.IInterface
         return DESCRIPTOR;
       }
       // PostNotification
-
       @Override public void post(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper data) throws android.os.RemoteException
       {
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          if ((data!=null)) {
-            _data.writeInt(1);
-            data.writeToParcel(_data, 0);
-          }
-          else {
-            _data.writeInt(0);
-          }
+          _Parcel.writeTypedObject(_data, data, 0);
           boolean _status = mRemote.transact(Stub.TRANSACTION_post, _data, null, android.os.IBinder.FLAG_ONEWAY);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().post(data);
-            return;
-          }
         }
         finally {
           _data.recycle();
@@ -131,38 +118,38 @@ public interface INotificationPoster extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(tag);
           boolean _status = mRemote.transact(Stub.TRANSACTION_cancelWithTag, _data, null, android.os.IBinder.FLAG_ONEWAY);
-          if (!_status && getDefaultImpl() != null) {
-            getDefaultImpl().cancelWithTag(tag);
-            return;
-          }
         }
         finally {
           _data.recycle();
         }
       }
-      public static tornaco.apps.shortx.core.notification.INotificationPoster sDefaultImpl;
     }
     static final int TRANSACTION_post = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_cancelWithTag = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
-    public static boolean setDefaultImpl(tornaco.apps.shortx.core.notification.INotificationPoster impl) {
-      // Only one user of this interface can use this function
-      // at a time. This is a heuristic to detect if two different
-      // users in the same process use this function.
-      if (Stub.Proxy.sDefaultImpl != null) {
-        throw new IllegalStateException("setDefaultImpl() called twice");
-      }
-      if (impl != null) {
-        Stub.Proxy.sDefaultImpl = impl;
-        return true;
-      }
-      return false;
-    }
-    public static tornaco.apps.shortx.core.notification.INotificationPoster getDefaultImpl() {
-      return Stub.Proxy.sDefaultImpl;
-    }
   }
+  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.notification.INotificationPoster";
   // PostNotification
-
   public void post(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper data) throws android.os.RemoteException;
   public void cancelWithTag(java.lang.String tag) throws android.os.RemoteException;
+  /** @hide */
+  static class _Parcel {
+    static private <T> T readTypedObject(
+        android.os.Parcel parcel,
+        android.os.Parcelable.Creator<T> c) {
+      if (parcel.readInt() != 0) {
+          return c.createFromParcel(parcel);
+      } else {
+          return null;
+      }
+    }
+    static private <T extends android.os.Parcelable> void writeTypedObject(
+        android.os.Parcel parcel, T value, int parcelableFlags) {
+      if (value != null) {
+        parcel.writeInt(1);
+        value.writeToParcel(parcel, parcelableFlags);
+      } else {
+        parcel.writeInt(0);
+      }
+    }
+  }
 }

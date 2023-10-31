@@ -89,6 +89,7 @@ val allActionClasses = listOf(
     Action.RemoveNotificationForPackageByPkg::class,
     Action.HttpRequest::class,
     Action.InjectKeyCode::class,
+    Action.InjectCombineKeyCode::class,
     Action.WakeupScreen::class,
     Action.SleepScreen::class,
     Action.StartLastApp::class,
