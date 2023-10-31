@@ -447,6 +447,7 @@
   "ui.action.click.tile": "Click QS tile",
   "ui.action.click.tile.is.long.click": "Long click",
   "ui.action.inject.keycode": "Press key",
+  "ui.action.inject.combine.keycode": "Combine key",
   "ui.action.custom.keycode": "Custom keycode",
   "ui.action.enable.universal.copy": "Universal copy",
   "ui.action.enable.universal.copy.text.not.found": "No text to copy",

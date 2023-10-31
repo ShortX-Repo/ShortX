@@ -164,7 +164,10 @@
             android:exported="false" />
         <activity
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.StartActivityIntentSelectorActivity"
-            android:excludeFromRecents="false" />
+            android:exported="false" />
+        <activity
+            android:name="tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.tile.Tile1"

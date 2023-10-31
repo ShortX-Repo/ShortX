@@ -7,7 +7,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import tornaco.apps.shortx.core.BuildProp
 import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.RingerMode
 import tornaco.apps.shortx.core.proto.common.VolumeDirection
@@ -25,6 +24,7 @@ import tornaco.apps.shortx.ui.addrule.base.rememberCategoryState
 import tornaco.apps.shortx.ui.addrule.condition.SIMSlotSelectorDialog
 import tornaco.apps.shortx.ui.addrule.condition.rememberSIMSlotSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.BrightnessValueSelector
+import tornaco.apps.shortx.ui.addrule.fact.selector.CombineKeyEventSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.KeyEventSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.QSTileSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.VibratePatternSelector
@@ -87,6 +87,16 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
         addAction(Action.InjectKeyCode(code = code))
     })
     KeyEventSelector(injectKeyCodeSelectorState)
+
+    val injectCombineKeyCodeLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.toBaseSelectorActionOrNull<Action.InjectCombineKeyCode>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
 
     val adjustVolumeSelectorState = rememberMenuDialogState<String>(
         title = i18N["ui.action.adjust.volume"],
@@ -222,6 +232,17 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.InjectCombineKeyCode::class -> {
+                injectCombineKeyCodeLauncher.launch(
+                    BaseSelectorActivity.newIntent(
+                        context,
+                        source.getActionAs<Action.InjectCombineKeyCode>(),
+                        CombineKeyEventSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
             Action.AdjustVolume::class -> {
                 adjustVolumeSelectorState.show()
                 true
@@ -311,6 +332,7 @@ fun SystemActions(
         Action.WakeupScreen::class,
         Action.SleepScreen::class,
         Action.InjectKeyCode::class,
+        Action.InjectCombineKeyCode::class,
         Action.MediaPlayback::class,
         Action.SetRingerMode::class,
         Action.AdjustVolume::class,

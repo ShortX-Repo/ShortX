@@ -445,6 +445,7 @@
   "ui.action.click.tile": "点击磁贴",
   "ui.action.click.tile.is.long.click": "长按",
   "ui.action.inject.keycode": "模拟按键",
+  "ui.action.inject.combine.keycode": "模拟组合按键",
   "ui.action.custom.keycode": "自定义keycode",
   "ui.action.show.danmu": "显示弹幕",
   "ui.action.danmu.text": "文本",
