@@ -90,7 +90,12 @@ class PkgPool(
     }
 
     private val _allApps: MutableMap<String, App> = mutableMapOf()
-    val allApps: Map<String, App> get() = _allApps.toMap()
+    private val allApps: Map<String, App> get() = _allApps
+
+    @Synchronized
+    fun <T> withAllApps(call: Map<String, App>.() -> T): T {
+        return call.invoke(allApps)
+    }
 
     private val shortXAppUids = mutableListOf<Int>()
     private val systemUIAppUids = mutableListOf<Int>()

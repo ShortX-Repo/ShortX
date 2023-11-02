@@ -184,22 +184,30 @@ class AppStateService(shortXContext: ShortXContext) :
     private fun poolForUser(userId: Int) = pkgPools.firstOrNull { it.userId == userId }
 
     fun getInstalledApps(): List<App> {
-        return pkgPools.map { it.allApps.values }.flatten()
+        return pkgPools.map {
+            it.withAllApps { values }
+        }.flatten()
     }
 
     fun uidToApp(uid: Int): App? {
         val userId = UserHandle.getUserId(uid)
         return poolForUser(userId)?.let { pool ->
-            pool.allApps.values.firstOrNull { it.uid == uid }
+            pool.withAllApps {
+                values.firstOrNull { it.uid == uid }
+            }
         }
     }
 
     fun pkgToApp(pkg: AppPkg): App? {
-        return pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)
+        return pkgPools.firstOrNull { it.userId == pkg.userId }?.withAllApps {
+            get(pkg.pkgName)
+        }
     }
 
     fun getAppLabel(pkg: AppPkg): String? =
-        pkgPools.firstOrNull { it.userId == pkg.userId }?.allApps?.get(pkg.pkgName)?.label
+        pkgPools.firstOrNull { it.userId == pkg.userId }?.withAllApps {
+            get(pkg.pkgName)?.label
+        }
 
     fun onPackageUpdated(listener: (App) -> Unit) {
         onPackageUpdatedListeners.add(listener)
