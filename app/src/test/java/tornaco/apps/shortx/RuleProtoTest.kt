@@ -96,7 +96,8 @@ class RuleProtoTest {
                 onJobStarted = {},
                 actionEvaluateResultListener = { },
                 actionEvaluateStartListener = {},
-                conditionEvaluateResultListener = {}
+                conditionEvaluateResultListener = {},
+                isSystemReadyPublished = { true }
             ).fire(
                 KeyEvent.newBuilder().setKeyCode(20).build(),
                 listOf(rule)

@@ -57,6 +57,8 @@ object RuleEngineFactory {
         onJobCompleted: (String) -> Unit,
         onJobCancelled: (String) -> Unit,
         scope: CoroutineScope = CoroutineScope(SupervisorJob()),
+        isRuleFeatureEnabled: () -> Boolean = { shortXContext.rule.isRuleFeatureEnabled() },
+        isSystemReadyPublished: () -> Boolean = { shortXContext.user.isSystemReadyTriggered },
     ) = DefaultRuleEngine(
         factMatcher = factMatcher,
         conditionEvaluator = conditionEvaluator,
@@ -65,8 +67,8 @@ object RuleEngineFactory {
         onJobStarted = onJobStarted,
         onJobCompleted = onJobCompleted,
         onJobCancelled = onJobCancelled,
-        isRuleFeatureEnabled = { shortXContext.rule.isRuleFeatureEnabled() },
-        isSystemReadyPublished = { shortXContext.user.isSystemReadyTriggered },
+        isRuleFeatureEnabled = isRuleFeatureEnabled,
+        isSystemReadyPublished = isSystemReadyPublished,
     )
 }
 
