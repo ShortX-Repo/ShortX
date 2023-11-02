@@ -128,7 +128,11 @@ interface Engine {
     val coroutineScope: CoroutineScope
 
     fun shouldFire(
-        rules: List<Rule>, fact: ProtoMessage
+        rules: List<Rule>,
+        fact: ProtoMessage,
+        // For normal fact, no need to check condition
+        // For KeyEvent, pls check condition before intercept system
+        checkCondition: Boolean
     ): Boolean
 
     fun fire(
@@ -189,18 +193,24 @@ class DefaultRuleEngine(
         .setSerialNumber(nextEvaluateContextSerialNumber())
         .build()
 
-    override fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
+    override fun shouldFire(
+        rules: List<Rule>,
+        fact: ProtoMessage,
+        checkCondition: Boolean
+    ): Boolean {
         if (!isRuleFeatureEnabled()) return false
         val startTimeMillis = System.currentTimeMillis()
         return rules.filterInvalid().any {
             shouldFireRuleForFact(
                 context = preCheckContext,
                 fact = fact,
-                rule = it
+                rule = it,
+                checkCondition = checkCondition
             ) || shouldFireRuleZQuitForFact(
                 context = preCheckContext,
                 fact = fact,
-                rule = it
+                rule = it,
+                checkCondition = checkCondition
             )
         }.also {
             logger.d("shouldFire check taken: ${System.currentTimeMillis() - startTimeMillis}ms")
@@ -210,36 +220,44 @@ class DefaultRuleEngine(
     private fun shouldFireRuleForFact(
         context: EvaluateContext,
         fact: ProtoMessage,
-        rule: Rule
-    ) = factMatcher.match(fact, rule.factsList) && runBlocking {
-        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
-            conditionEvaluator.evaluate(
-                evaluateContext = context,
-                condOp = rule.condOp,
-                condOpPayload = rule.condOpPayload,
-                conditions = rule.conditionsList,
-                contextData = ContextData.obtain(),
-                localVars = LocalVars.obtain()
+        rule: Rule,
+        checkCondition: Boolean
+    ) = factMatcher.match(fact, rule.factsList) && (
+            !checkCondition || (
+                    runBlocking {
+                        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+                            conditionEvaluator.evaluate(
+                                evaluateContext = context,
+                                condOp = rule.condOp,
+                                condOpPayload = rule.condOpPayload,
+                                conditions = rule.conditionsList,
+                                contextData = ContextData.obtain(),
+                                localVars = LocalVars.obtain()
+                            )
+                        }
+                    } ?: defaultCondRes(rule))
             )
-        }
-    } ?: defaultCondRes(rule)
 
     private fun shouldFireRuleZQuitForFact(
         context: EvaluateContext,
         fact: ProtoMessage,
-        rule: Rule
-    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList) && runBlocking {
-        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
-            conditionEvaluator.evaluate(
-                evaluateContext = context,
-                condOp = rule.quit.condOp,
-                condOpPayload = rule.quit.condOpPayload,
-                conditions = rule.quit.conditionsList,
-                contextData = ContextData.obtain(),
-                localVars = LocalVars.obtain()
+        rule: Rule,
+        checkCondition: Boolean
+    ) = rule.quit.isEnabled && factMatcher.match(fact, rule.quit.factsList) && (
+            !checkCondition || (
+                    runBlocking {
+                        withTimeoutOrNull(CONDITION_WAIT_TIMEOUT) {
+                            conditionEvaluator.evaluate(
+                                evaluateContext = context,
+                                condOp = rule.quit.condOp,
+                                condOpPayload = rule.quit.condOpPayload,
+                                conditions = rule.quit.conditionsList,
+                                contextData = ContextData.obtain(),
+                                localVars = LocalVars.obtain()
+                            )
+                        }
+                    } ?: defaultCondRes(rule))
             )
-        }
-    } ?: defaultCondRes(rule)
 
     // Should call in Handler to make it Thread safe.
     override fun fire(

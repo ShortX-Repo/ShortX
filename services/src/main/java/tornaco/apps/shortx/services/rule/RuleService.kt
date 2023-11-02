@@ -48,8 +48,6 @@ import tornaco.apps.shortx.services.data.RuleSettingsStore
 import tornaco.apps.shortx.services.data.Settings
 import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
-import tornaco.apps.shortx.services.watchdog.launchSafety
-import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.rule.actor.PrebuiltActor
 import tornaco.apps.shortx.services.rule.actor.dummyHandlerParamsForAction
 import tornaco.apps.shortx.services.rule.actor.impl.ExecuteMVEL
@@ -58,6 +56,8 @@ import tornaco.apps.shortx.services.rule.fact.trigger.allTriggers
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.util.SingleKeyGestureDetector
+import tornaco.apps.shortx.services.watchdog.launchSafety
+import tornaco.apps.shortx.services.watchdog.postSafety
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -272,7 +272,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             // Check Normal Rules.
             val fact = KeyEvent.newBuilder().setKeyCode(it.keyCode).build()
             val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact)) {
+            if (shouldFire(enabledRules, fact, true)) {
                 if (it.action == android.view.KeyEvent.ACTION_UP) {
                     logger.d("hasAnyRuleMatchFact for keyCode: ${it.keyCode}")
                     handler.postSafety {
@@ -293,7 +293,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
             logger.d("onGestureEvent: $it")
             val fact = EdgeGesture.newBuilder().setEdge(it.first).setGesture(it.second).build()
             val enabledRules = getAllEnabledRules()
-            if (shouldFire(enabledRules, fact)) {
+            if (shouldFire(enabledRules, fact, true)) {
                 logger.d("hasAnyRuleMatchFact for onGestureEvent: $it")
                 handler.postSafety {
                     engine.fire(
@@ -321,8 +321,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     }
 
     // Quick check.
-    fun shouldFire(rules: List<Rule>, fact: ProtoMessage): Boolean {
-        return engine.shouldFire(rules, fact)
+    fun shouldFire(rules: List<Rule>, fact: ProtoMessage, checkCondition: Boolean): Boolean {
+        return engine.shouldFire(rules = rules, fact = fact, checkCondition = checkCondition)
     }
 
     @Deprecated("use publishFact with initialContextDataLazy")
