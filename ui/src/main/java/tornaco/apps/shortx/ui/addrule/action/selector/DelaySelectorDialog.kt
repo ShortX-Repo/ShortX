@@ -4,7 +4,6 @@ package tornaco.apps.shortx.ui.addrule.action.selector
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 
 class DelayState(
+    val canUseAlarm: Boolean,
     val onSelected: (Action.Delay) -> Unit
 ) : CommonDialogState() {
 
@@ -39,14 +39,22 @@ class DelayState(
         show()
     }
 
+    fun show(initialTime: String? = null) {
+        this.currentValue = initialTime ?: ""
+        this.useAlarm = false
+        show()
+    }
+
 }
 
 @Composable
 fun rememberDelayState(
+    canUseAlarm: Boolean,
     onSelected: (Action.Delay) -> Unit
 ): DelayState {
     return remember {
         DelayState(
+            canUseAlarm,
             onSelected
         )
     }
@@ -86,12 +94,13 @@ fun DelaySelectorDialog(state: DelayState) {
                 StandardSpacer()
 
 
-                FieldTitle(text = LocalI18N.current["ui.action.delay.input.use.alarm"])
-                TipBody(text = LocalI18N.current["ui.action.delay.input.use.alarm.summary"])
-                ShortXSwitch(checked = state.useAlarm, onCheckedChange = {
-                    state.useAlarm = it
-                })
-
+                if (state.canUseAlarm) {
+                    FieldTitle(text = LocalI18N.current["ui.action.delay.input.use.alarm"])
+                    TipBody(text = LocalI18N.current["ui.action.delay.input.use.alarm.summary"])
+                    ShortXSwitch(checked = state.useAlarm, onCheckedChange = {
+                        state.useAlarm = it
+                    })
+                }
             }
         })
     }

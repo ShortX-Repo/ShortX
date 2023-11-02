@@ -21,6 +21,7 @@ import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
 import tornaco.apps.shortx.core.proto.condition.RequireBTDisconnected
+import tornaco.apps.shortx.core.proto.condition.RequireDelay
 import tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled
 import tornaco.apps.shortx.core.proto.condition.RequireScreenRotate
 import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
@@ -393,6 +394,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 isInvert = data.isInvert,
                 customContextDataKey = data.customContextDataKey,
                 degree = data.degree
+            )
+        }
+
+        this is_ RequireDelay::class.java -> {
+            val data = this unpack_ RequireDelay::class.java
+            Condition.RequireDelay(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                timeString = data.timeString
             )
         }
 

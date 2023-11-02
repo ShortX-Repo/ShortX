@@ -70,6 +70,7 @@ fun extActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
 
     val delaySelectionState =
         rememberDelayState(
+            canUseAlarm = true,
             onSelected = {
                 addAction(it)
             })

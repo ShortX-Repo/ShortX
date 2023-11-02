@@ -23,6 +23,7 @@ fun OtherConditions(
     val items = listOf(
         Condition.MVEL::class,
         Condition.TRUE::class,
+        Condition.RequireDelay::class,
         Condition.EvaluateGlobalVar::class,
         Condition.EvaluateLocalVar::class,
         Condition.IsRuleEnabled::class

@@ -186,6 +186,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.RequireDelay::class -> {
+            listOf(
+                i18N["ui.action.delay"],
+            )
+        }
+
         else -> {
             emptyList()
         }
@@ -402,6 +408,13 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
             listOf(
                 i18N["ui.fact.window.rotate"],
                 i18N[condition.degree.labelKey()]
+            )
+        }
+
+        is Condition.RequireDelay -> {
+            listOf(
+                i18N["ui.action.delay"],
+                i18N[condition.timeString]
             )
         }
     }

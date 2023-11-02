@@ -3,7 +3,9 @@ package tornaco.apps.shortx.ui.addrule.condition.selector
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.selector.DelaySelectorDialog
 import tornaco.apps.shortx.ui.addrule.action.selector.SetRuleEnabledSelectorDialog
+import tornaco.apps.shortx.ui.addrule.action.selector.rememberDelayState
 import tornaco.apps.shortx.ui.addrule.action.selector.rememberSetRuleEnabledDialogState
 import tornaco.apps.shortx.ui.addrule.condition.ConditionSelectSource
 import tornaco.apps.shortx.ui.addrule.condition.EvaluateGlobalVarSelectorDialog
@@ -40,16 +42,24 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     val setRuleEnabledState = rememberSetRuleEnabledDialogState(
         LocalI18N.current["ui.condition.is.rule.enabled"],
         onSelected = {
-        addCondition(
-            Condition.IsRuleEnabled(
-                ruleId = it.ruleId,
-                isEnabled = it.enableRule,
-                ruleLabel = it.ruleLabel
+            addCondition(
+                Condition.IsRuleEnabled(
+                    ruleId = it.ruleId,
+                    isEnabled = it.enableRule,
+                    ruleLabel = it.ruleLabel
+                )
             )
-        )
-    })
+        })
     SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
 
+
+    val delaySelectionState =
+        rememberDelayState(
+            canUseAlarm = false,
+            onSelected = {
+                addCondition(Condition.RequireDelay(timeString = it.time))
+            })
+    DelaySelectorDialog(state = delaySelectionState)
 
     return { source ->
         when (source.clazz) {
@@ -60,6 +70,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
 
             Condition.TRUE::class -> {
                 addCondition(Condition.TRUE())
+                true
+            }
+
+            Condition.RequireDelay::class -> {
+                delaySelectionState.show(initialTime = source.getConditionAs<Condition.RequireDelay>()?.timeString)
                 true
             }
 
