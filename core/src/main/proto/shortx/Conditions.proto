@@ -369,3 +369,15 @@ message RequireWindowRotation {
   string note = 99;
   string id = 100;
 }
+
+message RequireDelay {
+  string timeString = 1;
+  bool useAlarm = 2;
+
+  CustomContextDataKey customContextDataKey = 97;
+  bool isInvert = 98;
+  string note = 99;
+  string id = 100;
+}
+
+
