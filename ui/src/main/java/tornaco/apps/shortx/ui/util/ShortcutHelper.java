@@ -2,7 +2,7 @@ package tornaco.apps.shortx.ui.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 
 import androidx.annotation.WorkerThread;
 
@@ -13,9 +13,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
 
-import tornaco.apps.shortx.core.proto.common.App;
+import lang3.RandomStringUtils;
 import tornaco.apps.shortx.core.util.Logger;
-import tornaco.apps.shortx.ui.R;
+import tornaco.apps.shortx.ui.base.IconsKt;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ShortcutHelper {
@@ -27,29 +27,27 @@ public class ShortcutHelper {
 
     @WorkerThread
     public static File createShortcutStubApkFor(Context context,
-                                         App appInfo,
-                                         String appLabel,
-                                         String versionName,
-                                         int versionCode) throws Exception {
+                                                String appLabel,
+                                                String iconName,
+                                                String versionName,
+                                                int versionCode) throws Exception {
         File workDir = new File(Objects.requireNonNull(context.getExternalCacheDir()).getAbsolutePath()
                 + File.separator
                 + WORK_DIR_PATH
                 + System.currentTimeMillis());
         File iconPath = new File(workDir, ICON_DIR_PATH);
         Files.createParentDirs(iconPath);
-        Bitmap iconBitmap = GlideUtils.loadInCurrentThread(context, appInfo);
-        if (iconBitmap == null) {
-            iconBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.splash_logo);
-        }
-        boolean compressed = iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, Files.asByteSink(iconPath).openStream());
+
+
+        Bitmap bitmap = IconUtils.INSTANCE.getCenteredAndColoredBitmap(context, IconsKt.remixResId(context, iconName), Color.BLUE, 64, 64);
+        boolean compressed = bitmap.compress(Bitmap.CompressFormat.PNG, 100, Files.asByteSink(iconPath).openStream());
         if (!compressed) {
             throw new IllegalStateException("Compress fail.");
         }
-        return generateStubApk(context, appInfo, workDir, iconPath, appLabel, versionName, versionCode);
+        return generateStubApk(context, workDir, iconPath, appLabel, versionName, versionCode);
     }
 
     private static File generateStubApk(Context context,
-                                        App appInfo,
                                         File workDir,
                                         File iconPath,
                                         String appLabel,
@@ -61,7 +59,7 @@ public class ShortcutHelper {
                         + File.separator
                         + OUT_APK_PATH
                         + File.separator
-                        + appInfo.getPkg().getPkgName()));
+                        + "tornaco.apps.shortx.stub." + RandomStringUtils.randomAlphabetic(8).toLowerCase()));
 
         Files.createParentDirs(outApk);
         Files.createParentDirs(workDir);
@@ -75,14 +73,15 @@ public class ShortcutHelper {
                 .commit();
         // Replaces/
         apkBuilder
-                .replaceFile("res/mipmap-xxxhdpi-v4/ic_launcher.png", iconPath.getPath())
-                .replaceFile("res/mipmap-xxhdpi-v4/ic_launcher.png", iconPath.getPath())
-                .replaceFile("res/mipmap-xhdpi-v4/ic_launcher.png", iconPath.getPath())
-                .replaceFile("res/mipmap-hdpi-v4/ic_launcher.png", iconPath.getPath())
+                .replaceFile("res/o-.png", iconPath.getPath())
+                .replaceFile("res/RJ.png", iconPath.getPath())
+                .replaceFile("res/FS.png", iconPath.getPath())
+                .replaceFile("res/yn.png", iconPath.getPath())
+                .replaceFile("res/9w.png", iconPath.getPath())
                 .setArscPackageName("test")
                 .build()
-                .sign()
-                .cleanWorkspace();
+                .sign();
+        //.cleanWorkspace();
 
         return outApk;
     }
