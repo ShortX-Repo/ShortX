@@ -88,6 +88,7 @@ fun SettingsScreen(
     goToGestureRecord: () -> Unit,
     viewOpenSourceLicense: () -> Unit,
     viewPrivacyStatement: () -> Unit,
+    manageShortcutApps: () -> Unit,
     goToSettingsCatcherRecord: () -> Unit,
 ) {
     val vm = hiltViewModel<SettingsViewModel>()
@@ -302,6 +303,7 @@ fun SettingsScreen(
                                 state = state,
                                 mainState = subscribeState,
                                 vm = vm,
+                                manageShortcutApps = manageShortcutApps
                             )
                         )
                         addAll(devSettings(state = state, vm = vm))
@@ -694,6 +696,7 @@ private fun engineSettings(
     state: SettingsState,
     mainState: LVLStateHolder.State,
     vm: SettingsViewModel,
+    manageShortcutApps: () -> Unit,
 ): List<Preference> {
     val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
@@ -788,6 +791,13 @@ private fun engineSettings(
             onCheckChanged = { enable ->
                 vm.setPostNByAppEnabled(enable)
             }
+        ),
+        Preference.TextPreference(
+            icon = Remix.System.apps_fill,
+            title = i18N["Shortcut apps"],
+            summary = i18N["Shortcut apps"],
+            hasLongSummary = false,
+            onClick = manageShortcutApps
         )
     ).filterNotNull()
 }

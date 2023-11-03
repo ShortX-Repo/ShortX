@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.record.SettingsAccessRecordActivity
 import tornaco.apps.shortx.ui.settings.SettingsScreen
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
+import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.AssetUtils
 
@@ -137,6 +138,9 @@ fun HomeScreen() {
                                         "privacy/privacy_agreement.html"
                                     )
                                 )
+                            },
+                            manageShortcutApps = {
+                                ShortcutStubManageActivity.start(context)
                             })
 
                         BackHandler(enabled = drawerState.isOpen) {
