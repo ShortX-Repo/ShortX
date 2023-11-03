@@ -23,7 +23,7 @@ object WhileLoop : Actor {
         withContext(Dispatchers.IO) {
             val d = action unpack_ WhileLoop::class.java
             if (d.actionsList.isNullOrEmpty().not()) {
-                val delay = maxOf(500L, d.delay.toLong())
+                val delay = maxOf(10L, d.delay.toLong())
                 val repeat = if (d.repeatTimes <= 0) Int.MAX_VALUE else d.repeatTimes
                 logger.d("WhileLoop execute, repeat: $repeat")
                 var index = 0
