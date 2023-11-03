@@ -43,6 +43,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -230,7 +231,7 @@ private fun ItemCard(itemLabel: String, content: @Composable () -> Unit) {
 private fun ColorPickerDialog(state: ColorPickerDialogState) {
     if (state.isShowing) {
         var colorValue by remember {
-            mutableStateOf(state.colorInt)
+            mutableIntStateOf(state.colorInt)
         }
         Dialog(properties = DialogProperties(dismissOnClickOutside = false), onDismissRequest = {
             state.dismiss()
@@ -287,7 +288,7 @@ private fun ColorPickerDialog(state: ColorPickerDialogState) {
     }
 }
 
-class ColorPickerDialogState(
+private class ColorPickerDialogState(
     val colorInt: Int,
     val onColorChanged: (Int) -> Unit,
 ) {
