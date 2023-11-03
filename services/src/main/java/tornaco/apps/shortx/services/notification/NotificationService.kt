@@ -184,6 +184,9 @@ class NotificationService(shortXContext: ShortXContext) :
 
     fun removeNotificationByTag(tag: String) {
         logger.d("removeNotificationByTag: $tag")
+
+        AppNotificationServiceProxy.cancelWithTag(context, tag)
+
         synchronized(attachedPoster) {
             val itemCount = attachedPoster.beginBroadcast()
             if (itemCount == 0) {
@@ -248,6 +251,20 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
         })
     }
 
+    fun cancelWithTag(tag: String) {
+        setTask(object : ProxyTask() {
+            override fun run() {
+                runCatching {
+                    logger.i("call remove: $impl")
+                    requireNotNull(impl) { "impl is null." }.cancelWithTag(tag)
+                }.onFailure {
+                    logger.e(it, "ProxyTask")
+                }
+            }
+
+        })
+    }
+
     companion object {
         fun post(context: Context, postNotification: PostNotification) {
             val intent = Intent()
@@ -255,6 +272,14 @@ internal class AppNotificationServiceProxy(context: Context, intent: Intent?) :
             intent.component =
                 ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
             return AppNotificationServiceProxy(context, intent).post(postNotification)
+        }
+
+        fun cancelWithTag(context: Context, tag: String) {
+            val intent = Intent()
+            intent.setPackage(BuildProp.APP_PACKAGE_NAME)
+            intent.component =
+                ComponentName.unflattenFromString("${BuildProp.APP_PACKAGE_NAME}/${BuildProp.APP_NOTIFICATION_SERVICE_NAME}")
+            return AppNotificationServiceProxy(context, intent).cancelWithTag(tag)
         }
     }
 }
