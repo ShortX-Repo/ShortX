@@ -887,5 +887,9 @@
   "ui.common.app.xposedmodule": "Xposed模块",
   "ui.common.app.all": "全部",
   "ui.common.sensor.tip.title": "正在监听{count}个传感器",
-  "ui.common.picker.pick": "选择"
+  "ui.common.picker.pick": "选择",
+  "ui.common.install": "安装",
+  "ui.common.uninstall": "卸载",
+  "ui.common.install.success": "安装成功",
+  "ui.common.install.failed": "安装失败，请抓取日志反馈"
 }

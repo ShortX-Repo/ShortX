@@ -46,6 +46,7 @@ import tornaco.apps.shortx.core.rule.IPkgSetObserver
 import tornaco.apps.shortx.core.rule.IRuleObserver
 import tornaco.apps.shortx.core.rule.ProtoAny
 import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.rule.action.emptyByteArrayWrapper
 import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
@@ -59,9 +60,6 @@ import tornaco.apps.shortx.core.util.powerManager
 import tornaco.apps.shortx.core.util.statusBarManager
 import tornaco.apps.shortx.core.util.wifiManager
 import tornaco.apps.shortx.services.data.Dirs
-import tornaco.apps.shortx.services.data.Settings
-import tornaco.apps.shortx.services.data.read
-import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.toHttpResponseBody
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
@@ -971,6 +969,32 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun isPostNByAppEnabled(): Boolean {
             return shortXContext.notification.isPostNByAppEnabled()
+        }
+
+        override fun installApk(
+            packageName: String,
+            fd: ParcelFileDescriptor,
+            onSuccess: ICallback,
+            onFailure: ICallback
+        ) {
+            enforceCallingPermissions()
+            shortXContext.appState.installApk(
+                packageName = packageName,
+                fd = fd,
+                onSuccess = {
+                    onSuccess.receive(emptyByteArrayWrapper)
+                },
+                onFailure = {
+                    onFailure.receive(emptyByteArrayWrapper)
+                })
+        }
+
+        override fun getInstalledShortcutApps(): List<ByteArrayWrapper> {
+            return shortXContext.appState.getInstalledApps().filter {
+                it.isShortcutStub
+            }.map {
+                ByteArrayWrapper(it.toByteArray())
+            }
         }
 
         override fun getActivities(

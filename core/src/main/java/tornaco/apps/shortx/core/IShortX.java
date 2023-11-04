@@ -597,6 +597,13 @@ public interface IShortX extends android.os.IInterface
     {
       return false;
     }
+    @Override public void installApk(java.lang.String packageName, android.os.ParcelFileDescriptor fd, tornaco.apps.shortx.core.ICallback onSuccess, tornaco.apps.shortx.core.ICallback onFailure) throws android.os.RemoteException
+    {
+    }
+    @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledShortcutApps() throws android.os.RemoteException
+    {
+      return null;
+    }
     @Override
     public android.os.IBinder asBinder() {
       return null;
@@ -2310,6 +2317,34 @@ public interface IShortX extends android.os.IInterface
           boolean _result = this.isPostNByAppEnabled();
           reply.writeNoException();
           reply.writeInt(((_result)?(1):(0)));
+          return true;
+        }
+        case TRANSACTION_installApk:
+        {
+          data.enforceInterface(descriptor);
+          java.lang.String _arg0;
+          _arg0 = data.readString();
+          android.os.ParcelFileDescriptor _arg1;
+          if ((0!=data.readInt())) {
+            _arg1 = android.os.ParcelFileDescriptor.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg1 = null;
+          }
+          tornaco.apps.shortx.core.ICallback _arg2;
+          _arg2 = tornaco.apps.shortx.core.ICallback.Stub.asInterface(data.readStrongBinder());
+          tornaco.apps.shortx.core.ICallback _arg3;
+          _arg3 = tornaco.apps.shortx.core.ICallback.Stub.asInterface(data.readStrongBinder());
+          this.installApk(_arg0, _arg1, _arg2, _arg3);
+          reply.writeNoException();
+          return true;
+        }
+        case TRANSACTION_getInstalledShortcutApps:
+        {
+          data.enforceInterface(descriptor);
+          java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result = this.getInstalledShortcutApps();
+          reply.writeNoException();
+          reply.writeTypedList(_result);
           return true;
         }
         default:
@@ -5701,6 +5736,54 @@ public interface IShortX extends android.os.IInterface
         }
         return _result;
       }
+      @Override public void installApk(java.lang.String packageName, android.os.ParcelFileDescriptor fd, tornaco.apps.shortx.core.ICallback onSuccess, tornaco.apps.shortx.core.ICallback onFailure) throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          _data.writeString(packageName);
+          if ((fd!=null)) {
+            _data.writeInt(1);
+            fd.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
+          _data.writeStrongBinder((((onSuccess!=null))?(onSuccess.asBinder()):(null)));
+          _data.writeStrongBinder((((onFailure!=null))?(onFailure.asBinder()):(null)));
+          boolean _status = mRemote.transact(Stub.TRANSACTION_installApk, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().installApk(packageName, fd, onSuccess, onFailure);
+            return;
+          }
+          _reply.readException();
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+      }
+      @Override public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledShortcutApps() throws android.os.RemoteException
+      {
+        android.os.Parcel _data = android.os.Parcel.obtain();
+        android.os.Parcel _reply = android.os.Parcel.obtain();
+        java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> _result;
+        try {
+          _data.writeInterfaceToken(DESCRIPTOR);
+          boolean _status = mRemote.transact(Stub.TRANSACTION_getInstalledShortcutApps, _data, _reply, 0);
+          if (!_status && getDefaultImpl() != null) {
+            return getDefaultImpl().getInstalledShortcutApps();
+          }
+          _reply.readException();
+          _result = _reply.createTypedArrayList(tornaco.apps.shortx.core.rule.action.ByteArrayWrapper.CREATOR);
+        }
+        finally {
+          _reply.recycle();
+          _data.recycle();
+        }
+        return _result;
+      }
       public static tornaco.apps.shortx.core.IShortX sDefaultImpl;
     }
     static final int TRANSACTION_version = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -5856,6 +5939,8 @@ public interface IShortX extends android.os.IInterface
     static final int TRANSACTION_unregisterSensorUsageListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 150);
     static final int TRANSACTION_setPostNByAppEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 151);
     static final int TRANSACTION_isPostNByAppEnabled = (android.os.IBinder.FIRST_CALL_TRANSACTION + 152);
+    static final int TRANSACTION_installApk = (android.os.IBinder.FIRST_CALL_TRANSACTION + 153);
+    static final int TRANSACTION_getInstalledShortcutApps = (android.os.IBinder.FIRST_CALL_TRANSACTION + 154);
     public static boolean setDefaultImpl(tornaco.apps.shortx.core.IShortX impl) {
       // Only one user of this interface can use this function
       // at a time. This is a heuristic to detect if two different
@@ -6086,4 +6171,6 @@ public interface IShortX extends android.os.IInterface
 
   public void setPostNByAppEnabled(boolean enable) throws android.os.RemoteException;
   public boolean isPostNByAppEnabled() throws android.os.RemoteException;
+  public void installApk(java.lang.String packageName, android.os.ParcelFileDescriptor fd, tornaco.apps.shortx.core.ICallback onSuccess, tornaco.apps.shortx.core.ICallback onFailure) throws android.os.RemoteException;
+  public java.util.List<tornaco.apps.shortx.core.rule.action.ByteArrayWrapper> getInstalledShortcutApps() throws android.os.RemoteException;
 }

@@ -2,30 +2,50 @@ package tornaco.apps.shortx.ui.shortcut
 
 import android.content.Context
 import android.content.Intent
+import android.os.ParcelFileDescriptor
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
+import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.proto.common.App
-import tornaco.apps.shortx.ui.base.StateViewModel
-import tornaco.apps.shortx.ui.composeLogger
-import tornaco.apps.shortx.ui.util.APKInstall
+import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
+import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.util.ShortcutHelper
 import java.io.File
-import java.io.IOException
 import java.security.SecureRandom
 
 data class ShortcutStubManageState(
     val shortcutApps: List<App> = emptyList()
 )
 
-class ShortcutStubManageViewModel :
-    StateViewModel<ShortcutStubManageState>({ ShortcutStubManageState() }) {
+sealed interface ShortcutStubManageEffect {
+    data object Installing : ShortcutStubManageEffect
+    data object InstallSuccess : ShortcutStubManageEffect
+    data object InstallFailure : ShortcutStubManageEffect
+}
+
+class ShortcutStubManageViewModel : ViewModel(),
+    ContainerHost<ShortcutStubManageState, ShortcutStubManageEffect> {
+
+    override val container: Container<ShortcutStubManageState, ShortcutStubManageEffect> =
+        container(initialState = ShortcutStubManageState())
 
     fun loadApps() {
-
+        intent {
+            val apps = shortXManager.getInstalledShortcutApps()
+            reduce {
+                state.copy(shortcutApps = apps)
+            }
+        }
     }
 
     fun installShortcutApk(context: Context, info: ShortcutStubInfo) {
@@ -36,7 +56,11 @@ class ShortcutStubManageViewModel :
         }
     }
 
-    private fun doInstallShortcutApk(context: Context, info: ShortcutStubInfo): Boolean {
+    private fun doInstallShortcutApk(context: Context, info: ShortcutStubInfo) {
+        intent {
+            postSideEffect(ShortcutStubManageEffect.Installing)
+        }
+
         val apkFile = ShortcutHelper.createShortcutStubApkFor(
             context,
             info.appLabel,
@@ -45,30 +69,24 @@ class ShortcutStubManageViewModel :
             info.appPkgName,
             1
         )
-
-        val onFailure = {
-            composeLogger.i("Install failure.")
-        }
-        val onSuccess = {
-            composeLogger.i("Install success.")
-        }
-        val session =
-            APKInstall.startSession(context, info.appPkgName, onFailure, onSuccess)
-        val cmd = "adb_pm_install ${apkFile.absolutePath} ${info.appPkgName}"
-        if (Shell.cmd(cmd).exec().isSuccess) return true
-
-        try {
-            session.install(context, apkFile)
-        } catch (e: IOException) {
-            composeLogger.e(e, "install")
-            return false
-        }
-        session.waitIntent()?.let {
-            composeLogger.i("waitIntent res: $it")
-            context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        } ?: return false
-
-        return true
+        val pfd = ParcelFileDescriptor.open(apkFile, ParcelFileDescriptor.MODE_READ_WRITE)
+        shortXManager.installApk(
+            info.appPkgName,
+            pfd,
+            onSuccess = object : ICallback.Stub() {
+                override fun receive(data: ByteArrayWrapper?) {
+                    intent {
+                        postSideEffect(ShortcutStubManageEffect.InstallSuccess)
+                    }
+                }
+            },
+            onFailure = object : ICallback.Stub() {
+                override fun receive(data: ByteArrayWrapper?) {
+                    intent {
+                        postSideEffect(ShortcutStubManageEffect.InstallFailure)
+                    }
+                }
+            })
     }
 
     private fun viewApkFile(context: Context, file: File) {

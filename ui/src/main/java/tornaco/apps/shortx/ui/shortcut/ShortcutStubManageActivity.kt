@@ -4,6 +4,7 @@ package tornaco.apps.shortx.ui.shortcut
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +48,7 @@ import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectSideEffect
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.ClickOutsideClearFocusBox
@@ -57,6 +58,7 @@ import tornaco.apps.shortx.ui.base.FieldTitle
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MDIconSelectorDialog
 import tornaco.apps.shortx.ui.base.MediumSpacer
+import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
@@ -65,6 +67,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SplitLines
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberMDIconSelectorState
+import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageViewModel.Companion.genPackageName
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -82,8 +85,32 @@ class ShortcutStubManageActivity : BaseActivity() {
     @Composable
     override fun Content() {
         val context = LocalContext.current
+        val i18N = LocalI18N.current
         val vm = hiltViewModel<ShortcutStubManageViewModel>()
-        val state by vm.state.collectAsState()
+
+        val progressDialogState =
+            rememberProgressDialogState(title = i18N["ui.common.install"], message = "...")
+        ProgressDialog(state = progressDialogState)
+
+        vm.collectSideEffect(sideEffect = {
+            when (it) {
+                ShortcutStubManageEffect.InstallFailure -> {
+                    progressDialogState.dismiss()
+                    Toast.makeText(context, i18N["ui.common.install.failed"], Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                ShortcutStubManageEffect.InstallSuccess -> {
+                    progressDialogState.dismiss()
+                    Toast.makeText(context, i18N["ui.common.install.success"], Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                ShortcutStubManageEffect.Installing -> {
+                    progressDialogState.show()
+                }
+            }
+        })
 
         LaunchedEffect(vm) {
             vm.loadApps()
@@ -100,7 +127,6 @@ class ShortcutStubManageActivity : BaseActivity() {
             Surface(
                 modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
             ) {
-                val i18N = LocalI18N.current
                 Scaffold(modifier = Modifier,
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     floatingActionButton = {
@@ -197,7 +223,7 @@ fun CreateShortcutStubContent(
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.shortx.stub.apk.create"]) },
+                        title = { Text(text = LocalI18N.current["ui.shortx.stub.apk.create"] + LocalI18N.current["ui.shortx.stub.apk"]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()
@@ -206,11 +232,11 @@ fun CreateShortcutStubContent(
                             }
                         },
                         actions = {
-                            IconButton(onClick = {
+                            TextButton(onClick = {
                                 state.dismiss()
                                 state.createShortcutApk(state.toShortcutStubInfo())
                             }) {
-                                RemixIcon(remixName = Remix.System.check_line)
+                                Text(text = LocalI18N.current["ui.common.install"])
                             }
                         }
                     )

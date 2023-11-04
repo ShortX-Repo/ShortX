@@ -6,16 +6,21 @@ import android.app.ActivityTaskManager
 import android.app.IActivityManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.os.Process
 import android.os.ServiceManager
 import android.os.UserHandle
 import android.widget.Toast
+import com.topjohnwu.superuser.Shell
 import github.tornaco.android.thanos.core.app.ThanosManagerNative
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.*
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.App
@@ -42,6 +47,9 @@ import tornaco.apps.shortx.services.os.UserEvent
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.util.*
 
 class AppStateService(shortXContext: ShortXContext) :
@@ -597,5 +605,65 @@ class AppStateService(shortXContext: ShortXContext) :
         synchronized(activityStartResultOneTimeListeners) {
             activityStartResultOneTimeListeners.add(listener)
         }
+    }
+
+    fun installApk(
+        packageName: String,
+        fd: ParcelFileDescriptor,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        systemServiceScope.launchSafety {
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    installApkInternal(packageName, fd).apply {
+                        if (this) onSuccess() else onFailure("Install failed.")
+                    }
+                }.onFailure {
+                    logger.e(it, "installApkInternal")
+                    onFailure(it.message ?: it.javaClass.toString())
+                }
+            }
+        }
+    }
+
+    private fun installApkInternal(packageName: String, fd: ParcelFileDescriptor): Boolean {
+        val tmpApkFile = File(Dirs.baseServerTmpDir(), "$packageName.apk").apply {
+            parentFile.mkdirs()
+        }
+        logger.d("installApk: $tmpApkFile")
+        fd.use {
+            val input = FileInputStream(fd.fileDescriptor)
+            input.use {
+                it.copyTo(tmpApkFile.outputStream())
+            }
+        }
+        logger.d("apk copy complete.")
+
+        val onFailure = {
+            logger.e("startSession failure.")
+        }
+        val onSuccess = {
+            logger.i("startSession success.")
+        }
+        val session =
+            APKInstall.startSession(context, packageName, onFailure, onSuccess)
+        val cmd = "adb_pm_install $tmpApkFile $packageName"
+        if (Shell.cmd(cmd).exec().isSuccess) return true
+
+        try {
+            session.install(context, tmpApkFile)
+        } catch (e: IOException) {
+            logger.e(e, "install")
+            return false
+        }
+
+        val intent = session.waitIntent()
+        logger.i("waitIntent: $intent")
+
+        intent?.let {
+            context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+        return true
     }
 }

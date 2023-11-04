@@ -888,5 +888,9 @@
   "ui.common.app.xposedmodule": "Xposed mod",
   "ui.common.app.all": "All",
   "ui.common.sensor.tip.title": "{count} sensor is listening",
-  "ui.common.picker.pick": "Pick"
+  "ui.common.picker.pick": "Pick",
+  "ui.common.install": "Install",
+  "ui.common.uninstall": "Uninstall",
+  "ui.common.install.success": "Install success",
+  "ui.common.install.failed": "Install failed, pls catch log and report to developer"
 }

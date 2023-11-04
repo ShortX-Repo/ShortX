@@ -263,4 +263,7 @@ interface IShortX {
     // N
     void setPostNByAppEnabled(boolean enable);
     boolean isPostNByAppEnabled();
+
+    void installApk(String packageName, in ParcelFileDescriptor fd, in ICallback onSuccess, in ICallback onFailure);
+    List<ByteArrayWrapper> getInstalledShortcutApps();
 }

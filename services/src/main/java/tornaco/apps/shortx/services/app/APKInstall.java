@@ -1,4 +1,4 @@
-package tornaco.apps.shortx.ui.util;
+package tornaco.apps.shortx.services.app;
 
 import static android.content.pm.PackageInstaller.EXTRA_SESSION_ID;
 import static android.content.pm.PackageInstaller.EXTRA_STATUS;
@@ -25,6 +25,8 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import tornaco.apps.shortx.core.compat.ContextCompat;
+
 public final class APKInstall {
 
     public static void transfer(InputStream in, OutputStream out) throws IOException {
@@ -40,7 +42,7 @@ public final class APKInstall {
             Context context, BroadcastReceiver receiver, IntentFilter filter) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // noinspection InlinedApi
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            context.registerReceiver(receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         } else {
             context.registerReceiver(receiver, filter);
         }
@@ -67,8 +69,10 @@ public final class APKInstall {
     public interface Session {
         // @WorkerThread
         OutputStream openStream(Context context) throws IOException;
+
         // @WorkerThread
         void install(Context context, File apk) throws IOException;
+
         // @WorkerThread @Nullable
         Intent waitIntent();
     }
@@ -136,7 +140,8 @@ public final class APKInstall {
             try {
                 // noinspection ResultOfMethodCallIgnored
                 latch.await(5, TimeUnit.SECONDS);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             return userAction;
         }
 
@@ -159,6 +164,7 @@ public final class APKInstall {
                 public void write(byte[] b, int off, int len) throws IOException {
                     out.write(b, off, len);
                 }
+
                 @Override
                 public void close() throws IOException {
                     super.close();

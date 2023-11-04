@@ -180,6 +180,14 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun getInstalledShortcutApps(): List<App> {
+        return invokeService(emptyList()) {
+            installedShortcutApps.map {
+                App.parseFrom(it.byteData)
+            }
+        }
+    }
+
     fun getAppLabel(pkg: AppPkg): String {
         return invokeService("Unknown") {
             getAppLabel(ByteArrayWrapper(pkg.toByteArray())) ?: "Unknown"
@@ -1027,6 +1035,17 @@ class ShortXManager(val service: IShortX) {
     fun isPostNByAppEnabled(): Boolean {
         return invokeService(false) {
             isPostNByAppEnabled
+        }
+    }
+
+    fun installApk(
+        packageName: String,
+        fd: ParcelFileDescriptor,
+        onSuccess: ICallback,
+        onFailure: ICallback
+    ) {
+        invokeService(Unit) {
+            installApk(packageName, fd, onSuccess, onFailure)
         }
     }
 
