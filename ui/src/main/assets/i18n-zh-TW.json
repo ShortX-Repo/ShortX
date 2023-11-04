@@ -871,6 +871,14 @@
   "ui.tools.regex.test.result": "匹配结果",
   "ui.user.guide": "查看教程",
   "ui.shortx.removed.toast": "ShortX已卸载，所有缓存文件都已清除，建议尽快重启设备",
+  "ui.shortx.stub.apk": "快捷应用",
+  "ui.shortx.stub.apk.description": "查看和管理快捷应用",
+  "ui.shortx.stub.apk.create": "创建",
+  "ui.shortx.stub.apk.label": "应用名称",
+  "ui.shortx.stub.apk.icon": "应用图标",
+  "ui.shortx.stub.apk.icon.tint": "图标颜色",
+  "ui.shortx.stub.apk.icon.bg": "图标背景色",
+  "ui.shortx.stub.apk.icon.preview": "预览",
   "ui.common.app.disabled": "已冻结",
   "ui.common.app.suspended": "已挂起",
   "ui.common.app.system": "系统",
@@ -878,5 +886,6 @@
   "ui.common.app.game": "游戏",
   "ui.common.app.xposedmodule": "Xposed模块",
   "ui.common.app.all": "全部",
-  "ui.common.sensor.tip.title": "正在监听{count}个传感器"
+  "ui.common.sensor.tip.title": "正在监听{count}个传感器",
+  "ui.common.picker.pick": "选择"
 }

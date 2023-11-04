@@ -794,8 +794,8 @@ private fun engineSettings(
         ),
         Preference.TextPreference(
             icon = Remix.System.apps_fill,
-            title = i18N["Shortcut apps"],
-            summary = i18N["Shortcut apps"],
+            title = i18N["ui.shortx.stub.apk"],
+            summary = i18N["ui.shortx.stub.apk.description"],
             hasLongSummary = false,
             onClick = manageShortcutApps
         )

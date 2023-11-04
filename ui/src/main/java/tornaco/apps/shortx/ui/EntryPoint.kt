@@ -1,10 +1,12 @@
 package tornaco.apps.shortx.ui
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornaco.android.sec.net.S
 import tornaco.apps.shortx.core.isSuccess
-import tornaco.apps.shortx.core.onDebugBuild
-import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.base.I18NCache
@@ -28,22 +30,12 @@ object EntryPoint {
         checkCB(context)
         LCRulesAdapter.initRules(context)
 
-        onDebugBuild {
-            Thread(Runnable {
-                runCatching {
-                    ShortcutHelper.createShortcutStubApkFor(
-                        context,
-                        "Test",
-                        Remix.System.apps_line,
-                        "1.0",
-                        1
-                    ).apply {
-                        logger.d("createShortcutStubApkFor: $this")
-                    }
-                }.onFailure {
-                    logger.e(it, "createShortcutStubApkFor")
-                }
-            }).start()
+        // Async clean up.
+        @Suppress("OPT_IN_USAGE")
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                ShortcutHelper.cleanUp(context)
+            }
         }
     }
 

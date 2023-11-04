@@ -21,6 +21,7 @@ public interface IAudioRecordingListener extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.IAudioRecordingListener
   {
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IAudioRecordingListener";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -48,9 +49,6 @@ public interface IAudioRecordingListener extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
-      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
-        data.enforceInterface(descriptor);
-      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -58,25 +56,23 @@ public interface IAudioRecordingListener extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
-      }
-      switch (code)
-      {
         case TRANSACTION_onStartRecording:
         {
+          data.enforceInterface(descriptor);
           this.onStartRecording();
-          break;
+          return true;
         }
         case TRANSACTION_onStopRecording:
         {
+          data.enforceInterface(descriptor);
           this.onStopRecording();
-          break;
+          return true;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
-      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.IAudioRecordingListener
     {
@@ -99,6 +95,10 @@ public interface IAudioRecordingListener extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onStartRecording, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onStartRecording();
+            return;
+          }
         }
         finally {
           _data.recycle();
@@ -110,16 +110,36 @@ public interface IAudioRecordingListener extends android.os.IInterface
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
           boolean _status = mRemote.transact(Stub.TRANSACTION_onStopRecording, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().onStopRecording();
+            return;
+          }
         }
         finally {
           _data.recycle();
         }
       }
+      public static tornaco.apps.shortx.core.IAudioRecordingListener sDefaultImpl;
     }
     static final int TRANSACTION_onStartRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_onStopRecording = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.IAudioRecordingListener impl) {
+      // Only one user of this interface can use this function
+      // at a time. This is a heuristic to detect if two different
+      // users in the same process use this function.
+      if (Stub.Proxy.sDefaultImpl != null) {
+        throw new IllegalStateException("setDefaultImpl() called twice");
+      }
+      if (impl != null) {
+        Stub.Proxy.sDefaultImpl = impl;
+        return true;
+      }
+      return false;
+    }
+    public static tornaco.apps.shortx.core.IAudioRecordingListener getDefaultImpl() {
+      return Stub.Proxy.sDefaultImpl;
+    }
   }
-  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.IAudioRecordingListener";
   public void onStartRecording() throws android.os.RemoteException;
   public void onStopRecording() throws android.os.RemoteException;
 }

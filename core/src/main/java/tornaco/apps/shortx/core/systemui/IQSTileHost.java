@@ -24,6 +24,7 @@ public interface IQSTileHost extends android.os.IInterface
   /** Local-side IPC implementation stub class. */
   public static abstract class Stub extends android.os.Binder implements tornaco.apps.shortx.core.systemui.IQSTileHost
   {
+    private static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.systemui.IQSTileHost";
     /** Construct the stub at attach it to the interface. */
     public Stub()
     {
@@ -51,9 +52,6 @@ public interface IQSTileHost extends android.os.IInterface
     @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
     {
       java.lang.String descriptor = DESCRIPTOR;
-      if (code >= android.os.IBinder.FIRST_CALL_TRANSACTION && code <= android.os.IBinder.LAST_CALL_TRANSACTION) {
-        data.enforceInterface(descriptor);
-      }
       switch (code)
       {
         case INTERFACE_TRANSACTION:
@@ -61,36 +59,40 @@ public interface IQSTileHost extends android.os.IInterface
           reply.writeString(descriptor);
           return true;
         }
-      }
-      switch (code)
-      {
         case TRANSACTION_getTiles:
         {
+          data.enforceInterface(descriptor);
           tornaco.apps.shortx.core.os.SynchronousResultReceiver _arg0;
-          _arg0 = _Parcel.readTypedObject(data, tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR);
+          if ((0!=data.readInt())) {
+            _arg0 = tornaco.apps.shortx.core.os.SynchronousResultReceiver.CREATOR.createFromParcel(data);
+          }
+          else {
+            _arg0 = null;
+          }
           this.getTiles(_arg0);
-          break;
+          return true;
         }
         case TRANSACTION_click:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.click(_arg0);
-          break;
+          return true;
         }
         case TRANSACTION_longClick:
         {
+          data.enforceInterface(descriptor);
           java.lang.String _arg0;
           _arg0 = data.readString();
           this.longClick(_arg0);
-          break;
+          return true;
         }
         default:
         {
           return super.onTransact(code, data, reply, flags);
         }
       }
-      return true;
     }
     private static class Proxy implements tornaco.apps.shortx.core.systemui.IQSTileHost
     {
@@ -112,8 +114,18 @@ public interface IQSTileHost extends android.os.IInterface
         android.os.Parcel _data = android.os.Parcel.obtain();
         try {
           _data.writeInterfaceToken(DESCRIPTOR);
-          _Parcel.writeTypedObject(_data, receiver, 0);
+          if ((receiver!=null)) {
+            _data.writeInt(1);
+            receiver.writeToParcel(_data, 0);
+          }
+          else {
+            _data.writeInt(0);
+          }
           boolean _status = mRemote.transact(Stub.TRANSACTION_getTiles, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().getTiles(receiver);
+            return;
+          }
         }
         finally {
           _data.recycle();
@@ -126,6 +138,10 @@ public interface IQSTileHost extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(tileSpec);
           boolean _status = mRemote.transact(Stub.TRANSACTION_click, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().click(tileSpec);
+            return;
+          }
         }
         finally {
           _data.recycle();
@@ -138,39 +154,38 @@ public interface IQSTileHost extends android.os.IInterface
           _data.writeInterfaceToken(DESCRIPTOR);
           _data.writeString(tileSpec);
           boolean _status = mRemote.transact(Stub.TRANSACTION_longClick, _data, null, android.os.IBinder.FLAG_ONEWAY);
+          if (!_status && getDefaultImpl() != null) {
+            getDefaultImpl().longClick(tileSpec);
+            return;
+          }
         }
         finally {
           _data.recycle();
         }
       }
+      public static tornaco.apps.shortx.core.systemui.IQSTileHost sDefaultImpl;
     }
     static final int TRANSACTION_getTiles = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     static final int TRANSACTION_click = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
     static final int TRANSACTION_longClick = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+    public static boolean setDefaultImpl(tornaco.apps.shortx.core.systemui.IQSTileHost impl) {
+      // Only one user of this interface can use this function
+      // at a time. This is a heuristic to detect if two different
+      // users in the same process use this function.
+      if (Stub.Proxy.sDefaultImpl != null) {
+        throw new IllegalStateException("setDefaultImpl() called twice");
+      }
+      if (impl != null) {
+        Stub.Proxy.sDefaultImpl = impl;
+        return true;
+      }
+      return false;
+    }
+    public static tornaco.apps.shortx.core.systemui.IQSTileHost getDefaultImpl() {
+      return Stub.Proxy.sDefaultImpl;
+    }
   }
-  public static final java.lang.String DESCRIPTOR = "tornaco.apps.shortx.core.systemui.IQSTileHost";
   public void getTiles(tornaco.apps.shortx.core.os.SynchronousResultReceiver receiver) throws android.os.RemoteException;
   public void click(java.lang.String tileSpec) throws android.os.RemoteException;
   public void longClick(java.lang.String tileSpec) throws android.os.RemoteException;
-  /** @hide */
-  static class _Parcel {
-    static private <T> T readTypedObject(
-        android.os.Parcel parcel,
-        android.os.Parcelable.Creator<T> c) {
-      if (parcel.readInt() != 0) {
-          return c.createFromParcel(parcel);
-      } else {
-          return null;
-      }
-    }
-    static private <T extends android.os.Parcelable> void writeTypedObject(
-        android.os.Parcel parcel, T value, int parcelableFlags) {
-      if (value != null) {
-        parcel.writeInt(1);
-        value.writeToParcel(parcel, parcelableFlags);
-      } else {
-        parcel.writeInt(0);
-      }
-    }
-  }
 }

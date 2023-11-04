@@ -13,11 +13,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
 
-import lang3.RandomStringUtils;
+import kotlin.io.FilesKt;
 import tornaco.apps.shortx.core.util.Logger;
 import tornaco.apps.shortx.ui.base.IconsKt;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ShortcutHelper {
     private static final Logger LOGGER = new Logger("ShortcutHelper");
     private static final String STUB_APK_TEMPLATE_PATH = "apk/shortcut-stub.apk";
@@ -25,11 +24,22 @@ public class ShortcutHelper {
     private static final String WORK_DIR_PATH = "tmp_";
     private static final String ICON_DIR_PATH = "icon.png";
 
+    public static void cleanUp(Context context) {
+        try {
+            FilesKt.deleteRecursively(new File(context.getFilesDir().getAbsolutePath()
+                    + File.separator
+                    + OUT_APK_PATH));
+            LOGGER.i("cleanUp complete.");
+        } catch (Throwable ignored) {
+        }
+    }
+
     @WorkerThread
     public static File createShortcutStubApkFor(Context context,
                                                 String appLabel,
                                                 String iconName,
                                                 String versionName,
+                                                String packageName,
                                                 int versionCode) throws Exception {
         File workDir = new File(Objects.requireNonNull(context.getExternalCacheDir()).getAbsolutePath()
                 + File.separator
@@ -44,7 +54,7 @@ public class ShortcutHelper {
         if (!compressed) {
             throw new IllegalStateException("Compress fail.");
         }
-        return generateStubApk(context, workDir, iconPath, appLabel, versionName, versionCode);
+        return generateStubApk(context, workDir, iconPath, appLabel, versionName, packageName, versionCode);
     }
 
     private static File generateStubApk(Context context,
@@ -52,14 +62,14 @@ public class ShortcutHelper {
                                         File iconPath,
                                         String appLabel,
                                         String versionName,
+                                        String packageName,
                                         int versionCode) throws Exception {
         File outApk = new File(String.format("%s.apk",
-                Objects.requireNonNull(context
-                        .getExternalCacheDir()).getAbsolutePath()
+                context.getFilesDir().getAbsolutePath()
                         + File.separator
                         + OUT_APK_PATH
                         + File.separator
-                        + "tornaco.apps.shortx.stub." + RandomStringUtils.randomAlphabetic(8).toLowerCase()));
+                        + packageName));
 
         Files.createParentDirs(outApk);
         Files.createParentDirs(workDir);
@@ -69,7 +79,7 @@ public class ShortcutHelper {
                 .setVersionCode(versionCode)
                 .setVersionName(versionName)
                 .setAppName(appLabel)
-                .setPackageName("test.app")
+                .setPackageName(packageName)
                 .commit();
         // Replaces/
         apkBuilder
@@ -80,8 +90,8 @@ public class ShortcutHelper {
                 .replaceFile("res/9w.png", iconPath.getPath())
                 .setArscPackageName("test")
                 .build()
-                .sign();
-        //.cleanWorkspace();
+                .sign()
+                .cleanWorkspace();
 
         return outApk;
     }
