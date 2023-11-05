@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import lang3.RandomStringUtils
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -21,7 +22,6 @@ import tornaco.apps.shortx.core.rule.action.ByteArrayWrapper
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.util.ShortcutHelper
 import java.io.File
-import java.security.SecureRandom
 
 data class ShortcutStubManageState(
     val shortcutApps: List<App> = emptyList()
@@ -100,30 +100,8 @@ class ShortcutStubManageViewModel : ViewModel(),
 
 
     companion object {
-        private const val ALPHA = "abcdefghijklmnopqrstuvwxyz"
-        private const val ALPHADOTS = "$ALPHA....."
-
         fun genPackageName(): String {
-            val random = SecureRandom()
-            val len = 5 + random.nextInt(15)
-            val builder = StringBuilder(len)
-            var next: Char
-            var prev = 0.toChar()
-            for (i in 0 until len) {
-                next = if (prev == '.' || i == 0 || i == len - 1) {
-                    ALPHA[random.nextInt(ALPHA.length)]
-                } else {
-                    ALPHADOTS[random.nextInt(ALPHADOTS.length)]
-                }
-                builder.append(next)
-                prev = next
-            }
-            if (!builder.contains('.')) {
-                // Pick a random index and set it as dot
-                val idx = random.nextInt(len - 2)
-                builder[idx + 1] = '.'
-            }
-            return builder.toString()
+            return "shortx.stub.${RandomStringUtils.randomAlphabetic(5).lowercase()}"
         }
     }
 }
