@@ -1,4 +1,5 @@
 import tornaco.project.android.shortx.Configs.outDir
+import tornaco.project.android.shortx.Configs.sxIsDebugBuild
 import tornaco.project.android.shortx.Configs.sxVersionCode
 import tornaco.project.android.shortx.Configs.sxVersionName
 import tornaco.project.android.shortx.log
@@ -73,7 +74,8 @@ subprojects {
                 minSdk = tornaco.project.android.shortx.Configs.minSdkVersion
                 if (this is com.android.build.api.dsl.ApplicationDefaultConfig) {
                     targetSdk = tornaco.project.android.shortx.Configs.targetSdkVersion
-                    versionCode = tornaco.project.android.shortx.Configs.sxVersionCode
+                    versionCode =
+                        if (sxIsDebugBuild) 999999 else tornaco.project.android.shortx.Configs.sxVersionCode
                     versionName = tornaco.project.android.shortx.Configs.sxVersionName
                     testInstrumentationRunner =
                         tornaco.project.android.shortx.Configs.testInstrumentationRunner
