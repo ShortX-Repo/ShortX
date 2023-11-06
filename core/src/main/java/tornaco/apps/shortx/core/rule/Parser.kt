@@ -3,6 +3,7 @@ package tornaco.apps.shortx.core.rule
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.da.DirectActionSet
 import tornaco.apps.shortx.core.proto.rule.Rule
+import tornaco.apps.shortx.core.proto.rule.RuleList
 import tornaco.apps.shortx.core.proto.rule.RuleSet
 import tornaco.apps.shortx.core.proto.toProto
 import tornaco.apps.shortx.core.util.Logger
@@ -31,7 +32,8 @@ fun parseShareContentRule(content: String): Rule? {
             Rule.parseFrom(Rule.newBuilder().toProto(content).toByteArray())?.apply {
                 requireNotNull(this.id) { "Id is null. invalid rule?" }
                 requireNotNull(this.title) { "Title is null. invalid rule?" }
-            }).build()
+            })
+            .setIsEnabled(false).build()
     }.getOrElse {
         logger.e(it, "parseShareContentRule")
         null
@@ -40,9 +42,17 @@ fun parseShareContentRule(content: String): Rule? {
 
 fun parseShareContentRuleSet(content: String): RuleSet? {
     return runCatching {
-        RuleSet.newBuilder(
+        val set = RuleSet.newBuilder(
             RuleSet.parseFrom(RuleSet.newBuilder().toProto(content).toByteArray())
         ).build()
+
+        val allRules = set.ruleList.rulesList.map {
+            Rule.newBuilder(it).setIsEnabled(false).build()
+        }
+
+        RuleSet.newBuilder(set)
+            .clearRuleList()
+            .setRuleList(RuleList.newBuilder().addAllRules(allRules).build()).build()
     }.getOrElse {
         logger.e(it, "parseShareContentRuleSet")
         null
