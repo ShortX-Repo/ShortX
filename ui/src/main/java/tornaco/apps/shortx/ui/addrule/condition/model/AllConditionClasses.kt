@@ -4,6 +4,7 @@ val allConditionClasses = listOf(
     Condition.CurrentForegroundApp::class,
     Condition.CurrentForegroundAppByPkg::class,
     Condition.MVEL::class,
+    Condition.JS::class,
     Condition.TRUE::class,
     Condition.EvaluateGlobalVar::class,
     Condition.EvaluateLocalVar::class,

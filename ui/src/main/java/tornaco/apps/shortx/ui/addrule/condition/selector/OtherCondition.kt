@@ -22,6 +22,7 @@ fun OtherConditions(
     val i18N = LocalI18N.current
     val items = listOf(
         Condition.MVEL::class,
+        Condition.JS::class,
         Condition.TRUE::class,
         Condition.RequireDelay::class,
         Condition.EvaluateGlobalVar::class,

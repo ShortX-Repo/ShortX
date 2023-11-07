@@ -57,6 +57,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.MatchMVEL
     },
+    MatchJS {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.MatchJS
+    },
     EvaluateGlobalVar {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.EvaluateGlobalVar

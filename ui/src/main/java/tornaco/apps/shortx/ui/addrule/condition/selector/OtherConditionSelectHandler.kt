@@ -29,6 +29,15 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         }
     CodeEditorDialog(state = mvelConditionSelectorState)
 
+    val jsConditionSelectorState =
+        rememberCodeEditorState(title = LocalI18N.current["ui.title.js"],
+            execute = {
+                shortXManager.executeJS(it)
+            }) { expression ->
+            addCondition(Condition.JS(expression.src))
+        }
+    CodeEditorDialog(state = jsConditionSelectorState)
+
     val evaluateGlobalVarSelectorDialogState = rememberEvaluateGlobalVarSelectorState {
         addCondition(it)
     }
@@ -65,6 +74,11 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
         when (source.clazz) {
             Condition.MVEL::class -> {
                 mvelConditionSelectorState.show(source.getConditionAs<Condition.MVEL>()?.expression)
+                true
+            }
+
+            Condition.JS::class -> {
+                jsConditionSelectorState.show(source.getConditionAs<Condition.JS>()?.expression)
                 true
             }
 

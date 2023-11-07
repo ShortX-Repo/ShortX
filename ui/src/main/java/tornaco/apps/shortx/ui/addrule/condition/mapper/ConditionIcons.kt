@@ -36,6 +36,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Development.code_fill
         }
 
+        Condition.JS::class -> {
+            Remix.Development.javascript_fill
+        }
+
         Condition.TRUE::class -> {
             Remix.System.check_fill
         }

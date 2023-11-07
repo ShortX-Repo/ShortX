@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
+import tornaco.apps.shortx.core.proto.condition.MatchJS
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
@@ -142,6 +143,17 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ MatchMVEL::class.java -> {
             val data = this unpack_ MatchMVEL::class.java
             Condition.MVEL(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                expression = data.expression
+            )
+        }
+
+        this is_ MatchJS::class.java -> {
+            val data = this unpack_ MatchJS::class.java
+            Condition.JS(
                 id = data.id,
                 note = data.note,
                 isInvert = data.isInvert,

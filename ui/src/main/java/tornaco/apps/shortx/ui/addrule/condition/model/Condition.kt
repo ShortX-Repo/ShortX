@@ -278,6 +278,29 @@ sealed interface Condition : Parcelable {
     }
 
     @Parcelize
+    data class JS(
+        val expression: String,
+        override val isInvert: Boolean = false,
+        override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
+        override val note: String = "",
+        override val id: String = defaultNewConditionId()
+    ) : Condition {
+        override fun clone(
+            id: String,
+            note: String,
+            isInvert: Boolean,
+            customContextDataKey: CustomContextDataKey
+        ): Condition {
+            return copy(
+                id = id,
+                note = note,
+                isInvert = isInvert,
+                customContextDataKey = customContextDataKey
+            )
+        }
+    }
+
+    @Parcelize
     data class TRUE(
         override val isInvert: Boolean = false,
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),

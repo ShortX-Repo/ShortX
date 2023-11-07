@@ -17,6 +17,7 @@ import tornaco.apps.shortx.core.proto.condition.IsInCall
 import tornaco.apps.shortx.core.proto.condition.IsRinging
 import tornaco.apps.shortx.core.proto.condition.IsRuleEnabled
 import tornaco.apps.shortx.core.proto.condition.KeyguardIsLocked
+import tornaco.apps.shortx.core.proto.condition.MatchJS
 import tornaco.apps.shortx.core.proto.condition.MatchMVEL
 import tornaco.apps.shortx.core.proto.condition.PlugState
 import tornaco.apps.shortx.core.proto.condition.RequireBTConnected
@@ -172,6 +173,14 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.MVEL -> {
             MatchMVEL.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setCustomContextDataKey(customContextDataKey).setExpression(expression).build()
+        }
+
+        is Condition.JS -> {
+            MatchJS.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)
@@ -421,6 +430,7 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
                 .setDegree(degree)
                 .build()
         }
+
         is Condition.RequireDelay -> {
             RequireDelay.newBuilder()
                 .setId(overrideId ?: id)

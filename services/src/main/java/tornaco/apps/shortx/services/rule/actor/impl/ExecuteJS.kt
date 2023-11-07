@@ -5,9 +5,11 @@ import com.google.protobuf.Message
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ImporterTopLevel
 import org.mozilla.javascript.ScriptableObject
+import tornaco.apps.shortx.core.context.ContextData
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
 import tornaco.apps.shortx.core.context.forKey
+import tornaco.apps.shortx.core.localvar.LocalVars
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.isList
@@ -15,6 +17,7 @@ import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -33,18 +36,41 @@ object ExecuteJS : Actor {
     ) {
         require(Interceptors.checkExecuteMVEL(params.shortXContext, params.androidContext))
         val d = params.action unpack_ tornaco.apps.shortx.core.proto.action.ExecuteJS::class.java
+
+        val res = executeJS(
+            params.androidContext,
+            params.shortXContext,
+            params.contextData,
+            params.localVars,
+            d.expression
+        )
+
+        params.contextData.add(
+            d.customContextDataKey.forKey(ContextDataMapping.ExecuteJS.jsRet.name)
+                .fallbackOnEmpty(ContextDataMapping.ExecuteJS.jsRet.name),
+            res
+        )
+    }
+
+    fun executeJS(
+        androidContext: android.content.Context,
+        shortXContext: ShortXContext,
+        contextData: ContextData,
+        localVars: LocalVars,
+        rawExpression: String,
+    ): String {
         val rhinoContext = rhinoAndroidHelper.enterContext()
         rhinoContext.optimizationLevel = 1
         rhinoContext.initStandardObjects()
 
         val scope = ImporterTopLevel(rhinoContext)
-        val wrappedAndroidContext = Context.javaToJS(params.androidContext, scope)
+        val wrappedAndroidContext = Context.javaToJS(androidContext, scope)
         ScriptableObject.putProperty(scope, "context", wrappedAndroidContext)
 
-        params.contextData.map.forEach {
+        contextData.map.forEach {
             ScriptableObject.putConstProperty(scope, it.key, it.value)
         }
-        params.shortXContext.rule.getAllGlobalVars().forEach {
+        shortXContext.rule.getAllGlobalVars().forEach {
             ScriptableObject.putConstProperty(
                 scope,
                 GLOBAL_VAR_REF_PREFIX + it.name,
@@ -55,7 +81,7 @@ object ExecuteJS : Actor {
                 }
             )
         }
-        params.localVars.all.forEach {
+        localVars.all.forEach {
             ScriptableObject.putConstProperty(
                 scope,
                 LOCAL_VAR_REF_PREFIX + it.name,
@@ -67,7 +93,7 @@ object ExecuteJS : Actor {
             )
         }
 
-        val expression = d.expression.inflateContextMap(params.contextData.map.mapValues { entry ->
+        val expression = rawExpression.inflateContextMap(contextData.map.mapValues { entry ->
             // Wrap all data with ""
             entry.value?.let {
                 "\"$it\""
@@ -76,19 +102,15 @@ object ExecuteJS : Actor {
             logger.d("inflated expression: $this")
         }
 
-        runCatching {
-            rhinoContext.evaluateString(scope, expression, "<shortx_js>", 1, null)
+        return runCatching {
+            val obj = rhinoContext.evaluateString(scope, expression, "<shortx_js>", 1, null)
+            Context.toString(obj)
         }.onSuccess {
-            params.contextData.add(
-                d.customContextDataKey.forKey(ContextDataMapping.ExecuteJS.jsRet.name)
-                    .fallbackOnEmpty(ContextDataMapping.ExecuteJS.jsRet.name),
-                Context.toString(it)
-            )
+            logger.d(it)
             Context.exit()
         }.onFailure {
             logger.e(it, "JS")
             Context.exit()
-            throw IllegalStateException(it)
-        }
+        }.getOrThrow()
     }
 }

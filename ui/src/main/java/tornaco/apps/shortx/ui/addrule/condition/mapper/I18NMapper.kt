@@ -50,6 +50,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.title.mvel"])
         }
 
+        Condition.JS::class -> {
+            listOf(i18N["ui.title.js"])
+        }
+
         Condition.TRUE::class -> {
             listOf(
                 i18N["ui.conditions.true"]
@@ -250,7 +254,11 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         }
 
         is Condition.MVEL -> {
-            listOf("MVEL expression", condition.expression)
+            listOf(i18N["ui.title.mvel"], condition.expression)
+        }
+
+        is Condition.JS -> {
+            listOf(i18N["ui.title.js"], condition.expression)
         }
 
         is Condition.TRUE -> {
