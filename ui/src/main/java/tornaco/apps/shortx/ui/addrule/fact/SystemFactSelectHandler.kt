@@ -40,8 +40,10 @@ import tornaco.apps.shortx.ui.base.InputValidateResult
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
+import tornaco.apps.shortx.ui.base.RegexTextInputDialog
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import java.time.LocalTime
 
@@ -280,17 +282,17 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
         )
     MenuDialog(state = callStateSelectState)
 
-    val clipboardRegexDialogState = rememberTextInputState(
+    val clipboardRegexDialogState = rememberRegexTextInputState(
         title = LocalI18N.current["ui.fact.clipboard.content.changed"],
         message = LocalI18N.current["ui.fact.clipboard.content.changed.regex"],
         inputValidator = {
             InputValidateResult.OK
         },
-        onSelected = {
-            addFact(Fact.ClipboardContentChanged(content = it))
+        onSelected = { text, options ->
+            addFact(Fact.ClipboardContentChanged(content = text, options = options))
         }
     )
-    TextInputDialog(state = clipboardRegexDialogState)
+    RegexTextInputDialog(state = clipboardRegexDialogState)
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current["ui.fact.screen.rotate"],
@@ -528,7 +530,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ClipboardContentChanged::class -> {
                 clipboardRegexDialogState.show(
-                    source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: ""
+                    initialValue = source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: "",
+                    options = source.getFactAs<Fact.ClipboardContentChanged>()?.options
                 )
                 true
             }

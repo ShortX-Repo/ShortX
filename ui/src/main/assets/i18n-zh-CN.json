@@ -891,5 +891,7 @@
   "ui.common.install": "安装",
   "ui.common.uninstall": "卸载",
   "ui.common.install.success": "安装成功",
-  "ui.common.install.failed": "安装失败，请抓取日志反馈"
+  "ui.common.install.failed": "安装失败，请抓取日志反馈",
+  "ui.common.regex.options.RegexMatchOptions_Match": "完整匹配",
+  "ui.common.regex.options.RegexMatchOptions_ContainsMatchIn": "包含匹配"
 }

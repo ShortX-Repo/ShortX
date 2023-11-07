@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.rule
 import tornaco.apps.shortx.core.PrebuiltStablePkgSetLabel
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.OnOffAny
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.fact.ActivityStarted
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
@@ -424,7 +425,7 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
         register(ClipboardContentChanged::class.java) { actual, rule ->
             val actualN = (actual as ClipboardContentChanged)
             val ruleN = (rule as ClipboardContentChanged)
-            emptyOrRegexMatch(ruleN.content, actualN.content)
+            emptyOrRegexMatch(ruleN.content, actualN.content, ruleN.matchOptions)
         }
 
         register(GlobalVarChanged::class.java) { actual, rule ->
@@ -639,11 +640,25 @@ class FactMatcherImpl(private val shortXContext: () -> ShortXContext) : FactMatc
     }
 }
 
-fun emptyOrRegexMatch(vararg ruleAndActuals: Pair<String, String>) = ruleAndActuals.all {
-    emptyOrRegexMatch(it.first, it.second)
-}
+fun emptyOrRegexMatch(
+    vararg ruleAndActuals: Pair<String, String>,
+    options: RegexMatchOptions = RegexMatchOptions.RegexMatchOptions_Match
+) =
+    ruleAndActuals.all {
+        emptyOrRegexMatch(it.first, it.second, options)
+    }
 
-fun emptyOrRegexMatch(ruleField: String, actualField: String) =
-    ruleField.isEmpty() || ruleField.toRegex().matches(actualField).apply {
-        logger.d("emptyOrRegexMatch, regex: $ruleField, result: $this")
+fun emptyOrRegexMatch(
+    ruleField: String,
+    actualField: String,
+    options: RegexMatchOptions = RegexMatchOptions.RegexMatchOptions_Match
+) =
+    ruleField.isEmpty() || ruleField.toRegex().let {
+        if (options == RegexMatchOptions.RegexMatchOptions_Match) {
+            it.matches(actualField)
+        } else {
+            it.containsMatchIn(actualField)
+        }
+    }.apply {
+        logger.d("emptyOrRegexMatch, regex: $ruleField, options: $options, result: $this")
     }

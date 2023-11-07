@@ -592,7 +592,8 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
             Fact.ClipboardContentChanged(
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
-                content = data.content
+                content = data.content,
+                options = data.matchOptions
             )
         }
 

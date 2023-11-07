@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.KeyGesture
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.ProcessName
+import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
 import tornaco.apps.shortx.core.proto.common.StatusBarTile
 import tornaco.apps.shortx.core.proto.common.StringPair
@@ -893,6 +894,7 @@ sealed interface Fact {
         override val id: String = defaultNewFactId(),
 
         val content: String,
+        val options: RegexMatchOptions,
     ) : Fact {
         override fun clone(
             id: String,

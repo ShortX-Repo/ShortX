@@ -455,6 +455,7 @@ fun Fact.toProtoFact(overrideId: String? = null): ProtoMessage {
             ClipboardContentChanged.newBuilder().setId(overrideId ?: id).setNote(note)
                 .setCustomContextDataKey(customContextDataKey)
                 .setContent(content)
+                .setMatchOptions(options)
                 .build()
         }
 

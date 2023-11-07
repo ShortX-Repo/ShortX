@@ -348,3 +348,8 @@ message SensorUsage {
   int32 sensor = 1;
   repeated string srcId = 2;
 }
+
+enum RegexMatchOptions {
+    RegexMatchOptions_Match = 0;
+    RegexMatchOptions_ContainsMatchIn = 1;
+}

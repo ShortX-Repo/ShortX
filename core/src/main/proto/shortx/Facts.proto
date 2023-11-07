@@ -494,6 +494,7 @@ message CallStateChanged {
 
 message ClipboardContentChanged {
   string content = 1;
+  RegexMatchOptions matchOptions = 2;
 
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
