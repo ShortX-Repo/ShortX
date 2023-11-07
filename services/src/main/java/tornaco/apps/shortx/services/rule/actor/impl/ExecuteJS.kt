@@ -7,12 +7,14 @@ import org.mozilla.javascript.ImporterTopLevel
 import org.mozilla.javascript.ScriptableObject
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.context.ContextMapUtil.inflateContextMap
+import tornaco.apps.shortx.core.context.forKey
 import tornaco.apps.shortx.core.rule.GLOBAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.LOCAL_VAR_REF_PREFIX
 import tornaco.apps.shortx.core.rule.isList
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.rule.valueList
 import tornaco.apps.shortx.core.rule.valueString
+import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.services.data.Dirs
 import tornaco.apps.shortx.services.rule.Interceptors
 import tornaco.apps.shortx.services.rule.actor.Actor
@@ -77,7 +79,11 @@ object ExecuteJS : Actor {
         runCatching {
             rhinoContext.evaluateString(scope, expression, "<shortx_js>", 1, null)
         }.onSuccess {
-            params.contextData.add(ContextDataMapping.ExecuteJS.jsRet.name, Context.toString(it))
+            params.contextData.add(
+                d.customContextDataKey.forKey(ContextDataMapping.ExecuteJS.jsRet.name)
+                    .fallbackOnEmpty(ContextDataMapping.ExecuteJS.jsRet.name),
+                Context.toString(it)
+            )
             Context.exit()
         }.onFailure {
             logger.e(it, "JS")
