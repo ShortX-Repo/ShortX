@@ -11,11 +11,12 @@ object IsRuleEnabled : Cond {
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         val data =
             param.condition.unpack_(tornaco.apps.shortx.core.proto.condition.IsRuleEnabled::class.java)
-        val isEnabled = requireNotNull(param.shortXContext.rule.getRuleById(data.ruleId)).isEnabled
+        val rule = requireNotNull(param.shortXContext.rule.getRuleById(data.ruleId))
+        val res = rule.isEnabled == data.isEnabled
         return if (data.isInvert) {
-            !isEnabled
+            !res
         } else {
-            isEnabled
+            res
         }.toResult()
     }
 }
