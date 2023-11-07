@@ -283,6 +283,9 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     val clipboardRegexDialogState = rememberTextInputState(
         title = LocalI18N.current["ui.fact.clipboard.content.changed"],
         message = LocalI18N.current["ui.fact.clipboard.content.changed.regex"],
+        inputValidator = {
+            InputValidateResult.OK
+        },
         onSelected = {
             addFact(Fact.ClipboardContentChanged(content = it))
         }
@@ -525,7 +528,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
 
             Fact.ClipboardContentChanged::class -> {
                 clipboardRegexDialogState.show(
-                    source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: ".*"
+                    source.getFactAs<Fact.ClipboardContentChanged>()?.content ?: ""
                 )
                 true
             }

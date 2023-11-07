@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor
 
+import io.kotest.matchers.shouldBe
 import org.junit.Before
 import org.junit.Test
 import tornaco.apps.shortx.core.util.logAdapter
@@ -17,6 +18,21 @@ class RegexTest {
     @Test
     fun testRegex() {
         println(".*/Downloads/.*".toRegex().matches("/sdcard/Downloads/A.mp3"))
+    }
+
+    @Test
+    fun testRegex3() {
+        "(.|\n)*".toRegex().matches("""
+            Global pattern flags 
+            g modifier: global. All matches (don't return after first match)
+            m modifier: multi line. Causes ^ and ${'$'} to match the begin/end of each line (not only begin/end of string)
+        """.trimIndent()) shouldBe true
+
+        ".*".toRegex().containsMatchIn("""
+            Global pattern flags 
+            g modifier: global. All matches (don't return after first match)
+            m modifier: multi line. Causes ^ and ${'$'} to match the begin/end of each line (not only begin/end of string)
+        """.trimIndent()) shouldBe true
     }
 
     @Test

@@ -119,7 +119,7 @@
   "ui.fact.screen.rotate.degree.ScreenRotateDegree_Any": "Any degree",
   "ui.fact.system.ready": "System ready",
   "ui.fact.clipboard.content.changed": "Clipboard change",
-  "ui.fact.clipboard.content.changed.regex": "Enter the regular expression you want to match the content of the clipboard. When the clipboard changes and the content matches the expression, the trigger will fire",
+  "ui.fact.clipboard.content.changed.regex": "Enter the regular expression you want to match the content of the clipboard. When the clipboard changes and the content matches the expression, the trigger will fire. Leave it blank will trigger on any content",
   "ui.fact.call.state.changed": "Call state changed",
   "ui.fact.call.state.callstateidle": "Idle",
   "ui.fact.call.state.callstateringing": "Ringing",
