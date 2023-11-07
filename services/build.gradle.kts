@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":services-29"))
     implementation(project(":services-30"))
     implementation(project(":services-33"))
+    implementation(project(":services-34"))
     implementation(project(":external:utils"))
     implementation(project(":external:picasso"))
     implementation(project(":external:rhino-android"))
