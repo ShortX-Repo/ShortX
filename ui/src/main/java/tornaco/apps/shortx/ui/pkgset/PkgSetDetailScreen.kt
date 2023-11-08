@@ -58,6 +58,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
+import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 
@@ -148,7 +149,12 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                                 .fillMaxSize()
                         )
                     } else {
-                        PkgSetContent(PaddingValues(bottom = 128.dp), state, vm)
+                        PkgSetContent(
+                            paddingValues = paddingValues.copy(
+                                bottom = { it + 120.dp }
+                            ),
+                            state = state,
+                            vm = vm)
                     }
                 }
 

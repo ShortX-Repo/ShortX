@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
+import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
@@ -198,12 +199,13 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
                 if (globalVar == null) {
                     LoadError()
                 } else {
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        contentPadding = paddingValues
+                        contentPadding = paddingValues.copy(
+                            bottom = { it + 120.dp }
+                        )
                     ) {
 
                         stickyHeader {
