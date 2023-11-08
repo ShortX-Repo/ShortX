@@ -15,6 +15,7 @@
   "ui.conditions.eva.global.var": "比较全局变量",
   "ui.conditions.eva.local.var": "比较局部变量",
   "ui.conditions.app.running": "应用正在运行",
+  "ui.conditions.current.activity": "活动在前台",
   "ui.conditions.app.not.running": "应用未在运行",
   "ui.conditions.service.running": "服务正在运行",
   "ui.conditions.has.audio.focus": "应用正在播放音频",

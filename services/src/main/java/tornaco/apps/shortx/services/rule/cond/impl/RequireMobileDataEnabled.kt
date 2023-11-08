@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.cond.impl
 
+import android.annotation.SuppressLint
 import android.telephony.SubscriptionManager
 import com.google.protobuf.Message
 import tornaco.apps.shortx.core.rule.unpack_
@@ -10,6 +11,7 @@ object RequireMobileDataEnabled : Cond {
     override fun condClass(): Class<out Message> =
         tornaco.apps.shortx.core.proto.condition.RequireMobileDataEnabled::class.java
 
+    @SuppressLint("MissingPermission")
     override suspend fun evaluate(param: Cond.CondParam): Cond.Result {
         return with(param) {
             val data =

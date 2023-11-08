@@ -44,6 +44,7 @@
   "ui.conditions.app.running": "App is running",
   "ui.conditions.app.not.running": "App is NOT running",
   "ui.conditions.service.running": "Service is running",
+  "ui.conditions.current.activity": "Activity resumed",
   "ui.conditions.has.audio.focus": "App is playing audio",
   "ui.conditions.battery.percent.op": "Select op",
   "ui.conditions.battery.percent.value": "Value (0-100)",

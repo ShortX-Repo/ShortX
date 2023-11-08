@@ -140,6 +140,10 @@ fun iconForCondition(condition: KClass<out Condition>): String {
             Remix.Device.sensor_fill
         }
 
+        Condition.CurrentActivity::class -> {
+            Remix.Logos.android_fill
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

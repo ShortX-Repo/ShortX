@@ -7,6 +7,7 @@ import tornaco.apps.shortx.core.proto.condition.AppIsNotRunning
 import tornaco.apps.shortx.core.proto.condition.AppIsRunning
 import tornaco.apps.shortx.core.proto.condition.BatteryPercent
 import tornaco.apps.shortx.core.proto.condition.ChargeState
+import tornaco.apps.shortx.core.proto.condition.CurrentActivity
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgList
 import tornaco.apps.shortx.core.proto.condition.CurrentPkgListByPkg
 import tornaco.apps.shortx.core.proto.condition.EvaluateGlobalVar
@@ -124,6 +125,18 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
                 customContextDataKey = data.customContextDataKey,
                 op = data.op.toOp(null),
                 services = data.servicesList
+            )
+        }
+
+        this is_ CurrentActivity::class.java -> {
+            val data = this unpack_ CurrentActivity::class.java
+            Condition.CurrentActivity(
+                id = data.id,
+                note = data.note,
+                isInvert = data.isInvert,
+                customContextDataKey = data.customContextDataKey,
+                op = data.op.toOp(null),
+                activities = data.activitiesList
             )
         }
 

@@ -24,6 +24,9 @@ class ActivityStateHandlerImpl(val context: Context, val shortXContext: ShortXCo
         emptyList()
     )
 
+    val currentResumedActivities
+        get() = _currentResumedActivities.value
+
     val currentFrontAppPkgs
         get() = _currentResumedActivities.value.map {
             it.pkg

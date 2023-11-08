@@ -27,6 +27,7 @@ fun AppConditions(
         Condition.AppIsNotRunning::class,
         Condition.AppHasAudioFocus::class,
         Condition.ServiceIsRunning::class,
+        Condition.CurrentActivity::class,
         Condition.AppHasNotification::class,
     ).map {
         SelectorItem(

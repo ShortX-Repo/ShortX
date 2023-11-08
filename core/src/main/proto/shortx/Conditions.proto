@@ -57,9 +57,8 @@ message CurrentPkgListByPkg {
 
 
 message CurrentActivity {
-  string pkgName = 1;
-  string className = 2;
-  int32 userId = 3;
+  repeated AppComponent activities = 1;
+  ConditionOperator op = 2;
 
   CustomContextDataKey customContextDataKey = 97;
   bool isInvert = 98;
@@ -177,7 +176,6 @@ message GlobalVarOpPayload {
 
 message ServiceIsRunning {
   repeated AppComponent services = 1;
-  repeated string globalVarNames = 2;
 
   // Default is ALL.
   ConditionOperator op = 3;

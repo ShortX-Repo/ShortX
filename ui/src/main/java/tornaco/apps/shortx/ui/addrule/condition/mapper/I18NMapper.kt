@@ -42,6 +42,10 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             listOf(i18N["ui.conditions.service.running"])
         }
 
+        Condition.CurrentActivity::class -> {
+            listOf(i18N["ui.conditions.current.activity"])
+        }
+
         Condition.AppHasAudioFocus::class -> {
             listOf(i18N["ui.conditions.has.audio.focus"])
         }
@@ -256,6 +260,16 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
                 }
             }.labelLinesFromAppComponents(
                 condition.services
+            )
+        }
+
+        is Condition.CurrentActivity -> {
+            mutableListOf(i18N["ui.conditions.current.activity"]).apply {
+                if (condition.activities.size > 1) {
+                    add(opDescriptionForComponent(op = condition.op, i18N = i18N))
+                }
+            }.labelLinesFromAppComponents(
+                condition.activities
             )
         }
 

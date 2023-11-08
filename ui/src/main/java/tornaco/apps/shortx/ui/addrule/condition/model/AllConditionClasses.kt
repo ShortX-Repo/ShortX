@@ -35,4 +35,5 @@ val allConditionClasses = listOf(
     Condition.RequireWindowRotation::class,
     Condition.RequireDelay::class,
     Condition.RequireSensorOff::class,
+    Condition.CurrentActivity::class,
 )

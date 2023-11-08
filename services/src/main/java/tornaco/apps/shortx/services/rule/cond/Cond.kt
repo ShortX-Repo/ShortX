@@ -37,6 +37,10 @@ interface CondProvider {
 }
 
 enum class PrebuiltCond : CondProvider {
+    CurrentActivity {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.CurrentActivity
+    },
     CurrentPkgList {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.CurrentPkgList

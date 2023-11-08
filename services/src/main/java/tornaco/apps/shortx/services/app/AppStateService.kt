@@ -177,6 +177,10 @@ class AppStateService(shortXContext: ShortXContext) :
         return activityState.currentFrontAppPkgs.toList()
     }
 
+    fun currentResumedActivities(): List<AppComponent> {
+        return activityState.currentResumedActivities.toList()
+    }
+
     fun onActivityResumed(componentName: ComponentName, userId: Int, intentUri: String) {
         activityState.onActivityResumed(componentName, userId, intentUri)
     }

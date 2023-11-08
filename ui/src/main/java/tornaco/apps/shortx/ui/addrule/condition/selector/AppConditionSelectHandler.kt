@@ -144,6 +144,20 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
     )
     ComponentOrGVSelectorDialog(state = serviceIsRunningSelectorState)
 
+
+    val currentActivitySelectorState = rememberComponentOrGVSelectorState(
+        types = listOf(ComponentType.Activity),
+        onSelected = { it, op ->
+            addCondition(
+                Condition.CurrentActivity(
+                    activities = it.components,
+                    op = op
+                )
+            )
+        }
+    )
+    ComponentOrGVSelectorDialog(state = currentActivitySelectorState)
+
     return { source ->
         when (source.clazz) {
             Condition.CurrentForegroundApp::class -> {
@@ -194,6 +208,14 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
                 serviceIsRunningSelectorState.show(
                     source.getConditionAs<Condition.ServiceIsRunning>()?.services,
                     source.getConditionAs<Condition.ServiceIsRunning>()?.op
+                )
+                true
+            }
+
+            Condition.CurrentActivity::class -> {
+                currentActivitySelectorState.show(
+                    source.getConditionAs<Condition.CurrentActivity>()?.activities,
+                    source.getConditionAs<Condition.CurrentActivity>()?.op
                 )
                 true
             }
